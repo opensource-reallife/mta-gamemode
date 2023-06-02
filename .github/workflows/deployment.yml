@@ -1,0 +1,46 @@
+name: deployment
+
+on:
+  push:
+    branches:
+      - "feature/deployment"
+
+jobs:
+  build:
+    runs-on: debian-latest
+    steps:
+      -
+        run: |
+          - apt-get update && apt-get install -y python3 git lua5.1
+          - 'echo "GIT_VERSION=\"$(git rev-parse HEAD)\" ; GIT_BRANCH=\"$CI_BUILD_REF_NAME\"" >> vrp/buildinfo.lua'
+          - python3 build/lint.py
+          - python3 build/buildscript.py --branch $CI_BUILD_REF_NAME
+          - python3 build/packAssets.py
+          - ./build/make_archives.sh
+    
+  build_docker:
+    runs-on: docker:17.06.0-ce
+    needs: build
+    steps:
+      -
+        run: |
+          - apk add --update openssl
+          - apk add curl
+          - wget -q -O build/workerserver https://upload.exo-reallife.de/build/workerserver # Built by deploy-workerunit project
+          - wget -q -O build/ml_gps.so https://upload.exo-reallife.de/build/ml_gps.so # Built by mta-module-gps project
+          - wget -q -O build/ml_jwt.so https://glare.vercel.app/eXo-OpenSource/ml_jwt/ml_jwt.so
+          - wget -q -O build/ml_redis.so https://glare.vercel.app/eXo-OpenSource/ml_redis/ml_redis.so
+          - docker build -t exo-rl-mta .
+          - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+          - docker tag exo-rl-mta $CI_REGISTRY_IMAGE:latest-$(echo $CI_BUILD_REF_NAME | tr -d /)
+          - '[ "$CI_BUILD_REF_NAME" == "master" ] && docker tag exo-rl-mta $CI_REGISTRY_IMAGE:latest'
+          - docker push "$CI_REGISTRY_IMAGE"
+
+    
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build_docker
+    steps:
+      -
+        run: echo "Test"
+  
