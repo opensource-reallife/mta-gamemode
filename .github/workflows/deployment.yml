@@ -25,8 +25,9 @@ jobs:
       -
         run: |
           docker build -t rl-mta .
-          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} 
-          docker tag rl-mta $GITHUB_REPOSITORY:latest-$(echo $GITHUB_REF_NAME | tr -d /)
-          [ "$GITHUB_REF_NAME" == "master" ] && docker tag rl-mta $GITHUB_REPOSITORY:latest
-          docker push $GITHUB_REPOSITORY
+          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          DOCKERTAG=latest-$(echo $GITHUB_REF_NAME | tr -d /)
+          [ "$GITHUB_REF_NAME" == "master" ] && DOCKERTAG=latest
+          docker tag rl-mta $GITHUB_REPOSITORY:$DOCKERTAG
+          docker push ghcr.io/$GITHUB_REPOSITORY:$DOCKERTAG
     
