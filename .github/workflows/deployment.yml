@@ -22,7 +22,8 @@ jobs:
           ./build/make_archives.sh
     
   build_docker:
-    runs-on: docker:17.06.0-ce
+    runs-on: ubuntu-latest
+    container: docker:17.06.0-ce
     needs: build
     steps:
       -
