@@ -20,11 +20,6 @@ jobs:
           python3 build/buildscript.py --branch $GITHUB_REF_NAME
           python3 build/packAssets.py
           ./build/make_archives.sh
-    
-  build_docker:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
       -
         run: |
           wget -q -O build/ml_jwt.so https://github.com/eXo-OpenSource/ml_jwt/releases/download/1.0-wip/ml_jwt.so
@@ -34,12 +29,4 @@ jobs:
           docker tag rl-mta $GITHUB_REPOSITORY:latest-$(echo $GITHUB_REF_NAME | tr -d /)
           '[ "$GITHUB_REF_NAME" == "master" ] && docker tag rl-mta $GITHUB_REPOSITORY:latest'
           docker push ghcr.io/$GITHUB_REPOSITORY
-
     
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build_docker
-    steps:
-      -
-        run: echo "Test"
-  
