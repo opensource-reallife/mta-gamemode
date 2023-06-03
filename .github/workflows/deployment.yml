@@ -28,6 +28,6 @@ jobs:
           docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
           DOCKERTAG=latest-$(echo $GITHUB_REF_NAME | tr -d /)
           [ "$GITHUB_REF_NAME" == "master" ] && DOCKERTAG=latest
-          docker tag rl-mta $GITHUB_REPOSITORY:$DOCKERTAG
+          docker tag rl-mta ghcr.io/$GITHUB_REPOSITORY:$DOCKERTAG
           docker push ghcr.io/$GITHUB_REPOSITORY:$DOCKERTAG
     
