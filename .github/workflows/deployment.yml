@@ -26,19 +26,17 @@ jobs:
         run: |
           - apk add --update openssl
           - apk add curl
-          - wget -q -O build/workerserver https://upload.exo-reallife.de/build/workerserver # Built by deploy-workerunit project
-          - wget -q -O build/ml_gps.so https://upload.exo-reallife.de/build/ml_gps.so # Built by mta-module-gps project
-          - wget -q -O build/ml_jwt.so https://glare.vercel.app/eXo-OpenSource/ml_jwt/ml_jwt.so
-          - wget -q -O build/ml_redis.so https://glare.vercel.app/eXo-OpenSource/ml_redis/ml_redis.so
-          - docker build -t exo-rl-mta .
-          - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-          - docker tag exo-rl-mta $CI_REGISTRY_IMAGE:latest-$(echo $CI_BUILD_REF_NAME | tr -d /)
-          - '[ "$CI_BUILD_REF_NAME" == "master" ] && docker tag exo-rl-mta $CI_REGISTRY_IMAGE:latest'
-          - docker push "$CI_REGISTRY_IMAGE"
+          - wget -q -O build/ml_jwt.so https://github.com/eXo-OpenSource/ml_jwt/releases/download/1.0-wip/ml_jwt.so
+          - wget -q -O build/ml_redis.so https://github.com/eXo-OpenSource/ml_redis/releases/download/1.0-wip/ml_redis.so
+          - docker build -t rl-mta .
+          - echo $CR_PAT | docker login ghcr.io -u opensource-reallife --password-stdin
+          - docker tag rl-mta $GITHUB_REPOSITORY:latest-$(echo $GITHUB_REF_NAME | tr -d /)
+          - '[ "$GITHUB_REF_NAME" == "master" ] && docker tag rl-mta $GITHUB_REPOSITORY:latest'
+          - docker push ghcr.io/$GITHUB_REPOSITORY
 
     
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: debian-latest
     needs: build_docker
     steps:
       -
