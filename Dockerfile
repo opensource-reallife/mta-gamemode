@@ -10,16 +10,16 @@ RUN echo $TZ | tee /etc/timezone && \
 
 # Setup user and change to its home
 RUN useradd -u 5000 -m -d /var/lib/mtasa/ mtasa && \
-	cd /var/lib/mtasa
+	cd /var/lib/mtasa && \
 
-# Download and install MTA Server
-RUN	wget -q -O mta.tar.gz https://nightly.multitheftauto.com/multitheftauto_linux_x64-1.5.9-rc-21648.tar.gz && \
+	# Download and install MTA Server
+	wget -q -O mta.tar.gz https://nightly.multitheftauto.com/multitheftauto_linux_x64-1.5.9-rc-21648.tar.gz && \
 	tar xfz mta.tar.gz && mv multitheftauto*/* ./ && \
 	rm -Rf multitheftauto* && \
-	rm mta.tar.gz
+	rm mta.tar.gz && \
 
-# Download default resources
-RUN	mkdir /var/lib/mtasa/mods/deathmatch/resources && \
+	# Download default resources
+	mkdir /var/lib/mtasa/mods/deathmatch/resources && \
 	cd /var/lib/mtasa/mods/deathmatch/resources && \
 	wget -q -O res.zip https://mirror.mtasa.com/mtasa/resources/mtasa-resources-latest.zip && \
 	unzip res.zip && \
