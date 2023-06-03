@@ -20,12 +20,12 @@ jobs:
           python3 build/buildscript.py --branch $GITHUB_REF_NAME
           python3 build/packAssets.py
           ./build/make_archives.sh
-      -
-        run: |
           wget -q -O build/ml_jwt.so https://github.com/eXo-OpenSource/ml_jwt/releases/download/1.0-wip/ml_jwt.so
           wget -q -O build/ml_redis.so https://github.com/eXo-OpenSource/ml_redis/releases/download/1.0-wip/ml_redis.so
+      -
+        run: |
           docker build -t rl-mta .
-          echo $CR_PAT | docker login ghcr.io -u opensource-reallife --password-stdin
+          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} 
           docker tag rl-mta $GITHUB_REPOSITORY:latest-$(echo $GITHUB_REF_NAME | tr -d /)
           '[ "$GITHUB_REF_NAME" == "master" ] && docker tag rl-mta $GITHUB_REPOSITORY:latest'
           docker push ghcr.io/$GITHUB_REPOSITORY
