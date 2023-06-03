@@ -28,6 +28,7 @@ jobs:
     steps:
       -
         run: |
+          ls -la
           apk add --update openssl
           apk add curl
           wget -q -O build/ml_jwt.so https://github.com/eXo-OpenSource/ml_jwt/releases/download/1.0-wip/ml_jwt.so
