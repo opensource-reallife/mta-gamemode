@@ -34,7 +34,6 @@ EXPOSE 8080/tcp
 
 # Add subproject artitifacts
 ADD build/workerserver /var/lib/mtasa/workerserver
-ADD build/ml_gps.so /var/lib/mtasa/x64/modules/ml_gps.so
 ADD build/ml_jwt.so /var/lib/mtasa/x64/modules/ml_jwt.so
 ADD build/ml_redis.so /var/lib/mtasa/x64/modules/ml_redis.so
 
