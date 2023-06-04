@@ -141,10 +141,10 @@ function ScoreboardGUI:refresh()
 	self:addPlayerCount("Zivilisten", self.m_FactionCount[0] or 0, self.m_FactionAFKCount[0] or 0, tocolor(255, 255, 255))
 
 	for id, faction in pairs(FactionManager.Map) do
-		if id ~= 2 and id ~= 3  then
+		--if id ~= 2 and id ~= 3  then -- SAPD, FBI and SASF = "Staat"
 			local color = faction:getColor()
-			self:addPlayerCount((id == 1 and "Staat") or faction:getShortName(), self.m_FactionCount[id] or 0, self.m_FactionAFKCount[id] or 0, tocolor(color.r, color.g, color.b))
-		end
+			self:addPlayerCount(faction:getShortName(), self.m_FactionCount[id] or 0, self.m_FactionAFKCount[id] or 0, tocolor(color.r, color.g, color.b))
+		--end
 	end
 	for id, company in ipairs(CompanyManager.Map) do
 		self:addPlayerCount(company:getShortName(), self.m_CompanyCount[id] or 0, self.m_CompanyAFKCount[id] or 0)
@@ -200,7 +200,7 @@ function ScoreboardGUI:insertPlayers()
 		local item = self.m_Grid:addItem(
 			(isLoggedIn and player:isPremium()) and "files/images/Nametag/premium.png" or "files/images/Textures/Other/trans.png",
 			(player.getPublicSync and (player:getPublicSync("supportMode") or player:getPublicSync("ticketsupportMode")) and ("[%s] %s"):format(RANKSCOREBOARD[player.getPublicSync and player:getPublicSync("Rank") or 3] or "Support", player:getName())) or player:getName(),
-			isLoggedIn and (player:getFaction() and player:getFaction():getId() >= 1 and player:getFaction():getId() <= 3 and "Staat" or (player:getFaction() and player:getFaction():getShortName() or "- Keine -")) or "-",
+			isLoggedIn and (player:getFaction() and player:getFaction():getShortName() or "- Keine -") or "-",
 			isLoggedIn and ((localPlayer:getFaction() and localPlayer:getFaction():isRescueFaction()) and (player:getFaction() and player:getFaction():isRescueFaction() and player:getRadioStatus() or "-")) or "",
 			isLoggedIn and (player:getCompany() and player:getCompany():getShortName()  or "- Keins -") or "-",
 			isLoggedIn and gname or "-",
@@ -212,11 +212,11 @@ function ScoreboardGUI:insertPlayers()
 
 		if player:getFaction() then
 			local color = player:getFaction():getColor()
-			if player:getFaction():getId() >= 1 and player:getFaction():getId() <= 3 then
-				item:setColumnColor(3, tocolor(0, 200, 255))
-			else
+			--if player:getFaction():getId() >= 1 and player:getFaction():getId() <= 3 then -- SAPD, FBI and SASF = "Staat"
+			--	item:setColumnColor(3, tocolor(0, 200, 255))
+			--else
 				item:setColumnColor(3, tocolor(color.r, color.g, color.b))
-			end
+			--end
 
 			if (localPlayer:getFaction() and localPlayer:getFaction():isRescueFaction()) and (player:getFaction() and player:getFaction():isRescueFaction()) then
 				if tonumber(player:getRadioStatus()) and FMS_STATUS_COLORS[tonumber(player:getRadioStatus())] then
