@@ -13,7 +13,7 @@ RUN useradd -u 5000 -m -d /var/lib/mtasa/ mtasa && \
 	cd /var/lib/mtasa && \
 
 	# Download and install MTA Server
-	wget -q -O mta.tar.gz https://nightly.mtasa.com/multitheftauto_linux_x64-1.5.8-rc-20985.tar.gz && \
+	wget -q -O mta.tar.gz https://nightly.multitheftauto.com/multitheftauto_linux_x64-1.5.9-rc-21648.tar.gz && \
 	tar xfz mta.tar.gz && mv multitheftauto*/* ./ && \
 	rm -Rf multitheftauto* && \
 	rm mta.tar.gz && \
@@ -23,10 +23,10 @@ RUN useradd -u 5000 -m -d /var/lib/mtasa/ mtasa && \
 	cd /var/lib/mtasa/mods/deathmatch/resources && \
 	wget -q -O res.zip https://mirror.mtasa.com/mtasa/resources/mtasa-resources-latest.zip && \
 	unzip res.zip && \
-	rm res.zip && \
+	rm res.zip
 
-	# Create modules directory and delete bad shipped libs
-	mkdir /var/lib/mtasa/x64/modules && \
+# Create modules directory and delete bad shipped libs
+RUN	mkdir /var/lib/mtasa/x64/modules && \
 	rm -Rf /var/lib/mtasa/x64/linux-libs
 
 # Expose ports (22003/udp, 22126/udp, 22005/tcp are exposed dynamically)
@@ -34,7 +34,6 @@ EXPOSE 8080/tcp
 
 # Add subproject artitifacts
 ADD build/workerserver /var/lib/mtasa/workerserver
-ADD build/ml_gps.so /var/lib/mtasa/x64/modules/ml_gps.so
 ADD build/ml_jwt.so /var/lib/mtasa/x64/modules/ml_jwt.so
 ADD build/ml_redis.so /var/lib/mtasa/x64/modules/ml_redis.so
 
