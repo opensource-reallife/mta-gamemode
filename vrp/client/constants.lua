@@ -9,7 +9,7 @@ screenWidth, screenHeight = guiGetScreenSize()
 screenSize = Vector2(screenWidth, screenHeight)
 ASPECT_RATIO_MULTIPLIER = (screenWidth/screenHeight)/(16/9)
 
-HTTP_DOWNLOAD = not DEBUG
+HTTP_DOWNLOAD = false
 FILE_HTTP_SERVER_URL = false -- "https://download.exo-reallife.de/files/release/production/vrp_assets/" -- Todo: move to config
 FILE_HTTP_FALLBACK_URL = false -- "https://download2.exo-reallife.de/files/release/production/vrp_assets/" -- Todo: see above
 TEXTURE_HTTP_URL = false -- "https://picupload.pewx.de/textures"

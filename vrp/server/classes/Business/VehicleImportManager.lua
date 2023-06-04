@@ -8,7 +8,7 @@
 
 
 VehicleImportManager = inherit(Singleton)
-VehicleImportManager.ImportLocation = Vector3(-1706.71, 12.56, 3.55)
+VehicleImportManager.ImportLocation = Vector3(-1706.71, 12.56, 3.85)
 VehicleImportManager.ImportRotation = 315
 VehicleImportManager.TransportMissionEndCountdown = 10 -- 10 sec
 VehicleImportManager.VehiclePriceToPaymentPower = 0.7 -- math.pow(price, x) -> total payment for both EPT and driver
