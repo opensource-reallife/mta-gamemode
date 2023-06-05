@@ -37,7 +37,7 @@ DrivingSchool.testRoute =
 	{1761.76, -1687.31, 13.02},
 }
 
-addRemoteEvents{"drivingSchoolCallInstructor", "drivingSchoolStartTheory", "drivingSchoolPassTheory", "drivingSchoolStartAutomaticTest", "drivingSchoolHitRouteMarker",	"drivingSchoolStartLessionQuestion", "drivingSchoolEndLession", "drivingSchoolReceiveTurnCommand", "drivingSchoolReduceSTVO"}
+addRemoteEvents{"drivingSchoolCallInstructor", "drivingSchoolStartTheory", "drivingSchoolPassTheory", "drivingSchoolStartAutomaticTest", "drivingSchoolHitRouteMarker",	"drivingSchoolStartLessionQuestion", "drivingSchoolEndLession", "drivingSchoolReceiveTurnCommand", "drivingSchoolReduceSTVO", "drivingSchoolBuyLicense"}
 
 function DrivingSchool:constructor()
 	InteriorEnterExit:new(Vector3(1778.92, -1721.45, 13.37), Vector3(-2026.93, -103.89, 1035.17), 90, 180, 3, 0, false)
@@ -84,6 +84,8 @@ function DrivingSchool:constructor()
     addEventHandler("drivingSchoolEndLession", root, bind(DrivingSchool.Event_endLession, self))
     addEventHandler("drivingSchoolReceiveTurnCommand", root, bind(DrivingSchool.Event_receiveTurnCommand, self))
 	addEventHandler("drivingSchoolReduceSTVO", root, bind(DrivingSchool.Event_reduceSTVO, self))
+
+	addEventHandler("drivingSchoolBuyLicense", root, bind(DrivingSchool.buyPlayerLicense, self))
 end
 
 function DrivingSchool:destructor()
@@ -534,3 +536,22 @@ function DrivingSchool:Event_reduceSTVO(category, amount)
 	self.m_BankAccountServer:transferMoney({self, nil, true}, stvoPricing*0.85, "STVO-Punkte abbauen", "Driving School", "ReduceSTVO")
 	triggerClientEvent(client, "hideDrivingSchoolReduceSTVO", resourceRoot)
 end
+
+function DrivingSchool:buyPlayerLicense(type)
+    local costs = DrivingSchool.LicenseCosts[type]*1.25
+	if not client then return end
+    if costs then
+        if not self:checkPlayerLicense(client, type) then
+			if target:getMoney() >= costs then
+				client:sendError(_("Der Spieler %s hat genug Geld dabei! TEST(%d$)", client, costs))
+			else
+				client:sendError(_("Der Spieler %s hat nicht genug Geld dabei! (%d$)", client, costs))
+			end
+		else
+			client:sendError(_("Der Spieler %s hat den %s bereits!", client, DrivingSchool.TypeNames[type]))
+		end
+    else
+        client:sendError(_("Interner Fehler: Argumente falsch @DrivingSchool:buyPlayerLicense!", client))
+    end
+end
+

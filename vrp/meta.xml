@@ -845,6 +845,7 @@
 
     <script src="client/classes/GUIForms/Company/DrivingSchool/DrivingSchoolInstructorGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Company/DrivingSchool/DrivingSchoolPedGUI.lua" type="client" />
+    <script src="client/classes/GUIForms/Company/DrivingSchool/DrivingSchoolLicensePedGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Company/DrivingSchool/DrivingSchoolStudentGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Company/DrivingSchool/DrivingSchoolTheoryGUI.lua" type="client" />
 
