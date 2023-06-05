@@ -1,4 +1,4 @@
-PROJECT_NAME = "eXo Reallife"
+PROJECT_NAME = "OpenReallife"
 PROJECT_VERSION = "1.10"
 DISABLE_SENTRY = false
 DISABLE_INFLUX = false
@@ -170,7 +170,7 @@ ADMIN_RANK_PERMISSION = {
 
 	--admin general
 	["event"] = RANK.Moderator,
-	["eventMoneyWithdraw"] = RANK.Moderator,
+	["eventMoneyWithdraw"] = RANK.Administrator,
 	["eventMoneyDeposit"] = RANK.Supporter,
 	["vehicleTexture"] = RANK.Moderator,
 	["spect"] = RANK.Supporter,
