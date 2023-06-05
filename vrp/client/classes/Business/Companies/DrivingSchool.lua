@@ -71,7 +71,7 @@ function DrivingSchool:createPed()
 	local licensePed = Ped.create(295, Vector3( 1779.93, -1685.50, 13.37), 180)
 	licensePed:setData("NPC:Immortal", true)
 	licensePed:setFrozen(true)
-	ped.SpeakBubble = SpeakBubble3D:new(licensePed, "Fahrschule", "Helikopter oder LKW-Schein gefällig?")
+	ped.SpeakBubble = SpeakBubble3D:new(licensePed, "Fahrschule", "Piloten oder LKW-Schein gefällig?")
 	setElementData(licensePed, "clickable", true)
 
 	licensePed:setData("onClickEvent",

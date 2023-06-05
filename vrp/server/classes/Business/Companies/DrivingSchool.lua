@@ -540,18 +540,25 @@ end
 function DrivingSchool:buyPlayerLicense(type)
     local costs = DrivingSchool.LicenseCosts[type]*1.25
 	if not client then return end
-    if costs then
+    if costs and client then
         if not self:checkPlayerLicense(client, type) then
-			if target:getMoney() >= costs then
-				client:sendError(_("Der Spieler %s hat genug Geld dabei! TEST(%d$)", client, costs))
+			if client:getMoney() >= costs then
+				--client:sendError(_("Der Spieler %s hat genug Geld dabei! (%d$)", client, client.name, costs))
+				QuestionBox:new(client, _("Möchtest du den %s kaufen? Kosten: %d$ (25 Prozent mehr als bei einem Fahrlehrer)", client, DrivingSchool.TypeNames[type], costs),
+					function(player)
+						client:sendInfo(_("Du hast den %sschein gekauft.", client, DrivingSchool.TypeNames[type]))
+						client:transferMoney(self.m_BankAccountServer, costs, ("%s-Führerschein"):format(DrivingSchool.TypeNames[type]), "Company", "License")
+						self:setPlayerLicense(client, type, true)
+					end
+				)
 			else
-				client:sendError(_("Der Spieler %s hat nicht genug Geld dabei! (%d$)", client, costs))
+				client:sendError(_("Du hast nicht genug Geld dabei! (%d$)", client, costs))
 			end
 		else
-			client:sendError(_("Der Spieler %s hat den %s bereits!", client, DrivingSchool.TypeNames[type]))
+			client:sendError(_("Du hast den den %s bereits!", client, DrivingSchool.TypeNames[type]))
 		end
     else
-        client:sendError(_("Interner Fehler: Argumente falsch @DrivingSchool:buyPlayerLicense!", client))
+        client:sendError(_("Interner Fehler: Argumente falsch @DrivingSchool:buyPlayerLicense!", client, client.name))
     end
 end
 

@@ -8,7 +8,7 @@
 DrivingSchoolLicensePedGUI = inherit(GUIButtonMenu)
 inherit(Singleton, DrivingSchoolLicensePedGUI)
 
-function DrivingSchoolLicensePedGUI:constructor(automaticTestAvailable)
+function DrivingSchoolLicensePedGUI:constructor(buyPlayerLicense)
 	GUIButtonMenu.constructor(self, "Fahrschule", 300, 380, false, false, localPlayer.position)
 	self:addItem(_"Helikopterführerschein", Color.Accent,
 		function()
