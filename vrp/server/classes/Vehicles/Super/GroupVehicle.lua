@@ -9,6 +9,9 @@ GroupVehicle = inherit(PermanentVehicle)
 
 -- This function converts a normal (User/PermanentVehicle) to an GroupVehicle
 function GroupVehicle.convertVehicle(vehicle, group)
+	if #group:getVehicles() >= group:getMaxVehicles() then
+		return false -- Apply vehilce limit
+	end
 
 	-- don't convert them if they have occupants or are currently towed
 	if (vehicle:getOccupants() and table.size(vehicle:getOccupants()) > 0) or vehicle.towingVehicle or vehicle:getData("towedByVehicle") or (vehicle.m_SeatExtensionPassengers and #vehicle.m_SeatExtensionPassengers ~= 0) then

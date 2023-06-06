@@ -1,6 +1,15 @@
 MAX_VEHICLES_PER_LEVEL = 1 -- Todo: improve this
 VEHICLE_SPECIAL_SMOKE = {[512] = true, [513] = true}
 
+MAX_VEHICLE_SLOTS_WITH_MONEY = 15
+VEHICLE_SLOT_UPGRADE_PRICE = 15000
+
+FREE_GROUP_VEHICLE_SLOTS = 5
+GROUP_VEHICLE_SLOT_UPGRADE_PRICE = 30000
+MAX_VEHICLE_SLOTS = { -- How much Slots you can buy.
+	["Firma"] = 0,
+	["Gang"] = 0,
+}
 
 VEHICLE_SPECIAL_TEXTURE = {
 	[417] = "leviathnbody8bit256",

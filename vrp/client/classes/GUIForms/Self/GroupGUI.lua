@@ -93,7 +93,7 @@ function GroupGUI:constructor()
 
 	local tabVehicles = self.m_TabPanel:addTab(_"Fahrzeuge")
 	self.m_TabVehicles = tabVehicles
-	GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.25, self.m_Height*0.06, _"Fahrzeuge:", tabVehicles)
+	self.m_VehicleCount = GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.25, self.m_Height*0.06, _"Fahrzeuge:", tabVehicles)
 	self.m_VehiclesGrid = GUIGridList:new(self.m_Width*0.02, self.m_Height*0.09, self.m_Width*0.65, self.m_Height*0.4, tabVehicles)
 	self.m_VehiclesGrid:addColumn(_"Name", 0.3)
 	self.m_VehiclesGrid:addColumn(_"Standort", 0.5)
@@ -297,6 +297,9 @@ function GroupGUI:Event_groupRetrieveInfo(id, name, rank, money, playTime, playe
 	if type == "Firma" then
 		self.m_TabBusiness:setEnabled(true)
 	end
+
+	local max = FREE_GROUP_VEHICLE_SLOTS + localPlayer:getGroupVehicleExtraSlots()
+		self.m_VehicleCount:setText(_("Fahrzeuge: %s/%s", #self.m_VehiclesGrid:getItems(), max))
 end
 
 function GroupGUI:Event_vehicleRetrieveInfo(vehiclesInfo)
@@ -324,6 +327,15 @@ function GroupGUI:Event_vehicleRetrieveInfo(vehiclesInfo)
 			item.VehicleId = vehicleId
 			item.VehicleElement = element
 			item.PositionType = vehicleInfo[2]
+		end
+
+		if self.m_BuyVehicleExtraSlot then		
+			local price = calculateMoneyToNextGroupVehicleSlot(localPlayer:getGroupVehicleExtraSlots())
+			local text = "(Maximale Slots erreicht)"
+			if MAX_VEHICLE_SLOTS[localPlayer:getGroupType()] <= 0 or MAX_VEHICLE_SLOTS[localPlayer:getGroupType()] > localPlayer:getGroupVehicleExtraSlots() then
+				text = _("(kaufen: %s)", toMoneyString(price))
+			end
+			self.m_BuyVehicleExtraSlot:setText(text)
 		end
 	end
 end
@@ -414,6 +426,25 @@ function GroupGUI:addLeaderTab()
 		self.m_TypeChange.onHover = function () self.m_TypeChange:setColor(Color.White) end
 		self.m_TypeChange.onUnhover = function () self.m_TypeChange:setColor(Color.Accent) end
 		self.m_TypeChange:setVisible(false)
+		
+		local price = calculateMoneyToNextGroupVehicleSlot(localPlayer:getGroupVehicleExtraSlots())
+		local text = "(Maximale Slots erreicht)"
+		if MAX_VEHICLE_SLOTS[localPlayer:getGroupType()] <= 0 then
+			text = _("(kaufen: %s)", toMoneyString(price))
+		end
+		 
+		GUILabel:new(self.m_Width*0.45, self.m_Height*0.64, self.m_Width*0.4, self.m_Height*0.06, _"Platz kaufen:", tabLeader)
+		self.m_BuyVehicleExtraSlotLeader = GUILabel:new(self.m_Width*0.7, self.m_Height*0.64, self.m_Width*0.4, self.m_Height*0.06, "", tabLeader)
+		self.m_BuyVehicleExtraSlot = GUILabel:new(self.m_Width*0.7, self.m_Height*0.64, self.m_Width*0.4, self.m_Height*0.06, text, tabLeader):setColor(Color.Accent)
+		self.m_BuyVehicleExtraSlot.onLeftClick = function ()
+			local price = calculateMoneyToNextGroupVehicleSlot(localPlayer:getGroupVehicleExtraSlots())
+			QuestionBox:new(_("Möchtest du wirklich einen weiteren Fahrzeug Platz für %s holen", toMoneyString(price)),
+			    function() 	triggerServerEvent("buyVehicleExtraSlot", localPlayer, "group") end
+			)
+		end
+		self.m_BuyVehicleExtraSlot.onHover = function () self.m_BuyVehicleExtraSlot:setColor(Color.White) end
+		self.m_BuyVehicleExtraSlot.onUnhover = function () self.m_BuyVehicleExtraSlot:setColor(Color.Accent) end
+		--self.m_TypeLabelLeader:setVisible(false)
 
 		self.m_BindButton = GUIButton:new(self.m_Width*0.45, self.m_Height*62, self.m_Width*0.3, self.m_Height*0.07, _"Binds verwalten", tabLeader):setBarEnabled(true)
 		self.m_BindButton.onLeftClick = function()

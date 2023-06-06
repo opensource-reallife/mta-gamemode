@@ -1748,5 +1748,5 @@ function SelfGUI:onSettingChange(setting)
 end
 
 function SelfGUI:VehicleExtraSlotsButton_Click()
-	triggerServerEvent("buyVehicleExtraSlot", localPlayer)
+	triggerServerEvent("buyVehicleExtraSlot", localPlayer, "player")
 end

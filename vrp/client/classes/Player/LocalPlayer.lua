@@ -1000,3 +1000,7 @@ end
 function LocalPlayer:getVehicleExtraSlots()
 	return self:getData("VehicleExtraSlots") or 0
 end
+
+function LocalPlayer:getGroupVehicleExtraSlots()
+	return self:getData("GroupVehicleExtraSlots") or 0
+end

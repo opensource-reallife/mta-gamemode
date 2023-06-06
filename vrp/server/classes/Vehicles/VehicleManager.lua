@@ -2083,19 +2083,43 @@ function VehicleManager:Event_vehicleToggleRC(vehicleId, state)
 	end
 end
 
-function VehicleManager:Event_buyVehicleExtraSlot()
-	if client:getVehicleExtraSlots() >= MAX_VEHICLE_SLOTS_WITH_MONEY  then
-		return client:sendError(_("Du hast bereits die Maxmialen Slots", client))
-	end
+function VehicleManager:Event_buyVehicleExtraSlot(type)
+	if type == "player" then
+		if client:getVehicleExtraSlots() >= MAX_VEHICLE_SLOTS_WITH_MONEY  then
+			return client:sendError(_("Du hast bereits die Maxmialen Slots", client))
+		end
 
-	local price = calculateMoneyToNextVehicleSlot(client:getVehicleExtraSlots())
-	if client:getBankMoney() < price then
-		return client:sendError(_("Du hast nicht genug Geld (%s)", client, toMoneyString(price)))
-	end
+		local price = calculateMoneyToNextVehicleSlot(client:getVehicleExtraSlots())
+		if client:getBankMoney() < price then
+			return client:sendError(_("Du hast nicht genug Geld (%s)", client, toMoneyString(price)))
+		end
 
-	if client:transferBankMoney(self.m_BankAccountServer, price, "Extra Fahrzeug Slot", "Vehicle", "ExtraSlot") then
-		client:incrementVehicleExtraSlots()
-		self:syncVehicleInfo(client)
-		client:sendSuccess(_("Erfolgreich gekauft", client))
+		if client:transferBankMoney(self.m_BankAccountServer, price, "Extra Fahrzeug Slot", "Vehicle", "ExtraSlot") then
+			client:incrementVehicleExtraSlots()
+			self:syncVehicleInfo(client)
+			client:sendSuccess(_("Erfolgreich gekauft", client))
+		end
+	elseif type == "group" then
+		if client:getGroup() then
+			local group = client:getGroup()
+			local limit = MAX_VEHICLE_SLOTS[group:getType()]
+
+			if limit > 0 and group:getVehicleExtraSlots() >= limit then
+				return client:sendError(_("Deine Gruppe hat bereits die Maxmialen Slots", client))
+			end
+
+			local price = calculateMoneyToNextGroupVehicleSlot(group:getVehicleExtraSlots())
+			if group:getMoney() < price then
+				return client:sendError(_("Deine Gruppe hat nicht genug Geld in der Kasse (%s)", client, toMoneyString(price)))
+			end
+
+			if group:transferMoney(self.m_BankAccountServer, price, "Extra Fahrzeug Slot", "Vehicle", "ExtraSlot") then
+				group:incrementVehicleExtraSlots()
+				self:syncVehicleInfo(client)
+				client:sendSuccess(_("Erfolgreich gekauft", client))
+			end
+		else
+			return client:sendError(_("Du bist in keiner Gruppe", client))
+		end
 	end
 end

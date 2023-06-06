@@ -7,7 +7,7 @@
 -- ****************************************************************************
 Group = inherit(Object)
 
-function Group:constructor(Id, name, type, money, playTime, lastNameChange, rankNames, rankLoans, rankPermissions)
+function Group:constructor(Id, name, type, money, playTime, lastNameChange, rankNames, rankLoans, rankPermissions, vehicleExtraSlots)
 	if not players then players = {} end -- can happen due to Group.create using different constructor
 
 	self.m_Id = Id
@@ -30,6 +30,7 @@ function Group:constructor(Id, name, type, money, playTime, lastNameChange, rank
 	self.m_MarkersAttached = false
 	self.m_BankAccountServer = BankServer.get("group")
 	self.m_Settings = UserGroupSettings:new(USER_GROUP_TYPES.Group, Id)
+	self.m_VehicleExtraSlots = vehicleExtraSlots
 
 	self.m_BankAccount = BankAccount.loadByOwner(self.m_Id, BankAccountTypes.Group)
 	if not self.m_BankAccount then
@@ -141,6 +142,7 @@ function Group:onPlayerJoin(player)
 	end
 
 	GroupManager:getSingleton():addActiveGroup(self)
+	player:setData("GroupVehicleExtraSlots", self.m_VehicleExtraSlots, true)
 end
 
 function Group:onPlayerQuit(player)
@@ -250,6 +252,7 @@ function Group:addPlayer(playerId, rank)
 			player:giveAchievement(28)
 		end
 		PermissionsManager:getSingleton():syncPermissions(player, "group")
+		player:setData("GroupVehicleExtraSlots", self.m_VehicleExtraSlots, true)
 	end
 
 	sql:queryExec("UPDATE ??_character SET GroupId = ?, GroupRank = ?, GroupLoanEnabled = 1 WHERE Id = ?", sql:getPrefix(), self.m_Id, rank, playerId)
@@ -896,10 +899,32 @@ function Group:payDay()
  	end
 end
 
+function Group:getMaxVehicles()
+	return FREE_GROUP_VEHICLE_SLOTS + self:getVehicleExtraSlots()
+end
+
+function Group:getVehicleExtraSlots()
+	return self.m_VehicleExtraSlots
+end
+
+function Group:setVehicleExtraSlots(level)
+	self.m_VehicleExtraSlots = level
+	for i, v in pairs(self:getOnlinePlayers()) do
+		v:setData("GroupVehicleExtraSlots", level, true)
+	end
+end
+
+function Group:incrementVehicleExtraSlots()
+	self.m_VehicleExtraSlots = self.m_VehicleExtraSlots + 1
+	for i, v in pairs(self:getOnlinePlayers()) do
+		v:setData("GroupVehicleExtraSlots", self.m_VehicleExtraSlots, true)
+	end
+end
+
 function Group:save()
 	self.m_BankAccount:save()
 	if self.m_Settings then
 		self.m_Settings:save()
 	end
-	sql:queryExec("UPDATE ??_groups SET PlayTime = ? WHERE Id = ?", sql:getPrefix(), self:getPlayTime(), self:getId())
+	sql:queryExec("UPDATE ??_groups SET PlayTime = ?, VehicleExtraSlots = ? WHERE Id = ?", sql:getPrefix(), self:getPlayTime(), self.m_VehicleExtraSlots, self:getId())
 end
