@@ -57,7 +57,7 @@ function CompanyManager:loadCompanies()
 		end
 
 		if Company.DerivedClasses[row.Id] then
-			self:addRef(Company.DerivedClasses[row.Id]:new(row.Id, row.Name, row.Name_Short, row.Name_Shorter, row.Creator, {players, playerLoans, playerPermissions}, row.lastNameChange, row.BankAccount, fromJSON(row.Settings) or {["VehiclesCanBeModified"]=false}, row.RankLoans, row.RankSkins, row.RankPermissions))
+			self:addRef(Company.DerivedClasses[row.Id]:new(row.Id, row.Name, row.Name_Short, row.Name_Shorter, row.Creator, {players, playerLoans, playerPermissions}, row.lastNameChange, row.BankAccount, fromJSON(row.Settings) or {["VehiclesCanBeModified"]=false}, row.RankLoans, row.RankSkins, row.RankPermissions, row.PlayerLimit))
 		else
 			outputServerLog(("Company class for Id %s not found!"):format(row.Id))
 			--self:addRef(Company:new(row.Id, row.Name, row.Name_Short, row.Creator, players, row.lastNameChange, row.BankAccount, fromJSON(row.Settings) or {["VehiclesCanBeModified"]=false}, row.RankLoans, row.RankSkins))
@@ -159,6 +159,11 @@ function CompanyManager:Event_companyAddPlayer(player)
 		return
 	end
 
+	if company:hasPlayerLimit() and company:getPlayerLimit() <= table.size(company:getPlayers(true))  then
+		client:sendError(_("Dein Unternehmen kann keine weiteren Spieler aufnehmen", client))
+		return
+	end
+
 	if player:getCompany() then
 		client:sendError(_("Dieser Benutzer ist bereits in einem Unternehmen!", client))
 		return
@@ -223,6 +228,11 @@ function CompanyManager:Event_companyInvitationAccept(companyId)
 	end
 
 	if company:hasInvitation(client) then
+		if company:hasPlayerLimit() and company:getPlayerLimit() <= table.size(company:getPlayers(true))  then
+			client:sendError(_("Das Unternehmen kann keine weiteren Spieler aufnehmen", client))
+			return
+		end
+
 		if not client:getCompany() then
 			company:addPlayer(client)
 
