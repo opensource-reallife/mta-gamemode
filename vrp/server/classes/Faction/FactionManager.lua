@@ -83,7 +83,7 @@ function FactionManager:loadFactions()
 			playerActionPermissions[factionRow.Id] = fromJSON(factionRow.FactionActionPermissions)
 		end
 
-		local instance = Faction:new(row.Id, row.Name_Short, row.Name_Shorter, row.Name, row.BankAccount, {players, playerLoans, playerWeapons, playerPermissions, playerWeaponPermissions, playerActionPermissions}, row.RankLoans, row.RankSkins, row.RankWeapons, row.Depot, row.Type, row.Diplomacy, row.RankPermissions, row.RankActions)
+		local instance = Faction:new(row.Id, row.Name_Short, row.Name_Shorter, row.Name, row.BankAccount, {players, playerLoans, playerWeapons, playerPermissions, playerWeaponPermissions, playerActionPermissions}, row.RankLoans, row.RankSkins, row.RankWeapons, row.Depot, row.Type, row.Diplomacy, row.RankPermissions, row.RankActions, row.PlayerLimit)
 		FactionManager.Map[row.Id] = instance
 		count = count + 1
 	end
@@ -334,6 +334,11 @@ function FactionManager:Event_factionAddPlayer(player)
 		return
 	end
 
+	if faction:hasPlayerLimit() and faction:getPlayerLimit() <= table.size(faction:getPlayers(true))  then
+		client:sendError(_("Deine Fraktion kann keine weiteren Spieler aufnehmen", client))
+		return
+	end
+
 	if player:getFaction() then
 		client:sendError(_("Dieser Benutzer ist bereits in einer Fraktion!", client))
 		return
@@ -401,6 +406,11 @@ function FactionManager:Event_factionInvitationAccept(factionId)
 	end
 
 	if faction:hasInvitation(client) then
+		if faction:hasPlayerLimit() and faction:getPlayerLimit() <= table.size(faction:getPlayers(true))  then
+			client:sendError(_("Die Fraktion kann keine weiteren Spieler aufnehmen", client))
+			return
+		end
+
 		if not client:getFaction() then
 			faction:addPlayer(client)
 			faction:addLog(client, "Fraktion", "ist der Fraktion beigetreten!")

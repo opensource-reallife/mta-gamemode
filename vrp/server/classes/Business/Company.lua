@@ -12,7 +12,7 @@ function Company.onInherit(derivedClass)
   Company.DerivedClasses[#Company.DerivedClasses+1] = derivedClass
 end
 
-function Company:constructor(Id, Name, ShortName, ShorterName, Creator, players, lastNameChange, bankAccountId, Settings, rankLoans, rankSkins, rankPermissions)
+function Company:constructor(Id, Name, ShortName, ShorterName, Creator, players, lastNameChange, bankAccountId, Settings, rankLoans, rankSkins, rankPermissions, playerLimit)
 	self.m_Id = Id
 	self.m_Name = Name
 	self.m_ShortName = ShortName
@@ -50,6 +50,9 @@ function Company:constructor(Id, Name, ShortName, ShorterName, Creator, players,
 	self.m_PhoneTakeOff = bind(self.phoneTakeOff, self)
 
 	self.m_VehicleTexture = companyVehicleShaders[Id] or false
+
+	self.m_PlayerLimit = playerLimit > 0 and true or false
+	self.m_MaxPlayers = playerLimit
 
 	if not DEBUG then
 		Async.create(
@@ -656,4 +659,19 @@ function Company:stopRespawnAnnouncement(stopper)
 		fPlayer:triggerEvent("stopCompanyRespawnAnnoucement", stopper)
 	end
 	killTimer(self.m_RespawnTimer)
+end
+
+function Company:hasPlayerLimit()
+	return self.m_PlayerLimit
+end
+
+function Company:getPlayerLimit()
+	return self.m_MaxPlayers
+end
+
+function Company:reloadPlayerLimit()
+	local result = sql:queryFetch("SELECT PlayerLimit from ??_companies WHERE Id = ?", sql:getPrefix(), self:getId())
+	local newLimit = result[1]["PlayerLimit"] or 0
+	self.m_PlayerLimit = newLimit > 0 and true or false
+	self.m_MaxPlayers = newLimit
 end

@@ -10,7 +10,7 @@ Faction = inherit(Object)
 
 -- implement by children
 
-function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, players, rankLoans, rankSkins, rankWeapons, depotId, factionType, diplomacy, rankPermissions, rankActions)
+function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, players, rankLoans, rankSkins, rankWeapons, depotId, factionType, diplomacy, rankPermissions, rankActions, playerLimit)
 	self.m_Id = Id
 	self.m_Name_Short = name_short
 	self.m_ShorterName = name_shorter
@@ -58,6 +58,9 @@ function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, 
 	self.m_VehicleTexture = false
 
 	self.m_DiplomacyJSON = diplomacy
+
+	self.m_PlayerLimit = playerLimit > 0 and true or false
+	self.m_MaxPlayers = playerLimit
 
 	if not DEBUG then
 		Async.create(
@@ -1106,4 +1109,19 @@ function Faction:stopRespawnAnnouncement(stopper)
 		fPlayer:triggerEvent("stopFactionRespawnAnnoucement", stopper)
 	end
 	killTimer(self.m_RespawnTimer)
+end
+
+function Faction:hasPlayerLimit()
+	return self.m_PlayerLimit
+end
+
+function Faction:getPlayerLimit()
+	return self.m_MaxPlayers
+end
+
+function Faction:reloadPlayerLimit()
+	local result = sql:queryFetch("SELECT PlayerLimit from ??_factions WHERE Id = ?", sql:getPrefix(), self:getId())
+	local newLimit = result[1]["PlayerLimit"] or 0
+	self.m_PlayerLimit = newLimit > 0 and true or false
+	self.m_MaxPlayers = newLimit
 end

@@ -73,6 +73,7 @@ function Admin:constructor()
 	addCommandHandler("cookie", adminCommandBind)
 	addCommandHandler("disablereg", adminCommandBind)
 	addCommandHandler("enablereg", adminCommandBind)
+	addCommandHandler("reloadplayerlimit", adminCommandBind)
 
 	addCommandHandler("drun", bind(self.runString, self))
 	addCommandHandler("dpcrun", bind(self.runPlayerString, self))
@@ -405,7 +406,15 @@ function Admin:command(admin, cmd, targetName, ...)
 			self:sendShortMessage(_("%s hat die Registration aktiviert!", admin, admin:getName()))
 			StatisticsLogger:getSingleton():addAdminAction(admin, "register", "Register enabled")
 		end
-    else
+	elseif cmd == "reloadplayerlimit" then
+		for i, faction in pairs(FactionManager.Map) do
+			faction:reloadPlayerLimit()
+		end
+		for i, company in pairs(CompanyManager.Map) do
+			company:reloadPlayerLimit()
+		end
+		admin:sendSuccess(_("Spieler Limit refreshed", admin))
+	else
 		if targetName then
             local target = PlayerManager:getSingleton():getPlayerFromPartOfName(targetName, admin)
             if isElement(target) then
