@@ -135,6 +135,10 @@ function BankRobbery:destroyRob()
 	ActionsCheck:getSingleton():endAction()
 	StatisticsLogger:getSingleton():addActionLog("BankRobbery", "stop", self.m_RobPlayer, self.m_RobFaction, "faction")
 	self:build()
+
+	if self.m_BlipPC then
+		self.m_BlipPC:setOptionalColor({27, 125, 47})
+	end
 end
 
 function BankRobbery:onHelpColHit(hitElement, matchingDimension)
@@ -527,7 +531,6 @@ function BankRobbery:handleBagDelivery(faction, player)
 	if self.m_SafeDoor.m_Open then
 		if self:getRemainingBagAmount() == 0 then
 			local text = ("Der Raub wurde erfolgreich abgeschlossen! %s"):format(faction:isStateFaction() and "Das Geld konnte sichergestellt werden!" or "Die Täter sind mit der Beute entkommen!")
-
 			PlayerManager:getSingleton():breakingNews(text)
 			Discord:getSingleton():outputBreakingNews(text)
 			source:destroy()

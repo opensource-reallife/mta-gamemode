@@ -49,6 +49,10 @@ function BankPalomino:constructor()
 
 	self:build()
 
+	self.m_BlipPC = Blip:new("Bank.png", 2310.46, -13.25, root, 400)
+	self.m_BlipPC:setOptionalColor({27, 125, 47})
+	self.m_BlipPC:setDisplayText("Bank")
+
 	self.m_Name = "Bank"
 	self.m_MarkedPosition = {2318.43, 11.37, 26.48} -- the marked position where action blips and so on will be located
 end
@@ -104,6 +108,10 @@ function BankPalomino:startRob(player)
 
 	self:createTruck(2337.54, 16.67, 26.61, 0) --this first ad startRobGeneral unfreezes the truck
 	self:startRobGeneral(player)
+
+	if self.m_BlipPC then
+		self.m_BlipPC:setOptionalColor({122, 22, 22})
+	end
 
 	PlayerManager:getSingleton():breakingNews("Eine derzeit unbekannte Fraktion überfällt die Palomino-Creek Bank!")
 	Discord:getSingleton():outputBreakingNews("Eine derzeit unbekannte Fraktion überfällt die Palomino-Creek Bank!")
