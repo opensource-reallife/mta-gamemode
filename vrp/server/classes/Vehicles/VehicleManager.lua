@@ -1075,7 +1075,7 @@ end
 function VehicleManager:getVehiclesFromPlayer()
 	local vehicles = {}
 	for k, vehicle in pairs(self:getPlayerVehicles(client)) do
-		vehicles[vehicle:getId()] = {vehicle, vehicle:getPositionType()}
+		vehicles[vehicle:getId()] = {vehicle, vehicle:getPositionType(), ["isPrem"] = vehicle:isPremiumVehicle()}
 	end
 	return vehicles
 end
@@ -2094,7 +2094,7 @@ function VehicleManager:Event_buyVehicleExtraSlot(type)
 
 		local price = calculateMoneyToNextVehicleSlot(client:getVehicleExtraSlots())
 		if client:getBankMoney() < price then
-			return client:sendError(_("Du hast nicht genug Geld (%s)", client, toMoneyString(price)))
+			return client:sendError(_("Du hast nicht genug Geld auf der Bank(%s)", client, toMoneyString(price)))
 		end
 
 		if client:transferBankMoney(self.m_BankAccountServer, price, "Extra Fahrzeug Slot", "Vehicle", "ExtraSlot") then

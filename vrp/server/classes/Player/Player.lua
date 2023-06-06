@@ -1831,3 +1831,13 @@ function Player:getMaxVehicles()
 	local bonus = self.m_Premium:isPremium() and 2 or 0
 	return math.floor(self:getVehicleLevel() * MAX_VEHICLES_PER_LEVEL) + self:getVehicleExtraSlots() + bonus
 end
+
+function Player:getVehicleCountWithoutPrem()
+	local nonPremCarsCount = 0
+	for i, v in pairs(self:getVehicles()) do
+		if not v:isPremiumVehicle() then
+			nonPremCarsCount = nonPremCarsCount + 1
+		end
+	end
+	return nonPremCarsCount
+end

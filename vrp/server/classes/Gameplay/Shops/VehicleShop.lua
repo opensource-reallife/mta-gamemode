@@ -110,7 +110,7 @@ function VehicleShop:buyVehicle(player, vehicleModel, index)
 		player:sendError(_("Du hast nicht genügend Geld!", player))
 		return
 	end
-	if #player:getVehicles() < player:getMaxVehicles() then
+	if player:getVehicleCountWithoutPrem() < player:getMaxVehicles() then
 		local spawnX, spawnY, spawnZ, rotation = unpack(self.m_Spawn)
 		spawnZ = spawnZ + VehicleCategory:getSingleton():getModelBaseHeight(vehicleModel)
 		local vehicle = VehicleManager:getSingleton():createNewVehicle(player, VehicleTypes.Player, vehicleModel, spawnX, spawnY, spawnZ, 0, 0, rotation, false, shopIndex, price, template)
@@ -135,7 +135,7 @@ function VehicleShop:buyVehicle(player, vehicleModel, index)
 			player:sendMessage(_("Fehler beim Erstellen des Fahrzeugs. Bitte benachrichtige einen Admin!", player), 255, 0, 0)
 		end
 	else
-		player:sendError(_("Du hast keinen freien Fahrzeug-Slot! Erhöhe dein Fahrzeuglevel oder kaufe dir Fahrzeugplätze! (%d/%d)", player, #player:getVehicles(), player:getMaxVehicles()))
+		player:sendError(_("Du hast keinen freien Fahrzeug-Slot! Erhöhe dein Fahrzeuglevel oder kaufe dir Fahrzeugslots! (%d/%d)", player, player:getVehicleCountWithoutPrem(), player:getMaxVehicles()))
 	end
 end
 

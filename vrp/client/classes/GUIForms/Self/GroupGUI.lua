@@ -274,9 +274,10 @@ function GroupGUI:Event_groupRetrieveInfo(id, name, rank, money, playTime, playe
 
 	-- Group Vehicles
 	self.m_VehiclesGrid:clear()
+	self.m_NonPremVehicleCount = 0
 	if vehicles then
 		for vehId, vehicleInfo  in pairs(vehicles) do
-			local element, positionType = unpack(vehicleInfo)
+			local element, positionType, isPrem = unpack(vehicleInfo)
 			local position = _"Unbekannt"
 
 			if positionType == VehiclePositionType.World then
@@ -290,6 +291,10 @@ function GroupGUI:Event_groupRetrieveInfo(id, name, rank, money, playTime, playe
 
 			item.VehicleElement = element
 			item.PositionType = positionType
+
+			if not isPrem then
+				self.m_NonPremVehicleCount = self.m_NonPremVehicleCount + 1
+			end
 		end
 	end
 
@@ -299,7 +304,7 @@ function GroupGUI:Event_groupRetrieveInfo(id, name, rank, money, playTime, playe
 	end
 
 	local max = FREE_GROUP_VEHICLE_SLOTS + localPlayer:getGroupVehicleExtraSlots()
-		self.m_VehicleCount:setText(_("Fahrzeuge: %s/%s", #self.m_VehiclesGrid:getItems(), max))
+		self.m_VehicleCount:setText(_("Fahrzeuge: %s/%s", self.m_NonPremVehicleCount, max))
 end
 
 function GroupGUI:Event_vehicleRetrieveInfo(vehiclesInfo)
@@ -433,7 +438,7 @@ function GroupGUI:addLeaderTab()
 			text = _("(kaufen: %s)", toMoneyString(price))
 		end
 		 
-		GUILabel:new(self.m_Width*0.45, self.m_Height*0.64, self.m_Width*0.4, self.m_Height*0.06, _"Platz kaufen:", tabLeader)
+		GUILabel:new(self.m_Width*0.45, self.m_Height*0.64, self.m_Width*0.4, self.m_Height*0.06, _"Fahrzeugslot kaufen:", tabLeader)
 		self.m_BuyVehicleExtraSlotLeader = GUILabel:new(self.m_Width*0.7, self.m_Height*0.64, self.m_Width*0.4, self.m_Height*0.06, "", tabLeader)
 		self.m_BuyVehicleExtraSlot = GUILabel:new(self.m_Width*0.7, self.m_Height*0.64, self.m_Width*0.4, self.m_Height*0.06, text, tabLeader):setColor(Color.Accent)
 		self.m_BuyVehicleExtraSlot.onLeftClick = function ()

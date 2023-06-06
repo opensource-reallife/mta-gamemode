@@ -193,7 +193,7 @@ function SelfGUI:constructor()
 	self.m_VehicleGarageUpgradeButton = GUILabel:new(self.m_Width*0.02 + dxGetTextWidth(self.m_VehicleGarages:getText(), self.m_VehicleGarages:getFontSize(), self.m_VehicleGarages:getFont()) + 5, self.m_Height*0.75, self.m_Width*0.17, self.m_Height*0.06, _"(Kaufen: 0$)", tabVehicles):setColor(Color.Accent)
 	self.m_VehicleGarageUpgradeButton.onHover = function () self.m_VehicleGarageUpgradeButton:setColor(Color.White) end
 	self.m_VehicleGarageUpgradeButton.onUnhover = function () self.m_VehicleGarageUpgradeButton:setColor(Color.Accent) end
-	self.m_VehicleExtraSlots = GUILabel:new(self.m_Width*0.02, self.m_Height*0.84, self.m_Width*0.5, self.m_Height*0.06, _"Extra Plätze:", tabVehicles)
+	self.m_VehicleExtraSlots = GUILabel:new(self.m_Width*0.02, self.m_Height*0.84, self.m_Width*0.5, self.m_Height*0.06, _"Extra Slots:", tabVehicles)
 	self.m_VehicleExtraSlotsButton = GUILabel:new(self.m_Width*0.02 + dxGetTextWidth(self.m_VehicleExtraSlots:getText(), self.m_VehicleExtraSlots:getFontSize(), self.m_VehicleExtraSlots:getFont()) + 5, self.m_Height*0.84, self.m_Width*0.17, self.m_Height*0.06, _"(Kaufen: 0$)", tabVehicles):setColor(Color.Accent)
 	self.m_VehicleExtraSlotsButton.onHover = function () self.m_VehicleExtraSlotsButton:setColor(Color.White) end
 	self.m_VehicleExtraSlotsButton.onUnhover = function () self.m_VehicleExtraSlotsButton:setColor(Color.Accent) end
@@ -586,9 +586,14 @@ end
 function SelfGUI:Event_vehicleRetrieveInfo(vehiclesInfo, garageType, hangarType)
 	if vehiclesInfo then
 		self.m_VehiclesGrid:clear()
+		self.m_NonPremVehicleCount = 0
 		local vehInfo = {}
 		for vehicleId, vehicleInfo in pairs(vehiclesInfo) do
 			table.insert(vehInfo, {vehicleId, vehicleInfo})
+
+			if not vehicleInfo["isPrem"] then
+				self.m_NonPremVehicleCount = self.m_NonPremVehicleCount + 1
+			end
 		end
 		table.sort(vehInfo, function (a, b) return (a[2][2] < b[2][2]) end)
 		for i, vehicleInfo in ipairs(vehInfo) do
@@ -610,12 +615,13 @@ function SelfGUI:Event_vehicleRetrieveInfo(vehiclesInfo, garageType, hangarType)
 			item.VehicleId = vehicleId
 			item.VehicleElement = element
 			item.PositionType = vehicleInfo[2]
+
 		end
 	end
 
 	local bonus = localPlayer:isPremium() and 2 or 0
 	local max = math.floor(MAX_VEHICLES_PER_LEVEL * localPlayer:getVehicleLevel()) + localPlayer:getVehicleExtraSlots() + bonus
-	self.m_VehiclesLabel:setText(_("Fahrzeuge: (%d/%d)", #self.m_VehiclesGrid:getItems() or 0, max or 0))
+	self.m_VehiclesLabel:setText(_("Fahrzeuge: (%d/%d)", self.m_NonPremVehicleCount or 0, max or 0))
 
 	if garageType then
 		localPlayer.m_GarageType = garageType
@@ -648,10 +654,10 @@ function SelfGUI:Event_vehicleRetrieveInfo(vehiclesInfo, garageType, hangarType)
 	]]
 	local price = calculateMoneyToNextVehicleSlot(localPlayer:getVehicleExtraSlots()) or "-"
 	local text = "(Maximale Slots erreicht)"
-	self.m_VehicleExtraSlots:setText(_("Extra Plätze: %d/%d",localPlayer:getVehicleExtraSlots(), MAX_VEHICLE_SLOTS_WITH_MONEY))
+	self.m_VehicleExtraSlots:setText(_("Extra Slots: %d/%d",localPlayer:getVehicleExtraSlots(), MAX_VEHICLE_SLOTS_WITH_MONEY))
 
 	if localPlayer:getVehicleExtraSlots() < MAX_VEHICLE_SLOTS_WITH_MONEY then
-		text = _("(Platz kaufen: %s)", toMoneyString(price))
+		text = _("(Fahrzeugslot kaufen: %s)", toMoneyString(price))
 	end
 	self.m_VehicleExtraSlotsButton:setText(text)	
 	self.m_VehicleExtraSlotsButton:setPosition(self.m_Width*0.02 + dxGetTextWidth(self.m_VehicleExtraSlots:getText(), self.m_VehicleExtraSlots:getFontSize(), self.m_VehicleExtraSlots:getFont()) + 5, self.m_Height*0.84)
@@ -1751,5 +1757,7 @@ function SelfGUI:onSettingChange(setting)
 end
 
 function SelfGUI:VehicleExtraSlotsButton_Click()
-	triggerServerEvent("buyVehicleExtraSlot", localPlayer, "player")
+	QuestionBox:new(_("Bitte bestätige den Kauf. Das Geld wird von deinem Konto abgebucht."), function()
+		triggerServerEvent("buyVehicleExtraSlot", localPlayer, "player")
+	end)
 end

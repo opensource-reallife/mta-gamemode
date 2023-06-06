@@ -9,7 +9,7 @@ GroupVehicle = inherit(PermanentVehicle)
 
 -- This function converts a normal (User/PermanentVehicle) to an GroupVehicle
 function GroupVehicle.convertVehicle(vehicle, group)
-	if #group:getVehicles() >= group:getMaxVehicles() then
+	if group:getVehicleCountWithoutPrem() >= group:getMaxVehicles() and not vehicle:isPremiumVehicle() then
 		return false -- Apply vehilce limit
 	end
 
@@ -307,7 +307,7 @@ function GroupVehicle:buy(player)
 
 	if self.m_ForSale then
 		if self.m_SalePrice >= 0 and player:getBankMoney() >= self.m_SalePrice then
-			if #player:getVehicles() < player:getMaxVehicles() then
+			if player:getVehicleCountWithoutPrem() < player:getMaxVehicles() then
 				local group = self:getGroup()
 				local price = self.m_SalePrice
 				if player:transferBankMoney(group, price, "Firmen-Fahrzeug Kauf", "Group", "VehicleSell") then
@@ -323,7 +323,7 @@ function GroupVehicle:buy(player)
 					player:sendError(_("Es ist ein Fehler aufgetreten!", player))
 				end
 			else
-				player:sendError(_("Du hast keinen freien Fahrzeug-Slot! Erhöhe dein Fahrzeuglevel oder kaufe dir Fahrzeugplätze! (%d/%d)", player, #player:getVehicles(), player:getMaxVehicles()))
+				player:sendError(_("Du hast keinen freien Fahrzeug-Slot! Erhöhe dein Fahrzeuglevel oder kaufe dir Fahrzeugslots! (%d/%d)", player, #player:getVehicles(), player:getMaxVehicles()))
 			end
 		else
 			player:sendError(_("Du hast nicht genug Geld dabei! (%d$)", player, self.m_SalePrice))

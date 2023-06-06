@@ -138,7 +138,7 @@ function GroupManager:sendInfosToClient(player)
 	if group then --use triggerLatentEvent to improve serverside performance
 		local vehicles = {}
 		for _, vehicle in pairs(group:getVehicles() or {}) do
-			vehicles[vehicle:getId()] = {vehicle, vehicle:getPositionType()}
+			vehicles[vehicle:getId()] = {vehicle, vehicle:getPositionType(), vehicle:isPremiumVehicle()}
 		end
 		if group:getPlayerRank(player) < GroupRank.Manager and not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "editLoan") and not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "changeGroupType") and not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "changeRankNames") then
 			player:triggerLatentEvent("groupRetrieveInfo", group:getId(), group:getName(), group:getPlayerRank(player), group:getMoney(), group:getPlayTime(), group:getPlayers(), group:getType(), vehicles, group:canVehiclesBeModified(), self:getGangActionState(group), group.m_RankNames)

@@ -205,7 +205,7 @@ function MechanicTow:Event_mechanicTakeVehicle()
 			return false
 		end
 	else
-		if table.size(client:getVehicles()) >= client:getMaxVehicles() then
+		if client:getVehicleCountWithoutPrem() >= client:getMaxVehicles() then
 			client:sendError(_("Du hast nicht genug Platz, um ein Fahrzeug abzuholen", client))
 			return false
 		end

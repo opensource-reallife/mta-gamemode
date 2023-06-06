@@ -9,7 +9,7 @@ PermanentVehicle = inherit(Vehicle)
 
 -- This function converts a GroupVehicle into a normal vehicle (User/PermanentVehicle)
 function PermanentVehicle.convertVehicle(vehicle, player, group)
-	if #player:getVehicles() >= player:getMaxVehicles() then
+	if player:getVehicleCountWithoutPrem() >= player:getMaxVehicles() and not vehicle:isPremiumVehicle() then
 		return false -- Apply vehilce limit
 	end
 

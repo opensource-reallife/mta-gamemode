@@ -928,3 +928,13 @@ function Group:save()
 	end
 	sql:queryExec("UPDATE ??_groups SET PlayTime = ?, VehicleExtraSlots = ? WHERE Id = ?", sql:getPrefix(), self:getPlayTime(), self.m_VehicleExtraSlots, self:getId())
 end
+
+function Group:getVehicleCountWithoutPrem()
+	local nonPremVehCount = 0
+	for i, v in pairs(self:getVehicles()) do
+		if not v:isPremiumVehicle() then
+			nonPremVehCount = nonPremVehCount + 1
+		end
+	end
+	return nonPremVehCount
+end

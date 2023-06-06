@@ -32,7 +32,7 @@ function ItemSellContract:Event_OnSellRequest( player, price, veh )
 				return
 			end 
 
-			if #player:getVehicles() >= player:getMaxVehicles() then
+			if player:getVehicleCountWithoutPrem() >= player:getMaxVehicles() then
 				client:sendError(_("Der Spieler hat die maximalen Fahrzeug-Slots erreicht!", client))
 				return
 			end
