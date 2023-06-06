@@ -649,13 +649,16 @@ function SelfGUI:Event_vehicleRetrieveInfo(vehiclesInfo, garageType, hangarType)
 	local price = calculateMoneyToNextVehicleSlot(localPlayer:getVehicleExtraSlots()) or "-"
 	local text = "(Maximale Slots erreicht)"
 	self.m_VehicleExtraSlots:setText(_("Extra Plätze: %d/%d",localPlayer:getVehicleExtraSlots(), MAX_VEHICLE_SLOTS_WITH_MONEY))
+
 	if localPlayer:getVehicleExtraSlots() < MAX_VEHICLE_SLOTS_WITH_MONEY then
 		text = _("(Platz kaufen: %s)", toMoneyString(price))
 	end
-	self.m_VehicleExtraSlotsButton:setText(text)
-	
+	self.m_VehicleExtraSlotsButton:setText(text)	
 	self.m_VehicleExtraSlotsButton:setPosition(self.m_Width*0.02 + dxGetTextWidth(self.m_VehicleExtraSlots:getText(), self.m_VehicleExtraSlots:getFontSize(), self.m_VehicleExtraSlots:getFont()) + 5, self.m_Height*0.84)
 	self.m_VehicleExtraSlotsButton:setSize(dxGetTextWidth(self.m_VehicleExtraSlotsButton:getText(), self.m_VehicleExtraSlotsButton:getFontSize(), self.m_VehicleExtraSlotsButton:getFont()), self.m_Height*0.06)
+
+	self.m_VehicleExtraSlotsButton:setVisible(MAX_VEHICLE_LEVEL <= localPlayer:getVehicleLevel())
+	self.m_VehicleExtraSlots:setVisible(MAX_VEHICLE_LEVEL <= localPlayer:getVehicleLevel())
 end
 
 function SelfGUI:VehicleGarageUpgradeButton_Click()

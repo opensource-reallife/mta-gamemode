@@ -2085,6 +2085,9 @@ end
 
 function VehicleManager:Event_buyVehicleExtraSlot(type)
 	if type == "player" then
+		if client:getVehicleLevel() < MAX_VEHICLE_LEVEL then
+			return client:sendError(_("Dein Fahrzeuglevel ist noch nicht auf dem Maximum", client))
+		end
 		if client:getVehicleExtraSlots() >= MAX_VEHICLE_SLOTS_WITH_MONEY  then
 			return client:sendError(_("Du hast bereits die Maxmialen Slots", client))
 		end
