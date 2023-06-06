@@ -996,3 +996,7 @@ function LocalPlayer:addGangwarSyncChangeHandler()
 		end
 	end)
 end
+
+function LocalPlayer:getVehicleExtraSlots()
+	return self:getData("VehicleExtraSlots") or 0
+end

@@ -1822,3 +1822,12 @@ end
 function Player:isEating()
 	return self.m_IsEating
 end
+
+function Player:getExtraVehicleClots()
+
+end
+
+function Player:getMaxVehicles()
+	local bonus = self.m_Premium:isPremium() and 2 or 0
+	return math.floor(self:getVehicleLevel() * MAX_VEHICLES_PER_LEVEL) + self:getVehicleExtraSlots() + bonus
+end

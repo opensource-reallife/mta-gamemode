@@ -476,6 +476,10 @@ function calculatePointsToNextLevel(currentLevel)
 	return (currentLevel+2)^3 * 10
 end
 
+function calculateMoneyToNextVehicleSlot(currentLevel)
+	return (currentLevel + 1) * VEHICLE_SLOT_UPGRADE_PRICE
+end
+
 function getRandomUniqueNick()
 	local randomNick
 	repeat

@@ -1,4 +1,4 @@
-MAX_VEHICLES_PER_LEVEL = 1.5 -- Todo: improve this
+MAX_VEHICLES_PER_LEVEL = 1 -- Todo: improve this
 VEHICLE_SPECIAL_SMOKE = {[512] = true, [513] = true}
 
 

@@ -172,6 +172,7 @@ function DatabasePlayer:load(sync)
 	self:setWarns()
 	self:setBail( row.Bail )
 	self:setJailTime( row.JailTime or 0)
+	self:setVehicleExtraSlots(row.VehicleExtraSlots)
 
 	self.m_TeamspeakId = Account.getTeamspeakIdFromId(self.m_Id)
 	self.m_LoggedIn = true
@@ -200,11 +201,11 @@ function DatabasePlayer:save()
 
 		if self:isActive() then
 			self:saveAccountActivity()
-			return sql:queryExec("UPDATE ??_character SET Skin=?, XP=?, Points=?, WeaponLevel=?, VehicleLevel=?, SkinLevel=?, Money=?, WantedLevel=?, Job=?, SpawnLocation=?, SpawnLocationProperty = ?, LastGarageEntrance=?, LastHangarEntrance=?, Collectables=?, JobLevel=?, Achievements=?, BankAccount=?, HasPilotsLicense=?, HasTheory=?, hasDrivingLicense=?, hasBikeLicense=?, hasTruckLicense=?, PaNote=?, STVO=?, PrisonTime=?, GunBox=?, Bail=?, JailTime=? ,SpawnWithFacSkin=?, AlcoholLevel = ?, CJClothes = ?, FishingSkill = ?, FishingLevel = ?, FishSpeciesCaught = ?, WalkingStyle = ?, RadioCommunication = ?, Injury = ? WHERE Id=?", sql:getPrefix(),
-				self.m_Skin, self.m_XP, self.m_Points, self.m_WeaponLevel, self.m_VehicleLevel, self.m_SkinLevel,	self:getMoney(), self.m_WantedLevel, 0, self.m_SpawnLocation, toJSON(self.m_SpawnLocationProperty or ""), self.m_LastGarageEntrance, self.m_LastHangarEntrance,	toJSON(self.m_Collectables or {}, true), self:getJobLevel(), toJSON(self:getAchievements() or {}, true), self:getBankAccount() and self:getBankAccount():getId() or 0, self.m_HasPilotsLicense, self.m_HasTheory, self.m_HasDrivingLicense, self.m_HasBikeLicense, self.m_HasTruckLicense, self.m_PaNote, toJSON(self.m_STVO, true), self:getRemainingPrisonTime(), toJSON(self.m_GunBox or {}, true), self.m_Bail or 0,self.m_JailTime or 0, spawnFac, self.m_AlcoholLevel, toJSON(self.m_SkinData or {}), self.m_FishingSkill  or 0, self.m_FishingLevel or 0, toJSON(self.m_FishSpeciesCaught),  self:getWalkingstyle(), (self.m_RadioFrequency and toJSON(self.m_RadioFrequency)) or "", DamageManager:getSingleton():serializePlayer(self), self:getId())
+			return sql:queryExec("UPDATE ??_character SET Skin=?, XP=?, Points=?, WeaponLevel=?, VehicleLevel=?, SkinLevel=?, Money=?, WantedLevel=?, Job=?, SpawnLocation=?, SpawnLocationProperty = ?, LastGarageEntrance=?, LastHangarEntrance=?, Collectables=?, JobLevel=?, Achievements=?, BankAccount=?, HasPilotsLicense=?, HasTheory=?, hasDrivingLicense=?, hasBikeLicense=?, hasTruckLicense=?, PaNote=?, STVO=?, PrisonTime=?, GunBox=?, Bail=?, JailTime=? ,SpawnWithFacSkin=?, AlcoholLevel = ?, CJClothes = ?, FishingSkill = ?, FishingLevel = ?, FishSpeciesCaught = ?, WalkingStyle = ?, RadioCommunication = ?, Injury = ?, VehicleExtraSlots = ? WHERE Id=?", sql:getPrefix(),
+				self.m_Skin, self.m_XP, self.m_Points, self.m_WeaponLevel, self.m_VehicleLevel, self.m_SkinLevel,	self:getMoney(), self.m_WantedLevel, 0, self.m_SpawnLocation, toJSON(self.m_SpawnLocationProperty or ""), self.m_LastGarageEntrance, self.m_LastHangarEntrance,	toJSON(self.m_Collectables or {}, true), self:getJobLevel(), toJSON(self:getAchievements() or {}, true), self:getBankAccount() and self:getBankAccount():getId() or 0, self.m_HasPilotsLicense, self.m_HasTheory, self.m_HasDrivingLicense, self.m_HasBikeLicense, self.m_HasTruckLicense, self.m_PaNote, toJSON(self.m_STVO, true), self:getRemainingPrisonTime(), toJSON(self.m_GunBox or {}, true), self.m_Bail or 0,self.m_JailTime or 0, spawnFac, self.m_AlcoholLevel, toJSON(self.m_SkinData or {}), self.m_FishingSkill  or 0, self.m_FishingLevel or 0, toJSON(self.m_FishSpeciesCaught),  self:getWalkingstyle(), (self.m_RadioFrequency and toJSON(self.m_RadioFrequency)) or "", DamageManager:getSingleton():serializePlayer(self), self.m_VehicleExtraSlots, self:getId())
 		else
-			return sql:queryExec("UPDATE ??_character SET Skin=?, XP=?, Points=?, WeaponLevel=?, VehicleLevel=?, SkinLevel=?, Money=?, WantedLevel=?, Job=?, SpawnLocation=?, SpawnLocationProperty = ?, LastGarageEntrance=?, LastHangarEntrance=?, Collectables=?, JobLevel=?, Achievements=?, BankAccount=?, HasPilotsLicense=?, HasTheory=?, hasDrivingLicense=?, hasBikeLicense=?, hasTruckLicense=?, PaNote=?, STVO=?, PrisonTime=?, GunBox=?, Bail=?, JailTime=? ,SpawnWithFacSkin=?, AlcoholLevel = ?, CJClothes = ?, FishingSkill = ?, FishingLevel = ?, FishSpeciesCaught = ? WHERE Id=?", sql:getPrefix(),
-				self.m_Skin, self.m_XP, self.m_Points, self.m_WeaponLevel, self.m_VehicleLevel, self.m_SkinLevel,	self:getMoney(), self.m_WantedLevel, 0, self.m_SpawnLocation, toJSON(self.m_SpawnLocationProperty or ""), self.m_LastGarageEntrance, self.m_LastHangarEntrance,	toJSON(self.m_Collectables or {}, true), self:getJobLevel(), toJSON(self:getAchievements() or {}, true), self:getBankAccount() and self:getBankAccount():getId() or 0, self.m_HasPilotsLicense, self.m_HasTheory, self.m_HasDrivingLicense, self.m_HasBikeLicense, self.m_HasTruckLicense, self.m_PaNote, toJSON(self.m_STVO, true), self:getRemainingPrisonTime(), toJSON(self.m_GunBox or {}, true), self.m_Bail or 0,self.m_JailTime or 0, spawnFac, self.m_AlcoholLevel, toJSON(self.m_SkinData or {}), self.m_FishingSkill  or 0, self.m_FishingLevel or 0, toJSON(self.m_FishSpeciesCaught), self:getId())
+			return sql:queryExec("UPDATE ??_character SET Skin=?, XP=?, Points=?, WeaponLevel=?, VehicleLevel=?, SkinLevel=?, Money=?, WantedLevel=?, Job=?, SpawnLocation=?, SpawnLocationProperty = ?, LastGarageEntrance=?, LastHangarEntrance=?, Collectables=?, JobLevel=?, Achievements=?, BankAccount=?, HasPilotsLicense=?, HasTheory=?, hasDrivingLicense=?, hasBikeLicense=?, hasTruckLicense=?, PaNote=?, STVO=?, PrisonTime=?, GunBox=?, Bail=?, JailTime=? ,SpawnWithFacSkin=?, AlcoholLevel = ?, CJClothes = ?, FishingSkill = ?, FishingLevel = ?, FishSpeciesCaught = ?, VehicleExtraSlots = ? WHERE Id=?", sql:getPrefix(),
+				self.m_Skin, self.m_XP, self.m_Points, self.m_WeaponLevel, self.m_VehicleLevel, self.m_SkinLevel,	self:getMoney(), self.m_WantedLevel, 0, self.m_SpawnLocation, toJSON(self.m_SpawnLocationProperty or ""), self.m_LastGarageEntrance, self.m_LastHangarEntrance,	toJSON(self.m_Collectables or {}, true), self:getJobLevel(), toJSON(self:getAchievements() or {}, true), self:getBankAccount() and self:getBankAccount():getId() or 0, self.m_HasPilotsLicense, self.m_HasTheory, self.m_HasDrivingLicense, self.m_HasBikeLicense, self.m_HasTruckLicense, self.m_PaNote, toJSON(self.m_STVO, true), self:getRemainingPrisonTime(), toJSON(self.m_GunBox or {}, true), self.m_Bail or 0,self.m_JailTime or 0, spawnFac, self.m_AlcoholLevel, toJSON(self.m_SkinData or {}), self.m_FishingSkill  or 0, self.m_FishingLevel or 0, toJSON(self.m_FishSpeciesCaught), self.m_VehicleExtraSlots, self:getId())
 		end
 	end
 	return false
@@ -339,6 +340,7 @@ function DatabasePlayer:setJailTime( jail ) self.m_JailTime = jail end
 function DatabasePlayer:setStateCuffed(state) self.m_StateCuffed = state end
 function DatabasePlayer:setFishingSkill(points) self.m_FishingSkill = math.floor(points or 0) if self:isActive() then self:setPrivateSync("FishingSkill", self.m_FishingSkill) end end
 function DatabasePlayer:setFishingLevel(level) self.m_FishingLevel = level or 0	if self:isActive() then self:setPrivateSync("FishingLevel", self.m_FishingLevel) end end
+
 
 function DatabasePlayer:loadStatistics()
 	local row = sql:queryFetchSingle("SELECT * FROM ??_stats WHERE Id = ?", sql:getPrefix(), self.m_Id)
@@ -1095,4 +1097,24 @@ end
 
 function DatabasePlayer:getFishSpeciesCaught()
 	return self.m_FishSpeciesCaught
+end
+
+function DatabasePlayer:setVehicleExtraSlots(slots) 
+	self.m_VehicleExtraSlots = slots
+	if self:isActive() then 
+		self:setPrivateSync("VehicleExtraSlots", self.m_VehicleExtraSlots) 
+		self:setData("VehicleExtraSlots", self.m_VehicleExtraSlots, true)
+	end
+end
+
+function DatabasePlayer:incrementVehicleExtraSlots()
+	self.m_VehicleExtraSlots = self.m_VehicleExtraSlots + 1
+	if self:isActive() then 
+		self:setPrivateSync("VehicleExtraSlots", self.m_VehicleExtraSlots) 
+		self:setData("VehicleExtraSlots", self.m_VehicleExtraSlots, true)
+	end
+end
+
+function DatabasePlayer:getVehicleExtraSlots()
+	return self.m_VehicleExtraSlots
 end

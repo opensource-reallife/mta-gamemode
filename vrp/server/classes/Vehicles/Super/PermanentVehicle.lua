@@ -9,7 +9,7 @@ PermanentVehicle = inherit(Vehicle)
 
 -- This function converts a GroupVehicle into a normal vehicle (User/PermanentVehicle)
 function PermanentVehicle.convertVehicle(vehicle, player, group)
-	if #player:getVehicles() >= math.floor(MAX_VEHICLES_PER_LEVEL*player:getVehicleLevel()) then
+	if #player:getVehicles() >= player:getMaxVehicles() then
 		return false -- Apply vehilce limit
 	end
 
@@ -459,6 +459,8 @@ function PermanentVehicle:toggleRegister(player)
 		elseif self:isWaterVehicle() or self:getModel() == 460 then
 			pickUpText = "Du kannst es an den Ocean Docks abholen"
 			x, y, z, rotation = 2350.26, -2523.06, 0, 180 -- ls docks
+		else
+			rotation = 0
 		end
 		self:setPosition(x, y, z + self:getBaseHeight())
 		self:setRotation(0, 0, rotation)

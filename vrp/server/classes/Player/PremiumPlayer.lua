@@ -64,7 +64,7 @@ end
 function PremiumPlayer:takeVehicle(model)
 	local row = sqlPremium:queryFetchSingle("SELECT * FROM premium_veh WHERE UserId = ? AND Model = ? AND abgeholt = 0", self.m_Player:getId(), model)
 	if row and row.ID then
-		if #self.m_Player:getVehicles() < math.floor(MAX_VEHICLES_PER_LEVEL*self.m_Player:getVehicleLevel()) then
+		if #self.m_Player:getVehicles() < self.m_Player:getMaxVehicles() then
 			sqlPremium:queryExec("UPDATE premium_veh SET abgeholt = 1, Timestamp_abgeholt = ? WHERE ID = ?;", getRealTime().timestamp, row.ID)
 			local vehicle = VehicleManager:getSingleton():createNewVehicle(self.m_Player, VehicleTypes.Player, model, 1268.63, -2069.85, 59.49, 0, 0, 0, 1)
 			if vehicle then

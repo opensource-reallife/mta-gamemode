@@ -205,6 +205,10 @@ function MechanicTow:Event_mechanicTakeVehicle()
 			return false
 		end
 	else
+		if table.size(client:getVehicles()) >= client:getMaxVehicles() then
+			client:sendError(_("Du hast nicht genug Platz, um ein Fahrzeug abzuholen", client))
+			return false
+		end
 		if not client:transferBankMoney(self, 1000, "Fahrzeug freigekauft", "Company", "VehicleFreeBought") then
 			client:sendError(_("Du hast nicht genügend Geld! (1000$)", client))
 			return false

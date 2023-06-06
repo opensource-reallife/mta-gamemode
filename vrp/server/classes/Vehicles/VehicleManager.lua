@@ -33,7 +33,7 @@ function VehicleManager:constructor()
 	"vehicleGetTuningList", "adminVehicleEdit", "adminVehicleSetInTuning", "adminVehicleGetTextureList", "adminVehicleOverrideTextures", "vehicleLoadObject", "vehicleDeloadObject", "clientMagnetGrabVehicle", "clientToggleVehicleEngine",
 	"clientToggleVehicleLight", "clientToggleHandbrake", "vehicleSetVariant", "vehicleSetTuningPropertyTable", "vehicleRequestHandling", "vehicleResetHandling", "requestVehicleMarks", "vehicleToggleLoadingRamp",
 	"VehicleInfrared:onUse", "VehicleInfrared:onStop", "VehicleInfrared:onPlayerExit", "VehicleInfrared:onSyncLight", "VehicleInfrared:onCreateLight", "VehicleInfrared:onStopLight", "requestVehicles", "onToggleVehicleRegister",
-	"toggleShamalInterior", "requestKeyList", "vehicleToggleRC"}
+	"toggleShamalInterior", "requestKeyList", "vehicleToggleRC", "buyVehicleExtraSlot"}
 
 	addEventHandler("vehicleLock", root, bind(self.Event_vehicleLock, self))
 	addEventHandler("vehicleRequestKeys", root, bind(self.Event_vehicleRequestKeys, self))
@@ -77,6 +77,7 @@ function VehicleManager:constructor()
 	addEventHandler("toggleShamalInterior", root, bind(self.Event_toggleShamalInterior, self))
 	addEventHandler("requestKeyList", root, bind(self.Event_requestKeyList, self))
 	addEventHandler("vehicleToggleRC", root, bind(self.Event_vehicleToggleRC, self))
+	addEventHandler("buyVehicleExtraSlot", root, bind(self.Event_buyVehicleExtraSlot, self))
 
 	addEventHandler("onVehicleExplode", root,
 		function()
@@ -2079,5 +2080,22 @@ function VehicleManager:Event_vehicleToggleRC(vehicleId, state)
 		end
 	else
 		client:sendError(_("Mit diesem Fahrzeug nicht möglich.", client))
+	end
+end
+
+function VehicleManager:Event_buyVehicleExtraSlot()
+	if client:getVehicleExtraSlots() >= MAX_VEHICLE_SLOTS_WITH_MONEY  then
+		return client:sendError(_("Du hast bereits die Maxmialen Slots", client))
+	end
+
+	local price = calculateMoneyToNextVehicleSlot(client:getVehicleExtraSlots())
+	if client:getBankMoney() < price then
+		return client:sendError(_("Du hast nicht genug Geld (%s)", client, toMoneyString(price)))
+	end
+
+	if client:transferBankMoney(self.m_BankAccountServer, price, "Extra Fahrzeug Slot", "Vehicle", "ExtraSlot") then
+		client:incrementVehicleExtraSlots()
+		self:syncVehicleInfo(client)
+		client:sendSuccess(_("Erfolgreich gekauft", client))
 	end
 end
