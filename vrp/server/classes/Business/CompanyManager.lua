@@ -89,9 +89,9 @@ function CompanyManager:sendInfosToClient(client)
 
 	if company then --use triggerLatentEvent to improve serverside performance
 		if company:getPlayerRank(client) < CompanyRank.Manager and not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "editLoan") then
-        	client:triggerLatentEvent("companyRetrieveInfo",company:getId(), company:getName(), company:getPlayerRank(client), company:getMoney(), company:getPlayers(), company.m_RankNames)
+        	client:triggerLatentEvent("companyRetrieveInfo",company:getId(), company:getName(), company:getPlayerRank(client), company:getMoney(), company:getPlayers(), company.m_RankNames, table.size(company:getPlayers(true)), company:hasPlayerLimit() and company:getPlayerLimit() or false)
 		else
-			client:triggerLatentEvent("companyRetrieveInfo",company:getId(), company:getName(), company:getPlayerRank(client), company:getMoney(), company:getPlayers(), company.m_RankNames, company.m_RankLoans)
+			client:triggerLatentEvent("companyRetrieveInfo",company:getId(), company:getName(), company:getPlayerRank(client), company:getMoney(), company:getPlayers(), company.m_RankNames, table.size(company:getPlayers(true)), company:hasPlayerLimit() and company:getPlayerLimit() or false, company.m_RankLoans)
 		end
 	else
 		client:triggerEvent("companyRetrieveInfo")

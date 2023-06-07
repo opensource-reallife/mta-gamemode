@@ -28,9 +28,12 @@ function CompanyGUI:constructor()
 	GUILabel:new(self.m_Width*0.02, self.m_Height*0.12, self.m_Width*0.25, self.m_Height*0.06, _"Rang:", tabAllgemein)
 	self.m_CompanyRankLabel = GUILabel:new(self.m_Width*0.3, self.m_Height*0.12, self.m_Width*0.4, self.m_Height*0.06, "", tabAllgemein)
 --	self.m_CompanyQuitButton = GUIButton:new(self.m_Width*0.74, self.m_Height*0.02, self.m_Width*0.25, self.m_Height*0.07, _"Fraktion verlassen", tabAllgemein):setBackgroundColor(Color.Red)::setBarEnabled(true)
+	GUILabel:new(self.m_Width*0.02, self.m_Height*0.20, self.m_Width*0.25, self.m_Height*0.06, _"Mitglieder:", tabAllgemein)
+	self.m_CompanyPlayersLabel = GUILabel:new(self.m_Width*0.3, self.m_Height*0.20, self.m_Width*0.7, self.m_Height*0.06, "", tabAllgemein)
 
-	GUILabel:new(self.m_Width*0.02, self.m_Height*0.23, self.m_Width*0.25, self.m_Height*0.1, _"Kasse:", tabAllgemein)
-	GUILabel:new(self.m_Width*0.02, self.m_Height*0.33, self.m_Width*0.25, self.m_Height*0.06, _"Inhalt:", tabAllgemein)
+
+	GUILabel:new(self.m_Width*0.02, self.m_Height*0.31, self.m_Width*0.25, self.m_Height*0.1, _"Kasse:", tabAllgemein)
+	GUILabel:new(self.m_Width*0.02, self.m_Height*0.41, self.m_Width*0.25, self.m_Height*0.06, _"Inhalt:", tabAllgemein)
 	self.m_CompanyMoneyLabel = GUILabel:new(self.m_Width*0.3, self.m_Height*0.33, self.m_Width*0.25, self.m_Height*0.06, "", tabAllgemein)
 	--self.m_CompanyMoneyAmountEdit = GUIEdit:new(self.m_Width*0.02, self.m_Height*0.39, self.m_Width*0.27, self.m_Height*0.07, tabAllgemein):setCaption(_"Betrag")
 	--self.m_CompanyMoneyDepositButton = GUIButton:new(self.m_Width*0.3, self.m_Height*0.39, self.m_Width*0.25, self.m_Height*0.07, _"Einzahlen", tabAllgemein):setBarEnabled(true)
@@ -221,7 +224,7 @@ function CompanyGUI:onSelectRank(name,rank)
 	self.m_SaveRank:setEnabled(true)
 end
 
-function CompanyGUI:Event_companyRetrieveInfo(id, name, rank, money, players, rankNames, rankLoans)
+function CompanyGUI:Event_companyRetrieveInfo(id, name, rank, money, players, rankNames, playerCount, maxPlayers, rankLoans)
 	if id then
 		if id > 0 then
 			self.m_Id = id
@@ -230,6 +233,16 @@ function CompanyGUI:Event_companyRetrieveInfo(id, name, rank, money, players, ra
 			self.m_CompanyNameLabel:setText(name)
 			self.m_CompanyRankLabel:setText(tostring(rank).." - "..rankNames[rank])
 			self.m_CompanyMoneyLabel:setText(tostring(money).."$")
+
+			local color = Color.Green
+			if maxPlayers then
+				if playerCount >= maxPlayers then
+					color = Color.Red
+				end 
+				self.m_CompanyPlayersLabel:setText(_("%s / %s", playerCount, maxPlayers)):setColor(color)
+			else
+				self.m_CompanyPlayersLabel:setText(_("%s / %s", playerCount, "∞")):setColor(color)
+			end
 
 			self.m_CompanyPlayersGrid:clear()
 			for playerId, info in pairs(players) do

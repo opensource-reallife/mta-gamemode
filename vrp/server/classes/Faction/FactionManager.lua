@@ -261,9 +261,9 @@ function FactionManager:sendInfosToClient(client)
 
 	if faction then --use triggerLatentEvent to improve serverside performance
 		if faction:getPlayerRank(client) < FactionRank.Manager and not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "editLoan") and not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "editWeaponPermissions") and not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "editActionPermissions") then
-			client:triggerLatentEvent("factionRetrieveInfo", faction:getId(), faction:getName(), faction:getPlayerRank(client), faction:getMoney(), faction:getPlayers(), ActionsCheck:getSingleton():getStatus(), faction.m_RankNames)
+			client:triggerLatentEvent("factionRetrieveInfo", faction:getId(), faction:getName(), faction:getPlayerRank(client), faction:getMoney(), faction:getPlayers(), ActionsCheck:getSingleton():getStatus(), faction.m_RankNames, table.size(faction:getPlayers(true)), faction:hasPlayerLimit() and faction:getPlayerLimit() or false)
 		else
-			client:triggerLatentEvent("factionRetrieveInfo", faction:getId(), faction:getName(), faction:getPlayerRank(client), faction:getMoney(), faction:getPlayers(), ActionsCheck:getSingleton():getStatus(), faction.m_RankNames, faction.m_RankLoans, wpn, faction.m_RankWeapons)
+			client:triggerLatentEvent("factionRetrieveInfo", faction:getId(), faction:getName(), faction:getPlayerRank(client), faction:getMoney(), faction:getPlayers(), ActionsCheck:getSingleton():getStatus(), faction.m_RankNames, table.size(faction:getPlayers(true)), faction:hasPlayerLimit() and faction:getPlayerLimit() or false, faction.m_RankLoans, wpn, faction.m_RankWeapons)
 		end
 	else
 		client:triggerEvent("factionRetrieveInfo")

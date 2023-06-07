@@ -33,11 +33,12 @@ function FactionGUI:constructor()
 	self.m_FactionRankLabel = GUILabel:new(self.m_Width*0.3, self.m_Height*0.1, self.m_Width*0.4, self.m_Height*0.06, "", tabAllgemein)
 	GUILabel:new(self.m_Width*0.02, self.m_Height*0.18, self.m_Width*0.25, self.m_Height*0.06, _"Aktions-Status:", tabAllgemein)
 	self.m_FactionNextActionLabel = GUILabel:new(self.m_Width*0.3, self.m_Height*0.18, self.m_Width*0.7, self.m_Height*0.06, "", tabAllgemein)
-
+	GUILabel:new(self.m_Width*0.02, self.m_Height*0.26, self.m_Width*0.25, self.m_Height*0.06, _"Mitglieder:", tabAllgemein)
+	self.m_FactionPlayersLabel = GUILabel:new(self.m_Width*0.3, self.m_Height*0.26, self.m_Width*0.7, self.m_Height*0.06, "", tabAllgemein)
 --	self.m_FactionQuitButton = GUIButton:new(self.m_Width*0.74, self.m_Height*0.02, self.m_Width*0.25, self.m_Height*0.07, _"Fraktion verlassen", tabAllgemein):setBackgroundColor(Color.Red):setBarEnabled(true)
 
-	GUILabel:new(self.m_Width*0.02, self.m_Height*0.23, self.m_Width*0.25, self.m_Height*0.1, _"Kasse:", tabAllgemein)
-	GUILabel:new(self.m_Width*0.02, self.m_Height*0.33, self.m_Width*0.25, self.m_Height*0.06, _"Inhalt:", tabAllgemein)
+	GUILabel:new(self.m_Width*0.02, self.m_Height*0.33, self.m_Width*0.25, self.m_Height*0.1, _"Kasse:", tabAllgemein)
+	GUILabel:new(self.m_Width*0.02, self.m_Height*0.43, self.m_Width*0.25, self.m_Height*0.06, _"Inhalt:", tabAllgemein)
 	self.m_FactionMoneyLabel = GUILabel:new(self.m_Width*0.3, self.m_Height*0.33, self.m_Width*0.25, self.m_Height*0.06, "", tabAllgemein)
 	--self.m_FactionMoneyAmountEdit = GUIEdit:new(self.m_Width*0.02, self.m_Height*0.39, self.m_Width*0.27, self.m_Height*0.07, tabAllgemein):setCaption(_"Betrag")
 
@@ -602,7 +603,7 @@ function FactionGUI:Event_gangwarLoadTopList( damage, kills, mvp, localToplist)
 	ShortMessage:new(_("Achtung! Deine eigenen Statistiken werden nur alle 30 Minuten aktualisiert (sofern nicht in den Top-Ten)!"), _"Bestenliste" , {180, 130, 0})
 end
 
-function FactionGUI:Event_factionRetrieveInfo(id, name, rank, money, players, actionStatus, rankNames, rankLoans, validWeapons, rankWeapons)
+function FactionGUI:Event_factionRetrieveInfo(id, name, rank, money, players, actionStatus, rankNames, playerCount, maxPlayers, rankLoans, validWeapons, rankWeapons)
 	--self:adjustFactionTab(rank or false)
 	if id then
 		if id > 0 then
@@ -625,6 +626,16 @@ function FactionGUI:Event_factionRetrieveInfo(id, name, rank, money, players, ac
 			else
 				self.m_FactionNextActionLabel:setText(_("%s läuft", actionStatus["current"]))
 				self.m_FactionNextActionLabel:setColor(Color.Red)
+			end
+
+			local color = Color.Green
+			if maxPlayers then
+				if playerCount >= maxPlayers then
+					color = Color.Red
+				end 
+				self.m_FactionPlayersLabel:setText(_("%s / %s", playerCount, maxPlayers)):setColor(color)
+			else
+				self.m_FactionPlayersLabel:setText(_("%s / %s", playerCount, "∞")):setColor(color)
 			end
 
 			self.m_FactionPlayersGrid:clear()
