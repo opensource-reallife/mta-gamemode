@@ -338,7 +338,7 @@ function GroupGUI:Event_vehicleRetrieveInfo(vehiclesInfo)
 		end
 
 		if self.m_BuyVehicleExtraSlot then		
-			local price = GROUP_VEHICLE_SLOT_UPGRADE_PRICE
+			local price = calculateMoneyToNextGroupVehicleSlot(localPlayer:getGroupVehicleExtraSlots())
 			local text = "(Maximale Slots erreicht)"
 			if MAX_VEHICLE_SLOTS[localPlayer:getGroupType()] <= 0 or MAX_VEHICLE_SLOTS[localPlayer:getGroupType()] > localPlayer:getGroupVehicleExtraSlots() then
 				text = _("(kaufen: %s)", toMoneyString(price))
@@ -435,7 +435,7 @@ function GroupGUI:addLeaderTab()
 		self.m_TypeChange.onUnhover = function () self.m_TypeChange:setColor(Color.Accent) end
 		self.m_TypeChange:setVisible(false)
 		
-		local price = GROUP_VEHICLE_SLOT_UPGRADE_PRICE
+		local price = calculateMoneyToNextGroupVehicleSlot(localPlayer:getGroupVehicleExtraSlots())
 		local text = "(Maximale Slots erreicht)"
 		if MAX_VEHICLE_SLOTS[localPlayer:getGroupType()] <= 0 then
 			text = _("(kaufen: %s)", toMoneyString(price))
@@ -445,7 +445,7 @@ function GroupGUI:addLeaderTab()
 		self.m_BuyVehicleExtraSlotLeader = GUILabel:new(self.m_Width*0.7, self.m_Height*0.64, self.m_Width*0.4, self.m_Height*0.06, "", tabLeader)
 		self.m_BuyVehicleExtraSlot = GUILabel:new(self.m_Width*0.7, self.m_Height*0.64, self.m_Width*0.4, self.m_Height*0.06, text, tabLeader):setColor(Color.Accent)
 		self.m_BuyVehicleExtraSlot.onLeftClick = function ()
-			local price = GROUP_VEHICLE_SLOT_UPGRADE_PRICE
+			local price = calculateMoneyToNextGroupVehicleSlot(localPlayer:getGroupVehicleExtraSlots())
 			QuestionBox:new(_("Möchtest du wirklich einen weiteren Fahrzeug Platz für %s holen", toMoneyString(price)),
 			    function() 	triggerServerEvent("buyVehicleExtraSlot", localPlayer, "group") end
 			)
