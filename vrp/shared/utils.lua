@@ -480,10 +480,6 @@ function calculateMoneyToNextVehicleSlot(currentLevel)
 	return (currentLevel + 1) * VEHICLE_SLOT_UPGRADE_PRICE
 end
 
-function calculateMoneyToNextGroupVehicleSlot(currentLevel)
-	return (currentLevel + 1) * GROUP_VEHICLE_SLOT_UPGRADE_PRICE
-end
-
 function getRandomUniqueNick()
 	local randomNick
 	repeat

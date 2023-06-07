@@ -2111,7 +2111,7 @@ function VehicleManager:Event_buyVehicleExtraSlot(type)
 				return client:sendError(_("Deine Gruppe hat bereits die Maxmialen Slots", client))
 			end
 
-			local price = calculateMoneyToNextGroupVehicleSlot(group:getVehicleExtraSlots())
+			local price = GROUP_VEHICLE_SLOT_UPGRADE_PRICE
 			if group:getMoney() < price then
 				return client:sendError(_("Deine Gruppe hat nicht genug Geld in der Kasse (%s)", client, toMoneyString(price)))
 			end
