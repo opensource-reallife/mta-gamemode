@@ -2104,22 +2104,26 @@ function VehicleManager:Event_buyVehicleExtraSlot(type)
 		end
 	elseif type == "group" then
 		if client:getGroup() then
-			local group = client:getGroup()
-			local limit = MAX_VEHICLE_SLOTS[group:getType()]
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "buyExtraVehicleSlots") then
+				local group = client:getGroup()
+				local limit = MAX_VEHICLE_SLOTS[group:getType()]
 
-			if limit > 0 and group:getVehicleExtraSlots() >= limit then
-				return client:sendError(_("Deine Gruppe hat bereits die Maxmialen Slots", client))
-			end
+				if limit > 0 and group:getVehicleExtraSlots() >= limit then
+					return client:sendError(_("Deine Gruppe hat bereits die Maxmialen Slots", client))
+				end
 
-			local price = GROUP_VEHICLE_SLOT_UPGRADE_PRICE
-			if group:getMoney() < price then
-				return client:sendError(_("Deine Gruppe hat nicht genug Geld in der Kasse (%s)", client, toMoneyString(price)))
-			end
+				local price = GROUP_VEHICLE_SLOT_UPGRADE_PRICE
+				if group:getMoney() < price then
+					return client:sendError(_("Deine Gruppe hat nicht genug Geld in der Kasse (%s)", client, toMoneyString(price)))
+				end
 
-			if group:transferMoney(self.m_BankAccountServer, price, "Extra Fahrzeug Slot", "Vehicle", "ExtraSlot") then
-				group:incrementVehicleExtraSlots()
-				self:syncVehicleInfo(client)
-				client:sendSuccess(_("Erfolgreich gekauft", client))
+				if group:transferMoney(self.m_BankAccountServer, price, "Extra Fahrzeug Slot", "Vehicle", "ExtraSlot") then
+					group:incrementVehicleExtraSlots()
+					self:syncVehicleInfo(client)
+					client:sendSuccess(_("Erfolgreich gekauft", client))
+				end
+			else
+				return client:sendError(_("Du bist nicht berechtigt Fahrzeugslots zu kaufen.", client))
 			end
 		else
 			return client:sendError(_("Du bist in keiner Gruppe", client))

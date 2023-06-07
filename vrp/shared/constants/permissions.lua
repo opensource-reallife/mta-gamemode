@@ -37,6 +37,7 @@ PERMISSIONS_INFO = { -- name = {{type, id} type = 0 for all, {faction min rank, 
 	["buyProperty"] =			{{0}, {["faction"] = nil, ["company"] = nil, ["group"] = 0}},
 	["sellProperty"] =			{{0}, {["faction"] = nil, ["company"] = nil, ["group"] = 0}},
 	["manageImmoDepot"] =		{{0}, {["faction"] = nil, ["company"] = nil, ["group"] = 0}},
+	["buyExtraVehicleSlots"] =	{{0}, {["faction"] = nil, ["company"] = nil, ["group"] = 5}},
 	["startBusTour"] =			{{2, {CompanyStaticId.EPT}}, {["faction"] = nil, ["company"] = 0, ["group"] = nil}},
 	["startVehicleImport"] =	{{2, {CompanyStaticId.EPT}}, {["faction"] = nil, ["company"] = 0, ["group"] = nil}},
 	["startStreetRace"] =		{{2, {CompanyStaticId.SANNEWS}}, {["faction"] = nil, ["company"] = 0, ["group"] = nil}},
@@ -105,6 +106,7 @@ PERMISSION_NAMES = {
 	["disableBug"] =			"Wanze deaktivieren",
 	["manageImmoDepot"] =		"Immobilien Depot verwalten",
 	["changePermissions"] =		"Rechte verwalten (Beinhaltet Vollzugriff)",
+	["buyExtraVehicleSlots"] =	"Fahrzeugeslots kaufen",
 }
 
 ACTION_PERMISSIONS_INFO = {

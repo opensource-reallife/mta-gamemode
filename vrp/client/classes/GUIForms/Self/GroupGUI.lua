@@ -251,7 +251,10 @@ function GroupGUI:Event_groupRetrieveInfo(id, name, rank, money, playTime, playe
 		end
 	end
 
-	if rank >= GroupRank.Manager or PermissionsManager:getSingleton():hasPlayerPermissionsTo("group", "editLoan") or PermissionsManager:getSingleton():hasPlayerPermissionsTo("group", "changeGroupType") or PermissionsManager:getSingleton():hasPlayerPermissionsTo("group", "changeRankNames") then
+	if rank >= GroupRank.Manager or PermissionsManager:getSingleton():hasPlayerPermissionsTo("group", "editLoan") or 
+	PermissionsManager:getSingleton():hasPlayerPermissionsTo("group", "changeGroupType") or 
+	PermissionsManager:getSingleton():hasPlayerPermissionsTo("group", "changeRankNames") or 
+	PermissionsManager:getSingleton():hasPlayerPermissionsTo("group", "buyExtraVehicleSlots") then
 
 		self.m_RankNames = rankNames
 		self.m_RankLoans = rankLoans
@@ -438,7 +441,7 @@ function GroupGUI:addLeaderTab()
 			text = _("(kaufen: %s)", toMoneyString(price))
 		end
 		 
-		GUILabel:new(self.m_Width*0.45, self.m_Height*0.64, self.m_Width*0.4, self.m_Height*0.06, _"Fahrzeugslot kaufen:", tabLeader)
+		self.m_BuyVehicleExtraSlotLabel = GUILabel:new(self.m_Width*0.45, self.m_Height*0.64, self.m_Width*0.4, self.m_Height*0.06, _"Fahrzeugslot kaufen:", tabLeader)
 		self.m_BuyVehicleExtraSlotLeader = GUILabel:new(self.m_Width*0.7, self.m_Height*0.64, self.m_Width*0.4, self.m_Height*0.06, "", tabLeader)
 		self.m_BuyVehicleExtraSlot = GUILabel:new(self.m_Width*0.7, self.m_Height*0.64, self.m_Width*0.4, self.m_Height*0.06, text, tabLeader):setColor(Color.Accent)
 		self.m_BuyVehicleExtraSlot.onLeftClick = function ()
@@ -449,7 +452,8 @@ function GroupGUI:addLeaderTab()
 		end
 		self.m_BuyVehicleExtraSlot.onHover = function () self.m_BuyVehicleExtraSlot:setColor(Color.White) end
 		self.m_BuyVehicleExtraSlot.onUnhover = function () self.m_BuyVehicleExtraSlot:setColor(Color.Accent) end
-		--self.m_TypeLabelLeader:setVisible(false)
+		self.m_BuyVehicleExtraSlot:setVisible(false)
+		self.m_BuyVehicleExtraSlotLabel:setVisible(false)
 
 		self.m_BindButton = GUIButton:new(self.m_Width*0.45, self.m_Height*62, self.m_Width*0.3, self.m_Height*0.07, _"Binds verwalten", tabLeader):setBarEnabled(true)
 		self.m_BindButton.onLeftClick = function()
@@ -471,6 +475,8 @@ function GroupGUI:refreshLeaderTab()
 	self.m_LeaderRankName:setVisible(PermissionsManager:getSingleton():hasPlayerPermissionsTo("group", "changeRankNames"))
 	self.m_TypeChange:setVisible(PermissionsManager:getSingleton():hasPlayerPermissionsTo("group", "changeGroupType"))
 	self.m_ChangePermissions:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("group", "changePermissions"))
+	self.m_BuyVehicleExtraSlot:setVisible(PermissionsManager:getSingleton():hasPlayerPermissionsTo("group", "buyExtraVehicleSlots"))
+	self.m_BuyVehicleExtraSlotLabel:setVisible(PermissionsManager:getSingleton():hasPlayerPermissionsTo("group", "buyExtraVehicleSlots"))
 
 	self:refreshRankGrid()
 end
