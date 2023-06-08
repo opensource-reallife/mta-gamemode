@@ -115,6 +115,7 @@ function Core:ready() --onClientResourceStart
 	Casino:new()
 	TrainManager:new()
 	FireManager:new()
+	SARManager:new()
 	VehicleInteraction:new()
 	EventManager:new()
 	DMRaceEvent:new()
