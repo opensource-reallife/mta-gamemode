@@ -205,9 +205,17 @@ function MechanicTow:Event_mechanicTakeVehicle()
 			return false
 		end
 	else
-		if client:getVehicleCountWithoutPrem() >= client:getMaxVehicles() then
-			client:sendError(_("Du hast nicht genug Platz, um ein Fahrzeug abzuholen", client))
-			return false
+		if client:getVehicleCountWithoutPrem() > client:getMaxVehicles() then
+			local vehCount = 0
+			for i, veh in pairs(client:getVehicles()) do
+				if veh:getPositionType() == VehiclePositionType.World then
+					vehCount = vehCount + 1
+				end
+			end
+			if vehCount >= client:getMaxVehicles() then
+				client:sendError(_("Du hast nicht genug Platz, um ein Fahrzeug abzuholen", client))
+				return false
+			end
 		end
 		if not client:transferBankMoney(self, 1000, "Fahrzeug freigekauft", "Company", "VehicleFreeBought") then
 			client:sendError(_("Du hast nicht genügend Geld! (1000$)", client))
