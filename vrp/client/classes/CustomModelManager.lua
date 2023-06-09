@@ -96,9 +96,9 @@ function CustomModelManager:constructor()
 	self:loadImportTXD("files/models/objects/worldItems/mushrooms.txd", 1947)
 	self:loadImportDFF("files/models/objects/worldItems/mushroom02.dff", 1947)
 	--Wanted board of LSPD
-	self:loadImportCOL("files/models/objects/mostWanted.col", 1903)
-	self:loadImportTXD("files/models/objects/mostWanted.txd", 1903)
-	self:loadImportDFF("files/models/objects/mostWanted.dff", 1903)
+	--self:loadImportCOL("files/models/objects/mostWanted.col", 1903)
+	--self:loadImportTXD("files/models/objects/mostWanted.txd", 1903)
+	--self:loadImportDFF("files/models/objects/mostWanted.dff", 1903)
 	--water can
 	self:loadImportCOL("files/models/wearables/waterCan.col", 1902)
 	self:loadImportTXD("files/models/wearables/waterCan.txd", 1902)

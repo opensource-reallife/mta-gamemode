@@ -126,7 +126,7 @@ function AdminGUI:constructor(money)
 	self:addAdminButton("timeban", "Timeban", self.onPlayerButtonClick, 220, 290, 160, 30, Color.Red, tabSpieler)
 	self:addAdminButton("permaban", "Permaban", self.onPlayerButtonClick, 220, 330, 160, 30, Color.Red, tabSpieler)
 	self:addAdminButton("modsBan", "Mods sperren", self.onPlayerButtonClick, 220, 370, 160, 30, Color.Red, tabSpieler)
-	self:addAdminButton("removeModsBan", "Mods freigeben ", self.onPlayerButtonClick, 220, 410, 160, 30, Color.Red, tabSpieler)
+	self:addAdminButton("removeModsBan", "Mods freigeben", self.onPlayerButtonClick, 220, 410, 160, 30, Color.Red, tabSpieler)
 
 	GUILabel:new(440, 130, 160, 30, _"Sonstiges:", tabSpieler)
 	self:addAdminButton("spect", "specten", self.onPlayerButtonClick, 440, 170, 160, 30, Color.LightRed, tabSpieler)
@@ -176,7 +176,7 @@ function AdminGUI:constructor(money)
 	self:addAdminButton("offlinePrison", "ins Prison", self.onOfflineButtonClick, 220, 410, 180, 30, Color.Orange, tabOffline)
 	self:addAdminButton("offlineUnPrison", "aus Prison entlassen", self.onOfflineButtonClick, 410, 410, 180, 30, Color.Orange, tabOffline)
 	self:addAdminButton("offlineModsBan", "Mods sperren", self.onOfflineButtonClick, 220, 450, 180, 30, Color.Red, tabOffline)
-	self:addAdminButton("offlineRemoveModsBan", "Mods freigeben ", self.onOfflineButtonClick, 410, 450, 180, 30, Color.Red, tabOffline)
+	self:addAdminButton("offlineRemoveModsBan", "Mods freigeben", self.onOfflineButtonClick, 410, 450, 180, 30, Color.Red, tabOffline)
 
 	self:refreshOnlinePlayers()
 

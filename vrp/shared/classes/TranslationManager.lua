@@ -60,6 +60,9 @@ function TranslationManager:translate(message, locale)
 			if DEBUG then
 				outputDebugString("There's a missing translation. Please update the .po files")
 				outputDebugString("Missing string: "..message)
+				
+				outputConsole("There's a missing translation. Please update the .po files")
+				outputConsole("Missing string: "..message)
 			end
 			return message
 		end

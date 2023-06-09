@@ -4390,3 +4390,9 @@ msgstr "The player %s was banned by %s for %d hours!"
 
 msgid "Der Spieler %s wurde von %s entbannt!"
 msgstr "The player %s was unbanned from %s!"
+
+msgid "FMS"
+msgstr "FMS"
+
+msgid "Tastenzuordnung (Funk)"
+msgstr "Bindings (Func)"
