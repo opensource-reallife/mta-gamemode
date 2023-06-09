@@ -291,6 +291,11 @@ function GroupPropertyManager:clearProperty(id, groupId, price, inactivityClear)
 	property.m_OwnerID = 0
 	sql:queryExec("UPDATE ??_group_property SET GroupId=? WHERE Id=?", sql:getPrefix(), 0, property.m_Id)
 	property.m_Open = 1
+	
+	for key, player in ipairs( GroupManager.Map[tonumber(groupId)]:getOnlinePlayers() ) do
+		player:triggerEvent("destroyGroupBlip",property.m_Id)
+		player:triggerEvent("forceGroupPropertyClose")
+	end
 	if property.m_Pickup and isElement(property.m_Pickup) then
 		setPickupType(property.m_Pickup, 3, 1273)
 	end
