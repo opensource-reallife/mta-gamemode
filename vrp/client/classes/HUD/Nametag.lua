@@ -55,7 +55,7 @@ function Nametag:draw()
 			local phX, phY, phZ = getPedBonePosition(player, 8)
 			local bDistance = getDistanceBetweenPoints3D(cx,cy,cz, pX, pY, pZ)
 			local smokeHit = false
-			if bRifleCheck == player then bDistance = 10 end -- fix the distance if the localPlayer aims at the specific player
+			if bRifleCheck == player or player.vehicle and bRifleCheck == player.vehicle then bDistance = 10 end -- fix the distance if the localPlayer aims at the specific player
 			if not localPlayer:isLoggedIn() then return false end
 			if (bDistance <= maxDistance) or localPlayer:getPrivateSync("isSpecting") then
 				local scx,scy = getScreenFromWorldPosition(pX, pY, pZ + 1.2)
@@ -187,7 +187,7 @@ function Nametag:_weaponCheck ( player )
 		if boolean then
 			if isElement ( hit ) then
 				if isElementStreamedIn(hit) then
-					if getElementType ( hit ) == "player" then
+					if getElementType ( hit ) == "player" or getElementType ( hit ) == "vehicle" then
 						return hit
 					end
 				end
