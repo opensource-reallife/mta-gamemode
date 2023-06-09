@@ -1,5 +1,5 @@
 
-MostWanted = inherit(GUIForm3D)
+--[[MostWanted = inherit(GUIForm3D)
 inherit(Singleton, MostWanted)
 
 function MostWanted:constructor()
@@ -34,4 +34,4 @@ function MostWanted:generateUrl()
 		end
 	end
 	return url
-end
+end]]

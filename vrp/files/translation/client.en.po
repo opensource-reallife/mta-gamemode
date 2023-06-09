@@ -383,14 +383,8 @@ msgstr "Name"
 msgid "Erhalten"
 msgstr "Received"
 
-msgid ""
-"Auf eXo-Reallife gibt es viele Achievements mit verschiedenen Belohnungen, "
-"die gefunden bzw. erledigt werden können. Einige davon sind vesteckt und "
-"tauchen erst in der Liste auf wenn du diese findest!"
-msgstr ""
-"On eXo-Reallife there are many Achievements with different rewards that can "
-"be found or done. Some of them are hidden and only appear in the list when "
-"you find them!"
+msgid "Auf eXo-Reallife gibt es viele Achievements mit verschiedenen Belohnungen, die gefunden bzw. erledigt werden können. Einige davon sind vesteckt und tauchen erst in der Liste auf wenn du diese findest!"
+msgstr "On eXo-Reallife there are many Achievements with different rewards that can be found or done. Some of them are hidden and only appear in the list when you find them!"
 
 msgid "Sichtbare  Ach."
 msgstr "Visible ah."
@@ -524,6 +518,9 @@ msgstr "Playtime: -"
 
 msgid "Job: -"
 msgstr "Job: -"
+
+msgid "Job: Boxer"
+msgstr "Job: Boxer"
 
 msgid "Geld: -"
 msgstr "Money: -"
@@ -2248,9 +2245,7 @@ msgstr "Filter:"
 msgid "Suche:"
 msgstr "Search:"
 
-msgid ""
-"Herzlich willkommen auf eXo Reallife, bitte logge dich mit deinen "
-"Accountdaten ein."
+msgid "Herzlich willkommen auf eXo Reallife, bitte logge dich mit deinen Accountdaten ein."
 msgstr "Welcome to eXo Reallife, please log in using your account data."
 
 msgid "Username"
@@ -2580,7 +2575,7 @@ msgid "Parken"
 msgstr "Park"
 
 msgid "Reparieren"
-msgstr "修复"
+msgstr "Repair"
 
 msgid "Despawnen"
 msgstr "Despawn"
@@ -2592,7 +2587,7 @@ msgid "Aus welchem Grund möchtest du das Fahrzeug despawnen?"
 msgstr "For which reason do you want to despawn the vehicle?"
 
 msgid "Handbremse lösen"
-msgstr "Release the handbrake"
+msgstr "Release handbrake"
 
 msgid "Editieren"
 msgstr "Edit"
@@ -4598,3 +4593,125 @@ msgstr "eXo Browser"
 
 msgid "Du betrittst ein militärisches Sperrgebiet! Sei vorsichtig!"
 msgstr "You are entering a restricted military area! Be careful"
+
+msgid "FMS"
+msgstr "FMS"
+
+msgid "Tastenzuordnungen (Funk)"
+msgstr "Bindings (radio)"
+
+msgid "Am Krankenhaus spawnen"
+msgstr "Spawn at hospital"
+
+msgid "(Fahrzeugslot kaufen: %s)"
+msgstr "(Buy vehicle slot: %s)"
+
+msgid "Extra Slots:"
+msgstr "Extra slots:"
+
+msgid "Extra Slots: %d/%d"
+msgstr "Extra slots: %d/%d"
+
+msgid "gemietete Fahrzeuge"
+msgstr "rented vehicles"
+
+msgid "Einloggen%s"
+msgstr "Login%s"
+
+msgid "Einloggen"
+msgstr "Login"
+
+msgid "Häuser"
+msgstr "Houses"
+
+msgid "Bitte bestätige den Kauf. Das Geld wird von deinem Konto abgebucht."
+msgstr "Please confirm the purchase. The money will be debited from your account."
+
+msgid "Fahrzeuge an-/abmelden"
+msgstr "Register/deregister vehicles"
+
+msgid "Fahrzeug für %s$ ausleihen!"
+msgstr "Borrow vehicle for %s$!"
+
+msgid "Aktionsstartberechtigung"
+msgstr "Action start authorization"
+
+msgid "Rechteverwaltung"
+msgstr "Rights management"
+
+msgid "Waffen deaktivieren"
+msgstr "Deactivate weapons"
+
+msgid "Rechte bearbeiten"
+msgstr "Edit rights"
+
+msgid "%s / %s"
+msgstr "%s / %s"
+
+msgid "Garage: keine Garage"
+msgstr "Garage: no garage"
+
+msgid "Hier startet der Drogentruck!"
+msgstr "This is where the drug truck takes off!"
+
+msgid "Illegaler Weed-Transport"
+msgstr "Illegal weed transport"
+
+msgid "Als Boxer musst du gegen andere Boxer antreten und diese im Kampf besiegen."
+"Gewinnst du den Kampf, gewinnst du ein Preisgeld."
+"Verlierst du jedoch, gehst du leer aus."
+msgstr "As a boxer you have to compete against other boxers and defeat them in a fight."
+"If you win the fight, you win a prize money."
+"However, if you lose, you go away empty-handed."
+
+msgid "Rang 0"
+msgstr "Rank 0"
+
+msgid "Rang 1"
+msgstr "Rank 1"
+
+msgid "Rang 2"
+msgstr "Rank 2"
+
+msgid "Rang 3"
+msgstr "Rank 3"
+
+msgid "Rang 4"
+msgstr "Rank 4"
+
+msgid "Rang 5"
+msgstr "Rank 5"
+
+msgid "Rang 6"
+msgstr "Rank 6"
+
+msgid "Speichern"
+msgstr "Save"
+
+msgid "Berechtigungen verwalten"
+msgstr "Manage permissions"
+
+msgid "%s einen Respawn angekündigt."
+msgstr "%s announced a respawn."
+
+msgid "%s %s"
+msgstr "%s %s"
+
+msgid "Alle Fahrzeuge werden in %d Sekunden respawned!"
+msgstr "All vehicles are respawned in %d seconds!"
+
+msgid "Klicke hier, um den Respawn zu stoppen."
+msgstr "Click here to stop the respawn."
+
+msgid "Fahrzeug Respawn"
+msgstr "Vehicle respawn"
+
+msgid "Speichern"
+msgstr "Save"
+
+msgid "Speichern"
+msgstr "Save"
+
+msgid "Speichern"
+msgstr "Save"
+
