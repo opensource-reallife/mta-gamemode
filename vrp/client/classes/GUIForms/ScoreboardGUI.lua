@@ -27,7 +27,7 @@ function ScoreboardGUI:constructor()
 	self.m_Grid:addColumn(_"Gang/Firma", 0.27)
 	self.m_Grid:addColumn(_"Spielzeit", 0.08)
 	self.m_Grid:addColumn(_"Ping", 0.11)
-	self.m_Grid:setSortable{"VIP", "Name", "Fraktion", "Unternehmen", "Gang/Firma", "Spielzeit"} --We can't sort Ping (Ping can be a number and also a string)
+	self.m_Grid:setSortable{_"VIP", _"Name", _"Fraktion", _"Unternehmen", _"Gang/Firma", _"Spielzeit"} --We can't sort Ping (Ping can be a number and also a string)
 	--self.m_Grid:setSortColumn(_"Fraktion")
 
 	self.m_Line = GUIRectangle:new(0, self.m_Height*0.65, self.m_Width, self.m_Height*0.05, Color.Accent, self.m_Rect)
@@ -91,7 +91,7 @@ function ScoreboardGUI:refresh()
 
 	for k, player in pairs(getElementsByType("player")) do
 		local factionId = player:getFaction() and player:getFaction():getId() or 0
-		if factionId > 0 and factionId < 4 then factionId = 1 end
+		--if factionId > 0 and factionId < 4 then factionId = 1 end
 		local companyId = player:getCompany() and player:getCompany():getId() or 0
 		table.insert(self.m_Players, {player, factionId})
 
