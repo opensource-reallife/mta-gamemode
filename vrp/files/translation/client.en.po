@@ -4706,12 +4706,189 @@ msgstr "Click here to stop the respawn."
 msgid "Fahrzeug Respawn"
 msgstr "Vehicle respawn"
 
-msgid "Speichern"
-msgstr "Save"
+msgid "Aktionsstartberechtigungen"
+msgstr "Action start authorizations"
 
-msgid "Speichern"
-msgstr "Save"
+msgid "Mitglieder:"
+msgstr "Members:"
 
-msgid "Speichern"
-msgstr "Save"
+msgid "Firmenkonto"
+msgstr "Company account"
+
+msgid "Überweisung"
+msgstr "Bank transfer"
+
+msgid "Ein/Auszahlen"
+msgstr "Deposit/Withdraw"
+
+msgid "Kontostand: -"
+msgstr "Balance: -"
+
+msgid "Kontostand: %s"
+msgstr "Balance: %s"
+
+msgid "oder spenden an:"
+msgstr "or donate to:"
+
+msgid "Um 20:00 findet das tägliche eXo-Pferderennen statt, du kannst im Wettbüro auf ein Pferd setzen und um 20:00 die Live-Übertragung anschauen! Viel Glück!"
+msgstr "At 20:00 the daily eXo horse race will take place, you can bet on a horse in the betting office and watch the live broadcast at 20:00! Good luck!"
+
+msgid "Unternehmensfahrzeuge respawnen"
+msgstr "Company vehicles respawn"
+
+msgid "im Umkreis respawnen"
+msgstr "respawn within the radius"
+
+msgid "Chat löschen"
+msgstr "Clear chat"
+
+msgid "Werbung ausblenden"
+msgstr "Hide advertising"
+
+msgid "Aktions-Sperre resetten"
+msgstr "Reset action lock"
+
+msgid "Fahrzeug Texturen Menu"
+msgstr "Vehicle Textures Menu"
+
+msgid "zu Koordinaten porten"
+msgstr "Teleport to coordinates"
+
+msgid "Event-Menü"
+msgstr "Event menu"
+
+msgid "Überlappende Fahrzeuge"
+msgstr "Overlapping vehicles"
+
+msgid "Ped-Menü"
+msgstr "Ped menu"
+
+msgid "Feuer-Menü"
+msgstr "Fire menu"
+
+msgid "ID des Spielers"
+msgstr "ID of the player"
+
+msgid "Login-Fix"
+msgstr "Login-Fix"
+
+msgid "senden"
+msgstr "send"
+
+msgid "Support-Modus aktivieren/deaktivieren"
+msgstr "Enable/disable support mode"
+
+msgid "Fraktionsfahrzeuge respawnen"
+msgstr "Faction vehicles respawn"
+
+msgid "Fahrzeug-Menü"
+msgstr "Vehicle menu"
+
+msgid "Transaktions-Menü"
+msgstr "Transaction menu"
+
+msgid "Serial-Account-Verknüpfungen"
+msgstr "Serial account links"
+
+msgid "Leadersperren-Menü"
+msgstr "Leader lock menu"
+
+msgid "kicken"
+msgstr "kick"
+
+msgid "ins Prison"
+msgstr "to the Prison"
+
+msgid "aus Prison entlassen"
+msgstr "release from Prison"
+
+msgid "Timeban"
+msgstr "Timeban"
+
+msgid "Permaban"
+msgstr "Permaban"
+
+msgid "Mods sperren"
+msgstr "Lock mods"
+
+msgid "Mods freigeben"
+msgstr "Share mods"
+
+msgid "specten"
+msgstr "spectate"
+
+msgid "ent/freezen"
+msgstr "un/freeze"
+
+msgid "hin porten"
+msgstr "teleport to"
+
+msgid "her porten"
+msgstr "teleport here"
+
+msgid "Nick ändern"
+msgstr "Change nick"
+
+msgid "Firma/Gruppen Fahrzeuge"
+msgstr "Company/Group Vehicles"
+
+msgid "Fahrzeuge anzeigen"
+msgstr "Show vehicles"
+
+msgid "Warns verwalten"
+msgstr "Manage Warns"
+
+msgid "in Fraktion setzen"
+msgstr "set in faction"
+
+msgid "in Unternehmen setzen"
+msgstr "set in company"
+
+msgid "Modbann: -"
+msgstr "Mod ban: -"
+
+msgid "Unban"
+msgstr "Unban"
+
+msgid "NickChange"
+msgstr "NickChange"
+
+msgid "Rangstandard"
+msgstr "Rank Standard"
+
+msgid "Trainiere dein Waffenlevel im LSPD"
+msgstr "Train your weapon level in LSPD"
+
+msgid "Spawn nach Login"
+msgstr "Spawn after login"
+
+msgid "Spawn nach Tod (Fraktion)"
+msgstr "Spawn after death (faction)"
+
+msgid "Nutze das Klicksystem bzw. das Hausmenü um den Spawnpunkt für ein Fahrzeug oder Haus festzulegen!"
+msgstr "Use the click system or the house menu to set the spawn point for a vehicle or house!"
+
+msgid "Job: Kiesgruben-Arbeiter"
+msgstr "Job: Gravel pit worker"
+
+msgid "Job: Schatzsucher"
+msgstr "Job: Treasure hunter"
+
+msgid "Job: Gabelstapler-Fahrer"
+msgstr "Job: Forklift driver"
+
+msgid "Job: Logistik"
+msgstr "Job: Logistics"
+
+msgid "Hinsetzen (Sessel)"
+msgstr "Sit down (chair)"
+
+msgid "Handstand"
+msgstr "Handstand"
+
+msgid "Winken"
+msgstr "Wave"
+
+msgid "Waffe beidhändig"
+msgstr "Weapon ambidextrous"
 
