@@ -1,7 +1,7 @@
 GroupPropertyManager = inherit(Singleton)
 local PICKUP_ARROW = 1318
 local PICKUP_FOR_SALE = 1272
-addRemoteEvents{"GroupPropertyClientInput", "GroupPropertyBuy", "GroupPropertySell", "RequestImmoForSale","KeyChangeAction","requestRefresh","switchGroupDoorState","requestImmoPanel","updatePropertyText","requestImmoPanelClose","requestPropertyItemDepot"}
+addRemoteEvents{"GroupPropertyClientInput", "GroupPropertyBuy", "GroupPropertySell", "RequestImmoInfos","KeyChangeAction","requestRefresh","switchGroupDoorState","requestImmoPanel","updatePropertyText","requestImmoPanelClose","requestPropertyItemDepot", "GroupPropertySetForSale"}
 function GroupPropertyManager:constructor( )
 	local st, count = getTickCount(), 0
 	self.Map = {}
@@ -9,7 +9,7 @@ function GroupPropertyManager:constructor( )
 	self.m_BankAccountServer = BankServer.get("group.properties")
 	local result = sql:queryFetch("SELECT * FROM ??_group_property", sql:getPrefix())
 	for k, row in ipairs(result) do
-		self.Map[row.Id] = GroupProperty:new(row.Id, row.Name, row.GroupId, row.Type, row.Price, Vector3(unpack(split(row.Pickup, ","))), row.InteriorId,  Vector3(unpack(split(row.InteriorSpawn, ","))), row.Cam, row.open, row.Message, row.DepotId, row.ElevatorData)
+		self.Map[row.Id] = GroupProperty:new(row.Id, row.Name, row.GroupId, row.Type, row.Price, Vector3(unpack(split(row.Pickup, ","))), row.InteriorId,  Vector3(unpack(split(row.InteriorSpawn, ","))), row.Cam, row.open, row.Message, row.DepotId, row.ElevatorData, row.SalePrice)
 		count = count + 1
 	end
 
@@ -31,9 +31,10 @@ function GroupPropertyManager:constructor( )
 		end
 	end)
 
-	addEventHandler("GroupPropertyBuy", root, bind( GroupPropertyManager.BuyProperty, self))
+	addEventHandler("GroupPropertyBuy", root, bind( GroupPropertyManager.checkPropertyBuy, self))
 	addEventHandler("GroupPropertySell", root, bind( GroupPropertyManager.SellProperty, self))
-	addEventHandler("RequestImmoForSale", root, bind( GroupPropertyManager.OnRequestImmo, self))
+	addEventHandler("GroupPropertySetForSale", root, bind( GroupPropertyManager.setPropertyForSale, self))
+	addEventHandler("RequestImmoInfos", root, bind( GroupPropertyManager.OnRequestImmoInfos, self))
 	addEventHandler("requestImmoPanel", root, bind( GroupPropertyManager.OnRequestImmoPanel, self))
 	addEventHandler("requestImmoPanelClose", root, bind( GroupPropertyManager.OnRequestImmoPanelClose, self))
 	addEventHandler("switchGroupDoorState", root, bind( GroupPropertyManager.OnDrooStateSwitch, self))
@@ -89,13 +90,21 @@ function GroupPropertyManager:addNewProperty( )
         sql:getPrefix(), userId, type, weapons, costs, self:getZone(player))
 end
 
-function GroupPropertyManager:OnRequestImmo()
+function GroupPropertyManager:OnRequestImmoInfos()
 	local tempTable = {}
 	for index, property in pairs(GroupPropertyManager:getSingleton().Map) do
+		local ownerName = false
+		if property:hasOwner() then
+			ownerName = property:getOwner():getName()
+		end
 		tempTable[index] = {
+			id = property.m_Id,
 			name = property.m_Name,
-			owner = property.m_OwnerID, 
 			price = property.m_Price,
+			salePrice = {property.m_ForSale, property.m_SalePrice},
+			pos = serialiseVector(property.m_Position),
+			--owner = property.m_OwnerID,
+			owner = ownerName,
 			camMatrix = property.m_CamMatrix,
 			interior = property.m_Interior,
 			dimension = property.m_Dimension
@@ -128,7 +137,25 @@ function GroupPropertyManager:OnDrooStateSwitch( )
 	end
 end
 
-function GroupPropertyManager:BuyProperty( Id )
+function GroupPropertyManager:checkPropertyBuy(id)
+	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "buyProperty") then
+		client:sendError(_("Du bist nicht berechtigt eine Immobilie für deine Firma/Gang zu kaufen!", client))
+		return
+	end
+
+	local prop = self.Map[id]
+	if prop:isForSale() and prop:getSalePrice() > 0 then
+		print(2)
+		self:buyPropertyFromGroup(id, client)
+	else
+		print(3)
+		self:BuyProperty(id, client)
+	end
+end
+
+function GroupPropertyManager:BuyProperty( Id, player )
+	if not client then player = client end
+	if not player or not client then return end
 	if not client:getGroup() then
 		client:sendError(_("Du bist in keiner Firma oder Gang!", client))
 		return
@@ -162,12 +189,17 @@ function GroupPropertyManager:BuyProperty( Id )
 				client:triggerEvent("ForceClose")
 				for key, player in ipairs( newOwner:getOnlinePlayers() ) do
 					player:triggerEvent("addPickupToGroupStream",property.m_ExitMarker, property.m_Id)
-					x,y,z = getElementPosition( property.m_Pickup )
+					local x,y,z = getElementPosition( property.m_Pickup )
 					player:triggerEvent("createGroupBlip",x,y,z,property.m_Id,newOwner.m_Type)
 				end
 				StatisticsLogger:GroupBuyImmoLog( property.m_OwnerID or 0, "BUY", property.m_Id)
+				property:setForSale(false)
 			else
-				client:sendError(_("Diese Immobilie ist bereits vergeben!", client))
+				if property:isForSale() then
+					self:sellPropertyToGroup(Id)
+				else
+					client:sendError(_("Diese Immobilie ist bereits vergeben!", client))
+				end
 			end
 		else
 			client:sendError(_("In deiner Firmen/Gang-Kasse befindet sich nicht genug Geld!", client))
@@ -210,6 +242,7 @@ function GroupPropertyManager:SellProperty(  )
 					player:triggerEvent("destroyGroupBlip",property.m_Id)
 					player:triggerEvent("forceGroupPropertyClose")
 				end
+				property:setForSale(false)
 				StatisticsLogger:GroupBuyImmoLog( pOwner.m_Id or 0, "SELL", property.m_Id or 0)
 			end
 		end
@@ -252,7 +285,7 @@ function GroupPropertyManager:takePropsFromGroup(group) --in case the group gets
 	end
 end
 
-function GroupPropertyManager:clearProperty(id, groupId, price)
+function GroupPropertyManager:clearProperty(id, groupId, price, inactivityClear)
 	local property = self.Map[id]			
 	property.m_Owner = false
 	property.m_OwnerID = 0
@@ -261,8 +294,63 @@ function GroupPropertyManager:clearProperty(id, groupId, price)
 	if property.m_Pickup and isElement(property.m_Pickup) then
 		setPickupType(property.m_Pickup, 3, 1273)
 	end
-	if GroupManager.Map[groupId] then
+	if GroupManager.Map[groupId] and inactivityClear then
 		self.m_BankAccountServer:transferMoney(GroupManager.Map[groupId].m_BankAccount, math.floor(price * 0.75), "Inactivity", "Group", "PropertyClear")
 		sqlLogs:queryExec("INSERT INTO ??_propertiesfreed (GroupId, PropertyID, Date) VALUES (?, ?, Now())", sqlLogs:getPrefix(), groupId, id)
+	end
+end
+
+function GroupPropertyManager:buyPropertyFromGroup(Id, player)
+	local property = self.Map[Id]
+	if not client then client = player end
+	if not player or not client then return end
+	if not client:getGroup() then return client:sendError(_("Du bist in keiner Gruppe", client)) end
+	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "buyProperty") then
+		client:sendError(_("Du bist nicht berechtigt eine Immobilie für deine Firma/Gang zu kaufen!", client))
+		return
+	end
+	if #self:getPropsForPlayer(client) > 0 then
+		return client:sendWarning(_("Du hast bereits eine Immobilie!", client))
+	end
+	if not property.m_Owner or property.m_OwnerID == 0 then
+		return client:sendError(_("Die Immobilie hat keinen Besitzer", client)) 
+	end
+
+	local price = property:getSalePrice()
+	local forSale = property:isForSale()
+	local housePrice = property.m_Price
+	if price > 0 and forSale then
+		if price + housePrice <= property:getOwner():getMoney() then
+			property:sellToPlayer(property.m_Owner, client)
+		else
+			return client:sendError(_("Die Gruppe hat nicht genug Geld. (%s)", client, toMoneyString(housePrice + price)))
+		end
+	else
+		return client:sendError(_("Die Immobilie steht nicht zum Verkauf!", client))
+	end
+end
+
+function GroupPropertyManager:setPropertyForSale(state, money)
+	if client and client:getGroup() then
+		local group = client:getGroup()
+		local property = client.m_LastPropertyPickup
+		if property and property.m_Owner == group then
+			if state then		
+				if group:transferMoney(self.m_BankAccountServer, GROUP_PROPERTY_SET_FOR_SALE_FEE, "Anzeigengebühr", "Property", "Group") then
+					property:setForSale(true, money)
+					client:sendSuccess(_("Verkauf gestartet.", client))
+					group:sendShortMessage(_("%s hat die Immobilie für %s zum Verkauf gestellt", client, client:getName(), toMoneyString(money)))
+				else
+					return client:sendError(_("Deine Gruppe hat nicht genug Geld in Kasse.", client))
+				end
+			else
+				property:setForSale(false)
+				client:sendSuccess(_("Verkauf beendet.", client))
+				group:sendShortMessage(_("%s hat den Verkauf für die Immobilie beendet.", client, client:getName()))
+			end
+			client:triggerEvent("isPropertyForSale", property:isForSale())
+		else
+			return client:sendError(_("Deine Gruppe gehört diese Immobilie nicht.", client))
+		end
 	end
 end

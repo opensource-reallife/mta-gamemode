@@ -45,7 +45,7 @@ function InactivityManager:clearProperties()
 	for _, row in ipairs(result) do
 		if row.GroupId ~= 0 then
 			if self:isGroupInactive(row.GroupId) then
-				GroupPropertyManager:getSingleton():clearProperty(row.Id, row.GroupId, row.Price)
+				GroupPropertyManager:getSingleton():clearProperty(row.Id, row.GroupId, row.Price, true)
 			end
 		end
 	end

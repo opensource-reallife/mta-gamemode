@@ -8,11 +8,14 @@
 GroupProperty = inherit(Object)
 local PICKUP_SOLD = 1272
 local PICKUP_FOR_SALE = 1273
-function GroupProperty:constructor(Id, Name, OwnerId, Type, Price, Pickup, InteriorId, InteriorSpawn, Cam, Open, Message, depotId, elevatorData)
+function GroupProperty:constructor(Id, Name, OwnerId, Type, Price, Pickup, InteriorId, InteriorSpawn, Cam, Open, Message, depotId, elevatorData, SalePrice)
 
 	self.m_Id = Id
 	self.m_Name = Name
 	self.m_Price = Price
+	self.m_SalePrice = SalePrice
+	self.m_ForSale = (SalePrice and SalePrice > 0) and true or false
+	self.m_IsLockable = not self.m_ForSale
 	self.m_OwnerID = OwnerId
 	self.m_Message = Message
 	self.m_Owner = GroupManager:getSingleton():getFromId(OwnerId) or false
@@ -24,7 +27,7 @@ function GroupProperty:constructor(Id, Name, OwnerId, Type, Price, Pickup, Inter
 	self.m_Interior = InteriorId
 	self.m_InteriorPosition = InteriorSpawn
 	self.m_Dimension = Id+1000
-	self.m_CamMatrix = {tonumber(gettok(Cam,1,",")), tonumber(gettok(Cam,2,",")), tonumber(gettok(Cam,3,",")), Pickup.x, Pickup.y, Pickup.z}
+	self.m_CamMatrix = Cam and {tonumber(gettok(Cam,1,",")), tonumber(gettok(Cam,2,",")), tonumber(gettok(Cam,3,",")), Pickup.x, Pickup.y, Pickup.z} or false
 
 	self.m_Pickup = createPickup(Pickup, 3, PICKUP_FOR_SALE, 0)
 	if self.m_OwnerID ~= 0 then setPickupType(self.m_Pickup, 3, PICKUP_SOLD) end
@@ -94,7 +97,7 @@ function GroupProperty:destructor()
 			end
 		end
 	end
-	sql:queryExec("UPDATE ??_group_property SET open=?, DepotId=? WHERE Id=?", sql:getPrefix(), self.m_Open, self.m_DepotId, self.m_Id)
+	sql:queryExec("UPDATE ??_group_property SET open=?, DepotId=?, SalePrice = ? WHERE Id=?", sql:getPrefix(), self.m_Open, self.m_DepotId, tonumber(self.m_SalePrice) or 0, self.m_Id)
 	if self.m_Depot then
 		self.m_Depot:save()
 	else
@@ -117,8 +120,9 @@ function GroupProperty:Event_requestImmoPanel( client )
 	end
 	if rank then
 		if rank >= 1 then
-			client:triggerEvent("setPropGUIActive", self)
+			client:triggerEvent("setPropGUIActive", self, self:isForSale())
 			client:triggerEvent("sendGroupKeyList",self.m_Keys, self.m_ChangeKeyMap)
+			client:triggerEvent("isPropertyForSale", self:isForSale())
 		end
 	end
 end
@@ -297,6 +301,10 @@ end
 
 --// now the so-called EVENT-ZONE //
 function GroupProperty:Event_ChangeDoor( client )
+	if not self.m_IsLockable then
+		return client:sendError(_("Die Immobilie steht zum Verkauf und kann daher nicht abgeschlossen werden", client))
+	end
+
 	if self.m_Open == 1 then
 		self.m_Open = 0
 		self.m_Owner:sendMessage("["..self.m_Owner:getName().."] #ffffff"..client:getName().." schloss die Tür ab! ("..self.m_Name..")", 0,200,200,true)
@@ -367,6 +375,50 @@ function GroupProperty:setOwner( id )
 		self.m_OwnerID = id
 	end
 	return self.m_Owner
+end
+
+function GroupProperty:setForSale(state, price)
+	if state == true then
+		self.m_ForSale = true
+		self.m_SalePrice = tonumber(price)
+		self.m_IsLockable = false
+		self.m_Open = 1
+	else
+		self.m_ForSale = false
+		self.m_SalePrice = 0
+		self.m_IsLockable = true
+	end
+end
+
+function GroupProperty:isForSale()
+	return self.m_ForSale
+end
+
+function GroupProperty:getSalePrice()
+	return self.m_SalePrice
+end
+
+function GroupProperty:sellToPlayer(sellerGroup, buyerPlayer)
+	if sellerGroup and sellerGroup:getId() == self.m_OwnerID then
+		local sellerId = sellerGroup:getId()
+		local salePrice = self.m_SalePrice
+		local price = self.m_Price * 0.75
+		local buyerGroup = buyerPlayer:getGroup()
+
+		sellerGroup:sendShortMessage("%s (%s) hat eure Immobilie für %s gekauft", buyerPlayer:getName(), buyerGroup:getName(), toMoneyString(salePrice))
+		buyerGroup:sendShortMessage("%s hat die Immobilie %s für %s (Grundpreis + Ablöse) von %s gekauft", buyerPlayer:getName(), self:getName(), toMoneyString(salePrice, self.m_Price), sellerGroup:getName())
+
+		GroupPropertyManager:getSingleton().m_BankAccountServer:transferMoney({"group", sellerId, true}, price, "Immobilien-Verkauf", "Group", "PropertySell")
+		buyerGroup:transferMoney({"group", sellerId, true}, salePrice, "Immobilien-Kauf (Kaufpreis)", "GroupProperty", "SellToGroup")
+		
+		GroupPropertyManager:getSingleton():clearProperty(self:getId(), self:getOwner(), self.m_Price)
+		GroupPropertyManager:getSingleton():BuyProperty(self:getId(), buyerPlayer)
+
+		StatisticsLogger:getSingleton():GroupBuyImmoLog(sellerId, "sellToGroup", self.m_Id)
+		StatisticsLogger:getSingleton():GroupBuyImmoLog(buyerGroup:getId(), "buyFromGroup", self.m_Id)
+	else
+		return false
+	end
 end
 
 -- Short getters

@@ -8,7 +8,7 @@
 GroupPropertyGUI = inherit(GUIForm)
 inherit(Singleton, GroupPropertyGUI)
 
-addRemoteEvents{"setPropGUIActive","sendGroupKeyList","updateGroupDoorState","forceGroupPropertyClose"}
+addRemoteEvents{"setPropGUIActive","sendGroupKeyList","updateGroupDoorState","forceGroupPropertyClose", "isPropertyForSale"}
 function GroupPropertyGUI:constructor( tObj )
 	self.m_PropertyTable = tObj
 	GUIForm.constructor(self, screenWidth/2 - screenWidth*0.4/2, screenHeight/2 - screenHeight*0.5/2, screenWidth*0.4, screenHeight*0.5, true)
@@ -31,6 +31,11 @@ function GroupPropertyGUI:constructor( tObj )
 	self.m_MessageFunc = function() self:newMessageWindow() end
 	self.m_MessageButton.onLeftClick = self.m_MessageFunc
 	self.m_MessageButton:setVisible(false) -- nicht fertig
+
+	self.m_SetForSaleButton = GUIButton:new(self.m_Width*0.1, self.m_Height*0.56, self.m_Width*0.35, self.m_Height*0.08, "Verkauf beenden", tabManage):setBackgroundColor(Color.Red):setFontSize(1)
+	self.m_SetForSaleButton:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("group", "sellProperty"))
+	self.m_SetForSaleButton.onLeftClick = bind(self.onSetForSaleButton_Click, self)
+	
 	self.m_SellButton = GUIButton:new(self.m_Width*0.1, self.m_Height*0.69, self.m_Width*0.35, self.m_Height*0.08, _"Verkaufen", tabManage):setBackgroundColor(Color.Red):setFontSize(1)
 	self.m_SellButton:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("group", "sellProperty"))
 	self.m_SellButton.onLeftClick = bind(GroupPropertyGUI.OnSellClick,self)
@@ -76,6 +81,10 @@ function GroupPropertyGUI:constructor( tObj )
 		self:setGroupDoorState(iState)
 	end)
 
+	addEventHandler("isPropertyForSale", root, function(state)
+		self:isPropertyForSale(state)
+	end)
+
 end
 
 function GroupPropertyGUI:openDepot( )
@@ -87,6 +96,22 @@ function GroupPropertyGUI:OnSellClick()
 		_"Bist du dir sicher, dass du diese Immobilie verkaufen möchtest?",
 		function() 	triggerServerEvent("GroupPropertySell",localPlayer) end
 	)
+end
+
+function GroupPropertyGUI:onSetForSaleButton_Click()
+	if self.m_IsForSale then
+		QuestionBox:new("Möchtest du den Verkauf der Immobilie wirklich beenden", 
+		function() 	
+			triggerServerEvent("GroupPropertySetForSale", localPlayer, false) 
+		end, nil, localPlayer, 5)
+	else
+		InputBox:new(_"Immobilie zum Verkauf stellen",
+			_("Für wie viel möchtest du die Immobilie zum Verkauf stellen (Beachte dass dich das eine Gebühr von %s kostet)?", toMoneyString(GROUP_PROPERTY_SET_FOR_SALE_FEE)),
+			function(money) 	
+				triggerServerEvent("GroupPropertySetForSale", localPlayer, true, money) 
+			end
+		, true)
+	end
 end
 
 function GroupPropertyGUI:newMessageWindow()
@@ -125,7 +150,10 @@ function GroupPropertyGUI:setGroupDoorState( b )
 	end
 end
 
-
+function GroupPropertyGUI:isPropertyForSale(state)
+	self.m_IsForSale = state
+	self.m_SetForSaleButton:setText(state and _"Verkauf beenden" or _"Zum Verkauf stellen")
+end
 
 function GroupPropertyGUI:setMessage( text )
 	if #text < 20 and #text > 1 then
@@ -144,16 +172,17 @@ function GroupPropertyGUI.disable()
 	unbindKey("f6","up", GroupPropertyGUI.toggle)
 end
 
-function GroupPropertyGUI.toggle(key, state, pickup)
+function GroupPropertyGUI.toggle(key, state, pickup, forSale)
 	if GroupPropertyGUI:isInstantiated() then
 		delete(GroupPropertyGUI:getSingleton())
 	else
 		GroupPropertyGUI:new(pickup)
+		GroupPropertyGUI:getSingleton():isPropertyForSale(forSale)
 	end
 end
 
-addEventHandler("setPropGUIActive",localPlayer,function(pickup)
-	bindKey("f6","up", GroupPropertyGUI.toggle, pickup)
+addEventHandler("setPropGUIActive",localPlayer,function(pickup, forSale)
+	bindKey("f6","up", GroupPropertyGUI.toggle, pickup, forSale)
 	ShortMessage:new(_"Drücke F6 für das Immobilien-Panel!")
 end
 )
