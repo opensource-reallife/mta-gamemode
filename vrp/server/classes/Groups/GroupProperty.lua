@@ -406,12 +406,12 @@ function GroupProperty:sellToPlayer(sellerGroup, buyerPlayer)
 		local buyerGroup = buyerPlayer:getGroup()
 
 		sellerGroup:sendShortMessage(_("%s (%s) hat eure Immobilie für %s gekauft", buyerPlayer, buyerPlayer:getName(), buyerGroup:getName(), toMoneyString(salePrice)))
-		buyerGroup:sendShortMessage(_("%s hat die Immobilie %s für %s (Grundpreis + Ablöse) von %s gekauft", buyerPlayer, buyerPlayer:getName(), self:getName(), toMoneyString(salePrice, self.m_Price), sellerGroup:getName()))
+		buyerGroup:sendShortMessage(_("%s hat die Immobilie %s für %s (Grundpreis + Ablöse) von %s gekauft", buyerPlayer, buyerPlayer:getName(), self:getName(), toMoneyString(salePrice + self.m_Price), sellerGroup:getName()))
 
 		GroupPropertyManager:getSingleton().m_BankAccountServer:transferMoney({"group", sellerId, true}, price, "Immobilien-Verkauf", "Group", "PropertySell")
 		buyerGroup:transferMoney({"group", sellerId, true}, salePrice, "Immobilien-Kauf (Kaufpreis)", "GroupProperty", "SellToGroup")
 		
-		GroupPropertyManager:getSingleton():clearProperty(self:getId(), self:getOwner())
+		GroupPropertyManager:getSingleton():clearProperty(self:getId(), self:getOwner():getId())
 		GroupPropertyManager:getSingleton():BuyProperty(self:getId(), buyerPlayer)
 
 		StatisticsLogger:getSingleton():GroupBuyImmoLog(sellerId, "sellToGroup", self.m_Id)
