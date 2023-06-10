@@ -11,6 +11,7 @@ SAR = inherit(Object)
 function SAR:constructor(pedPositions, missionID, missionInfo)
     self.m_Injured = { }
     self.m_PedStats = { ["total"] = 0, ["found"] = 0, ["rescued"] = 0 }
+    self.m_PlayerStats = { }
     self.m_MissionData = { ["id"] = missionID, ["name"] = missionInfo[1], ["blip"] = nil }
     self.m_Timers = { ["cancel"] = setTimer(bind(self.endSAR, self), 1000 * 60 * missionInfo[5], 1), ["stats"] = setTimer(bind(self.triggerStatistics, self), 1000, 0) }
     self.m_DeleteEvent = bind(self.Event_onElementDestroy, self)
@@ -54,9 +55,10 @@ function SAR:Event_onColShapeHit(hitElement)
             if isElement(ped) and not ped.m_Dead then
                 hitElement:sendInfo(_("Du hast eine verletzte Person gefunden!"))
                 ped.m_Dead = true
+                ped.m_RevivalMult = 5 
                 FactionRescue:getSingleton():createPedDeathPickup(ped, "Verletzte Person")
                 self.m_PedStats["found"] = self.m_PedStats["found"] + 1
-                self.m_BankAccountServer:transferMoney(hitElement, 500, "Verletzte Person gefunden (Suchen & Retten)", "Faction", "SAR")
+                self.m_BankAccountServer:transferMoney(hitElement, 250, "Verletzte Person gefunden (Suchen & Retten)", "Faction", "SAR")
             end
         else
             hitElement:sendInfo(_("Eine verletzte Person! Du solltest schnellstens Rettungskräfte informieren!"))
