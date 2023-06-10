@@ -102,12 +102,13 @@ function FactionRescue:constructor()
 				end
 			end
 
-			local deadPlayer = player.m_RescueStretcher.player
-			if isElement(deadPlayer) and getElementType(deadPlayer) == "ped" and not deadPlayer.despawn then
-				deadPlayer:destroy()
-			end
-
 			if player.m_RescueStretcher then
+				if player.m_RescueStretcher.player then
+					local deadPlayer = player.m_RescueStretcher.player
+					if isElement(deadPlayer) and getElementType(deadPlayer) == "ped" and not deadPlayer.despawn then
+						deadPlayer:destroy()
+					end
+				end
 				player.m_RescueStretcher:destroy()
 			end
 		end
