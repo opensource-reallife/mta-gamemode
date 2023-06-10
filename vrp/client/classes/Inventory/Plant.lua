@@ -68,7 +68,7 @@ end
 function Plant:isUnderWater()
 	local pos = localPlayer:getPosition()
 	local waterLevel = getWaterLevel(pos.x, pos.y, pos.z)
-	if waterLevel and pos.z-waterLevel < 0 then
+	if (waterLevel and pos.z-waterLevel < 1) or pos.z < 1 then
 		return true
 	end
 	return false
