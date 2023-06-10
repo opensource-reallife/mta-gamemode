@@ -128,7 +128,8 @@ function Gangwar:onAreaPayday()
 			else
 				count = 0
 			end
-			amount2 = math.floor((1 - ( count/areasInTotal)) * PAYDAY_ACTION_BONUS )
+			--amount2 = math.floor((1 - ( count/areasInTotal)) * PAYDAY_ACTION_BONUS )
+			amount2 = PAYDAY_ACTION_BONUS
 			faction:sendMessage("Fraktions Payday: Grundeinkommen der Fraktion: "..amount2.."$ !" , 0, 200, 0, true)
 		end
 	end
