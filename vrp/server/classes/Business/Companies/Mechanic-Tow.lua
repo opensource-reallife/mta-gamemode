@@ -68,11 +68,14 @@ function MechanicTow:respawnVehicle(vehicle)
 		vehicle:respawn(true, true)
 		vehicle:getFaction():transferMoney(self, 1500, "Fahrzeug freigekauft", "Company", "VehicleFreeBought", {silent = true, allowNegative = true})
 		vehicle:getFaction():sendShortMessage(("Das Fahrzeug %s (%s) wurde vom M&T abgeschleppt und für %s an eurer Basis respawned!"):format(vehicle:getName(), vehicle:getPlateText(), toMoneyString(1500)))
-	else
+	elseif instanceof(vehicle, CompanyVehicle, true) then
+		vehicle:respawn(true, true)
+		vehicle:getCompany():transferMoney(self, 1500, "Fahrzeug freigekauft", "Company", "VehicleFreeBought", {silent = true, allowNegative = true})
+		vehicle:getCompany():sendShortMessage(("Das Fahrzeug %s (%s) wurde vom M&T abgeschleppt und für %s an eurer Basis respawned!"):format(vehicle:getName(), vehicle:getPlateText(), toMoneyString(1500)))
+	else 
 		if instanceof(vehicle, GroupVehicle, true) then
 			GroupManager.Map[vehicle:getOwner()]:transferMoney({"company", self:getId(), true, true}, 500, "Mech&Tow Abschleppkosten", "Company", "VehicleTowed")
 		end
-
 		if instanceof(vehicle, PermanentVehicle, true) then
 			Async.create( -- player:load()/:save() needs a aynchronous execution
 				function()
@@ -244,7 +247,7 @@ function MechanicTow:Event_mechanicTakeVehicle()
 end
 
 function MechanicTow:isValidTowableVehicle(veh)
-	return instanceof(veh, PermanentVehicle, true) or instanceof(veh, GroupVehicle, true) or instanceof(veh, FactionVehicle, true) or veh.burned
+	return instanceof(veh, PermanentVehicle, true) or instanceof(veh, GroupVehicle, true) or instanceof(veh, FactionVehicle, true) or instanceof(veh, CompanyVehicle, true) or veh.burned
 end
 
 function MechanicTow:onEnterTowLot(hitElement)

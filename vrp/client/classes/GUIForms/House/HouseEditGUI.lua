@@ -34,7 +34,7 @@ function HouseEditGUI:constructor(forSale)
 	if localPlayer:getRank() >= ADMIN_RANK_PERMISSION["editHouseInterior"] then
 		self.m_InteriorChangeBtn = GUIGridButton:new(1, 2, 5, 1, _"Interior ändern", self.m_Window):setEnabled(localPlayer:hasAdminRightTo("freeHouse"))
 		self.m_InteriorChangeBtn.onLeftClick = function()
-			self:close()
+			self:hide()
 			HouseGUI:getSingleton():hide()
 			HouseInteriorChanger:new(self.m_CurrentInterior)
 		end
@@ -104,6 +104,6 @@ function HouseInteriorChanger:virtual_destructor()
 	localPlayer:setDimension(dim)
 	localPlayer:setPosition(pos)
 
-	HouseGUI:getSingleton():show()
+	--HouseGUI:getSingleton():show()
 	HouseEditGUI:getSingleton():show()
 end
