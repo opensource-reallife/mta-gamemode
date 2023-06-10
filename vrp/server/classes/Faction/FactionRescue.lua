@@ -345,6 +345,8 @@ function FactionRescue:removeStretcher(player, vehicle)
 			if player.m_RescueStretcher.player then
 				local deadPlayer = player.m_RescueStretcher.player
 				if isElement(deadPlayer) and getElementType(deadPlayer) == "ped" then
+					local revMult = 1
+					if deadPlayer.m_RevivalMult then revMult = deadPlayer.m_RevivalMult end
 					deadPlayer:setPosition(vehicle.position - vehicle.matrix.forward*4)
 					deadPlayer:setAnimation()
 					if deadPlayer.despawn then
@@ -353,8 +355,8 @@ function FactionRescue:removeStretcher(player, vehicle)
 						deadPlayer:destroy()
 					end
 					player:sendShortMessage(_("Du hast den Bürger erfolgreich wiederbelebt!", player))
-					self.m_BankAccountServer:transferMoney(self.m_Faction, 100, "Rescue Team Wiederbelebung", "Faction", "Revive")
-					self.m_BankAccountServer:transferMoney(player, 50, "Rescue Team Wiederbelebung", "Faction", "Revive")
+					self.m_BankAccountServer:transferMoney(self.m_Faction, 100 * revMult, "Rescue Team Wiederbelebung", "Faction", "Revive")
+					self.m_BankAccountServer:transferMoney(player, 50 * revMult, "Rescue Team Wiederbelebung", "Faction", "Revive")
 					self.m_Faction:addLog(player, "Wiederbel.", "hat einen Bürger wiederbelebt!")
 				elseif isElement(deadPlayer) then
 					if deadPlayer:isDead() then
