@@ -112,7 +112,7 @@ function Gangwar:onAreaPayday()
 			playersOnline = facObj:getOnlinePlayers()
 			if #playersOnline > 2 then
 				areaCounts[facObj] = count
-				amount = (count * (GANGWAR_PAYOUT_PER_PLAYER * #playersOnline)) + (GANGWAR_PAYOUT_PER_AREA * count)
+				amount = (GANGWAR_PAYOUT_PER_PLAYER * #playersOnline) + (GANGWAR_PAYOUT_PER_AREA * count)
 				self.m_BankAccountServer:transferMoney(facObj, amount+amount2, "Gangwar-Payday", "Faction", "Gangwar")
 				facObj:sendMessage("Gangwar-Payday: #FFFFFFEure Fraktion erhält: "..amount.." $ (Pro Online-Member:"..GANGWAR_PAYOUT_PER_PLAYER.." und Pro Gebiet: "..GANGWAR_PAYOUT_PER_AREA.."$)" , 0, 200, 0, true)
 			else
