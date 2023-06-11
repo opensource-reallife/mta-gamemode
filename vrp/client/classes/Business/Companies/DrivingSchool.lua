@@ -68,7 +68,7 @@ function DrivingSchool:createPed()
 		end
 	)
 	
-	local licensePed = Ped.create(295, Vector3( 1779.93, -1685.50, 13.37), 180)
+	--[[local licensePed = Ped.create(295, Vector3( 1779.93, -1685.50, 13.37), 180)
 	licensePed:setData("NPC:Immortal", true)
 	licensePed:setFrozen(true)
 	ped.SpeakBubble = SpeakBubble3D:new(licensePed, "Fahrschule", "Piloten oder LKW-Schein gefällig?")
@@ -81,7 +81,7 @@ function DrivingSchool:createPed()
 			local onlinePlayers = CompanyManager:getSingleton():getFromId(CompanyStaticId.DRIVINGSCHOOL):getOnlinePlayers()
 			DrivingSchoolLicensePedGUI:new(#onlinePlayers < 3)
 		end
-	)
+	)]]
 end
 
 function DrivingSchool:createLowLodObjects()
