@@ -30,6 +30,18 @@ function DrivingSchoolPedGUI:constructor(automaticTestAvailable)
 				self:delete()
 			end
 		)
+		self:addItem(_"Fahrprüfung (LKW)", Color.Accent,
+			function()
+				triggerServerEvent("drivingSchoolStartAutomaticTest", localPlayer, "truck")
+				self:delete()
+			end
+		)
+		self:addItem(_"Flugprüfung (Pilot)", Color.Accent,
+			function()
+				triggerServerEvent("drivingSchoolStartAutomaticTest", localPlayer, "heli")
+				self:delete()
+			end
+		)
 	else
 		self:addItem(_"Fahrlehrer rufen", Color.Accent,
 			function()
