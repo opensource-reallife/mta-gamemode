@@ -153,8 +153,8 @@ function GrowableManager:checkPlantConditionsForPlayer(player, seed)
 	return true
 end
 
-function GrowableManager:getClientCheck(seed, bool, z_pos, isUnderWater)
-	if not bool or isUnderWater then client:sendError(_("Dies ist kein guter Untergrund zum Anpflanzen! Suche dir ebene Gras- oder Erdflächen", client)) return false end
+function GrowableManager:getClientCheck(seed, bool, z_pos, isUnderWater, isWrongDimension)
+	if not bool or isUnderWater or isWrongDimension then client:sendError(_("Dies ist kein guter Untergrund zum Anpflanzen! Suche dir ebene Gras- oder Erdflächen", client)) return false end
 	if not self:checkPlantConditionsForPlayer(client, seed) then return false end
 	
 	local pos = client:getPosition()

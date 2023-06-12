@@ -74,9 +74,16 @@ function Plant:isUnderWater()
 	return false
 end
 
+function Plant:isWrongDimension()
+	if localPlayer:getDimension() ~= 0 then
+		return true
+	end
+	return false
+end
+
 function Plant:onUse(plant)
 	local surfaceClear, surfaceRightType, gz = Plant.checkGroundInfo()
-	triggerServerEvent("plant:getClientCheck", localPlayer, plant, surfaceClear and surfaceRightType, gz, self:isUnderWater())
+	triggerServerEvent("plant:getClientCheck", localPlayer, plant, surfaceClear and surfaceRightType, gz, self:isUnderWater(), self:isWrongDimension())
 end
 
 function Plant:Render()
