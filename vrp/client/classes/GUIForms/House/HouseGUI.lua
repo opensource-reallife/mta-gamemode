@@ -88,10 +88,12 @@ function HouseGUI:constructor(ownerName, price, rentprice, isValidRob, isClosed,
 	end
 
 	self.m_EnterLeaveBtn.onLeftClick = function()
-		if self.m_isInside then
-			triggerServerEvent("leaveHouse",root)
-		else
-			triggerServerEvent("enterHouse",root)
+		if not localPlayer:isDead() then
+			if self.m_isInside then
+				triggerServerEvent("leaveHouse",root)
+			else
+				triggerServerEvent("enterHouse",root)
+			end
 		end
 		delete(self)
 	end
