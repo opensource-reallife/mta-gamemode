@@ -40,13 +40,29 @@ function POParser:constructor(poPath)
 	for i, line in ipairs(lines) do
 		if line:sub(0, 5) == "msgid" then
 			lastInstruction = line:sub(0, 5)
-			lastKey = line:sub(8, -3)
+			if line:sub(-1, -1) == "\r" then
+				lastKey = line:sub(8, -3)
+			else
+				lastKey = line:sub(8, -2)
+			end
 			self.m_Strings[lastKey] = false
 		elseif line:sub(0, 6) == "msgstr" then
+			local tmp = ""
 			lastInstruction = line:sub(0, 6)
-			self.m_Strings[lastKey] = line:sub(9, -3)
+			if line:sub(-1, -1) == "\r" then
+				tmp = line:sub(9, -3)
+			else
+				tmp = line:sub(9, -2)
+			end
+			self.m_Strings[lastKey] = tmp
 		elseif line:sub(0, 1) == "\"" then
-			local value = line:sub(2, -3)
+			local value
+			if line:sub(-1, -1) == "\r" then
+				value = line:sub(2, -3)
+			else
+				value = line:sub(2, -2)
+			end
+			
 			if lastKey then
 				if self.m_Strings[lastKey] then
 					self.m_Strings[lastKey] = self.m_Strings[lastKey] .. value
