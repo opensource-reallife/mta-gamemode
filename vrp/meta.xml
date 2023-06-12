@@ -1351,8 +1351,8 @@
 
 	<script src="client/classes/ScreenCapture.lua" type="client" />
 
-	<file src="files/translation/client.en.po" />
-	<file src="files/translation/server.en.po" />
+	<vrpfile src="files/translation/client.en.po" />
+	<vrpfile src="files/translation/server.en.po" />
 
 	<file src="files/data/objects.xml" />
 
