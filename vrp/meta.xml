@@ -1712,6 +1712,10 @@
 	<vrpfile src="files/images/Weapons/44.png"/>
 	<vrpfile src="files/images/Weapons/45.png"/>
 	<vrpfile src="files/images/Weapons/46.png"/>
+	<vrpfile src="files/images/Weapons/DefuseKit.png"/>
+	<vrpfile src="files/images/Weapons/Gasmaske.png"/>
+	<vrpfile src="files/images/Weapons/Rauchgranate.png"/>
+	<vrpfile src="files/images/Weapons/SLAM.png"/>
 
 	<vrpfile src="files/images/HUD/infrared/static.png"/>
 	<vrpfile src="files/images/HUD/infrared/lock.png"/>

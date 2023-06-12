@@ -21,7 +21,7 @@ function FactionManager:constructor()
 	"factionToggleWeapon", "factionDiplomacyAnswer", "factionChangePermission", "factionRequestSkinSelection", 
 	"factionPlayerSelectSkin", "factionUpdateSkinPermissions", "factionRequestSkinSelectionSpecial" , 
 	"factionEquipmentOptionRequest", "factionEquipmentOptionSubmit", "factionPlayerNeedhelp", "factionStorageSelectedWeapons",
-	"stopFactionRespawnAnnouncement"}
+	"stopFactionRespawnAnnouncement", "factionReceiveWeaponTruckShopInfos", "factionReceiveArmsDealerShopInfos"}
 
 	addEventHandler("getFactions", root, bind(self.Event_getFactions, self))
 	addEventHandler("factionRequestInfo", root, bind(self.Event_factionRequestInfo, self))
@@ -35,6 +35,7 @@ function FactionManager:constructor()
 	addEventHandler("factionRankUp", root, bind(self.Event_factionRankUp, self))
 	addEventHandler("factionRankDown", root, bind(self.Event_factionRankDown, self))
 	addEventHandler("factionReceiveWeaponShopInfos", root, bind(self.Event_receiveFactionWeaponShopInfos, self))
+	addEventHandler("factionReceiveWeaponTruckShopInfos", root, bind(self.Event_receiveFactionWeaponTruckShopInfos, self))
 	addEventHandler("factionWeaponShopBuy", root, bind(self.Event_factionWeaponShopBuy, self))
 	addEventHandler("factionSaveRank", root, bind(self.Event_factionSaveRank, self))
 	addEventHandler("factionRespawnVehicles", root, bind(self.Event_factionRespawnVehicles, self))
@@ -53,6 +54,7 @@ function FactionManager:constructor()
 	addEventHandler("factionPlayerNeedhelp", root, bind(self.Event_playerNeedhelp, self))
 	addEventHandler("factionStorageSelectedWeapons", root, bind(self.Event_storageSelecteWeapons, self))
 	addEventHandler("stopFactionRespawnAnnouncement", root, bind(self.Event_stopRespawnAnnoucement, self))
+	addEventHandler("factionReceiveArmsDealerShopInfos", root, bind(self.Event_factionReceiveArmsDealerShopInfos, self))
 
 	addCommandHandler("needhelp",bind(self.Command_needhelp, self))
 
@@ -607,7 +609,15 @@ function FactionManager:Event_receiveFactionWeaponShopInfos()
 	local depot = faction.m_Depot
 	local playerId = client:getId()
 	local rank = faction.m_Players[playerId]
-	triggerClientEvent(client,"updateFactionWeaponShopGUI",client,faction.m_ValidWeapons, faction.m_WeaponDepotInfo, depot:getWeaponTable(id), faction:getRankWeapons(rank), faction.m_PlayerWeaponPermissions[playerId])
+	triggerClientEvent(client,"updateFactionWeaponShopGUI",client,faction.m_ValidWeapons, faction.m_WeaponDepotInfo, depot:getWeaponTable(id), faction:getRankWeapons(rank), faction.m_PlayerWeaponPermissions[playerId], faction.m_SpecialWeapons)
+end
+
+function FactionManager:Event_receiveFactionWeaponTruckShopInfos()
+	local faction = client:getFaction()
+	local depot = faction.m_Depot
+	local playerId = client:getId()
+	local rank = faction.m_Players[playerId]
+	triggerClientEvent(client,"updateFactionWeaponTruckShopGUI",client,faction.m_ValidWeapons, faction.m_WeaponDepotInfo, depot:getWeaponTable(id), faction:getRankWeapons(rank), faction.m_PlayerWeaponPermissions[playerId])
 end
 
 function FactionManager:Event_factionWeaponShopBuy(weaponTable)
@@ -973,4 +983,13 @@ function FactionManager:Event_stopRespawnAnnoucement()
 	if client:getFaction() then
 		client:getFaction():stopRespawnAnnouncement(client)
 	end
+end
+
+function FactionManager:Event_factionReceiveArmsDealerShopInfos()
+	local faction = client:getFaction()
+	local depot = faction.m_Depot
+	local playerId = client:getId()
+	local rank = faction.m_Players[playerId]
+
+	client:triggerEvent("updateFactionArmsDealerShopGUI", faction.m_SpecialWeapons, faction.m_WeaponDepotInfo, depot:getWeaponTable())
 end
