@@ -208,10 +208,10 @@ function MechanicTow:Event_mechanicTakeVehicle()
 			return false
 		end
 	else
-		if client:getVehicleCountWithoutPrem() > client:getMaxVehicles() then
+		if client:getVehicleCountWithoutPrem() > client:getMaxVehicles() and not source:isPremiumVehicle() then
 			local vehCount = 0
 			for i, veh in pairs(client:getVehicles()) do
-				if veh:getPositionType() == VehiclePositionType.World then
+				if veh:getPositionType() == VehiclePositionType.World and not veh:isPremiumVehicle() then
 					vehCount = vehCount + 1
 				end
 			end

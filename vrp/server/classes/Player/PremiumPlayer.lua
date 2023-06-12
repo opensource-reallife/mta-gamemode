@@ -64,7 +64,7 @@ end
 function PremiumPlayer:takeVehicle(model)
 	local row = sqlPremium:queryFetchSingle("SELECT * FROM premium_veh WHERE UserId = ? AND Model = ? AND abgeholt = 0", self.m_Player:getId(), model)
 	if row and row.ID then
-		if self.m_Player:getVehicleCountWithoutPrem() < self.m_Player:getMaxVehicles() then
+		--if self.m_Player:getVehicleCountWithoutPrem() < self.m_Player:getMaxVehicles() then
 			sqlPremium:queryExec("UPDATE premium_veh SET abgeholt = 1, Timestamp_abgeholt = ? WHERE ID = ?;", getRealTime().timestamp, row.ID)
 			local vehicle = VehicleManager:getSingleton():createNewVehicle(self.m_Player, VehicleTypes.Player, model, 1268.63, -2069.85, 59.49, 0, 0, 0, 1)
 			if vehicle then
@@ -77,9 +77,9 @@ function PremiumPlayer:takeVehicle(model)
 			else
 				self.m_Player:sendMessage(_("Fehler beim Erstellen des Fahrzeugs. Bitte benachrichtige einen Admin!", self.m_Player), 255, 0, 0)
 			end
-		else
-			self.m_Player:sendError(_("Maximaler Fahrzeug-Slot erreicht!", self.m_Player))
-		end
+		--else
+		--	self.m_Player:sendError(_("Maximaler Fahrzeug-Slot erreicht!", self.m_Player))
+		--end
 	else
 		self.m_Player:sendError(_("Ungültiges Fahrzeug!", self.m_Player))
 	end
