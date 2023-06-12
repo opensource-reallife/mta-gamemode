@@ -286,8 +286,6 @@ function DeathmatchLobby:giveWeapons(player, weapons)
 end
 
 function DeathmatchLobby:onIntOrDimChange(old, new)
-	print(old)
-	print(new)
 	if source.deathmatchLobby and old ~= new then
 		nextframe(function(player)
 			self:removePlayer(player)

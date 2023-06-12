@@ -145,10 +145,8 @@ function GroupPropertyManager:checkPropertyBuy(id)
 
 	local prop = self.Map[id]
 	if prop:isForSale() and prop:getSalePrice() > 0 then
-		print(2)
 		self:buyPropertyFromGroup(id, client)
 	else
-		print(3)
 		self:BuyProperty(id, client)
 	end
 end

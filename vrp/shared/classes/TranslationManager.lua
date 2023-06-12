@@ -8,6 +8,10 @@
 TranslationManager = inherit(Singleton)
 SERVER = triggerServerEvent == nil
 
+TranslationManager.ms_AvailableTranslations = {
+	["en"] = true
+}
+
 function TranslationManager:constructor()
 	self.m_Translations = {}
 	self.m_AddonTranslations = {}
@@ -70,7 +74,7 @@ function TranslationManager:translate(message, locale)
 	else
 		-- Look up in loaded addon translations
 		for k, poParser in ipairs(self.m_AddonTranslations[locale] or {}) do
-			translatedMsg = poParser:translate(message)
+			local translatedMsg = poParser:translate(message)
 			if translatedMsg then
 				return translatedMsg
 			end

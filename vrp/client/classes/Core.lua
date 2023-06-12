@@ -14,6 +14,8 @@ function Core:constructor()
 	influx = InfluxDB:new("", "", "")
 	InfluxLogging:new()
 	Cursor = GUICursor:new()
+
+	localPlayer:setLocale(core:get("HUD", "locale", getLocalization()["code"] == "de" and "de" or "en"))
 	self.m_WhitelistChecker = setTimer(bind(self.checkDomainsWhitelist, self), 1000, 0)
 
 	if HTTP_DOWNLOAD then -- In debug mode use old Provider
@@ -41,27 +43,35 @@ function Core:constructor()
 			end
 		)()
 	else
-		local dgi = DownloadGUI:getSingleton()
-		Provider:getSingleton():addFileToRequest("vrp.list")
-		Provider:getSingleton():requestFiles(
-			function()
-				local fh = fileOpen("vrp.list")
-				local json = fileRead(fh, fileGetSize(fh))
-				fileClose(fh)
-				local tbl = fromJSON(json)
-
-				for _, v in pairs(tbl) do
-					Provider:getSingleton():addFileToRequest(v)
-				end
-
-				Provider:getSingleton():requestFiles(
-					bind(DownloadGUI.onComplete, dgi),
-					bind(DownloadGUI.onProgress, dgi),
-					bind(DownloadGUI.onWrite, dgi)
-				)
+		-- translation first, everything else second
+		for lang, state in pairs(TranslationManager.ms_AvailableTranslations) do
+			if state then
+				Provider:getSingleton():addFileToRequest(("files/translation/client.%s.po"):format(lang))
+				Provider:getSingleton():addFileToRequest(("files/translation/server.%s.po"):format(lang))
 			end
-		)
+		end
 
+		Provider:getSingleton():requestFiles(function()
+			TranslationManager:getSingleton():loadTranslation("en")
+		
+			local fh = fileOpen("vrp.list")
+			local json = fileRead(fh, fileGetSize(fh))
+			fileClose(fh)
+			local tbl = fromJSON(json)
+	
+			Provider:getSingleton():addFileToRequest("vrp.list")
+			for _, v in pairs(tbl) do
+				Provider:getSingleton():addFileToRequest(v)
+			end
+			
+			local dgi = DownloadGUI:getSingleton()
+			Provider:getSingleton():requestFiles(
+				bind(DownloadGUI.onComplete, dgi),
+				bind(DownloadGUI.onProgress, dgi),
+				bind(DownloadGUI.onWrite, dgi)
+			)
+		end)
+		
 		setAmbientSoundEnabled( "gunfire", false )
 		showChat(true)
 	end
@@ -88,7 +98,6 @@ function Core:ready() --onClientResourceStart
 		["LastCompanySkin"] = core:get("Cache", "LastCompanySkin", 0),
 	})
 
-	localPlayer:setLocale(core:get("HUD", "locale", getLocalization()["code"] == "de" and "de" or "en"))
 	triggerServerEvent("playerLocale", localPlayer, localPlayer:getLocale())
 
 	-- Request Browser Domains

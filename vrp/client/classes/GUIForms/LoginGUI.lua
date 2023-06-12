@@ -123,7 +123,7 @@ function LoginGUI:loadLoginElements()
 	self:centerForm()
 	self.m_LoginMode = true
 
-	self.m_Window = GUIWindow:new(0, 0, self.m_W, self.m_H, _"", false, false, self)
+	self.m_Window = GUIWindow:new(0, 0, self.m_W, self.m_H, "", false, false, self)
 	self.m_Elements.logo = GUIGridImage:new(1, 1, 9, 2, "files/images/LogoNoFont.png", self.m_Window):fitBySize(285, 123)
 
 	self.m_Elements.window = self.m_Window
