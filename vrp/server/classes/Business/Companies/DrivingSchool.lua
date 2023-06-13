@@ -226,18 +226,18 @@ function DrivingSchool:Event_passTheory(pass)
 		client.m_HasTheory = true
 		client:sendInfo(_("Du kannst nun die praktische Prüfung machen!", client))
 	else
-		client:sendInfo(_("Du hast abgebrochen oder nicht bestanden! Versuche die Prüfung erneut!", client))
+		client:sendError(_("Du hast abgebrochen oder nicht bestanden! Versuche die Prüfung erneut!", client))
 	end
 end
 
 function DrivingSchool:Event_startAutomaticTest(type)
 	if not client.m_HasTheory then
-		client:sendWarning(_("Du hast die Theorieprüfung noch nicht bestanden!", client))
+		client:sendError(_("Du hast die Theorieprüfung noch nicht bestanden!", client))
 		return
 	end
 
 	if #self:getOnlinePlayers() >= 3 then
-		client:sendWarning(_("Es sind genügend Fahrlehrer online!", client))
+		client:sendError(_("Es sind genügend Fahrlehrer online!", client))
 		return
 	end
 
@@ -245,22 +245,22 @@ function DrivingSchool:Event_startAutomaticTest(type)
 	if not valid[type] then return end
 
 	if type == "car" and client.m_HasDrivingLicense then
-		client:sendWarning(_("Du hast bereits den Autoführerschein", client))
+		client:sendError(_("Du hast bereits den Autoführerschein!", client))
 		return
 	end
 
 	if type == "bike" and client.m_HasBikeLicense then
-		client:sendWarning(_("Du hast bereits den Motorradführerschein", client))
+		client:sendError(_("Du hast bereits den Motorradführerschein!", client))
 		return
 	end
 
 	if type == "truck" and client.m_HasTruckLicense then
-		client:sendWarning(_("Du hast bereits den LKW-Führerschein", client))
+		client:sendError(_("Du hast bereits den LKW-Führerschein!", client))
 		return
 	end
 
 	if type == "heli" and client.m_HasPilotsLicense then
-		client:sendWarning(_("Du hast bereits den Pilotenschein", client))
+		client:sendError(_("Du hast bereits den Pilotenschein!", client))
 		return
 	end
 
