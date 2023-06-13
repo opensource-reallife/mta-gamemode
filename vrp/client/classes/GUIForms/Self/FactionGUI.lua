@@ -35,11 +35,11 @@ function FactionGUI:constructor()
 	self.m_FactionNextActionLabel = GUILabel:new(self.m_Width*0.3, self.m_Height*0.18, self.m_Width*0.7, self.m_Height*0.06, "", tabAllgemein)
 	GUILabel:new(self.m_Width*0.02, self.m_Height*0.26, self.m_Width*0.25, self.m_Height*0.06, _"Mitglieder:", tabAllgemein)
 	self.m_FactionPlayersLabel = GUILabel:new(self.m_Width*0.3, self.m_Height*0.26, self.m_Width*0.7, self.m_Height*0.06, "", tabAllgemein)
---	self.m_FactionQuitButton = GUIButton:new(self.m_Width*0.74, self.m_Height*0.02, self.m_Width*0.25, self.m_Height*0.07, _"Fraktion verlassen", tabAllgemein):setBackgroundColor(Color.Red):setBarEnabled(true)
+	--self.m_FactionQuitButton = GUIButton:new(self.m_Width*0.74, self.m_Height*0.02, self.m_Width*0.25, self.m_Height*0.07, _"Fraktion verlassen", tabAllgemein):setBackgroundColor(Color.Red):setBarEnabled(true)
 
 	GUILabel:new(self.m_Width*0.02, self.m_Height*0.33, self.m_Width*0.25, self.m_Height*0.1, _"Kasse:", tabAllgemein)
 	GUILabel:new(self.m_Width*0.02, self.m_Height*0.43, self.m_Width*0.25, self.m_Height*0.06, _"Inhalt:", tabAllgemein)
-	self.m_FactionMoneyLabel = GUILabel:new(self.m_Width*0.3, self.m_Height*0.33, self.m_Width*0.25, self.m_Height*0.06, "", tabAllgemein)
+	self.m_FactionMoneyLabel = GUILabel:new(self.m_Width*0.3, self.m_Height*0.43, self.m_Width*0.25, self.m_Height*0.06, "", tabAllgemein)
 	--self.m_FactionMoneyAmountEdit = GUIEdit:new(self.m_Width*0.02, self.m_Height*0.39, self.m_Width*0.27, self.m_Height*0.07, tabAllgemein):setCaption(_"Betrag")
 
 	GUILabel:new(self.m_Width*0.02, self.m_Height*0.5, self.m_Width*0.25, self.m_Height*0.1, _"Funktionen:", tabAllgemein)
