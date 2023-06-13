@@ -2,39 +2,132 @@ DrivingSchool = inherit(Company)
 DrivingSchool.LicenseCosts = {["car"] = 4500, ["bike"] = 2000, ["truck"] = 10000, ["heli"] = 50000, ["plane"] = 50000 }
 DrivingSchool.TypeNames = {["car"] = "Autoführerschein", ["bike"] = "Motorradschein", ["truck"] = "LKW-Schein", ["heli"] = "Helikopterschein", ["plane"] = "Flugschein"}
 DrivingSchool.m_LessonVehicles = {}
-DrivingSchool.testRoute =
-{
-	--{1355.07, -1621.64, 13.22, 90} .. start
-	{1807.23, -1711.17, 13.37},
-	{1807.27, -1730.13, 13.39},
-	{1651.56, -1729.75, 13.38},
-	{1327.79, -1730.02, 13.04},
-	{1310.11, -1575.86, 13.04},
-	{1349.55, -1399.87, 12.97},
-	{1106.99, -1392.60, 13.12},
-	{804.73, -1393.98, 13.14},
-	{650.62, -1397.89, 13.04},
-	{625.97, -1534.58, 14.72},
-	{651.80, -1674.67, 14.15},
-	{796.70, -1676.98, 13.01},
-	{819.15, -1641.51, 13.04},
-	{1019.96, -1574.58, 13.04},
-	{1048.16, -1516.02, 13.04},
-	{1065.41, -1419.91, 13.08},
-	{1060.16, -1276.25, 13.40},
-	{1060.41, -1161.71, 23.36},
-	{1323.85, -1148.96, 23.3},
-	{1444.42, -1163.26, 23.31},
-	{1451.98, -1285.99, 13.04},
-	{1700.87, -1305.06, 13.10},
-	{1712.74, -1427.98, 13.04},
-	{1468.86, -1438.64, 13.04},
-	{1427.40, -1577.95, 13.02},
-	{1515.72, -1595.33, 13.03},
-	{1527.44, -1718.88, 13.04},
-	{1592.89, -1734.80, 13.38},
-	{1802.97, -1734.55, 13.39},
-	{1761.76, -1687.31, 13.02},
+DrivingSchool.testRoute = {
+	["car"] = {
+		{1807.23, -1711.17, 13.37},
+		{1807.27, -1730.13, 13.39},
+		{1651.56, -1729.75, 13.38},
+		{1327.79, -1730.02, 13.04},
+		{1310.11, -1575.86, 13.04},
+		{1349.55, -1399.87, 12.97},
+		{1106.99, -1392.60, 13.12},
+		{804.73, -1393.98, 13.14},
+		{650.62, -1397.89, 13.04},
+		{625.97, -1534.58, 14.72},
+		{651.80, -1674.67, 14.15},
+		{796.70, -1676.98, 13.01},
+		{819.15, -1641.51, 13.04},
+		{1019.96, -1574.58, 13.04},
+		{1048.16, -1516.02, 13.04},
+		{1065.41, -1419.91, 13.08},
+		{1060.16, -1276.25, 13.40},
+		{1060.41, -1161.71, 23.36},
+		{1323.85, -1148.96, 23.3},
+		{1444.42, -1163.26, 23.31},
+		{1451.98, -1285.99, 13.04},
+		{1700.87, -1305.06, 13.10},
+		{1712.74, -1427.98, 13.04},
+		{1468.86, -1438.64, 13.04},
+		{1427.40, -1577.95, 13.02},
+		{1515.72, -1595.33, 13.03},
+		{1527.44, -1718.88, 13.04},
+		{1592.89, -1734.80, 13.38},
+		{1802.97, -1734.55, 13.39},
+		{1762.27, -1694.62, 14.00}
+	},
+	["bike"] = {
+		{1807.23, -1711.17, 13.37},
+		{1807.27, -1730.13, 13.39},
+		{1651.56, -1729.75, 13.38},
+		{1327.79, -1730.02, 13.04},
+		{1310.11, -1575.86, 13.04},
+		{1349.55, -1399.87, 12.97},
+		{1106.99, -1392.60, 13.12},
+		{804.73, -1393.98, 13.14},
+		{650.62, -1397.89, 13.04},
+		{625.97, -1534.58, 14.72},
+		{651.80, -1674.67, 14.15},
+		{796.70, -1676.98, 13.01},
+		{819.15, -1641.51, 13.04},
+		{1019.96, -1574.58, 13.04},
+		{1048.16, -1516.02, 13.04},
+		{1065.41, -1419.91, 13.08},
+		{1060.16, -1276.25, 13.40},
+		{1060.41, -1161.71, 23.36},
+		{1323.85, -1148.96, 23.3},
+		{1444.42, -1163.26, 23.31},
+		{1451.98, -1285.99, 13.04},
+		{1700.87, -1305.06, 13.10},
+		{1712.74, -1427.98, 13.04},
+		{1468.86, -1438.64, 13.04},
+		{1427.40, -1577.95, 13.02},
+		{1515.72, -1595.33, 13.03},
+		{1527.44, -1718.88, 13.04},
+		{1592.89, -1734.80, 13.38},
+		{1802.97, -1734.55, 13.39},
+		{1762.27, -1694.62, 14.00}
+	},
+	["truck"] = {
+		{1807.23, -1711.17, 13.37},
+		{1807.27, -1730.13, 13.39},
+		{1651.56, -1729.75, 13.38},
+		{1327.79, -1730.02, 13.04},
+		{1310.11, -1575.86, 13.04},
+		{1349.55, -1399.87, 12.97},
+		{1106.99, -1392.60, 13.12},
+		{804.73, -1393.98, 13.14},
+		{650.62, -1397.89, 13.04},
+		{625.97, -1534.58, 14.72},
+		{651.80, -1674.67, 14.15},
+		{796.70, -1676.98, 13.01},
+		{819.15, -1641.51, 13.04},
+		{1019.96, -1574.58, 13.04},
+		{1048.16, -1516.02, 13.04},
+		{1065.41, -1419.91, 13.08},
+		{1060.16, -1276.25, 13.40},
+		{1060.41, -1161.71, 23.36},
+		{1323.85, -1148.96, 23.3},
+		{1444.42, -1163.26, 23.31},
+		{1451.98, -1285.99, 13.04},
+		{1700.87, -1305.06, 13.10},
+		{1712.74, -1427.98, 13.04},
+		{1468.86, -1438.64, 13.04},
+		{1427.40, -1577.95, 13.02},
+		{1515.72, -1595.33, 13.03},
+		{1527.44, -1718.88, 13.04},
+		{1592.89, -1734.80, 13.38},
+		{1802.97, -1734.55, 13.39},
+		{1762.27, -1694.62, 14.00}
+	},
+	["heli"] = {
+		{1651.56, -1729.75, 43.38},
+		{1327.79, -1730.02, 43.04},
+		{1310.11, -1575.86, 43.04},
+		{1349.55, -1399.87, 42.97},
+		{1106.99, -1392.60, 43.12},
+		{804.73, -1393.98, 43.14},
+		{650.62, -1397.89, 43.04},
+		{625.97, -1534.58, 44.72},
+		{651.80, -1674.67, 44.15},
+		{796.70, -1676.98, 43.01},
+		{819.15, -1641.51, 43.04},
+		{1019.96, -1574.58, 43.04},
+		{1048.16, -1516.02, 43.04},
+		{1065.41, -1419.91, 43.08},
+		{1060.16, -1276.25, 43.40},
+		{1060.41, -1161.71, 43.36},
+		{1323.85, -1148.96, 43.3},
+		{1444.42, -1163.26, 43.31},
+		{1451.98, -1285.99, 43.04},
+		{1700.87, -1305.06, 43.10},
+		{1712.74, -1427.98, 43.04},
+		{1468.86, -1438.64, 43.04},
+		{1427.40, -1577.95, 43.02},
+		{1515.72, -1595.33, 43.03},
+		{1527.44, -1718.88, 43.04},
+		{1592.89, -1734.80, 43.38},
+		{1793.60, -1715.12, 29.79}
+	}
 }
 
 addRemoteEvents{"drivingSchoolCallInstructor", "drivingSchoolStartTheory", "drivingSchoolPassTheory", "drivingSchoolStartAutomaticTest", "drivingSchoolHitRouteMarker",	"drivingSchoolStartLessionQuestion", "drivingSchoolEndLession", "drivingSchoolReceiveTurnCommand", "drivingSchoolReduceSTVO", "drivingSchoolBuyLicense"}
@@ -160,7 +253,7 @@ function DrivingSchool:Event_startAutomaticTest(type)
 		return
 	end
 
-	local valid = {["car"]= true, ["bike"] = true }
+	local valid = {["car"]= true, ["bike"] = true, ["truck"] = true, ["heli"] = true}
 	if not valid[type] then return end
 
 	if type == "car" and client.m_HasDrivingLicense then
@@ -236,20 +329,26 @@ function DrivingSchool:startAutomaticTest(player, type)
 		destroyElement(DrivingSchool.m_LessonVehicles[player])
 	end
 
-	local veh  = TemporaryVehicle.create(type == "car" and 410 or 586, 1761.76, -1687.31, 13.02, 180)
+	local veh = nil
+	if type == "heli" then
+		veh = TemporaryVehicle.create(487, 1793.60, -1715.12, 19.79, 180)
+	else
+		veh = TemporaryVehicle.create((type == "car" and 410) or (type == "bike" and 586) or 578, 1762.27, -1694.62, 14.00, 270)
+	end
+
 	veh:setColor(255, 255, 255)
 	veh.m_Driver = player
 	veh.m_CurrentNode = 1
 	veh.m_IsAutoLesson = true
 	veh.m_TestMode = type
 
-	player:setPosition(Vector3(1766.50, -1687.10, 13.37))
-	player:setRotation(0, 0, 90)
 	player:setInterior(0)
+	player:warpIntoVehicle(veh)
 	player:setCameraTarget(player)
 
 	local randomName =	{"Nero Soliven", "Kempes Waldemar", "Avram Vachnadze", "Klaus Schweiger", "Luca Pasqualini", "Peter Schmidt", "Mohammed Vegas", "Isaha Rosenberg"}
 	local name = randomName[math.random(1, #randomName)]
+
 	veh.m_NPC = createPed(295, 1765.50, -1687.10, 15.37)
 	veh.m_NPC:setData("NPC:Immortal", true, true)
 	veh.m_NPC:setData("isBuckeled", true, true)
@@ -257,30 +356,25 @@ function DrivingSchool:startAutomaticTest(player, type)
 	veh.m_NPC:setData("isDrivingCoach", true)
 	veh.m_NPC:warpIntoVehicle(veh, 1)
 
-	player:sendInfo("Steige in das Fahrzeug vor dir.")
-
-	addEventHandler("onVehicleStartEnter", veh,
-		function(player, seat)
-			if source.m_Driver == player then
-				if seat == 0 then
-					outputChatBox(_("Fahre die vorgesehene Strecke ab und achte darauf, dass dein Fahrzeug nicht beschädigt wird!", player), player, 200, 200, 0)
-					outputChatBox(_("%s sagt: Mit 'X' schaltest du den Motor an.", player, name), player, 200, 200, 200)
-
-					setTimer(outputChatBox, 2000, 1, _("%s sagt: Anschließend mit 'L' die Lichter.", player, name) , player, 200, 200, 200)
-					setTimer(outputChatBox, 8000, 1, _("%s sagt: Und abgeht es! Vergiss nicht den Limiter mit der Taste 'K' anzuschalten.", player, name) , player, 200, 200, 200)
-					setTimer(outputChatBox, 12000, 1, _("%s sagt: Die Schranke öffnest du mit #C8C800'H'#C8C8C8. Bitte schließe diese nachher wieder.", player, name) , player, 200, 200, 200, true)
-
-					if player.m_AutoTestMode == "car" then
-						setTimer(outputChatBox, 4000, 1, _("%s sagt: Nun Anschnallen mit 'M'", player, name) , player, 200, 200, 200)
-					else
-						setTimer(outputChatBox, 4000, 1, _("%s sagt: Ziehe deinen Helm an.", player, name) , player, 200, 200, 200)
-					end
-				end
-			else
-				cancelEvent()
-			end
+	if player.m_AutoTestMode ~= "heli" then
+		outputChatBox(_("Fahre die vorgesehene Strecke ab und achte darauf, dass dein Fahrzeug nicht beschädigt wird!", player), player, 200, 200, 0)
+		outputChatBox(_("%s sagt: Mit 'X' schaltest du den Motor an.", player, name), player, 200, 200, 200)
+		setTimer(outputChatBox, 2000, 1, _("%s sagt: Anschließend mit 'L' die Lichter.", player, name), player, 200, 200, 200)
+		if player.m_AutoTestMode == "bike" then
+			setTimer(outputChatBox, 4000, 1, _("%s sagt: Ziehe deinen Helm an.", player, name), player, 200, 200, 200)
+		else
+			setTimer(outputChatBox, 4000, 1, _("%s sagt: Nun Anschnallen mit 'M'.", player, name), player, 200, 200, 200)
 		end
-	)
+		setTimer(outputChatBox, 6000, 1, _("%s sagt: Mit den Tasten 'W', 'A', 'S' und 'D' bewegst du das Fahrzeug.", player, name), player, 200, 200, 200, true)
+		setTimer(outputChatBox, 8000, 1, _("%s sagt: Die Schranke öffnest du mit #C8C800'H'#C8C8C8. Bitte schließe diese nachher wieder.", player, name), player, 200, 200, 200, true)
+		setTimer(outputChatBox, 10000, 1, _("%s sagt: Und abgeht es! Vergiss nicht den Limiter mit der Taste 'K' anzuschalten.", player, name), player, 200, 200, 200)
+	else
+		outputChatBox(_("Fliege die vorgesehene Strecke und achte darauf, dass dein Helikopter nicht beschädigt wird!", player), player, 200, 200, 0)
+		setTimer(outputChatBox, 2000, 1, _("%s sagt: Mit 'X' schaltest du den Motor an.", player, name), player, 200, 200, 200, true)
+		setTimer(outputChatBox, 4000, 1, _("%s sagt: Mit 'W' lässt du den Helikopter steigen, mit 'S' lässt du ihn sinken.", player, name), player, 200, 200, 200)
+		setTimer(outputChatBox, 6000, 1, _("%s sagt: ... und mit den Pfeiltasten neigst du den Helikopter, damit er sich bewegt.", player, name), player, 200, 200, 200, true)
+		setTimer(outputChatBox, 8000, 1, _("%s sagt: Los geht's!", player, name), player, 200, 200, 200, true)
+	end
 
 	addEventHandler("onVehicleExit", veh,
 		function(player, seat)
@@ -296,9 +390,10 @@ function DrivingSchool:startAutomaticTest(player, type)
 				destroyElement(source)
 			end
 			player:triggerEvent("DrivingLesson:endLesson")
-			fadeCamera(player,false,0.5)
-			setTimer(setElementPosition,1000,1,player,1759.05, -1690.22, 13.37)
-			setTimer(fadeCamera,1500,1, player,true,0.5)
+			fadeCamera(player, false, 0.5)
+			setTimer(setElementPosition, 1000, 1, player, 1778.88, -1706.73, 13.37)
+			setTimer(setElementRotation, 1000, 1, player, 0, 0, 0)
+			setTimer(fadeCamera, 1500, 1, player, true, 0.5)
 		end
 	)
 
@@ -346,7 +441,7 @@ function DrivingSchool:startAutomaticTest(player, type)
 		end, false
 	)
 
-	player:triggerEvent("DrivingLesson:setMarker", DrivingSchool.testRoute[veh.m_CurrentNode], veh)
+	player:triggerEvent("DrivingLesson:setMarker", DrivingSchool.testRoute[veh.m_TestMode][veh.m_CurrentNode], veh)
 	DrivingSchool.m_LessonVehicles[player] = veh
 end
 
@@ -354,15 +449,19 @@ function DrivingSchool:onHitRouteMarker()
 	if DrivingSchool.m_LessonVehicles[client] then
 		local veh = DrivingSchool.m_LessonVehicles[client]
 		veh.m_CurrentNode = veh.m_CurrentNode + 1
-		if veh.m_CurrentNode <= #DrivingSchool.testRoute then
-			client:triggerEvent("DrivingLesson:setMarker",DrivingSchool.testRoute[veh.m_CurrentNode], veh)
+		if veh.m_CurrentNode <= #DrivingSchool.testRoute[veh.m_TestMode] then
+			client:triggerEvent("DrivingLesson:setMarker",DrivingSchool.testRoute[veh.m_TestMode][veh.m_CurrentNode], veh)
 		else
 			veh.m_IsFinished = true
 			if getElementHealth(veh) >= 500 then
 				if veh.m_TestMode == "car" then
 					client.m_HasDrivingLicense = true
-				else
+				elseif veh.m_TestMode == "bike" then
 					client.m_HasBikeLicense = true
+				elseif veh.m_TestMode == "truck" then
+					client.m_HasTruckLicense = true
+				else
+					client.m_HasPilotsLicense = true
 				end
 				outputChatBox(_("Du hast die Prüfung bestanden und dein Fahrzeug ist in einem ausreichenden Zustand!", client), client, 0, 200, 0)
 				if veh.m_NPC then
@@ -373,7 +472,7 @@ function DrivingSchool:onHitRouteMarker()
 				client:triggerEvent("DrivingLesson:endLesson")
 			else
 				client.m_HasDrivingLicense = false
-				outputChatBox(_("Da dein Fahrzeug zu beschädigt war hast du nicht bestanden!", client), client, 200, 0, 0)
+				outputChatBox(_("Da dein Fahrzeug zu beschädigt war, hast du nicht bestanden!", client), client, 200, 0, 0)
 				if veh.m_NPC then
 					destroyElement(veh.m_NPC)
 				end
