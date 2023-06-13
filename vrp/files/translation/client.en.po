@@ -5,7 +5,7 @@ msgid "Privat Fahrzeug"
 msgstr "Private vehicle"
 
 msgid "Firma/Gruppen Fahrzeug"
-msgstr "Company/Groups Vehicle"
+msgstr "Firm/Groups Vehicle"
 
 msgid "Fahrzeug freikaufen"
 msgstr "Buy out a vehicle"
@@ -290,7 +290,7 @@ msgid "Firmen-/Gangimmobilien"
 msgstr "Company-/ Gang real estate"
 
 msgid "Du hast keine Firma/Gang!"
-msgstr "You have no company/gang!"
+msgstr "You have no firm/gang!"
 
 msgid "Ausweis / Kaufvertrag"
 msgstr "Identity card / purchase agreement"
@@ -531,7 +531,7 @@ msgid "Unternehmen: -"
 msgstr "Company: -"
 
 msgid "Gang/Firma: -"
-msgstr "Gang/Company: -"
+msgstr "Gang/Firm: -"
 
 msgid "Strafen:"
 msgstr "Punishments:"
@@ -576,7 +576,7 @@ msgid "Unternehmen: %s"
 msgstr "Company: %s"
 
 msgid "Gang/Firma: %s"
-msgstr "Gang/Company: %s"
+msgstr "Gang/Firm: %s"
 
 msgid "Job: %s"
 msgstr "Job: %s"
@@ -1592,17 +1592,17 @@ msgid "Bitte gebe einen gültige Anzahl ein!"
 msgstr "Please enter a valid number!"
 
 msgid "Private Gang/Firma erstellen"
-msgstr "Create private gang/company"
+msgstr "Create private gang/firm"
 
 msgid ""
 "Hier kannst du eine private Firma oder Gang gründen.\n"
 "Eine Gründung kostet %s!"
 msgstr ""
-"Here you can create a private company or gang.\n"
+"Here you can create a private firm or gang.\n"
 "A foundation costs %s!"
 
 msgid "Name der Gang/Firma:"
-msgstr "Name of the gang/company:"
+msgstr "Name of the gang/firm:"
 
 msgid "Typ auswählen:"
 msgstr "Select type:"
@@ -1620,7 +1620,7 @@ msgid "Bitte gib zuerst einen Namen ein!"
 msgstr "Please enter a name first!"
 
 msgid "Firma / Gang:"
-msgstr "Company / Gang:"
+msgstr "Firm / Gang:"
 
 msgid "Namen ändern"
 msgstr "Change name"
@@ -1628,7 +1628,7 @@ msgstr "Change name"
 msgid ""
 "Bitte gib einen neuen Name für deine Firma / Gang ein! Dies kostet dich %d$!"
 msgstr ""
-"Please enter a new name for your company / gang! This will cost you %d$!"
+"Please enter a new name for your firm / gang! This will cost you %d$!"
 
 msgid "Achtung: Der Name ist nur alle 30 Tage änderbar!"
 msgstr "Attention: The name can only be changed every 30 days!"
@@ -1674,7 +1674,7 @@ msgid ""
 "Firma/Gang hinzufügen"
 msgstr ""
 "Add Vehicle to\n"
-"company/gang"
+"firm/gang"
 
 msgid "Geschäfte"
 msgstr "Shops"
@@ -1720,7 +1720,7 @@ msgid "Hafen"
 msgstr "Harbour"
 
 msgid "Möchtest du deine Firma/Gang wirklich verlassen?"
-msgstr "Do you really want to leave your company/gang?"
+msgstr "Do you really want to leave your firm/gang?"
 
 msgid ""
 "Möchtest du deine Firma/Gang wirklich löschen\n"
@@ -1748,10 +1748,10 @@ msgid "Das Fahrzeug darf sich nicht im Autohof befinden!"
 msgstr "The vehicle can not be in the carport!"
 
 msgid "Möchtest du das Fahrzeug wirklich in die Firma setzen?"
-msgstr "Do you really want to put the vehicle in the company?"
+msgstr "Do you really want to put the vehicle in the firm?"
 
 msgid "Möchtest du das Fahrzeug wirklich aus der Firma entfernen?"
-msgstr "Do you really want to remove the vehicle from the company?"
+msgstr "Do you really want to remove the vehicle from the firm?"
 
 msgid ""
 "Dieses Fahrzeug befindet sich in %s!\n"
@@ -1784,7 +1784,7 @@ msgid "Erwerbliche Immobilien"
 msgstr "Available real estates"
 
 msgid "Hier kannst du eine Immobilie für deine Firma/Gang erwerben!"
-msgstr "Here you can purchase a property for your company/gang!"
+msgstr "Here you can purchase a property for your firm/gang!"
 
 msgid "Anschauen"
 msgstr "View"
@@ -2803,7 +2803,7 @@ msgid "W"
 msgstr "W"
 
 msgid "Firma/Gang"
-msgstr "Company/gang"
+msgstr "Firm/Gang"
 
 msgid "Spielerinformationen"
 msgstr "Player information"
@@ -2994,7 +2994,7 @@ msgid "Unternehmen"
 msgstr "Companies"
 
 msgid "Gang/Firma"
-msgstr "Gang/Company"
+msgstr "Gang/Firm"
 
 msgid "Spielzeit"
 msgstr "Playtime"
@@ -4819,7 +4819,7 @@ msgid "Nick ändern"
 msgstr "Change nick"
 
 msgid "Firma/Gruppen Fahrzeuge"
-msgstr "Company/Group Vehicles"
+msgstr "Firm/Group Vehicles"
 
 msgid "Fahrzeuge anzeigen"
 msgstr "Show vehicles"
