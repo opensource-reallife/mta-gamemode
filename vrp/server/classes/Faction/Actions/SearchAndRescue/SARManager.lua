@@ -8,8 +8,8 @@
 
 SARManager = inherit(Singleton)
 
-local SAR_TIME_MIN = 60 -- in minutes
-local SAR_TIME_MAX = 120 -- in minutes
+local SAR_TIME_MIN = 120 -- in minutes
+local SAR_TIME_MAX = 180 -- in minutes
 local SAR_MIN_PLAYERS = 2
 local SAR_MAX_CONCURRENT = 1
 

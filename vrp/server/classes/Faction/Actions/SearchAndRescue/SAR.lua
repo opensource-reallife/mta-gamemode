@@ -55,10 +55,10 @@ function SAR:Event_onColShapeHit(hitElement)
             if (faction:isRescueFaction() or faction:isStateFaction()) and hitElement:isFactionDuty() then
                 hitElement:sendInfo(_("Du hast eine verletzte Person gefunden!"))
                 ped.m_Dead = true
-                ped.m_RevivalMult = 5 
+                ped.m_RevivalMult = 10
                 FactionRescue:getSingleton():createPedDeathPickup(ped, "Verletzte Person")
                 self.m_PedStats["found"] = self.m_PedStats["found"] + 1
-                self.m_BankAccountServer:transferMoney(hitElement, 250, "Verletzte Person gefunden (Suchen & Retten)", "Faction", "SAR")
+                self.m_BankAccountServer:transferMoney(hitElement, 500, "Verletzte Person gefunden (Suchen & Retten)", "Faction", "SAR")
             else
                 hitElement:sendInfo(_("Eine verletzte Person! Du solltest schnellstens Rettungskräfte informieren!"))
             end
