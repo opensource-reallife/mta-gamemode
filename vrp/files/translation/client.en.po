@@ -567,7 +567,7 @@ msgid "Spielzeit: %s:%s h"
 msgstr "Playtime: %s:%s h"
 
 msgid "Fraktion: %s"
-msgstr "Fraction: %s"
+msgstr "Faction: %s"
 
 msgid "-"
 msgstr "-"
@@ -1090,7 +1090,7 @@ msgid "Rang:"
 msgstr "Rank:"
 
 msgid "Kasse:"
-msgstr "Cash register:"
+msgstr "Bank:"
 
 msgid "Inhalt:"
 msgstr "Content:"
@@ -1347,13 +1347,13 @@ msgid "Abbrechen"
 msgstr "Cancel"
 
 msgid "Fraktion:"
-msgstr "Fraction:"
+msgstr "Faction:"
 
 msgid "Aktions-Status:"
 msgstr "Action status:"
 
 msgid "Fraktions-Logs"
-msgstr "Fraction logs"
+msgstr "Faction logs"
 
 msgid "platzierte Objekte"
 msgstr "placed objects"
@@ -1481,7 +1481,7 @@ msgid "%s läuft"
 msgstr "%s runs"
 
 msgid "Fraktions Waffenshop - "
-msgstr "Fractional Arms Shop - "
+msgstr "Factional Arms Shop - "
 
 msgid "Ware"
 msgstr "Goods"
@@ -1577,7 +1577,7 @@ msgid "Gangwar-Menü"
 msgstr "Gangwar menu"
 
 msgid "Fraktion für das Gebiet"
-msgstr "Fraction for the territory"
+msgstr "Faction for the territory"
 
 msgid "Tankstelle"
 msgstr "Petrol station"
@@ -2409,22 +2409,22 @@ msgid "Fraktion: Spieler durchsuchen"
 msgstr "Faction: Search player"
 
 msgid "Fraktion: Handschellen abnehmen"
-msgstr "Fraction: Remove handcuffs"
+msgstr "Faction: Remove handcuffs",,
 
 msgid "Fraktion: Handschellen anlegen"
-msgstr "Fraction: Putting on handcuffs"
+msgstr "Faction: Putting on handcuffs"
 
 msgid "Fraktion: Alkoholtest durchführen"
-msgstr "Fraction: Perform breathalyzer test"
+msgstr "Faction: Perform breathalyzer test"
 
 msgid "Fraktion: nach Lizenz fragen"
-msgstr "Fraction: Ask for license"
+msgstr "Faction: Ask for license"
 
 msgid "Fraktion: illegales abnehmen"
-msgstr "Fraction: Remove illegal items"
+msgstr "Faction: Remove illegal items"
 
 msgid "Fraktion: Waffen abnehmen"
-msgstr "Fraction: Remove weapons"
+msgstr "Faction: Remove weapons"
 
 msgid "Fraktion: GWD-Note vergeben"
 msgstr "Faction: award BMS grade"
@@ -5000,3 +5000,27 @@ msgstr "Lateral position"
 
 msgid "Schmerzen"
 msgstr "Pain"
+
+msgid "(kaufen: %s)"
+msgstr "(buy: %s)"
+
+msgid "Fahrzeugslot kaufen:"
+msgstr "Buy vehicle slot:"
+
+msgid "Kasse(n) gesamt:"
+msgstr "Total cash register(s):"
+
+msgid "Fahrzeug zu Privatbesitz hinzufügen"
+msgstr "Add vehicle to private property"
+
+msgid "Hausraub Status:"
+msgstr "House robbery status:"
+
+msgid "Fahrzeuge: %s/%s"
+msgstr "Vehicles: %s/%s"
+
+msgid "Fahrzeug zur Firma/Gang hinzufügen"
+msgstr "Add vehicle to company/gang"
+
+msgid "Fahrzeug zur %s hinzufügen"
+msgstr "Add vehicle to %s"
