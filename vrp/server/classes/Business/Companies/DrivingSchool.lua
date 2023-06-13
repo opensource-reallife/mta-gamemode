@@ -366,7 +366,18 @@ function DrivingSchool:startAutomaticTest(player, type)
 		end
 		setTimer(outputChatBox, 6000, 1, _("%s sagt: Mit den Tasten 'W', 'A', 'S' und 'D' bewegst du das Fahrzeug.", player, name), player, 200, 200, 200, true)
 		setTimer(outputChatBox, 8000, 1, _("%s sagt: Die Schranke öffnest du mit #C8C800'H'#C8C8C8. Bitte schließe diese nachher wieder.", player, name), player, 200, 200, 200, true)
-		setTimer(outputChatBox, 10000, 1, _("%s sagt: Und abgeht es! Vergiss nicht den Limiter mit der Taste 'K' anzuschalten.", player, name), player, 200, 200, 200)
+		setTimer(outputChatBox, 10000, 1, _("%s sagt: Und abgeht es! Vergiss nicht den Limiter mit der Taste 'K' auf 80 km/h einzustellen.", player, name), player, 200, 200, 200)
+
+		setTimer(function(veh)
+			if not isElement(veh) then
+				sourceTimer:destroy()
+				return
+			end
+			if veh:getSpeed() >= 85 then
+				veh.m_Driver:sendWarning(_("Du fährst zu schnell! Du fällst durch die Prüfung, wenn du zu oft zu schnell fährst!", veh.m_Driver))
+				veh.m_SpeedingPoints = veh.m_SpeedingPoints + 1
+			end
+		end, 5000, 0, veh)
 	else
 		player:sendInfo(_("Fliege die vorgesehene Strecke ohne deinen Helikopter zu beschädigen!", player))
 		setTimer(outputChatBox, 2000, 1, _("%s sagt: Mit 'X' schaltest du den Motor an.", player, name), player, 200, 200, 200, true)
@@ -444,17 +455,6 @@ function DrivingSchool:startAutomaticTest(player, type)
 
 	player:triggerEvent("DrivingLesson:setMarker", DrivingSchool.testRoute[veh.m_TestMode][veh.m_CurrentNode], veh)
 	DrivingSchool.m_LessonVehicles[player] = veh
-
-	setTimer(function(veh)
-		if not isElement(veh) then
-			sourceTimer:destroy()
-			return
-		end
-		if veh:getSpeed() >= 85 then
-			veh.m_Driver:sendWarning(_("Du fährst zu schnell! Du fällst durch die Prüfung, wenn du zu oft zu schnell fährst!", veh.m_Driver))
-			veh.m_SpeedingPoints = veh.m_SpeedingPoints + 1
-		end
-	end, 5000, 0, veh)
 end
 
 function DrivingSchool:onHitRouteMarker()
