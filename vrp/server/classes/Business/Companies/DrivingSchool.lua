@@ -379,7 +379,7 @@ function DrivingSchool:startAutomaticTest(player, type)
 				if veh.m_SpeedingPoints < 5 then
 					if veh.m_SpeedingPoints == 1 then
 						setTimer(outputChatBox, 2000, 1, _("%s sagt: Vergiss nicht den Limiter mit der Taste #C8C800'K'#C8C8C8 auf #C8C80080 km/h#C8C8C8 einzustellen!", player, name, veh.m_SpeedingPoints), player, 200, 200, 200, true)
-						setTimer(outputChatBox, 4000, 1, _("%s sagt: Denk dran: Bei #C8C8005#C8C8C8 Fehlerpunkten fällst du durch!", player, name), player, 200, 200, 200, true)
+						setTimer(outputChatBox, 4000, 1, _("%s sagt: Solltest du #C8C8005#C8C8C8 Fehlerpunkte bekommen, fällst du durch!", player, name), player, 200, 200, 200, true)
 					else
 						setTimer(outputChatBox, 2000, 1, _("%s sagt: Damit hast du jetzt schon #C8C800%s#C8C8C8 Fehlerpunkte!", player, name, veh.m_SpeedingPoints), player, 200, 200, 200, true)
 					end
