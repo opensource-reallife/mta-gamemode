@@ -2991,7 +2991,7 @@ msgid "VIP"
 msgstr "VIP"
 
 msgid "Unternehmen"
-msgstr "Companies"
+msgstr "Company"
 
 msgid "Gang/Firma"
 msgstr "Gang/Firm"
