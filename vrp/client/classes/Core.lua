@@ -51,6 +51,7 @@ function Core:constructor()
 			end
 		end
 
+		Provider:getSingleton():addFileToRequest("vrp.list")
 		Provider:getSingleton():requestFiles(function()
 			TranslationManager:getSingleton():loadTranslation("en")
 		
@@ -59,7 +60,6 @@ function Core:constructor()
 			fileClose(fh)
 			local tbl = fromJSON(json)
 	
-			Provider:getSingleton():addFileToRequest("vrp.list")
 			for _, v in pairs(tbl) do
 				Provider:getSingleton():addFileToRequest(v)
 			end
