@@ -368,8 +368,8 @@ function DrivingSchool:startAutomaticTest(player, type)
 		setTimer(outputChatBox, 8000, 1, _("%s sagt: Die Schranke öffnest du mit #C8C800'H'#C8C8C8. Bitte schließe diese nachher wieder.", player, name), player, 200, 200, 200, true)
 		setTimer(outputChatBox, 10000, 1, _("%s sagt: Und abgeht es! Vergiss nicht den Limiter mit der Taste #C8C800'K'#C8C8C8 auf #C8C80080 km/h#C8C8C8 einzustellen.", player, name), player, 200, 200, 200, true)
 
-		setTimer(function(veh)
-			if not isElement(veh, name) then
+		setTimer(function()
+			if not isElement(veh) then
 				sourceTimer:destroy()
 				return
 			end
@@ -388,13 +388,13 @@ function DrivingSchool:startAutomaticTest(player, type)
 					setTimer(destroyElement, 2000, 1, veh)
 				end
 			end
-		end, 5000, 0, veh, name)
+		end, 4000, 0, veh, name)
 	else
 		player:sendInfo(_("Fliege die vorgesehene Strecke ohne deinen Helikopter zu beschädigen!", player))
 		outputChatBox(_("%s sagt: Mit #C8C800'X'#C8C8C8 schaltest du den Motor an.", player, name), player, 200, 200, 200, true)
-		setTimer(outputChatBox, 4000, 1, _("%s sagt: Mit #C8C800'W'#C8C8C8 lässt du den Helikopter steigen, mit #C8C800'S'#C8C8C8 lässt du ihn sinken.", player, name), player, 200, 200, 200, true)
-		setTimer(outputChatBox, 6000, 1, _("%s sagt: ... und mit den #C8C800Pfeiltasten#C8C8C8 neigst du den Helikopter, damit er sich bewegt.", player, name), player, 200, 200, 200, true)
-		setTimer(outputChatBox, 8000, 1, _("%s sagt: Los geht's!", player, name), player, 200, 200, 200)
+		setTimer(outputChatBox, 2000, 1, _("%s sagt: Mit #C8C800'W'#C8C8C8 lässt du den Helikopter steigen, mit #C8C800'S'#C8C8C8 lässt du ihn sinken.", player, name), player, 200, 200, 200, true)
+		setTimer(outputChatBox, 4000, 1, _("%s sagt: ... und mit den #C8C800Pfeiltasten#C8C8C8 neigst du den Helikopter, damit er sich bewegt.", player, name), player, 200, 200, 200, true)
+		setTimer(outputChatBox, 6000, 1, _("%s sagt: Los geht's!", player, name), player, 200, 200, 200)
 	end
 
 	addEventHandler("onVehicleExit", veh,
