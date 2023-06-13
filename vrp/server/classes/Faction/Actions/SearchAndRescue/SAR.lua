@@ -70,7 +70,7 @@ function SAR:Event_onElementDestroy()
     self.m_PedStats["rescued"] = self.m_PedStats["rescued"] + 1
 
     if self.m_PedStats["rescued"] == self.m_PedStats["total"] then
-        self:endSAR()
+        setTimer(bind(self.endSAR, self), 100, 1)
     end
 end
 
