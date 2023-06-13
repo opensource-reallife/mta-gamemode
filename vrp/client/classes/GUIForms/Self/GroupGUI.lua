@@ -116,7 +116,7 @@ function GroupGUI:constructor()
 	self.m_PrivateVehiclesGrid:addColumn(_"Steuer", 0.2)
 
 	GUILabel:new(self.m_Width*0.695, self.m_Height*0.6, self.m_Width*0.28, self.m_Height*0.06, _"Optionen:", tabVehicles):setColor(Color.Accent)
-	self.m_VehicleConvertToGroupButton = GUIButton:new(self.m_Width*0.695, self.m_Height*0.67, self.m_Width*0.28, self.m_Height*0.14, _"Fahrzeug zur \nFirma/Gang hinzufügen", tabVehicles):setBarEnabled(true)
+	self.m_VehicleConvertToGroupButton = GUIButton:new(self.m_Width*0.695, self.m_Height*0.67, self.m_Width*0.28, self.m_Height*0.14, _"Fahrzeug zur Firma/Gang hinzufügen", tabVehicles):setBarEnabled(true)
 	self.m_VehicleConvertToGroupButton:setFont(VRPFont(25)):setFontSize(1)
 	self.m_VehicleConvertToGroupButton.onLeftClick = bind(self.VehicleConvertToGroupButton_Click, self)
 
@@ -201,7 +201,7 @@ function GroupGUI:Event_groupRetrieveInfo(id, name, rank, money, playTime, playe
 	self.m_GroupMoneyLabel:setText(toMoneyString(money))
 	self.m_GroupPayDayLabel:setText(_("in %s Minuten", nextPayDay))
 	self.m_TypeLabel:setText(type..":")
-	self.m_VehicleConvertToGroupButton:setText(_("Fahrzeug zur\n%s hinzufügen", type))
+	self.m_VehicleConvertToGroupButton:setText(_("Fahrzeug zur %s hinzufügen", type))
 
 		self.m_ActionLabel:setVisible(localPlayer:getGroupType() == "Gang" and true or false)
 		self.m_HousRobLabel:setVisible(localPlayer:getGroupType() == "Gang" and true or false)
