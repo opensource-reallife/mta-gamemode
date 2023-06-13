@@ -464,15 +464,11 @@ msgstr "Stop fire"
 msgid "Feuer starten"
 msgstr "Start fire"
 
-msgid ""
-"Der gelbe Marker muss die obere rechte Ecke des Feuers markieren (nach "
-"Norden orientiert)."
-msgstr ""
-"The yellow marker must mark the upper right corner of the fire (facing "
-"north)."
+msgid "Der gelbe Marker muss die obere rechte Ecke des Feuers markieren (nach Norden orientiert)."
+msgstr "The yellow marker must mark the upper right corner of the fire (facing north)."
 
 msgid "Adminansage:"
-msgstr "Admin announcement:"
+msgstr "Admin say:"
 
 msgid "Zu Koordinaten porten: (x,y,z)"
 msgstr "Port to coordinates: (x,y,z)"
@@ -742,7 +738,7 @@ msgid "Datum"
 msgstr "Date"
 
 msgid "Ablauf"
-msgstr "Flow"
+msgstr "Expiration"
 
 msgid "Der Spieler %s hat keine Warns!"
 msgstr "The player %s has no warnings!"
@@ -3366,7 +3362,7 @@ msgid "Ak-47/M4 im Holster"
 msgstr "Ak-47/M4 in holster"
 
 msgid "Sounds"
-msgstr "声音"
+msgstr "Sounds"
 
 msgid "Halleluja-Sound beim sterben"
 msgstr "Hallelujah sound when you die"
@@ -3505,21 +3501,14 @@ msgstr "Active"
 msgid "Shader"
 msgstr "Shader"
 
-msgid ""
-"Hier kannst du Shader aktivieren oder deaktivieren. Zu viele aktivierte "
-"Shader können sich möglicherweise auf die Performance auswirken.\n"
-"Probiere einfach ein wenig herum um die ideale Einstellung für dich zu "
-"finden."
-msgstr ""
-"Here you can enable or disable shaders. Too many activated shaders can "
-"possibly affect performance.\n"
-"Just try a little around to find the ideal setting for you."
+msgid "Hier kannst du Shader aktivieren oder deaktivieren. Zu viele aktivierte Shader können sich möglicherweise auf die Performance auswirken. Probiere einfach ein wenig herum um die ideale Einstellung für dich zu finden."
+msgstr "Here you can enable or disable shaders. Too many activated shaders can possibly affect performance. Just try a little around to find the ideal setting for you."
 
 msgid "Log von letzten Shortmessages (Doppelklick zum kopieren)"
 msgstr "Log of last short messages (double click to copy)"
 
 msgid "Leeren"
-msgstr "Empty"
+msgstr "Clear"
 
 msgid "Kleidungs-Auswahl"
 msgstr "Skin selection"
@@ -4892,3 +4881,122 @@ msgstr "Wave"
 msgid "Waffe beidhändig"
 msgstr "Weapon ambidextrous"
 
+msgid "In Fraktionsverlauf vermerken?"
+msgstr "Note in fraction history?"
+
+msgid "Sprache (Experimentelles Feature)"
+msgstr "Language (Experimental Feature)"
+
+msgid "Ducken"
+msgstr "Duck"
+
+msgid "Hände hoch"
+msgstr "Hands up"
+
+msgid "Strecken"
+msgstr "Stretches"
+
+msgid "Arme verschränken"
+msgstr "Cross arms"
+
+msgid "Hinlegen"
+msgstr "Lying down"
+
+msgid "Links/Rechts schauen"
+msgstr "Look left/right"
+
+msgid "Sprechen"
+msgstr "Talk"
+
+msgid "Bombe platzieren"
+msgstr "Place bomb"
+
+msgid "Lachen"
+msgstr "Laugh"
+
+msgid "Hinsetzen"
+msgstr "Sit down"
+
+msgid "Waffe Gangster"
+msgstr "Weapon gangster"
+
+msgid "Tänze"
+msgstr "Dances"
+
+msgid "Tanz Wave"
+msgstr "Dance Wave"
+
+msgid "Tanz Chill"
+msgstr "Dance Chill"
+
+msgid "Tanz Ruhig"
+msgstr "Dance Calm"
+
+msgid "Tanz Sexy"
+msgstr "Dance Sexy"
+
+msgid "Tanz Wild"
+msgstr "Dance wild"
+
+msgid "Taichi"
+msgstr "Taichi"
+
+msgid "Tanz Nuttig"
+msgstr "Dance Slutty"
+
+msgid "Tanz Strip"
+msgstr "Dance Strip"
+
+msgid "Tanz Hip-Hop"
+msgstr "Dance hip-hop"
+
+msgid "Überreichen"
+msgstr "Hand over"
+
+msgid "Fuck you"
+msgstr "Fuck you"
+
+msgid "Po klatschen"
+msgstr "Butt clap"
+
+msgid "Rauchen"
+msgstr "Smoking"
+
+msgid "Bezahlen"
+msgstr "Pay"
+
+msgid "Kaugummi"
+msgstr "Chewing gum"
+
+msgid "Geld abheben"
+msgstr "Withdraw money"
+
+msgid "Bitch Slap"
+msgstr "Bitch Slap"
+
+msgid "Vulgär"
+msgstr "Vulgar"
+
+msgid "Pinkeln"
+msgstr "Pee"
+
+msgid "Wichsen"
+msgstr "Jerk off"
+
+msgid "Sex unten"
+msgstr "Sex below"
+
+msgid "Kotzen"
+msgstr "Vomit"
+
+msgid "Sex oben"
+msgstr "Sex top"
+
+msgid "Verletzung"
+msgstr "Injury"
+
+msgid "Seitenlage"
+msgstr "Lateral position"
+
+msgid "Schmerzen"
+msgstr "Pain"
