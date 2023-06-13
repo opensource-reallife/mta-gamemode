@@ -114,7 +114,7 @@ DrivingSchool.testRoute = {
 		{1515.72, -1595.33, 43.03},
 		{1527.44, -1718.88, 43.04},
 		{1592.89, -1734.80, 43.38},
-		{1793.60, -1715.12, 29.79}
+		{1780.11, -1715.12, 29.81}
 	}
 }
 
@@ -329,7 +329,7 @@ function DrivingSchool:startAutomaticTest(player, type)
 
 	local veh = nil
 	if type == "heli" then
-		veh = TemporaryVehicle.create(487, 1793.60, -1715.12, 19.79, 180)
+		veh = TemporaryVehicle.create(487, 1780.11, -1715.12, 19.81, 180)
 	else
 		veh = TemporaryVehicle.create((type == "car" and 410) or (type == "bike" and 586) or 578, 1762.27, -1694.62, 14.00, 270)
 	end
