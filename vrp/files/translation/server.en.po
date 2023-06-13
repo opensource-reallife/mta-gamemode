@@ -2432,7 +2432,7 @@ msgid "Du bist Polizist, du darfst keinen Überfall machen!"
 msgstr "You're a policeman, you can't do a robbery!"
 
 msgid "Du bist Mitglied einer privaten Firma! Nur Gangs können überfallen!"
-msgstr "You are a member of a private company! Only gangs can rob!"
+msgstr "You are a member of a private firm! Only gangs can rob!"
 
 msgid "Du bist kein Mitglied einer privaten Gang!"
 msgstr "You're not a member of a private gang!"
@@ -2478,7 +2478,7 @@ msgid "Drücke 'F6' um das %s-Menü zu öffnen!"
 msgstr "Press 'F6' to open the %s menu!"
 
 msgid "[FIRMA] %s hat den Shop '%s' für %d$ gekauft!"
-msgstr "[COMPANY] %s bought the shop '%s' for %d$!"
+msgstr "[FIRM] %s bought the shop '%s' for %d$!"
 
 msgid "hat den Shop '%s' für %d$ gekauft!"
 msgstr "bought the shop '%s' for %d$!"
@@ -2487,10 +2487,10 @@ msgid "In der Firmenkasse ist nicht genug Geld! (%d$)"
 msgstr "There's not enough money in the company's cash box! (%d$)"
 
 msgid "Nur Leader und Co-Leader deiner Firma können den Shop kaufen!"
-msgstr "Only leaders and co-leaders of your company can buy the shop!"
+msgstr "Only leaders and co-leaders of your firm can buy the shop!"
 
 msgid "Du bist in keiner privaten Firma!"
-msgstr "You're not in a private company!"
+msgstr "You're not in a private firm!"
 
 msgid "Dieser Shop kann nur von privaten Firmen gekauft werden!"
 msgstr "This shop can only be bought by private companies!"
@@ -2499,16 +2499,16 @@ msgid "Dieser Shop kann nicht gekauft werden!"
 msgstr "This shop can't be bought!"
 
 msgid "[FIRMA] %s hat den Shop '%s' für %d$ verkauft!"
-msgstr "[COMPANY] %s sold the shop '%s' for %d$!"
+msgstr "[FIRM] %s sold the shop '%s' for %d$!"
 
 msgid "hat den Shop '%s' für %d$ verkauft!"
 msgstr "sold the shop '%s' for %d$!"
 
 msgid "Nur Leader und Co-Leader deiner Firma können den Shop verkaufen!"
-msgstr "Only leaders and co-leaders of your company can sell the shop!"
+msgstr "Only leaders and co-leaders of your firm can sell the shop!"
 
 msgid "Dieser Shop gehört nicht deiner Firma!"
-msgstr "This shop doesn't belong to your company!"
+msgstr "This shop doesn't belong to your firm!"
 
 msgid "Invalid Shop ID!"
 msgstr "Invalid Shop ID!"
@@ -2667,7 +2667,7 @@ msgid "Dieses Haus wurde bereits ausgeraubt!"
 msgstr "This house has already been robbed!"
 
 msgid "Du bist bereits in einer Firma/Gang!"
-msgstr "You are already in a company/gang!"
+msgstr "You are already in a firm/gang!"
 
 msgid "Der Name muss mindestens 5 Zeichen lang sein!"
 msgstr "The name must be at least 5 characters long!"
@@ -2679,7 +2679,7 @@ msgid "Name enthält ungültige Zeichen!"
 msgstr "Name contains invalid characters!"
 
 msgid "Eine Gang oder Firma mit diesem Namen existiert bereits!"
-msgstr "A gang or company with this name already exists!"
+msgstr "A gang or firm with this name already exists!"
 
 msgid "Ungültiger Typ!"
 msgstr "Invalid type!"
@@ -2697,28 +2697,28 @@ msgid "%s hat soeben eure %s verlassen!"
 msgstr "%s just left your %s!"
 
 msgid "Du hast die Firma/Gang erfolgreich verlassen!"
-msgstr "You have successfully left the company/gang!"
+msgstr "You have successfully left the firm/gang!"
 
 msgid "Du bist nicht berechtigt die Firma/Gang zu löschen!"
-msgstr "You are not authorized to delete the company/gang!"
+msgstr "You are not authorized to delete the firm/gang!"
 
 msgid "Deine "
 msgstr "Your "
 
 msgid "In der Firma/Gangkasse befindet sich nicht genügend Geld!"
-msgstr "There is not enough money on the company/gang's bank account!"
+msgstr "There is not enough money on the firm/gang's bank account!"
 
 msgid "Du bist nicht berechtigt Firmen/Gang Mitglieder hinzuzufügen!"
 msgstr "You are not allowed to add companies/gang members!"
 
 msgid "Dieser Benutzer ist bereits in einer Firma oder Gang!"
-msgstr "This user is already in a company or gang!"
+msgstr "This user is already in a firm or gang!"
 
 msgid "Dieser Spieler ist bereits in deiner Firma/Gang!"
-msgstr "This player is already in your company/gang!"
+msgstr "This player is already in your firm/gang!"
 
 msgid "Du kannst den Firmen/Gang Leader nicht rauswerfen!"
-msgstr "You can't kick out the company/gang leader!"
+msgstr "You can't kick out the firm/gang leader!"
 
 msgid "%s ist soeben der %s beigetreten!"
 msgstr "%s has just joined the %s!"
@@ -2742,7 +2742,7 @@ msgid "Du bist nicht berechtigt den Namen zu verändern!"
 msgstr "You are not allowed to change the name!"
 
 msgid "Es existiert bereits eine Firma/Gang mit diesem Namen!"
-msgstr "A company/gang with this name already exists!"
+msgstr "A firm/gang with this name already exists!"
 
 msgid "Du kannst deine %s nur alle %d Tage umbennen!"
 msgstr "You can only rename your %s every %d days!"
@@ -2761,7 +2761,7 @@ msgid "Die Einstellungen für Rang "
 msgstr "The settings for rank "
 
 msgid "Das Fahrzeug ist nun im Besitz der Firma/Gang!"
-msgstr "The vehicle is now owned by the company/gang!"
+msgstr "The vehicle is now owned by the firm/gang!"
 
 msgid "Es ist ein Fehler aufgetreten!"
 msgstr "An error has occurred!"
@@ -2791,7 +2791,7 @@ msgid "Du hast das Fahrzeug für %d$ angeboten!"
 msgstr "You offered the vehicle for %d$!"
 
 msgid "Deine Firma besitzt noch Geschäfte! Bitte verkaufe diese erst!"
-msgstr "Your company still owns businesses! Please sell them first!"
+msgstr "Your firm still owns businesses! Please sell them first!"
 
 msgid "Du bietest noch Fahrzeuge zum Verkauf an! Beende diese erst!"
 msgstr "You still offer vehicles for sale! Finish them first!"
@@ -4250,7 +4250,7 @@ msgid "Dieses Fahrzeug ist nicht von deiner Fraktion!"
 msgstr "This vehicle is not from your faction!"
 
 msgid "Diese Fahrzeug ist nicht von deiner Firma!"
-msgstr "This vehicle is not from your company!"
+msgstr "This vehicle is not from your firm!"
 
 msgid "Diese Fahrzeug ist nicht von deiner Gruppe!"
 msgstr "This vehicle is not from your group!"
