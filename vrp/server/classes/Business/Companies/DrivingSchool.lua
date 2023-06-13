@@ -357,40 +357,51 @@ function DrivingSchool:startAutomaticTest(player, type)
 
 	if player.m_AutoTestMode ~= "heli" then
 		player:sendInfo(_("Fahre die vorgesehene Strecke ohne dein Fahrzeug zu beschädigen!", player))
-		outputChatBox(_("%s sagt: Mit 'X' schaltest du den Motor an.", player, name), player, 200, 200, 200)
-		setTimer(outputChatBox, 2000, 1, _("%s sagt: Anschließend mit 'L' die Lichter.", player, name), player, 200, 200, 200)
+		outputChatBox(_("%s sagt: Mit #C8C800'X'#C8C8C8 schaltest du den Motor an.", player, name), player, 200, 200, 200, true)
+		setTimer(outputChatBox, 2000, 1, _("%s sagt: Anschließend mit #C8C800'L'#C8C8C8 die Lichter.", player, name), player, 200, 200, 200, true)
 		if player.m_AutoTestMode == "bike" then
-			setTimer(outputChatBox, 4000, 1, _("%s sagt: Ziehe deinen Helm an.", player, name), player, 200, 200, 200)
+			setTimer(outputChatBox, 4000, 1, _("%s sagt: Nun ziehe deinen Helm an.", player, name), player, 200, 200, 200)
 		else
-			setTimer(outputChatBox, 4000, 1, _("%s sagt: Nun Anschnallen mit 'M'.", player, name), player, 200, 200, 200)
+			setTimer(outputChatBox, 4000, 1, _("%s sagt: Nun Anschnallen mit #C8C800'M'#C8C8C8.", player, name), player, 200, 200, 200, true)
 		end
-		setTimer(outputChatBox, 6000, 1, _("%s sagt: Mit den Tasten 'W', 'A', 'S' und 'D' bewegst du das Fahrzeug.", player, name), player, 200, 200, 200, true)
+		setTimer(outputChatBox, 6000, 1, _("%s sagt: Mit den Tasten #C8C800'W'#C8C8C8, #C8C800'A'#C8C8C8, #C8C800'S'#C8C8C8 und #C8C800'D'#C8C8C8 bewegst du das Fahrzeug.", player, name), player, 200, 200, 200, true)
 		setTimer(outputChatBox, 8000, 1, _("%s sagt: Die Schranke öffnest du mit #C8C800'H'#C8C8C8. Bitte schließe diese nachher wieder.", player, name), player, 200, 200, 200, true)
-		setTimer(outputChatBox, 10000, 1, _("%s sagt: Und abgeht es! Vergiss nicht den Limiter mit der Taste 'K' auf 80 km/h einzustellen.", player, name), player, 200, 200, 200)
+		setTimer(outputChatBox, 10000, 1, _("%s sagt: Und abgeht es! Vergiss nicht den Limiter mit der Taste #C8C800'K'#C8C8C8 auf #C8C80080 km/h#C8C8C8 einzustellen.", player, name), player, 200, 200, 200, true)
 
 		setTimer(function(veh)
-			if not isElement(veh) then
+			if not isElement(veh, name) then
 				sourceTimer:destroy()
 				return
 			end
 			if veh:getSpeed() >= 85 then
-				veh.m_Driver:sendWarning(_("Du fährst zu schnell! Du fällst durch die Prüfung, wenn du zu oft zu schnell fährst!", veh.m_Driver))
 				veh.m_SpeedingPoints = veh.m_SpeedingPoints + 1
+				outputChatBox(_("%s sagt: Du fährst zu schnell! Das gibt einen Fehlerpunkt!", player, name), player, 200, 200, 200)
+				if veh.m_SpeedingPoints < 5 then
+					if veh.m_SpeedingPoints == 1 then
+						setTimer(outputChatBox, 2000, 1, _("%s sagt: Vergiss nicht den Limiter mit der Taste #C8C800'K'#C8C8C8 auf #C8C80080 km/h#C8C8C8 einzustellen!", player, name, veh.m_SpeedingPoints), player, 200, 200, 200, true)
+						setTimer(outputChatBox, 4000, 1, _("%s sagt: Denk dran: Bei #C8C8005#C8C8C8 Fehlerpunkten fällst du durch!", player, name), player, 200, 200, 200, true)
+					else
+						setTimer(outputChatBox, 2000, 1, _("%s sagt: Damit hast du jetzt schon #C8C800%s#C8C8C8 Fehlerpunkte!", player, name, veh.m_SpeedingPoints), player, 200, 200, 200, true)
+					end
+				else
+					setTimer(outputChatBox, 2000, 1, _("%s sagt: Das wars! Durchgefallen!", player, name), player, 200, 200, 200)
+					setTimer(destroyElement, 2000, 1, veh)
+				end
 			end
-		end, 5000, 0, veh)
+		end, 5000, 0, veh, name)
 	else
 		player:sendInfo(_("Fliege die vorgesehene Strecke ohne deinen Helikopter zu beschädigen!", player))
-		setTimer(outputChatBox, 2000, 1, _("%s sagt: Mit 'X' schaltest du den Motor an.", player, name), player, 200, 200, 200, true)
-		setTimer(outputChatBox, 4000, 1, _("%s sagt: Mit 'W' lässt du den Helikopter steigen, mit 'S' lässt du ihn sinken.", player, name), player, 200, 200, 200)
-		setTimer(outputChatBox, 6000, 1, _("%s sagt: ... und mit den Pfeiltasten neigst du den Helikopter, damit er sich bewegt.", player, name), player, 200, 200, 200, true)
-		setTimer(outputChatBox, 8000, 1, _("%s sagt: Los geht's!", player, name), player, 200, 200, 200, true)
+		outputChatBox(_("%s sagt: Mit #C8C800'X'#C8C8C8 schaltest du den Motor an.", player, name), player, 200, 200, 200, true)
+		setTimer(outputChatBox, 4000, 1, _("%s sagt: Mit #C8C800'W'#C8C8C8 lässt du den Helikopter steigen, mit #C8C800'S'#C8C8C8 lässt du ihn sinken.", player, name), player, 200, 200, 200, true)
+		setTimer(outputChatBox, 6000, 1, _("%s sagt: ... und mit den #C8C800Pfeiltasten#C8C8C8 neigst du den Helikopter, damit er sich bewegt.", player, name), player, 200, 200, 200, true)
+		setTimer(outputChatBox, 8000, 1, _("%s sagt: Los geht's!", player, name), player, 200, 200, 200)
 	end
 
 	addEventHandler("onVehicleExit", veh,
 		function(player, seat)
 			if seat ~= 0 then return end
 			if not source.m_IsFinished then
-				player:sendError(_("Du hast das Fahrzeug verlassen und die Prüfung beendet!", player))
+				player:sendError(_("Du hast das Fahrzeug verlassen und die Prüfung abgebrochen!", player))
 			end
 			if DrivingSchool.m_LessonVehicles[player] == source then
 				DrivingSchool.m_LessonVehicles[player] = nil
@@ -436,7 +447,7 @@ function DrivingSchool:startAutomaticTest(player, type)
 				if DrivingSchool.m_LessonVehicles[player] == source then
 					DrivingSchool.m_LessonVehicles[player] = nil
 					if not source.m_IsFinished then
-						player:sendError(_("Du hast das Fahrzeug verlassen und die Prüfung beendet!", player))
+						player:sendError(_("Du hast die Prüfung nicht bestanden!", player))
 					end
 					if source.m_NPC then
 						if isElement(source.m_NPC) then
@@ -465,7 +476,7 @@ function DrivingSchool:onHitRouteMarker()
 			client:triggerEvent("DrivingLesson:setMarker",DrivingSchool.testRoute[veh.m_TestMode][veh.m_CurrentNode], veh)
 		else
 			veh.m_IsFinished = true
-			if getElementHealth(veh) >= 600 and veh.m_SpeedingPoints <= 5 then
+			if getElementHealth(veh) >= 600 then
 				if veh.m_TestMode == "car" then
 					client.m_HasDrivingLicense = true
 				elseif veh.m_TestMode == "bike" then
@@ -483,11 +494,7 @@ function DrivingSchool:onHitRouteMarker()
 				DrivingSchool.m_LessonVehicles[client] = nil
 				client:triggerEvent("DrivingLesson:endLesson")
 			else
-				if veh.m_SpeedingPoints > 5 then
-					client:sendError(_("Da du zu oft zu schnell warst, hast du nicht bestanden!", client))
-				else
-					client:sendError(_("Da dein Fahrzeug zu beschädigt war, hast du nicht bestanden!", client))
-				end
+				client:sendError(_("Da dein Fahrzeug zu beschädigt war, hast du nicht bestanden!", client))
 				if veh.m_NPC then
 					destroyElement(veh.m_NPC)
 				end
