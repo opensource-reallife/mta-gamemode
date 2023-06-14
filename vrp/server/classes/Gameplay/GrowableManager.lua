@@ -157,13 +157,21 @@ function GrowableManager:getClientCheck(seed, bool, z_pos, isUnderWater, isWrong
 	if not bool or isUnderWater or isWrongDimension then client:sendError(_("Dies ist kein guter Untergrund zum Anpflanzen! Suche dir ebene Gras- oder Erdflächen", client)) return false end
 	if not self:checkPlantConditionsForPlayer(client, seed) then return false end
 	
-	local pos = client:getPosition()
-	client:giveAchievement(61)
-	client:getInventory():removeItem(seed, 1)
-	toggleAllControls(client, false)
-	client:setAnimation("bomber", "bom_plant", 1500, false, false, false, false)
-	GrowableManager:getSingleton():addNewPlant(GrowableManager:getSingleton():getPlantNameFromSeed(seed), Vector3(pos.x, pos.y, z_pos), client)
-	Timer(toggleAllControls, 1500, 1, client, true)
+	if not client.m_IsPlanting then
+		client.m_IsPlanting = true
+		toggleAllControls(client, false)
+		client:setAnimation("bomber", "bom_plant", 1500, false, false, false, false)
+		setTimer(function(client, seed, z_pos)
+			local pos = client:getPosition()
+			client:giveAchievement(61)
+			client:getInventory():removeItem(seed, 1)
+			GrowableManager:getSingleton():addNewPlant(GrowableManager:getSingleton():getPlantNameFromSeed(seed), Vector3(pos.x, pos.y, z_pos), client)
+			toggleAllControls(client, true)
+			client.m_IsPlanting = false
+		end, 1500, 1, client, seed, z_pos)
+	else
+		client:sendError(_("Du bist gerade schon am einpflanzen!", player))
+	end
 end
 
 function GrowableManager:sendGrowablesToClient(player)
