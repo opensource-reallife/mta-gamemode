@@ -43,7 +43,7 @@ function ItemCan:action(player, key, state, bag, place)
 			if isElementInWater( player ) then
 				player:getInventory():setItemValueByBag(bag, place, 10)
 				player:triggerEvent("itemCanRefresh", 10)
-				player:sendInfo(_("Kanne aufgefüllt!", player))
+				player:sendSuccess(_("Kanne aufgefüllt!", player))
 			else
 				player:sendError(_("Du befindest dich nicht im Wasser!", player))
 			end
