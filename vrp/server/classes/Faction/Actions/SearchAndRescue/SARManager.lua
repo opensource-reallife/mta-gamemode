@@ -8,8 +8,8 @@
 
 SARManager = inherit(Singleton)
 
-local SAR_TIME_MIN = 60 -- in minutes
-local SAR_TIME_MAX = 120 -- in minutes
+local SAR_TIME_MIN = 240 -- in minutes
+local SAR_TIME_MAX = 360 -- in minutes
 local SAR_MIN_PLAYERS = 2
 local SAR_MAX_CONCURRENT = 1
 
@@ -20,6 +20,7 @@ function SARManager:constructor()
         [1] = {"Mount Chiliad", "Eine Gruppe Wanderer wird im Gebiet des Mount Chiliad vermisst!", -2371.401, -1611.086, 30},
         [2] = {"Einkaufszentrum LS", "Ein Amokläufer hat mehrere Besucher eines Einkaufszentrums beim All Saints General Hospital verletzt!", 1129.113, -1489.698, 10},
         [3] = {"Geisterstadt", "Einige Jugendliche sind von einer Übernachtung in der sogenannten Geisterstadt nicht zurückgekehrt.", -384.62, 2239.91, 20},
+        [4] = {"Schiffsunglück", "Opfer eines Schiffsunglücks wurden an den Strand nahe Angel Pine gespült.", -2644.75, -2699.29, 20},
     }
     self.m_MissionPeds = {
         [1] = {
@@ -87,6 +88,38 @@ function SARManager:constructor()
             {-323.40, 2277.85, 69.95},
             {-346.55, 2322.24, 58.42},
             {-516.75, 2132.25, 72.28},
+        },
+        [4] = {
+            {-2651.61, -2196.68, 2.58},
+            {-2656.03, -2262.75, 5.89},
+            {-2691.85, -2222.15, 1.92},
+            {-2765.13, -2289.94, 4.75},
+            {-2701.47, -2328.40, 5.63},
+            {-2825.21, -2392.42, 1.63},
+            {-2793.37, -2418.74, 4.00},
+            {-2712.86, -2468.84, 2.88},
+            {-2604.40, -2524.65, 3.00},
+            {-2753.56, -2607.04, 2.97},
+            {-2669.10, -2629.50, 7.60},
+            {-2596.65, -2657.94, 8.98},
+            {-2661.96, -2692.41, 25.20},
+            {-2682.34, -2746.38, 4.25},
+            {-2588.69, -2718.99, 4.55},
+            {-2515.30, -2757.13, 8.84},
+            {-2482.69, -2847.05, 3.00},
+            {-2408.50, -2768.31, 3.32},
+            {-2338.46, -2804.86, 9.74},
+            {-2250.03, -2824.05, 2.85},
+            {-2176.55, -2815.32, 3.29},
+            {-2102.02, -2826.16, 3.19},
+            {-2013.36, -2781.55, 6.82},
+            {-1978.65, -2814.99, 3.57},
+            {-1925.39, -2762.62, 8.89},
+            {-1841.85, -2742.58, 4.50},
+            {-2660.21, -2479.70, 9.92},
+            {-2798.44, -2481.81, 6.53},
+            {-2596.87, -2749.97, 3.00},
+            {-2611.85, -2859.42, 1.28},
         }
     }
 
