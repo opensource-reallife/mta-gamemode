@@ -19,7 +19,7 @@ FACTION_STATE_WT_DESTINATION = Vector3(1598.78064, -1611.63953, 12.5)
 WEAPONTRUCK_NAME = {["evil"] = "Waffentruck", ["state"] = "Staats-Waffentruck"}
 WEAPONTRUCK_NAME_SHORT = {["evil"] = "Waffentruck", ["state"] = "Staats-WT"}
 
-WEAPONTRUCK_MIN_MEMBERS = 0--{["evil"] = 3, ["state"] = 3}
+WEAPONTRUCK_MIN_MEMBERS = {["evil"] = 0, ["state"] = 0}
 BANKROB_MIN_MEMBERS = DEBUG and 0 or 3
 WEEDTRUCK_MIN_MEMBERS = DEBUG and 0 or 2
 EVIDENCETRUCK_MIN_MEMBERS = DEBUG and 0 or 3
