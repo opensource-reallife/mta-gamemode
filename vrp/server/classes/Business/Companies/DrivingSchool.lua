@@ -202,7 +202,7 @@ end
 
 function DrivingSchool:Event_startTheory(ped)
 	if client.m_HasTheory then
-		client:sendWarning(_("Du hast die Theorieprüfung bereits bestanden!", client))
+		client:sendError(_("Du hast die Theorieprüfung bereits bestanden!", client))
 		return
 	end
 
@@ -486,7 +486,7 @@ function DrivingSchool:onHitRouteMarker()
 				else
 					client.m_HasPilotsLicense = true
 				end
-				client:sendInfo(_("Du hast die Prüfung bestanden und dein Fahrzeug ist in einem ausreichenden Zustand!", client))
+				client:sendSuccess(_("Du hast die Prüfung bestanden und dein Fahrzeug ist in einem ausreichenden Zustand!", client))
 				if veh.m_NPC then
 					destroyElement(veh.m_NPC)
 				end
