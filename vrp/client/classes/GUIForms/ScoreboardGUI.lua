@@ -151,7 +151,7 @@ function ScoreboardGUI:refresh()
 	end
 
 	self.m_PlayerCount:setText(_("Derzeit sind %d Spieler online", #getElementsByType("player")))
-	self.m_Ping:setText(_("eigener Ping: %dms", localPlayer:getPing()))
+	self.m_Ping:setText(_("Ping: %dms", localPlayer:getPing()))
 end
 
 function ScoreboardGUI:addPlayerCount(name, value, valueAFK, color)

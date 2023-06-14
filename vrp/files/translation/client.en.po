@@ -3008,8 +3008,8 @@ msgstr "Ping"
 msgid "Derzeit sind %d Spieler online"
 msgstr "Currently %d players are online"
 
-msgid "eigener Ping: %dms"
-msgstr "own Ping: %dms"
+msgid "Ping: %dms"
+msgstr "Ping: %dms"
 
 msgid "Score: %d"
 msgstr "Score: %d"
@@ -4649,9 +4649,7 @@ msgstr "Illegal weed transport"
 msgid "Als Boxer musst du gegen andere Boxer antreten und diese im Kampf besiegen."
 "Gewinnst du den Kampf, gewinnst du ein Preisgeld."
 "Verlierst du jedoch, gehst du leer aus."
-msgstr "As a boxer you have to compete against other boxers and defeat them in a fight."
-"If you win the fight, you win a prize money."
-"However, if you lose, you go away empty-handed."
+msgstr "As a boxer you have to compete against other boxers and defeat them in a fight.\nIf you win the fight, you win a prize money.\nHowever, if you lose, you go away empty-handed."
 
 msgid "Rang 0"
 msgstr "Rank 0"
@@ -4869,6 +4867,9 @@ msgstr "Job: Forklift driver"
 msgid "Job: Logistik"
 msgstr "Job: Logistics"
 
+msgid "Job: Bauer"
+msgstr "Job: Farmer"
+
 msgid "Hinsetzen (Sessel)"
 msgstr "Sit down (chair)"
 
@@ -5024,3 +5025,36 @@ msgstr "Add vehicle to company/gang"
 
 msgid "Fahrzeug zur %s hinzufügen"
 msgstr "Add vehicle to %s"
+
+msgid "Bitte reconnecten damit die Änderung ihre Wirkung zeigt!"
+msgstr "Please reconnect so that the change shows its effect!"
+
+msgid ""
+msgstr ""
+
+msgid ""
+msgstr ""
+
+msgid ""
+msgstr ""
+
+msgid ""
+msgstr ""
+
+msgid ""
+msgstr ""
+
+msgid ""
+msgstr ""
+
+msgid ""
+msgstr ""
+
+msgid ""
+msgstr ""
+
+msgid ""
+msgstr ""
+
+msgid ""
+msgstr ""
