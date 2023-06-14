@@ -254,7 +254,8 @@ function MechanicTow:onEnterTowLot(hitElement)
 	if getElementType(hitElement) ~= "player" then return end
 	if hitElement:getCompany() ~= self then return end
 	if hitElement:isCompanyDuty() ~= true then return end
-	if not hitElement.vehicle or not hitElement.vehicle.getCompany or hitElement.vehicle:getCompany() ~= self or (hitElement.vehicle:getModel() ~= 525 and hitElement.vehicle:getModel() ~= 417) then return end
+	--if not hitElement.vehicle or not hitElement.vehicle.getCompany or hitElement.vehicle:getCompany() ~= self or (hitElement.vehicle:getModel() ~= 525 and hitElement.vehicle:getModel() ~= 417) then return end
+	if not hitElement.vehicle or (hitElement.vehicle:getModel() ~= 525 and hitElement.vehicle:getModel() ~= 417) then return end
 
 	local towingBike = hitElement.vehicle:getData("towingBike")
 	if isElement(towingBike) then
@@ -315,7 +316,7 @@ function MechanicTow:onAttachVehicleToTow(towTruck)
 	local driver = getVehicleOccupant(towTruck)
 	if driver and getElementType(driver) == "player" then
 		if driver:getCompany() == self and driver:isCompanyDuty() then
-			if towTruck.getCompany and towTruck:getCompany() == self and towTruck:getModel() == 525 then
+			if towTruck:getModel() == 525 then --towTruck.getCompany and towTruck:getCompany() == self and towTruck:getModel() == 525 then
 				if self:isValidTowableVehicle(source) then
 					source:toggleRespawn(false)
 					source.m_HasBeenUsed = 1 --disable despawn on logout
@@ -334,7 +335,7 @@ function MechanicTow:onDetachVehicleFromTow(towTruck, vehicle)
 	local driver = getVehicleOccupant(towTruck)
 	if driver and driver.m_InTowLot then
 		if driver:getCompany() == self and driver:isCompanyDuty() then
-			if towTruck.getCompany and towTruck:getCompany() == self then
+			if towTruck:getModel() == 525 then --towTruck.getCompany and towTruck:getCompany() == self then
 				if self:isValidTowableVehicle(source) then
 					if not source.burned then
 						self:respawnVehicle(source)
