@@ -49,7 +49,7 @@ function GroupPropertyManager:OnMessageTextChange( text )
 		if client then
 			if client.m_LastPropertyPickup then
 				client.m_LastPropertyPickup.m_Message = text
-				client:sendInfo("Die Eingangsnachricht wurde aktualisiert!")
+				client:sendInfo(_"Die Eingangsnachricht wurde aktualisiert!")
 			end
 		end
 	end
