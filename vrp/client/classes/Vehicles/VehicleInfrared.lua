@@ -46,7 +46,7 @@ VehicleInfrared.DefaultColorSecondary = tocolor(0, 0, 0, 255)
 VehicleInfrared.InvertColor = tocolor(0, 0, 0, 255)
 VehicleInfrared.InvertColorSecondary = tocolor(255, 255, 255, 255)
 
-function VehicleInfrared:constructor(vehicle) 
+function VehicleInfrared:constructor(vehicle, useBuiltIn) 
 	VehicleInfrared.Sensitivity = core:get("Vehicles", "InfraredSensitivity", 2)
 	self.m_Deleted = false
 	self.m_State = false
@@ -73,7 +73,7 @@ function VehicleInfrared:constructor(vehicle)
 	self.m_Cursor = bind(self.cursor, self)
 	self.m_Key = bind(self.onKey, self)
 	self:sound()
-	self:start(vehicle)
+	self:start(vehicle, useBuiltIn)
 end
 
 function VehicleInfrared:destructor() 
@@ -95,13 +95,17 @@ function VehicleInfrared:updateSensitivity()
 	VehicleInfrared.Sensitivity = core:get("Vehicles", "InfraredSensitivity", 2)
 end
 
-function VehicleInfrared:start(vehicle) 
+function VehicleInfrared:start(vehicle, useBuiltIn) 
 	toggleAllControls(false)
 	Nametag:getSingleton():setDisabled(true)
-	self.m_Shader = MonochromeShader:new(true)
-	self.m_ThermalShaderVehicle = DxShader("files/shader/thermal.fx", 9999, 0, true)
-	self.m_ThermalShaderPed = DxShader("files/shader/thermal-ped.fx", 9999, 0, false, "ped")
-	self.m_ThermalAntiShader = DxShader("files/shader/thermal-anti.fx", 9999, 0, true)
+	if useBuiltIn then
+		setCameraGoggleEffect("thermalvision")
+	else
+		self.m_Shader = MonochromeShader:new(true)
+		self.m_ThermalShaderVehicle = DxShader("files/shader/thermal.fx", 9999, 0, true)
+		self.m_ThermalShaderPed = DxShader("files/shader/thermal-ped.fx", 9999, 0, false, "ped")
+		self.m_ThermalAntiShader = DxShader("files/shader/thermal-anti.fx", 9999, 0, true)
+	end
 	setNearClipDistance(.1)
 	self.m_Vehicle = vehicle or localPlayer.vehicle
 	self.m_Yaw = self.m_Vehicle.rotation.z
@@ -173,7 +177,9 @@ function VehicleInfrared:restore()
 	if self.m_ThermalShaderPed then 
 		engineRemoveShaderFromWorldTexture ( self.m_ThermalShaderPed, "*" )
 	end
-	self.m_Shader:delete()
+	if self.m_Shader then
+		self.m_Shader:delete()
+	end
 	if self.m_White then 
 		self.m_White:destroy()
 	end
@@ -194,6 +200,7 @@ function VehicleInfrared:restore()
 	Nametag:getSingleton():setDisabled(false)
 
 	resetSkyGradient()
+	setCameraGoggleEffect("normal")
 	setNearClipDistance(.3)
 	setCameraTarget(localPlayer)
 end
@@ -496,7 +503,7 @@ function VehicleInfrared:light()
 end
 
 function VehicleInfrared:mode() 
-	if self.m_Shader:getSource() then
+	if self.m_Shader and self.m_Shader:getSource() then
 		if self.m_Mode == 0 then 
 			self.m_Shader:getSource():setValue("luminanceFloat", 2)
 			self.m_Shader:getSource():setValue("negative", 0)
@@ -576,13 +583,13 @@ addEventHandler("VehicleInfrared:onWasted", root, function()
 end)
 
 addEvent("VehicleInfrared:start", true)
-addEventHandler("VehicleInfrared:start", root, function(vehicle) 
+addEventHandler("VehicleInfrared:start", root, function(vehicle, useBuiltIn) 
 	if localPlayer:getData("inInfraredVehicle") and vehicle:getData("isInfraredVehicle") then 
 		if VehicleInfrared:isInstantiated() then 
 			delete(VehicleInfrared:getSingleton())
 			localPlayer.m_PreviousInfrared = nil
 		end
-		VehicleInfrared:new(vehicle)
+		VehicleInfrared:new(vehicle, useBuiltIn)
 	end
 end)
 

@@ -208,13 +208,13 @@ function VehicleManager:constructor()
 				if not isValidElement(client.vehicle.m_InfraredUsedBy, "player") then
 					client.vehicle.m_InfraredUsedBy = client
 					client:setData("inInfraredVehicle", true, true)
-					client:triggerEvent("VehicleInfrared:start", client.vehicle)
+					client:triggerEvent("VehicleInfrared:start", client.vehicle, client.vehicle:getFaction():isRescueFaction())
 				else
 					if not client.vehicle.m_InfraredUsedBy.vehicle or client.vehicle.m_InfraredUsedBy.vehicle ~= client.vehicle then
 						client.vehicle.m_InfraredUsedBy:setData("inInfraredVehicle", false, true)
 						client.vehicle.m_InfraredUsedBy = client
 						client:setData("inInfraredVehicle", true, true)
-						client:triggerEvent("VehicleInfrared:start", client.vehicle)
+						client:triggerEvent("VehicleInfrared:start", client.vehicle, client.vehicle:getFaction():isRescueFaction())
 					else
 						if client.vehicle.m_InfraredUsedBy ~= client then
 							client:sendError(_("Die Kamera wird zurzeit von %s bedient!", client, client.vehicle.m_InfraredUsedBy:getName()))
