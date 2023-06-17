@@ -1011,12 +1011,13 @@ function FactionRescue:outputMegaphone(player, ...)
 end
 
 function FactionRescue:Event_changeRadioStatus(status)
-	if client:getFaction() and client:getFaction():isRescueFaction() and client:isFactionDuty() then
+	if client:getFaction() and client:getFaction():isRescueFaction() then
 		if not client.lastStatusChange then client.lastStatusChange = 0 end
-		if client.lastStatusChange + 3 < getRealTime().timestamp then
+		if client.lastStatusChange < getRealTime().timestamp then
 			local faction = client:getFaction()
 			local rankName = faction:getRankName(faction:getPlayerRank(client))
-			for i, player in pairs(self:getOnlinePlayers(false, true)) do
+			for i, player in pairs(self:getOnlinePlayers(false, false)) do
+				player:outputChat(_("#03cafc** [FMS] #b3eaff%s %s meldet Status %s #03cafc**", player, rankName, client:getName(), status), 3, 202, 252, true)
 				if player ~= client then
 					player:sendShortMessage(_("%s %s meldet Status %s", player, rankName, client:getName(), status))
 				else
@@ -1025,10 +1026,6 @@ function FactionRescue:Event_changeRadioStatus(status)
 			end
 			client.lastStatusChange = getRealTime().timestamp
 			client:setPublicSync("RadioStatus", status)
-		end
-	else
-		if client:getFaction() and client:getFaction():isRescueFaction() then
-			client:sendError(_("Du bist nicht im Dienst!", client))
 		end
 	end
 end
