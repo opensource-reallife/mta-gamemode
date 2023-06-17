@@ -198,7 +198,6 @@ function FactionRescue:Event_toggleDuty(type, wasted, prefSkin, dontChangeSkin, 
 				client:setBadge()
 				takeAllWeapons(client)
 				if not wasted then faction:updateDutyGUI(client) end
-				client:setPublicSync("RadioStatus", 6)
 			else
 				if wasted then return end
 				if client:getPublicSync("Company:Duty") and client:getCompany() then
@@ -208,10 +207,7 @@ function FactionRescue:Event_toggleDuty(type, wasted, prefSkin, dontChangeSkin, 
 					CompanyManager:getSingleton():companyForceOffduty(client)
 				end
 				takeAllWeapons(client)
-				if type == "fire" then
-					giveWeapon(client, 42, 0, true)
-					client:setPublicSync("RadioStatus", 3)
-				end
+				if type == "fire" then giveWeapon(client, 42, 0, true) end
 				client:setFactionDuty(true)
 				client:sendInfo(_("Du bist nun im Dienst deiner Fraktion!", client))
 				client:setPublicSync("Rescue:Type",type)
