@@ -358,7 +358,12 @@ function Player:buckleSeatBelt(vehicle)
 	end
 
 	if self.vehicle then
-		self:sendShortMessage(_("Du hast dich %sgeschnallt!", self, self.m_SeatBelt and "an" or "ab"))
+		if self.m_SeatBelt then
+			self:sendShortMessage(_("Du hast dich angeschnallt!", self))
+		else
+			self:sendShortMessage(_("Du hast dich abgeschnallt!", self))
+		end
+		--self:sendShortMessage(_("Du hast dich %sgeschnallt!", self, self.m_SeatBelt and "an" or "ab"))
 	end
 end
 

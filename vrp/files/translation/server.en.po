@@ -3700,8 +3700,11 @@ msgstr "You had 20 RTR points your driver's license was revoked!"
 msgid "Knast: Du kannst dich mit /bail für %d$ freikaufen!"
 msgstr "Jail: You can buy yourself free with /bail for %d$!"
 
-msgid "Du hast dich %sgeschnallt!"
-msgstr "You're fucking crazy!"
+msgid "Du hast dich abgeschnallt!"
+msgstr "You have unbuckled your seat belt!"
+
+msgid "Du hast dich angeschnallt!"
+msgstr "You put on your seat belt!"
 
 msgid "Eure Allianz hat kein Bündnis!"
 msgstr "Your faction has no alliance!"

@@ -71,7 +71,7 @@ msgid "Code Editor"
 msgstr "Code editor"
 
 msgid "Editor"
-msgstr "编辑"
+msgstr "Editor"
 
 msgid "Code in der Zwischenablage gespeichert."
 msgstr "Code stored in the clipboard."
@@ -196,14 +196,11 @@ msgstr "Wrong password!"
 msgid "Riesenrad"
 msgstr "Ferris wheel"
 
-msgid ""
-"Mit einer Höhe von 32m und 10 Gondeln ist dieses Riesenrad das wohl "
-"spektakulärste in ganz San Andreas! Klicke auf eine Gondel, um für nur 10$ "
-"bis zu 2 Runden mitzufahren."
-msgstr ""
-"With a height of 32m and 10 gondolas, this Ferris wheel is probably the most "
-"spectacular in all of San Andreas! Click on a gondola to ride up to 2 laps "
-"for only 10$."
+msgid "Mit einer Höhe von 32m und 10 Gondeln ist dieses Riesenrad das wohl spektakulärste in ganz San Andreas! Klicke auf eine Gondel, um für nur 10$ bis zu 2 Runden mitzufahren."
+msgstr "With a height of 32m and 10 gondolas, this Ferris wheel is probably the most spectacular in all of San Andreas! Click on a gondola to ride up to 2 laps for only 10$."
+
+msgid "Verstanden!"
+msgstr "Understood!"
 
 msgid "Du kannst im Wasser nicht angeln!"
 msgstr "You can't fish in water!"
@@ -328,12 +325,8 @@ msgstr "Button %d"
 msgid "Male in %d verschiedenen Farben!"
 msgstr "Draw in %d different colours!"
 
-msgid ""
-"Du bist durch das Verlassen des Gebiets aus dem Gangwar ausgetreten. Du "
-"kannst jedoch jederzeit wieder eintreten!"
-msgstr ""
-"You left the gang war by leaving the area. However, you can re-enter at any "
-"time!"
+msgid "Du bist durch das Verlassen des Gebiets aus dem Gangwar ausgetreten. Du kannst jedoch jederzeit wieder eintreten!"
+msgstr "You left the gang war by leaving the area. However, you can re-enter at any time!"
 
 msgid "Gangwar beendet! Das Gebiet gehört nun %s"
 msgstr "Gangwar finished! The area now belongs to %s"
@@ -401,10 +394,8 @@ msgstr "Received: No"
 msgid "Verstecktes Achievement"
 msgstr "Hidden Achievement"
 
-msgid ""
-"Dieses Achievement wird dir erst angezeigt wenn du es findest bzw. erfüllst!"
-msgstr ""
-"This Achievement will only be shown to you when you find it or fulfill it!"
+msgid "Dieses Achievement wird dir erst angezeigt wenn du es findest bzw. erfüllst!"
+msgstr "This Achievement will only be shown to you when you find it or fulfill it!"
 
 msgid "Allgemein"
 msgstr "General"
@@ -451,12 +442,8 @@ msgstr "..i]:setDisplayText(v.name"
 msgid "Kein Feuer ausgewählt!"
 msgstr "No fire selected!"
 
-msgid ""
-"Möchtest du das Feuer wirklich permanent löschen? Du kannst es auch "
-"deaktivieren, damit es nicht mehr zufällig ausbricht"
-msgstr ""
-"Do you really want to delete the fire permanently? You can also deactivate "
-"it so that it no longer breaks out accidentally"
+msgid "Möchtest du das Feuer wirklich permanent löschen? Du kannst es auch deaktivieren, damit es nicht mehr zufällig ausbricht"
+msgstr "Do you really want to delete the fire permanently? You can also deactivate it so that it no longer breaks out accidentally"
 
 msgid "Feuer stoppen"
 msgstr "Stop fire"
@@ -663,16 +650,16 @@ msgid "Bitte wähle das gewünschte Unternehmen aus:"
 msgstr "Please select the desired company:"
 
 msgid "Fraktion setzten"
-msgstr "Set fraction"
+msgstr "Set faction"
 
 msgid "Bitte wähle die gewünschte Fraktion aus:"
-msgstr "Please select the desired fraction:"
+msgstr "Please select the desired faction:"
 
 msgid "Unternehmens-Fahrzeuge respawnen"
 msgstr "Respawn company vehicles"
 
 msgid "Fraktions-Fahrzeuge respawnen"
-msgstr "Respawn fractional vehicles"
+msgstr "Respawn factional vehicles"
 
 msgid "Bitte geben einen gültigen Wert ein!"
 msgstr "Please enter a valid value!"
@@ -781,7 +768,7 @@ msgid ""
 "Fraktion / ein Unternehmen aus der Combo Box oder die ID (Zahl) des "
 "Spielers / der Gruppe sein."
 msgstr ""
-"The owner could not be found! The entry must be either a fraction / company "
+"The owner could not be found! The entry must be either a faction / company "
 "from the combo box or the ID (number) of the player / group."
 
 msgid "Das Fahrzeugmodell muss zwischen ID 400 und 611 liegen."
@@ -891,7 +878,7 @@ msgid "Waffen einlagern"
 msgstr "Depot weapons"
 
 msgid "Fraktionsfarben ablegen"
-msgstr "Put down fraction colours"
+msgstr "Put down faction colours"
 
 msgid "Aktionskleidung"
 msgstr "Action clothing"
@@ -900,7 +887,7 @@ msgid "In Dienst gehen"
 msgstr "Go into service"
 
 msgid "Fraktionstätigkeit beginnen"
-msgstr "Start fraction activities"
+msgstr "Start faction activities"
 
 msgid "In Sanitäter-Dienst gehen"
 msgstr "Go in paramedic duty"
@@ -3008,8 +2995,8 @@ msgstr "Ping"
 msgid "Derzeit sind %d Spieler online"
 msgstr "Currently %d players are online"
 
-msgid "eigener Ping: %dms"
-msgstr "own Ping: %dms"
+msgid "Ping: %dms"
+msgstr "Ping: %dms"
 
 msgid "Score: %d"
 msgstr "Score: %d"
@@ -3253,7 +3240,7 @@ msgid "Usertreff"
 msgstr "User meeting"
 
 msgid "Fraktionsbase"
-msgstr "Group base"
+msgstr "Faction base"
 
 msgid "Unternehmensbase"
 msgstr "Company base"
@@ -3263,13 +3250,6 @@ msgstr "House"
 
 msgid "Wohnwagen/Boot"
 msgstr "Caravan/boat"
-
-msgid ""
-"Nutze das Klicksystem bzw. das Hausmenü um den Spawnpunkt für ein Fahrzeug "
-"oder Haus festzulegen!"
-msgstr ""
-"Use the click system/house menu to set up the spawn point for a vehicle/"
-"house!"
 
 msgid "Nametag"
 msgstr "Nametag"
@@ -4649,9 +4629,7 @@ msgstr "Illegal weed transport"
 msgid "Als Boxer musst du gegen andere Boxer antreten und diese im Kampf besiegen."
 "Gewinnst du den Kampf, gewinnst du ein Preisgeld."
 "Verlierst du jedoch, gehst du leer aus."
-msgstr "As a boxer you have to compete against other boxers and defeat them in a fight."
-"If you win the fight, you win a prize money."
-"However, if you lose, you go away empty-handed."
+msgstr "As a boxer you have to compete against other boxers and defeat them in a fight.\nIf you win the fight, you win a prize money.\nHowever, if you lose, you go away empty-handed."
 
 msgid "Rang 0"
 msgstr "Rank 0"
@@ -4869,6 +4847,9 @@ msgstr "Job: Forklift driver"
 msgid "Job: Logistik"
 msgstr "Job: Logistics"
 
+msgid "Job: Bauer"
+msgstr "Job: Farmer"
+
 msgid "Hinsetzen (Sessel)"
 msgstr "Sit down (chair)"
 
@@ -4882,7 +4863,7 @@ msgid "Waffe beidhändig"
 msgstr "Weapon ambidextrous"
 
 msgid "In Fraktionsverlauf vermerken?"
-msgstr "Note in fraction history?"
+msgstr "Note in faction history?"
 
 msgid "Sprache (Experimentelles Feature)"
 msgstr "Language (Experimental Feature)"
@@ -5024,3 +5005,36 @@ msgstr "Add vehicle to company/gang"
 
 msgid "Fahrzeug zur %s hinzufügen"
 msgstr "Add vehicle to %s"
+
+msgid "Bitte reconnecten damit die Änderung ihre Wirkung zeigt!"
+msgstr "Please reconnect so that the change shows its effect!"
+
+msgid "Um 21:00 Uhr findet das tägliche Schildkrötenrennen statt! Du kannst am Strand auf eine Schildkröte Geld setzen und das rennen vor Ort anschauen. Viel Glück!"
+msgstr "At 21:00 the daily turtle race takes place! You can bet money on a turtle on the beach and watch the race on the spot. Good luck!"
+
+msgid "Als Pizzalieferant hast du die Aufgabe die Ware des Pizza Stacks an die jeweiligen Orte zu liefern. \nDu erhälst deine Ware beim Pizza Stack ( Marker ) und lieferst Sie zum Ziel ( Ziel-Icon beim Radar ) ab. Desto schneller du dies schaffst, desto höher ist dein Bonus."
+msgstr "kek"
+
+msgid "Ausgang"
+msgstr "Exit"
+
+msgid "Eingang"
+msgstr "Entry"
+
+msgid ""
+msgstr ""
+
+msgid ""
+msgstr ""
+
+msgid ""
+msgstr ""
+
+msgid ""
+msgstr ""
+
+msgid ""
+msgstr ""
+
+msgid ""
+msgstr ""

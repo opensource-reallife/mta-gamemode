@@ -29,13 +29,30 @@ function VehicleMouseMenu:constructor(posX, posY, element)
 	--self:addItem(_("Klasse: %s", element:getCategoryName())):setTextColor(Color.LightBlue)
 	if not element:isBlown() then
 		if element:getVehicleType() ~= VehicleType.Bike and element:getVehicleType() ~= VehicleType.Trailer then
-			self:addItem(_("%sschließen", element:isLocked() and "Auf" or "Zu"),
+			if element:isLocked() then
+				self:addItem(_("Aufschließen"),
 				function()
 					if self:getElement() then
 						triggerServerEvent("vehicleLock", self:getElement())
 					end
 				end
 			):setIcon(element:isLocked() and FontAwesomeSymbols.Lock or FontAwesomeSymbols.Unlock)
+			else
+				self:addItem(_("Abschließen"),
+				function()
+					if self:getElement() then
+						triggerServerEvent("vehicleLock", self:getElement())
+					end
+				end
+			):setIcon(element:isLocked() and FontAwesomeSymbols.Lock or FontAwesomeSymbols.Unlock)
+			end
+			--self:addItem(_("%sschließen", element:isLocked() and "Auf" or "Zu"),
+			--	function()
+			--		if self:getElement() then
+			--			triggerServerEvent("vehicleLock", self:getElement())
+			--		end
+			--	end
+			--):setIcon(element:isLocked() and FontAwesomeSymbols.Lock or FontAwesomeSymbols.Unlock)
 		end
 		if getElementData(element, "lastDrivers") then
 			local lastDriver = getElementData(element, "lastDrivers")[#getElementData(element, "lastDrivers")]
