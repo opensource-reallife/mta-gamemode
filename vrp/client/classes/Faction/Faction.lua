@@ -124,3 +124,15 @@ function Faction:stopRespawnAnnoucement(stopper)
 	self.m_RespawnAnnouncement:delete()
 	self.m_RespawnAnnouncement = ShortMessage:new(whoStoppedText, _"Fahrzeug Respawn")
 end
+
+function Faction:getOnlinePlayers(afkCheck, dutyCheck)
+	local players = {}
+	for _, player in pairs(getElementsByType("player")) do
+		if player and isElement(player) and player:isLoggedIn() then
+			if (not afkCheck or not player:getPublicSync("AFK")) and (not dutyCheck or player:getPublicSync("Faction:Duty")) then
+				players[#players + 1] = player
+			end
+		end
+	end
+	return players
+end

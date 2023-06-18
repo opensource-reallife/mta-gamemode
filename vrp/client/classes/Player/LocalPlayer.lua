@@ -364,6 +364,7 @@ end
 
 function LocalPlayer:onDeathTimerUp()
 	self.m_Death = false
+	self.m_SuicideAllowed = false
 	if self.m_DeathMessage then
 		delete(self.m_DeathMessage)
 	end
@@ -411,6 +412,7 @@ function LocalPlayer:onDeathTimerUp()
 end
 
 function LocalPlayer:createWastedTimer()
+	local isRescueActive = table.size(FactionManager:getSingleton():getFromId(4):getOnlinePlayers(true, true))
 	local start = getTickCount()
 	self.m_WastedTimer = setTimer(
 		function()
@@ -418,19 +420,24 @@ function LocalPlayer:createWastedTimer()
 			if timeGone >= MEDIC_TIME-500 then
 				self.m_OnDeathTimerUp()
 			else
-				if localPlayer:isPremium() then
+				if timeGone and MEDIC_TIME - timeGone <= MEDIC_TIME - 60000 and not self.m_SuicideAllowed and isRescueActive then
+					self.m_SuicideAllowed = true
+					self.m_DeathMessage:delete()
+					self:createDeathShortMessage()
+				end
+				if localPlayer:isPremium() or self.m_SuicideAllowed then
 					self.m_DeathMessage.m_Text = _("Du bist schwer verletzt und verblutest in %s Sekunden...\n(Drücke hier um dich umzubringen)", math.floor((MEDIC_TIME - timeGone)/1000))
 				else
 					self.m_DeathMessage.m_Text = _("Du bist schwer verletzt und verblutest in %s Sekunden...", math.floor((MEDIC_TIME - timeGone)/1000))
 				end
 				self.m_DeathMessage:anyChange()
 			end
-		end, 1000, MEDIC_TIME/1000
+		end, 1000, MEDIC_TIME/1000, isRescueActive
 	)
 end
 
 function LocalPlayer:createDeathShortMessage()
-	if localPlayer:isPremium() then
+	if localPlayer:isPremium() or self.m_SuicideAllowed then
 		self.m_DeathMessage = ShortMessage:new(_("Du bist schwer verletzt und verblutest in %s Sekunden...\n(Drücke hier um dich umzubringen)", MEDIC_TIME/1000), nil, nil, MEDIC_TIME,
 			function()
 				if self.m_Death then
