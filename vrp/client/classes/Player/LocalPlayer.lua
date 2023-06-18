@@ -412,7 +412,7 @@ function LocalPlayer:onDeathTimerUp()
 end
 
 function LocalPlayer:createWastedTimer()
-	local isRescueActive = table.size(FactionManager:getSingleton():getFromId(4):getOnlinePlayers(true, true))
+	local activeRescuelers = table.size(FactionManager:getSingleton():getFromId(4):getOnlinePlayers(true, true))
 	local start = getTickCount()
 	self.m_WastedTimer = setTimer(
 		function()
@@ -420,7 +420,7 @@ function LocalPlayer:createWastedTimer()
 			if timeGone >= MEDIC_TIME-500 then
 				self.m_OnDeathTimerUp()
 			else
-				if timeGone and MEDIC_TIME - timeGone <= MEDIC_TIME - 60000 and not self.m_SuicideAllowed and isRescueActive then
+				if timeGone and MEDIC_TIME - timeGone <= MEDIC_TIME - 60000 and not self.m_SuicideAllowed and activeRescuelers >= 1 then
 					self.m_SuicideAllowed = true
 					self.m_DeathMessage:delete()
 					self:createDeathShortMessage()
@@ -432,7 +432,7 @@ function LocalPlayer:createWastedTimer()
 				end
 				self.m_DeathMessage:anyChange()
 			end
-		end, 1000, MEDIC_TIME/1000, isRescueActive
+		end, 1000, MEDIC_TIME/1000, activeRescuelers
 	)
 end
 
