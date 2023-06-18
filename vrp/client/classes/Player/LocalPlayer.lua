@@ -420,7 +420,7 @@ function LocalPlayer:createWastedTimer()
 			if timeGone >= MEDIC_TIME-500 then
 				self.m_OnDeathTimerUp()
 			else
-				if timeGone and MEDIC_TIME - timeGone <= MEDIC_TIME - 60000 and not self.m_SuicideAllowed and activeRescuelers >= 1 then
+				if timeGone and MEDIC_TIME - timeGone <= MEDIC_TIME - 60000 and not self.m_SuicideAllowed and not activeRescuelers >= 1 then
 					self.m_SuicideAllowed = true
 					self.m_DeathMessage:delete()
 					self:createDeathShortMessage()
