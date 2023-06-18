@@ -53,7 +53,7 @@ function MapEditorMapSettingsGUI:fillInfos(mapInfos)
     self.m_ActiveSwitch:setState(toboolean(mapInfos[3]))
 	self.m_SaveObjectsSwitch:setState(toboolean(mapInfos[4]))
     self.m_DeactivatableSwitch:setState(toboolean(mapInfos[5]))
-    if localPlayer:getRank() <= RANK.Developer then
+    if localPlayer:getRank() < RANK.Developer then
         self.m_SaveObjectsSwitch:setEnabled(false)
         self.m_DeactivatableSwitch:setEnabled(false)
     end
