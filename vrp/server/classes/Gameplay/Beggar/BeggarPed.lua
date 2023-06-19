@@ -139,7 +139,7 @@ function BeggarPed:Event_onPedWasted(totalAmmo, killer, killerWeapon, bodypart, 
 		if chance(25) then
 			setTimer(function()
 				if killer and isElement(killer) then
-				killer:sendWarning("Dein Mord wurde von einem Augenzeuge an das LSPD gemeldet!")
+				killer:sendWarning("Dein Mord wurde von einem Augenzeugen an das SAPD gemeldet!")
 				killer:giveWanteds(4)
 				killer:sendMessage("Verbrechen begangen: Mord, 4 Wanteds", 255, 255, 0)
 				end
