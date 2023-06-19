@@ -1,9 +1,9 @@
 Gate = inherit(Object)
 Gate.Map = {}
-function Gate:constructor(model, pos, rot, openPos, openRot, playSound, interior , dimension)
+function Gate:constructor(model, pos, rot, openPos, openRot, playSound, interior, dimension, scale)
     self.m_Gates = {}
 	self.m_Closed = true
-	self:addGate(model, pos, rot, openPos, openRot, playSound, interior, dimension)
+	self:addGate(model, pos, rot, openPos, openRot, playSound, interior, dimension, scale)
 end
 
 function Gate:addGate(model, pos, rot, openPos, openRot, playSound, interior, dimension, scale)

@@ -5,6 +5,7 @@
 -- *  PURPOSE:     Faction Rescue Class
 -- *
 -- ****************************************************************************
+
 FactionRescue = inherit(Singleton)
 addRemoteEvents{
 	"factionRescueToggleDuty", "factionRescueHealPlayerQuestion", "factionRescueDiscardHealPlayer", "factionRescueHealPlayer",
@@ -16,7 +17,7 @@ addRemoteEvents{
 function FactionRescue:constructor()
 	-- Duty Pickup
 	self:createDutyPickup(1076.30, -1374.01, 13.65, 0) -- Garage
-	self:createDutyPickup(132.562, 163.525, 1186.05, 3) -- Garage
+	self:createDutyPickup(132.562, 163.525, 1186.05, 3) -- Interior
 
 	self.m_VehicleFires = {}
 
@@ -26,9 +27,11 @@ function FactionRescue:constructor()
 	self.m_BankAccountServerCorpse = BankServer.get("player.corpse")
 
 	self.m_GateHitBind = bind(self.onBarrierHit, self)
+
 	-- Barriers
-	Gate:new(968, Vector3(1138.5, -1384.88, 13.33), Vector3(0, 90, 0), Vector3(1138.5, -1384.88, 13.33), Vector3(0, 5, 0), false).onGateHit = self.m_GateHitBind
+	Gate:new(968, Vector3(1138.5, -1384.88, 13.48), Vector3(0, 90, 0), Vector3(1138.5, -1384.88, 13.33), Vector3(0, 5, 0), false).onGateHit = self.m_GateHitBind
 	Gate:new(968, Vector3(1138.4, -1291, 13.3), Vector3(0, 90, 0), Vector3(1138.4, -1291, 13.3), Vector3(0, 5, 0), false).onGateHit = self.m_GateHitBind
+	Gate:new(968, Vector3(1072.65, -1323.05, 13.26), Vector3(0, 90, 90), Vector3(1072.6, -1323.05, 13.26), Vector3(0, 5, 90), false, 0, 0, 0.85).onGateHit = self.m_GateHitBind
 
 	--Garage doors
 	self.m_Gates = {
@@ -43,11 +46,24 @@ function FactionRescue:constructor()
 
 		Gate:new(3037, Vector3(1090.3, -1384.5, 14.9), Vector3(0, 0, 90), Vector3(1090.3, -1381.9, 17), Vector3(0, 88, 90)), --four
 		Gate:new(3037, Vector3(1090.3, -1371.1, 14.9), Vector3(0, 0, 270), Vector3(1090.3, -1374.2, 17), Vector3(0, 88, 270)), --four back
+
+		Gate:new(3037, Vector3(1073.2, -1365.6, 14.9), Vector3(0, 0, 0), Vector3(1075.8, -1365.6, 17), Vector3(0, 88, 0)), --five
+		Gate:new(3037, Vector3(1084.4, -1365.6, 14.9), Vector3(0, 0, 360), Vector3(1081.8, -1365.6, 17), Vector3(0, -88, 360)), --five back
+
+		Gate:new(3037, Vector3(1073.2, -1353.77, 14.9), Vector3(0, 0, 0), Vector3(1075.8, -1353.77, 17), Vector3(0, 88, 0)), --six
+		Gate:new(3037, Vector3(1084.4, -1353.77, 14.9), Vector3(0, 0, 360), Vector3(1081.8, -1353.77, 17), Vector3(0, -88, 360)), --six back
+
+		Gate:new(3037, Vector3(1073.2, -1341.9, 14.9), Vector3(0, 0, 0), Vector3(1075.8, -1341.9, 17), Vector3(0, 88, 0)), --seven
+		Gate:new(3037, Vector3(1084.4, -1341.9, 14.9), Vector3(0, 0, 360), Vector3(1081.8, -1341.9, 17), Vector3(0, -88, 360)), --seven back
+
+		Gate:new(3037, Vector3(1073.2, -1330.1, 14.9), Vector3(0, 0, 0), Vector3(1075.8, -1330.1, 17), Vector3(0, 88, 0)), --eight
+		Gate:new(3037, Vector3(1084.4, -1330.1, 14.9), Vector3(0, 0, 360), Vector3(1081.8, -1330.1, 17), Vector3(0, -88, 360)), --eight back
 	}
 
 	for i,v in pairs(self.m_Gates) do
 		v.onGateHit = self.m_GateHitBind
 	end
+
 	--[[local elevator = Elevator:new()
 	elevator:addStation("Heliport", Vector3(1161.74, -1329.84, 31.49))
 	elevator:addStation("Vordereingang", Vector3(1172.45, -1325.44, 15.41), 270)
@@ -57,7 +73,6 @@ function FactionRescue:constructor()
 	InteriorEnterExit:new(Vector3(1144.70, -1322.30, 13.57), Vector3(170.699, 167.3999, 1191.1999), 90, 90, 3, 0) -- back
 	InteriorEnterExit:new(Vector3(1161.74, -1329.84, 31.49), Vector3(176.6999, 171.5, 1191.1999), 90, 0, 3, 0) -- heliport
 
-
 	self.m_Faction = FactionManager.Map[4]
 
 	self.m_LadderBind = bind(self.ladderFunction, self)
@@ -66,7 +81,7 @@ function FactionRescue:constructor()
 
 	nextframe(
 		function ()
-			local safe = createObject(2332, 1075.83, -1384.2, 13.21, 0, 0, 180)
+			local safe = createObject(2332, 1075.83, -1384.6, 13.21, 0, 0, 180)
 			setElementDoubleSided(safe,true)
 			FactionManager:getSingleton():getFromId(4):setSafe(safe)
 		end
@@ -90,7 +105,6 @@ function FactionRescue:constructor()
 	addEventHandler("factionRescueFillFireExtinguisher", root, bind(self.Event_fillFireExtinguisher, self))
 	addEventHandler("factionRescueChangeRadioStatus", root, bind(self.Event_changeRadioStatus, self))
 
-
 	PlayerManager:getSingleton():getQuitHook():register(
 		function(player)
 			if player.m_DeathPickup then
@@ -113,8 +127,6 @@ function FactionRescue:constructor()
 			end
 		end
 	)
-
-
 end
 
 function FactionRescue:destructor()
