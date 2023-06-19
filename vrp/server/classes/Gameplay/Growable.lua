@@ -112,19 +112,30 @@ function Growable:harvest(player)
 			delete(self)
 		elseif amount > 0 then
 			if player:getInventory():getFreePlacesForItem(self.ms_Item) >= amount then
-				player:sendInfo(_("Du hast %d %s geerntet!", player, amount, self.ms_Item))
-				player:getInventory():giveItem(self.ms_Item, amount)
-				player:triggerEvent("hidePlantGUI")
-				self.m_Size = 0
-				self.m_TimesEarned = self.m_TimesEarned + 1
-				self:refreshObjectSize()
-				StatisticsLogger:getSingleton():addDrugHarvestLog(player, self.m_Type, self.m_OwnerId, amount, 0)
-				if self.m_TimesEarned >= self.ms_TimesEarnedForDestroy  then
-					sql:queryExec("DELETE FROM ??_plants WHERE Id = ?", sql:getPrefix(), self.m_Id)
-					triggerClientEvent("ColshapeStreamer:deleteColshape", player, "growable", self.m_Id)
-					delete(self)
+				if not player.m_IsHarvesting then
+					player.m_IsHarvesting = true
+					toggleAllControls(player, false)
+					player:setAnimation("bomber", "bom_plant", 1500, false, false, false, false)
+					setTimer(function(player, amount)
+						player:sendInfo(_("Du hast %d %s geerntet!", player, amount, self.ms_Item))
+						player:getInventory():giveItem(self.ms_Item, amount)
+						player:triggerEvent("hidePlantGUI")
+						self.m_Size = 0
+						self.m_TimesEarned = self.m_TimesEarned + 1
+						self:refreshObjectSize()
+						StatisticsLogger:getSingleton():addDrugHarvestLog(player, self.m_Type, self.m_OwnerId, amount, 0)
+						if self.m_TimesEarned >= self.ms_TimesEarnedForDestroy  then
+							sql:queryExec("DELETE FROM ??_plants WHERE Id = ?", sql:getPrefix(), self.m_Id)
+							triggerClientEvent("ColshapeStreamer:deleteColshape", player, "growable", self.m_Id)
+							delete(self)
+						end
+						player:setData("Plant:Current", false)
+						toggleAllControls(player, true)
+						player.m_IsHarvesting = false
+					end, 1500, 1, player, amount)
+				else
+					player:sendError(_("Du erntest gerade schon eine Pflanze!", player))
 				end
-				player:setData("Plant:Current", false)
 			else
 				player:sendError(_("Du hast in deinem Inventar nicht Platz für %d %s!", player, amount, self.ms_Item))
 			end

@@ -136,7 +136,7 @@ function BeggarPed:Event_onPedWasted(totalAmmo, killer, killerWeapon, bodypart, 
 	if killer and isElement(killer) and getElementType(killer) == "vehicle" then killer = killer.controller end
 	if killer and killer ~= source and killerWeapon ~= 3 and getElementType(killer) == "player" then
 		-- Give Wanteds
-		if (getZoneName(self.position, true) == "Los Santos" and chance(50) or chance(25)) then
+		if chance(25) then
 			setTimer(function()
 				if killer and isElement(killer) then
 				killer:sendWarning("Dein Mord wurde von einem Augenzeuge an das LSPD gemeldet!")

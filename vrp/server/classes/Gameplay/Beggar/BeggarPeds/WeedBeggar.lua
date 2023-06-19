@@ -28,6 +28,16 @@ function WeedBeggar:sellWeed(player, amount)
 					self:despawn()
 				end, 50, 1
 			)
+			-- Give Wanteds
+			if chance(3) then
+				setTimer(function()
+					if player and isElement(player) then
+					player:sendWarning("Deine illegalen Aktivitäten wurde von einem Augenzeugen an das SAPD gemeldet!")
+					player:giveWanteds(2)
+					player:sendMessage("Verbrechen begangen: Drogenhandel, 2 Wanteds", 255, 255, 0)
+					end
+				end, math.random(2000, 10000), 1)
+			end
 		else
 			player:sendError(_("Du hast nicht so viel Weed dabei!", player))
 		end

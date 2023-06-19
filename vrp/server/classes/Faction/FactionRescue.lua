@@ -31,7 +31,6 @@ function FactionRescue:constructor()
 	-- Barriers
 	Gate:new(968, Vector3(1138.5, -1384.88, 13.48), Vector3(0, 90, 0), Vector3(1138.5, -1384.88, 13.33), Vector3(0, 5, 0), false).onGateHit = self.m_GateHitBind
 	Gate:new(968, Vector3(1138.4, -1291, 13.3), Vector3(0, 90, 0), Vector3(1138.4, -1291, 13.3), Vector3(0, 5, 0), false).onGateHit = self.m_GateHitBind
-	Gate:new(968, Vector3(1072.65, -1323.05, 13.26), Vector3(0, 90, 90), Vector3(1072.6, -1323.05, 13.26), Vector3(0, 5, 90), false, 0, 0, 0.85).onGateHit = self.m_GateHitBind
 
 	--Garage doors
 	self.m_Gates = {
