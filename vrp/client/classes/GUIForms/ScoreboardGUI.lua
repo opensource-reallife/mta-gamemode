@@ -147,7 +147,9 @@ function ScoreboardGUI:refresh()
 		--end
 	end
 	for id, company in ipairs(CompanyManager.Map) do
-		self:addPlayerCount(company:getShortName(), self.m_CompanyCount[id] or 0, self.m_CompanyAFKCount[id] or 0)
+		if id ~= 1 then -- Hide Driving School
+			self:addPlayerCount(company:getShortName(), self.m_CompanyCount[id] or 0, self.m_CompanyAFKCount[id] or 0)
+		end
 	end
 
 	self.m_PlayerCount:setText(_("Derzeit sind %d Spieler online", #getElementsByType("player")))
