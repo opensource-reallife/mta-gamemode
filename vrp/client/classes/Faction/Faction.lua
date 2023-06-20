@@ -128,7 +128,7 @@ end
 function Faction:getOnlinePlayers(afkCheck, dutyCheck)
 	local players = {}
 	for _, player in pairs(getElementsByType("player")) do
-		if player and isElement(player) and player:isLoggedIn() then
+		if player and isElement(player) and not player:getName():find("Gast_") then
 			if (not afkCheck or not player:getPublicSync("AFK")) and (not dutyCheck or player:getPublicSync("Faction:Duty")) then
 				players[#players + 1] = player
 			end
