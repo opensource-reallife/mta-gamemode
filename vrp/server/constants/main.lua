@@ -28,7 +28,7 @@ CheatSeverity = {Low = 1, Middle = 2, High = 3, Brutal = 4}
 NOOB_SPAWN = Vector3(1481.07, -1764.84, 18.80)
 NOOB_SKIN = 78
 
-START_MONEY_BAR = 5000
+START_MONEY_BAR = 7500
 
 Interiors = {
     -- Name -- Dimension ("Allocate" a block of dimensions)
