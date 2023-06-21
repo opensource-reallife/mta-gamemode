@@ -1864,7 +1864,7 @@ function FactionState:Event_givePANote(target, note)
 			client:sendError(_("Du bist nicht im Dienst!", client))
 		end
 	else
-		client:sendError(_("Du bist nicht im MBT!", client))
+		client:sendError(_("Du bist nicht im PD!", client))
 	end
 end
 
