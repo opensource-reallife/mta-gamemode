@@ -152,9 +152,11 @@ function VehicleCustomTextureShop:closeFor(player, vehicle, doNotCallEvent)
             vehicle:setFrozen(false)
             vehicle:setPosition(position)
 			vehicle:setRotation(0, 0, rotation)
-			for name, tex in pairs(vehicle:getTexture()) do
-				if tex:isPreview() then
-					vehicle:removeTexture(name)
+			if vehicle:getTexture() then
+				for name, tex in pairs(vehicle:getTexture()) do
+					if tex:isPreview() then
+						vehicle:removeTexture(name)
+					end
 				end
 			end
         end
