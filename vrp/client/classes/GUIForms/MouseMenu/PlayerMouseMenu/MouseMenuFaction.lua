@@ -146,9 +146,9 @@ function PlayerMouseMenuFaction:constructor(posX, posY, element)
 			):setIcon(FontAwesomeSymbols.Ticket)
 		end
 
-		if localPlayer:getFaction():getId() == 3 then
+		if localPlayer:getFaction():getId() == 1 then
 			if PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "setPaNote") then
-				self:addItem(_"Fraktion: GWD-Note vergeben",
+				self:addItem(_"Fraktion: PA-Note vergeben",
 					function()
 						if self:getElement() then
 							StateFactionNoteGUI:new(self:getElement())

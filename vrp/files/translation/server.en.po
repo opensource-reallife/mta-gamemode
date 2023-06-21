@@ -1748,20 +1748,20 @@ msgstr "is looking at %s' driver's license."
 msgid "schüttelt den Kopf."
 msgstr "shakes his head."
 
-msgid "Du bist nicht berechtig GWD-Noten auszuteilen!"
-msgstr "You are not allowed to give BMS grades!"
+msgid "Du bist nicht berechtig PA-Noten auszuteilen!"
+msgstr "You are not allowed to give PA-Notes!"
 
-msgid "Du darfst dir nicht selber eine GWD-Noten setzen!"
-msgstr "You can't set yourself a BMS grade!"
+msgid "Du darfst dir nicht selber eine PA-Note setzen!"
+msgstr "You can't set yourself a PA-Note!"
 
-msgid "%s hat dir eine GWD-Note von %d gegeben!"
-msgstr "%s gave you a BMS grade of %d!"
+msgid "%s hat dir eine PA-Note von %d gegeben!"
+msgstr "%s gave you a PA-Note of %d!"
 
-msgid "Du hast %s eine GWD-Note von %d gegeben!"
-msgstr "You gave %s a BMS grade of %d!"
+msgid "Du hast %s eine PA-Note von %d gegeben!"
+msgstr "You gave %s a PA-Note of %d!"
 
-msgid "Ungültige GWD-Note!"
-msgstr "Invalid BMS grade!"
+msgid "Ungültige PA-Note!"
+msgstr "Invalid PA-Note!"
 
 msgid "Du bist nicht im MBT!"
 msgstr "You're not in the MBT!"

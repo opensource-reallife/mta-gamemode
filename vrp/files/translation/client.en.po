@@ -2067,8 +2067,8 @@ msgstr "Traffic rules"
 msgid "Wanteds:"
 msgstr "Wanteds:"
 
-msgid "GWD-Note:"
-msgstr "BMS grade:"
+msgid "PA-Note:"
+msgstr "PA-Note:"
 
 msgid "Wähle eine oder mehrere Wunden per Doppelklick aus!"
 msgstr "Select one or more wounds with a double click!"
@@ -2413,8 +2413,8 @@ msgstr "Faction: Remove illegal items"
 msgid "Fraktion: Waffen abnehmen"
 msgstr "Faction: Remove weapons"
 
-msgid "Fraktion: GWD-Note vergeben"
-msgstr "Faction: award BMS grade"
+msgid "Fraktion: PA-Note vergeben"
+msgstr "Faction: PA-Note awarded"
 
 msgid "Fraktion: Wanze verstecken"
 msgstr "Faction: hide a bug"
@@ -3539,8 +3539,8 @@ msgstr "Imprison with bail"
 msgid "ohne Kaution einknasten"
 msgstr "Imprison without bail"
 
-msgid "GWD-Note vergeben"
-msgstr "Award BMS grade"
+msgid "PA-Note vergeben"
+msgstr "Award PA-Note"
 
 msgid "Note:"
 msgstr "Note:"
@@ -3551,11 +3551,11 @@ msgstr "(Between 1 and 100 allowed)"
 msgid "Note vergeben"
 msgstr "Assign the grade"
 
-msgid "Möchtest du dem Spieler %s eine GWD-Note von %d vergeben?"
-msgstr "Do you want to set the player %s a BMS grade of %d?"
+msgid "Möchtest du dem Spieler %s eine PA-Note von %d vergeben?"
+msgstr "Do you want to set the player %s a PA-Note of %d?"
 
-msgid "Ungültige GWD-Note!"
-msgstr "Invalid BMS grade!"
+msgid "Ungültige PA-Note!"
+msgstr "Invalid PA-Note!"
 
 msgid "Stream-URL:"
 msgstr "Stream URL:"
