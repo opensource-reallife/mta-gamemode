@@ -423,7 +423,7 @@ function Fishing:clientSendFishTrading(list)
 			local qualityMultiplicator = fish.quality == 3 and 2 or (fish.quality == 2 and 1.5 or (fish.quality == 1 and 1.25 or 1))
 			local rareBonusMultiplicator = Fishing.Fish[fish.Id].RareBonus + 1
 
-			local fishIncome = default*fishingLevelMultiplicator*qualityMultiplicator*rareBonusMultiplicator
+			local fishIncome = default*qualityMultiplicator*rareBonusMultiplicator
 			totalPrice = totalPrice + fishIncome
 
 			self:removeFrishFromCoolingBag(fish.Id, fish.size)
@@ -433,7 +433,7 @@ function Fishing:clientSendFishTrading(list)
 	end
 
 	if totalPrice > 0 then
-		self.m_BankAccountServer:transferMoney(client, totalPrice, "Fischhandel", "Gampelay", "Fishing")
+		self.m_BankAccountServer:transferMoney(client, totalPrice, "Fischhandel", "Gameplay", "Fishing")
 	end
 end
 
