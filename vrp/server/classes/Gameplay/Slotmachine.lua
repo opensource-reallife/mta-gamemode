@@ -374,7 +374,7 @@ end
 function Slotmachine:startPlayer(player)
 	if player:getMoney() >= self.m_Prices.bet then
 		if self.canSpin == true then
-			player:transferMoney(self.m_BankAccountServer, self.m_Prices.bet, "Slotmaschine", "Gampelay", "Slotmachine")
+			player:transferMoney(self.m_BankAccountServer, self.m_Prices.bet, "Slotmaschine", "Gameplay", "Slotmachine")
 		--	triggerClientEvent(player, "onSlotmachineWintext", player, "#FF0000-$"..self.m_Prices.bet)
 			self:start(player)
 		end
