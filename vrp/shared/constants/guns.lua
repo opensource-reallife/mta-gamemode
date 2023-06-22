@@ -233,7 +233,7 @@ WEAPON_RELOAD_TIME = -- how much time a weapon should need to reload
 
 WEAPON_READY_TIME = -- how much time a weapon should need before beeing able to be fired
 {
-	[34] = 0 
+	[34] = 1500 
 }
 
 WEAPONS_KEVLAR_REPELS =
