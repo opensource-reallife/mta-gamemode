@@ -26,8 +26,8 @@ ROULETTE_TOKENS = {
     ["pink"] = 500,
     ["red"] = 1000,
     ["yellow"] = 5000,
-    ["gray"] = 10000,
-    ["black"] = 50000
+    ["gray"] = 10000
+    --["black"] = 50000
 }
 
 ROULETTE_WIN_MULTIPLIKATOR = {
