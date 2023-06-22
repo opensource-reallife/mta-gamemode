@@ -12,14 +12,15 @@ function TollStation:constructor(Name, BarrierPos, BarrierRot, PedPos, PedRot, t
 	self.m_Barrier = VehicleBarrier:new(BarrierPos, BarrierRot, 2.5, type, 1500)
 	self.m_Barrier.onBarrierHit = bind(self.onBarrierHit, self)
 
-	self.m_Ped = NPC:new(71, PedPos.x, PedPos.y, PedPos.z)
-	self.m_Ped:setImmortal(true)
+	self.m_Ped = GuardActor:new(PedPos)
 	self.m_Ped:giveWeapon(31, 999999999, true)
 	self.m_Ped:setRotation(PedRot)
 	self.m_Ped:setFrozen(true)
 	self.m_RespawnPos = PedPos
 	self.m_RespawnRot = PedRot
 	addEventHandler("onPedWasted", self.m_Ped, bind(self.onPedWasted, self))
+	addEventHandler("onElementDestroy", self.m_Ped, bind(self.onPedDestroy, self))
+	addEventHandler("onElementStartSync", self.m_Ped, bind(self.onPedStartSync, self))
 end
 
 function TollStation:destructor()
@@ -50,9 +51,8 @@ function TollStation:getBarrier()
 end
 
 function TollStation:onBarrierHit(player)
-	if not self.m_Ped:isDead() then
-		if player.vehicle and player:getOccupiedVehicleSeat() == 0 then
-
+	if player.vehicle and player:getOccupiedVehicleSeat() == 0 then
+		if not self.m_Ped:isDead() then
 			local veh = player.vehicle
 			for seat, occupant in pairs(veh:getOccupants()) do
 				if occupant:getWanteds() > 0 then
@@ -107,9 +107,9 @@ function TollStation:onBarrierHit(player)
 					bindKey(player, TOLL_PAY_KEY, "down", player.m_BuyTollFunc)
 				end
 			end
+		else
+			player:sendError(_("Diese Maut-Station ist derzeit geschlossen!", player))
 		end
-	else
-		player:sendError(_("Diese Maut-Stationen ist derzeit geschlossen!", player))
 	end
 
 	return false
@@ -140,24 +140,44 @@ function TollStation:onPedWasted(_, killer)
 		end
 
 		if killer:getType() == "player" then
+			outputDebug(("%s killed a Ped at %s"):format(killer:getName(), self.m_Name))
+
+			-- Give Wanteds
+			setTimer(function()
+				killer:sendWarning("Dein Mord wurde von einem Augenzeugen an das SAPD gemeldet!")
+				killer:giveWanteds(4)
+				killer:sendMessage("Verbrechen begangen: Mord, 4 Wanteds", 255, 255, 0)
+			end, math.random(2000, 10000), 1)
+
 			-- Send the News to the San News Company
 			CompanyManager:getSingleton():getFromId(CompanyStaticId.SANNEWS):sendShortMessage(("Ein Beamter an der Maut-Station %s wurde erschossen! Die Station bleibt bis auf weiteres geschlossen."):format(self.m_Name), 10000)
 
-			killer:reportCrime(Crime.Kill)
-			outputDebug(("%s killed a Ped at %s"):format(killer:getName(), self.m_Name))
-
-			setTimer(
-				function()
-					self.m_Ped:destroy()
-					self.m_Ped = NPC:new(71, self.m_RespawnPos.x, self.m_RespawnPos.y, self.m_RespawnPos.z)
-					self.m_Ped:setImmortal(true)
-					self.m_Ped:setRotation(self.m_RespawnRot)
-					self.m_Ped:giveWeapon(31, 999999999, true)
-					self.m_Ped:setFrozen(true)
-					addEventHandler("onPedWasted", self.m_Ped, bind(self.onPedWasted, self))
-				end, TOLL_PED_RESPAWN_TIME, 1
-			)
+			self.m_Ped.m_Dead = true
+			-- Create Rescue Team mission
+			self.m_Ped:setAnimation("wuzi","cs_dead_guy", -1, true, false, false, true)
+			FactionRescue:getSingleton():createPedDeathPickup(self.m_Ped, "Zollbeamter")
+			self.m_Ped.m_AbortRescueTimer = setTimer(function()
+				self.m_Ped:destroy()
+			end, TOLL_PED_RESPAWN_TIME, 1)
 		end
+	end
+end
+
+function TollStation:onPedDestroy()
+	if self.m_Ped.m_AbortRescueTimer and isTimer(self.m_Ped.m_AbortRescueTimer) then killTimer(self.m_Ped.m_AbortRescueTimer) end
+	if self.m_Ped.m_DeathPickup then FactionRescue:getSingleton():removePedDeathPickup(self.m_Ped) end
+	self.m_Ped = GuardActor:new(self.m_RespawnPos)
+	self.m_Ped:setRotation(self.m_RespawnRot)
+	self.m_Ped:giveWeapon(31, 999999999, true)
+	self.m_Ped:setFrozen(true)
+	addEventHandler("onPedWasted", self.m_Ped, bind(self.onPedWasted, self))
+	addEventHandler("onElementDestroy", self.m_Ped, bind(self.onPedDestroy, self))
+	addEventHandler("onElementStartSync", self.m_Ped, bind(self.onPedStartSync, self))
+end
+
+function TollStation:onPedStartSync()
+	if self.m_Ped:isDead() then
+		self.m_Ped:setAnimation("wuzi","cs_dead_guy", -1, true, false, false, true)
 	end
 end
 

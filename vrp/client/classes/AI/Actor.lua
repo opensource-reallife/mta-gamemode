@@ -5,7 +5,7 @@
 -- *  PURPOSE:     Actor class
 -- *
 -- ****************************************************************************
-Actor = inherit(Ped)
+Actor = inherit(Object)
 addRemoteEvents{"actorCreate", "actorStartPrimaryTask", "actorStopPrimaryTask", "actorStartSecondaryTask", "actorInitialSync"}
 
 function Actor:constructor()

@@ -5,7 +5,7 @@
 -- *  PURPOSE:     Actor class
 -- *
 -- ****************************************************************************
-Actor = inherit(Ped)
+Actor = inherit(Object)
 
 function Actor:virtual_constructor()
     self.m_PrimaryTask = false
