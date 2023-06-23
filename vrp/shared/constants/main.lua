@@ -788,6 +788,7 @@ FactionStaticId = {
 	VATOS = 10,
 	TRIAD = 11,
 	BRIGADA = 12,
+	INSURGENT = 13,
 }
 
 SEASONS = {

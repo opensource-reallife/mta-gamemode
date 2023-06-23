@@ -35,6 +35,10 @@ function Faction:isRescueFaction()
 	return self.m_Type == "Rescue"
 end
 
+function Faction:isInsurgentFaction()
+	return self.m_Type == "Insurgent"
+end
+
 function Faction:getName()
 	return self.m_Name
 end

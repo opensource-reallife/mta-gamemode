@@ -157,29 +157,24 @@ function Faction:save()
 	end
 end
 
-function Faction:isStateFaction()
-	if self.m_Type == "State" then
-		return true
-	end
-	return false
-end
-
 function Faction:setDepotId(Id)
 	self.m_Depot = Depot.load(Id, self, "faction")
 end
 
-function Faction:isRescueFaction()
-	if self.m_Type == "Rescue" then
-		return true
-	end
-	return false
+function Faction:isStateFaction()
+	return self.m_Type == "State"
 end
 
 function Faction:isEvilFaction()
-	if self.m_Type == "Evil" then
-		return true
-	end
-	return false
+	return self.m_Type == "Evil"
+end
+
+function Faction:isRescueFaction()
+	return self.m_Type == "Rescue"
+end
+
+function Faction:isInsurgentFaction()
+	return self.m_Type == "Insurgent"
 end
 
 function Faction:setSetting(category, key, value, responsiblePlayer)
