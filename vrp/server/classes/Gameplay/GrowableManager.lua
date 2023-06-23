@@ -33,7 +33,7 @@ GrowableManager.Types = {
 		["Item"] = "Apfel",
 		["Seed"] = "Apfelbaum-Samen",
 		["ItemPerSize"] = 1,
-		["TimesEarnedForDestroy"] = 1,
+		["TimesEarnedForDestroy"] = 3,
 		["Illegal"] = false,
 		["SizeBetweenPlants"] = 3
 	};
