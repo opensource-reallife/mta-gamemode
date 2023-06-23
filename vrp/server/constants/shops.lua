@@ -191,10 +191,10 @@ SHOP_TYPES = {
 
 SHOP_ITEMS = {
 	["Gärtnerei"] = {
-		["Weed-Samen"] = 20,
+		["Weed-Samen"] = 40,
 		["Kanne"] = 500,
-		["Apfelbaum-Samen"] = 40,
-		["Blumen-Samen"] = 80,
+		["Apfelbaum-Samen"] = 60,
+		["Blumen-Samen"] = 20,
 	};
 	["24/7"] = {
 		["Radio"] = 2000,
