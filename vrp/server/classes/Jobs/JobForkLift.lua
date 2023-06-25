@@ -7,7 +7,7 @@
 -- ****************************************************************************
 JobForkLift = inherit(Job)
 
-local MONEY_PER_BOX = 55*2
+local MONEY_PER_BOX = 2
 
 function JobForkLift:constructor()
 	Job.constructor(self)
@@ -52,12 +52,12 @@ function JobForkLift:onBoxLoad(box)
 		local duration = getRealTime().timestamp - client.m_LastJobAction
 		local points
 		client.m_LastJobAction = getRealTime().timestamp
-		self.m_BankAccount:transferMoney({client, true}, MONEY_PER_BOX * JOB_PAY_MULTIPLICATOR, "Gabelstapler-Job", "Job", "ForkLift")
+		self.m_BankAccount:transferMoney({client, true}, MONEY_PER_BOX * JOB_PAY_MULTIPLICATOR * (1 + client:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR), "Gabelstapler-Job", "Job", "ForkLift")
 		if chance(50) then
 			points = math.floor(1*JOB_EXTRA_POINT_FACTOR)
 			client:givePoints(points)
 		end
-		StatisticsLogger:getSingleton():addJobLog(client, "jobForkLift", duration, MONEY_PER_BOX * JOB_PAY_MULTIPLICATOR, nil, nil, points)
+		StatisticsLogger:getSingleton():addJobLog(client, "jobForkLift", duration, MONEY_PER_BOX * JOB_PAY_MULTIPLICATOR * (1 + client:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR), nil, nil, points)
 	end
 end
 

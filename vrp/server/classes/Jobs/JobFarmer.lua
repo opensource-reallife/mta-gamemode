@@ -7,10 +7,10 @@ local PLANTSONWALTON = 50
 local SEEDSONWALTON = 100
 local STOREMARKERPOS = {-37.85, 58.03, 2.2} -- marker to deliver seeds and load plants
 
-local MONEY_PER_PLANT = 16
-local MONEY_PER_SEED = 8
-local MONEY_PLANT_HARVESTER = 13
-local MONEY_PLANT_TRACTOR = 13
+local MONEY_PER_PLANT = 0.3
+local MONEY_PER_SEED = 0.15
+local MONEY_PLANT_HARVESTER = 0.45
+local MONEY_PLANT_TRACTOR = 0.45
 
 function JobFarmer:constructor()
 	Job.constructor(self)
@@ -106,7 +106,10 @@ function JobFarmer:onVehicleSpawn(player, vehicleModel, vehicle)
 	self:setDeliveryBlipMode(player, false)
 
 	if vehicleModel == 531 then -- Tractor
+		vehicle:setHandling("maxVelocity", vehicle:getHandling()["maxVelocity"]*0.25)
+		vehicle:setHandling(vehicle, "engineAcceleration", vehicle:getHandling()["engineAcceleration"]*0.75)
 		vehicle.trailer = createVehicle(610, vehicle:getPosition())
+		vehicle.trailer:setOverrideLights(1)
 		vehicle:attachTrailer(vehicle.trailer)
 
 		addEventHandler("onTrailerDetach", vehicle.trailer, function(tractor) if isElement(tractor) then tractor:attachTrailer(source) end	end)
@@ -124,6 +127,9 @@ function JobFarmer:onVehicleSpawn(player, vehicleModel, vehicle)
 				self:updatePrivateData(player)
 			end, false
 		)
+	elseif vehicleModel == 532 then -- Combine Harvester
+		vehicle:setHandling("maxVelocity", vehicle:getHandling()["maxVelocity"]*0.15)
+		vehicle:setHandling(vehicle, "engineAcceleration", vehicle:getHandling()["engineAcceleration"]*0.6)
 	end
 end
 
@@ -147,7 +153,7 @@ function JobFarmer:storeHit(hitElement, matchingDimension)
 			end
 			hitElement.m_HasSeeds = false
 
-			local income = self.m_CurrentSeeds[player]*MONEY_PER_SEED * JOB_PAY_MULTIPLICATOR
+			local income = self.m_CurrentSeeds[player] * MONEY_PER_SEED * JOB_PAY_MULTIPLICATOR * (1 + player:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR)
 			local duration = getRealTime().timestamp - player.m_LastJobAction
 			player.m_LastJobAction = getRealTime().timestamp
 			StatisticsLogger:getSingleton():addJobLog(player, "jobFarmer.transport", duration, income, nil, nil, math.floor(math.ceil(self.m_CurrentSeeds[player]/10)*JOB_EXTRA_POINT_FACTOR))
@@ -289,7 +295,7 @@ function JobFarmer:deliveryHit (hitElement,matchingDimension)
 	if player and matchingDimension and getElementModel(hitElement) == getVehicleModelFromName("Walton") and hitElement == player.jobVehicle then
 		if self.m_CurrentPlants[player] and self.m_CurrentPlants[player] > 0 then
 			if hitElement.m_HasPlants then
-				local income = self.m_CurrentPlants[player]*MONEY_PER_PLANT * JOB_PAY_MULTIPLICATOR
+				local income = self.m_CurrentPlants[player] * MONEY_PER_PLANT * JOB_PAY_MULTIPLICATOR * (1 + player:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR)
 				local duration = getRealTime().timestamp - player.m_LastJobAction
 				player.m_LastJobAction = getRealTime().timestamp
 				StatisticsLogger:getSingleton():addJobLog(player, "jobFarmer.transport", duration, income, nil, nil, math.floor(math.ceil(self.m_CurrentPlants[player]/10)*JOB_EXTRA_POINT_FACTOR))
@@ -401,7 +407,7 @@ function JobFarmer:createPlant(position, vehicle)
 		setTimer(function (o) o.isFarmAble = true end, 1000*7.5, 1, object)
 		setElementVisibleTo(object, client, true)
 
-		local income = MONEY_PLANT_TRACTOR * JOB_PAY_MULTIPLICATOR	
+		local income = MONEY_PLANT_TRACTOR * JOB_PAY_MULTIPLICATOR * (1 + client:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR)
 		self.m_PlayerIncomeCache[client].tractor = self.m_PlayerIncomeCache[client].tractor + income
 		if self.m_PlayerIncomeCache[client].lastAction == 0 then
 			self.m_PlayerIncomeCache[client].lastAction = getRealTime().timestamp
@@ -423,7 +429,7 @@ function JobFarmer:collectPlant(hitElement, matchingDimension)
 			destroyElement(source.m_Plant)
 			destroyElement(source)
 
-			local income = MONEY_PLANT_HARVESTER * JOB_PAY_MULTIPLICATOR
+			local income = MONEY_PLANT_HARVESTER * JOB_PAY_MULTIPLICATOR * (1 + player:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR)
 			self.m_PlayerIncomeCache[player].combine = self.m_PlayerIncomeCache[player].combine + income
 			if self.m_PlayerIncomeCache[player].lastAction == 0 then
 				self.m_PlayerIncomeCache[player].lastAction = getRealTime().timestamp

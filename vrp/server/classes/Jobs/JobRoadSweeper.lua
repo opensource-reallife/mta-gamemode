@@ -6,8 +6,8 @@
 -- *
 -- ****************************************************************************
 JobRoadSweeper = inherit(Job)
-local SWEEPER_LOAN = 28
-local SWEEPER_MAX_LOAD = 50
+local SWEEPER_LOAN = 1
+local SWEEPER_MAX_LOAD = 25
 
 function JobRoadSweeper:constructor()
 	Job.constructor(self)
@@ -50,7 +50,7 @@ function JobRoadSweeper:onDeliveryHit(hitElement, dim)
 		if hitElement.vehicle and hitElement.vehicle.model == 574 and hitElement:getJob() == self then
 			if hitElement.vehicle.Garbage and hitElement.vehicle.Garbage > 0 then
 				local garbage = hitElement.vehicle.Garbage
-				local loan = garbage*SWEEPER_LOAN * JOB_PAY_MULTIPLICATOR
+				local loan = garbage * SWEEPER_LOAN * JOB_PAY_MULTIPLICATOR * (1 + hitElement:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR)
 				hitElement.vehicle.Garbage = 0
 				hitElement:sendShortMessage(_("%d Abfälle abgegeben!\nAbfallbehälter: %d/%d", hitElement, garbage, hitElement.vehicle.Garbage, SWEEPER_MAX_LOAD))
 
