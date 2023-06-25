@@ -7,10 +7,10 @@ local PLANTSONWALTON = 50
 local SEEDSONWALTON = 100
 local STOREMARKERPOS = {-37.85, 58.03, 2.2} -- marker to deliver seeds and load plants
 
-local MONEY_PER_PLANT = 0.3
-local MONEY_PER_SEED = 0.15
-local MONEY_PLANT_HARVESTER = 0.45
-local MONEY_PLANT_TRACTOR = 0.45
+local MONEY_PER_PLANT = 0.9
+local MONEY_PER_SEED = 0.45
+local MONEY_PLANT_HARVESTER = 1.35
+local MONEY_PLANT_TRACTOR = 1.35
 
 function JobFarmer:constructor()
 	Job.constructor(self)

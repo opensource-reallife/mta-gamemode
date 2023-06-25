@@ -6,7 +6,7 @@
 -- *
 -- ****************************************************************************
 JobLumberjack = inherit(Job)
-local TREE_MONEY = 2
+local TREE_MONEY = 6
 local DUMP_POSITION = Vector3(-1969.8, -2432.6, 29.5)
 
 function JobLumberjack:constructor()
