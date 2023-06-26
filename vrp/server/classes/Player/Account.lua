@@ -24,7 +24,7 @@ local MULTIACCOUNT_CHECK = GIT_BRANCH == "release/production" and true or false
 
 Account = inherit(Object)
 Account.REGISTRATION_ACTIVATED = true
-Account.FORUM_LOGIN = false
+Account.FORUM_LOGIN = true
 Account.PendingRequests = {
 	Logins = {},
 	Registrations = {}
@@ -140,7 +140,7 @@ function Account.loginSuccess(player, Id, Username, ForumId, RegisterDate, Teams
 		if #MultiAccount.getAccountsBySerial(player:getSerial()) > 1 then
 			if not MultiAccount.isAccountLinkedToSerial(Id, player:getSerial()) then
 				if not MultiAccount.allowedToCreateAnMultiAccount(player:getSerial()) then
-					player:triggerEvent("loginfailed", "Deine Serial wird für mehrere Accounts benutzt. Dies kann passieren, wenn sich jemand auf deinem PC mit anderen Accountdaten einloggt. Bitte melde dich im Forum (forum.exo-reallife.de) unter 'administrative Anfragen', um das Problem zu beseitigen.")
+					player:triggerEvent("loginfailed", "Deine Serial wird für mehrere Accounts benutzt. Dies kann passieren, wenn sich jemand auf deinem PC mit anderen Accountdaten einloggt. Bitte melde dich im Forum (forum.byflex.de) unter 'administrative Anfragen', um das Problem zu beseitigen.")
 					return false
 				else
 					MultiAccount.linkAccountToSerial(Id, player:getSerial())

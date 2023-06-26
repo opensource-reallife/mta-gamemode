@@ -278,9 +278,9 @@ function LoginGUI:showRegisterMultiaccountError(name)
 	self.m_Elements.checkAcceptRules:setVisible(false)
 	self.m_Elements.cLblRules:setVisible(false)
 
-	local text = _("Für deine Serial existiert bereits ein Account. Wenn du mit anderen Spielern im gleichen Netzwerk spielen möchtest, musst du einen Multiaccount-Antrag im Forum (forum.exo-reallife.de) verfassen.")
+	local text = _("Für deine Serial existiert bereits ein Account. Wenn du mit anderen Spielern im gleichen Netzwerk spielen möchtest, musst du einen Multiaccount-Antrag im Forum (forum.byflex.de) verfassen.")
 	if name then
-		text = _("Deine Serial wurde zuletzt vom Spieler '%s' benutzt! Wenn du mit anderen Spielern im gleichen Netzwerk spielen möchtest, musst du einen Multiaccount-Antrag im Forum (forum.exo-reallife.de) verfassen.", name)
+		text = _("Deine Serial wurde zuletzt vom Spieler '%s' benutzt! Wenn du mit anderen Spielern im gleichen Netzwerk spielen möchtest, musst du einen Multiaccount-Antrag im Forum (forum.byflex.de) verfassen.", name)
 	end
 	self.m_Elements.ErrorLbl:setVisible(true)
 	self.m_Elements.ErrorLbl:setText(text)
@@ -470,7 +470,7 @@ function LoginRuleGUI:constructor()
 	GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true)
 	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Regelwerk", true, true, self)
 
-	self.m_Browser = GUIGridWebView:new(1, 1, 15, 11, "https://forum.exo-reallife.de/index.php?thread/22539-serverregeln/", true, self.m_Window)
+	self.m_Browser = GUIGridWebView:new(1, 1, 15, 11, "https://forum.byflex.de/index.php?thread/22539-serverregeln/", true, self.m_Window)
 end
 
 function LoginRuleGUI:destructor()
