@@ -349,6 +349,23 @@ factionAirDropPoint[12] = Vector3(280.24, -1230.52, 74.74)
 factionNavigationpoint[12] = evilFactionInteriorEnter[12]
 factionDTDestination[12] = {Vector3(413.39, -1033.81, 96.04), 59.46, 186, "Gio Vanni"}
 
+-- ID 13 = Insurgent:
+factionRankNames[13] = {
+	[0] = "Befürworter",
+	[1] = "Unterstützer",
+	[2] = "Vorkämpfer",
+	[3] = "Spezialist",
+	[4] = "Koordinator",
+	[5] = "Organisator",
+	[6] = "Kommandant",
+}
+factionColors[13] = {["r"] = 166, ["g"] = 117, ["b"] = 82}
+factionCarColors[13] = {["r"] = 166, ["g"] = 117, ["b"] = 82, ["r1"] = 166, ["g1"] = 117, ["b1"] = 82}
+factionSkins[13] = {[111]=true, [112]=true, [113]=true, [124]=true, [125]=true, [126]=true, [127]=true, [237]=true, [272]=true}
+factionWeapons[13] = {[4]=true, [24]=true, [25]=true, [26]=true, [29]=true, [30]=true, [31]=true, [33]=true, [34]=true}
+factionSpawnpoint[13] = {Vector3(0, 0, 0), 0, 0}
+factionNavigationpoint[13] = Vector3(0, 0, 0)
+
 -- General:
 factionWeaponDepotInfo = {
 	[1] = {["Waffe"] = 10, ["Magazine"] = 0, ["WaffenPreis"] = 10, ["MagazinPreis"] = 0}, -- Brass Knuckles

@@ -132,7 +132,7 @@ function Trunk:addItem(player, item, amount, value)
 				end
 			end
 
-			if item == "Weed" or "Weed-Samen" then
+			if item == "Weed" or item == "Weed-Samen" then
 				player:sendError(_("Du kannst dieses Item nicht in den Kofferraum legen!", player))
 				self:refreshClient(player)
 				return false

@@ -122,7 +122,7 @@ function Gangwar:onAreaPayday()
 	end
 	local count = 0
 	for k, faction in pairs(FactionManager:getSingleton().Map) do
-		if not faction:isStateFaction() and faction.m_Id ~= 4 then
+		if faction:isEvilFaction() then
 			if areaCounts[faction] then
 				count = areaCounts[faction]
 			else

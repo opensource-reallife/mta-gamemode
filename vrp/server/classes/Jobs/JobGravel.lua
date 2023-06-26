@@ -10,9 +10,9 @@ JobGravel = inherit(Job)
 MAX_STONES_IN_STOCK = 250
 MAX_STONES_MINED = 100
 
-LOAN_MINING = 32*2 -- Per Stone
-LOAN_DOZER = 62*2 -- Per Stone
-LOAN_DUMPER = 82*2 -- Per Stone
+LOAN_MINING = 1.5
+LOAN_DOZER = 3
+LOAN_DUMPER = 6
 
 MAX_STONES_IN_DUMPER = 10
 
@@ -239,12 +239,12 @@ function JobGravel:Event_onGravelMine(rockDestroyed, times)
 			local duration = getRealTime().timestamp - client.m_LastJobAction
 			client.m_LastJobAction = getRealTime().timestamp
 			local points = 0
-			self.m_BankAccount:transferMoney({client, true}, times*LOAN_MINING * JOB_PAY_MULTIPLICATOR, "Kiesgruben-Job", "job", "gravel.mining")
+			self.m_BankAccount:transferMoney({client, true}, times * LOAN_MINING * JOB_PAY_MULTIPLICATOR * (1 + client:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR), "Kiesgruben-Job", "job", "gravel.mining")
 			if chance(6) then
 				points = math.floor(1*JOB_EXTRA_POINT_FACTOR)
 				client:givePoints(points)
 			end
-			StatisticsLogger:getSingleton():addJobLog(client, "jobGravel.mining", duration, times*LOAN_MINING * JOB_PAY_MULTIPLICATOR, nil, nil, points)
+			StatisticsLogger:getSingleton():addJobLog(client, "jobGravel.mining", duration, times*LOAN_MINING * JOB_PAY_MULTIPLICATOR * (1 + client:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR), nil, nil, points)
 		end
 
 		self:updateGravelAmount("mined", true)
@@ -285,7 +285,7 @@ function JobGravel:Event_onCollectingContainerHit(track)
 
 					if not self.m_DozerDropTimer[client] then
 						self.m_DozerDropTimer[client] = setTimer(function()
-							local loan = LOAN_DOZER * (self.m_DozerDropStones[client] or 0) * JOB_PAY_MULTIPLICATOR
+							local loan = LOAN_DOZER * (self.m_DozerDropStones[client] or 0) * JOB_PAY_MULTIPLICATOR * (1 + client:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR)
 							local duration = getRealTime().timestamp - client.m_LastJobAction
 							client.m_LastJobAction = getRealTime().timestamp
 							local points = 0
@@ -407,7 +407,7 @@ end
 function JobGravel:giveDumperDeliverLoan(player)
 	local amount = self.m_DumperDeliverStones[player] or 0
 	if amount > MAX_STONES_IN_DUMPER then amount = MAX_STONES_IN_DUMPER end
-	local loan = amount*LOAN_DUMPER * JOB_PAY_MULTIPLICATOR
+	local loan = amount * LOAN_DUMPER * JOB_PAY_MULTIPLICATOR * (1 + player:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR)
 	local duration = getRealTime().timestamp - player.m_LastJobAction
 	local points = math.floor(math.floor(amount/2)*JOB_EXTRA_POINT_FACTOR)
 	player.m_LastJobAction = getRealTime().timestamp

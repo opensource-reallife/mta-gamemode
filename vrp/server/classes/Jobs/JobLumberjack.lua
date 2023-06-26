@@ -6,7 +6,7 @@
 -- *
 -- ****************************************************************************
 JobLumberjack = inherit(Job)
-local TREE_MONEY = 58*1.8
+local TREE_MONEY = 6
 local DUMP_POSITION = Vector3(-1969.8, -2432.6, 29.5)
 
 function JobLumberjack:constructor()
@@ -169,8 +169,8 @@ function JobLumberjack:dumpHit(hitElement, matchingDimension)
 
 		local duration = getRealTime().timestamp - hitElement.m_LastJobAction
 		hitElement.m_LastJobAction = getRealTime().timestamp
-		StatisticsLogger:getSingleton():addJobLog(hitElement, "jobLumberjack", duration, numTrees * TREE_MONEY * JOB_PAY_MULTIPLICATOR, nil, nil, numTrees * JOB_EXTRA_POINT_FACTOR, numTrees)
-		self.m_BankAccount:transferMoney({hitElement, true}, numTrees * TREE_MONEY * JOB_PAY_MULTIPLICATOR, "Holzfäller-Job", "Job", "Lumberjack")  --// default *20
+		StatisticsLogger:getSingleton():addJobLog(hitElement, "jobLumberjack", duration, numTrees * TREE_MONEY * JOB_PAY_MULTIPLICATOR * (1 + hitElement:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR), nil, nil, numTrees * JOB_EXTRA_POINT_FACTOR, numTrees)
+		self.m_BankAccount:transferMoney({hitElement, true}, numTrees * TREE_MONEY * JOB_PAY_MULTIPLICATOR * (1 + hitElement:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR), "Holzfäller-Job", "Job", "Lumberjack")  --// default *20
 		hitElement:givePoints(numTrees * JOB_EXTRA_POINT_FACTOR)
 
 		for k, v in pairs(getAttachedElements(vehicle)) do

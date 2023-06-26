@@ -8,12 +8,13 @@
 TollStation = inherit(Object)
 
 function TollStation:constructor(Name, BarrierPos, BarrierRot, PedPos, PedRot, type)
-	self.m_Name = Name or "Unkown"
+	self.m_Name = Name or "Unknown"
 	self.m_Barrier = VehicleBarrier:new(BarrierPos, BarrierRot, 2.5, type, 1500)
 	self.m_Barrier.onBarrierHit = bind(self.onBarrierHit, self)
 
 	self.m_Ped = GuardActor:new(PedPos)
 	self.m_Ped:giveWeapon(31, 999999999, true)
+	self.m_Ped:setArmor(100)
 	self.m_Ped:setRotation(PedRot)
 	self.m_Ped:setFrozen(true)
 	self.m_RespawnPos = PedPos
@@ -167,8 +168,9 @@ function TollStation:onPedDestroy()
 	if self.m_Ped.m_AbortRescueTimer and isTimer(self.m_Ped.m_AbortRescueTimer) then killTimer(self.m_Ped.m_AbortRescueTimer) end
 	if self.m_Ped.m_DeathPickup then FactionRescue:getSingleton():removePedDeathPickup(self.m_Ped) end
 	self.m_Ped = GuardActor:new(self.m_RespawnPos)
-	self.m_Ped:setRotation(self.m_RespawnRot)
 	self.m_Ped:giveWeapon(31, 999999999, true)
+	self.m_Ped:setArmor(100)
+	self.m_Ped:setRotation(self.m_RespawnRot)
 	self.m_Ped:setFrozen(true)
 	addEventHandler("onPedWasted", self.m_Ped, bind(self.onPedWasted, self))
 	addEventHandler("onElementDestroy", self.m_Ped, bind(self.onPedDestroy, self))

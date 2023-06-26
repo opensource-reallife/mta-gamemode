@@ -6,8 +6,8 @@
 -- *
 -- ****************************************************************************
 TaskShootTarget = inherit(Task)
+
 local MAX_SHOOT_DISTANCE = 30
-local MAX_SHOOT_DISTANCE_SNIPER = MAX_SHOOT_DISTANCE*3
 
 function TaskShootTarget:constructor(actor, target)
 	outputDebug("TaskShootTarget:constructor - target: "..tostring(target))
@@ -90,13 +90,13 @@ function TaskShootTarget:update()
 		self.m_Actor:setRotation(0, 0, findRotation(actorPosition.x, actorPosition.y, targetPosition.x, targetPosition.y))
 
 		-- Stop if target is too far away
-		if self.m_Actor:getWeapon() ~= 34 then
-			if (actorPosition-targetPosition).length > MAX_SHOOT_DISTANCE then
+		if self.m_Actor:getWeaponSlot() == 5 or self.m_Actor:getWeaponSlot() == 6 then
+			if (actorPosition-targetPosition).length > MAX_SHOOT_DISTANCE*3 then
 				triggerServerEvent("taskShootTargetTooFarAway", self.m_Actor)
 				return self:stopUpdating()
 			end
 		else
-			if (actorPosition-targetPosition).length > MAX_SHOOT_DISTANCE_SNIPER then
+			if (actorPosition-targetPosition).length > MAX_SHOOT_DISTANCE then
 				triggerServerEvent("taskShootTargetTooFarAway", self.m_Actor)
 				return self:stopUpdating()
 			end

@@ -6,7 +6,7 @@
 -- *
 -- ****************************************************************************
 JobTrashman = inherit(Job)
-local MONEY_PER_CAN = 29*2 --// 15 default
+local MONEY_PER_CAN = 9
 
 function JobTrashman:constructor()
 	Job.constructor(self)
@@ -104,7 +104,7 @@ function JobTrashman:dumpCans(hitElement, matchingDimension)
 			local numCans = hitElement:getData("Trashman:Cans")
 
 			if numCans and numCans > 0 then
-				local moneyAmount = numCans * MONEY_PER_CAN * JOB_PAY_MULTIPLICATOR
+				local moneyAmount = numCans * MONEY_PER_CAN * JOB_PAY_MULTIPLICATOR * (1 + hitElement:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR)
 				local duration = getRealTime().timestamp - hitElement.m_LastJobAction
 				local points = math.floor(math.ceil(numCans/3)*JOB_EXTRA_POINT_FACTOR)
 				hitElement.m_LastJobAction = getRealTime().timestamp
