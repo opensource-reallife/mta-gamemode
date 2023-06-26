@@ -982,9 +982,7 @@ function DatabasePlayer:setNewNick(admin, newNick)
 		return false
 	end
 	
-	sql:queryExec("UPDATE ??_account SET Name = ? WHERE Id = ?", sql:getPrefix(), newNick, self.m_Id)
-
-	--[[local boardId = Account.getBoardIdFromId(self.m_Id)
+	local boardId = Account.getBoardIdFromId(self.m_Id)
 	local oldNick = Account.getNameFromId(self.m_Id)
 
 	Forum:getSingleton():userUpdate(boardId, {username = newNick}, Async.waitFor(self))
@@ -992,6 +990,7 @@ function DatabasePlayer:setNewNick(admin, newNick)
 	local data = fromJSON(result)
 
 	if data and data.status and data.status == 200 then
+		sql:queryExec("UPDATE ??_account SET Name = ? WHERE Id = ?", sql:getPrefix(), newNick, self.m_Id)
 		StatisticsLogger:getSingleton():addPunishLog(admin, self.m_Id, "nickchange", "von "..oldNick.." zu "..newNick, 0)
 	else
 		if data and data.status then
@@ -1000,7 +999,7 @@ function DatabasePlayer:setNewNick(admin, newNick)
 			admin:sendError(_("Fehler: Es gab ein Problem mit der Schnittstelle", admin))
 		end
 		return false
-	end]]
+	end
 
 	if self:isActive() then
 		self:getAccount().m_Username = newNick
