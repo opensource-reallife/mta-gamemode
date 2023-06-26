@@ -609,7 +609,7 @@ function FactionManager:Event_receiveFactionWeaponShopInfos()
 	local depot = faction.m_Depot
 	local playerId = client:getId()
 	local rank = faction.m_Players[playerId]
-	triggerClientEvent(client,"updateFactionWeaponShopGUI",client,faction.m_ValidWeapons, faction.m_WeaponDepotInfo, depot:getWeaponTable(id), faction:getRankWeapons(rank), faction.m_PlayerWeaponPermissions[playerId], faction.m_SpecialWeapons)
+	triggerClientEvent(client,"updateFactionWeaponShopGUI",client,faction.m_ValidWeapons, faction.m_WeaponDepotInfo, depot:getWeaponTable(id), faction:getRankWeapons(rank), faction.m_PlayerWeaponPermissions[playerId], faction.m_SpecialWeapons["Weapons"] or {})
 end
 
 function FactionManager:Event_receiveFactionWeaponTruckShopInfos()
@@ -991,5 +991,5 @@ function FactionManager:Event_factionReceiveArmsDealerShopInfos()
 	local playerId = client:getId()
 	local rank = faction.m_Players[playerId]
 
-	client:triggerEvent("updateFactionArmsDealerShopGUI", faction.m_SpecialWeapons, faction.m_WeaponDepotInfo, depot:getWeaponTable())
+	client:triggerEvent("updateFactionArmsDealerShopGUI", faction.m_SpecialWeapons, faction.m_WeaponDepotInfo, depot:getWeaponTable(), faction.m_EquipmentDepotInfo, depot:getEquipmentTable())
 end

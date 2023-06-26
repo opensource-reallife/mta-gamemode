@@ -222,21 +222,26 @@ end
 
 function FactionState:putEvidenceInDepot(player, box)
 	local content = box.m_Content
-	local type, product, amount, price, id = unpack(box.m_Content)
 	local depot = player:getFaction():getDepot()
-	if type == "Waffe" then
-		if id then
-			player:getFaction():sendShortMessage(("%s hat %s Waffe/n [ %s ] (%s $) konfesziert!"):format(player:getName(), amount, product, price))
-			StateEvidence:getSingleton():addWeaponsToEvidence(player, id, amount, true)
+	
+	for i, data in pairs(content) do
+		if i ~= "BagPrice" then
+			local type, product, amount, price, id = unpack(data)
+			if type == "Waffe" then
+				if id then
+					player:getFaction():sendShortMessage(("%s hat %s Waffe/n [ %s ] (%s $) konfesziert!"):format(player:getName(), amount, product, price))
+					StateEvidence:getSingleton():addWeaponsToEvidence(player, id, amount, true)
+				end
+			elseif type == "Munition" then
+				if id then
+					player:getFaction():sendShortMessage(("%s hat %s Munition [ %s ] (%s $) konfesziert!"):format(player:getName(), amount, product, price))
+					StateEvidence:getSingleton():addMunitionToEvidence(player, id, amount, true)
+				end
+			else
+				player:getFaction():sendShortMessage(("%s hat %s Stück %s (%s $) konfesziert!"):format(player:getName(), amount, product, price))
+				self.m_BankAccountServer:transferMoney(player:getFaction(), price , "Schwarzmarktware", "Faction", "Schwarzmarktware")
+			end
 		end
-	elseif type == "Munition" then
-		if id then
-			player:getFaction():sendShortMessage(("%s hat %s Munition [ %s ] (%s $) konfesziert!"):format(player:getName(), amount, product, price))
-			StateEvidence:getSingleton():addMunitionToEvidence(player, id, amount, true)
-		end
-	else
-		player:getFaction():sendShortMessage(("%s hat %s Stück %s (%s $) konfesziert!"):format(player:getName(), amount, product, price))
-		self.m_BankAccountServer:transferMoney(player:getFaction(), price , "Schwarzmarktware", "Faction", "Schwarzmarktware")
 	end
 	box.m_Package:delete()
 end

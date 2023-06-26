@@ -34,6 +34,7 @@ function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, 
 	self.m_SpecialWeapons = factionSpecialWeapons[Id]
 	self.m_Color = factionColors[Id]
 	self.m_WeaponDepotInfo = factionType == "State" and factionWeaponDepotInfoState or factionWeaponDepotInfo
+	self.m_EquipmentDepotInfo = factionEquipmentDepotInfo
 	self.m_Countdowns = {}
 
 	self.m_Vehicles = {}

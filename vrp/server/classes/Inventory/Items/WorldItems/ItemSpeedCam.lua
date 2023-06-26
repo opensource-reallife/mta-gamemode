@@ -107,7 +107,7 @@ end
 
 function ItemSpeedCam:onRadarDetectorColShapeHit(element, dim)
 	if dim then
-		if element:getType() == "vehicle" then
+		if element:getType() == "vehicle" and instanceof(element, PermanentVehicle) then
 			if element:getOccupant() and element:hasRadarDetector() then
 				local player = element:getOccupant()
 				player:sendWarning(_("Achtung! Das Radarwarngerät meldet einen Blitzer in der Nähe!", player))

@@ -10,9 +10,6 @@
 
 FileModdingHelper = inherit(Singleton)
 FileModdingHelper.WeaponImagePath = "files/images/Weapons/"
-FileModdingHelper.SpecialWeapons = {
-    -1, "DefuseKit", "Rauchgranate", "Gasmaske", "SLAM"
-}
 
 function FileModdingHelper:constructor()
     self.m_WeaponImagePath = ""
@@ -39,12 +36,10 @@ function FileModdingHelper:makePaths()
             self.m_FilePaths.weapons[weaponID] = path
         end
     end
-
-    for i, specialWpn in pairs(FileModdingHelper.SpecialWeapons) do
-        local path = FileModdingHelper.WeaponImagePath..(-1)..".png"
-        local customPath = "_custom/"..path
-        self.m_FilePaths.weapons[specialWpn] = fileExists(customPath) and customPath or path
-    end
+    --vest 
+    local path = FileModdingHelper.WeaponImagePath..(-1)..".png"
+    local customPath = "_custom/"..path
+    self.m_FilePaths.weapons[-1] = fileExists(customPath) and customPath or path
 end
 
 function FileModdingHelper:makePath(fileName)

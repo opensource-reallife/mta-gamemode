@@ -33,10 +33,14 @@ ArmsDealer.ProhibitedRank =
     ["SLAM"] = 3,
     ["Scharfschützengewehr"] =  3 
 }
+ArmsDealer.MaxBags = 4
 
-addRemoteEvents{"requestArmsDealerInfo", "checkoutArmsDealerCart"}
+addRemoteEvents{"requestArmsDealerInfo", "checkoutArmsDealerCart", }
 function ArmsDealer:constructor()
     self.m_Order = {}
+    self.m_BagContent = {}
+    self.m_MaxPrice = {}
+    self.m_OrderedToday = {}
     self.m_BankAccountServer = BankServer.get("gameplay.blackmarket")
     addEventHandler("requestArmsDealerInfo", root, bind(self.sendInfo, self))
     addEventHandler("checkoutArmsDealerCart", root, bind(self.checkoutCart, self))
@@ -54,7 +58,7 @@ function ArmsDealer:getItemData(item)
 end
 
 
-function ArmsDealer:checkoutCart(cart)
+function ArmsDealer:checkoutCart(cart, maxPrice)
     if not ActionsCheck:getSingleton():isActionAllowed(client) then return end
     if not PermissionsManager:getSingleton():isPlayerAllowedToStart(client, "faction", "Airdrop") then
 		client:sendError(_("Du bist nicht berechtigt einen Airdrop zu starten!", client))
@@ -63,53 +67,72 @@ function ArmsDealer:checkoutCart(cart)
 	if FactionState:getSingleton():countPlayers() < ARMSDEALER_MIN_MEMBERS then
        return client:sendError(_("Es müssen mindestens %d Staatsfraktionisten online sein!",client, ARMSDEALER_MIN_MEMBERS))
     end
-    if client and client.getFaction and client:getFaction() then 
-        if cart and not self.m_InAir then
-            local faction = client:getFaction()
-            if not self.m_Order[faction] then
-                self.m_Order[faction] = {}
-                local depot = faction.m_Depot
-                local orderCount = 0
-                local price, maxAmount, currentAmount, pricePerPiece
-                local validWeapons, maxWeapons, weaponDepot = faction.m_ValidWeapons, faction.m_WeaponDepotInfo, depot:getWeaponTable()
-                for category, data in pairs(cart) do 
-                    for product, subdata in pairs(data) do 
-                        if category == "Waffen" then
-                            if not self:isMagazin(product) then
-                                maxAmount = maxWeapons[product]["Waffe"]
-                                currentAmount = weaponDepot[product]["Waffe"]
-                                pricePerPiece = maxWeapons[product]["WaffenPreis"]
-                                if (maxAmount - currentAmount) > 0 then
-                                    table.insert(self.m_Order[faction], {"Waffe", WEAPON_NAMES[product], (maxAmount-currentAmount), (maxAmount-currentAmount)*pricePerPiece, product})
-                                end
-                            else 
-                                product = self:getMagazineId(product)
-                                product = tonumber(product) -- hence doing tonumber(self:getMagazineId(...)) is trying to tonumber both gsub-return values
-                                maxAmount = maxWeapons[product]["Magazine"]
-                                currentAmount = weaponDepot[product]["Munition"]
-                                pricePerPiece = maxWeapons[product]["MagazinPreis"]
-                                if (maxAmount - currentAmount) > 0 then
-                                    table.insert(self.m_Order[faction], {"Munition", WEAPON_NAMES[product], (maxAmount-currentAmount), (maxAmount-currentAmount)*pricePerPiece, product})
-                                end
-                            end
-                        else 
-                            if ArmsDealer.Data[category] and ArmsDealer.Data[category][product] then
-                                table.insert(self.m_Order[faction], {"Equipment", product, ArmsDealer.Data[category][product][1], ArmsDealer.Data[category][product][2], ArmsDealer.Data[category][product][3] })
-                            end
-                        end
+    if not client or not client.getFaction or not client:getFaction() then
+        return 
+    end 
+    if not cart or self.m_InAir then
+        return client:sendError(_("Es läuft zurzeit bereits ein Airdrop!", client))
+    end
+
+    local faction = client:getFaction()
+    if not self.m_OrderedToday[faction] then
+        self.m_Order[faction] = {}
+        self.m_BagContent[faction] = {}
+        self.m_MaxPrice[faction] = maxPrice
+        self.m_TotalPrice = 0
+        local depot = faction.m_Depot
+        local orderCount = 0
+        local price, maxAmount, currentAmount, pricePerPiece, totalPrice
+        local validWeapons, maxWeapons, weaponDepot = faction.m_ValidWeapons, faction.m_WeaponDepotInfo, depot:getWeaponTable()
+        local maxEquipment = faction.m_EquipmentDepotInfo
+        for category, data in pairs(cart) do 
+            for product, subdata in pairs(data) do 
+                if category == "Weapon" then
+                    if subdata["Waffe"] > 0 then
+                        --maxAmount = maxWeapons[product]["Waffe"]
+                        --currentAmount = weaponDepot[product]["Waffe"]
+                        pricePerPiece = maxWeapons[product]["WaffenPreis"]
+                        totalPrice = pricePerPiece*subdata["Waffe"]
+                        self.m_TotalPrice = self.m_TotalPrice + totalPrice
+                        table.insert(self.m_Order[faction], {"Waffe", WEAPON_NAMES[product], subdata["Waffe"], totalPrice, product})
                     end
+                    if subdata["Munition"] > 0 then 
+                        --currentAmount = weaponDepot[product]["Munition"]
+                        pricePerPiece = maxWeapons[product]["MagazinPreis"]
+                        totalPrice = pricePerPiece*subdata["Munition"]
+                        self.m_TotalPrice = self.m_TotalPrice + totalPrice
+                        table.insert(self.m_Order[faction], {"Munition", WEAPON_NAMES[product], subdata["Munition"], totalPrice, product})
+                    end
+                elseif category == "Equipment" then
+                    if subdata["Count"] > 0 then
+                        --maxAmount = maxWeapons[product]["Waffe"]
+                        --currentAmount = weaponDepot[product]["Waffe"]
+                        pricePerPiece = maxEquipment[product]["Price"]
+                        totalPrice = pricePerPiece*subdata["Count"]
+                        self.m_TotalPrice = self.m_TotalPrice + totalPrice
+                        table.insert(self.m_Order[faction], {"Equipment", WEAPON_NAMES[product], subdata["Count"], totalPrice, product})
+                    end
+                else 
+                    --if ArmsDealer.Data[category] and ArmsDealer.Data[category][product] then
+                    --    table.insert(self.m_Order[faction], {"Equipment", product, ArmsDealer.Data[category][product][1], ArmsDealer.Data[category][product][2], ArmsDealer.Data[category][product][3] })
+                    --end
                 end
-                self:processCart( self.m_Order[faction], faction)
-                StatisticsLogger:getSingleton():addActionLog("Airdrop", "start", client, faction, "faction")
-                client:getFaction():addLog(client, "Lager", ("Airdrop gestartet für $%s!"):format(self.m_TotalPrice))
-                self.m_LastPlayer = client 
-                self.m_LastFaction = faction
-            else 
-                client:sendError(_("Deine Fraktion hat bereits heute bestellt!", client))
+                
             end
-        else 
-            client:sendError(_("Es läuft zurzeit bereits ein Airdrop!", client))
         end
+        if faction:transferMoney(self.m_BankAccountServer, self.m_TotalPrice, "Lieferung", "Action", "Blackmarket") then
+            local bagContent = self:splitOrder(faction)
+            self:processCart(bagContent, faction)
+            StatisticsLogger:getSingleton():addActionLog("Airdrop", "start", client, faction, "faction")
+            client:getFaction():addLog(client, "Lager", ("Airdrop gestartet für $%s!"):format(self.m_TotalPrice))
+            self.m_LastPlayer = client 
+            self.m_LastFaction = faction
+            self.m_OrderedToday[faction] = true
+        else
+            return client:sendError(_("Deine Fraktion hat nicht genügend Geld (%s)", client, toMoneyString(self.m_TotalPrice)))
+        end
+    else 
+        client:sendError(_("Deine Fraktion hat bereits heute bestellt!", client))
     end
 end
 
@@ -119,26 +142,7 @@ function ArmsDealer:processCart( order, faction )
     if endPoint then
         etaTime = self:setupPlane(endPoint, 400000, faction, order)
     end
-
-    local text = "Jackal Weapon Delivery\n"
-    local categoryDisplay = {}
-
-    for i, data in ipairs(order) do -- group the order into categories for display-purposes
-        if not categoryDisplay[data[2]] then categoryDisplay[data[2]] = {} end
-        table.insert(categoryDisplay[data[2]], data)
-    end
-    self.m_TotalPrice = 0
-    for category, data in pairs(categoryDisplay) do 
-        text = ("%s» %s\n"):format(text, category) 
-        for i, subdata in ipairs(data) do 
-            text = ("%s%s [ Stück: %s  - Preis: $%s  ]\n"):format(text, subdata[1], subdata[3], subdata[4])
-            self.m_TotalPrice = self.m_TotalPrice + subdata[4]
-        end
-        text = ("%s\n"):format(text) -- add double breakline after each category
-    end
-    text = ("%s= Total-Preis: %s\n\nETA: %s"):format(text, self.m_TotalPrice, getOpticalTimestamp(etaTime+getRealTime().timestamp, true))
-    faction:sendShortMessage(text, -1)
-    faction:transferMoney(self.m_BankAccountServer, self.m_TotalPrice, "Lieferung", "Action", "Blackmarket")
+    
     self.m_Blip =  Blip:new("Marker.png", endPoint.x, endPoint.y, {faction = {faction:getId()}}, 9999, BLIP_COLOR_CONSTANTS.Red)
     self.m_Blip:attach(self.m_Plane)
 
@@ -146,18 +150,6 @@ function ArmsDealer:processCart( order, faction )
     self.m_DropIndicator = createObject(354, endPoint.x, endPoint.y, endPoint.z)
     PlayerManager:getSingleton():breakingNews("Ein nicht identifiziertes Flugzeug ist in den Flugraum von San Andreas eingedrungen!")
     self.m_InAir = true
-end
-
-function ArmsDealer:isMagazin(product)
-    if type(product) == "number" then
-        return false 
-    else
-        return product:find("%-%[Magazin]")
-    end
-end
-
-function ArmsDealer:getMagazineId(product)
-    return product:gsub("%-%[Magazin]", "")
 end
 
 function ArmsDealer:sendInfo()
@@ -254,4 +246,26 @@ end
 
 function ArmsDealer:destructor()
 
+end
+--table.insert(self.m_Order[faction], {"Munition", WEAPON_NAMES[product], subdata["Munition"], totalPrice, product})
+function ArmsDealer:splitOrder(faction)
+    local pricePerBag = self.m_MaxPrice[faction] / ArmsDealer.MaxBags
+    for i = 1, 4, 1 do
+        if table.size(self.m_Order[faction]) == 0 then
+            break
+        end
+        if not self.m_BagContent[faction][i] then
+            self.m_BagContent[faction][i] = {}
+            self.m_BagContent[faction][i]["BagPrice"] = 0
+        end
+
+        for mi, data in pairs(self.m_Order[faction]) do
+            if data[4] + self.m_BagContent[faction][i]["BagPrice"] <= pricePerBag or i == ArmsDealer.MaxBags then
+                self.m_BagContent[faction][i]["BagPrice"] = self.m_BagContent[faction][i]["BagPrice"] + data[4]
+                table.insert(self.m_BagContent[faction][i], data)
+                self.m_Order[faction][mi] = nil
+            end
+        end
+    end
+    return self.m_BagContent[faction]
 end

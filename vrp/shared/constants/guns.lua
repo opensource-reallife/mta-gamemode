@@ -121,7 +121,13 @@ WEAPON_NAMES = {
 	[43] = "Kamera",
 	[44] = "Nachtsicht-Gerät",
 	[45] = "Wärmesicht-Gerät",
-	[46] = "Fallschirm"
+	[46] = "Fallschirm",
+
+	["Fallschirm"] = "Fallschrim",
+	["SLAM"] = "SLAM",
+	["DefuseKit"] = "Entschärfungskit",
+	["Rauchgranate"] = "Rauchgranate",
+	["Gasmaske"] = "Gasmaske",
 }
 
 TRADE_DISABLED_WEAPONS = { --weapons that should not be traded with
