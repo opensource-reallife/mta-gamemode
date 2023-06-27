@@ -17,7 +17,7 @@ function InteriorEnterExitGUI:constructor(entry, text, icon, checkRange, allowVe
     self.m_X, self.m_Y = screenWidth/2-self.m_Width/2, screenHeight-self.m_Height*2
 
     self.m_Entry = entry
-    self.m_Text = ("%s"):format(text:upper() or _"EINGANG")
+    self.m_Text = ("%s"):format(text:upper() or "EINGANG")
     self.m_Icon = icon
     self.m_CheckRange = checkRange or 3
     self.m_CancelVehicleEnter = not allowVehicleEnter
