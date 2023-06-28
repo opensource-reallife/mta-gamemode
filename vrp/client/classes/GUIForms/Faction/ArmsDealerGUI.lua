@@ -10,10 +10,12 @@ inherit(Singleton, ArmsDealerGUI)
 
 addRemoteEvents{"openArmsDealerGUI", "updateFactionArmsDealerShopGUI"}
 
-function ArmsDealerGUI:constructor()
+function ArmsDealerGUI:constructor(type)
 	GUIForm.constructor(self, screenWidth/2-945/2, screenHeight/2-230, 945, 460)
-	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Airdrop Lieferung", true, true, self)
+	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Waffenlieferung", true, true, self)
 	self.m_Window:deleteOnClose(true)
+
+	self.m_Type = type
 
 	self.m_Cart = {}
 	self.m_Cart["Weapon"] = {}
@@ -75,19 +77,24 @@ function ArmsDealerGUI:Event_updateArmsDealerGUI(specialWeapons, depotWeaponsMax
 	self.m_DepotEquipmentMax = depotEquipmentMax
 	self.m_Weapons = specialWeapons["Weapons"]
 	self.m_Equipment = specialWeapons["Equipment"]
-	for k,v in pairs(self.m_Weapons) do
-		if v == true then
-			self:addWeaponToGUI(k,depotWeapons[k]["Waffe"],depotWeapons[k]["Munition"])
+	if self.m_Weapons then
+		for k,v in pairs(self.m_Weapons) do
+			if v == true then
+				self:addWeaponToGUI(k,depotWeapons[k]["Waffe"],depotWeapons[k]["Munition"])
+			end
 		end
 	end
-	self.m_WaffenColumn = self.m_WaffenColumn + 1
-	self.m_WaffenRow = 0
-	self.m_WaffenAnzahl = 0
-	for k, v in pairs(self.m_Equipment) do
-		if v == true then
-			self:addEquipmentToGUI(k, depotEquipments[k])
+	
+	if self.m_Equipment then
+		self.m_WaffenColumn = self.m_WaffenColumn + 1
+		self.m_WaffenRow = 0
+		self.m_WaffenAnzahl = 0
+		for k, v in pairs(self.m_Equipment) do
+			if v == true then
+				self:addEquipmentToGUI(k, depotEquipments[k])
+			end
+			
 		end
-		
 	end
 
 	self.m_WeaponArea:resize(465, 230+self.m_WaffenColumn*140)
@@ -177,30 +184,34 @@ end
 
 
 function ArmsDealerGUI:updateButtons()
-	for weaponID,v in pairs(self.m_Weapons) do
-		if v == true then
-			if self.m_WeaponDepot[weaponID]["Waffe"]+self.m_Cart["Weapon"][weaponID]["Waffe"] < self.m_DepotWeaponsMax[weaponID]["Waffe"] then
-				self.m_WeaponsBuyGun[weaponID]:setEnabled(true)
-			else
-				self.m_WeaponsBuyGun[weaponID]:setEnabled(false)
-			end
-
-			if self.m_WeaponsBuyMunition[weaponID] then
-				if self.m_WeaponDepot[weaponID]["Munition"]+self.m_Cart["Weapon"][weaponID]["Munition"] < self.m_DepotWeaponsMax[weaponID]["Magazine"] then
-					self.m_WeaponsBuyMunition[weaponID]:setEnabled(true)
+	if self.m_Weapons then
+		for weaponID,v in pairs(self.m_Weapons) do
+			if v == true then
+				if self.m_WeaponDepot[weaponID]["Waffe"]+self.m_Cart["Weapon"][weaponID]["Waffe"] < self.m_DepotWeaponsMax[weaponID]["Waffe"] then
+					self.m_WeaponsBuyGun[weaponID]:setEnabled(true)
 				else
-					self.m_WeaponsBuyMunition[weaponID]:setEnabled(false)
+					self.m_WeaponsBuyGun[weaponID]:setEnabled(false)
+				end
+
+				if self.m_WeaponsBuyMunition[weaponID] then
+					if self.m_WeaponDepot[weaponID]["Munition"]+self.m_Cart["Weapon"][weaponID]["Munition"] < self.m_DepotWeaponsMax[weaponID]["Magazine"] then
+						self.m_WeaponsBuyMunition[weaponID]:setEnabled(true)
+					else
+						self.m_WeaponsBuyMunition[weaponID]:setEnabled(false)
+					end
 				end
 			end
 		end
 	end
 
-	for equip, state  in pairs(self.m_Equipment) do
-		if state then
-			if self.m_Cart["Equipment"][equip]["Count"] >= self.m_DepotEquipmentMax[equip]["MaxPerAirDrop"] then
-				self.m_WeaponsBuyGun[equip]:setEnabled(false)
-			else
-				self.m_WeaponsBuyGun[equip]:setEnabled(true)
+	if self.m_Equipment then
+		for equip, state  in pairs(self.m_Equipment) do
+			if state then
+				if self.m_Cart["Equipment"][equip]["Count"] >= self.m_DepotEquipmentMax[equip]["MaxPerAirDrop"] then
+					self.m_WeaponsBuyGun[equip]:setEnabled(false)
+				else
+					self.m_WeaponsBuyGun[equip]:setEnabled(true)
+				end
 			end
 		end
 	end
@@ -308,11 +319,11 @@ function ArmsDealerGUI:factionArmsDealerLoad()
 end
 
 addEventHandler("openArmsDealerGUI", root,
-		function()
+		function(type)
 			if ArmsDealerGUI:getSingleton():isInstantiated() then
 				ArmsDealerGUI:getSingleton():open()
 			else
-				ArmsDealerGUI:getSingleton():new()
+				ArmsDealerGUI:getSingleton():new(type)
 			end
 
 		end

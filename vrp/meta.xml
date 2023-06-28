@@ -439,6 +439,8 @@
 	<script src="server/classes/Faction/Actions/BankRobbery/BankRobberyManager.lua" type="server"/>
 	<script src="server/classes/Faction/Actions/JewelryStoreRobbery/JewelryStoreRobbery.lua" type="server"/>
 	<script src="server/classes/Faction/Actions/JewelryStoreRobbery/JewelryStoreRobberyManager.lua" type="server"/>
+	<script src="server/classes/Faction/Actions/HeavyWeaponTransport/HeavyWeaponTransportManager.lua" type="server"/>
+	
 	<script src="server/classes/Faction/FactionDepot.lua" type="server"/>
 	<script src="server/classes/Faction/Faction.lua" type="server"/>
 	<script src="server/classes/Faction/StateEvidence.lua" type="server"/>

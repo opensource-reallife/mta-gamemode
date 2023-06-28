@@ -59,14 +59,26 @@ end
 
 
 function ArmsDealer:checkoutCart(cart, maxPrice)
+    local faction = client:getFaction()
     if not ActionsCheck:getSingleton():isActionAllowed(client) then return end
-    if not PermissionsManager:getSingleton():isPlayerAllowedToStart(client, "faction", "Airdrop") then
-		client:sendError(_("Du bist nicht berechtigt einen Airdrop zu starten!", client))
-		return
-	end
-	if FactionState:getSingleton():countPlayers() < ARMSDEALER_MIN_MEMBERS then
-       return client:sendError(_("Es müssen mindestens %d Staatsfraktionisten online sein!",client, ARMSDEALER_MIN_MEMBERS))
+    if faction:isEvilFaction() then
+        if not PermissionsManager:getSingleton():isPlayerAllowedToStart(client, "faction", "Airdrop") then
+            client:sendError(_("Du bist nicht berechtigt einen %s zu starten!", client, faction:isStateFaction() and "Staats-Waffendrop" or "Airdrop"))
+            return
+        end
+        if FactionState:getSingleton():countPlayers() < ARMSDEALER_MIN_MEMBERS then
+            return client:sendError(_("Es müssen mindestens %d Staatsfraktionisten online sein!",client, ARMSDEALER_MIN_MEMBERS))
+        end
+    else
+        if not PermissionsManager:getSingleton():isPlayerAllowedToStart(client, "faction", "StateAirdrop") then
+            client:sendError(_("Du bist nicht berechtigt einen %s zu starten!", client, faction:isStateFaction() and "Staats-Waffendrop" or "Airdrop"))
+            return
+        end
+        if FactionEvil:getSingleton():countPlayers() < ARMSDEALER_MIN_MEMBERS then
+            return client:sendError(_("Es müssen mindestens %d Böse fraktionisten online sein!",client, ARMSDEALER_MIN_MEMBERS))
+        end
     end
+
     if not client or not client.getFaction or not client:getFaction() then
         return 
     end 
@@ -74,7 +86,7 @@ function ArmsDealer:checkoutCart(cart, maxPrice)
         return client:sendError(_("Es läuft zurzeit bereits ein Airdrop!", client))
     end
 
-    local faction = client:getFaction()
+
     if not self.m_OrderedToday[faction] then
         self.m_Order[faction] = {}
         self.m_BagContent[faction] = {}
@@ -148,7 +160,12 @@ function ArmsDealer:processCart( order, faction )
 
     self.m_DropBlip = Blip:new("SniperGame.png", endPoint.x, endPoint.y,  {factionType = {"State", "Evil"}}, 9999, BLIP_COLOR_CONSTANTS.Blue)
     self.m_DropIndicator = createObject(354, endPoint.x, endPoint.y, endPoint.z)
-    PlayerManager:getSingleton():breakingNews("Ein nicht identifiziertes Flugzeug ist in den Flugraum von San Andreas eingedrungen!")
+    if faction:isStateFaction() then
+        PlayerManager:getSingleton():breakingNews("Der Luftraum von San Andreas wird aufgrund eines Staatlichen Waffendrops nun verschärft beobachtet!")
+    else
+        PlayerManager:getSingleton():breakingNews("Ein nicht identifiziertes Flugzeug ist in den Flugraum von San Andreas eingedrungen!")
+    end
+    
     self.m_InAir = true
 end
 
@@ -168,7 +185,7 @@ function ArmsDealer:startAirDrop(faction, order, acceleration)
             setTimer(function() 
                 if self.m_Plane then 
                     local pos = self.m_Plane:getPosition()
-                    ArmsPackage:new(data, Vector3(pos.x-4, pos.y, pos.z), Vector3(pos.x-4, pos.y, endPoint.z-0.35))
+                    ArmsPackage:new(data, Vector3(pos.x-4, pos.y, pos.z), Vector3(pos.x-4, pos.y, endPoint.z-0.35), faction:getType())
                 end
             end, acceleration*(length*i), 1)
         end
@@ -176,32 +193,79 @@ function ArmsDealer:startAirDrop(faction, order, acceleration)
 end
 
 function ArmsDealer:setupPlane(pos, time, faction, order)
-    self:sendOperatorMessage(faction, "In der Luft!")
-    ActionsCheck:getSingleton():setAction("Waffendrop")
-    local acceleration = time/6000
-    local startPoint = Vector3(-3000, pos.y, 100)
-    local distanceToDrop = math.abs(-3000 - pos.x)
-    local distanceAfterDrop = 6000 - distanceToDrop
-    local endPoint = Vector3(3000, pos.y, 100)
-    self.m_Plane =  TemporaryVehicle.create(592, -3000, pos.y, 100)
-    self.m_Plane:disableRespawn(true)
-    self.m_Plane:setColor(0,0,0,0,0,0)
-    self.m_Plane:setCollisionsEnabled(false)
-    setVehicleLandingGearDown(self.m_Plane, false)
-    self.m_MoveObject = createObject(1337, -3000, pos.y, 100)
-    self.m_MoveObject:setCollisionsEnabled(false)
-    self.m_MoveObject:setAlpha(0)
-    self.m_Plane:attach(self.m_MoveObject, Vector3(0, 0, 0), Vector3(0, 0, 270))
-    self.m_MoveObject:move(acceleration*distanceToDrop, pos.x, pos.y, 100)
-    faction:setCountDown((acceleration*distanceToDrop)/1000, "Airdrop")
-    setTimer(function() self:sendOperatorMessage(faction, "Abwurf in T-10!") end, (distanceToDrop*acceleration)-10000, 1)
-    setTimer(function() 
-        self.m_MoveObject:move(distanceAfterDrop*acceleration, 3000, pos.y, 100) 
-        self:sendOperatorMessage(faction, "Abwurf!")
-        self:startAirDrop(faction, order, acceleration)
-        setTimer(function() self:clear() end, distanceAfterDrop*acceleration, 1)
-    end, acceleration*distanceToDrop, 1)
-    return (acceleration*distanceToDrop)/1000
+    if faction:isEvilFaction() then
+        self:sendOperatorMessage(faction, "In der Luft!")
+        ActionsCheck:getSingleton():setAction("Waffendrop")
+        local acceleration = time/6000
+        local startPoint = Vector3(-3000, pos.y, 100)
+        local distanceToDrop = math.abs(-3000 - pos.x)
+        local distanceAfterDrop = 6000 - distanceToDrop
+        local endPoint = Vector3(3000, pos.y, 100)
+        self.m_Plane =  TemporaryVehicle.create(592, -3000, pos.y, 100)
+        self.m_Plane:disableRespawn(true)
+        self.m_Plane:setColor(0,0,0,0,0,0)
+        self.m_Plane:setCollisionsEnabled(false)
+        setVehicleLandingGearDown(self.m_Plane, false)
+        self.m_MoveObject = createObject(1337, -3000, pos.y, 100)
+        self.m_MoveObject:setCollisionsEnabled(false)
+        self.m_MoveObject:setAlpha(0)
+        self.m_Plane:attach(self.m_MoveObject, Vector3(0, 0, 0), Vector3(0, 0, 270))
+        self.m_MoveObject:move(acceleration*distanceToDrop, pos.x, pos.y, 100)
+        faction:setCountDown((acceleration*distanceToDrop)/1000, "Airdrop")
+        setTimer(function() self:sendOperatorMessage(faction, "Abwurf in T-10!") end, (distanceToDrop*acceleration)-10000, 1)
+        setTimer(function() 
+            self.m_MoveObject:move(distanceAfterDrop*acceleration, 3000, pos.y, 100) 
+            self:sendOperatorMessage(faction, "Abwurf!")
+            self:startAirDrop(faction, order, acceleration)
+            setTimer(function() self:clear() end, distanceAfterDrop*acceleration, 1)
+        end, acceleration*distanceToDrop, 1)
+        return (acceleration*distanceToDrop)/1000
+    else
+        self:sendOperatorMessage(faction, "Auf dem Weg zum Waffenstützpunkt!")
+        ActionsCheck:getSingleton():setAction("Staats-Waffendrop")
+        faction:setCountDown(7 * 60, "Staats-Waffendrop")
+       
+        self.m_Plane = TemporaryVehicle.create(520, -1437.20, 507.79, 19.15, 270)
+        self.m_Plane:setDamageProof(true)
+        self.m_Plane:setCollisionsEnabled(false)
+    
+        self.m_MoveObject = createObject(2710,  -1437.20, 507.79, 19.15, 0, 0, 270)
+        self.m_MoveObject:setAlpha(0)
+        self.m_Plane:attach(self.m_MoveObject, 0, 0, 0, 0, 0, 0)
+    
+        self.m_Pilot = Ped(287, Vector3(-1437.20, 507.79, 19.15+3))
+        self.m_Pilot:setCollisionsEnabled(false)
+        self.m_Pilot:warpIntoVehicle(self.m_Plane)
+    
+        setTimer(function()
+            self.m_MoveObject:move(15000, -850.21, 513.78, 37.16, 10, 0, 0, "InQuad")
+        end, 5000, 1)
+        setTimer(function()
+            setVehicleLandingGearDown(self.m_Plane, false)
+        end, 10000, 1)
+        setTimer(function()
+            self.m_MoveObject:move(40000, 3937.20, 507.79, 157.16, -10, 0, 0) 
+        end, 20000, 1) 
+        setTimer(function()
+            self.m_Plane:setDimension(PRIVATE_DIMENSION_SERVER)
+        end, 60000, 1) 
+    
+        setTimer(function()
+            self:sendOperatorMessage(faction, "Auf dem Weg zur Abwurfstelle!")
+            self.m_Plane:setDimension(0)
+            self.m_MoveObject:setRotation(0, 0, findRotation(self.m_MoveObject.position.x, self.m_MoveObject.position.y,  281.39, 2501.79))
+            self.m_MoveObject:move(2 * 1000 * 60, 281.39, 2501.79, 148.59)
+    
+            setTimer(function()
+                self.m_MoveObject:move(2 * 1000 * 60, self.m_MoveObject.matrix:transformPosition(Vector3(0, 3000, 0)))
+                self:sendOperatorMessage(faction, "Abwurf!")
+                self:startAirDrop(faction, order, 50)
+                setTimer(function() self:clear() end, 15 * 1000, 1)
+            end, 1000 * 60 * 2, 1)
+    
+        end, 1000 * 60 * 5, 1)
+        setTimer(function() self:sendOperatorMessage(faction, "Abwurf in T-10!") end, 7 * 60 * 1000 - 10000, 1)
+    end
 end
 
 function ArmsDealer:sendOperatorMessage(faction, text)
@@ -237,6 +301,10 @@ function ArmsDealer:clear()
         self.m_DropIndicator:destroy()
         self.m_DropIndicator = nil
     end
+    if self.m_Pilot and isElement(self.m_Pilot) then
+        self.m_Pilot:destroy()
+        self.m_Pilot = nil
+    end
     self.m_InAir = false
     StatisticsLogger:getSingleton():addActionLog("Airdrop", "stop", self.m_LastPlayer, self.m_LastFaction, "faction")
     self.m_LastPlayer = nil 
@@ -247,8 +315,9 @@ end
 function ArmsDealer:destructor()
 
 end
---table.insert(self.m_Order[faction], {"Munition", WEAPON_NAMES[product], subdata["Munition"], totalPrice, product})
+
 function ArmsDealer:splitOrder(faction)
+    local bagContent = {}
     local pricePerBag = self.m_MaxPrice[faction] / ArmsDealer.MaxBags
     for i = 1, 4, 1 do
         if table.size(self.m_Order[faction]) == 0 then
@@ -267,5 +336,14 @@ function ArmsDealer:splitOrder(faction)
             end
         end
     end
-    return self.m_BagContent[faction]
+
+    for i, v in pairs(self.m_BagContent[faction]) do
+        if v.BagPrice > 0 then
+            table.insert(bagContent, v)
+        else
+            self.m_BagContent[faction][i] = nil
+        end
+    end
+
+    return bagContent
 end

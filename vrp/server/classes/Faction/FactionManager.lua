@@ -617,7 +617,11 @@ function FactionManager:Event_receiveFactionWeaponTruckShopInfos()
 	local depot = faction.m_Depot
 	local playerId = client:getId()
 	local rank = faction.m_Players[playerId]
-	triggerClientEvent(client,"updateFactionWeaponTruckShopGUI",client,faction.m_ValidWeapons, faction.m_WeaponDepotInfo, depot:getWeaponTable(id), faction:getRankWeapons(rank), faction.m_PlayerWeaponPermissions[playerId])
+	local validWeapons = faction.m_ValidWeapons
+	if faction:isStateFaction() then
+		validWeapons = FactionState:getSingleton():getAllWeapons()
+	end
+	triggerClientEvent(client,"updateFactionWeaponTruckShopGUI",client, validWeapons, faction.m_WeaponDepotInfo, depot:getWeaponTable(id), faction:getRankWeapons(rank), faction.m_PlayerWeaponPermissions[playerId])
 end
 
 function FactionManager:Event_factionWeaponShopBuy(weaponTable)
@@ -990,6 +994,10 @@ function FactionManager:Event_factionReceiveArmsDealerShopInfos()
 	local depot = faction.m_Depot
 	local playerId = client:getId()
 	local rank = faction.m_Players[playerId]
+	local specialWeapons = faction.m_SpecialWeapons
+	if faction:isStateFaction() then
+		specialWeapons = FactionState:getSingleton():getAllSpecialWeapons()
+	end
 
-	client:triggerEvent("updateFactionArmsDealerShopGUI", faction.m_SpecialWeapons, faction.m_WeaponDepotInfo, depot:getWeaponTable(), faction.m_EquipmentDepotInfo, depot:getEquipmentTable())
+	client:triggerEvent("updateFactionArmsDealerShopGUI", specialWeapons, faction.m_WeaponDepotInfo, depot:getWeaponTable(), faction.m_EquipmentDepotInfo, depot:getEquipmentTable())
 end

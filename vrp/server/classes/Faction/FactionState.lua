@@ -201,8 +201,10 @@ function FactionState:Event_OnEvidenceEquipmentClick(button, state, player)
 		if player:getFaction() and player:getFaction():isStateFaction() then
 			if player:isFactionDuty() then
 				local box = player:getPlayerAttachedObject()
-				if box and isElement(box) and box.m_Content then
+				if box and isElement(box) and box.m_Content and box.m_Type == "Evil" then
 					self:putEvidenceInDepot(player, box)
+				elseif box and isElement(box) and box.m_Content and box.m_Type == "State" then
+					self:putOrderInDepot(player, box)
 				else
 					if not getElementData(player, "isEquipmentGUIOpen") then -- get/setData doesnt seem to sync to client despite sync-arguement beeing true(?)
 						setElementData(player, "isEquipmentGUIOpen", true, true)
@@ -240,6 +242,49 @@ function FactionState:putEvidenceInDepot(player, box)
 			else
 				player:getFaction():sendShortMessage(("%s hat %s Stück %s (%s $) konfesziert!"):format(player:getName(), amount, product, price))
 				self.m_BankAccountServer:transferMoney(player:getFaction(), price , "Schwarzmarktware", "Faction", "Schwarzmarktware")
+			end
+		end
+	end
+	box.m_Package:delete()
+end
+
+function FactionState:putOrderInDepot(player, box)
+	local insertWeapomAmount = 0
+	local insertAmmoAmount = 0
+	local content = box.m_Content
+	local depot = player:getFaction():getDepot()
+	local depotInfo = factionWeaponDepotInfoState
+
+	for i, data in pairs(box.m_Content) do
+		if i ~= "BagPrice" then
+			local type, product, amount, price, id = unpack(data)
+			if type == "Waffe" then
+				if id then
+					if depotInfo[id]["Waffe"] >= depot.m_Weapons[id]["Waffe"] + amount then
+						insertWeapomAmount = amount
+					else
+						insertWeapomAmount = (depotInfo[id]["Waffe"] - depot.m_Weapons[id]["Waffe"] >= 0 and depotInfo[id]["Waffe"] - depot.m_Weapons[id]["Waffe"] or 0)
+					end
+					depot:addWeaponD(id, insertWeapomAmount)
+					player:getFaction():sendShortMessage(("%s hat %s Waffe/n [ %s ] ins Lager gelegt!"):format(player:getName(), insertWeapomAmount, product))
+					--player:getFaction():sendShortMessage(("%s hat %s Munition [ %s ] ins Lager gelegt!"):format(player:getName(), insertAmmoAmount, product))
+					player:getFaction():addLog(player, "Lager", ("%s hat %s Waffe/n [ %s ] ins Lager gelegt!"):format(player:getName(), insertWeapomAmount, product))
+				end
+			elseif type == "Munition" then
+				if id then
+					if depotInfo[id]["Magazine"] >= depot.m_Weapons[id]["Munition"] + amount then
+						insertAmmoAmount = amount
+					else
+						insertAmmoAmount = (depotInfo[id]["Magazine"] - depot.m_Weapons[id]["Munition"] >= 0 and depotInfo[id]["Magazine"] - depot.m_Weapons[id]["Munition"] or 0)
+					end
+					depot:addMagazineD(id,insertAmmoAmount)
+					player:getFaction():sendShortMessage(("%s hat %s Munition [ %s ] ins Lager gelegt!"):format(player:getName(), insertAmmoAmount, product))
+					player:getFaction():addLog(player, "Lager", ("%s hat %s Munition [ %s ] ins Lager gelegt!"):format(player:getName(), insertAmmoAmount, product)) 
+				end
+			else
+				depot:addEquipment(player, id, amount, true)
+				player:getFaction():sendShortMessage(("%s hat %s Stück %s ins Lager gelegt!"):format(player:getName(), amount, product))
+				player:getFaction():addLog(player, "Lager", ("%s hat %s Stück %s ins Lager gelegt!"):format(player:getName(), amount, product))
 			end
 		end
 	end
@@ -2278,4 +2323,29 @@ function FactionState:Event_removeIllegalTunings(vehicle)
 			client:sendError(_("In dem Fahrzeug ist kein Radarwarngerät eingebaut.", client))
 		end]]
 	end
+end
+
+function FactionState:getAllSpecialWeapons()
+	local specialWeapons = {}
+	for _, faction in pairs(self:getFactions()) do
+		for type, data in pairs(faction.m_SpecialWeapons) do
+			if not specialWeapons[type] then
+				specialWeapons[type] = {}
+			end
+			for id, state in pairs(data) do
+				specialWeapons[type][id] = state
+			end
+		end
+	end
+	return specialWeapons
+end
+
+function FactionState:getAllWeapons()
+	local weapons = {}
+	for _, faction in pairs(self:getFactions()) do
+		for id, state in pairs(faction.m_ValidWeapons) do
+			weapons[id] = state
+		end
+	end
+	return weapons
 end
