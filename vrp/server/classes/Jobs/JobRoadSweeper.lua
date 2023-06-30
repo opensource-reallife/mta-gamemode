@@ -7,7 +7,7 @@
 -- ****************************************************************************
 JobRoadSweeper = inherit(Job)
 local SWEEPER_LOAN = 3
-local SWEEPER_MAX_LOAD = 25
+local SWEEPER_MAX_LOAD = 30
 
 function JobRoadSweeper:constructor()
 	Job.constructor(self)
