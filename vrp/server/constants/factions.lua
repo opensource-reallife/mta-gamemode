@@ -403,31 +403,31 @@ factionWeaponDepotInfo = {
 	[5] = {["Waffe"] = 10, ["Magazine"] = 0, ["WaffenPreis"] = 50, ["MagazinPreis"] = 0}, -- Baseball Bat
 	[6] = {["Waffe"] = 10, ["Magazine"] = 0, ["WaffenPreis"] = 10, ["MagazinPreis"] = 0}, -- Shovel
 	[7] = {["Waffe"] = 10, ["Magazine"] = 0, ["WaffenPreis"] = 50, ["MagazinPreis"] = 0}, -- Pool Cue
-	[8] = {["Waffe"] = 10, ["Magazine"] = 0, ["WaffenPreis"] = 250, ["MagazinPreis"] = 0}, -- Katana
+	[8] = {["Waffe"] = 10, ["Magazine"] = 0, ["WaffenPreis"] = 750, ["MagazinPreis"] = 0}, -- Katana
 	[9] = {["Waffe"] = 0, ["Magazine"] = 0, ["WaffenPreis"] = 0, ["MagazinPreis"] = 0}, -- Chainsaw
 	[10] = {["Waffe"] = 0, ["Magazine"] = 0, ["WaffenPreis"] = 0, ["MagazinPreis"] = 0}, -- Long Purple Dildo
 	[11] = {["Waffe"] = 0, ["Magazine"] = 0, ["WaffenPreis"] = 0, ["MagazinPreis"] = 0}, -- Short tan Dildo
 	[12] = {["Waffe"] = 0, ["Magazine"] = 0, ["WaffenPreis"] = 0, ["MagazinPreis"] = 0}, -- Vibrator
 	[14] = {["Waffe"] = 0, ["Magazine"] = 0, ["WaffenPreis"] = 0, ["MagazinPreis"] = 0}, -- Flowers
 	[15] = {["Waffe"] = 0, ["Magazine"] = 0, ["WaffenPreis"] = 0, ["MagazinPreis"] = 0}, -- Cane
-	[16] = {["Waffe"] = 10, ["Magazine"] = 0, ["WaffenPreis"] = 200, ["MagazinPreis"] = 0}, -- Grenade
-	[17] = {["Waffe"] = 10, ["Magazine"] = 0, ["WaffenPreis"] = 150, ["MagazinPreis"] = 0}, -- Tear Gas
+	[16] = {["Waffe"] = 10, ["Magazine"] = 0, ["WaffenPreis"] = 1200, ["MagazinPreis"] = 0}, -- Grenade
+	[17] = {["Waffe"] = 10, ["Magazine"] = 0, ["WaffenPreis"] = 750, ["MagazinPreis"] = 0}, -- Tear Gas
 	[18] = {["Waffe"] = 10, ["Magazine"] = 0, ["WaffenPreis"] = 80, ["MagazinPreis"] = 0}, -- Molotov Cocktails
 	[22] = {["Waffe"] = 30, ["Magazine"] = 50, ["WaffenPreis"] = 140, ["MagazinPreis"] = 20}, -- Pistol
 	[23] = {["Waffe"] = 0, ["Magazine"] = 0, ["WaffenPreis"] = 0, ["MagazinPreis"] = 0}, -- Taser
 	[24] = {["Waffe"] = 30, ["Magazine"] = 60, ["WaffenPreis"] = 550, ["MagazinPreis"] = 100}, -- Deagle
 	[25] = {["Waffe"] = 34, ["Magazine"] = 200, ["WaffenPreis"] = 170, ["MagazinPreis"] = 3}, -- Shotgun
 	[26] = {["Waffe"] = 16, ["Magazine"] = 60, ["WaffenPreis"] = 200, ["MagazinPreis"] = 5}, -- Sawn-Off Shotgun
-	[27] = {["Waffe"] = 16, ["Magazine"] = 32, ["WaffenPreis"] = 600, ["MagazinPreis"] = 150}, -- SPAZ-12 Combat Shotgun
+	[27] = {["Waffe"] = 16, ["Magazine"] = 64, ["WaffenPreis"] = 600, ["MagazinPreis"] = 150}, -- SPAZ-12 Combat Shotgun
 	[28] = {["Waffe"] = 40, ["Magazine"] = 120, ["WaffenPreis"] = 180, ["MagazinPreis"] = 50}, -- Uzi
 	[29] = {["Waffe"] = 40, ["Magazine"] = 120, ["WaffenPreis"] = 180, ["MagazinPreis"] = 50}, -- MP5
 	[30] = {["Waffe"] = 40, ["Magazine"] = 90, ["WaffenPreis"] = 480, ["MagazinPreis"] = 75}, -- AK47
 	[31] = {["Waffe"] = 30, ["Magazine"] = 60, ["WaffenPreis"] = 540, ["MagazinPreis"] = 85}, -- M4
 	[32] = {["Waffe"] = 40, ["Magazine"] = 120, ["WaffenPreis"] = 200, ["MagazinPreis"] = 70}, -- Tec9
 	[33] = {["Waffe"] = 20, ["Magazine"] = 120, ["WaffenPreis"] = 400, ["MagazinPreis"] = 5}, -- County Rifle
-	[34] = {["Waffe"] = 5, ["Magazine"] = 15, ["WaffenPreis"] = 5000, ["MagazinPreis"] = 100}, -- Sniper
-	[35] = {["Waffe"] = 10, ["Magazine"] = 20, ["WaffenPreis"] = 2000, ["MagazinPreis"] = 500}, -- Rocket Launcher
-	[36] = {["Waffe"] = 10, ["Magazine"] = 20, ["WaffenPreis"] = 3000, ["MagazinPreis"] = 700}, -- Heat-Seeking RPG
+	[34] = {["Waffe"] = 5, ["Magazine"] = 15, ["WaffenPreis"] = 7500, ["MagazinPreis"] = 250}, -- Sniper
+	[35] = {["Waffe"] = 3, ["Magazine"] = 6, ["WaffenPreis"] = 13500, ["MagazinPreis"] = 2100}, -- Rocket Launcher
+	[36] = {["Waffe"] = 2, ["Magazine"] = 4, ["WaffenPreis"] = 12500, ["MagazinPreis"] = 2000}, -- Heat-Seeking RPG
 	[37] = {["Waffe"] = 0, ["Magazine"] = 0, ["WaffenPreis"] = 0, ["MagazinPreis"] = 0}, -- Flamethrower
 	[38] = {["Waffe"] = 0, ["Magazine"] = 0, ["WaffenPreis"] = 0, ["MagazinPreis"] = 0}, -- Minigun
 	[39] = {["Waffe"] = 0, ["Magazine"] = 0, ["WaffenPreis"] = 0, ["MagazinPreis"] = 0}, -- Satchel Charges
@@ -436,7 +436,7 @@ factionWeaponDepotInfo = {
 	[42] = {["Waffe"] = 0, ["Magazine"] = 0, ["WaffenPreis"] = 0, ["MagazinPreis"] = 0}, -- Fire Extinguisher
 	[43] = {["Waffe"] = 0, ["Magazine"] = 0, ["WaffenPreis"] = 0, ["MagazinPreis"] = 0}, -- Camera
 	[44] = {["Waffe"] = 20, ["Magazine"] = 0, ["WaffenPreis"] = 200, ["MagazinPreis"] = 0}, -- Night-Vision Goggles
-	[45] = {["Waffe"] = 20, ["Magazine"] = 0, ["WaffenPreis"] = 200, ["MagazinPreis"] = 0}, -- Infrared Goggles
+	[45] = {["Waffe"] = 10, ["Magazine"] = 0, ["WaffenPreis"] = 200, ["MagazinPreis"] = 0}, -- Infrared Goggles
 	[46] = {["Waffe"] = 0, ["Magazine"] = 0, ["WaffenPreis"] = 0, ["MagazinPreis"] = 0}, -- Parachute
 }
 
