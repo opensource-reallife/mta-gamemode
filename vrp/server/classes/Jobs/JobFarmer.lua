@@ -62,12 +62,12 @@ function JobFarmer:giveJobMoney(player)
 	self.m_PlayerIncomeCache[player].lastAction = 0
 	if self.m_PlayerIncomeCache[player].combine > 0 then
 		income = self.m_PlayerIncomeCache[player].combine
-		earnedPoints = math.round(((income / MONEY_PLANT_HARVESTER) / 6)*JOB_EXTRA_POINT_FACTOR) -- one point every six plants
+		earnedPoints = math.round(income / 50 * JOB_EXTRA_POINT_FACTOR)
 		StatisticsLogger:getSingleton():addJobLog(player, "jobFarmer.combine", duration, income, nil, nil, earnedPoints)
 		self.m_PlayerIncomeCache[player].combine = 0 
 	elseif self.m_PlayerIncomeCache[player].tractor > 0 then
 		income = self.m_PlayerIncomeCache[player].tractor
-		earnedPoints = math.round(((income / MONEY_PLANT_HARVESTER) / 6)*JOB_EXTRA_POINT_FACTOR) -- one point every six plants
+		earnedPoints = math.round(income / 50 * JOB_EXTRA_POINT_FACTOR)
 		StatisticsLogger:getSingleton():addJobLog(player, "jobFarmer.tractor", duration, income, nil, nil, earnedPoints)
 		self.m_PlayerIncomeCache[player].tractor = 0
 	end
@@ -156,7 +156,8 @@ function JobFarmer:storeHit(hitElement, matchingDimension)
 			local income = self.m_CurrentSeeds[player] * MONEY_PER_SEED * JOB_PAY_MULTIPLICATOR * (1 + player:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR)
 			local duration = getRealTime().timestamp - player.m_LastJobAction
 			player.m_LastJobAction = getRealTime().timestamp
-			StatisticsLogger:getSingleton():addJobLog(player, "jobFarmer.transport", duration, income, nil, nil, math.floor(math.ceil(self.m_CurrentSeeds[player]/10)*JOB_EXTRA_POINT_FACTOR))
+			local points = math.round(income / 50 * JOB_EXTRA_POINT_FACTOR)
+			StatisticsLogger:getSingleton():addJobLog(player, "jobFarmer.transport", duration, income, nil, nil, points)
 			player:giveCombinedReward("Farmer-Job", {
 				money = {
 					mode = "give",
@@ -166,7 +167,7 @@ function JobFarmer:storeHit(hitElement, matchingDimension)
 					category = "Job",
 					subcategory = "Farmer"
 				},
-				points = math.floor(math.ceil(self.m_CurrentSeeds[player]/30)*JOB_EXTRA_POINT_FACTOR), -- one point every six plants
+				points
 			})
 
 			self.m_CurrentSeedsFarm = self.m_CurrentSeedsFarm + self.m_CurrentSeeds[player]
@@ -298,7 +299,8 @@ function JobFarmer:deliveryHit (hitElement,matchingDimension)
 				local income = self.m_CurrentPlants[player] * MONEY_PER_PLANT * JOB_PAY_MULTIPLICATOR * (1 + player:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR)
 				local duration = getRealTime().timestamp - player.m_LastJobAction
 				player.m_LastJobAction = getRealTime().timestamp
-				StatisticsLogger:getSingleton():addJobLog(player, "jobFarmer.transport", duration, income, nil, nil, math.floor(math.ceil(self.m_CurrentPlants[player]/10)*JOB_EXTRA_POINT_FACTOR))
+				local points = math.round(income / 50 * JOB_EXTRA_POINT_FACTOR)
+				StatisticsLogger:getSingleton():addJobLog(player, "jobFarmer.transport", duration, income, nil, nil, points)
 
 				player:giveCombinedReward("Farmer-Job", {
 					money = {
@@ -309,7 +311,7 @@ function JobFarmer:deliveryHit (hitElement,matchingDimension)
 						category = "Job",
 						subcategory = "Farmer"
 					},
-					points = math.floor(math.ceil(self.m_CurrentPlants[player]/30)*JOB_EXTRA_POINT_FACTOR), -- one point every six plants
+					points
 				})
 				self.m_CurrentPlants[player] = 0
 				self:updatePrivateData(player)

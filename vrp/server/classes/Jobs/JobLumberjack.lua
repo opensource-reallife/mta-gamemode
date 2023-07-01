@@ -169,9 +169,11 @@ function JobLumberjack:dumpHit(hitElement, matchingDimension)
 
 		local duration = getRealTime().timestamp - hitElement.m_LastJobAction
 		hitElement.m_LastJobAction = getRealTime().timestamp
-		StatisticsLogger:getSingleton():addJobLog(hitElement, "jobLumberjack", duration, numTrees * TREE_MONEY * JOB_PAY_MULTIPLICATOR * (1 + hitElement:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR), nil, nil, numTrees * JOB_EXTRA_POINT_FACTOR, numTrees)
-		self.m_BankAccount:transferMoney({hitElement, true}, numTrees * TREE_MONEY * JOB_PAY_MULTIPLICATOR * (1 + hitElement:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR), "Holzfäller-Job", "Job", "Lumberjack")  --// default *20
-		hitElement:givePoints(numTrees * JOB_EXTRA_POINT_FACTOR)
+		local money = numTrees * TREE_MONEY * JOB_PAY_MULTIPLICATOR * (1 + hitElement:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR)
+		local points = math.round(pay / 50 * JOB_EXTRA_POINT_FACTOR)
+		StatisticsLogger:getSingleton():addJobLog(hitElement, "jobLumberjack", duration, money, nil, nil, points, numTrees)
+		self.m_BankAccount:transferMoney({hitElement, true}, money, "Holzfäller-Job", "Job", "Lumberjack")
+		hitElement:givePoints(points)
 
 		for k, v in pairs(getAttachedElements(vehicle)) do
 			destroyElement(v)

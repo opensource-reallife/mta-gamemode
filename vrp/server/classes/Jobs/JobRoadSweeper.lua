@@ -57,12 +57,7 @@ function JobRoadSweeper:onDeliveryHit(hitElement, dim)
 				local duration = getRealTime().timestamp - hitElement.m_LastJobAction
 				hitElement.m_LastJobAction = getRealTime().timestamp
 				self.m_BankAccount:transferMoney({hitElement, true}, loan, "Straßenreiniger-Job", "Job", "RoadSweeper")
-				local points = 0
-				for i = 0, garbage do
-					if chance(15) then
-						points = points + math.floor(1*JOB_EXTRA_POINT_FACTOR)
-					end
-				end
+				local points = math.round(loan / 50 * JOB_EXTRA_POINT_FACTOR)
 				hitElement:givePoints(points)
 
 				StatisticsLogger:getSingleton():addJobLog(hitElement, "jobRoadSweeper", duration, loan, nil, nil, points)

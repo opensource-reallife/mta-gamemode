@@ -106,7 +106,7 @@ function JobTrashman:dumpCans(hitElement, matchingDimension)
 			if numCans and numCans > 0 then
 				local moneyAmount = numCans * MONEY_PER_CAN * JOB_PAY_MULTIPLICATOR * (1 + hitElement:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR)
 				local duration = getRealTime().timestamp - hitElement.m_LastJobAction
-				local points = math.floor(math.ceil(numCans/3)*JOB_EXTRA_POINT_FACTOR)
+				local points = math.round(moneyAmount / 50 * JOB_EXTRA_POINT_FACTOR)
 				hitElement.m_LastJobAction = getRealTime().timestamp
 				StatisticsLogger:getSingleton():addJobLog(hitElement, "jobTrashman", duration, moneyAmount, nil, nil, points, numCans)
 

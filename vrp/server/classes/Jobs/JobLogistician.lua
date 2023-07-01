@@ -138,9 +138,11 @@ function JobLogistician:onMarkerHit(hitElement, dim)
 							local duration = getRealTime().timestamp - hitElement.m_LastJobAction
 							hitElement.m_LastJobAction = getRealTime().timestamp
 							outputDebug(getDistanceBetweenPoints3D(hitElement:getData("Logistician:LastCrane").m_Object:getPosition(), crane.m_Object:getPosition()))
-							StatisticsLogger:getSingleton():addJobLog(hitElement, "jobLogistician", duration, self.m_MoneyPerTransport * JOB_PAY_MULTIPLICATOR * (1 + hitElement:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR), nil, nil, math.floor(10*JOB_EXTRA_POINT_FACTOR), nil)
-							self.m_BankAccount:transferMoney({hitElement, true}, self.m_MoneyPerTransport * JOB_PAY_MULTIPLICATOR * (1 + hitElement:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR), "Logistiker Job", "Job", "Logistician")
-							hitElement:givePoints(math.floor(10*JOB_EXTRA_POINT_FACTOR))
+							local money = self.m_MoneyPerTransport * JOB_PAY_MULTIPLICATOR * (1 + hitElement:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR)
+							local points = math.round(pay / 50 * JOB_EXTRA_POINT_FACTOR)
+							StatisticsLogger:getSingleton():addJobLog(hitElement, "jobLogistician", duration, money, nil, nil, points, nil)
+							self.m_BankAccount:transferMoney({hitElement, true}, money, "Logistiker Job", "Job", "Logistician")
+							hitElement:givePoints(points)
 						end)
 					else
 						hitElement:sendError(_("Du bist am falschen Kran!", hitElement))

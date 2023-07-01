@@ -50,12 +50,9 @@ function JobPizza:onPizzaDeliver(distance, time)
 		local workFactor = math.min(distance, 1899) / math.max(time, 10) -- Note: 1899 is the longest distance from start point
 		local pay = math.floor(BASE_LOAN * workFactor*2  * JOB_PAY_MULTIPLICATOR * (1 + client:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR))
 		local duration = getRealTime().timestamp - client.m_LastJobAction
-		local points = 0
 		client.m_LastJobAction = getRealTime().timestamp
-		if chance(30) then
-			points = math.floor(1*JOB_EXTRA_POINT_FACTOR)
-			client:givePoints(points)
-		end
+		local points = math.round(pay / 50 * JOB_EXTRA_POINT_FACTOR)
+		client:givePoints(points)
 
 		StatisticsLogger:getSingleton():addJobLog(client, "jobPizzaDelivery", duration, pay, client.vehicle:getModel(), distance, points, time)
 		self.m_BankAccount:transferMoney({client, true}, pay, "Pizza-Job", "Job", "PizzaDelivery")
