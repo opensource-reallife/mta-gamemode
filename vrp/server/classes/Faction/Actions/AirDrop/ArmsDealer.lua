@@ -87,7 +87,7 @@ function ArmsDealer:checkoutCart(cart, maxPrice)
     end
 
 
-    if not self.m_OrderedToday[faction] then
+    if self:isFactionAllowedToOrder(faction) then
         self.m_Order[faction] = {}
         self.m_BagContent[faction] = {}
         self.m_MaxPrice[faction] = maxPrice
@@ -106,14 +106,14 @@ function ArmsDealer:checkoutCart(cart, maxPrice)
                         pricePerPiece = maxWeapons[product]["WaffenPreis"]
                         totalPrice = pricePerPiece*subdata["Waffe"]
                         self.m_TotalPrice = self.m_TotalPrice + totalPrice
-                        table.insert(self.m_Order[faction], {"Waffe", WEAPON_NAMES[product], subdata["Waffe"], totalPrice, product})
+                        table.insert(self.m_Order[faction], {"Waffe", WEAPON_NAMES[product], subdata["Waffe"], totalPrice, product, pricePerPiece})
                     end
                     if subdata["Munition"] > 0 then 
                         --currentAmount = weaponDepot[product]["Munition"]
                         pricePerPiece = maxWeapons[product]["MagazinPreis"]
                         totalPrice = pricePerPiece*subdata["Munition"]
                         self.m_TotalPrice = self.m_TotalPrice + totalPrice
-                        table.insert(self.m_Order[faction], {"Munition", WEAPON_NAMES[product], subdata["Munition"], totalPrice, product})
+                        table.insert(self.m_Order[faction], {"Munition", WEAPON_NAMES[product], subdata["Munition"], totalPrice, product, pricePerPiece})
                     end
                 elseif category == "Equipment" then
                     if subdata["Count"] > 0 then
@@ -122,7 +122,7 @@ function ArmsDealer:checkoutCart(cart, maxPrice)
                         pricePerPiece = maxEquipment[product]["Price"]
                         totalPrice = pricePerPiece*subdata["Count"]
                         self.m_TotalPrice = self.m_TotalPrice + totalPrice
-                        table.insert(self.m_Order[faction], {"Equipment", WEAPON_NAMES[product], subdata["Count"], totalPrice, product})
+                        table.insert(self.m_Order[faction], {"Equipment", WEAPON_NAMES[product], subdata["Count"], totalPrice, product, pricePerPiece})
                     end
                 else 
                     --if ArmsDealer.Data[category] and ArmsDealer.Data[category][product] then
@@ -316,7 +316,7 @@ function ArmsDealer:destructor()
 
 end
 
-function ArmsDealer:splitOrder(faction)
+function ArmsDealer:splitOrderOld(faction)
     local bagContent = {}
     local pricePerBag = self.m_MaxPrice[faction] / ArmsDealer.MaxBags
     for i = 1, 4, 1 do
@@ -346,4 +346,63 @@ function ArmsDealer:splitOrder(faction)
     end
 
     return bagContent
+end
+
+--{"Equipment", WEAPON_NAMES[product], subdata["Count"], totalPrice, product}
+function ArmsDealer:splitOrder(faction)
+    local bagContent, pieceCount = {}, {}
+    local pricePerBag = self.m_MaxPrice[faction] / ArmsDealer.MaxBags
+    
+
+    for i = 1, ArmsDealer.MaxBags, 1 do
+        if table.size(self.m_Order[faction]) == 0 then
+            break
+        end
+
+        if not self.m_BagContent[faction][i] then
+            self.m_BagContent[faction][i] = {}
+            self.m_BagContent[faction][i]["BagPrice"] = 0
+        end
+        
+    
+        for id, data in pairs(self.m_Order[faction]) do
+            local currentPrice = self.m_BagContent[faction][i]["BagPrice"]
+            if currentPrice + data[4] <= pricePerBag or i == ArmsDealer.MaxBags then
+                table.insert(self.m_BagContent[faction][i], data)
+                self.m_BagContent[faction][i]["BagPrice"] = self.m_BagContent[faction][i]["BagPrice"] + data[4]
+                self.m_Order[faction][id] = nil
+            else
+                local newData, data2
+                for mi = 1, data[3], 1 do
+                    if (mi * data[6]) + currentPrice <= pricePerBag then
+
+                        data2 = {data[1], data[2], mi, mi*data[6], data[5], data[6]}
+                        newData = {data[1], data[2], data[3]-mi, data[4]-(mi*data[6]), data[5], data[6]}
+                    end 
+                end
+                if data2 and newData then
+                    self.m_BagContent[faction][i]["BagPrice"] = self.m_BagContent[faction][i]["BagPrice"] + data2[4]
+                    table.insert(self.m_Order[faction], newData)
+                    table.insert(self.m_BagContent[faction][i], data2)
+                    self.m_Order[faction][id] = nil
+                end
+            end
+        end
+    end
+
+    return self.m_BagContent[faction]
+end
+
+function ArmsDealer:isFactionAllowedToOrder(faction)
+    if faction:isEvilFaction() and not self.m_OrderedToday[faction] then
+        return true
+    end
+
+    for i, sFaction in pairs(FactionState:getSingleton():getFactions()) do
+        if self.m_OrderedToday[sFaction] then
+            return false
+        end
+    end
+
+    return true
 end

@@ -19,14 +19,15 @@ end
 function ArmsPackage:create()
     local distance = (self.m_Position - self.m_Destination):getLength()
     local time = distance*(60/100)*1000
-    local boxId, scaleX, scaleY, scaleZ = 2919, 0.5, 0.5, 0.5
+    local boxId, flyingId, scaleX, scaleY, scaleZ = 2919, 2903, 0.5, 0.5, 0.5
     if self.m_FactionType == "State" then
         boxId = 2358
+        flyingId = boxId
         scaleX, scaleY, scaleZ = 1.6, 1.8, 2.3
     end
     
-    self.m_Object = createObject(2903, self.m_Position)
-    self.m_Object:setScale(0.5)
+    self.m_Object = createObject(flyingId, self.m_Position)
+    self.m_Object:setScale(scaleX, scaleY, scaleZ)
     self.m_Object:setCollisionsEnabled(false)
     self.m_Object:setRotation(Vector3(0, 60, 0))
     self.m_Object:move(time, self.m_Destination.x, self.m_Destination.y, self.m_Destination.z+(6.2*0.5), Vector3(0,-60,0), "OutQuad")
