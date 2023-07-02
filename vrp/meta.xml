@@ -441,6 +441,8 @@
 	<script src="server/classes/Faction/Actions/BankRobbery/BankRobberyManager.lua" type="server"/>
 	<script src="server/classes/Faction/Actions/JewelryStoreRobbery/JewelryStoreRobbery.lua" type="server"/>
 	<script src="server/classes/Faction/Actions/JewelryStoreRobbery/JewelryStoreRobberyManager.lua" type="server"/>
+	<script src="server/classes/Faction/Actions/HeavyWeaponTransport/HeavyWeaponTransportManager.lua" type="server"/>
+	
 	<script src="server/classes/Faction/FactionDepot.lua" type="server"/>
 	<script src="server/classes/Faction/Faction.lua" type="server"/>
 	<script src="server/classes/Faction/StateEvidence.lua" type="server"/>
@@ -1715,6 +1717,10 @@
 	<vrpfile src="files/images/Weapons/44.png"/>
 	<vrpfile src="files/images/Weapons/45.png"/>
 	<vrpfile src="files/images/Weapons/46.png"/>
+	<vrpfile src="files/images/Weapons/DefuseKit.png"/>
+	<vrpfile src="files/images/Weapons/Gasmaske.png"/>
+	<vrpfile src="files/images/Weapons/Rauchgranate.png"/>
+	<vrpfile src="files/images/Weapons/SLAM.png"/>
 
 	<vrpfile src="files/images/HUD/infrared/static.png"/>
 	<vrpfile src="files/images/HUD/infrared/lock.png"/>

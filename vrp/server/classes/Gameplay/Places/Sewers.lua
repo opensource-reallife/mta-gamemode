@@ -287,10 +287,11 @@ function Sewers:Event_onPedClick(button, state, player)
 		or state ~= "down"
 		or not faction
 		or not faction:isEvilFaction()
+        or not player:isFactionDuty()
 	then
 		return
 	end
-	player:triggerEvent("openArmsDealerGUI", source)
+	player:triggerEvent("openArmsDealerGUI", source, "evil")
 end
 
 function Sewers:addKevlarToPed(ped)

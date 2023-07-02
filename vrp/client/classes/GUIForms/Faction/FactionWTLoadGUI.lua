@@ -8,7 +8,7 @@
 FactionWTLoadGUI = inherit(GUIForm)
 inherit(Singleton, FactionWTLoadGUI)
 
-addRemoteEvents{"showFactionWTLoadGUI", "updateFactionWeaponShopGUI"}
+addRemoteEvents{"showFactionWTLoadGUI", "updateFactionWeaponTruckShopGUI"}
 
 function FactionWTLoadGUI:constructor()
 	GUIForm.constructor(self, screenWidth/2-945/2, screenHeight/2-230, 945, 460)
@@ -53,13 +53,13 @@ function FactionWTLoadGUI:constructor()
 	self.m_Info:setFont(FontAwesome(20)):setFontSize(1)
 	self.m_Info:setBarEnabled(false)
     self.m_Info:setBackgroundColor(Color.Accent)
-	addEventHandler("updateFactionWeaponShopGUI", root, bind(self.Event_updateFactionWTLoadGUI, self))
+	addEventHandler("updateFactionWeaponTruckShopGUI", root, bind(self.Event_updateFactionWTLoadGUI, self))
 
-	self:factionReceiveWeaponShopInfos()
+	self:factionReceiveWeaponTruckShopInfos()
 end
 
 function FactionWTLoadGUI:destuctor()
-	removeEventHandler("updateFactionWeaponShopGUI", root, bind(self.Event_updateFactionWTLoadGUI, self))
+	removeEventHandler("updateFactionWeaponTruckShopGUI", root, bind(self.Event_updateFactionWTLoadGUI, self))
 	GUIForm.destructor(self)
 end
 
@@ -79,6 +79,7 @@ function FactionWTLoadGUI:Event_updateFactionWTLoadGUI(validWeapons, depotWeapon
 			self:addWeaponToGUI(k,depotWeapons[k]["Waffe"],depotWeapons[k]["Munition"])
 		end
 	end
+	
 	self.depot = depotWeapons
 	self:updateButtons()
 	self:updateCart()
@@ -295,8 +296,8 @@ function FactionWTLoadGUI:calcBoxAmount(i)
 	return sum
 end
 
-function FactionWTLoadGUI:factionReceiveWeaponShopInfos()
-	triggerServerEvent("factionReceiveWeaponShopInfos",localPlayer)
+function FactionWTLoadGUI:factionReceiveWeaponTruckShopInfos()
+	triggerServerEvent("factionReceiveWeaponTruckShopInfos",localPlayer)
 end
 
 function FactionWTLoadGUI:factionWeaponTruckLoad()

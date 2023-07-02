@@ -57,13 +57,18 @@ function FactionWeaponShopGUI:onHide()
 	AntiClickSpam:getSingleton():setEnabled(true)
 end]]
 
-function FactionWeaponShopGUI:Event_updateFactionWeaponShopGUI(validWeapons, depotWeaponsMax, depotWeapons, rankWeapons, weaponsPermissions)
+function FactionWeaponShopGUI:Event_updateFactionWeaponShopGUI(validWeapons, depotWeaponsMax, depotWeapons, rankWeapons, weaponsPermissions, specialWeapons)
 	self.m_ValidWeapons = validWeapons
-	self.m_SpecialWeapons = {}
+	self.m_SpecialWeapons = specialWeapons
 	self.m_GUIWeapons = {}
 	self.m_WeaponPermissions = weaponsPermissions
 	
 	for k,v in pairs(self.m_ValidWeapons) do
+		if v == true then
+			self:addWeaponToGUI(k, depotWeapons[k]["Waffe"], depotWeapons[k]["Munition"])
+		end
+	end
+	for k,v in pairs(self.m_SpecialWeapons) do
 		if v == true then
 			if k == 27 then
 				if localPlayer:getData("Faction:InSpecialDuty") or localPlayer:getFaction():isEvilFaction() then

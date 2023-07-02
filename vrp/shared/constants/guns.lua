@@ -121,7 +121,13 @@ WEAPON_NAMES = {
 	[43] = "Kamera",
 	[44] = "Nachtsicht-Gerät",
 	[45] = "Wärmesicht-Gerät",
-	[46] = "Fallschirm"
+	[46] = "Fallschirm",
+
+	["Fallschirm"] = "Fallschrim",
+	["SLAM"] = "SLAM",
+	["DefuseKit"] = "Entschärfungskit",
+	["Rauchgranate"] = "Rauchgranate",
+	["Gasmaske"] = "Gasmaske",
 }
 
 TRADE_DISABLED_WEAPONS = { --weapons that should not be traded with
@@ -232,6 +238,11 @@ WEAPON_RELOAD_TIME = -- how much time a weapon should need to reload
 }
 
 WEAPON_READY_TIME = -- how much time a weapon should need before beeing able to be fired
+{
+	[34] = 1 
+}
+
+WEAPON_BLUR_TIME = -- how much time a weapon should need before beeing able to be fired
 {
 	[34] = 1500 
 }

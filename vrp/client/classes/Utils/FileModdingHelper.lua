@@ -10,6 +10,7 @@
 
 FileModdingHelper = inherit(Singleton)
 FileModdingHelper.WeaponImagePath = "files/images/Weapons/"
+
 function FileModdingHelper:constructor()
     self.m_WeaponImagePath = ""
     self.m_FilePaths = {

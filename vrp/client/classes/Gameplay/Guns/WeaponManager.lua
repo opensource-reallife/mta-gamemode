@@ -59,7 +59,7 @@ function WeaponManager:update()
 		end
 	end
 
-	if WEAPON_READY_TIME[weapon] then -- both of the following bugs work due to the script beeing latent when detecting wether a player is aiming or not, hence why the fixes for them are connected with confusing checks
+	--[[if WEAPON_READY_TIME[weapon] then -- both of the following bugs work due to the script beeing latent when detecting wether a player is aiming or not, hence why the fixes for them are connected with confusing checks
 		if (getPedControlState(localPlayer, "fire") or getPedControlState(localPlayer, "action")) and not getPedControlState("aim_weapon") then --bug#1 prevent player pressing fire then aiming to override cooldown
 			WeaponManager.Weapon[weapon] = {ready = now + WEAPON_READY_TIME[weapon]+700}
 		end
@@ -68,7 +68,7 @@ function WeaponManager:update()
 				WeaponManager.Weapon[weapon] = {ready = now + WEAPON_READY_TIME[weapon]+700}
 			end
 		end
-	end
+	end]]
 
 	if WeaponManager.Weapon[weapon] then
 		if WeaponManager.Weapon[weapon].ready and WeaponManager.Weapon[weapon].ready >= now then

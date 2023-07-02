@@ -119,6 +119,7 @@ ACTION_PERMISSIONS_INFO = {
 	["JewelryStoreRobbery"] =	{{1, {FactionStaticId.LCN, FactionStaticId.YAKUZA, FactionStaticId.GROVE, FactionStaticId.BALLAS, FactionStaticId.OUTLAWS, FactionStaticId.VATOS, FactionStaticId.TRIAD, FactionStaticId.BRIGADA}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}}, 
 	["ExplosiveTruck"] =		{{1, {FactionStaticId.LCN, FactionStaticId.YAKUZA, FactionStaticId.GROVE, FactionStaticId.BALLAS, FactionStaticId.OUTLAWS, FactionStaticId.VATOS, FactionStaticId.TRIAD, FactionStaticId.BRIGADA}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}}, 
 	["Airdrop"] =				{{1, {FactionStaticId.LCN, FactionStaticId.YAKUZA, FactionStaticId.GROVE, FactionStaticId.BALLAS, FactionStaticId.OUTLAWS, FactionStaticId.VATOS, FactionStaticId.TRIAD, FactionStaticId.BRIGADA}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}}, 
+	["StateAirdrop"] =			{{1, {FactionStaticId.SAPD, FactionStaticId.FBI, FactionStaticId.MBT}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}}, 
 
 	--[[["ShopRob"] =				{{3}, {["faction"] = nil, ["company"] = nil, ["group"] = 0}}, 
 	["HouseRob"] =				{{3}, {["faction"] = nil, ["company"] = nil, ["group"] = 0}}, 
@@ -135,7 +136,7 @@ ACTION_PERMISSION_NAMES = {
 	["JewelryStoreRobbery"] =	"Juwelierraub",
 	["ExplosiveTruck"] =		"Sprengstoff beschaffen",
 	["Airdrop"] =				"Airdrop", 
-
+	["StateAirdrop"] =			"Staats-Waffendrop"
 	--[[["ShopRob"] =				"Shopüberfall", 
 	["HouseRob"] =				"Hausraub",
 	["ShopVehicleRob"] =		"Shopfahrzeug Diebstahl",]]

@@ -31,8 +31,10 @@ function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, 
 	self.m_SpecialSkin = false
 	for i, v in pairs(self.m_Skins) do if tonumber(self:getSetting("Skin", i, 0)) == -1 then self.m_SpecialSkin = i end end
 	self.m_ValidWeapons = factionWeapons[Id]
+	self.m_SpecialWeapons = factionSpecialWeapons[Id]
 	self.m_Color = factionColors[Id]
 	self.m_WeaponDepotInfo = factionType == "State" and factionWeaponDepotInfoState or factionWeaponDepotInfo
+	self.m_EquipmentDepotInfo = factionEquipmentDepotInfo
 	self.m_Countdowns = {}
 
 	self.m_Vehicles = {}

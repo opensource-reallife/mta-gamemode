@@ -998,5 +998,15 @@ end
 
 function Vehicle:hasInfrared() return self.m_HasInfrared end
 
+function Vehicle:getAttachedObjectsCount()
+	local count = 0
+	for i, v in pairs(getAttachedElements(self)) do
+		if v.model ~= 1921 then -- if not ELS light object
+			count = count + 1
+		end
+	end
+	return count
+end
+
 Vehicle.isPermanent = pure_virtual
 Vehicle.respawn = pure_virtual

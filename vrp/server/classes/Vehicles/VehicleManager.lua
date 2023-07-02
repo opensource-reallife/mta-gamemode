@@ -1650,6 +1650,10 @@ function VehicleManager:Event_LoadObject(veh, type)
 			ChristmasTruckManager:getSingleton().m_Current:Event_LoadPresent(veh)
 			return
 		end
+	elseif type == "weaponPackage" then
+		vehicleObjects = VEHICLE_WEAPON_PACKAGE_LOAD
+		model = 2358
+		name = "kein Waffenpaket"
 	end
 	if veh:canObjectBeLoaded(model) then
 		return veh:tryLoadObject(client, client:getPlayerAttachedObject())
@@ -1660,9 +1664,9 @@ function VehicleManager:Event_LoadObject(veh, type)
 				if not client:isDead() then
 					if not client.vehicle then
 						local object = client:getPlayerAttachedObject()
-						if #getAttachedElements(veh) < vehicleObjects[veh.model]["count"] then
+						if veh:getAttachedObjectsCount() < vehicleObjects[veh.model]["count"] then
 							if object then
-								local count = #getAttachedElements(veh)
+								local count = veh:getAttachedObjectsCount()
 								client:detachPlayerObject(object)
 								object:attach(veh, vehicleObjects[veh.model][count+1])
 								if object.LoadHook then
@@ -1716,6 +1720,10 @@ function VehicleManager:Event_DeLoadObject(veh, type)
 			ChristmasTruckManager:getSingleton().m_Current:Event_DeloadPresent(veh)
 			return
 		end
+	elseif type == "weaponPackage" then
+		vehicleObjects = VEHICLE_WEAPON_PACKAGE_LOAD
+		model = 2358
+		name = "kein Waffenpaket"
 	end
 	if veh:canObjectBeLoaded(model) then
 		return veh:tryUnloadObject(client)

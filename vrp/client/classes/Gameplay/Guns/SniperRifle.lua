@@ -38,7 +38,7 @@ function SniperRifle:render()
 	if self.m_Use then
 		Nametag:getSingleton():setDisabled(true)
 
-		local progress = (getTickCount() - self.m_Use) / WEAPON_READY_TIME[34]
+		local progress = (getTickCount() - self.m_Use) / WEAPON_BLUR_TIME[34]
 		local ease = getEasingValue(progress, "SineCurve")
 
 
@@ -69,7 +69,9 @@ end
 
 function SniperRifle:onUse()
 	self.m_Use = getTickCount()
-	WeaponManager.Weapon[34] = {ready = getTickCount() + WEAPON_READY_TIME[34]}
+	if WeaponManager.Weapon[34].ready <= getTickCount() then
+		WeaponManager.Weapon[34] = {ready = getTickCount() + WEAPON_READY_TIME[34]}
+	end
 end
 
 function SniperRifle:onStop()
