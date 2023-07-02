@@ -25,7 +25,7 @@ ShootingRanch.Trainings = {
 }
 
 function ShootingRanch:constructor()
-	InteriorEnterExit:new(Vector3(-7188.08, -2488.68, 32.36), Vector3(252.13, 117.37, 1003), 0, 270, 10, 0, 0, 0):setCustomText(_"Ausgang", _"Waffentraining")
+	InteriorEnterExit:new(Vector3(-7188.08, -2488.68, 32.36), Vector3(252.13, 117.37, 1003), 0, 270, 10, 0, 0, 0):setCustomText("Ausgang", _"Waffentraining")
 
 
 	self.m_ShootingRanchMarker = createMarker(-7190.96, -2482.61, 31.4, "cylinder", 1, 0, 255, 0, 200)

@@ -178,3 +178,8 @@ JobBoxerMoney = {
     435,
     675
 }
+
+DRUG_NPC_SPAWNPOINTS = {
+	Vector3(1520.64, -1676.92, 13.55),
+	Vector3(1520.96, -1680.14, 13.55),
+}

@@ -177,7 +177,7 @@ function InteriorEnterExit:onExitColHit(hitElement)
 	if getElementType(hitElement) == "player" and hitElement:getDimension() == source:getDimension() then
 		if hitElement:getInterior() == source:getInterior() then
 			hitElement.m_LastEnterExit = {self.m_Id, "exit"}
-			hitElement:triggerEvent("onTryEnterExit", self.m_ExitMarker, self.m_ExitText or _"Ausgang")
+			hitElement:triggerEvent("onTryEnterExit", self.m_ExitMarker, self.m_ExitText or "Ausgang")
 		end
 	end
 end
