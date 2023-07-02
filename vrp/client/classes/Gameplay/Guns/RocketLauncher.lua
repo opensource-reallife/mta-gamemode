@@ -144,11 +144,11 @@ function RocketLauncher:onSyncRocketEffect(start, stop, back)
 end
 
 function RocketLauncher:isAiming() 
-	--[[if localPlayer:getWeapon() == 35 then 
-		setPlayerHudComponentVisible("crosshair", false)
+	if localPlayer:getWeapon() == 35 then
+		setPlayerHudComponentVisible("crosshair", true)
 	else 
 		setPlayerHudComponentVisible("crosshair", true)
-	end]]
+	end
 	return isPedAiming(localPlayer) and localPlayer:getWeapon() == 35 and not self:check()
 end
 
