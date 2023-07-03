@@ -53,7 +53,7 @@ function JobForkLift:onBoxLoad(box)
 		local points
 		client.m_LastJobAction = getRealTime().timestamp
 		self.m_BankAccount:transferMoney({client, true}, MONEY_PER_BOX * JOB_PAY_MULTIPLICATOR * (1 + client:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR), "Gabelstapler-Job", "Job", "ForkLift")
-		if Randomizer:get(1, 5) == 5 then
+		if chance(20) then
 			points = math.round(1*JOB_EXTRA_POINT_FACTOR)
 			client:givePoints(points)
 		end
