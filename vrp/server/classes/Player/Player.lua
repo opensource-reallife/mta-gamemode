@@ -999,8 +999,9 @@ function Player:payDay()
 
 	local income, outgoing, total = 0, 0, 0
 	local income_faction, income_company, income_group, income_interest = 0, 0, 0, 0
-	local outgoing_vehicles, outgoing_house = 0, 0
+	local outgoing_vehicles, outgoing_rent, outgoing_house, outgoing_income = 0, 0, 0, 0
 	local points_total = 0
+
 	--Income:
 	if self:getFaction() then
 		income_faction = self:getFaction():paydayPlayer(self)
@@ -1050,7 +1051,7 @@ function Player:payDay()
 		end
 	end
 
-	income_interest = math.floor(self:getBankMoney()*0.01)
+	income_interest = math.floor(self:getBankMoney() * 0.01)
 	if income_interest > 1500 then income_interest = 1500 end
 	if income_interest > 0 then
 		income = income + income_interest
@@ -1069,12 +1070,12 @@ function Player:payDay()
 	--Outgoing
 	local temp_bank_money = self:getBankMoney() + income
 
-	outgoing_vehicles, vehiclesTaxAmount = self:calcVehiclesTax()
-	if outgoing_vehicles > 0 then
-		self:addPaydayText("outgoing", _("Fahrzeugsteuer", self), outgoing_vehicles)
-		self:transferBankMoney({BankServer.get("server.vehicle_tax"), nil, nil, true}, outgoing_vehicles, _("Fahrzeugsteuer", self), "Vehicle", "Tax", {silent = true, allowNegative = true})
-		temp_bank_money = temp_bank_money - outgoing_vehicles
-		points_total = points_total + vehiclesTaxAmount*2
+	outgoing_income = income_faction / 4 + income_company / 4 + income_group / 4
+	if outgoing_income > 0 then
+		self:addPaydayText("outgoing", _("Lohnsteuer", self), outgoing_income)
+		self:transferBankMoney({BankServer.get("server.loan_tax"), nil, nil, true}, outgoing_income, _("Lohnsteuer", self), "Loan", "Tax", {silent = true, allowNegative = true})
+		temp_bank_money = temp_bank_money - outgoing_income
+		points_total = points_total + math.floor(outgoing_income / 100)
 	end
 
 	if HouseManager:isInstantiated() then
@@ -1083,7 +1084,7 @@ function Player:payDay()
 			local rent = house:getRent()
 			if rent > 0 then
 				if self:getBankMoney() - rent >= 0 then
-					outgoing_house = outgoing_house + rent
+					outgoing_rent = outgoing_rent + rent
 					temp_bank_money = temp_bank_money - rent
 					points_total = points_total + 1
 					self:transferBankMoney({house.m_BankAccount, nil, nil, true}, rent, _("Miete an %s von %s", self, Account.getNameFromId(house:getOwner()), self:getName()), "House", "Rent", {silent = true})
@@ -1094,19 +1095,29 @@ function Player:payDay()
 				end
 			end
 		end
-		--give points if the player owns a house
-		if HouseManager:getSingleton():getPlayerHouse(self) then
-			points_total = points_total + 10
+		local house = HouseManager:getSingleton():getPlayerHouse(self)
+		if house then
+			outgoing_house = outgoing_house + house.m_Price / 1000
+			self:addPaydayText("outgoing", _("Grundsteuer", self), outgoing_house)
+			self:transferBankMoney({BankServer.get("server.property_tax"), nil, nil, true}, outgoing_house, _("Grundsteuer", self), "Property", "Tax", {silent = true, allowNegative = true})
+			temp_bank_money = temp_bank_money - outgoing_house
+			points_total = points_total + math.ceil(house.m_Price / 10000)
 		end
 	end
 
-	outgoing = outgoing_vehicles + outgoing_house
+	outgoing_vehicles, vehiclesTaxAmount = self:calcVehiclesTax()
+	if outgoing_vehicles > 0 then
+		self:addPaydayText("outgoing", _("Fahrzeugsteuer", self), outgoing_vehicles)
+		self:transferBankMoney({BankServer.get("server.vehicle_tax"), nil, nil, true}, outgoing_vehicles, _("Fahrzeugsteuer", self), "Vehicle", "Tax", {silent = true, allowNegative = true})
+		temp_bank_money = temp_bank_money - outgoing_vehicles
+		points_total = points_total + vehiclesTaxAmount * 2
+	end
 
+	outgoing = outgoing_vehicles + outgoing_rent + outgoing_house + outgoing_income
 	total = income - outgoing
 	self:addPaydayText("totalIncome", "", income)
 	self:addPaydayText("totalOutgoing", "", outgoing)
 	self:addPaydayText("total", "Total", total)
-
 
 	if self:getWanteds() > 0 then
 		self:addPaydayText("info", _("Dir wurde ein Wanted erlassen!", self))
