@@ -223,7 +223,7 @@ function ArmsDealer:setupPlane(pos, time, faction, order)
     else
         self:sendOperatorMessage(faction, "Auf dem Weg zum Waffenstützpunkt!")
         ActionsCheck:getSingleton():setAction("Staats-Waffendrop")
-        faction:setCountDown(7 * 60, "Staats-Waffendrop")
+        FactionState:getSingleton():setCountDown(7 * 60, "Staats-Waffendrop")
        
         self.m_Plane = TemporaryVehicle.create(520, -1437.20, 507.79, 19.15, 270)
         self.m_Plane:setDamageProof(true)
