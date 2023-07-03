@@ -8,7 +8,7 @@
 SniperRifle = inherit(Singleton)
 
 function SniperRifle:constructor()
-
+	WeaponManager.Weapon[34] = {ready = 0}
 end
 
 function SniperRifle:destructor()
