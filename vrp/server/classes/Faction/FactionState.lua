@@ -2349,3 +2349,30 @@ function FactionState:getAllWeapons()
 	end
 	return weapons
 end
+
+function FactionState:setCountDown(time, text)
+	for i, faction in pairs(self:getFactions()) do
+		if faction.m_Countdowns[text] then
+			for index, player in pairs(faction:getOnlinePlayers()) do
+				player:triggerEvent("CountdownStop", text)
+			end
+		end
+	end
+
+	for i, faction in pairs(self:getFactions()) do
+		faction.m_Countdowns[text] = {time, getRealTime().timestamp}
+		for index, player in pairs(faction:getOnlinePlayers()) do
+			player:triggerEvent("Countdown", time, text)
+		end
+	end
+end
+
+function FactionState:stopCountDown(text)
+	for i, faction in pairs(self:getFactions()) do
+		if faction.m_Countdowns[text] then
+			for index, player in pairs(faction:getOnlinePlayers()) do
+				player:triggerEvent("CountdownStop", text)
+			end
+		end
+	end
+end
