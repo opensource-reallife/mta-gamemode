@@ -38,7 +38,7 @@ function MTAFixes:dft_pathnode_teleport()
 	)
 end
 
--- Fix bike speed bug caused by spamming steer_forward by temporarily disabling steer_forward when on bike
+-- Fix bike speed bug caused by spamming steer_forward by temporarily disabling steer_forward after use on bike
 function MTAFixes:fixBikeSpeedBug()
 	if localPlayer.vehicle and localPlayer.vehicle.vehicleType == "Bike" then
 		toggleControl("steer_forward", false)
