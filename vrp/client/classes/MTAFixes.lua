@@ -9,6 +9,8 @@ MTAFixes = inherit(Singleton)
 
 function MTAFixes:constructor()
 	self:dft_pathnode_teleport()
+	bindKey("steer_forward", "down", bind(self.fixBikeSpeedBug, self))
+	bindKey("horn", "down", bind(self.fixHydraulicsOxygenBug, self))
 end
 
 function MTAFixes:dft_pathnode_teleport()
@@ -34,4 +36,21 @@ function MTAFixes:dft_pathnode_teleport()
 			end
 		end
 	)
+end
+
+-- Fix bike speed bug caused by spamming steer_forward by temporarily disabling steer_forward when on bike
+function MTAFixes:fixBikeSpeedBug()
+	if localPlayer.vehicle and localPlayer.vehicle.vehicleType == "Bike" then
+		toggleControl("steer_forward", false)
+		setTimer(toggleControl, 1000, 1, "steer_forward", true)
+	end
+end
+
+-- Fix oxygen replenishment bug when using hydraulics on seabed by disabling horn (= hydraulics) when in water
+function MTAFixes:fixHydraulicsOxygenBug()
+	if localPlayer.vehicle and localPlayer.vehicle.inWater then
+		toggleControl("horn", false)
+	else
+		toggleControl("horn", true)
+	end
 end
