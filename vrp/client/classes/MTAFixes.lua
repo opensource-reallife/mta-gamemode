@@ -9,7 +9,7 @@ MTAFixes = inherit(Singleton)
 
 function MTAFixes:constructor()
 	self:dft_pathnode_teleport()
-	bindKey("steer_forward", "up", bind(self.fixBikeSpeedBug, self))
+	bindKey("steer_forward", "down", bind(self.fixBikeSpeedBug, self))
 	bindKey("horn", "down", bind(self.fixHydraulicsOxygenBug, self))
 end
 
@@ -38,14 +38,12 @@ function MTAFixes:dft_pathnode_teleport()
 	)
 end
 
--- Fix bike speed bug caused by spamming steer_forward by temporarily disabling steer_forward after use on bike
+-- Fix bike speed bug caused by spamming steer_forward by disabling steer_forward when on ground
 function MTAFixes:fixBikeSpeedBug()
-	if localPlayer.vehicle and localPlayer.vehicle.vehicleType == "Bike" and not self.m_BikeSpeedBugTimer then
+	if localPlayer.vehicle and localPlayer.vehicle.vehicleType == "Bike" and localPlayer.vehicle:isWheelOnGround("front_left") or localPlayer.vehicle:isWheelOnGround("rear_left") then
 		toggleControl("steer_forward", false)
-		self.m_BikeSpeedBugTimer = setTimer(function() 
-			toggleControl("steer_forward", true)
-			self.m_BikeSpeedBugTimer = nil
-		end, 500, 1)
+	else
+		toggleControl("steer_forward", true)
 	end
 end
 
