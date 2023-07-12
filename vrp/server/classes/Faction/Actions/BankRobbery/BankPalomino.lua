@@ -20,7 +20,7 @@ function BankPalomino:constructor()
 		Vector3(1935.24, 169.98, 36.28)
 	}
 	self.ms_StateFinishMarker = Vector3(2278.23, -82.70, 25.53)
-	self.ms_MinBankrobStateMembers = DEBUG and 0 or 3
+	self.ms_MinBankrobStateMembers = DEBUG and 0 or 1
 
 	self.ms_BagSpawns = {
 		Vector3(2307.25, 17.90, 26),

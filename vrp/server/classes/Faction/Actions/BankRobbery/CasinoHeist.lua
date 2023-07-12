@@ -32,7 +32,7 @@ function CasinoHeist:constructor()
 		Vector3(2200.73, 2793.33, 10), -- north garage near burger shot
 	}
 	self.ms_StateFinishMarker = Vector3(2299.06, 2475.52, 2.27)
-	self.ms_MinBankrobStateMembers = DEBUG and 0 or 3 
+	self.ms_MinBankrobStateMembers = DEBUG and 0 or 1 
 
 	self.ms_BagSpawns = {
 		Vector3(2141.81, 1628.31, 992.97),
