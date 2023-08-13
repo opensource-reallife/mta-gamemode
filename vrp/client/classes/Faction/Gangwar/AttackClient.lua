@@ -1,7 +1,7 @@
 -- ****************************************************************************
 -- *
 -- *  PROJECT:     vRoleplay
--- *  FILE:        client/classes/Faction/Gangwar/GangwarAttack.lua
+-- *  FILE:        client/classes/Faction/Gangwar/AttackClient.lua
 -- *  PURPOSE:     AttackSession Client
 -- *
 -- ****************************************************************************
@@ -28,7 +28,7 @@ function AttackClient:constructor( faction1 , faction2 , pParticipants, pDisqual
 	end
 	self.m_Display = GangwarDisplay:new( faction1, faction2, self, pInitTime, pPos )
 	if not pNoPickGUI then
-		self.m_GangwarPick = GangwarPickGUI:new( areaName, pCanModifyPick, pShowPickGUI )
+		--self.m_GangwarPick = GangwarPickGUI:new( areaName, pCanModifyPick, pShowPickGUI )
 	end
 	if self.m_GangwarPick then
 		self.m_GangwarPick:setVisible(false)
