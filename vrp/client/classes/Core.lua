@@ -11,8 +11,10 @@ function Core:constructor()
 	Version:new()
 	TinyInfoLabel:new()
 	Provider:new()
-	influx = InfluxDB:new("", "", "")
-	InfluxLogging:new()
+	if not DISABLE_INFLUX then
+		influx = InfluxDB:new("", "", "")
+		InfluxLogging:new()
+	end
 	Cursor = GUICursor:new()
 
 	localPlayer:setLocale(core:get("HUD", "locale", getLocalization()["code"] == "de" and "de" or "en"))
