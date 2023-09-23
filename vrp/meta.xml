@@ -97,6 +97,7 @@
 	<script src="server/classes/PermissionsManager.lua" type="server"/>
 	<script src="server/classes/LeaderCheck.lua" type="server"/>
 	<script src="server/classes/MigrationManager.lua" type="server"/>
+	<script src="server/classes/NameManager.lua" type="server"/>
 
 
 	<!-- Super -->
