@@ -8,8 +8,6 @@
 DrawContestGUI = inherit(GUIForm)
 inherit(Singleton, DrawContestGUI)
 
-Config.register("INGAME_WEB_SECRET", "string", "")
-
 function DrawContestGUI:constructor(contest)
 	GUIWindow.updateGrid()
 	self.m_Width = grid("x", 21)
@@ -61,7 +59,7 @@ function DrawContestGUI:constructor(contest)
 			self:showInfoText("Das Bild wird gespeichert...")
 
 			local options = {
-				["postData"] =  ("secret=%s&playerId=%d&contest=%s&data=%s"):format(Config.get("INGAME_WEB_SECRET"), localPlayer:getPrivateSync("Id"), contest, toJSON(self.m_Skribble:getSyncData()))
+				["postData"] =  ("secret=%s&playerId=%d&contest=%s&data=%s"):format(""), localPlayer:getPrivateSync("Id"), contest, toJSON(self.m_Skribble:getSyncData()))
 			}
 
 			fetchRemote(INGAME_WEB_PATH .. "/ingame/drawContest/addData.php", options,

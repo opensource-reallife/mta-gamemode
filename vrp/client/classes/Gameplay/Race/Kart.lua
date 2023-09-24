@@ -10,8 +10,6 @@ addRemoteEvents{"KartStart", "KartStop", "KartRequestGhostDriver", "KartReceiveG
 
 Kart.record = false
 
-Config.register("INGAME_WEB_SECRET", "string", "")
-
 function Kart:constructor(startFinishMarker, checkpoints, selectedLaps, respawnEnabled, mapId)
 	self.m_State = "Flying"
 	self.m_HittedCheckpoints = {}
@@ -142,7 +140,7 @@ function Kart.uploadGhostDriver()
 	if not Kart.requestedRecord then return end
 
 	local options = {
-		["postData"] =  ("secret=%s&playerId=%d&mapId=%d&data=%s"):format(Config.get("INGAME_WEB_SECRET"), localPlayer:getPrivateSync("Id"), Kart.MapId, toJSON(Kart.requestedRecord))
+		["postData"] =  ("secret=%s&playerId=%d&mapId=%d&data=%s"):format(""), localPlayer:getPrivateSync("Id"), Kart.MapId, toJSON(Kart.requestedRecord))
 	}
 
 	fetchRemote(INGAME_WEB_PATH .. "/ingame/kart/addGhost.php", options,

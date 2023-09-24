@@ -1,8 +1,6 @@
 LogGUI = inherit(GUIForm)
 LogGUI.AmountPerLoad = 150
 
-Config.register("INGAME_WEB_SECRET", "string", "")
-
 function LogGUI:constructor(parent, url)
 	local yOffset = 0
 	if not parent then
@@ -39,7 +37,7 @@ function LogGUI:updateLog(start, amount)
 	self.m_Cache = {}
 
 	local options = {
-		["postData"] = ("secret=%s"):format(Config.get("INGAME_WEB_SECRET"))
+		["postData"] = ("secret=%s"):format("")
 	}
 
 	local filter = "";
