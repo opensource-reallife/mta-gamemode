@@ -13,7 +13,7 @@ RUN useradd -u 5000 -m -d /var/lib/mtasa/ mtasa && \
 	cd /var/lib/mtasa && \
 
 	# Download and install MTA Server
-	wget -q -O mta.tar.gz https://nightly.multitheftauto.com/multitheftauto_linux_x64-1.5.9-rc-21652.tar.gz && \
+	wget -q -O mta.tar.gz https://nightly.multitheftauto.com/multitheftauto_linux_x64-1.6.0-rc-22009.tar.gz && \
 	tar xfz mta.tar.gz && mv multitheftauto*/* ./ && \
 	rm -Rf multitheftauto* && \
 	rm mta.tar.gz && \
@@ -43,7 +43,6 @@ ADD build/docker-entrypoint.sh /docker-entrypoint.sh
 # Add MTA configs and modules
 ADD build/config/* /var/lib/mtasa/mods/deathmatch/
 ADD build/modules/* /var/lib/mtasa/x64/modules/
-ADD vrp/server/config/config.json.dist /var/lib/mtasa/config.json.dist
 
 # Add MTA resources
 ADD artifacts.tar.gz /var/lib/mtasa/mods/deathmatch/resources/

@@ -243,6 +243,11 @@ function Account.register(player, username, password, email)
 		return false
 	end
 
+	if NameManager:getSingleton():isNameBlocked(username) then
+		player:triggerEvent("registerfailed", _("Ungültiger Nickname. Dein Name oder Teile von diesem, dürfen nicht verwendet werden.", player))
+		return false
+	end
+
 	if #password < 5 then
 		player:triggerEvent("registerfailed", _("Passwort zu kurz! Min. 5 Zeichen!", player))
 		return false

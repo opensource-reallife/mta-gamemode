@@ -59,6 +59,7 @@
 
 	<!-- Server -->
 	<script src="server/utils.lua" type="server"/>
+	<script src="server/classes/Config.lua" type="server"/>
 	<script src="server/mapEditorScriptingExtension_s.lua" type="server"/>
 	<script src="server/constants/main.lua" type="server"/>
 	<script src="server/constants/factions.lua" type="server"/>
@@ -66,7 +67,6 @@
 	<script src="server/constants/beggar.lua" type="server"/>
 	<script src="server/constants/tollstations.lua" type="server"/>
 	<script src="server/classes/Debugging.lua" type="server"/>
-	<script src="server/classes/Config.lua" type="server"/>
 	<script src="server/classes/FileLogger.lua" type="server"/>
 	<script src="server/classes/Storage/SQL.lua" type="server"/>
 	<script src="server/classes/Storage/MySQL.lua" type="server"/>
@@ -96,6 +96,8 @@
 	<script src="server/classes/PedScale.lua" type="server"/>
 	<script src="server/classes/PermissionsManager.lua" type="server"/>
 	<script src="server/classes/LeaderCheck.lua" type="server"/>
+	<script src="server/classes/MigrationManager.lua" type="server"/>
+	<script src="server/classes/NameManager.lua" type="server"/>
 
 
 	<!-- Super -->
@@ -586,6 +588,13 @@
 	<script src="server/tests/UtilsTest.lua" type="server"/>
 	<script src="server/tests/GroupTest.lua" type="server"/>
 	<script src="server/tests/PromiseTest.lua" type="server"/>
+
+	<!-- Migrations -->
+	<script src="server/migrations/Migration_20230707_2258_premium_db.lua" type="server"/>
+	<script src="server/migrations/Migration_20230707_2312_logs_db.lua" type="server"/>
+	<script src="server/migrations/Migration_20230707_2320_game_db.lua" type="server"/>
+	<script src="server/migrations/Migration_20230707_2322_game_db_data.lua" type="server"/>
+	<script src="server/migrations/Migration_20230708_2055_game_view.lua" type="server"/>
 
 	<script src="server/Main.lua" type="server"/>
 

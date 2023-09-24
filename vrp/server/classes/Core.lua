@@ -65,12 +65,17 @@ function Core:constructor()
 
 <<<<<<< HEAD
 	-- Create ACL user for web-access
+<<<<<<< HEAD
 	self.m_ACLAccount = addAccount("exo_web", Config.get('webUserPassword'))
 =======
 	if not DISABLE_MIGRATION then
 		MigrationManager:new()
 	end
 >>>>>>> 0f754d7e3760522463ee938357721f25c7a1e0d7
+=======
+	--[[
+	self.m_ACLAccount = addAccount("", "")
+>>>>>>> parent of e414e831b (add ACL user for web-access)
 
 	if Config.get("WEB_ACCOUNT_USERNAME") ~= "" and Config.get("WEB_ACCOUNT_PASSWORD") ~= "" then
 		self.m_ACLAccount = Account.add(Config.get("WEB_ACCOUNT_USERNAME"), Config.get("WEB_ACCOUNT_PASSWORD"))
@@ -96,9 +101,13 @@ function Core:constructor()
 	acl:setRight("function.fetchRemote", true)
 
 	aclGroup:addObject("user.exo_web")
+<<<<<<< HEAD
 
 =======
 >>>>>>> 0f754d7e3760522463ee938357721f25c7a1e0d7
+=======
+	]]
+>>>>>>> parent of e414e831b (add ACL user for web-access)
 	ACLGroup.get("Admin"):addObject("resource.admin_exo")
 
 	if GIT_BRANCH == "release/production" then
