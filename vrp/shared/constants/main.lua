@@ -8,11 +8,11 @@ PRIVATE_DIMENSION_SERVER = 65535 -- This dimension should not be used for playin
 PRIVATE_DIMENSION_CLIENT = 2 -- This dimension should be used for things which
 							 -- happen while the player is in PRIVATE_DIMENSION on the server
 
-INGAME_WEB_PATH = "https://ingame.exo-reallife.de"
+INGAME_WEB_PATH = "https://ingame.byflex.de"
 PICUPLOAD_PATH = "https://picupload.pewx.de"
 
 if DEBUG then
-	INGAME_WEB_PATH = "https://ingame-dev.exo-reallife.de"
+	INGAME_WEB_PATH = "https://ingame.byflex.de"
 end
 
 DOMAINS = {"exo-reallife.de", "forum.byflex.de", INGAME_WEB_PATH:gsub("https://", ""), PICUPLOAD_PATH:gsub("https://", ""), "i.imgur.com", "download.exo-reallife.de", "download2.exo-reallife.de", "influxdb.merx.dev", "sentry.exo.cool", "cp.exo-reallife.de", "cp-echo.exo-reallife.de"}
