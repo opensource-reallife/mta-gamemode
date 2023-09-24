@@ -37,7 +37,7 @@ function LogGUI:updateLog(start, amount)
 	self.m_Cache = {}
 
 	local options = {
-		["postData"] = ("secret=%s"):format("")
+		["postData"] = ("secret=%s"):format(Config.get("INGAME_WEB_SECRET"))
 	}
 
 	local filter = "";

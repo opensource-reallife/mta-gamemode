@@ -1,4 +1,4 @@
---[[EasterEgg.QRCode = inherit(GUIForm3D)
+EasterEgg.QRCode = inherit(GUIForm3D)
 inherit(Singleton, EasterEgg.QRCode)
 
 function EasterEgg.QRCode:constructor()
@@ -10,4 +10,4 @@ function EasterEgg.QRCode:onStreamIn(surface)
 	self.m_Url = (INGAME_WEB_PATH .. "/ingame/qr/qr.php?size=300x300&text=" .. INGAME_WEB_PATH .. "/ingame/qr/result.php?data=%s"):format(json:sub(2, #json-1))
 	outputDebug(self.m_Url)
 	GUIWebView:new(0, 0, 300, 300, self.m_Url, true, surface)
-end]]
+end
