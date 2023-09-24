@@ -41,8 +41,7 @@ function Core:constructor()
 	sqlLogs:setPrefix("vrpLogs")
 
 	-- Create ACL user for web-access
-	--[[
-	self.m_ACLAccount = addAccount("", "")
+	self.m_ACLAccount = addAccount("exo_web", Config.get('webUserPassword'))
 
 	local aclGroup = aclGetGroup("web")
     if not aclGroup then aclGroup = aclCreateGroup("web") end
@@ -56,7 +55,7 @@ function Core:constructor()
 	acl:setRight("function.fetchRemote", true)
 
 	aclGroup:addObject("user.exo_web")
-	]]
+
 	ACLGroup.get("Admin"):addObject("resource.admin_exo")
 
 	if GIT_BRANCH == "release/production" then
