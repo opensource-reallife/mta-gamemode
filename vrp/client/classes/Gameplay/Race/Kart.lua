@@ -140,7 +140,7 @@ function Kart.uploadGhostDriver()
 	if not Kart.requestedRecord then return end
 
 	local options = {
-		["postData"] =  ("secret=%s&playerId=%d&mapId=%d&data=%s"):format(""), localPlayer:getPrivateSync("Id"), Kart.MapId, toJSON(Kart.requestedRecord))
+		["postData"] =  ("secret=%s&playerId=%d&mapId=%d&data=%s"):format(""), localPlayer:getPrivateSync("Id"), Kart.MapId, toJSON(Kart.requestedRecord)
 	}
 
 	fetchRemote(INGAME_WEB_PATH .. "/ingame/kart/addGhost.php", options,
