@@ -68,13 +68,14 @@ function Core:constructor()
 	end
 
 	-- Create ACL user for web-access
+	local aclGroup, acl
 	if Config.get("WEB_ACCOUNT_USERNAME") ~= "" and Config.get("WEB_ACCOUNT_PASSWORD") ~= "" then
 		self.m_ACLAccount = addAccount(Config.get("WEB_ACCOUNT_USERNAME"), Config.get("WEB_ACCOUNT_PASSWORD"))
 
-		local aclGroup = aclGetGroup("web")
+		aclGroup = aclGetGroup("web")
 		if not aclGroup then aclGroup = aclCreateGroup("web") end
 	
-		local acl = aclGet("web")
+		acl = aclGet("web")
 		if not acl then acl = aclCreate("web") end
 	
 		aclGroupAddACL(aclGroup, acl)
