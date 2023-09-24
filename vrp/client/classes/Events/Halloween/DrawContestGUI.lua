@@ -8,6 +8,8 @@
 DrawContestGUI = inherit(GUIForm)
 inherit(Singleton, DrawContestGUI)
 
+Config.register("INGAME_WEB_SECRET", "string", "")
+
 function DrawContestGUI:constructor(contest)
 	GUIWindow.updateGrid()
 	self.m_Width = grid("x", 21)

@@ -10,6 +10,8 @@ addRemoteEvents{"KartStart", "KartStop", "KartRequestGhostDriver", "KartReceiveG
 
 Kart.record = false
 
+Config.register("INGAME_WEB_SECRET", "string", "")
+
 function Kart:constructor(startFinishMarker, checkpoints, selectedLaps, respawnEnabled, mapId)
 	self.m_State = "Flying"
 	self.m_HittedCheckpoints = {}

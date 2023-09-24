@@ -1,6 +1,8 @@
 LogGUI = inherit(GUIForm)
 LogGUI.AmountPerLoad = 150
 
+Config.register("INGAME_WEB_SECRET", "string", "")
+
 function LogGUI:constructor(parent, url)
 	local yOffset = 0
 	if not parent then

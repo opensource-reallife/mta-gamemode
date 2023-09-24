@@ -1,5 +1,7 @@
 QuestDraw = inherit(Object)
 
+Config.register("INGAME_WEB_SECRET", "string", "")
+
 function QuestDraw:constructor(id, name, type)
 	self.m_Id = id
 	self.m_Name = name
