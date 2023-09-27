@@ -715,7 +715,7 @@
 	<!-- Eastereggs -->
 	<script src="client/classes/EasterEggs/EasterEgg.lua" type="client"/>
 	<script src="client/classes/EasterEggs/Slenderman.lua" type="client"/>
-	<!--<script src="client/classes/EasterEggs/QRCode.lua" type="client"/>-->
+	<script src="client/classes/EasterEggs/QRCode.lua" type="client"/>
 	<script src="client/classes/EasterEggs/Scream.lua" type="client"/>"
 	<script src="client/classes/EasterEggs/DrWho.lua" type="client"/>"
 	<script src="client/classes/EasterEggs/PewPew.lua" type="client"/>"
@@ -3392,9 +3392,9 @@
 	<vrpfile src="files/models/objects/worldItems/mushroom02.col"/>
 	<vrpfile src="files/models/objects/worldItems/boot.dff"/>
 	<vrpfile src="files/models/objects/worldItems/boot.txd"/>
-	<!--<vrpfile src="files/models/objects/mostWanted.txd" />
+	<vrpfile src="files/models/objects/mostWanted.txd" />
 	<vrpfile src="files/models/objects/mostWanted.dff" />
-	<vrpfile src="files/models/objects/mostWanted.col" />-->
+	<vrpfile src="files/models/objects/mostWanted.col" />
 	<vrpfile src="files/models/objects/holzstamm.txd" />
 	<vrpfile src="files/models/objects/holzstamm.dff" />
 	<vrpfile src="files/models/objects/holzstamm.col" />

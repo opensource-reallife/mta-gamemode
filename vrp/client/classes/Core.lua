@@ -144,7 +144,7 @@ function Core:ready() --onClientResourceStart
 	GangwarClient:new()
 	GangwarStatistics:new()
 	Damage:new()
-	--if core:get("World", "MostWantedEnabled", true) then MostWanted:new() end
+	if core:get("World", "MostWantedEnabled", true) then MostWanted:new() end
 	if core:get("Other", "Movehead", true) then
 		localPlayer:startLookAt()
 	end
