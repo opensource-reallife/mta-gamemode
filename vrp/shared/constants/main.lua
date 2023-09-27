@@ -1,5 +1,5 @@
 PROJECT_NAME = "OpenReallife"
-PROJECT_VERSION = "1.0.5"
+PROJECT_VERSION = "1.0.6"
 DISABLE_SENTRY = true
 DISABLE_INFLUX = true
 DISABLE_MIGRATION = true
@@ -15,7 +15,7 @@ if DEBUG then
 	INGAME_WEB_PATH = "https://ingame.byflex.de"
 end
 
-DOMAINS = {"exo-reallife.de", "forum.byflex.de", INGAME_WEB_PATH:gsub("https://", ""), PICUPLOAD_PATH:gsub("https://", ""), "i.imgur.com", "download.exo-reallife.de", "download2.exo-reallife.de", "influxdb.merx.dev", "sentry.exo.cool", "cp.exo-reallife.de", "cp-echo.exo-reallife.de"}
+DOMAINS = {"byflex.de", "forum.byflex.de", INGAME_WEB_PATH:gsub("https://", ""), PICUPLOAD_PATH:gsub("https://", ""), "i.imgur.com", "download.exo-reallife.de", "download2.exo-reallife.de", "influxdb.merx.dev", "sentry.exo.cool", "cp.exo-reallife.de", "cp-echo.exo-reallife.de"}
 FORUM_MAX_CONNECTION_ATTEMPTS = 4
 
 -- LEVELS
