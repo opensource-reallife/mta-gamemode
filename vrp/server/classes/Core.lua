@@ -22,6 +22,8 @@ Config.register("MYSQL_PREMIUM_DATABASE", "string", "vrp")
 Config.register("WEB_ACCOUNT_USERNAME", "string", "")
 Config.register("WEB_ACCOUNT_PASSWORD", "string", "")
 
+Config.register("INGAME_WEB_SECRET", "string", "")
+
 function Core:constructor()
 	outputServerLog("Initializing core...")
 	nextframe(function() --small hack to override the name meta-name

@@ -1,4 +1,5 @@
 Core = inherit(Object)
+addRemoteEvents{"retrieveWebSecret"}
 
 function Core:constructor()
 	-- Small hack to get the global core immediately
@@ -8,7 +9,7 @@ function Core:constructor()
 	enew(localPlayer, LocalPlayer)
 
 	self.m_Config = ConfigXML:new("@config.xml")
-	Version:new()
+	Version:new() 
 	TinyInfoLabel:new()
 	Provider:new()
 	if not DISABLE_INFLUX then
@@ -77,6 +78,8 @@ function Core:constructor()
 		setAmbientSoundEnabled( "gunfire", false )
 		showChat(true)
 	end
+
+	addEventHandler("retrieveWebSecret", localPlayer, function(token) INGAME_WEB_SECRET = token end)
 end
 
 function Core:onDownloadComplete()

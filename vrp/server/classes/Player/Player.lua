@@ -190,7 +190,7 @@ function Player:loadCharacter()
 		Rank = self:getRank();
 	}
 	self:triggerEvent("retrieveInfo", info)
-
+	self:triggerEvent("retrieveWebSecret", Config.get("INGAME_WEB_SECRET"))
 
 	-- Send initial sync
 	self:sendInitialSync()
