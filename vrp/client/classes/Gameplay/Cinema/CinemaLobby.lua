@@ -69,7 +69,7 @@ function CinemaLobby:renderBrowser()
 end 
 
 function CinemaLobby:defaultScreen()
-    self.m_Browser:loadURL("https://cp.exo-reallife.de/images/logo.png")
+    self.m_Browser:loadURL("https://cp.byflex.de/images/logo.png")
 end   
 
 function CinemaLobby:queueAdd(URL)

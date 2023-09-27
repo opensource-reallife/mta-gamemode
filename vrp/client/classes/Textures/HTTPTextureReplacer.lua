@@ -1,6 +1,6 @@
 HTTPTextureReplacer = inherit(TextureReplacer)
 HTTPTextureReplacer.BasePath = "https://picupload.pewx.de/textures/"
-HTTPTextureReplacer.BaseCPPath = "https://cp.exo-reallife.de/storage/textures/"
+HTTPTextureReplacer.BaseCPPath = "https://cp.byflex.de/storage/textures/"
 HTTPTextureReplacer.ExternalPath = "http://i.imgur.com/"
 HTTPTextureReplacer.ClientPath = "files/images/Textures/remote/%s"
 HTTPTextureReplacer.Queue = Queue:new()

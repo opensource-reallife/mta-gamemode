@@ -108,8 +108,7 @@ function ScreenCapture:sendPixelsToControlPanel()
 	local pixels = dxGetTexturePixels(self.m_UploadTarget)
 	if pixels then
 		local image = dxConvertPixels(pixels, "jpeg")
-		-- "https://cp.exo-reallife.de/api/admin/screencaptures"
-        fetchRemote("https://cp.exo-reallife.de/api/admin/screencaptures", {
+        fetchRemote("https://cp.byflex.de/api/admin/screencaptures", {
             method = "POST",
             formFields = {
 				queueName = "screenCapture",

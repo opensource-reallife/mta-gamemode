@@ -583,7 +583,7 @@ addEventHandler("onPlayerScreenShot", root, function(resource, status, pixels, t
 		if tag:sub(0, 3) == "cp:" then
 			local tag = tag:sub(4, #tag)
 			if status == "ok" then
-				fetchRemote("https://cp.exo-reallife.de/api/admin/screenshots", {
+				fetchRemote("https://cp.byflex.de/api/admin/screenshots", {
 					method = "POST",
 					formFields = {
 						status = "SUCCESS",
@@ -592,7 +592,7 @@ addEventHandler("onPlayerScreenShot", root, function(resource, status, pixels, t
 					}
 				}, function() end)
 			elseif status == "minimized" then
-				fetchRemote("https://cp.exo-reallife.de/api/admin/screenshots", {
+				fetchRemote("https://cp.byflex.de/api/admin/screenshots", {
 					method = "POST",
 					formFields = {
 						status = "ERROR",
@@ -601,7 +601,7 @@ addEventHandler("onPlayerScreenShot", root, function(resource, status, pixels, t
 					}
 				}, function() end)
 			elseif status == "disabled" then
-				fetchRemote("https://cp.exo-reallife.de/api/admin/screenshots", {
+				fetchRemote("https://cp.byflex.de/api/admin/screenshots", {
 					method = "POST",
 					formFields = {
 						status = "ERROR",
