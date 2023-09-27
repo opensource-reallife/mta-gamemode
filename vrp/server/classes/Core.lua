@@ -86,14 +86,6 @@ function Core:constructor()
 		aclGroup:addObject(("user.%s"):format(Config.get("WEB_ACCOUNT_USERNAME")))
 	end
 
-
-	aclGroupAddACL(aclGroup, acl)
-	acl:setRight("general.http", true)
-	acl:setRight("function.callRemote", true)
-	acl:setRight("function.fetchRemote", true)
-
-	aclGroup:addObject("user.exo_web")
-
 	ACLGroup.get("Admin"):addObject("resource.admin_exo")
 
 	if GIT_BRANCH == "release/production" then
