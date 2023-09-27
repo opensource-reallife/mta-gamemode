@@ -9,7 +9,7 @@ function Core:constructor()
 	enew(localPlayer, LocalPlayer)
 
 	self.m_Config = ConfigXML:new("@config.xml")
-	Version:new() 
+	Version:new()
 	TinyInfoLabel:new()
 	Provider:new()
 	if not DISABLE_INFLUX then
@@ -79,7 +79,7 @@ function Core:constructor()
 		showChat(true)
 	end
 
-	addEventHandler("retrieveWebSecret", localPlayer, function(token) INGAME_WEB_SECRET = token end)
+	addEventHandler("retrieveWebSecret", localPlayer, function(secret) INGAME_WEB_SECRET = secret end)
 end
 
 function Core:onDownloadComplete()
