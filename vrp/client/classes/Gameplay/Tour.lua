@@ -66,7 +66,7 @@ end
 
 function Tour:showGUI(title, description)
 	if TourGUI:isInstantiated() then delete(TourGUI:getSingleton()) end
-	TourGUI:new(title, description)
+	TourGUI:new(_(title), _(description, PROJECT_NAME))
 end
 
 function Tour:showArrow(position)

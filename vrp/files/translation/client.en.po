@@ -376,8 +376,8 @@ msgstr "Name"
 msgid "Erhalten"
 msgstr "Received"
 
-msgid "Auf eXo-Reallife gibt es viele Achievements mit verschiedenen Belohnungen, die gefunden bzw. erledigt werden können. Einige davon sind vesteckt und tauchen erst in der Liste auf wenn du diese findest!"
-msgstr "On eXo-Reallife there are many Achievements with different rewards that can be found or done. Some of them are hidden and only appear in the list when you find them!"
+msgid "Auf %s gibt es viele Achievements mit verschiedenen Belohnungen, die gefunden bzw. erledigt werden können. Einige davon sind vesteckt und tauchen erst in der Liste auf wenn du diese findest!"
+msgstr "On %s there are many Achievements with different rewards that can be found or done. Some of them are hidden and only appear in the list when you find them!"
 
 msgid "Sichtbare  Ach."
 msgstr "Visible ah."
@@ -2228,11 +2228,8 @@ msgstr "Filter:"
 msgid "Suche:"
 msgstr "Search:"
 
-msgid "Herzlich willkommen auf "
-msgstr "Welcome to "
-
-msgid ", bitte logge dich mit deinen Accountdaten ein."
-msgstr ", please log in using your account data."
+msgid "Herzlich willkommen auf %s, bitte logge dich mit deinen Accountdaten ein."
+msgstr "Welcome to %s, please log in using your account data."
 
 msgid "Username"
 msgstr "Username"

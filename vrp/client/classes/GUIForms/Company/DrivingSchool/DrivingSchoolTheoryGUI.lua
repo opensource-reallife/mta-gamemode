@@ -15,11 +15,11 @@ local width,height = screenWidth*0.4,screenHeight*0.4
 local TEXT_INFO = "Prüfungsablauf:\nWillkommen zur theoretischen Fahrprüfung für die Führerscheinklasse B. Es werden 10 Fragen folgen, welche mit einer maximal Fehlerpunktzahl von 10 beantwortet werden müssen. Das Ergebnis wird sofort danach angezeigt."
 local QUESTIONS =
 {
-	{"Wie schnell darf hier auf eXo-Reallife in Los Santos gefahren werden?","30 km/H","50 km/H","80 km/H","120 km/H",3,3},
+	{"Wie schnell darf in Los Santos gefahren werden?","30 km/H","50 km/H","80 km/H","120 km/H",3,3},
 	{"Wann darf rechts überholt werden?","Auf einer Autobahn","Innerorts auf einer Mehrspurigen Straße","Überall","Außerorts",3,2},
 	{"In welchem Zustand dürfen Sie fahren?","alkoholisiert","Nüchtern","auf Drogen",nil, 3,2},
 	{"Was gilt an einer Kreuzung ohne Beschilderung oder Ampel?","Wer zuerst kommt fährt","Wer am schnellsten ankommt fährt","Rechts vor Links","Wer hupt fährt zuerst",5,3},
-	{"Wo darf auf eXo-Reallife geparkt werden?","Auf der Straße","Vor Gebäude-Eingängen","Es gibt keine Regelung","auf Parkplätzen",4,4},
+	{"Wo ist es erlaubt zu parken?","Auf der Straße","Vor Gebäude-Eingängen","Es gibt keine Regelung","auf Parkplätzen",4,4},
 	{"Auf welche Verkehrsteilnehmer muss besonders geachtet werden?","LKW-Fahrer","PKW-Fahrer","Passanten",nil,5,3},
 	{"Was müssen Sie bei schlechten Lichtverhältnissen beachten?","Ausreichend Frühstücken","Ausreichende Beleuchtung am Fahrzeug","Laute Musik um wach zu bleiben","Schnell fahren",3,2},
 	{"Wie dürfen Sie Pesonen mit Ihrem Fahrzeug NICHT befördern?", "Auf dem Dach oder Motorhaube", "Auf Sitzplätzen im Fahrzeug", nil,nil,5,1},

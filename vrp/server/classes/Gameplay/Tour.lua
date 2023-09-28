@@ -78,7 +78,7 @@ end
 Tour.Data = {
 	{
 		["Title"] = "Herzlich Willkommen",
-		["Description"] = "Ich führe dich ein wenig durch eXo-Reallife. Halte dich an meine Tipps und ein super Start ist dir sicher. Gelegentlich wartet auch eine Belohnung für eine Aufgabe auf dich! Folge dem Pfeil über deinem Kopf zur ersten Station!",
+		["Description"] = "Ich führe dich ein wenig durch %s. Halte dich an meine Tipps und ein super Start ist dir sicher. Gelegentlich wartet auch eine Belohnung für eine Aufgabe auf dich! Folge dem Pfeil über deinem Kopf zur ersten Station!",
 		["Success"] = "Sehr gut! Du kannst nun mit der Taste 'B' das Klickmenü öffnen. Wenn du damit auf den NPC 'Ausweis / Kaufvertrag' oben am Schalter ganz rechts klickst, kannst du dir deinen Personalausweis beantragen.",
 		["Position"] = Vector3(1481.09, -1770.12, 17.9),
 		["Money"] = 400
@@ -147,7 +147,7 @@ Tour.Data = {
 		["Money"] = 50
 	},
 	{
-		["Title"] = "eXo Boxing Association",
+		["Title"] = "%s Boxing Association",
 		["Description"] = "Unser nächster Zwischenstopp führt uns zur Boxhalle!",
 		["Success"] = "In der Boxhalle kannst du gegen andere Spieler boxen. Ihr könnt optional einen Geldbetrag setzen und euch so mit gekonnten hieben etwas dazu verdienen.",
 		["Position"] = Vector3(2228.73, -1722.71, 12.7),
@@ -170,13 +170,13 @@ Tour.Data = {
 	{
 		["Title"] = "Casino",
 		["Description"] = "Der nächste Punkt ist fast nebenan. Hier ist unser Casino, du findest da drin einige nette Spiele!",
-		["Success"] = "Es gibt auf eXo-Reallife einige Multiplayer-Minigames. Klicke auf einen Spieler um diese zu starten.",
+		["Success"] = "Es gibt auf %s einige Multiplayer-Minigames. Klicke auf einen Spieler um diese zu starten.",
 		["Position"] = Vector3(1463.51, -1169.74, 23.3),
 		["Money"] = 250
 	},
 	{
 		["Title"] = "Formel 1 - Naja fast",
-		["Description"] = "Der letzte Punkt unserer Tour führt zu einem richtigen Highlight. Der eXo-Reallife Kartbahn!",
+		["Description"] = "Der letzte Punkt unserer Tour führt zu einem richtigen Highlight. Der %s Kartbahn!",
 		["Success"] = "Hier kannst du Rennen gegen die Uhr fahren und neue Toptimes aufstellen. Das wars mit der Tour, weiter Hilfe findest du unter F1, /report oder im Forum!",
 		["Position"] = Vector3(1295.52, 149.98, 19),
 		["Money"] = 500
