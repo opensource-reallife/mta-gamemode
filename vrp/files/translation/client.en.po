@@ -2228,8 +2228,11 @@ msgstr "Filter:"
 msgid "Suche:"
 msgstr "Search:"
 
-msgid "Herzlich willkommen auf eXo Reallife, bitte logge dich mit deinen Accountdaten ein."
-msgstr "Welcome to eXo Reallife, please log in using your account data."
+msgid "Herzlich willkommen auf "
+msgstr "Welcome to "
+
+msgid ", bitte logge dich mit deinen Accountdaten ein."
+msgstr ", please log in using your account data."
 
 msgid "Username"
 msgstr "Username"

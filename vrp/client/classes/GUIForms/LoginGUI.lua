@@ -128,7 +128,7 @@ function LoginGUI:loadLoginElements()
 
 	self.m_Elements.window = self.m_Window
 
-	self.m_Elements.lbl1 = GUIGridLabel:new(1, 3, 9, 2, _"Herzlich willkommen auf eXo Reallife, bitte logge dich mit deinen Accountdaten ein.", self.m_Window)
+	self.m_Elements.lbl1 = GUIGridLabel:new(1, 3, 9, 2, _"Herzlich willkommen auf " .. PROJECT_NAME .. _", bitte logge dich mit deinen Accountdaten ein.", self.m_Window)
 		:setAlignX("center")
 	self.m_Elements.editName = GUIGridEdit:new(1, 5, 9, 1, self.m_Window)
 		:setCaption(_"Username")
