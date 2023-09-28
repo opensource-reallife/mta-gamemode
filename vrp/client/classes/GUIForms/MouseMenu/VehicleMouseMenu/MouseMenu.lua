@@ -65,7 +65,7 @@ function VehicleMouseMenu:constructor(posX, posY, element)
 				end
 			):setIcon(FontAwesomeSymbols.Player)
 		end
-		if getElementData(element, "OwnerName") == localPlayer.name or (getElementData(element, "GroupType") and localPlayer:getGroupName() == getElementData(element, "OwnerName")) or hasLocalPlayerKey then
+		if getElementData(element, "OwnerName") == localPlayer.name or (getElementData(element, "GroupType") and localPlayer:getGroupName() == getElementData(element, "OwnerName")) or (getElementData(element, "OwnerType") == "faction" and localPlayer:getFaction():getId() == getElementData(element, "OwnerID")) or (getElementData(element, "OwnerType") == "company" and localPlayer:getCompany():getId() == getElementData(element, "OwnerID")) or hasLocalPlayerKey then
 			if (getElementData(element, "GroupType") and getElementData(element, "GroupType") == "Firma") then
 				if getElementData(element, "isRented") ~= true then
 					if getElementData(element, "forRent") ~= true then
@@ -142,7 +142,7 @@ function VehicleMouseMenu:constructor(posX, posY, element)
 					end
 				):setIcon(FontAwesomeSymbols.Music)
 			end
-			if getElementData(element, "OwnerType") ~= "faction" and getElementData(element, "OwnerType") ~= "company" and not hasLocalPlayerKey then
+			if not hasLocalPlayerKey then
 				self:addItem(_"Respawnen / Parken >>>",
 					function()
 						if self:getElement() then

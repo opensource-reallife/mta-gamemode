@@ -935,7 +935,7 @@ end
 function VehicleManager:Event_vehiclePark()
  	if not source or not isElement(source) then return end
  	self:checkVehicle(source)
-	if source:isPermanent() or instanceof(source, GroupVehicle) then
+	if source:isPermanent() or instanceof(source, GroupVehicle) or instanceof(source, FactionVehicle) or instanceof(source, CompanyVehicle) then
 		if source:hasKey(client) or client:getRank() >= ADMIN_RANK_PERMISSION["parkVehicle"] then
 			if source:isBroken() then
 				client:sendError(_("Dein Fahrzeug ist kaputt und kann nicht geparkt werden!", client))
@@ -943,7 +943,17 @@ function VehicleManager:Event_vehiclePark()
 			end
 
 			if (instanceof(source, GroupVehicle) and not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "vehiclePark")) then
-				client:sendError(_("Du bist nicht berechtigt Gruppen-Fahrzeuge zu parken.", client))
+				client:sendError(_("Du bist nicht berechtigt Gruppenfahrzeuge zu parken!", client))
+				return
+			end
+
+			if (instanceof(source, FactionVehicle) and not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "vehiclePark")) then
+				client:sendError(_("Du bist nicht berechtigt Fraktionsfahrzeuge zu parken!", client))
+				return
+			end
+
+			if (instanceof(source, CompanyVehicle) and not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "vehiclePark")) then
+				client:sendError(_("Du bist nicht berechtigt Unternehmensfahrzeuge zu parken!", client))
 				return
 			end
 			
@@ -1213,10 +1223,10 @@ function VehicleManager:Event_vehicleRespawn(garageOnly)
 				client:sendError(_("Dieses Fahrzeug ist nicht von deiner Fraktion!", client))
 				return
 			end
-			if client:getFaction():getPlayerRank(client) >= 4 then
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "vehicleRespawn") then
 				source:respawn()
 			else
-				client:sendError(_("Du bist nicht berechtigt!", client))
+				client:sendError(_("Du bist nicht berechtigt Fraktionsfahrzeuge zu respawnen!", client))
 			end
 			return
 		end
@@ -1233,10 +1243,10 @@ function VehicleManager:Event_vehicleRespawn(garageOnly)
 				client:sendError(_("Diese Fahrzeug ist nicht von deinen Unternehmen!", client))
 				return
 			end
-			if client:getCompany():getPlayerRank(client) >= 3 then
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "vehicleRespawn") then
 				source:respawn()
 			else
-				client:sendError(_("Du bist nicht berechtigt!", client))
+				client:sendError(_("Du bist nicht berechtigt Unternehmensfahrzeuge zu respawnen!", client))
 			end
 			return
 		end
@@ -1255,7 +1265,7 @@ function VehicleManager:Event_vehicleRespawn(garageOnly)
 			end
 
 			if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "vehicleRespawn") then
-				client:sendError(_("Du bist nicht berechtigt Gruppen-Fahrzeuge zu respawnen!", client))
+				client:sendError(_("Du bist nicht berechtigt Gruppenfahrzeuge zu respawnen!", client))
 				return
 			end
 
@@ -1328,7 +1338,7 @@ function VehicleManager:Event_vehicleRespawnWorld()
 		return
 	end
 
- 	if not instanceof(source, PermanentVehicle, true) and not instanceof(source, GroupVehicle) then
+ 	if not instanceof(source, PermanentVehicle, true) and not instanceof(source, GroupVehicle) or not instanceof(source, FactionVehicle) or not instanceof(source, CompanyVehicle) then
  		client:sendError(_("Das ist kein permanentes Server Fahrzeug!", client))
  		return
  	end
