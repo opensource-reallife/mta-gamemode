@@ -79,7 +79,7 @@ function Core:constructor()
 		showChat(true)
 	end
 
-	addEventHandler("retrieveWebSecret", localPlayer, function(secretClient) INGAME_WEB_SECRET = secretClient end)
+	addEventHandler("retrieveWebSecret", localPlayer, function(secret) INGAME_WEB_SECRET = secret end)
 end
 
 function Core:onDownloadComplete()
