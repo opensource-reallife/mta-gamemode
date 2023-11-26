@@ -6,7 +6,7 @@
 -- *
 -- ****************************************************************************
 HelpGUI = inherit(GUIForm)
-HelpGUI.LexiconBaseUrl = "https://forum.byflex.de/lexicon/"
+HelpGUI.LexiconBaseUrl = "https://forum.byflex.de/"
 inherit(Singleton, HelpGUI)
 
 function HelpGUI:constructor()
@@ -33,7 +33,7 @@ end
 
 function HelpGUI:onBrowserReady(url)
 	self.m_BrowserReady = true
-	if type(url) == "string" and not url:find("exo%-reallife%.de") then
+	if type(url) == "string" and not url:find("forum.byflex%.de") then
 		self:internalBrowserNavigateHome()
 		return
 	end
