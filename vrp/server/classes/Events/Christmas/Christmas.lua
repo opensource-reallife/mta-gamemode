@@ -69,7 +69,7 @@ local day = getRealTime().monthday
 local month = getRealTime().month+1
 
 if month == 12 and day >= 5 and day <= 11 then
-    Christmas.ms_PricePoolName = "Christmas2022-1"
+    Christmas.ms_PricePoolName = "Christmas2023-1"
     Christmas.ms_PricePoolEnd = 1670778000
     Christmas.ms_PricePoolPrices = {
         {"money", 150000},
@@ -82,7 +82,7 @@ if month == 12 and day >= 5 and day <= 11 then
         {"VIP", 1}
     }
 elseif month == 12 and day >= 12 and day <= 18 then
-    Christmas.ms_PricePoolName = "Christmas2022-2"
+    Christmas.ms_PricePoolName = "Christmas2023-2"
     Christmas.ms_PricePoolEnd = 1671382800
     Christmas.ms_PricePoolPrices = {
         {"money", 150000}, 
@@ -95,7 +95,7 @@ elseif month == 12 and day >= 12 and day <= 18 then
         {"VIP", 1}
     }
 elseif month == 12 and day >= 19 and day <= 25 then
-    Christmas.ms_PricePoolName = "Christmas2022-3"
+    Christmas.ms_PricePoolName = "Christmas2023-3"
     Christmas.ms_PricePoolEnd = 1671987600
     Christmas.ms_PricePoolPrices = {
         {"money", 150000}, 
@@ -108,7 +108,7 @@ elseif month == 12 and day >= 19 and day <= 25 then
         {"VIP", 1}
     }
 elseif (month == 12 and day >= 26) or (month == 1 and day <= 1) then
-    Christmas.ms_PricePoolName = "Christmas2022-4"
+    Christmas.ms_PricePoolName = "Christmas2023-4"
     Christmas.ms_PricePoolEnd = 1672592400
     Christmas.ms_PricePoolPrices = {
         {"money", 150000}, 
