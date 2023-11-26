@@ -24,7 +24,7 @@ function KartGUI:constructor(marker)
 	local tabToptimes = self.m_TabPanel:addTab(_("Toptimes"))
 
 	-- Zeitrennen
-	GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.4, self.m_Height*0.1, _"eXo Kart Racing", tabTimeRace)
+	GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.4, self.m_Height*0.1, _"Kart Racing", tabTimeRace)
 
 	GUILabel:new(self.m_Width*0.02, self.m_Height*0.11, self.m_Width*0.25, self.m_Height*0.06, _"Aktuelle Map:", tabTimeRace)
 	self.m_MapNameLabel = GUILabel:new(self.m_Width*0.3, self.m_Height*0.11, self.m_Width*0.68, self.m_Height*0.06, "", tabTimeRace)

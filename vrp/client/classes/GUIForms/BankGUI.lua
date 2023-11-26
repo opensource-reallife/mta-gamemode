@@ -54,7 +54,7 @@ function BankGUI:constructor(bankAtm)
 
 	local donate = {}
 	donate["San News"] = GUIGridButton:new(4, 3, 3, 1, "San News", self.m_Tabs[2]):setBackgroundColor(Color.Orange)
-	donate["eXo Event-Team"] = GUIGridButton:new(7, 3, 4, 1, "eXo Event-Team", self.m_Tabs[2]):setBackgroundColor(Color.Green)
+	donate["Event-Team"] = GUIGridButton:new(7, 3, 4, 1, "Event-Team", self.m_Tabs[2]):setBackgroundColor(Color.Green)
 	for index, btn in pairs(donate) do btn.onLeftClick = function() self.m_TransferToEdit:setText(index) end end
 
 	-- Gruppen Ein/Auszahlen

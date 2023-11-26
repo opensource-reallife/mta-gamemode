@@ -16,7 +16,7 @@ function TicketGUI:constructor()
 
 	GUIForm.constructor(self, screenWidth/2-width/2, screenHeight/2-height/2, width, height, true, true)
 
-	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"eXo Ticket-System", true, true, self)
+	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Ticket-System", true, true, self)
 	self.m_Window:addBackButton(function () SelfGUI:getSingleton():show() end)
 	self.m_Window:addTitlebarButton(FontAwesomeSymbols.Home, bind(self.internalBrowserNavigateHome, self))
 	self.m_WebView = GUIWebView:new(0, 32, self.m_Width, self.m_Height-32, ("https://cp.byflex.de/api/auth/?redirect=/tickets?minimal&token=%s"):format(localPlayer:getSessionId()), true, self.m_Window)

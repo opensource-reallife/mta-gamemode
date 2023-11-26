@@ -15,7 +15,7 @@ if DEBUG then
 	INGAME_WEB_PATH = "https://ingame.byflex.de"
 end
 
-DOMAINS = {"byflex.de", "forum.byflex.de", INGAME_WEB_PATH:gsub("https://", ""), PICUPLOAD_PATH:gsub("https://", ""), "i.imgur.com", "download.exo-reallife.de", "download2.exo-reallife.de", "influxdb.merx.dev", "sentry.exo.cool", "cp.byflex.de", "cp-echo.exo-reallife.de"}
+DOMAINS = {"byflex.de", "forum.byflex.de", INGAME_WEB_PATH:gsub("https://", ""), PICUPLOAD_PATH:gsub("https://", ""), "i.imgur.com", "cp.byflex.de"}
 FORUM_MAX_CONNECTION_ATTEMPTS = 4
 
 -- LEVELS

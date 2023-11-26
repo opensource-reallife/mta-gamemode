@@ -78,7 +78,7 @@ function HorseRace:sendShortmessageToPlayers(text)
 end
 
 function HorseRace:message()
-	self:sendShortmessageToPlayers("Um 20:00 findet das tägliche eXo-Pferderennen statt, du kannst im Wettbüro auf ein Pferd setzen und um 20:00 die Live-Übertragung anschauen! Viel Glück!")
+	self:sendShortmessageToPlayers("Um 20:00 findet das tägliche Pferderennen statt, du kannst im Wettbüro auf ein Pferd setzen und um 20:00 die Live-Übertragung anschauen! Viel Glück!")
 end
 
 function HorseRace:addPlayer()

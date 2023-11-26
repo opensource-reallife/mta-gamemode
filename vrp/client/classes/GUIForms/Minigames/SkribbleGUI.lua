@@ -16,7 +16,7 @@ function SkribbleGUI:constructor()
 	self.m_Height = grid("y", 16)
 
 	GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true)
-	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"eXo Skribble", true, true, self)
+	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Skribble", true, true, self)
 
 	GUIGridRectangle:new(1, 1, 24, 1, Color.LightGrey, self.m_Window)
 	GUIGridLabel:new(1, 1, 1, 1, FontAwesomeSymbols.Clock, self.m_Window):setFont(FontAwesome(30)):setFontSize(1):setAlignX("center")

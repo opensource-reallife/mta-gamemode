@@ -822,7 +822,7 @@ function LocalPlayer:Event_toggleRadar(state)
 end
 
 function LocalPlayer:sendTrayNotification(text, icon, sound)
-	createTrayNotification("eXo-RL: "..text, icon, sound)
+	createTrayNotification("OpenReallife: "..text, icon, sound)
 end
 
 function LocalPlayer:getWorldObject()

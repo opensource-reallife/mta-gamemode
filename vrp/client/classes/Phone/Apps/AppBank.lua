@@ -17,14 +17,14 @@ function AppBank:onOpen(form)
 	self.m_TabPanel = GUIPhoneTabPanel:new(0, 0, form.m_Width, form.m_Height, form)
 	self.m_Tabs = {}
 	self.m_Tabs["Info"] = self.m_TabPanel:addTab(_"Information", FontAwesomeSymbols.Info)
-	GUILabel:new(10, 10, 240, 50, _"eXo-Bank", self.m_Tabs["Info"])
+	GUILabel:new(10, 10, 240, 50, _"Bank", self.m_Tabs["Info"])
 	GUILabel:new(10, 70, 240, 30, _"Kontostand:", self.m_Tabs["Info"])
 	self.m_AccountBalanceLabel = GUILabel:new(10, 100, 240, 30, "", self.m_Tabs["Info"])
 	self.m_LocateATMsButton = GUIButton:new(10, self.m_Tabs["Info"].m_Height-50, 240, 30, _"Bankautomat finden", self.m_Tabs["Info"]):setBarEnabled(false)
 	self.m_LocateATMsButton.onLeftClick = bind(self.LocateATMsClick, self)
 
 	self.m_Tabs["Transfer"] = self.m_TabPanel:addTab(_"Überweisen", FontAwesomeSymbols.Money)
-	GUILabel:new(10, 10, 240, 50, _"eXo-Bank", self.m_Tabs["Transfer"])
+	GUILabel:new(10, 10, 240, 50, _"Bank", self.m_Tabs["Transfer"])
 	GUILabel:new(10, 70, 240, 30, _"Überweisen:", self.m_Tabs["Transfer"])
 
 	GUILabel:new(10, 100, 240, 20, _"Empfänger:", self.m_Tabs["Transfer"])
@@ -44,7 +44,7 @@ function AppBank:onOpen(form)
 	GUILabel:new(10, 320, 120, 30, _"Spenden:", self.m_Tabs["Transfer"])
 	local donate = {}
 	donate["San News"] = GUIButton:new(10, 350, 117, 30, _"San News", self.m_Tabs["Transfer"]):setBackgroundColor(Color.Orange):setFontSize(.9)
-	donate["eXo Event-Team"] = GUIButton:new(135, 350, 117, 30, _"eXo Event-Team", self.m_Tabs["Transfer"]):setBackgroundColor(Color.Green):setFontSize(.9)
+	donate["Event-Team"] = GUIButton:new(135, 350, 117, 30, _"Event-Team", self.m_Tabs["Transfer"]):setBackgroundColor(Color.Green):setFontSize(.9)
 
 	for index, btn in pairs(donate) do
 		btn.onLeftClick = function() self.m_TransferToEdit:setText(index) end

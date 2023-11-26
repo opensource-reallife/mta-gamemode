@@ -8,7 +8,7 @@
 AppNavigator = inherit(PhoneApp)
 
 function AppNavigator:constructor()
-	PhoneApp.constructor(self, "eXo Navigator", "IconNavigator.png")
+	PhoneApp.constructor(self, "Navigator", "IconNavigator.png")
 end
 
 function AppNavigator:onOpen(form)

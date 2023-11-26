@@ -94,8 +94,8 @@ msgstr "Reward: 5 packets"
 msgid "X-Mas Bonus Shop"
 msgstr "X-Mas Bonus Shop"
 
-msgid "eXo Weihnachts-Quests"
-msgstr "eXo Christmas Quests"
+msgid "Weihnachts-Quests"
+msgstr "Christmas Quests"
 
 msgid "Heutiger Quest: %d. Dezember - %s"
 msgstr "Today's quest: %d. December - %s"

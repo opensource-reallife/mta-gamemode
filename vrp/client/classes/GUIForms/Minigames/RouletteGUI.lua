@@ -3,7 +3,7 @@ inherit(Singleton, RouletteGUI)
 
 function RouletteGUI:constructor(customBank)
     GUIForm.constructor(self, screenWidth/2-330/2, 5, 330, 105, false)
-	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, "eXo Roulette", true, true, self)
+	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, "Roulette", true, true, self)
 	self.m_Window:deleteOnClose(true)
 
     self.m_SpinButton = GUIButton:new(10, 40, 150, 25, "Drehen", self.m_Window)

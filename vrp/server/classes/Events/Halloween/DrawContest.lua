@@ -8,7 +8,7 @@ DrawContest.Events = {
 		["Draw"] = {["Start"] = 1572217200, ["Duration"] = 86400}, 	--28.10 - 29.10
 		["Vote"] = {["Start"] = 1572303600, ["Duration"] = 86400}	--29.10 - 30.10
 	},
-	["Zeichne Halloween auf eXo"]= {
+	["Zeichne Halloween auf OpenReallife"]= {
 		["Draw"] = {["Start"] = 1572476400, ["Duration"] = 86400},	--31.10 - 01.11
 		["Vote"] = {["Start"] = 1572562800, ["Duration"] = 86400}	--01.11 - 02.11
 	},

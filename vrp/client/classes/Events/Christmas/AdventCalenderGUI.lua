@@ -7,7 +7,7 @@ function AdventCalenderGUI:constructor()
 	self.m_Height = grid("y", 10)
 
 	GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true)
-	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"eXo Adventskalender", true, true, self)
+	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Adventskalender", true, true, self)
 	self.m_Window:deleteOnClose(true)
 
 	self.m_NameLabel = GUIGridLabel:new(1, 7, 24, 1, _("Heutiges Türchen: %d. Dezember", getRealTime().monthday), self.m_Window)
