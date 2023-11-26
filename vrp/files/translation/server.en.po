@@ -2019,10 +2019,10 @@ msgstr "You have rejected the %s request from %s!"
 
 msgid ""
 "Du hast ein eXo-Logo gefunden!\n"
-"Dafür erhälst du %s eXo-Points!"
+"Dafür erhälst du %s Punkte!"
 msgstr ""
 "You found an eXo logo!\n"
-"For this you will receive %s eXo-Points!"
+"For this you will receive %s Points!"
 
 msgid "Du hast die Lobby verlassen!"
 msgstr "You left the lobby!"
