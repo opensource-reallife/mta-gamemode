@@ -29,7 +29,7 @@ function DeathmatchLobby:constructor(id, name, owner, map, weapons, mode, maxPla
 
 	if self.m_Type == DeathmatchLobby.Types[1] then
 		self.m_Owner = "Server"
-		self.m_OwnerName = "OpenReallife"
+		self.m_OwnerName = PROJECT_NAME
 	else
 		self.m_Owner = owner
 		self.m_OwnerName = owner:getName()

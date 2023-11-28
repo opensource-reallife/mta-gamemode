@@ -822,7 +822,7 @@ function LocalPlayer:Event_toggleRadar(state)
 end
 
 function LocalPlayer:sendTrayNotification(text, icon, sound)
-	createTrayNotification("OpenReallife: "..text, icon, sound)
+	createTrayNotification(PROJECT_NAME .. ": " .. text, icon, sound)
 end
 
 function LocalPlayer:getWorldObject()
