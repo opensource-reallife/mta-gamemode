@@ -257,7 +257,7 @@ SHOP_ITEMS = {
 	["Weihnachtsmarkt"] = {
 		["Gluehwein"] = 15,
 		["Shot"] = 20,
-		--["Lebkuchen"] = 15,
+		["Lebkuchen"] = 15,
 		["Wuerstchen"] = 25,
 	},
 	["Feuerwerks-Shop"] = {
