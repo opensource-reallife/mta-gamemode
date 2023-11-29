@@ -8,14 +8,14 @@ PRIVATE_DIMENSION_SERVER = 65535 -- This dimension should not be used for playin
 PRIVATE_DIMENSION_CLIENT = 2 -- This dimension should be used for things which
 							 -- happen while the player is in PRIVATE_DIMENSION on the server
 
-INGAME_WEB_PATH = "https://ingame.byflex.de"
+INGAME_WEB_PATH = "https://ingame.openreallife.net"
 PICUPLOAD_PATH = "https://picupload.pewx.de"
 
 if DEBUG then
-	INGAME_WEB_PATH = "https://ingame.byflex.de"
+	INGAME_WEB_PATH = "https://ingame.openreallife.net"
 end
 
-DOMAINS = {"byflex.de", "forum.byflex.de", INGAME_WEB_PATH:gsub("https://", ""), PICUPLOAD_PATH:gsub("https://", ""), "i.imgur.com", "cp.byflex.de"}
+DOMAINS = {"openreallife.net", "forum.openreallife.net", INGAME_WEB_PATH:gsub("https://", ""), PICUPLOAD_PATH:gsub("https://", ""), "i.imgur.com", "cp.openreallife.net"}
 FORUM_MAX_CONNECTION_ATTEMPTS = 4
 
 -- LEVELS

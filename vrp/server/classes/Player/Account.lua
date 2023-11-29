@@ -140,7 +140,7 @@ function Account.loginSuccess(player, Id, Username, ForumId, RegisterDate, Teams
 		if #MultiAccount.getAccountsBySerial(player:getSerial()) > 1 then
 			if not MultiAccount.isAccountLinkedToSerial(Id, player:getSerial()) then
 				if not MultiAccount.allowedToCreateAnMultiAccount(player:getSerial()) then
-					player:triggerEvent("loginfailed", "Deine Serial wird für mehrere Accounts benutzt. Dies kann passieren, wenn sich jemand auf deinem PC mit anderen Accountdaten einloggt. Bitte melde dich im Forum (forum.byflex.de) unter 'administrative Anfragen', um das Problem zu beseitigen.")
+					player:triggerEvent("loginfailed", "Deine Serial wird für mehrere Accounts benutzt. Dies kann passieren, wenn sich jemand auf deinem PC mit anderen Accountdaten einloggt. Bitte melde dich im Forum (forum.openreallife.net) unter 'administrative Anfragen', um das Problem zu beseitigen.")
 					return false
 				else
 					MultiAccount.linkAccountToSerial(Id, player:getSerial())

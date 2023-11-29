@@ -6,7 +6,7 @@
 -- *
 -- ****************************************************************************
 HelpGUI = inherit(GUIForm)
-HelpGUI.LexiconBaseUrl = "https://forum.byflex.de/"
+HelpGUI.LexiconBaseUrl = "https://forum.openreallife.net/"
 inherit(Singleton, HelpGUI)
 
 function HelpGUI:constructor()
@@ -20,8 +20,8 @@ function HelpGUI:constructor()
 	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Hilfe", true, true, self)
 	self.m_Window:addTitlebarButton(FontAwesomeSymbols.Home, bind(self.internalBrowserNavigateHome, self))
 
-	-- "https://forum.byflex.de/exo-api?token=%s"
-	self.m_WebView = GUIGridWebView:new(1, 1, 27, 15, ("https://forum.byflex.de/index.php?exo-api&token=%s"):format(localPlayer:getSessionId()), true, self.m_Window)
+	-- "https://forum.openreallife.net/exo-api?token=%s"
+	self.m_WebView = GUIGridWebView:new(1, 1, 27, 15, ("https://forum.openreallife.net/index.php?exo-api&token=%s"):format(localPlayer:getSessionId()), true, self.m_Window)
 	self.m_WebView.onDocumentReady = bind(self.onBrowserReady, self)
 end
 
@@ -33,7 +33,7 @@ end
 
 function HelpGUI:onBrowserReady(url)
 	self.m_BrowserReady = true
-	if type(url) == "string" and not url:find("forum.byflex%.de") then
+	if type(url) == "string" and not url:find("forum.openreallife.de") then
 		self:internalBrowserNavigateHome()
 		return
 	end
