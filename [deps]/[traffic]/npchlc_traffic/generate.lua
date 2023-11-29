@@ -301,6 +301,7 @@ function spawnTrafficInSquare(x,y,dim,trtype)
 			addNodeToPedRoute(ped,n1)
 			addNodeToPedRoute(ped,n2,nb)
 			for nodenum = 1,4 do addRandomNodeToPedRoute(ped) end
+			element_timers[ped][setTimer(destroyPedIfStuck,3000,0,ped)] = true
 
 		elseif create and trtype == "cars" then
 			local zoff = z_offset[model]/math.cos(math.rad(rx))
@@ -418,3 +419,19 @@ function despawnTrafficInSquare(x,y,dim,trtype)
 	end
 end
 
+function destroyPedIfStuck(ped) -- VRP: Destroy ped if stuck
+    if ped and isElement(ped) and getElementData(ped, "npc_hlc") and not isPedDead(ped) then
+        local oldPos = getElementData(ped, "oldpos")
+        if not oldPos then
+            setElementData(ped, "oldpos", Vector3(getElementPosition(ped)))
+        else
+            local pedPosition = Vector3(getElementPosition(ped))
+            local distance = getDistanceBetweenPoints2D(pedPosition.x, pedPosition.y, oldPos.x, oldPos.y)
+            if distance <= 1 then
+                destroyElement(ped)
+            else
+                setElementData(ped, "oldpos", Vector3(pedPosition))
+            end
+        end
+    end
+end
