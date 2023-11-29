@@ -1,5 +1,5 @@
 function initTrafficGenerator()
-	traffic_density = {peds = 0.01,cars = 0.01,boats = 0.01,planes = 0.01}
+	traffic_density = {peds = 0.01,cars = 0,boats = 0,planes = 0}
 
 	population = {peds = {},cars = {},boats = {},planes = {}}
 	element_timers = {}
