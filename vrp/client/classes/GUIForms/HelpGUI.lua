@@ -21,7 +21,7 @@ function HelpGUI:constructor()
 	self.m_Window:addTitlebarButton(FontAwesomeSymbols.Home, bind(self.internalBrowserNavigateHome, self))
 
 	-- "https://forum.openreallife.net/exo-api?token=%s"
-	self.m_WebView = GUIGridWebView:new(1, 1, 27, 15, ("https://forum.openreallife.net/index.php?exo-api&token=%s"):format(localPlayer:getSessionId()), true, self.m_Window)
+	self.m_WebView = GUIGridWebView:new(1, 1, 27, 15, ("https://forum.openreallife.net/index.php?user-api=%s"):format(localPlayer:getSessionId()), true, self.m_Window)
 	self.m_WebView.onDocumentReady = bind(self.onBrowserReady, self)
 end
 
