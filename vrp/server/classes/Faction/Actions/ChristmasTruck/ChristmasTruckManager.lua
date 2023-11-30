@@ -20,6 +20,7 @@ function ChristmasTruckManager:constructor()
         [2] = createObject(6972, 2765.54, -2508.25, 12.6625),
         [3] = createObject(6972, 2744.84, -2421.651, 12.6625),
         [5] = createObject(6972, 683.15, -1255.801, 12.5837),
+        [6] = createObject(6972, 1434.365, -1328.728, 12.363),
         [7] = createObject(6972, 2492.44, -1668.54, 12.36312),
         [8] = createObject(6972, 2225.167, -1431.90, 22.9),
         [10] = createObject(6972, 2782.35, -2019.28, 12.55),
