@@ -44,7 +44,7 @@ function HelpGUI:onBrowserReady(url)
 end
 
 function HelpGUI:openLexiconPage(url)
-	local absoluteUrl = ("%s/cms/index.php?thread/%s"):format(HelpGUI.LexiconBaseUrl, url)
+	local absoluteUrl = ("%sindex.php?thread/%s/"):format(HelpGUI.LexiconBaseUrl, url)
 	if self.m_BrowserReady then --load URL
 		self.m_WebView:loadURL(absoluteUrl)
 	else -- save url for when browser got created
