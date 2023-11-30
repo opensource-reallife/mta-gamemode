@@ -1097,11 +1097,11 @@ function Player:payDay()
 		end
 		local house = HouseManager:getSingleton():getPlayerHouse(self)
 		if house then
-			outgoing_house = outgoing_house + house.m_Price / 1000
+			outgoing_house = outgoing_house + house.m_BuyPrice / 1000
 			self:addPaydayText("outgoing", _("Grundsteuer", self), outgoing_house)
 			self:transferBankMoney({BankServer.get("server.property_tax"), nil, nil, true}, outgoing_house, _("Grundsteuer", self), "Property", "Tax", {silent = true, allowNegative = true})
 			temp_bank_money = temp_bank_money - outgoing_house
-			points_total = points_total + math.ceil(house.m_Price / 10000)
+			points_total = points_total + math.ceil(house.m_BuyPrice / 10000)
 		end
 	end
 
