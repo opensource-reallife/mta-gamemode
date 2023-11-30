@@ -494,7 +494,7 @@ GAS_STATIONS = {
 		evilStation = true,
 		fuelTypes = {"petrol", "diesel", "jetfuel"},
 	},
-	{
+	--[[{
 		name = "Yakuza",
 		stations = {
 			{Vector3(1409.013, -1437.945, 9), 80, 1},
@@ -504,7 +504,7 @@ GAS_STATIONS = {
 		nonInterior = true,
 		evilStation = true,
 		fuelTypes = {"petrol", "diesel", "jetfuel"},
-	},
+	},]]
 	{
 		name = "Vatos Locos",
 		stations = {
@@ -515,7 +515,7 @@ GAS_STATIONS = {
 		evilStation = true,
 		fuelTypes = {"petrol", "diesel", "jetfuel"},
 	},
-	{
+	--[[{
 		name = "Outlaws MC",
 		stations = {
 			{Vector3(693.20, -455.38, 16.84), 270, 1},
@@ -524,7 +524,7 @@ GAS_STATIONS = {
 		nonInterior = true,
 		evilStation = true,
 		fuelTypes = {"petrol", "diesel", "jetfuel"},
-	},
+	},]]
 	--[[{
 		name = "Triaden",
 		stations = {
