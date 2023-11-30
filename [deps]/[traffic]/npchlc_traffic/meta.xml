@@ -15,6 +15,8 @@
 
 	<script src="f_density.lua"  />
 
+	<script src="vrp_nocol.lua" type="client" />
+
 	<export function="setTrafficDensity" type="server" http="false" />
 	<export function="getTrafficDensity" type="server" http="false" />
 
