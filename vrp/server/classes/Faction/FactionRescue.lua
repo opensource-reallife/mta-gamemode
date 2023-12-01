@@ -935,7 +935,7 @@ function FactionRescue:addVehicleFire(veh)
 
 		self.m_VehicleFires[veh].Blip = Blip:new("Warning.png", pos.x, pos.y, root, 400)
 		self.m_VehicleFires[veh].Blip:setOptionalColor(BLIP_COLOR_CONSTANTS.Orange)
-		self.m_VehicleFires[veh].Blip:setDisplayText("Verkehrsbehinderung")
+		self.m_VehicleFires[veh].Blip:setDisplayText(_"Verkehrsbehinderung")
 
 		local tempVehicle = TemporaryVehicle.create(model, pos.x, pos.y, pos.z, rz)
 		tempVehicle:setHealth(300)
@@ -946,7 +946,7 @@ function FactionRescue:addVehicleFire(veh)
 		tempVehicle.burned = true
 		tempVehicle.Blip = Blip:new("CarShop.png", 0, 0, {company = CompanyStaticId.MECHANIC}, 400)
 		tempVehicle.Blip:setColor({150, 150, 150}) -- gets deleted on tow
-		tempVehicle.Blip:setDisplayText("Auto-Wrack")
+		tempVehicle.Blip:setDisplayText(_"Auto-Wrack")
 		tempVehicle.Blip:attachTo(tempVehicle)
 
 		CompanyManager:getSingleton():getFromId(CompanyStaticId.MECHANIC):sendWarning("Ein verbranntes Auto-Wrack muss abgeschleppt werden! Position: %s", "Auto-Wrack", true, pos, zone)

@@ -33,7 +33,7 @@ function VehicleCustomTextureShop:constructor()
         addEventHandler("onColShapeHit", colshape, bind(self.EntryColShape_Hit, self, garageId))
 
         local blip = Blip:new("VehicleTexture.png", position.x, position.y,root,600)
-		blip:setDisplayText("Speziallackierungs-Shop", BLIP_CATEGORY.VehicleMaintenance)
+		blip:setDisplayText(_"Speziallackierungs-Shop", BLIP_CATEGORY.VehicleMaintenance)
 		blip:setOptionalColor({255,235,59})
     end
 

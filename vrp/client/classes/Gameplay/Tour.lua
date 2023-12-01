@@ -44,7 +44,7 @@ function Tour:show(id, title, description, success, x, y, z)
   self.m_TargetBlip = Blip:new("Marker.png", x, y, 9999)
   self.m_TargetBlip:setZ(z)
   self.m_TargetBlip:setColor(BLIP_COLOR_CONSTANTS.Red)
-  self.m_TargetBlip:setDisplayText("nächstes Tour-Ziel")
+  self.m_TargetBlip:setDisplayText(_"nächstes Tour-Ziel")
   self.m_TargetMarker = createMarker(self.m_TargetPos, "cylinder", 2, 50, 200, 255)
 
   addEventHandler("onClientMarkerHit", self.m_TargetMarker, function(hitElement, dim)

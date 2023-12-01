@@ -4399,3 +4399,6 @@ msgstr "FMS"
 
 msgid "Tastenzuordnung (Funk)"
 msgstr "Bindings (Func)"
+
+msgid "Kino"
+msgstr "Cinema"

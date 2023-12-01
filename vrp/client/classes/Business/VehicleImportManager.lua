@@ -32,7 +32,7 @@ function VehicleImportManager:createBlips(vehicles)
 		v = math.min(v+0.5, 1) -- brighten up color to make it more visible on the map
 		local blip = Blip:new("Marker.png", x, y, 9999, {Color.hsvToRgb(h, s, v)})
 		blip:setZ(tonumber(z))
-		blip:setDisplayText("Abgabepunkt "..vehicle:getName())
+		blip:setDisplayText(_"Abgabepunkt "..vehicle:getName())
 		self.m_Blips[vehicle] = blip
 	end
 	self.m_BlipsVisible = true

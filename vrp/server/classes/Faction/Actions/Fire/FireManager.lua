@@ -83,7 +83,7 @@ function FireManager:startFire(id)
 	self.m_CurrentFire:setName(self.m_Fires[id].name)
 	self.m_CurrentFire.Blip = Blip:new("Warning.png", fireTable.position.x + fireTable.width/2, fireTable.position.y + fireTable.height/2, root, 400)
 	self.m_CurrentFire.Blip:setOptionalColor(BLIP_COLOR_CONSTANTS.Orange)
-	self.m_CurrentFire.Blip:setDisplayText("Verkehrsbehinderung")
+	self.m_CurrentFire.Blip:setDisplayText(_"Verkehrsbehinderung")
 
 	self.m_CurrentFire:setOnUpdateHook(bind(self.onUpdateHandler, self))
 

@@ -66,7 +66,7 @@ function JobPizza:nextDeliver( )
 	addEventHandler("onClientMarkerHit",self.m_PizzaJobMarker,bind( JobPizza.onMarkerHit, self))
 	self.m_PizzaJobBlip = Blip:new("Marker.png",x , y,9999)
 	self.m_PizzaJobBlip:setColor(BLIP_COLOR_CONSTANTS.Red)
-	self.m_PizzaJobBlip:setDisplayText("Pizza-Lieferadresse")
+	self.m_PizzaJobBlip:setDisplayText(_"Pizza-Lieferadresse")
 
 	self.m_PizzaTick = getTickCount()
 end
@@ -97,7 +97,7 @@ function JobPizza:pickupDeliver( )
 	GPS:getSingleton():startNavigationTo(Vector3(PickupX, PickupY, PickupZ))
 	self.m_PizzaJobBlip = Blip:new("Marker.png", PickupX, PickupY, 9999)
 	self.m_PizzaJobBlip:setColor(BLIP_COLOR_CONSTANTS.Red)
-	self.m_PizzaJobBlip:setDisplayText("Pizza-Stack")
+	self.m_PizzaJobBlip:setDisplayText(_"Pizza-Stack")
 	addEventHandler("onClientMarkerHit",self.m_PizzaPickupMarker,bind( JobPizza.onNextDeliver, self))
 end
 

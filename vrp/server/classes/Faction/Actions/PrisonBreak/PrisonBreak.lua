@@ -102,9 +102,9 @@ function PrisonBreak:setKeycardTimeout()
 end
 
 function PrisonBreak:start()
-	PlayerManager:getSingleton():breakingNews("Das Gefängnis meldet höchste Sicherheitswarnung. Gefahrenlage unbekannt!")
-	Discord:getSingleton():outputBreakingNews("Das Gefängnis meldet höchste Sicherheitswarnung. Gefahrenlage unbekannt!")
-	FactionState:getSingleton():sendWarning("Das Gefängnis meldet höchste Sicherheitswarnung mit Bitte um Unterstützung!", "Neuer Einsatz", true, {-542.90, -515.07, 55.79})
+	PlayerManager:getSingleton():breakingNews(_"Das Gefängnis meldet höchste Sicherheitswarnung. Gefahrenlage unbekannt!")
+	Discord:getSingleton():outputBreakingNews(_"Das Gefängnis meldet höchste Sicherheitswarnung. Gefahrenlage unbekannt!")
+	FactionState:getSingleton():sendWarning(_"Das Gefängnis meldet höchste Sicherheitswarnung mit Bitte um Unterstützung!", _"Neuer Einsatz", true, {-542.90, -515.07, 55.79})
 
 	self.m_Entrance:destroy()
 

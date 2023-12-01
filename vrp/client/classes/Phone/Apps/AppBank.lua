@@ -95,7 +95,7 @@ function AppBank:LocateATMsClick()
 			local obj = AppBank.ATMs[i]
 			if obj:getInterior() == 0 and obj:getDimension() == 0 then 
 				local blip = Blip:new("Bank.png", obj.position.x, obj.position.y, 9999, BLIP_COLOR_CONSTANTS.Green)
-				blip:setDisplayText("Bankautomat")
+				blip:setDisplayText(_"Bankautomat")
 				table.insert(self.m_ATMBlips, blip)
 			end
 		end

@@ -27,13 +27,13 @@ function Casino:constructor()
 	--Four Dragons Casino
 	InteriorEnterExit:new(Vector3(2019.85, 1007.72, 10.82), Vector3(2018.48, 1017.86, 996.88), 90, 270, 10)
 	self.m_Blip = Blip:new("Casino.png", 2019.85, 1007.72, root, 300)
-	self.m_Blip:setDisplayText("Casino", BLIP_CATEGORY.Leisure)
+	self.m_Blip:setDisplayText(_"Casino", BLIP_CATEGORY.Leisure)
 	self.m_Blip:setOptionalColor({238, 226, 200})
 
 	-- Caligulas Casino
 	InteriorEnterExit:new(Vector3(2196.34, 1677.16, 12.37), Vector3(2233.99, 1714.685, 1012.38), 180, 90, 1)
 	self.m_Blip = Blip:new("Casino.png", 2196.34, 1677.16, root, 300)
-	self.m_Blip:setDisplayText("Casino", BLIP_CATEGORY.Leisure)
+	self.m_Blip:setDisplayText(_"Casino", BLIP_CATEGORY.Leisure)
 	self.m_Blip:setOptionalColor({238, 226, 200})
 
 	Slotmachine:new(2244.2177734375, 1634.9814453125, 1008.7, 0, 0, 307.98718261719,1)

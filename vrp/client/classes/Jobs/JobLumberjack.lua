@@ -31,7 +31,7 @@ function JobLumberjack:start()
 		object.Blip = Blip:new("Marker.png", x, y)
 		object.Blip:setColor(BLIP_COLOR_CONSTANTS.Yellow)
 		object.Blip:setSize(Blip.getDefaultSize()/2)
-		object.Blip:setDisplayText("Baum")
+		object.Blip:setDisplayText(_"Baum")
 		table.insert(self.m_Trees, object)
 		addEventHandler("onClientObjectDamage", object, func)
 	end
@@ -43,7 +43,7 @@ function JobLumberjack:start()
 	end
 
 	self.m_SawMillBlip = Blip:new("Marker.png", -1969.8, -2432.6, 9999, BLIP_COLOR_CONSTANTS.Red)
-	self.m_SawMillBlip:setDisplayText("Sägewerk")
+	self.m_SawMillBlip:setDisplayText(_"Sägewerk")
 	ShortMessage:new(_"Säge die auf der Karte markierten Bäume mit der Motorsäge um.")
 	-- Show text in help menu
 	HelpBar:getSingleton():setLexiconPage(LexiconPages.JobLumberjack)

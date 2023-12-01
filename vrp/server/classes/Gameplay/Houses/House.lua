@@ -652,7 +652,7 @@ function House:tryToCatchRobbers( player )
 					end
 
 					group.m_RobReported = true
-					FactionState:getSingleton():sendWarning("Hauseinbruch gemeldet - die Täterbeschreibung bisher passt auf Mitglieder der Gruppe %s!", "Neuer Einsatz", false, serialiseVector(pickup:getPosition()), group:getName())
+					FactionState:getSingleton():sendWarning(_"Hauseinbruch gemeldet - die Täterbeschreibung bisher passt auf Mitglieder der Gruppe %s!", _"Neuer Einsatz", false, serialiseVector(pickup:getPosition()), group:getName())
 				end
 			end
 		end

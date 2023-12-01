@@ -75,14 +75,14 @@ JOB_LEVEL_GRAVEL = 8
 JOB_LEVEL_BOXER = 10
 
 BLIP_CATEGORY = {
-	Default = "Allgemein",
-	Shop = "Shops",
-	Job = "Arbeitsstellen",
-	Faction = "Fraktions-Basen",
-	Company = "Unternehmenssitze",
-	VehicleMaintenance = "Fahrzeug-Unterhaltung",
-	Leisure = "Freizeit",
-	Other = "Anderes",
+	Default = _"Allgemein",
+	Shop = _"Shops",
+	Job = _"Arbeitsstellen",
+	Faction = _"Fraktions-Basen",
+	Company = _"Unternehmenssitze",
+	VehicleMaintenance = _"Fahrzeug-Unterhaltung",
+	Leisure = _"Freizeit",
+	Other = _"Anderes",
 }
 
 BLIP_COLOR_CONSTANTS = {

@@ -81,7 +81,7 @@ function Christmas:constructor()
 		)
 		local blip = Blip:new("Calendar.png", ped.position.x, ped.position.y, 100, nil, {244, 73, 85})
 		blip:attachTo(ped)
-		blip:setDisplayText("Adventskalender")
+		blip:setDisplayText(_"Adventskalender")
 	end
 
 	local ped

@@ -44,7 +44,7 @@ function JobGravel:start()
 	self.m_DumperDeliverMarker = createMarker(824.22, 919.35, 13.35, "cylinder", 8, 255, 125, 0, 100)
 	self.m_DumperDeliverBlip = Blip:new("Marker.png", 824.22, 919.35, 999)
 	self.m_DumperDeliverBlip:setColor(BLIP_COLOR_CONSTANTS.Red)
-	self.m_DumperDeliverBlip:setDisplayText("Dumper-Abgabe")
+	self.m_DumperDeliverBlip:setDisplayText(_"Dumper-Abgabe")
 
 	addEventHandler("onClientColShapeHit", self.m_DumperDeliverCol, bind(self.onDumperDeliverColHit, self))
 
@@ -206,7 +206,7 @@ function JobGravel:generateRocks()
 		self.m_RockCols[index].Blip = Blip:new("Marker.png", data["col"].x, data["col"].y)
 		self.m_RockCols[index].Blip:setColor(BLIP_COLOR_CONSTANTS.Yellow)
 		self.m_RockCols[index].Blip:setSize(Blip.getDefaultSize()/2)
-		self.m_RockCols[index].Blip:setDisplayText("Stein")
+		self.m_RockCols[index].Blip:setDisplayText(_"Stein")
 		self.m_RockCols[index].Rock = self.m_Rocks[index]
 		self.m_RockCols[index].Times = math.random(4, 10)
 		addEventHandler("onClientColShapeHit", self.m_RockCols[index], self.m_OnRockColHitBind)

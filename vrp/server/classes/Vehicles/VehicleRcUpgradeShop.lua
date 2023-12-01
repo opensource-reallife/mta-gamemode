@@ -20,7 +20,7 @@ function VehicleRcUpgradeShop:constructor()
 	self.m_UpgradeNPC:setFrozen(true)
 
 	self.m_Blip = Blip:new("RcShop.png", 332.172, -1337.802, root, 400)
-	self.m_Blip:setDisplayText("RC Shop", BLIP_CATEGORY.Shop)
+	self.m_Blip:setDisplayText(_"RC Shop", BLIP_CATEGORY.Shop)
 	self.m_Blip:setOptionalColor({37, 78, 108})
 
 	self.m_BankAccountServer = BankServer.get("vehicle.rc_upgrade") or BankServer.create("vehicle.rc_upgrade")

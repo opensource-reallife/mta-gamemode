@@ -28,10 +28,10 @@ function ShopVehicleRob:constructor(robber, vehicle)
 	self:addMarkerAndBlips()
 	self:startPickingLock(self.m_Robber)
 
-	StatisticsLogger:getSingleton():addActionLog("ShopVehicle-Rob", "start", self.m_Robber, self.m_Gang, "group")
-	PlayerManager:getSingleton():breakingNews("%s meldet einen Überfall durch eine Straßengang!", self.m_Shop:getName())
-	Discord:getSingleton():outputBreakingNews(string.format("%s meldet einen Überfall durch eine Straßengang!", self.m_Shop:getName()))
-	FactionState:getSingleton():sendWarning("Die Alarmanlage von %s meldet einen Überfall! Die Täterbeschreibung passt zu Mitgliedern der Gang %s", "Neuer Einsatz", false, serialiseVector(self.m_Vehicle:getPosition()), self.m_Shop:getName(), self.m_Gang:getName())
+	StatisticsLogger:getSingleton():addActionLog(_"ShopVehicle-Rob", "start", self.m_Robber, self.m_Gang, "group")
+	PlayerManager:getSingleton():breakingNews(_"%s meldet einen Überfall durch eine Straßengang!", self.m_Shop:getName())
+	Discord:getSingleton():outputBreakingNews(string.format(_"%s meldet einen Überfall durch eine Straßengang!", self.m_Shop:getName()))
+	FactionState:getSingleton():sendWarning(_"Die Alarmanlage von %s meldet einen Überfall! Die Täterbeschreibung passt zu Mitgliedern der Gang %s", _"Neuer Einsatz", false, serialiseVector(self.m_Vehicle:getPosition()), self.m_Shop:getName(), self.m_Gang:getName())
 
 	self.m_onVehicleEnter = bind(self.Event_onVehicleEnter, self)
 	self.m_onVehicleExit = bind(self.Event_onVehicleExit, self)
@@ -108,10 +108,10 @@ function ShopVehicleRob:addMarkerAndBlips()
 
 	self.m_Gang:attachPlayerMarkers()
 	self.m_EvilBlip = Blip:new("Marker.png", evilPos.x, evilPos.y, {factionType = "State", duty = true, group = self.m_Gang:getId()}, 2000, BLIP_COLOR_CONSTANTS.Red)
-	self.m_EvilBlip:setDisplayText("Fahrzeug-Abgabepunkt")
+	self.m_EvilBlip:setDisplayText(_"Fahrzeug-Abgabepunkt")
 	self.m_EvilBlip:setZ(evilPos.z)
 	self.m_StateBlip = Blip:new("PoliceRob.png", statePos.x, statePos.y, {factionType = "State", duty = true, group = self.m_Gang:getId()}, 2000, BLIP_COLOR_CONSTANTS.Yellow)
-	self.m_StateBlip:setDisplayText("Fahrzeug-Abgabe (Staat)")
+	self.m_StateBlip:setDisplayText(_"Fahrzeug-Abgabe (Staat)")
 	self.m_StateBlip:setZ(statePos.z)
 
 	self.m_MechanicBlip = {}

@@ -95,7 +95,7 @@ function JobLogistician:setNewDestination(player, targetMarker, crane)
 	player:startNavigationTo(pos)
 
 	local blip = Blip:new("Marker.png", pos.x, pos.y, player,9999, BLIP_COLOR_CONSTANTS.Red)
-		blip:setDisplayText("Container-Abgabepunkt")
+		blip:setDisplayText(_"Container-Abgabepunkt")
 	player:setData("Logistician:Blip", blip)
 
 	player:setData("Logistician:TargetMarker", targetMarker)

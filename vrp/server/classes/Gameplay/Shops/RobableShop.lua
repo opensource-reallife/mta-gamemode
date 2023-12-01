@@ -94,10 +94,10 @@ function RobableShop:startRob(shop, attacker, ped)
 
 	self.m_RobActive = true
 
-	PlayerManager:getSingleton():breakingNews("%s meldet einen Überfall durch eine Straßengang!", shop:getName())
-	Discord:getSingleton():outputBreakingNews(string.format("%s meldet einen Überfall durch eine Straßengang!", shop:getName()))
+	PlayerManager:getSingleton():breakingNews(_"%s meldet einen Überfall durch eine Straßengang!", shop:getName())
+	Discord:getSingleton():outputBreakingNews(string.format(_"%s meldet einen Überfall durch eine Straßengang!", shop:getName()))
 
-	FactionState:getSingleton():sendWarning("Die Alarmanlage von %s meldet einen Überfall!", "Neuer Einsatz", false, serialiseVector(shop.m_Position), shop:getName())
+	FactionState:getSingleton():sendWarning(_"Die Alarmanlage von %s meldet einen Überfall!", _"Neuer Einsatz", false, serialiseVector(shop.m_Position), shop:getName())
 	shop.m_LastRob = getRealTime().timestamp
 
 	-- Play an alarm
@@ -126,10 +126,10 @@ function RobableShop:startRob(shop, attacker, ped)
 	self.m_Gang = attacker:getGroup()
 	self.m_Gang:attachPlayerMarkers()
 	self.m_EvilBlip = Blip:new("Marker.png", evilPos.x, evilPos.y, {factionType = "State", duty = true, group = self.m_Gang:getId()}, 2000, BLIP_COLOR_CONSTANTS.Red)
-	self.m_EvilBlip:setDisplayText("Beute-Abgabepunkt")
+	self.m_EvilBlip:setDisplayText(_"Beute-Abgabepunkt")
 	self.m_EvilBlip:setZ(evilPos.z)
 	self.m_StateBlip = Blip:new("PoliceRob.png", statePos.x, statePos.y, {factionType = "State", duty = true, group = self.m_Gang:getId()}, 2000, BLIP_COLOR_CONSTANTS.Yellow)
-	self.m_StateBlip:setDisplayText("Beute-Abgabe (Staat)")
+	self.m_StateBlip:setDisplayText(_"Beute-Abgabe (Staat)")
 	self.m_StateBlip:setZ(statePos.z)
 	self.m_EvilMarker = createMarker(evilPos, "cylinder", 2.5, 255, 0, 0, 100)
 	self.m_StateMarker = createMarker(statePos, "cylinder", 2.5, 0, 255, 0, 100)
@@ -284,7 +284,7 @@ function RobableShop:giveBag(player)
 	player:attachPlayerObject(self.m_Bag)
 	if self.m_BagBlip then delete(self.m_BagBlip) end
 	self.m_BagBlip = Blip:new("MoneyBag.png", 0, 0, {factionType = "State", duty = true, group = self.m_Gang:getId()}, 2000, {85, 58, 38})
-	self.m_BagBlip:setDisplayText("Shopraub-Beute")
+	self.m_BagBlip:setDisplayText(_"Shopraub-Beute")
 	self.m_BagBlip:attach(self.m_Bag)
 
 	self.m_onDamageFunc = bind(self.onDamage, self)

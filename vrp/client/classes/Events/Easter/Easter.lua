@@ -48,7 +48,7 @@ function Easter:constructor()
     RabbitManager:new()
 
     self.m_Blip = Blip:new("BunnyHead.png", 1477.5, -1663, 200, {177, 162, 133})
-    self.m_Blip:setDisplayText("Osterhase")
+    self.m_Blip:setDisplayText(_"Osterhase")
 
     self.m_Rabbit = createPed(304, 1480.62, -1673.24, 14.05, 180)
     RabbitManager:getSingleton():setPedRabbit(self.m_Rabbit)

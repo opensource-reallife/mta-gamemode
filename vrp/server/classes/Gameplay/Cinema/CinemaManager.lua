@@ -19,7 +19,7 @@ function CinemaManager:constructor()
 
     self.m_Blip = Blip:new("Cinema.png", 1290.91, -1160.42, root, 400)
     self.m_Blip:setOptionalColor({170, 0, 0})
-    self.m_Blip:setDisplayText("Kino", BLIP_CATEGORY.Leisure)
+    self.m_Blip:setDisplayText(_"Kino", BLIP_CATEGORY.Leisure)
 
     self.m_Ped = createPed(171, Vector3(-2161.22, 638.71, 1052.41))
     self.m_Ped:setInterior(1)

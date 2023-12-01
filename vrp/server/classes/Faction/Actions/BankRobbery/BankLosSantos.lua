@@ -94,9 +94,9 @@ end
 
 function BankLosSantos:startRob(player)
 	self:startRobGeneral(player)
-	PlayerManager:getSingleton():breakingNews("Eine derzeit unbekannte Fraktion überfällt die Los Santos Bank!")
-	Discord:getSingleton():outputBreakingNews("Eine derzeit unbekannte Fraktion überfällt die Los Santos Bank!")
-	FactionState:getSingleton():sendWarning("Die Bank von Los Santos wird überfallen!", "Neuer Einsatz", true, {1457.67, -996.27, 26.83})
+	PlayerManager:getSingleton():breakingNews(_"Eine derzeit unbekannte Fraktion überfällt die Los Santos Bank!")
+	Discord:getSingleton():outputBreakingNews(_"Eine derzeit unbekannte Fraktion überfällt die Los Santos Bank!")
+	FactionState:getSingleton():sendWarning(_"Die Bank von Los Santos wird überfallen!", _"Neuer Einsatz", true, {1457.67, -996.27, 26.83})
 
 	local pos = self.m_BankDoor:getPosition()
 	self.m_BankDoor:move(3000, pos.x-5, pos.y, pos.z)

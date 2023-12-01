@@ -178,9 +178,9 @@ function CasinoHeist:startRob(player)
 end
 
 function CasinoHeist:startAlarm()
-	PlayerManager:getSingleton():breakingNews("Eine derzeit unbekannte Fraktion überfällt Caligula's Casino!")
-	Discord:getSingleton():outputBreakingNews("Eine derzeit unbekannte Fraktion überfällt Caligula's Casino!")
-	FactionState:getSingleton():sendWarning("Caligula's Casino wird überfallen!", "Neuer Einsatz", true, {2193.39, 1677.15, 12.37})
+	PlayerManager:getSingleton():breakingNews(_"Eine derzeit unbekannte Fraktion überfällt Caligula's Casino!")
+	Discord:getSingleton():outputBreakingNews(_"Eine derzeit unbekannte Fraktion überfällt Caligula's Casino!")
+	FactionState:getSingleton():sendWarning(_"Caligula's Casino wird überfallen!", _"Neuer Einsatz", true, {2193.39, 1677.15, 12.37})
 	triggerClientEvent("bankAlarm", root, unpack(self.m_MarkedPosition)) --back
 end
 
