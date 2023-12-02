@@ -14,6 +14,9 @@ CALL_RESULT_CALLING = 3 -- used in AppContacts
 
 function AppCall:constructor()
 	PhoneApp.constructor(self, "Telefon", "IconCall.png")
+
+	self.m_PewPew = true
+
 	self.m_EasterEggFont = VRPFont(35, Fonts.BitBold) --dxCreateFont(EASTEREGG_FILE_PATH.."/BitBold.ttf", 22*EASTEREGG_FONT_SCALE)
 	self.m_EasterEggRenderFunction = function()
 		dxDrawText("SUPER SMASH STROBE", 0,2, screenWidth, screenHeight, tocolor(0, 0, 0, 255), 1, getVRPFont(self.m_EasterEggFont), "center", "center")
@@ -169,6 +172,13 @@ function AppCall:startSpecialCall(grid)
 end
 
 function AppCall:ButtonCallPlayer_Click()
+	if self.m_PlayerListGrid:getSelectedItem().Owner == "PewX" then
+		localPlayer:giveAchievement(98)
+		triggerEvent("renderPewPewAchievement", localPlayer)
+		self:openInCall(false, false, CALL_RESULT_BUSY, false)
+		return
+	end
+
 	local player = getPlayerFromName(self.m_PlayerListGrid:getSelectedItem().Owner)
 	if not player then
 		ErrorBox:new(_"Dieser Spieler ist nicht online!")
@@ -224,6 +234,15 @@ function AppCall:Event_receivePhoneNumbers(list)
 		local item = grid[numData["OwnerType"]]:addItem(numData["OwnerName"], tostring(number))
 		item.Owner = numData["OwnerName"]
 		item.Number = number
+	end
+
+	if self.m_PewPew and Randomizer:get(1, 1000) == 420 then
+		local name = "PewX"
+		local number = Randomizer:get(100000, 999999)
+		local item = grid["player"]:addItem(name, number)
+		item.Owner = name
+		item.Number = number
+		self.m_PewPew = false
 	end
 end
 
