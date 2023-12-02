@@ -17,7 +17,21 @@ function ItemPresent:destructor()
 
 end
 
-function ItemPresent:use()
+function ItemPresent:use(player)
+    local random = Randomizer:get(0, 2)
+
+    player:getInventory():removeItem("Päckchen", 1)
+    player:meChat(true, _("öffnet ein Päckchen...", player))
+
+    if random == 1 then
+        player:getInventory():giveItem("Zuckerstange", 1)
+        player:sendSuccess(_("Du hast im Päckchen eine Zuckerstange gefunden!", player))
+    elseif random == 2 then
+        player:getInventory():giveItem("Zuckerstange", 2)
+        player:sendSuccess(_("Du hast im Päckchen zwei Zuckerstangen gefunden!", player))
+    else
+        player:sendError(_("Leider war das Päckchen leer!", player))
+    end
 end
 
 function ItemPresent:addObject(Id, pos, rot, interior, dimension)

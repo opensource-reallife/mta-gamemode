@@ -5010,4 +5010,10 @@ msgid "Um 21:00 Uhr findet das tägliche Schildkrötenrennen statt! Du kannst am
 msgstr "At 21:00 the daily turtle race takes place! You can bet money on a turtle on the beach and watch the race on the spot. Good luck!"
 
 msgid "Als Pizzalieferant hast du die Aufgabe die Ware des Pizza Stacks an die jeweiligen Orte zu liefern. \nDu erhälst deine Ware beim Pizza Stack ( Marker ) und lieferst Sie zum Ziel ( Ziel-Icon beim Radar ) ab. Desto schneller du dies schaffst, desto höher ist dein Bonus."
-msgstr "kek"
+msgstr "As a pizza delivery person, your task is to deliver Pizza Stack's goods to their respective locations. \nYou receive your goods at Pizza Stack (marked location) and deliver them to the destination (destination icon on the radar). The faster you accomplish this, the higher your bonus will be."
+
+msgid "Päckchen"
+msgstr "Present"
+
+msgid "Nettes Päckchen vom Weihnachtsmann"
+msgstr "A nice present from Santa Claus"

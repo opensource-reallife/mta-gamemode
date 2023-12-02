@@ -269,11 +269,11 @@ function Inventory:addItemEvents(item)
 			item:setColor(Inventory.Color.ItemBackgroundHover)
 			if item.Item then
 				local itemName = item.ItemName
-				self.m_InfoText1:setText(_("%s - Menge: %s", itemName, tostring(item.Amount)))
+				self.m_InfoText1:setText(_("%s - Menge: %s", _(itemName), tostring(item.Amount)))
 				if itemName == "Kleidung" and item.Value and SkinInfo[tonumber(item.Value)] then
-					self.m_InfoText2:setText(SkinInfo[tonumber(item.Value)][1])
+					self.m_InfoText2:setText(_(SkinInfo[tonumber(item.Value)][1]))
 				else
-					self.m_InfoText2:setText(self.m_ItemData[itemName]["Info"])
+					self.m_InfoText2:setText(_(self.m_ItemData[itemName]["Info"]))
 				end
 			end
 		else

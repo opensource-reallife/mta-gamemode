@@ -4398,7 +4398,19 @@ msgid "FMS"
 msgstr "FMS"
 
 msgid "Tastenzuordnung (Funk)"
-msgstr "Bindings (Func)"
+msgstr "Bindings (Radio)"
+
+msgid "öffnet ein Päckchen..."
+msgstr "opens a present..."
+
+msgid "Du hast im Päckchen eine Zuckerstange gefunden!"
+msgstr "You found a sugar cane inside the present!"
+
+msgid "Du hast im Päckchen zwei Zuckerstangen gefunden!"
+msgstr "You found two sugar canes inside the present!"
+
+msgid "Leider war das Päckchen leer!"
+msgstr "Unfortunately the present was empty!"
 
 msgid "Kino"
 msgstr "Cinema"

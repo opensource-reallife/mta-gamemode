@@ -1338,7 +1338,7 @@ function VehicleManager:Event_vehicleRespawnWorld()
 		return
 	end
 
- 	if not instanceof(source, PermanentVehicle, true) and not instanceof(source, GroupVehicle) or not instanceof(source, FactionVehicle) or not instanceof(source, CompanyVehicle) then
+ 	if not instanceof(source, PermanentVehicle, true) and (not instanceof(source, GroupVehicle) or not instanceof(source, FactionVehicle) or not instanceof(source, CompanyVehicle)) then
  		client:sendError(_("Das ist kein permanentes Server Fahrzeug!", client))
  		return
  	end
