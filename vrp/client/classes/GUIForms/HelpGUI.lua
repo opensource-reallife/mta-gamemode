@@ -33,7 +33,7 @@ end
 
 function HelpGUI:onBrowserReady(url)
 	self.m_BrowserReady = true
-	if type(url) == "string" and not url:find("forum.openreallife%.net") then
+	if type(url) == "string" and not url:find("forum.openreallife.net") then
 		self:internalBrowserNavigateHome()
 		return
 	end
@@ -44,7 +44,12 @@ function HelpGUI:onBrowserReady(url)
 end
 
 function HelpGUI:openLexiconPage(url)
+	if localPlayer:getLocale() == "en" then
+		url = tostring(tonumber(url) + 1)
+	end
+
 	local absoluteUrl = ("%s/index.php?article/%s/"):format(HelpGUI.LexiconBaseUrl, url)
+
 	if self.m_BrowserReady then --load URL
 		self.m_WebView:loadURL(absoluteUrl)
 	else -- save url for when browser got created
