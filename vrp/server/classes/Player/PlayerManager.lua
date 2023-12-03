@@ -12,7 +12,7 @@ addRemoteEvents{"playerReady", "playerSendMoney", "unfreezePlayer", "requestWeap
 "startWeaponLevelTraining","switchSpawnWithFactionSkin","Event_setPlayerWasted", "Event_playerTryToBreakoutJail", "onClientRequestTime", "playerDecreaseAlcoholLevel",
 "premiumOpenVehiclesList", "premiumTakeVehicle","destroyPlayerWastedPed","onDeathPedWasted", "toggleSeatBelt", "onPlayerTryGateOpen", "onPlayerUpdateSpawnLocation",
 "attachPlayerToVehicle", "onPlayerFinishArcadeEasterEgg", "changeWalkingstyle", "PlayerManager:onRequestQuickTrade", "PlayerManager:onAcceptQuickTrade", "removeMeFromVehicle",
-"playerLocale", "requestPlayerWeapons"}
+"playerLocale", "requestPlayerWeapons", "playerReconnect"}
 
 function PlayerManager:constructor()
 	self.m_WastedHook = Hook:new()
@@ -66,6 +66,7 @@ function PlayerManager:constructor()
 	addEventHandler("removeMeFromVehicle", root, bind(self.Event_removeMeFromVehicle, self))
 	addEventHandler("playerLocale", root, bind(self.Event_playerLocale, self))
 	addEventHandler("requestPlayerWeapons", root, bind(self.Event_requestPlayerWeaponInfo, self))
+	addEventHandler("playerReconnect", root, bind(self.Event_forcePlayerReconnect, self))
 
 	addEventHandler("PlayerManager:onAcceptQuickTrade", root, bind(self.Event_OnStartQuickTrade, self))
 	addEventHandler("PlayerManager:onRequestQuickTrade", root, bind(self.Event_RequestQuickTrade, self))
@@ -803,6 +804,10 @@ end
 function PlayerManager:Event_playerRequestTrading()
 	-- TODO: Add accept prompt box
 	client:startTrading(source)
+end
+
+function PlayerManager:Event_forcePlayerReconnect()
+	client:reconnect()
 end
 
 function PlayerManager:Event_setPhoneStatus(state)
