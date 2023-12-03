@@ -142,14 +142,24 @@ function LoginGUI:loadLoginElements()
 	self.m_Elements.lbl2 = GUIGridLabel:new(1, 7, 6, 1, _"Passwort speichern", self.m_Window)
 	self.m_Elements.swSavePW = GUIGridSwitch:new(7, 7, 3, 1, self.m_Window):setState(self.m_SavedPW and self.m_SavedPW ~= "")
 
-	self.m_Elements.BtnLogin = GUIGridButton:new(1, 8, 9, 1, _"Einloggen", self.m_Window)
+	self.m_Elements.lbl3 = GUIGridLabel:new(1, 8, 6, 1, _"Sprache (Experimentell)", self.m_Window)
+	self.m_Elements.langChange = GUIGridChanger:new(6, 8, 4, 1, self.m_Window)
+	self.m_Elements.langChange:addItem("Deutsch")
+	self.m_Elements.langChange:addItem("English")
+	self.m_Elements.langChange.onChange = function(text, index)
+		core:set("HUD", "locale", index == 1 and "de" or "en")
+		localPlayer:setLocale(core:get("HUD", "locale"))
+		triggerServerEvent("playerLocale", localPlayer, localPlayer:getLocale())
+		ShortMessage:new(_"Bitte reconnecten damit die Änderung ihre Wirkung zeigt!", "Sprache", Color.DarkLightBlue)
+	end
+	self.m_Elements.langChange:setIndex(localPlayer:getLocale() == "de" and 1 or 2, true)
+
+	self.m_Elements.BtnLogin = GUIGridButton:new(1, 9, 9, 1, _"Einloggen", self.m_Window)
 		:setBarEnabled(false)
 	self.m_Elements.BtnLogin.onLeftClick = function()
 		self.m_Elements.BtnLogin:setEnabled(false)
 	end
-	self.m_Elements.connectionLabel = GUIGridLabel:new(1, 9, 9, 1, "", self.m_Window)
-		:setColor(Color.Red)
-		:setAlignX("center")
+	
 	self.m_Elements.Label = GUIGridLabel:new(1, 10, 9, 1, _"(Kein Account? Registriere dich noch heute!)", self.m_Window)
 		:setClickable(true)
 		:setAlignX("center")
@@ -253,7 +263,7 @@ function LoginGUI:loadRegisterElements()
 	self.m_Elements.cLblRules.onLeftClick = function()
 		if self:checkExternalWebsitesActivated() then
 			LoginRuleGUI:new()
-			InfoBox:new(_"Da alle Regeln in einem Dokument stehen wirkt der Scrollbalken erscheckend klein - aber keine Sorge, wichtig für dich sind für den Anfang nur die Regeln von §1 - §5.\nMit gedrückter Shift-Taste kannst du im Dokument schneller scrollen.")
+			--InfoBox:new(_"Da alle Regeln in einem Dokument stehen wirkt der Scrollbalken erscheckend klein - aber keine Sorge, wichtig für dich sind für den Anfang nur die Regeln von §1 - §5.\nMit gedrückter Shift-Taste kannst du im Dokument schneller scrollen.")
 		end
 	end
 
@@ -470,7 +480,7 @@ function LoginRuleGUI:constructor()
 	GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true)
 	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Regelwerk", true, true, self)
 
-	self.m_Browser = GUIGridWebView:new(1, 1, 15, 11, "https://forum.openreallife.net/index.php?thread/22539-serverregeln/", true, self.m_Window)
+	self.m_Browser = GUIGridWebView:new(1, 1, 15, 11, "https://forum.openreallife.net/cms/index.php?board/24-regeln/", true, self.m_Window)
 end
 
 function LoginRuleGUI:destructor()

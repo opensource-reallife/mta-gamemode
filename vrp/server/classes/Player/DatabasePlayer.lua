@@ -31,7 +31,7 @@ end
 
 function DatabasePlayer:virtual_constructor()
 	self.m_Account = false
-	self.m_Locale = "de"
+	self.m_Locale = "en"
 	self.m_Id = -1
 	self.m_Inventory = false
 	self.m_Skills = {}

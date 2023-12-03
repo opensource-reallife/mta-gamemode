@@ -11,7 +11,7 @@ addRemoteEvents{"retrieveInfo", "playerWasted", "playerCashChange", "disableDama
 ,"onTryEnterExit", "onAllowRadioCommunication", "playSound", "playSFX", "playSFX3D"}
 
 function LocalPlayer:constructor()
-	self.m_Locale = "de"
+	self.m_Locale = "en"
 	self.m_Job = false
 	self.m_Rank = 0
 	self.m_LoggedIn = false

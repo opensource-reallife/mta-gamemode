@@ -81,8 +81,8 @@ function GUISwitch:drawThis()
 	local w, h = self.m_Button:getSize()
 	dxDrawRectangle(self.m_AbsoluteX + x + self.m_Width/4 - w/2, self.m_AbsoluteY + y + self.m_Height/2 - h/2, w, h, self.m_Hovered and white or not self.m_Enabled and lightGrey or accent)
 
-	dxDrawText("An", self.m_AbsoluteX, self.m_AbsoluteY, self.m_AbsoluteX + self.m_Width/2, self.m_AbsoluteY + self.m_Height, (self.m_Hovered and self.m_State) and black or white, self:getFontSize(), self:getFont(), "center", "center")
-	dxDrawText("Aus", self.m_AbsoluteX + self.m_Width/2, self.m_AbsoluteY, self.m_AbsoluteX + self.m_Width, self.m_AbsoluteY + self.m_Height, (self.m_Hovered and not self.m_State) and black or white, self:getFontSize(), self:getFont(), "center", "center")
+	dxDrawText(_"An", self.m_AbsoluteX, self.m_AbsoluteY, self.m_AbsoluteX + self.m_Width/2, self.m_AbsoluteY + self.m_Height, (self.m_Hovered and self.m_State) and black or white, self:getFontSize(), self:getFont(), "center", "center")
+	dxDrawText(_"Aus", self.m_AbsoluteX + self.m_Width/2, self.m_AbsoluteY, self.m_AbsoluteX + self.m_Width, self.m_AbsoluteY + self.m_Height, (self.m_Hovered and not self.m_State) and black or white, self:getFontSize(), self:getFont(), "center", "center")
 
 	dxSetBlendMode("blend")
 end

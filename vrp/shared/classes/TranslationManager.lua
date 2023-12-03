@@ -15,7 +15,7 @@ TranslationManager.ms_AvailableTranslations = {
 function TranslationManager:constructor()
 	self.m_Translations = {}
 	self.m_AddonTranslations = {}
-	self.m_DefaultLocale = "de"
+	self.m_DefaultLocale = "en"
 
 	-- Load standard translations
 	self:loadTranslation("en")

@@ -5,14 +5,14 @@ function DownloadGUI:constructor()
 	GUIForm.constructor(self, 0, 0, screenWidth, screenHeight)
 
 	self.m_Logo = GUIImage:new(screenWidth/2 - 350/2, screenHeight/2 - 200/2 - 120, 350, 167, "files/images/Logo.png", self)
-	self.m_Text = GUILabel:new(0, screenHeight/2 - 150/2 + 50, screenWidth, 50, "Bitte warte, bis die erforderlichen Spielinhalte bereit sind...", self):setAlignX("center"):setFont(VRPFont(40))
+	self.m_Text = GUILabel:new(0, screenHeight/2 - 150/2 + 50, screenWidth, 50, _"Bitte warte, bis die erforderlichen Spielinhalte bereit sind...", self):setAlignX("center"):setFont(VRPFont(40))
 	if screenWidth < 1024 then
-		self.m_ResolutionWarning = GUILabel:new(0, screenHeight - 200, screenWidth, 20, "Bitte erhöhe deine Auflösung, um Darstellungsfehler zu vermeiden!", self):setAlignX("center"):setFont(VRPFont(30)):setColor(Color.Red)
+		self.m_ResolutionWarning = GUILabel:new(0, screenHeight - 200, screenWidth, 20, _"Bitte erhöhe deine Auflösung, um Darstellungsfehler zu vermeiden!", self):setAlignX("center"):setFont(VRPFont(30)):setColor(Color.Red)
 	end
 	if core:get("Login", "LoginMusic", true) then
-		self.m_MusicText = GUILabel:new(0, screenHeight - 30, screenWidth, 30, "Drücke 'm', um die Musik zu stoppen!", self):setAlignX("center")
+		self.m_MusicText = GUILabel:new(0, screenHeight - 30, screenWidth, 30, _"Drücke 'm', um die Musik zu stoppen!", self):setAlignX("center")
 	else
-		self.m_MusicText = GUILabel:new(0, screenHeight - 30, screenWidth, 30, "Drücke 'm', um die Musik zu starten!", self):setAlignX("center")
+		self.m_MusicText = GUILabel:new(0, screenHeight - 30, screenWidth, 30, _"Drücke 'm', um die Musik zu starten!", self):setAlignX("center")
 	end
 	self.m_ProgressBar = GUIProgressBar:new(screenWidth/2 - 500/2, screenHeight/2 - 150/2 + 110, 500, 30, self)
 
@@ -29,7 +29,7 @@ function DownloadGUI:launchMusic()
 		if self.m_Music then
 			destroyElement(self.m_Music)
 			self.m_Music = nil
-			self.m_MusicText:setText("Drücke 'm', um die Musik zu starten!")
+			self.m_MusicText:setText(_"Drücke 'm', um die Musik zu starten!")
 			core:set("Login", "LoginMusic", false)
 			self:bind("m", self.m_StartMusicFunc)
 		end
@@ -38,7 +38,7 @@ function DownloadGUI:launchMusic()
 		if not self.m_Music then
 			self.m_Music = playSound(INGAME_WEB_PATH .. "/ingame/DownloadMusic.mp3", true)
 			self.m_Music:setVolume(0.3)
-			self.m_MusicText:setText("Drücke 'm', um die Musik zu stoppen!")
+			self.m_MusicText:setText(_"Drücke 'm', um die Musik zu stoppen!")
 			core:set("Login", "LoginMusic", true)
 			self:bind("m", self.m_StopMusicFunc)
 		end
@@ -59,7 +59,7 @@ end
 
 function DownloadGUI:onWrite(files)
 	self.m_ProgressBar:setProgress(100)
-	self:setStateText(("Schreibe %d Dateien auf Festplatte..."):format(files))
+	self:setStateText(_("Schreibe %d Dateien auf Festplatte...", files))
 end
 
 function DownloadGUI:setStateText(text)

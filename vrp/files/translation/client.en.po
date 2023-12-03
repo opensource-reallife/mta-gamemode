@@ -1,3 +1,18 @@
+msgid "Bitte warte, bis die erforderlichen Spielinhalte bereit sind..."
+msgstr "Please wait while the necessary game contents are being prepared..."
+
+msgid "Bitte erhöhe deine Auflösung, um Darstellungsfehler zu vermeiden!"
+msgstr "Please increase your resolution to avoid display issues!"
+
+msgid "Drücke 'm', um die Musik zu starten!"
+msgstr "Press 'm' to start the music!"
+
+msgid "Drücke 'm', um die Musik zu stoppen!"
+msgstr "Press 'm' to stop the music!"
+
+msgid "Schreibe %d Dateien auf Festplatte..."
+msgstr "Writing %d files to the hard drive..."
+
 msgid "%s"
 msgstr "%s"
 
@@ -2229,7 +2244,7 @@ msgid "Suche:"
 msgstr "Search:"
 
 msgid "Herzlich willkommen auf %s, bitte logge dich mit deinen Accountdaten ein."
-msgstr "Welcome to %s, please log in using your account data."
+msgstr "Welcome to %s! Please continue by logging in using your account details."
 
 msgid "Username"
 msgstr "Username"
@@ -2237,15 +2252,17 @@ msgstr "Username"
 msgid "Passwort speichern"
 msgstr "Save password"
 
+msgid "An"
+msgstr "On"
+
+msgid "Aus"
+msgstr "Off"
+
 msgid "(Kein Account? Registriere dich noch heute!)"
 msgstr "(No account? Register today!)"
 
-msgid ""
-"Bitte fülle das Formular aus um einen neuen Account zu erstellen. Pro PC und "
-"Internetanschluss ist nur ein Account zugelassen."
-msgstr ""
-"Please fill out the form to create a new account. Only one account per PC "
-"and internet connection is allowed."
+msgid "Bitte fülle das Formular aus um einen neuen Account zu erstellen. Pro PC und Internetanschluss ist nur ein Account zugelassen."
+msgstr "Please fill out the form to create a new account. Only one account per computer and internet connection is allowed."
 
 msgid "Passwort wiederholen"
 msgstr "Repeat password"
@@ -2253,42 +2270,32 @@ msgstr "Repeat password"
 msgid "Email-Adresse"
 msgstr "Email address"
 
+msgid "Ich akzeptiere die Serverregeln."
+msgstr "I accept the server rules."
+
+msgid "(ansehen)"
+msgstr "(display)"
+
+msgid "Registrieren"
+msgstr "Register"
+
 msgid "(zurück zum Login)"
 msgstr "(back to login)"
 
 msgid "error text gets loaded here"
 msgstr "error text gets loaded here"
 
-msgid ""
-"Da alle Regeln in einem Dokument stehen wirkt der Scrollbalken erscheckend "
-"klein - aber keine Sorge, wichtig für dich sind für den Anfang nur die "
-"Regeln von §1 - §5.\n"
-"Mit gedrückter Shift-Taste kannst du im Dokument schneller scrollen."
-msgstr ""
-"Since all rules are in one forum thread, the scrollbar seems to be small - "
-"but don't worry, the important rules for you are those for now: §1 - §3.\n"
-"You can scroll through the posts faster by holding down the shift key."
+msgid "Da alle Regeln in einem Dokument stehen wirkt der Scrollbalken erscheckend klein - aber keine Sorge, wichtig für dich sind für den Anfang nur die Regeln von §1 - §5.\nMit gedrückter Shift-Taste kannst du im Dokument schneller scrollen."
+msgstr "Since all rules are in one document, the scrollbar might seem surprisingly small - but don't worry, for starters, only rules from §1 to §5 are essential for you. You can use the Shift key to scroll through the document faster."
 
-msgid ""
-"Für deine Serial existiert bereits ein Account. Wenn du mit anderen Spielern "
-"im gleichen Netzwerk spielen möchtest, musst du einen Multiaccount-Antrag im "
-"Forum (forum.openreallife.net) verfassen."
-msgstr ""
-"Your serial is already linked to an account. If you want to play with other "
-"players in the same network, you have to write a multi-account request in "
-"the forum (forum.openreallife.net)."
+msgid "Für deine Serial existiert bereits ein Account. Wenn du mit anderen Spielern im gleichen Netzwerk spielen möchtest, musst du einen Multiaccount-Antrag im Forum (forum.openreallife.net) verfassen."
+msgstr "Your serial is already linked to an account. If you want to play with other players in the same network, you have to write a multi-account request in the forum (forum.openreallife.net)."
 
-msgid ""
-"Deine Serial wurde zuletzt vom Spieler '%s' benutzt! Wenn du mit anderen "
-"Spielern im gleichen Netzwerk spielen möchtest, musst du einen Multiaccount-"
-"Antrag im Forum (forum.openreallife.net) verfassen."
-msgstr ""
-"Your serial was last used by the player '%s'! If you want to play with other "
-"players in the same network, you have to write a multi-account request in "
-"the forum (forum.openreallife.net)."
+msgid "Deine Serial wurde zuletzt vom Spieler '%s' benutzt! Wenn du mit anderen Spielern im gleichen Netzwerk spielen möchtest, musst du einen Multiaccount-Antrag im Forum (forum.openreallife.net) verfassen."
+msgstr "Your serial was last used by the player '%s'! If you want to play with other players in the same network, you have to write a multi-account request in the forum (forum.openreallife.net)."
 
 msgid "Regelwerk"
-msgstr "Set of rules"
+msgstr "Rules"
 
 msgid "Map Editor: bearbeitende Spieler"
 msgstr "Map Editor: editing players"
@@ -4864,6 +4871,9 @@ msgstr "Note in faction history?"
 
 msgid "Sprache (Experimentelles Feature)"
 msgstr "Language (Experimental Feature)"
+
+msgid "Sprache (Experimentell)"
+msgstr "Language (Experimental)"
 
 msgid "Ducken"
 msgstr "Duck"
