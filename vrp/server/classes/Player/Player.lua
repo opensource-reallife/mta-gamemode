@@ -15,6 +15,7 @@ Player.ms_ChatHook = Hook:new()
 Player.ms_ScreamHook = Hook:new()
 
 addEvent("characterInitialized")
+addEvent("playerReconnect", true)
 
 function Player:constructor()
 	self:setVoiceBroadcastTo(nil)
@@ -43,13 +44,14 @@ function Player:constructor()
 	self.m_detachPlayerObjectBindFunc = bind(Player.detachPlayerObjectBind, self)
 	self.m_detachPlayerObjectFunc = bind(Player.detachPlayerObject, self)
 
-
 	setElementData(self, "playingTimeFaction", 0)
 	setElementData(self, "playingTimeCompany", 0)
 	setElementData(self, "playingTimeGroup", 0)
 	setElementData(self, "dutyTimeFaction", 0)
 	setElementData(self, "dutyTimeCompany", 0)
 	setElementData(self, "dutyTime", 0)
+
+	addEventHandler("playerReconnect", root, bind(self.reconnect, self))
 end
 
 function Player:destructor()
@@ -107,6 +109,9 @@ function Player:connect()
 
 end
 
+function Player:reconnect()
+	self:redirect("", 0)
+end
 
 function Player:setVirtualTime(hour, minute)
 	self.m_VirtualTime = true
