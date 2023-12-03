@@ -18,7 +18,7 @@ function Core:constructor()
 	end
 	Cursor = GUICursor:new()
 
-	localPlayer:setLocale(core:get("HUD", "locale", getLocalization()["code"] == "de" and "de" or "en"))
+	localPlayer:setLocale(core:get("HUD", "locale", getLocalization()["code"] == "de_DE" and "de" or "en"))
 	self.m_WhitelistChecker = setTimer(bind(self.checkDomainsWhitelist, self), 1000, 0)
 
 	if HTTP_DOWNLOAD then -- In debug mode use old Provider
