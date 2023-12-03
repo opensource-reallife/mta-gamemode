@@ -24,7 +24,6 @@ local MULTIACCOUNT_CHECK = GIT_BRANCH == "release/production" and true or false
 
 Account = inherit(Object)
 Account.REGISTRATION_ACTIVATED = true
-Account.FORUM_LOGIN = true
 Account.PendingRequests = {
 	Logins = {},
 	Registrations = {}
@@ -61,7 +60,7 @@ function Account.login(player, username, password, pwhash, enableAutologin)
 		end
 	end
 
-	if not Account.FORUM_LOGIN then
+	if not FORUM_LOGIN then
 		local row = sql:queryFetchSingle("SELECT Id, ForumId, Name, Password, Salt, RegisterDate, TeamspeakId, AutologinToken FROM ??_account WHERE LCASE(Name) = ?", sql:getPrefix(), username)
 		if not row then
 			player:triggerEvent("loginfailed", "Dieser Account existiert nicht")
@@ -193,7 +192,7 @@ function Account.loginSuccess(player, Id, Username, ForumId, RegisterDate, Teams
 	player:spawn()
 	player:triggerEvent("loginsuccess", pwhash)
 
-	if not Account.FORUM_LOGIN then
+	if not FORUM_LOGIN then
 		player:setSessionId("none")
 		return
 	end
@@ -270,7 +269,7 @@ function Account.register(player, username, password, email)
 	end
 
 	-- Login via Database
-	if not Account.FORUM_LOGIN then
+	if not FORUM_LOGIN then
 		if sql:queryFetchSingle("SELECT Name FROM ??_account WHERE Name = ?", sql:getPrefix(), username) then
 			player:triggerEvent("registerfailed", _("Benutzername wird bereits verwendet!", player))
 			return false

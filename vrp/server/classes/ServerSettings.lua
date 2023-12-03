@@ -36,6 +36,10 @@ function ServerSettings:constructor()
 			JOB_EXTRA_POINT_FACTOR = tonumber(row.Value)
 		end
 
+		if row.Index == "ForumLogin" then
+			FORUM_LOGIN = toboolean(row.Value)
+		end
+
 		self.m_Settings[row.Index] = row.Value
 	end
 end
