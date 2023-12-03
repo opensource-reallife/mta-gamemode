@@ -27,7 +27,9 @@ function BankGUI:constructor(bankAtm)
 
 	self.m_PlayerBalanceLabel = GUIGridLabel:new(1, 1, 8, 1, _"Kontostand: -", self.m_Tabs[1]):setHeader():setColor(Color.Accent)
 	self.m_PlayerBalanceLabel2 = GUIGridLabel:new(1, 1, 8, 1, _"Kontostand: -", self.m_Tabs[2]):setHeader():setColor(Color.Accent)
-	self.m_GroupBalanceLabel = GUIGridLabel:new(1, 1, 8, 1, _"Kontostand: -", self.m_Tabs[3]):setHeader():setColor(Color.Accent)
+	if self.m_Tabs[3] then
+		self.m_GroupBalanceLabel = GUIGridLabel:new(1, 1, 8, 1, _"Kontostand: -", self.m_Tabs[3]):setHeader():setColor(Color.Accent)
+	end
 
 	-- Ein/Auszahlen
 	GUIGridLabel:new(1, 2, 3, 1, _"Betrag:", self.m_Tabs[1])
