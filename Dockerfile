@@ -21,7 +21,7 @@ RUN useradd -u 5000 -m -d /var/lib/mtasa/ mtasa && \
 	# Download default resources
 	mkdir /var/lib/mtasa/mods/deathmatch/resources && \
 	cd /var/lib/mtasa/mods/deathmatch/resources && \
-	wget -q -O res.zip https://mirror.mtasa.com/mtasa/resources/mtasa-resources-latest.zip && \
+	wget -q -O res.zip https://mirror-cdn.multitheftauto.com/mtasa/resources/mtasa-resources-latest.zip && \
 	unzip res.zip && \
 	rm res.zip
 
