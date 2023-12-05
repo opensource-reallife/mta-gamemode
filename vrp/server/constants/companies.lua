@@ -63,8 +63,6 @@ companySkins[2] = {[44]=true, [50]=true,[192]=true,[268]=true, [309]=true}
 companyDutyMarker[2] = Vector3(2455.18, -2103.97, 13.55)
 companySpawnpoint[2] = {Vector3(2453.93, -2107.24, 13.55), 0, 0}
 
--- Das hier gehört internationalisiert. Test. test2. Test3. Next
-
 -- ID 3 = SAN News:
 companyRankNames[3] = {
 [0] = "Zeitungsjunge",
