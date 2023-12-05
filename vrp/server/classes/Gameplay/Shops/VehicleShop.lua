@@ -31,7 +31,7 @@ function VehicleShop:constructor(id, name, marker, npc, spawn, image, owner, pri
 	local markerPos = split(marker,",")
 
 	self.m_Blip = Blip:new("CarShop.png", markerPos[1], markerPos[2],root,400)
-	self.m_Blip:setDisplayText(_"Autohaus", BLIP_CATEGORY.Shop)
+	self.m_Blip:setDisplayText("Autohaus", BLIP_CATEGORY.Shop)
 	self.m_Blip:setOptionalColor({37, 78, 108})
 
 	local npcData = split(npc,",")

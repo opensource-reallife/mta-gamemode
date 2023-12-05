@@ -148,11 +148,11 @@ function ChristmasTruckManager:startChristmasTruck(player)
                     ActionsCheck:getSingleton():setAction("Weihnachtstruck")
                     if self.m_Current then delete(self.m_Current) end
                     self.m_Current = ChristmasTruck:new(player)
-                    PlayerManager:getSingleton():breakingNews(_"Ein Truck mit Geschenken ist unterwegs")
-                    Discord:getSingleton():outputBreakingNews(_"Ein Weihnachtstruck wurde gestartet")
-                    FactionState:getSingleton():sendWarning(_"Ein Weihnachtstruck wurde gestartet", _"Neuer Einsatz", true, ChristmasTruck.spawnPos)
-                    FactionEvil:getSingleton():sendWarning(_"Ein Weihnachtstruck wurde gestartet", _"Neue Aktion", true, ChristmasTruck.spawnPos)
-                    StatisticsLogger:getSingleton():addActionLog(_"Weihnachtstruck", "start", player, player:getFaction(), "faction")
+                    PlayerManager:getSingleton():breakingNews("Ein Truck mit Geschenken ist unterwegs")
+                    Discord:getSingleton():outputBreakingNews("Ein Weihnachtstruck wurde gestartet")
+                    FactionState:getSingleton():sendWarning("Ein Weihnachtstruck wurde gestartet", "Neuer Einsatz", true, ChristmasTruck.spawnPos)
+                    FactionEvil:getSingleton():sendWarning("Ein Weihnachtstruck wurde gestartet", "Neue Aktion", true, ChristmasTruck.spawnPos)
+                    StatisticsLogger:getSingleton():addActionLog("Weihnachtstruck", "start", player, player:getFaction(), "faction")
                 end
             end
 		else
@@ -167,7 +167,7 @@ function ChristmasTruckManager:checkPresents()
             for index, timestamp in pairs(self.m_FactionPresents[faction:getId()]) do
                 if timestamp <= getRealTime().timestamp - ChristmasTruckManager.ExpireTime then
                     self.m_FactionPresents[faction:getId()][index] = nil
-                    faction:sendShortMessage(_"Die Zeit eines Geschenks ist abgelaufen!\nDas Geschenk wurde entfernt!")
+                    faction:sendShortMessage("Die Zeit eines Geschenks ist abgelaufen!\nDas Geschenk wurde entfernt!")
                 end
             end
         end

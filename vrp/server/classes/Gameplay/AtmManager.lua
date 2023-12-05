@@ -116,9 +116,9 @@ function AtmManager:Event_onHackSuccess()
 
     if chance(AtmManager.HackSuccessNotificationChance) then
         if chance(AtmManager.HackSuccessPhotoChance) then
-            FactionState:getSingleton():sendWarning(_"Der Sicherheitsalarm eines Bankautomaten in %s wurde ausgelöst! Ein Foto der Überwachungskamera zeigt jemanden, der auf die Personenbeschreibung von %s passt!", _"Neuer Einsatz!", true, serialiseVector(atm:getPosition()), getZoneName(atm:getPosition()), client:getName())
+            FactionState:getSingleton():sendWarning("Der Sicherheitsalarm eines Bankautomaten in %s wurde ausgelöst! Ein Foto der Überwachungskamera zeigt jemanden, der auf die Personenbeschreibung von %s passt!", "Neuer Einsatz!", true, serialiseVector(atm:getPosition()), getZoneName(atm:getPosition()), client:getName())
         else
-            FactionState:getSingleton():sendWarning(_"Der Sicherheitsalarm eines Bankautomaten in %s wurde ausgelöst!", _"Neuer Einsatz!", true, serialiseVector(atm:getPosition()), getZoneName(atm:getPosition()))
+            FactionState:getSingleton():sendWarning("Der Sicherheitsalarm eines Bankautomaten in %s wurde ausgelöst!", "Neuer Einsatz!", true, serialiseVector(atm:getPosition()), getZoneName(atm:getPosition()))
         end
     end
 end
@@ -132,9 +132,9 @@ function AtmManager:Event_onHackFail()
         if getTickCount() - atm.LastNotification > AtmManager.NotificationCooldown then
             atm.LastNotification = getTickCount()
             if chance(AtmManager.HackFailPhotoChance) then
-                FactionState:getSingleton():sendWarning(_"Ein Bankautomat in %s meldet merkwürdige Aktivitäten! Ein Foto der Überwachungskamera zeigt jemanden, der auf die Personenbeschreibung von %s passt!", _"Kontrolle notwendig!", true, serialiseVector(atm:getPosition()), getZoneName(atm:getPosition()), client:getName())
+                FactionState:getSingleton():sendWarning("Ein Bankautomat in %s meldet merkwürdige Aktivitäten! Ein Foto der Überwachungskamera zeigt jemanden, der auf die Personenbeschreibung von %s passt!", "Kontrolle notwendig!", true, serialiseVector(atm:getPosition()), getZoneName(atm:getPosition()), client:getName())
             else
-                FactionState:getSingleton():sendWarning(_"Ein Bankautomat in %s meldet merkwürdige Aktivitäten!", _"Kontrolle notwendig!", true, serialiseVector(atm:getPosition()), getZoneName(atm:getPosition()))
+                FactionState:getSingleton():sendWarning("Ein Bankautomat in %s meldet merkwürdige Aktivitäten!", "Kontrolle notwendig!", true, serialiseVector(atm:getPosition()), getZoneName(atm:getPosition()))
             end
         end
     end
@@ -178,7 +178,7 @@ function AtmManager:onBombExplode(atm, bombArea, player)
     else
         player:sendError(_("Die Explosion am Bankautomaten hat alle Geldscheine zerfetzt, Du gehst leer aus!", player))
     end
-    FactionState:getSingleton():sendWarning(_"Ein Bankautomat in %s meldet merkwürdige Aktivitäten!", _"Kontrolle notwendig!", true, serialiseVector(atm:getPosition()), getZoneName(atm:getPosition()))
+    FactionState:getSingleton():sendWarning("Ein Bankautomat in %s meldet merkwürdige Aktivitäten!", "Kontrolle notwendig!", true, serialiseVector(atm:getPosition()), getZoneName(atm:getPosition()))
 end
 
 function AtmManager:onAtmObjectDestroy(object)

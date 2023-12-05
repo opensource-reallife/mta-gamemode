@@ -140,12 +140,12 @@ function MWeaponTruck:Event_onWeaponTruckLoad(boxContentTable)
 						if self.m_CurrentWT then delete(self.m_CurrentWT) end
 						client:sendInfo(_("Die Ladung steht bereit! Klicke die Kisten an und bringe sie zum Waffen-Truck! Gesamtkosten: %d$",client,totalAmount))
 						self.m_CurrentWT = WeaponTruck:new(client, boxContentTable, totalAmount, self.m_CurrentType)
-						PlayerManager:getSingleton():breakingNews(_"Ein %s wird beladen", WEAPONTRUCK_NAME[self.m_CurrentType])
-						Discord:getSingleton():outputBreakingNews(string.format(_"Ein %s wird beladen", WEAPONTRUCK_NAME[self.m_CurrentType]))
+						PlayerManager:getSingleton():breakingNews("Ein %s wird beladen", WEAPONTRUCK_NAME[self.m_CurrentType])
+						Discord:getSingleton():outputBreakingNews(string.format("Ein %s wird beladen", WEAPONTRUCK_NAME[self.m_CurrentType]))
 						if self.m_CurrentType == "evil" then
-							FactionState:getSingleton():sendWarning(_"Ein %s wird beladen", _"Neuer Einsatz", true, WeaponTruck.spawnPos[self.m_CurrentType], WEAPONTRUCK_NAME[self.m_CurrentType])
+							FactionState:getSingleton():sendWarning("Ein %s wird beladen", "Neuer Einsatz", true, WeaponTruck.spawnPos[self.m_CurrentType], WEAPONTRUCK_NAME[self.m_CurrentType])
 						else
-							FactionEvil:getSingleton():sendWarning(_"Ein %s wird beladen", _"Neue Aktion", true, WeaponTruck.spawnPos[self.m_CurrentType], WEAPONTRUCK_NAME[self.m_CurrentType])
+							FactionEvil:getSingleton():sendWarning("Ein %s wird beladen", "Neue Aktion", true, WeaponTruck.spawnPos[self.m_CurrentType], WEAPONTRUCK_NAME[self.m_CurrentType])
 						end
 						StatisticsLogger:getSingleton():addActionLog(WEAPONTRUCK_NAME[self.m_CurrentType], "start", client, client:getFaction(), "faction")
 					end

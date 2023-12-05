@@ -30,7 +30,7 @@ function TurtleRace:constructor()
 	self.m_ColShapeHit = bind(TurtleRace.onColShapeHit, self)
 
 	self.m_Blip = Blip:new("Turtle.png", 318, -1820)
-	self.m_Blip:setDisplayText(_"Schildkröten Rennen", BLIP_CATEGORY.Leisure)
+	self.m_Blip:setDisplayText("Schildkröten Rennen", BLIP_CATEGORY.Leisure)
 	self.m_Blip:setOptionalColor({50, 170, 20})
 	self.m_BankAccountServer = BankServer.get("gameplay.turtle_race")
 	

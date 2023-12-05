@@ -51,7 +51,7 @@ function PublicTransport:constructor()
 	blip:setDisplayText(self:getName(), BLIP_CATEGORY.Company)
 
 	self.m_VehicleImportBlip = Blip:new("CarShop.png", -1687.93, 14.47, {company = self.m_Id, duty = true}, nil, {companyColors[self.m_Id].r, companyColors[self.m_Id].g, companyColors[self.m_Id].b})
-	self.m_VehicleImportBlip:setDisplayText(_"Fahrzeug-Import")
+	self.m_VehicleImportBlip:setDisplayText("Fahrzeug-Import")
 end
 
 function PublicTransport:start(player) -- on start duty
@@ -389,7 +389,7 @@ function PublicTransport:startBusTour_Driver(player, nextStation, line)
 		local x, y, z = getElementPosition(self.m_BusStops[self.m_Lines[line][nextStation]].object)
 		player.Bus_Blip = Blip:new("Marker.png", x, y, player, 9999, PublicTransport.ms_BusLineData[line].color)
 		player.Bus_Blip:setZ(z)
-		player.Bus_Blip:setDisplayText(_"Bushaltestelle")
+		player.Bus_Blip:setDisplayText("Bushaltestelle")
 		player:setPublicSync("EPT:BusDuty", true)
 		player.Bus_Statistics = {
 			line = line,
@@ -526,7 +526,7 @@ function PublicTransport:BusStop_Hit(player, matchingDimension)
 		delete(player.Bus_Blip)
 		player.Bus_Blip = Blip:new("Marker.png", x, y, player, 9999, PublicTransport.ms_BusLineData[line].color)
 		player.Bus_Blip:setZ(z)
-		player.Bus_Blip:setDisplayText(_"Bushaltestelle")
+		player.Bus_Blip:setDisplayText("Bushaltestelle")
 
 		if isElement(self.m_BusStops[stopId].marker[vehicle]) then
 			destroyElement(self.m_BusStops[stopId].marker[vehicle])

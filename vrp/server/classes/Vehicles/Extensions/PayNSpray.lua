@@ -3,7 +3,7 @@ PayNSpray = inherit(Object)
 function PayNSpray:constructor(x, y, z, garageId)
 	self.m_FixShape = createColSphere(x, y, z, 4)
 	self.m_Blip = Blip:new("PayNSpray.png", x, y, root, 600)
-	self.m_Blip:setDisplayText(_"Pay'N'Spray Autoreparatur", BLIP_CATEGORY.VehicleMaintenance)
+	self.m_Blip:setDisplayText("Pay'N'Spray Autoreparatur", BLIP_CATEGORY.VehicleMaintenance)
 	self.m_Blip:setOptionalColor({67, 121, 98})
 	self.m_BankAccountServer = BankServer.get("vehicle.paynspray")
 	if garageId then

@@ -17,7 +17,7 @@ function ColorCarsManager:constructor()
     self.m_ColorCarsMarker = createMarker(2695.80, -1706.67, 10.9, "cylinder", 1, 255, 255, 255)
     self.m_ColorCarsColShape = createColSphere(2695.80, -1706.67, 10.9, 2)
     self.m_ColorCarsBlip = Blip:new("ColorCars.png", 2695.80, -1706.67)
-    self.m_ColorCarsBlip:setDisplayText(_"ColorCars-Arena", BLIP_CATEGORY.Leisure)
+    self.m_ColorCarsBlip:setDisplayText("ColorCars-Arena", BLIP_CATEGORY.Leisure)
 
     addEventHandler("onColShapeHit", self.m_ColorCarsColShape, bind(self.Event_onColShapeHit, self))
     addEventHandler("ColorCars:addPlayerToLobby", root, bind(self.addPlayerToLobby, self))

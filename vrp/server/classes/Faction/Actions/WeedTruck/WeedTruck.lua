@@ -63,9 +63,9 @@ function WeedTruck:constructor(driver)
 	self.m_WaterCheckTimer = setTimer(bind(self.isWeedTruckInWater, self), 10000, 0)
 	self.m_IsSubmerged = false
 	
-	PlayerManager:getSingleton():breakingNews(_"Ein Weed-Transport wurde soeben gestartet!")
-	Discord:getSingleton():outputBreakingNews(_"Ein Weed-Transport wurde soeben gestartet!")
-	FactionState:getSingleton():sendWarning(_"Ein Weed-Transport wurde gestartet!", _"Neuer Einsatz", true, serialiseVector(WeedTruck.spawnPos))
+	PlayerManager:getSingleton():breakingNews("Ein Weed-Transport wurde soeben gestartet!")
+	Discord:getSingleton():outputBreakingNews("Ein Weed-Transport wurde soeben gestartet!")
+	FactionState:getSingleton():sendWarning("Ein Weed-Transport wurde gestartet!", "Neuer Einsatz", true, serialiseVector(WeedTruck.spawnPos))
 	
 	for i, faction in pairs(FactionEvil:getSingleton():getFactions()) do
 		local pos = factionDTDestination[faction:getId()][1]

@@ -15,7 +15,7 @@ function Train:constructor(speed, trailers)
     self.Trailers = trailers
     self.m_Blip = Blip:new("Train.png", 0, 0, root, 200)
     self.m_Blip:attach(self)
-    self.m_Blip:setDisplayText(_"Güterzug", BLIP_CATEGORY.Other)
+    self.m_Blip:setDisplayText("Güterzug", BLIP_CATEGORY.Other)
     self.m_Visible = false
 	-- Add ref to Manager
 	self.m_Manager:addRef(self)

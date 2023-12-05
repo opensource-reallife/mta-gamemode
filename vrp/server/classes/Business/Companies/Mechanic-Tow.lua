@@ -12,7 +12,7 @@ function MechanicTow:constructor()
 
 	local blip = Blip:new("CarLot.png", 2465.677, -2093.584, root, 400)
 	blip:setOptionalColor({150, 150, 150})
-	blip:setDisplayText(_"Autohof", BLIP_CATEGORY.VehicleMaintenance)
+	blip:setDisplayText("Autohof", BLIP_CATEGORY.VehicleMaintenance)
 
 	local id = self:getId()
 	local blip = Blip:new("House.png", 2481.79, -2097.76, {company = id}, 400, {companyColors[id].r, companyColors[id].g, companyColors[id].b})

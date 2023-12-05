@@ -29,7 +29,7 @@ function JewelryStoreRobbery:constructor(attacker, maxBags)
 
 	PlayerManager:getSingleton():breakingNews(math.randomchoice(JewelryStoreRobbery.StartMessages))
 
-	FactionState:getSingleton():sendWarning(_"Ein Juwelier wird ausgeraubt!", _"Neuer Einsatz", true, Vector3(561.292, -1506.786, 14.548))
+	FactionState:getSingleton():sendWarning("Ein Juwelier wird ausgeraubt!", "Neuer Einsatz", true, Vector3(561.292, -1506.786, 14.548))
 
 	self.m_Attacker = attacker
 	self.m_Faction = attacker:getFaction()
@@ -51,7 +51,7 @@ function JewelryStoreRobbery:constructor(attacker, maxBags)
 	self.m_Vehicle:setAlwaysDamageable(true)
 
 	self.m_VehicleBlip = Blip:new("Marker.png", self.m_Vehicle.position.x, self.m_Vehicle.position.y, self:getBlipVisibleTo(), 9999, BLIP_COLOR_CONSTANTS.Blue)
-	self.m_VehicleBlip:setDisplayText(_"Boot Spawn")
+	self.m_VehicleBlip:setDisplayText("Boot Spawn")
 	self.m_VehicleBlip:setZ(self.m_Vehicle.position.z)
 	]]
 
@@ -67,7 +67,7 @@ function JewelryStoreRobbery:constructor(attacker, maxBags)
 	setElementData(self.m_EvilDeliveryPed, "Ped:fakeNameTag", "Carlos Peralta")
 
 	self.m_EvilDeliveryPedBlip = Blip:new("Marker.png", self.m_EvilDeliveryPed.position.x, self.m_EvilDeliveryPed.position.y, self:getBlipVisibleTo(), 9999, BLIP_COLOR_CONSTANTS.Red)
-	self.m_EvilDeliveryPedBlip:setDisplayText(_"Juwelierraub-Abgabe")
+	self.m_EvilDeliveryPedBlip:setDisplayText("Juwelierraub-Abgabe")
 	self.m_EvilDeliveryPedBlip:setZ(self.m_EvilDeliveryPed.position.z)
 
 	self.m_StateDeliveryPed = NPC:new(281, 1578.373, -1620.275, 13.547, 270)
@@ -78,7 +78,7 @@ function JewelryStoreRobbery:constructor(attacker, maxBags)
 	setElementData(self.m_StateDeliveryPed, "Ped:fakeNameTag", "Marco Richter")
 
 	self.m_StateDeliveryPedBlip = Blip:new("Marker.png", self.m_StateDeliveryPed.position.x, self.m_StateDeliveryPed.position.y, self:getBlipVisibleTo(), 9999, BLIP_COLOR_CONSTANTS.Red)
-	self.m_StateDeliveryPedBlip:setDisplayText(_"Juwelierraub-Abgabe Staat")
+	self.m_StateDeliveryPedBlip:setDisplayText("Juwelierraub-Abgabe Staat")
 	self.m_StateDeliveryPedBlip:setZ(self.m_StateDeliveryPed.position.z)
 
 	self.m_BankAccountServer = BankServer.get("action.jewelry_store_robbery")
