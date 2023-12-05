@@ -4413,7 +4413,7 @@ msgid "Du hast eine Tasse Glühwein gewonnen!"
 msgstr "You won a cup of mulled wine!
 
 msgid "Du hast ein paar Lebkuchen gewonnen!"
-msgstr "You won some gingerbread!
+msgstr "You won some gingerbread!"
 
 msgid "Du hast ein Päckchen gewonnen!"
 msgstr "You won a present!"
