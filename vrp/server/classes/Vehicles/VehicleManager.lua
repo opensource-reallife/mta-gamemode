@@ -942,19 +942,21 @@ function VehicleManager:Event_vehiclePark()
 				return
 			end
 
-			if (instanceof(source, GroupVehicle) and not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "vehiclePark")) then
-				client:sendError(_("Du bist nicht berechtigt Gruppenfahrzeuge zu parken!", client))
-				return
-			end
+			if not client:getRank() >= ADMIN_RANK_PERMISSION["parkVehicle"] then
+				if (instanceof(source, GroupVehicle) and not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "vehiclePark")) then
+					client:sendError(_("Du bist nicht berechtigt Gruppenfahrzeuge zu parken!", client))
+					return
+				end
 
-			if (instanceof(source, FactionVehicle) and not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "vehiclePark")) then
-				client:sendError(_("Du bist nicht berechtigt Fraktionsfahrzeuge zu parken!", client))
-				return
-			end
+				if (instanceof(source, FactionVehicle) and not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "vehiclePark")) then
+					client:sendError(_("Du bist nicht berechtigt Fraktionsfahrzeuge zu parken!", client))
+					return
+				end
 
-			if (instanceof(source, CompanyVehicle) and not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "vehiclePark")) then
-				client:sendError(_("Du bist nicht berechtigt Unternehmensfahrzeuge zu parken!", client))
-				return
+				if (instanceof(source, CompanyVehicle) and not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "vehiclePark")) then
+					client:sendError(_("Du bist nicht berechtigt Unternehmensfahrzeuge zu parken!", client))
+					return
+				end
 			end
 			
 			if not source:isOnGround() then
@@ -976,7 +978,6 @@ function VehicleManager:Event_vehiclePark()
 				if  instanceof(source, GroupVehicle) and (source:getGroup() and client:getGroup()) and (source:getGroup() == client:getGroup()) then
 					client:getGroup():addLog(client, "Fahrzeuge", ("hat das Fahrzeug %s (%d) umgeparkt!"):format(source:getName(), source:getId()))
 				end
-
 			else
 				client:sendError(_("Du kannst dein Fahrzeug hier nicht parken!", client))
 			end
