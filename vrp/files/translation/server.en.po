@@ -4410,7 +4410,7 @@ msgid "Kino"
 msgstr "Cinema"
 
 msgid "Du hast eine Tasse Glühwein gewonnen!"
-msgstr "You won a cup of mulled wine!
+msgstr "You won a cup of mulled wine!"
 
 msgid "Du hast ein paar Lebkuchen gewonnen!"
 msgstr "You won some gingerbread!"
