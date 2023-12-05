@@ -68,56 +68,36 @@ Christmas.ms_Bonus = {
 local day = getRealTime().monthday
 local month = getRealTime().month+1
 
-if month == 12 and day >= 5 and day <= 11 then
+if month == 12 and day >= 4 and day <= 10 then
     Christmas.ms_PricePoolName = "Christmas2023-1"
     Christmas.ms_PricePoolEnd = 1670778000
     Christmas.ms_PricePoolPrices = {
-        {"money", 150000},
-        {"vehicle", 463 },
-         
-        {"money", 150000}, 
-        {"vehicle", 422}, 
-
-        {"money", 150000}, 
+        {"money", 50000},
+        {"vehicle", 522}, 
         {"VIP", 1}
     }
-elseif month == 12 and day >= 12 and day <= 18 then
+elseif month == 12 and day >= 11 and day <= 17 then
     Christmas.ms_PricePoolName = "Christmas2023-2"
     Christmas.ms_PricePoolEnd = 1671382800
     Christmas.ms_PricePoolPrices = {
-        {"money", 150000}, 
-        {"vehicle", 459}, 
-        
-        {"money", 150000}, 
-        {"vehicle", 480}, 
-        
-        {"money", 150000}, 
+        {"money", 50000}, 
+        {"vehicle", 506}, 
         {"VIP", 1}
     }
-elseif month == 12 and day >= 19 and day <= 25 then
+elseif month == 12 and day >= 18 and day <= 24 then
     Christmas.ms_PricePoolName = "Christmas2023-3"
     Christmas.ms_PricePoolEnd = 1671987600
     Christmas.ms_PricePoolPrices = {
-        {"money", 150000}, 
-        {"vehicle", 521},
-        
-        {"money", 150000},
-        {"vehicle", 587}, 
-        
-        {"money", 150000},
+        {"money", 50000}, 
+        {"vehicle", 560},
         {"VIP", 1}
     }
-elseif (month == 12 and day >= 26) or (month == 1 and day <= 1) then
+elseif month == 12 and day >= 25 and day <= 31 then
     Christmas.ms_PricePoolName = "Christmas2023-4"
     Christmas.ms_PricePoolEnd = 1672592400
     Christmas.ms_PricePoolPrices = {
-        {"money", 150000}, 
-        {"vehicle", 434}, 
-        
-        {"money", 150000}, 
-        {"vehicle", 534},
-
-        {"money", 150000}, 
+        {"money", 50000}, 
+        {"vehicle", 559}, 
         {"VIP", 1}
     }
 end
