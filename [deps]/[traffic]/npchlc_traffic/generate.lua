@@ -56,7 +56,7 @@ function updateSquarePopulations()
 
 	for player,exists in pairs(players) do
 		local x,y = getElementPosition(player)
-		local dim = getElementDimension(player)
+		local dim = 0 --getElementDimension(player)
 		x,y = math.floor(x/SQUARE_SIZE),math.floor(y/SQUARE_SIZE)
 
 		for sy = y-4,y+4 do for sx = x-4,x+4 do
@@ -303,7 +303,10 @@ function spawnTrafficInSquare(x,y,dim,trtype)
 			for nodenum = 1,4 do addRandomNodeToPedRoute(ped) end
 
 			-- VRP: avoid collisions
-			element_timers[ped][setTimer(function(ped) triggerClientEvent("vrpAvoidCollisions", resourceRoot, ped) end, 3000, 0, ped)] = true
+			element_timers[ped][setTimer(function(ped)
+				triggerClientEvent("vrpAvoidCollisions", resourceRoot, ped)
+				vrpDestroyPedsNearbyPeds(ped)
+			end, 10000, 0, ped)] = true
 
 		elseif create and trtype == "cars" then
 			local zoff = z_offset[model]/math.cos(math.rad(rx))
@@ -418,5 +421,13 @@ function despawnTrafficInSquare(x,y,dim,trtype)
 				end
 			end
 		end
+	end
+end
+
+function vrpDestroyPedsNearbyPeds(ped) -- VRP: Destroy self if too close to other peds
+	local x, y, z = getElementPosition(ped)
+	local nearbyPeds = getElementsWithinRange(x, y, z, 3, "ped")
+	if nearbyPeds[1] and isElement(nearbyPeds[1]) and getElementData(nearbyPeds[1], "npc_hlc") and nearbyPeds[1] ~= ped and not isPedDead(nearbyPeds[1]) then
+		destroyElement(ped)
 	end
 end

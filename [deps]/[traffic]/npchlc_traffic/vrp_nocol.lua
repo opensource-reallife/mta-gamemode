@@ -1,12 +1,8 @@
-function avoidCollisions(ped) -- VRP: Avoid collisions by disabling collisions with nearby objects and peds
+function avoidCollisions(ped) -- VRP: Avoid collisions by disabling collisions with nearby objects and deleting peds too near to each other
 	local x, y, z = getElementPosition(ped)
-	local nearbyObjects = getElementsWithinRange(x, y, z, 10, "object")
+	local nearbyObjects = getElementsWithinRange(x, y, z, 30, "object")
 	for i, obj in ipairs(nearbyObjects) do
 		setElementCollidableWith(ped, obj, false)
-	end
-	local nearbyPeds = getElementsWithinRange(x, y, z, 10, "ped")
-	for i, ped2 in ipairs(nearbyPeds) do
-		setElementCollidableWith(ped, ped2, false)
 	end
 end
 
