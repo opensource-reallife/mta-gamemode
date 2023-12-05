@@ -20,11 +20,6 @@ function ArmsPackage:create()
     local distance = (self.m_Position - self.m_Destination):getLength()
     local time = distance*(60/100)*1000
     local boxId, flyingId, scaleX, scaleY, scaleZ = 2919, 2903, 0.5, 0.5, 0.5
-    if self.m_FactionType == "State" then
-        boxId = 2358
-        flyingId = boxId
-        scaleX, scaleY, scaleZ = 1.6, 1.8, 2.3
-    end
     
     self.m_Object = createObject(flyingId, self.m_Position)
     self.m_Object:setScale(scaleX, scaleY, scaleZ)

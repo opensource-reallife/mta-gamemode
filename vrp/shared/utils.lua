@@ -139,6 +139,22 @@ function table.copy(tab)
 	return temp
 end
 
+function table.merge(t1, t2)
+    local mergedTable = {}
+
+    -- Copy elements from t1 to mergedTable
+    for k, v in pairs(t1) do
+        mergedTable[k] = v
+    end
+
+    -- Copy elements from t2 to mergedTable (overwrite if keys exist)
+    for k, v in pairs(t2) do
+        mergedTable[k] = v
+    end
+
+    return mergedTable
+end
+
 function table.reverse(tab)
     local reversedTable = {}
     local itemCount = #tab

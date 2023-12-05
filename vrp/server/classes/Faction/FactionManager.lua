@@ -258,7 +258,7 @@ function FactionManager:sendInfosToClient(client)
 			end
 		end
 	else
-		wpn = faction.m_ValidWeapons
+		wpn = table.merge(faction.m_ValidWeapons, faction.m_SpecialWeapons["Weapons"])
 	end
 
 	if faction then --use triggerLatentEvent to improve serverside performance

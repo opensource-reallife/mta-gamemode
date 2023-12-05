@@ -122,8 +122,8 @@ function PermissionsManager:Event_requestPlayerPermissionsList(permissionsType, 
 			return 
 		end
 		if not instance:isPlayerMember(playerId) then return end
-		
-		local weapons = table.copy(instance.m_ValidWeapons)
+
+		local weapons = table.merge(instance.m_ValidWeapons, instance.m_SpecialWeapons["Weapons"])
 
 		if instance:isEvilFaction() then
 			for i, v in pairs(factionWeaponDepotInfo) do
