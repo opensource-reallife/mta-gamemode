@@ -2303,12 +2303,6 @@ msgstr "You're already spinning a wheel of fortune."
 msgid "Das Glücksrad wird gerade von %s verwendet."
 msgstr "The wheel of fortune is just used by %s."
 
-msgid "Du hast 2 Zuckerstangen gewonnen!"
-msgstr "You won two candy canes!"
-
-msgid "Du hast 2 Tassen Glühwein gewonnen!"
-msgstr "You won two cups of mulled wine!"
-
 msgid "Du hast eine Weihnachtsmütze gewonnen! Ho ho ho!"
 msgstr "You won a Christmas hat! Ho ho ho!"
 
@@ -4403,14 +4397,26 @@ msgstr "Bindings (Radio)"
 msgid "öffnet ein Päckchen..."
 msgstr "opens a present..."
 
-msgid "Du hast im Päckchen eine Zuckerstange gefunden!"
-msgstr "You found a sugar cane inside the present!"
+msgid "Du hast im Päckchen eine leckere Zuckerstange gefunden!"
+msgstr "You found a tasty sugar cane inside the present!"
 
-msgid "Du hast im Päckchen zwei Zuckerstangen gefunden!"
-msgstr "You found two sugar canes inside the present!"
+msgid "Du hast im Päckchen %s leckere Zuckerstangen gefunden!"
+msgstr "You found %s tasty sugar canes inside the present!"
 
 msgid "Leider war das Päckchen leer!"
 msgstr "Unfortunately the present was empty!"
 
 msgid "Kino"
 msgstr "Cinema"
+
+msgid "Du hast eine Tasse Glühwein gewonnen!"
+msgstr "You won a cup of mulled wine!
+
+msgid "Du hast ein paar Lebkuchen gewonnen!"
+msgstr "You won some gingerbread!
+
+msgid "Du hast ein Päckchen gewonnen!"
+msgstr "You won a present!"
+
+msgid "Du hast 3 Gramm Weed gewonnen!"
+msgstr "You won 3 grams of weed!"

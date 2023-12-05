@@ -75,38 +75,46 @@ function WheelOfFortune:start(player)
 end
 
 function WheelOfFortune:givePrice(player, type)
-    if type == "Zuckerstange" then
-        player:getInventory():giveItem("Zuckerstange", 2)
-        player:sendSuccess(_("Du hast 2 Zuckerstangen gewonnen!", player))
+    if type == "Päckchen" then
+        player:getInventory():giveItem("Päckchen", 1)
+        player:sendSuccess(_("Du hast ein Päckchen gewonnen!", player))
     elseif type == "Gluehwein" then
-        player:getInventory():giveItem("Gluehwein", 2)
-        player:sendSuccess(_("Du hast 2 Tassen Glühwein gewonnen!", player))
+        player:getInventory():giveItem("Gluehwein", 1)
+        player:sendSuccess(_("Du hast eine Tasse Glühwein gewonnen!", player))
+    elseif type == "Lebkuchen" then
+        player:getInventory():giveItem("Lebkuchen", 1)
+        player:sendSuccess(_("Du hast ein paar Lebkuchen gewonnen!", player))
+    elseif type == "Punkte" then
+        player:givePoints(25)
     elseif type == "500$" then
         self.m_BankAccountServer:transferMoney(player, 500, "Glücksrad-Gewinn", "Gameplay", "WheelOfFortune")
     elseif type == "1000$" then
         self.m_BankAccountServer:transferMoney(player, 1000, "Glücksrad-Gewinn", "Gameplay", "WheelOfFortune")
-    elseif type == "10000$" then
-        self.m_BankAccountServer:transferMoney(player, 10000, "Glücksrad-Gewinn", "Gameplay", "WheelOfFortune")
+    elseif type == "2500$" then
+        self.m_BankAccountServer:transferMoney(player, 2500, "Glücksrad-Gewinn", "Gameplay", "WheelOfFortune")
     elseif type == "Muetze" then
         player:getInventory():giveItem("Weihnachtsmütze", 1)
         player:sendSuccess(_("Du hast eine Weihnachtsmütze gewonnen! Ho ho ho!", player))
+    elseif type == "Weed" then
+        player:getInventory():giveItem("Weed", 3)
+        player:sendSuccess(_("Du hast 3 Gramm Weed gewonnen!", player))
     end
 end
 
 WheelOfFortune.WinRotations = {
-    [1]="Zuckerstange",
-    [2]="Gluehwein",
-    [3]="500$",
-    [4]="Zuckerstange",
-    [5]="Gluehwein",
+    [1]="Päckchen",
+    [2]="Punkte",
+    [3]="Lebkuchen",
+    [4]="Päckchen",
+    [5]="Punkte",
     [6]="Muetze",
     [7]="1000$",
-    [8]="Gluehwein",
-    [9]="Zuckerstange",
+    [8]="Punkte",
+    [9]="Päckchen",
     [10]="500$",
-    [11]="Gluehwein",
-    [12]="Muetze",
-    [13]="1000$",
-    [14]="Zuckerstange",
-    [15]="10000$",
+    [11]="Punkte",
+    [12]="Weed",
+    [13]="Gluehwein",
+    [14]="Päckchen",
+    [15]="2500$",
 }
