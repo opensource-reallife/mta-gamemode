@@ -9,7 +9,7 @@ MTAFixes = inherit(Singleton)
 
 function MTAFixes:constructor()
 	self:dft_pathnode_teleport()
-	self:fixRunSpeedBug()
+	--self:fixRunSpeedBug()
 	--bindKey("steer_forward", "down", bind(self.fixBikeSpeedBug, self))
 	bindKey("horn", "down", bind(self.fixHydraulicsOxygenBug, self))
 end
