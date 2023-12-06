@@ -659,6 +659,8 @@ function DatabasePlayer:setWeaponLevel(level)
 		for _, stat in ipairs({69, 70, 71, 72, 74, 76, 77, 78}) do
 			if stat == 69 then
 				setPedStat(self, stat, self.m_WeaponLevel*90)
+			elseif self.m_WeaponLevel == 9 then
+				setPedStat(self, stat, 1000)
 			else
 		  		setPedStat(self, stat, self.m_WeaponLevel*100)
 			end
