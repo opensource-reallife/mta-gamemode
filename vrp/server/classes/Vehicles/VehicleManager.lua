@@ -942,7 +942,7 @@ function VehicleManager:Event_vehiclePark()
 				return
 			end
 
-			if not client:getRank() >= ADMIN_RANK_PERMISSION["parkVehicle"] then
+			if not (client:getRank() >= ADMIN_RANK_PERMISSION["parkVehicle"]) then
 				if (instanceof(source, GroupVehicle) and not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "vehiclePark")) then
 					client:sendError(_("Du bist nicht berechtigt Gruppenfahrzeuge zu parken!", client))
 					return
