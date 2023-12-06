@@ -6,7 +6,7 @@
 -- *
 -- ****************************************************************************
 ChristmasTruckManager = inherit(Singleton)
-ChristmasTruckManager.MinPlayers = 3
+ChristmasTruckManager.MinPlayers = 2
 ChristmasTruckManager.Price = 15000
 ChristmasTruckManager.MaxPresents = 32
 ChristmasTruckManager.MoneyBonusPerPresent = 50
