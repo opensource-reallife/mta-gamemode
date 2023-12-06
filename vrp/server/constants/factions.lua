@@ -83,8 +83,9 @@ factionCarColors[1] = {["r"] = 0,["g"] = 0,["b"] = 0, ["r1"] = 255,["g1"] = 255,
 factionSkins[1] = {[93]=true,[265]=true, [266]=true, [267]=true,[280]=true,[281]=true,[282]=true, [283]=true, [284]=true, [288]=true,[285]=true}
 factionWeapons[1] = {[3]=true,[22]=true,[24]=true, [25]=true, [29]=true, [31]=true}
 factionSpecialWeapons[1] = {
-							["Weapons"] = {[17]=true, [27]=true, [34]=true, [44]=true, [45]=true, }
-						}
+	["Weapons"] = {[17]=true, [27]=true, [34]=true, [44]=true, [45]=true},
+	["Equipment"] = {},
+}
 factionWTDestination[1] = Vector3(2741.90, -2405.60, 12.6)
 factionSpawnpoint[1] = {Vector3(228.09, 110.949, 1003.219), 10, 0}
 factionAirDropPoint[1] = Vector3(281.39, 2501.79, 16.48)
@@ -118,8 +119,9 @@ factionCarColors[2] = {["r"] = 0,["g"] = 0,["b"] = 0, ["r1"] = 0,["g1"] = 0,["b1
 factionSkins[2] = {[163]=true, [164]=true, [165]=true,[166]=true,[285]=true,[286]=true,[211]=true,[295]=true}
 factionWeapons[2] = {[3]=true,[22]=true,[24]=true, [25]=true, [29]=true, [31]=true}
 factionSpecialWeapons[2] = {
-							["Weapons"] = {[17]=true, [27]=true, [34]=true, [44]=true, [45]=true, }
-						}
+	["Weapons"] = {[17]=true, [27]=true, [34]=true, [44]=true, [45]=true},
+	["Equipment"] = {},
+}
 factionWTDestination[2] = Vector3(2741.90, -2405.60, 12.6)
 factionSpawnpoint[2] = {Vector3(1223.51, -1813.49, 16.59), 0, 0}
 factionAirDropPoint[2] = Vector3(281.39, 2501.79, 16.48)
@@ -154,8 +156,9 @@ factionCarColors[3] = {["r"] = 110,["g"] = 95,["b"] = 73, ["r1"] = 110,["g1"] = 
 factionSkins[3] = {[73]=true,[191]=true,[287]=true, [257]=true,[312]=true, [285]=true}
 factionWeapons[3] = {[6]=true, [22]=true, [24]=true, [25]=true, [29]=true, [31]=true}
 factionSpecialWeapons[3] = {
-							["Weapons"] = {[16]=true, [17]=true, [27]=true, [34]=true, [36]=true, [44]=true, [45]=true}
-						}
+	["Weapons"] = {[16]=true, [17]=true, [27]=true, [34]=true, [36]=true, [44]=true, [45]=true},
+	["Equipment"] = {},
+}
 factionWTDestination[3] = Vector3(2741.90, -2405.60, 12.6)
 factionSpawnpoint[3] = {Vector3(221.49, 1865.97, 13.14), 0, 0}
 factionAirDropPoint[3] = Vector3(281.39, 2501.79, 16.48)
@@ -188,6 +191,10 @@ factionColors[4] = {["r"] = 255, ["g"] = 120, ["b"] = 0}
 factionCarColors[4] = {["r"] = 178, ["g"] = 35, ["b"] = 33, ["r1"] = 255, ["g1"] = 255, ["b1"] = 255}
 factionSkins[4] = {[27]=true, [277]=true, [278]=true, [279]=true,[70]=true, [71]=true, [274]=true, [275]=true, [276]=true}
 factionWeapons[4] = {[9]=true}
+factionSpecialWeapons[4] = {
+	["Weapons"] = {},
+	["Equipment"] = {},
+}
 factionSpawnpoint[4] = {Vector3(1076.01, -1380.27, 13.71), 0, 0}
 factionNavigationpoint[4] = Vector3(1095.01, -1337.27, 13.71)
 
@@ -206,7 +213,7 @@ factionCarColors[5] = {["r"] = 75,["g"] = 75,["b"] = 75, ["r1"] = 75,["g1"] = 75
 factionSkins[5] = {[111]=true, [112]=true, [113]=true, [124]=true, [125]=true, [126]=true, [127]=true,[237]=true,[272]=true}
 factionWeapons[5] = {[7]=true, [22]=true, [24]=true, [25]=true, [29]=true, [30]=true, [31]=true, [33]=true}
 factionSpecialWeapons[5] = {
-							["Weapons"] = {[16]=true, [32]=true, [34]=true, [35]=true, [44]=true, [45]=true }, 
+							["Weapons"] = {[16]=true, [32]=true, [34]=true, [35]=true, [44]=true, [45]=true},
 							["Equipment"] = {["Fallschirm"]=true, ["DefuseKit"]=true, ["Rauchgranate"]=true, ["Gasmaske"]=true, ["SLAM"]=true},
 						}
 evilFactionInteriorEnter[5] = Vector3(691.58, -1275.94, 13.56)
@@ -232,9 +239,9 @@ factionCarColors[6] = {["r"] = 40,["g"] = 0,["b"] = 0, ["r1"] = 40,["g1"] = 0,["
 factionSkins[6] = {[121]=true, [123]=true, [122]=true, [186]=true, [294]=true, [49]=true, [141]=true, [169]=true}
 factionWeapons[6] = {[22]=true, [24]=true, [25]=true, [29]=true, [30]=true, [31]=true, [33]=true}
 factionSpecialWeapons[6] = {
-						["Weapons"]= {[8]=true, [16]=true, [28]=true, [34]=true, [35]=true, [44]=true, [45]=true}, 
-						["Equipment"] = {["Fallschirm"]=true, ["DefuseKit"]=true, ["Rauchgranate"]=true, ["Gasmaske"]=true, ["SLAM"]=true},
-						}
+	["Weapons"]= {[8]=true, [16]=true, [28]=true, [34]=true, [35]=true, [44]=true, [45]=true}, 
+	["Equipment"] = {["Fallschirm"]=true, ["DefuseKit"]=true, ["Rauchgranate"]=true, ["Gasmaske"]=true, ["SLAM"]=true},
+}
 evilFactionInteriorEnter[6] = Vector3(1419.70, -1328.59, 13.56)
 factionWTDestination[6] = Vector3(1454.41, -1328.95, 13.38)
 factionSpawnpoint[6] = {EVIL_FACTION_SPAWN_POINT, EVIL_FACTION_SPAWN_INTERIOR, 6}
@@ -257,9 +264,9 @@ factionCarColors[7] = {["r"] = 20,["g"] = 90,["b"] = 10, ["r1"] = 20,["g1"] = 90
 factionSkins[7] = {[105]=true, [106]=true, [107]=true, [269]=true, [270]=true, [293]=true, [300]=true, [301]=true, [311]=true}
 factionWeapons[7] = {[5]=true, [22]=true, [24]=true, [25]=true, [29]=true, [30]=true, [31]=true, [33]=true}
 factionSpecialWeapons[7] = {
-							["Weapons"] = {[16]=true, [32]=true, [34]=true, [35]=true, [44]=true, [45]=true, },
-							["Equipment"] = {["Fallschirm"]=true, ["DefuseKit"]=true, ["Rauchgranate"]=true, ["Gasmaske"]=true, ["SLAM"]=true},
-						}
+	["Weapons"] = {[16]=true, [32]=true, [34]=true, [35]=true, [44]=true, [45]=true},
+	["Equipment"] = {["Fallschirm"]=true, ["DefuseKit"]=true, ["Rauchgranate"]=true, ["Gasmaske"]=true, ["SLAM"]=true},
+}
 evilFactionInteriorEnter[7] = Vector3(2522.5205078125, -1679.2890625, 15.496999740601)
 factionWTDestination[7] = Vector3(2495.0478515625,-1667.689453125,12.96682834625)
 factionSpawnpoint[7] = {EVIL_FACTION_SPAWN_POINT, EVIL_FACTION_SPAWN_INTERIOR, 7}
@@ -282,9 +289,9 @@ factionCarColors[8] = {["r"] = 110,["g"] = 20,["b"] = 150, ["r1"] = 110,["g1"] =
 factionSkins[8] = {[13]=true, [102]=true, [103]=true, [104]=true, [195]=true, [296]=true, [297]=true}
 factionWeapons[8] = {[4]=true, [22]=true, [24]=true, [25]=true, [29]=true, [30]=true, [31]=true, [33]=true}
 factionSpecialWeapons[8] = {
-							["Weapons"] = {[16]=true, [28]=true, [34]=true, [35]=true, [44]=true, [45]=true,}, 
-							["Equipment"] = {["Fallschirm"]=true, ["DefuseKit"]=true, ["Rauchgranate"]=true, ["Gasmaske"]=true, ["SLAM"]=true}
-						}
+	["Weapons"] = {[16]=true, [28]=true, [34]=true, [35]=true, [44]=true, [45]=true,}, 
+	["Equipment"] = {["Fallschirm"]=true, ["DefuseKit"]=true, ["Rauchgranate"]=true, ["Gasmaske"]=true, ["SLAM"]=true}
+}
 evilFactionInteriorEnter[8] = Vector3(2232.70, -1436.40, 24.90)
 factionWTDestination[8] = Vector3(2212.42, -1435.53, 21.7)
 factionSpawnpoint[8] = {EVIL_FACTION_SPAWN_POINT, EVIL_FACTION_SPAWN_INTERIOR, 8}
@@ -307,9 +314,9 @@ factionCarColors[9] = {["r"] = 150,["g"] = 100,["b"] = 100, ["r1"] = 150,["g1"] 
 factionSkins[9] = {[100]=true, [181]=true, [242]=true, [247]=true, [248]=true, [291]=true, [298]=true, [299]=true}
 factionWeapons[9] = {[22]=true, [24]=true, [25]=true, [29]=true, [30]=true, [31]=true, [33]=true}
 factionSpecialWeapons[9] = {
-							["Weapons"] = {[16]=true, [18]=true, [26]=true, [34]=true, [35]=true, [44]=true, [45]=true},
-							["Equipment"] = {["Fallschirm"]=true, ["DefuseKit"]=true, ["Rauchgranate"]=true, ["Gasmaske"]=true, ["SLAM"]=true},
-						}
+	["Weapons"] = {[16]=true, [18]=true, [26]=true, [34]=true, [35]=true, [44]=true, [45]=true},
+	["Equipment"] = {["Fallschirm"]=true, ["DefuseKit"]=true, ["Rauchgranate"]=true, ["Gasmaske"]=true, ["SLAM"]=true},
+}
 evilFactionInteriorEnter[9] =  Vector3(681.44, -444.98, 16.34)
 factionWTDestination[9] =   Vector3(659.08, -455.65, 16.34)
 factionSpawnpoint[9] = {EVIL_FACTION_SPAWN_POINT, EVIL_FACTION_SPAWN_INTERIOR, 9}
@@ -332,9 +339,9 @@ factionCarColors[10] = {["r"] = 255,["g"] = 252,["b"] = 170, ["r1"] = 255,["g1"]
 factionSkins[10] = {[108]=true, [110]=true, [114]=true, [115]=true, [116]=true, [173]=true,[174]=true,[175]=true,[292]=true,[307]=true}
 factionWeapons[10] = {[1]=true,[22]=true, [24]=true, [25]=true, [29]=true, [30]=true, [31]=true, [33]=true}
 factionSpecialWeapons[10] = {
-							["Weapons"] = {[16]=true, [28]=true, [34]=true, [35]=true, [44]=true, [45]=true,},
-							["Equipment"] = {["Fallschirm"]=true, ["DefuseKit"]=true, ["Rauchgranate"]=true, ["Gasmaske"]=true, ["SLAM"]=true},
-						}
+	["Weapons"] = {[16]=true, [28]=true, [34]=true, [35]=true, [44]=true, [45]=true,},
+	["Equipment"] = {["Fallschirm"]=true, ["DefuseKit"]=true, ["Rauchgranate"]=true, ["Gasmaske"]=true, ["SLAM"]=true},
+}
 evilFactionInteriorEnter[10] =Vector3(2786.59, -1952.59, 13.55)
 factionWTDestination[10] = Vector3(2768.62, -1944.73, 13.36-0.7)
 factionSpawnpoint[10] = {EVIL_FACTION_SPAWN_POINT, EVIL_FACTION_SPAWN_INTERIOR, 10}
@@ -357,9 +364,9 @@ factionCarColors[11] = {["r"] = 40,["g"] = 0,["b"] = 0, ["r1"] = 40,["g1"] = 0,[
 factionSkins[11] = {[49]=true, [118]=true, [120]=true, [122]=true, [123]=true, [141]=true, [169]=true,[294]=true}
 factionWeapons[11] = {[22]=true, [24]=true, [25]=true, [29]=true, [30]=true, [31]=true, [33]=true}
 factionSpecialWeapons[11] = {
-							["Weapons"] = {[8]=true, [16]=true, [28]=true, [34]=true, [35]=true, [44]=true, [45]=true,},
-							["Equipment"] = {["Fallschirm"]=true, ["DefuseKit"]=true, ["Rauchgranate"]=true, ["Gasmaske"]=true, ["SLAM"]=true},
-						}
+	["Weapons"] = {[8]=true, [16]=true, [28]=true, [34]=true, [35]=true, [44]=true, [45]=true},
+	["Equipment"] = {["Fallschirm"]=true, ["DefuseKit"]=true, ["Rauchgranate"]=true, ["Gasmaske"]=true, ["SLAM"]=true},
+}
 evilFactionInteriorEnter[11] = Vector3(1923.46, 959.96, 11.0)
 factionWTDestination[11] = Vector3(1912.89, 935.21, 9.7)
 factionSpawnpoint[11] = {EVIL_FACTION_SPAWN_POINT, EVIL_FACTION_SPAWN_INTERIOR, 11}
@@ -383,9 +390,9 @@ factionCarColors[12] = {["r"] = 10,["g"] = 10,["b"] = 10, ["r1"] = 10,["g1"] = 1
 factionSkins[12] = {[111]=true, [112]=true, [113]=true, [124]=true, [125]=true, [126]=true, [127]=true,[237]=true,[272]=true}
 factionWeapons[12] = {[4]=true, [22] =true, [24]=true, [25]=true, [29]=true, [30]=true, [31]=true, [33]=true}
 factionSpecialWeapons[12] = {
-							["Weapons"] = {[16]=true, [26]=true, [34]=true, [35]=true, [44]=true, [45]=true,},
-							["Equipment"] = {["Fallschirm"]=true, ["DefuseKit"]=true, ["Rauchgranate"]=true, ["Gasmaske"]=true, ["SLAM"]=true},
-						}
+	["Weapons"] = {[16]=true, [26]=true, [34]=true, [35]=true, [44]=true, [45]=true},
+	["Equipment"] = {["Fallschirm"]=true, ["DefuseKit"]=true, ["Rauchgranate"]=true, ["Gasmaske"]=true, ["SLAM"]=true},
+}
 evilFactionInteriorEnter[12] = Vector3(283.75, -1181.02, 81.00)
 factionWTDestination[12] = Vector3(371.22, -1154.53, 78)
 --factionWTDestination[5] = Vector3(-1855.22, 1409.12, 7.19) --TESTING
@@ -408,6 +415,10 @@ factionColors[13] = {["r"] = 166, ["g"] = 117, ["b"] = 82}
 factionCarColors[13] = {["r"] = 166, ["g"] = 117, ["b"] = 82, ["r1"] = 166, ["g1"] = 117, ["b1"] = 82}
 factionSkins[13] = {[111]=true, [112]=true, [113]=true, [124]=true, [125]=true, [126]=true, [127]=true, [237]=true, [272]=true}
 factionWeapons[13] = {[4]=true, [24]=true, [25]=true, [26]=true, [29]=true, [30]=true, [31]=true, [33]=true, [34]=true}
+factionSpecialWeapons[13] = {
+	["Weapons"] = {},
+	["Equipment"] = {},
+}
 factionSpawnpoint[13] = {Vector3(0, 0, 0), 0, 0}
 factionNavigationpoint[13] = Vector3(0, 0, 0)
 
