@@ -9,7 +9,7 @@ MTAFixes = inherit(Singleton)
 
 function MTAFixes:constructor()
 	self:dft_pathnode_teleport()
-	--self:fixRunSpeedBug()
+	self:fixRunSpeedBug()
 	--bindKey("steer_forward", "down", bind(self.fixBikeSpeedBug, self))
 	bindKey("horn", "down", bind(self.fixHydraulicsOxygenBug, self))
 end
@@ -56,9 +56,8 @@ function MTAFixes:fixRunSpeedBug()
 	end)
 
 	bindKey("forwards", "down", function()
-		local isBlocking = self.m_RunSpeedBugIsAiming == self.m_RunSpeedBugIsJumping
-
-		if isBlocking and self.m_RunSpeedBugIsSprinting and self.m_RunSpeedBugIsMovingLeft or self.m_RunSpeedBugIsMovingRight then
+		if self.m_RunSpeedBugIsAiming and self.m_RunSpeedBugIsJumping and self.m_RunSpeedBugIsSprinting and (self.m_RunSpeedBugIsMovingLeft or self.m_RunSpeedBugIsMovingRight) then
+			WarningBox:new(_"Die Nutzung des Laufbugs ist nicht erlaubt!")
 			toggleAllControls(false)
 			Timer(function() toggleAllControls(true) end, 300, 1)
 		end

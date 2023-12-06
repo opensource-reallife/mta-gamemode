@@ -5027,3 +5027,6 @@ msgstr "Present"
 
 msgid "Nettes Päckchen vom Weihnachtsmann"
 msgstr "A nice present from Santa Claus"
+
+msgid "Die Nutzung des Laufbugs ist nicht erlaubt!"
+msgstr "The use of the run speed bug is not allowed!"
