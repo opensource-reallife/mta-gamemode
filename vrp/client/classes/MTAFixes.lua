@@ -15,6 +15,7 @@ function MTAFixes:constructor()
 end
 
 function MTAFixes:fixRunSpeedBug()
+	self.m_RunSpeedBugIsMovingLeft = false
 	self.m_RunSpeedBugIsMovingRight = false
 	self.m_RunSpeedBugIsSprinting = false
 	self.m_RunSpeedBugIsAiming = false
@@ -40,6 +41,13 @@ function MTAFixes:fixRunSpeedBug()
 		self.m_RunSpeedBugIsMovingRight = false
 	end)
 
+	bindKey("left", "down", function()
+		self.m_RunSpeedBugIsMovingLeft = true
+	end)
+	bindKey("left", "up", function()
+		self.m_RunSpeedBugIsMovingLeft = false
+	end)
+
 	bindKey("sprint", "down", function()
 		self.m_RunSpeedBugIsSprinting = true
 	end)
@@ -50,7 +58,7 @@ function MTAFixes:fixRunSpeedBug()
 	bindKey("forwards", "down", function()
 		local isBlocking = self.m_RunSpeedBugIsAiming == self.m_RunSpeedBugIsJumping
 
-		if isBlocking and self.m_RunSpeedBugIsMovingRight and self.m_RunSpeedBugIsSprinting then
+		if isBlocking and self.m_RunSpeedBugIsSprinting and self.m_RunSpeedBugIsMovingLeft or self.m_RunSpeedBugIsMovingRight then
 			toggleAllControls(false)
 			Timer(function() toggleAllControls(true) end, 300, 1)
 		end
