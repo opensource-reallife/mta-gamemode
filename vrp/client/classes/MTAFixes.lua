@@ -9,8 +9,52 @@ MTAFixes = inherit(Singleton)
 
 function MTAFixes:constructor()
 	self:dft_pathnode_teleport()
+	self:fixRunSpeedBug()
 	--bindKey("steer_forward", "down", bind(self.fixBikeSpeedBug, self))
 	bindKey("horn", "down", bind(self.fixHydraulicsOxygenBug, self))
+end
+
+function MTAFixes:fixRunSpeedBug()
+	self.m_RunSpeedBugIsMovingRight = false
+	self.m_RunSpeedBugIsSprinting = false
+	self.m_RunSpeedBugIsAiming = false
+
+	bindKey("aim_weapon", "down", function()
+		self.m_RunSpeedBugIsAiming = true
+	end)
+	bindKey("aim_weapon", "up", function()
+		self.m_RunSpeedBugIsAiming = false
+	end)
+
+	bindKey("jump", "down", function()
+		self.m_RunSpeedBugIsJumping = true
+	end)
+	bindKey("jump", "up", function()
+		self.m_RunSpeedBugIsJumping = false
+	end)
+
+	bindKey("right", "down", function()
+		self.m_RunSpeedBugIsMovingRight = true
+	end)
+	bindKey("right", "up", function()
+		self.m_RunSpeedBugIsMovingRight = false
+	end)
+
+	bindKey("sprint", "down", function()
+		self.m_RunSpeedBugIsSprinting = true
+	end)
+	bindKey("sprint", "up", function()
+		self.m_RunSpeedBugIsSprinting = false
+	end)
+
+	bindKey("forwards", "down", function()
+		local isBlocking = self.m_RunSpeedBugIsAiming == self.m_RunSpeedBugIsJumping
+
+		if isBlocking and self.m_RunSpeedBugIsMovingRight and self.m_RunSpeedBugIsSprinting then
+			toggleAllControls(false)
+			Timer(function() toggleAllControls(true) end, 300, 1)
+		end
+	end)
 end
 
 function MTAFixes:dft_pathnode_teleport()
