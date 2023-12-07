@@ -2018,10 +2018,10 @@ msgid "Du hast die %s-Anfrage von %s abgelehnt!"
 msgstr "You have rejected the %s request from %s!"
 
 msgid ""
-"Du hast ein eXo-Logo gefunden!\n"
+"Du hast ein Sammelobjekt gefunden!\n"
 "Dafür erhälst du %s Punkte!"
 msgstr ""
-"You found an eXo logo!\n"
+"You found an collectable!\n"
 "For this you will receive %s Points!"
 
 msgid "Du hast die Lobby verlassen!"
