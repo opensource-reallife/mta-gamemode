@@ -104,7 +104,7 @@ function JewelryStoreRobberyManager:constructor()
 	self.m_ShopPed:setFrozen(true)
     self.m_ShopPed.onTargetted = bind(self.Event_PedTargetted, self)
 
-	self.m_MinJewelryRobberyStateMembers = 3
+	self.m_MinJewelryRobberyStateMembers = 2
 
 	self.m_Players = {}
 	setmetatable(self.m_Players, { __mode = "v" })

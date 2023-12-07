@@ -63,7 +63,7 @@ end
 function ShopVehicleRobManager:Event_onVehicleSteal()
     if client:getGroup() then
 		if client:getGroup():getType() == "Gang" then
-			if not (client:getFaction() and client:getFaction():isStateFaction()) then
+			--if not (client:getFaction() and client:getFaction():isStateFaction()) then
 				if not client:isFactionDuty() then
 					if not timestampCoolDown(SHOP_VEHICLE_ROB_LAST_ROB, SHOP_VEHICLE_ROB_PAUSE) then
 						client:sendError(_("Der nächste Autohaus-Überfall ist am/um möglich: %s!", client, getOpticalTimestamp(SHOP_VEHICLE_ROB_LAST_ROB+SHOP_VEHICLE_ROB_PAUSE)))
@@ -86,9 +86,9 @@ function ShopVehicleRobManager:Event_onVehicleSteal()
 				else
 					client:sendError(_("Du bist im Dienst, du darfst keinen Überfall machen!", client))
 				end
-			else
-				client:sendError(_("Du bist Polizist, du darfst keinen Überfall machen!", client))
-			end
+			--else
+			--	client:sendError(_("Du bist Polizist, du darfst keinen Überfall machen!", client))
+			--end
 		else
 			client:sendError(_("Du bist Mitglied einer privaten Firma! Nur Gangs können überfallen!", client))
 		end
