@@ -10,11 +10,11 @@ WeaponTruck = inherit(Object)
 WeaponTruck.Time = 20*60*1000 -- in ms
 WeaponTruck.spawnPos = {
 	["evil"] = {-1869.58, 1430.02, 7.62, 224},
-	["state"] = {120.23, 1899.40, 18.97, 0}
+	["state"] = {2745.73, -2465.86, 13.97, 270}
 }
 WeaponTruck.loadMarkerPos = {
 	["evil"] = Vector3(-1873.56, 1434.15, 7.18),
-	["state"] = Vector3(120.26, 1894.21, 18.42)
+	["state"] = Vector3(2740.16, -2465.79, 13.65)
 }
 WeaponTruck.attachCords = {
 	Vector3(0.7, -0.1, 0.1), Vector3(-0.7, -0.1, 0.1), Vector3(0.7, -1.4, 0.1), Vector3(-0.7, -1.4, 0.1),
@@ -28,10 +28,10 @@ WeaponTruck.boxSpawnCords = {
 		Vector3(-1873.11, 1413, 6.2), Vector3(-1873.11, 1413, 6.9)
 				},
 	["state"] = {
-		Vector3(124.81, 1894.03, 17.5), Vector3(124.81, 1894.03, 18.2),
-		Vector3(123.61, 1897.85, 17.5), Vector3(123.61, 1897.85, 18.2),
-		Vector3(125.19, 1896.54, 17.5), Vector3(125.19, 1896.54, 18.2),
-		Vector3(125.37, 1892.65, 17.5), Vector3(125.37, 1892.65, 18.2)
+		Vector3(2734.53, -2470.60, 12.65), Vector3(2736.73, -2465.89, 12.65),
+		Vector3(2734.70, -2468.54, 12.65), Vector3(2735.11, -2464.25, 12.65),
+		Vector3(2735.08, -2466.66, 12.65), Vector3(2734.78, -2462.45, 12.65),
+		Vector3(2736.56, -2468.90, 12.65), Vector3(2736.71, -2462.69, 12.65)
 				}
 }
 
@@ -354,7 +354,12 @@ end
 function WeaponTruck:addDestinationMarker(faction, type)
 	local markerId = #self.m_DestinationMarkers+1
 	local color = factionColors[faction:getId()]
-	local destination = factionWTDestination[faction:getId()]
+	local destination
+	if faction:isStateFaction() and self.m_Type == "state" then
+		destination = factionSWTDestination[faction:getId()]
+	else
+		destination = factionWTDestination[faction:getId()]
+	end
 	self.m_DestinationMarkers[markerId] = createMarker(destination,"cylinder",8, color.r, color.g, color.b, 100)
 	self.m_DestinationMarkers[markerId].type = type
 	self.m_DestinationMarkers[markerId].faction = faction
