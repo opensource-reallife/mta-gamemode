@@ -8,76 +8,24 @@
 POParser = inherit(Object)
 
 function POParser:constructor(poPath)
-	self.m_Strings = {}
+    self.m_Strings = {}
 
-	local file = File.Open(poPath, true)
-	local lines = split(assert(file:getContent(), "Reading the translation file failed"), "\n")
-	--[[
-	local lastKey
-	for i, line in ipairs(lines) do
-		local pos = line:find(' ')
-		if pos then
-			local instruction = line:sub(1, pos-1)
-			local argument = line:sub(pos+1)
-			
-			if instruction == "msgid" then
-				-- Remove ""
-				argument = argument:sub(2, #argument-2)
-				
-				self.m_Strings[argument] = false
-				lastKey = argument
-			elseif instruction == "msgstr" then
-				-- Remove ""
-				argument = argument:sub(2, #argument-2)
-				self.m_Strings[lastKey] = argument
-			end
-		end
-	end
-	]]
+    local file = fileOpen(poPath)
+    if not file then
+        outputDebug("File could not be opened: " .. poPath)
+        return false
+    end
 
-	local lastKey
-	local lastInstruction
-	for i, line in ipairs(lines) do
-		if line:sub(0, 5) == "msgid" then
-			lastInstruction = line:sub(0, 5)
-			if line:sub(-1, -1) == "\r" then
-				lastKey = line:sub(8, -3)
-			else
-				lastKey = line:sub(8, -2)
-			end
-			self.m_Strings[lastKey] = false
-		elseif line:sub(0, 6) == "msgstr" then
-			local tmp = ""
-			lastInstruction = line:sub(0, 6)
-			if line:sub(-1, -1) == "\r" then
-				tmp = line:sub(9, -3)
-			else
-				tmp = line:sub(9, -2)
-			end
-			self.m_Strings[lastKey] = tmp
-		elseif line:sub(0, 1) == "\"" then
-			local value
-			if line:sub(-1, -1) == "\r" then
-				value = line:sub(2, -3)
-			else
-				value = line:sub(2, -2)
-			end
-			
-			if lastKey then
-				if self.m_Strings[lastKey] then
-					self.m_Strings[lastKey] = self.m_Strings[lastKey] .. value
-				else
-					self.m_Strings[lastKey] = value
-				end
-			end
-		else
-			lastKey = nil
-			lastInstruction = nil
-		end
-	end
+    local fileContent = fileRead(file, fileGetSize(file))
 
+    for msgid, msgstr in fileContent:gmatch('msgid "(.-)"%s+msgstr "(.-)"') do
+        msgid = msgid:gsub("\\n", "\n")
+        msgstr = msgstr:gsub("\\n", "\n")
 
-	file:close()
+        self.m_Strings[msgid] = msgstr
+    end
+
+    fileClose(file)
 end
 
 function POParser:translate(str)
