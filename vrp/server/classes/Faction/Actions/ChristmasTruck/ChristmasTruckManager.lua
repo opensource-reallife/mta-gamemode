@@ -115,7 +115,7 @@ function ChristmasTruckManager:startChristmasTruck(player)
 		if faction:isEvilFaction() then
 			if player:isFactionDuty() then
 				if FactionState:getSingleton():countPlayers() < CHRISTMASTRUCK_MIN_MEMBERS then
-					player:sendError(_("Es müssen mindestens % Staatsfraktionisten online sein!", player, CHRISTMASTRUCK_MIN_MEMBERS))
+					player:sendError(_("Es müssen mindestens %d Staatsfraktionisten online sein!", player, CHRISTMASTRUCK_MIN_MEMBERS))
 					return
 				end
 			else
@@ -125,7 +125,7 @@ function ChristmasTruckManager:startChristmasTruck(player)
 		elseif faction:isStateFaction() then
 			if player:isFactionDuty() then
 				if FactionEvil:getSingleton():countPlayers() < CHRISTMASTRUCK_MIN_MEMBERS then
-					player:sendError(_("Es müssen mindestens % Spieler böser Fraktionen online sein!", player, CHRISTMASTRUCK_MIN_MEMBERS))
+					player:sendError(_("Es müssen mindestens %d Spieler böser Fraktionen online sein!", player, CHRISTMASTRUCK_MIN_MEMBERS))
 					return
                 end
 			else

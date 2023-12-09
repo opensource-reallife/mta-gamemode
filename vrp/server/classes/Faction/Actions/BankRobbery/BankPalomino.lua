@@ -262,7 +262,7 @@ function BankPalomino:BombArea_Place(bombArea, player)
 	end
 	
 	if FactionState:getSingleton():countPlayers() < BANKROB_MIN_MEMBERS then
-		player:sendError(_("Um den Überfall starten zu können müssen mindestens % Staatler online sein!", player, BANKROB_MIN_MEMBERS))
+		player:sendError(_("Um den Überfall starten zu können müssen mindestens %d Staatler online sein!", player, BANKROB_MIN_MEMBERS))
 		return false
 	end
 

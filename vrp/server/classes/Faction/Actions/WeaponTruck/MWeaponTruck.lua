@@ -79,7 +79,7 @@ function MWeaponTruck:Event_onWeaponTruckLoad(boxContentTable)
 		if faction:isEvilFaction() then
 			if client:isFactionDuty() then
 				if FactionState:getSingleton():countPlayers() < WEAPONTRUCK_MIN_MEMBERS["evil"] then
-					client:sendError(_("Es müssen mindestens % Staatsfraktionisten online sein!", client, WEAPONTRUCK_MIN_MEMBERS["evil"]))
+					client:sendError(_("Es müssen mindestens %d Staatsfraktionisten online sein!", client, WEAPONTRUCK_MIN_MEMBERS["evil"]))
 					return
 				end
 				self.m_CurrentType = "evil"
@@ -90,7 +90,7 @@ function MWeaponTruck:Event_onWeaponTruckLoad(boxContentTable)
 		elseif faction:isStateFaction() then
 			if client:isFactionDuty() then
 				if FactionEvil:getSingleton():countPlayers() < WEAPONTRUCK_MIN_MEMBERS["state"] then
-					client:sendError(_("Es müssen mindestens % Spieler böser Fraktionen online sein!", client, WEAPONTRUCK_MIN_MEMBERS["state"]))
+					client:sendError(_("Es müssen mindestens %d Spieler böser Fraktionen online sein!", client, WEAPONTRUCK_MIN_MEMBERS["state"]))
 					return
 				end
 				self.m_CurrentType = "state"
