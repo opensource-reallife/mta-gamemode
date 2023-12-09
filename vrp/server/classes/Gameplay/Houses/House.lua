@@ -624,9 +624,13 @@ function House:giveRobItem( player )
 		local group = player:getGroup()
 		if group and self.m_RobGroup then
 			if group == self.m_RobGroup then
-				local item = GroupHouseRob:getSingleton():getRandomItem()
-				player:meChat(true, "entdeckt etwas und versucht es einzustecken. (("..item.."))")
-				player:getInventory():giveItem("Diebesgut",1)
+				if player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty() then
+					return
+				else
+					local item = GroupHouseRob:getSingleton():getRandomItem()
+					player:meChat(true, "entdeckt etwas und versucht es einzustecken. (("..item.."))")
+					player:getInventory():giveItem("Diebesgut",1)
+				end
 			end
 		end
 	end

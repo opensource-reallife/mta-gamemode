@@ -17,8 +17,10 @@ local findItems =
 	"Tablet",
 	"Laptop",
 	"MP3-Player",
+	"iPod",
 	"Digitalkamera",
 	"Elektrokabel",
+	"Autoschlüssel",
 }
 
 local sellerPeds =
