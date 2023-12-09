@@ -908,7 +908,7 @@ function FactionState:getFullReasonFromShortcut(reason)
 	elseif string.lower(reason) == "wvk" then
         reason = "Waffenverkauf"
         amount = 2
-    elseif string.lower(reason) == "carrob" or string.lower(reason) == "auto" then
+    elseif string.lower(reason) == "svr" or string.lower(reason) == "carrob" or string.lower(reason) == "auto" then
         reason = "Autohaus-Überfall"
         amount = 3
 	elseif string.lower(reason) == "bs" or string.lower(reason) == "wn" then
@@ -929,7 +929,7 @@ function FactionState:getFullReasonFromShortcut(reason)
     elseif string.lower(reason) == "haus" or string.lower(reason) == "hr" then
         reason = "Hauseinbruch"
         amount = 3
-    elseif string.lower(reason) == "bombe" or string.lower(reason) == "	sprengstoff" or string.lower(reason) == "tnt" then
+    elseif string.lower(reason) == "bombe" or string.lower(reason) == "sprengstoff" or string.lower(reason) == "tnt" then
         reason = "Mitführen von Sprengstoff"
         amount = 3
     elseif string.lower(reason) == "raub" or string.lower(reason) == "rob" then
