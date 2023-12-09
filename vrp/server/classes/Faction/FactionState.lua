@@ -1622,7 +1622,11 @@ function FactionState:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, pl
 	local faction = client:getFaction()
 	if faction:isStateFaction() then
 		if self:isPlayerInDutyPickup(client) or wasted then
+			local group = client:getGroup()
 			if client:isFactionDuty() then
+				if group and group.m_Markers[client] and isElement(group.m_Markers[client]) then
+					group.m_Markers[client]:setSize(0.4)
+				end
 				if wasted then
 					--client:takeAllWeapons()
 					takeAllWeapons(client) -- due to attached weapons
@@ -1657,6 +1661,9 @@ function FactionState:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, pl
 					--return false
 					--client:triggerEvent("companyForceOffduty")
 					CompanyManager:getSingleton():companyForceOffduty(client)
+				end
+				if group and group.m_Markers[client] and isElement(group.m_Markers[client]) then
+					group.m_Markers[client]:setSize(0)
 				end
 				client:setFactionDuty(true)
 				client:setBadge(FACTION_STATE_BADGES[faction:getId()], ("%s %s"):format(factionBadgeId[faction:getId()][faction:getPlayerRank(client)], client:getId()), nil)

@@ -134,6 +134,9 @@ function Group:onPlayerJoin(player)
 		self.m_Markers[player]:setDimension(player:getDimension())
 		self.m_Markers[player]:setInterior(player:getInterior())
 		self.m_Markers[player]:attach(player,0,0,1.5)
+		if player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty() then
+			self.m_Markers[player]:setSize(0)
+		end
 		self.m_RefreshAttachedMarker = bind(self.refreshAttachedMarker, self)
 		self.m_RemovePlayerMarkerOnQuit = bind(self.Event_RemovePlayerMarkerOnQuit, self)
 		addEventHandler("onElementDimensionChange", player, self.m_RefreshAttachedMarker)
@@ -579,6 +582,9 @@ function Group:attachPlayerMarkers()
 		self.m_Markers[player]:setDimension(player:getDimension())
 		self.m_Markers[player]:setInterior(player:getInterior())
 		self.m_Markers[player]:attach(player,0,0,1.5)
+		if player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty() then
+			self.m_Markers[player]:setSize(0)
+		end
 		self.m_RefreshAttachedMarker = bind(self.refreshAttachedMarker, self)
 		self.m_RemovePlayerMarkerOnQuit = bind(self.Event_RemovePlayerMarkerOnQuit, self)
 		addEventHandler("onElementDimensionChange", player, self.m_RefreshAttachedMarker)
@@ -593,6 +599,9 @@ function Group:attachPlayerMarker(player)
 	self.m_Markers[player]:setDimension(player:getDimension())
 	self.m_Markers[player]:setInterior(player:getInterior())
 	self.m_Markers[player]:attach(player,0,0,1.5)
+	if player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty() then
+		self.m_Markers[player]:setSize(0)
+	end
 	self.m_RefreshAttachedMarker = bind(self.refreshAttachedMarker, self)
 	self.m_RemovePlayerMarkerOnQuit = bind(self.Event_RemovePlayerMarkerOnQuit, self)
 	addEventHandler("onElementDimensionChange", player, self.m_RefreshAttachedMarker)
