@@ -908,6 +908,9 @@ function FactionState:getFullReasonFromShortcut(reason)
 	elseif string.lower(reason) == "wvk" then
         reason = "Waffenverkauf"
         amount = 2
+	elseif string.lower(reason) == "dw" or string.lower(reason) == "dd" then
+        reason = "Drogen wegwerfen"
+        amount = 2
     elseif string.lower(reason) == "svr" or string.lower(reason) == "carrob" or string.lower(reason) == "auto" then
         reason = "Autohaus-Überfall"
         amount = 3
