@@ -175,7 +175,7 @@ function StateEvidence:Event_startEvidenceTruck()
 						client:sendError(_("In der Asservatenkammer befindet sich zu wenig Material!", client))
 					end
 				else
-					client:sendError(_("Es müssen mindestens 3 Spieler böser Fraktionen online sein!", client))
+					client:sendError(_("Es müssen mindestens % Spieler böser Fraktionen online sein!", client, EVIDENCETRUCK_MIN_MEMBERS))
 				end
 			end
 		else

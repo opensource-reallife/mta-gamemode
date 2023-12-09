@@ -20,7 +20,6 @@ function BankPalomino:constructor()
 		Vector3(1935.24, 169.98, 36.28)
 	}
 	self.ms_StateFinishMarker = Vector3(2278.23, -82.70, 25.53)
-	self.ms_MinBankrobStateMembers = DEBUG and 0 or 1
 
 	self.ms_BagSpawns = {
 		Vector3(2307.25, 17.90, 26),
@@ -262,8 +261,8 @@ function BankPalomino:BombArea_Place(bombArea, player)
 		return false
 	end
 	
-	if not DEBUG and FactionState:getSingleton():countPlayers() < 3 then
-		player:sendError(_("Um den Überfall starten zu können müssen mindestens 3 Staats-Fraktionisten online sein!", player))
+	if FactionState:getSingleton():countPlayers() < BANKROB_MIN_MEMBERS then
+		player:sendError(_("Um den Überfall starten zu können müssen mindestens % Staatler online sein!", player, BANKROB_MIN_MEMBERS))
 		return false
 	end
 

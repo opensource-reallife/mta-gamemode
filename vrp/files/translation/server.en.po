@@ -925,8 +925,8 @@ msgstr "You won %d$ on the street racing!"
 msgid "Banken kannst du nur ausrauben wenn du Mitglied einer bösen Fraktion bist"
 msgstr "You can only rob banks if you are a member of an evil faction"
 
-msgid "Um den Überfall starten zu können müssen mindestens 3 Staats-Fraktionisten online sein!"
-msgstr "To start the robbery, at least 3 state factionists must be online!"
+msgid "Um den Überfall starten zu können müssen mindestens % Staats-Fraktionisten online sein!"
+msgstr "To start the robbery, at least % state factionists must be online!"
 
 msgid "%s hat einen Raubüberfall gestartet!"
 msgstr "%s has started a robbery!"
@@ -1000,10 +1000,10 @@ msgstr "Fire %d stored."
 msgid "Feuer %d gelöscht."
 msgstr "Fire %d deleted."
 
-msgid "Es müssen mindestens 3 Staatsfraktionisten online sein!"
+msgid "Es müssen mindestens % Staatsfraktionisten online sein!"
 msgstr "There must be at least 3 state factionists online!"
 
-msgid "Es müssen mindestens 3 Spieler böser Fraktionen online sein!"
+msgid "Es müssen mindestens % Spieler böser Fraktionen online sein!"
 msgstr "There must be at least 3 players of evil factions online!"
 
 msgid "Den Waffentruck können nur Mitglieder böser Fraktionen starten!"
