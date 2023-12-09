@@ -308,8 +308,12 @@ function WeedTruck:onDestinationPedClick(player, ped, stateDestination)
 				end
 				breakingNewsText = "Paket %d von %d wurde an das/die %s übergeben!"
 				PlayerManager:getSingleton():breakingNews(breakingNewsText, 10-self:getRemainingPackageAmount()+1, WeedTruck.MaxPackages, ped.faction:getShortName())
-				player:giveAchievement(111) -- Snitch
-				outputDebug("giveAchievement 111")
+				if player:getFaction() and player:getFaction():isStateFaction() and stateDestination then
+					outputDebug("Test123")
+				else
+					player:giveAchievement(111) -- Snitch
+					outputDebug("giveAchievement 111")
+				end
 			end
 			package = player:getPlayerAttachedObject()
 			player:detachPlayerObject(package)
