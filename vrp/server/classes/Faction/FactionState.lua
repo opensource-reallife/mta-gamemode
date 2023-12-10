@@ -44,7 +44,7 @@ function FactionState:constructor()
 	self.m_InteriorGarageEntrance:addExitEvent(function( player) player:triggerEvent("setOcclusion", true) end)
 
 
-	self.ms_IllegalItems = {"Kokain", "Weed", "Heroin", "Shrooms", "Diebesgut", "Sprengstoff"}
+	self.ms_IllegalItems = {"Kokain", "Weed", "Heroin", "Shrooms", "Diebesgut", "Sprengstoff", "Hacking-Kit"}
 
 	self.m_BankAccountServer = BankServer.get("faction.state")
 

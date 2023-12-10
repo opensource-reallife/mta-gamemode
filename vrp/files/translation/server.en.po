@@ -4145,3 +4145,12 @@ msgstr "You won a present!"
 
 msgid "Du hast 3 Gramm Weed gewonnen!"
 msgstr "You won 3 grams of weed!"
+
+msgid "Du hast nichts, um den Bankautomaten zu hacken!"
+msgstr "You dont have anything to hack the ATM with!"
+
+msgid "macht sich am Bankautomaten zu schaffen!"
+msgstr "is tampering with the ATM!"
+
+msgid "Suspekter Typ"
+msgstr "Suspicious dude"

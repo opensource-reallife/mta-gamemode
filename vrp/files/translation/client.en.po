@@ -4817,3 +4817,9 @@ msgstr "A nice present from Santa Claus"
 
 msgid "Die Nutzung des Laufbugs ist nicht erlaubt!"
 msgstr "The use of the run speed bug is not allowed!"
+
+msgid "Hacking-Kit"
+msgstr "Hacking-Kit"
+
+msgid "Eignet sich hervorragend für Bankautomaten"
+msgstr "Great for hacking ATMs"

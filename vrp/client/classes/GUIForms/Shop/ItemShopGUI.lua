@@ -51,7 +51,7 @@ function ItemShopGUI:refreshItemShopGUI(shopId, items, sortedItems, weaponItems)
 				item.onLeftClick =
 					function()
 						self.m_Preview:setImage(("files/images/Inventory/items/%s"):format(itemData[name]["Icon"]))
-						self.m_LabelDescription:setText(itemData[name]["Info"])
+						self.m_LabelDescription:setText(_(itemData[name]["Info"]))
 					end
 			end
 		end
