@@ -75,20 +75,20 @@ end
 
 function AtmManager:Event_onStartHacking(atm)
     if client:getInventory():getItemAmount("Hacking-Kit") >= 1 then
+        if self.m_AtmCooldowns[atm] then
+            if getTickCount() - self.m_AtmCooldowns[atm] < AtmManager.Cooldown then
+                client:sendError(_("Dieser Bankautomat wurde erst kürzlich sabotiert!", client))
+                return
+            end
+        end
+        if self.m_PlayerCooldowns[client:getId()] then
+            if getTickCount() - self.m_PlayerCooldowns[client:getId()] < AtmManager.Cooldown then
+                client:sendError(_("Du kannst nur alle %d Minuten einen Bankautomaten sabotieren!", client, AtmManager.Cooldown/60/1000))
+                return
+            end
+        end
         if client:getInventory():removeItem("Hacking-Kit", 1) then
             client:meChat(true, _("macht sich am Bankautomaten zu schaffen!", client))
-            if self.m_AtmCooldowns[atm] then
-                if getTickCount() - self.m_AtmCooldowns[atm] < AtmManager.Cooldown then
-                    client:sendError(_("Dieser Bankautomat wurde erst kürzlich sabotiert!", client))
-                    return
-                end
-            end
-            if self.m_PlayerCooldowns[client:getId()] then
-                if getTickCount() - self.m_PlayerCooldowns[client:getId()] < AtmManager.Cooldown then
-                    client:sendError(_("Du kannst nur alle %d Minuten einen Bankautomaten sabotieren!", client, AtmManager.Cooldown/60/1000))
-                    return
-                end
-            end
             client.m_LastAtmHacked = atm
             triggerClientEvent(client, "startCircuitBreaker", client, "onAtmHackSuccess", "onAtmHackFail", atm)
         else
