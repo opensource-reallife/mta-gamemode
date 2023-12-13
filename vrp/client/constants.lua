@@ -270,10 +270,9 @@ SHADERS = {
 	["Contrast"] = {["event"] = "switchContrast" },
 	["Carpaint"] = {["event"] = "switchCarPaint" },
 	["Roadshine"] = {["event"] = "switchRoadshine" },
-	["Water"] = {["event"] = "switchWaterRefract" },
+	["Water"] = {["event"] = "switchWaterShader" },
 	["WetRoads"] = {["event"] = "switchWetRoads" },
 	["Bloom"] = {["event"] = "switchBloom" },
-	--["Sun"] = {["event"] = "switchSunShader"},
 	["DoF"] = {["event"] = "switchDoF"},
 }
 
