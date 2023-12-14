@@ -208,6 +208,7 @@ function FactionRescue:Event_toggleDuty(type, wasted, prefSkin, dontChangeSkin, 
 				RadioCommunication:getSingleton():allowPlayer(client, false)
 				client:setBadge()
 				takeAllWeapons(client)
+				FactionManager:getSingleton():Event_stopNeedhelp(client)
 				if not wasted then faction:updateDutyGUI(client) end
 			else
 				if wasted then return end

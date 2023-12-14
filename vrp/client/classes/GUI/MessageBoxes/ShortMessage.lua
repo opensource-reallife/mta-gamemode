@@ -7,6 +7,7 @@
 -- ****************************************************************************
 ShortMessage = inherit(GUIElement)
 inherit(GUIFontContainer, ShortMessage)
+ShortMessage.Map = {}
 
 local MAX_BOX_LIMIT = 20
 local TEXTURE_SIZE_X = (340*screenWidth/1600)
@@ -27,6 +28,8 @@ function ShortMessage:constructor(text, title, tcolor, timeout, callback, timeou
 	local hasTitleBar = title ~= nil
 	self.m_Title = title
 	self.m_TitleColor = (type(tcolor) == "table" and tcolor) or (type(tcolor) == "number" and {fromcolor(tcolor)}) or {125, 0, 0}
+
+	self.m_Text = text
 
 	self.m_Callback = callback or nil
 	self.m_TimeoutFunc = timeoutFunc or nil
@@ -89,6 +92,7 @@ function ShortMessage:constructor(text, title, tcolor, timeout, callback, timeou
 end
 
 function ShortMessage:virtual_destructor(force)
+	ShortMessage.Map[self.m_Text] = nil
 	if self.m_Timeout and isTimer(self.m_Timeout) then
 		killTimer(self.m_Timeout)
 	end
@@ -170,7 +174,7 @@ addEvent("shortMessageBox", true)
 addEventHandler("shortMessageBox", root,
 	function(text, title, tcolor, timeout, callback, onTimeout, ...)
 		local additionalParameters = {...}
-		ShortMessage:new(text, title, tcolor, timeout,
+		ShortMessage.Map[text] = ShortMessage:new(text, title, tcolor, timeout,
 		function()
 			if callback then
 				triggerServerEvent(callback, root, unpack(additionalParameters))
@@ -183,3 +187,10 @@ addEventHandler("shortMessageBox", root,
 		end)
 	end
 )
+
+addEvent("shortMessageDelete", true)
+addEventHandler("shortMessageDelete", root, function(text)
+	if(ShortMessage.Map[text]) then
+		delete(ShortMessage.Map[text])
+	end
+end)
