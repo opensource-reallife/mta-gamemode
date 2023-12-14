@@ -208,7 +208,7 @@ function FactionManager:Command_needhelp(player)
 	
 	if faction then
 		if player:isFactionDuty() then
-			if player.m_ActiveNeedHelp then return end
+			if not player.m_ActiveNeedHelpRepeat and player.m_ActiveNeedHelpRepeat ~= nil then return end
 			if player:getInterior() == 0 and player:getDimension() == 0 then
 				local rankName = faction:getRankName(faction:getPlayerRank(player))
 				local color = {math.random(0, 255), math.random(0, 255), math.random(0, 255)}
@@ -239,21 +239,32 @@ function FactionManager:Command_needhelp(player)
 						onlinePlayer:sendShortMessage(_("%s %s benötigt Hilfe!", onlinePlayer, rankName, player:getName()), "Unterstützung erforderlich", color, 20000)
 					end
 				end
-				player:sendShortMessage(_("Du benötigst keine Unterstützung mehr? Klicke hier.", player), "Unterstützungseinheit gerufen", color, MAX_NEEDHELP_DURATION, "factionStopNeedhelp")
+				player.m_ActiveNeedHelpRepeat = false
 
-				local blip = Blip:new("Marker.png", player.position.x, player.position.y, visibility, 9999, color)
-					blip:setDisplayText(player.name)
-					blip:attach(player)
+				if isTimer(player.m_ActiveNeedHelpRepeatTimer) then
+					killTimer(player.m_ActiveNeedHelpRepeatTimer)
+				end
+				player.m_ActiveNeedHelpRepeatTimer = setTimer(function()
+					player.m_ActiveNeedHelpRepeat = true 
+				end, 20000, 1)
 
-				player.m_ActiveNeedHelp = true
-				player.m_ActiveNeedHelpBlip = blip
+				if not player.m_ActiveNeedHelp then 
+					player:sendShortMessage(_("Du benötigst keine Unterstützung mehr? Klicke hier.", player), "Unterstützung angefordert", color, MAX_NEEDHELP_DURATION, "factionStopNeedhelp")
 
-				player.m_ActiveNeedHelpTimer = setTimer(function()
-					blip:delete()
-					if isElement(player) then
-						player.m_ActiveNeedHelp = false
-					end
-				end, MAX_NEEDHELP_DURATION, 1)
+					local blip = Blip:new("Marker.png", player.position.x, player.position.y, visibility, 9999, color)
+						blip:setDisplayText(player.name)
+						blip:attach(player)
+
+					player.m_ActiveNeedHelp = true
+					player.m_ActiveNeedHelpBlip = blip
+
+					player.m_ActiveNeedHelpTimer = setTimer(function()
+						blip:delete()
+						if isElement(player) then
+							player.m_ActiveNeedHelp = false
+						end
+					end, MAX_NEEDHELP_DURATION, 1)
+				end
 			else
 				player:sendError(_("Du kannst hier keine Hilfe anfordern!", player))
 			end
@@ -270,12 +281,18 @@ function FactionManager:Event_stopNeedhelp(player)
 
 	player:deleteShortMessage(_("Du benötigst keine Unterstützung mehr? Klicke hier.", player))
 	player.m_ActiveNeedHelp = false
+	player.m_ActiveNeedHelpRepeat = true 
+	
 	if player.m_ActiveNeedHelpBlip then
 		delete(player.m_ActiveNeedHelpBlip)
 	end
 
 	if isTimer(player.m_ActiveNeedHelpTimer) then
 		killTimer(player.m_ActiveNeedHelpTimer)
+	end
+
+	if isTimer(player.m_ActiveNeedHelpRepeatTimer) then
+		killTimer(player.m_ActiveNeedHelpRepeatTimer)
 	end
 end
 

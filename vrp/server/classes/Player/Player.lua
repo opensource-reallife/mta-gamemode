@@ -1182,6 +1182,10 @@ end
 function Player:togglePhone(status)
 	self.m_PhoneOn = status
 	self:setPublicSync("Phone", status)
+
+	if not status and self:getFaction() and self:getFaction():isEvilFaction() then
+		FactionManager:getSingleton():Event_stopNeedhelp(self)
+	end
 end
 
 function Player:isPhoneEnabled()
