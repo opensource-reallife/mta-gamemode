@@ -292,7 +292,9 @@ function PermissionsManager:hasPlayerPermissionsTo(player, type, permission)
 
 	local instance = self:getInstance(player, type)
 
-	if PERMISSIONS_INFO[permission][2][type] > instance:getPlayerRank(player) then
+	if not PERMISSIONS_INFO[permission][2][type] then
+		return false
+	elseif PERMISSIONS_INFO[permission][2][type] > instance:getPlayerRank(player) then
 		return false
 	elseif instance.m_PlayerPermissions[player:getId()][permission] == true then
 		return true
