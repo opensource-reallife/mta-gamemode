@@ -239,7 +239,6 @@ end
 function AttackSession:onPurposlyDisqualify( player, bAfk, bPick)
 	if player and isElement(player) then
 		local reason = ""
-		
 		if bAfk then 
 			reason = "(AFK)"
 		end
