@@ -52,8 +52,10 @@ function Gangwar:constructor( )
 	local rows = sql:queryFetch(sql_query, sql:getPrefix())
 	if rows then
 		for i, row in ipairs( rows ) do
-			self.m_Areas[#self.m_Areas+1] = Area:new(row, self)
-			addEventHandler("onPickupHit", self.m_Areas[#self.m_Areas].m_Pickup, bind(Gangwar.Event_OnPickupHit, self))
+			if row["active"] == 1 then
+				self.m_Areas[#self.m_Areas+1] = Area:new(row, self)
+				addEventHandler("onPickupHit", self.m_Areas[#self.m_Areas].m_Pickup, bind(Gangwar.Event_OnPickupHit, self))
+			end
 		end
 	end
 	self.m_BindLoadCharacter = bind(self.onPlayerJoin, self)

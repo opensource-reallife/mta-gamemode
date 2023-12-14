@@ -32,7 +32,6 @@ function CasinoHeist:constructor()
 		Vector3(2200.73, 2793.33, 10), -- north garage near burger shot
 	}
 	self.ms_StateFinishMarker = Vector3(2299.06, 2475.52, 2.27)
-	self.ms_MinBankrobStateMembers = DEBUG and 0 or 1 
 
 	self.ms_BagSpawns = {
 		Vector3(2141.81, 1628.31, 992.97),
@@ -131,7 +130,7 @@ function CasinoHeist:updateDifficulty(DEBUG_moneyInBank, DEBUG_stateMembersOnlin
 		local difficulty_money = math.min((self.m_CurrentMoneyTotal > min_money) and difficulty or 0, 5)
 		self.m_Difficulty = math.min(difficulty_money, math.floor(online_state_members/3)) -- diffculty based on money and state members online, both need to be high for high diff
 		self.m_CurrentMoney = math.min(self.m_CurrentMoneyTotal, online_state_members*10000) -- 10000 per cop, aka 30k per 3 cops per truck -> save it to var
-		self.ms_MinBankrobStateMembers = self.m_Difficulty * 3
+		CASINOHEIST_MIN_MEMBERS = self.m_Difficulty * 3
 		
 		--[[outputDebug("updated casino!", "money total:", self.m_CurrentMoneyTotal, 
 		"state members online:", online_state_members, 

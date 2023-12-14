@@ -136,7 +136,7 @@ function ShopManager:foodShopBuyMenu(shopId, menu)
 			StatisticsLogger:getSingleton():addHealLog(client, shop.m_Menues[menu]["Health"], "Shop "..shop.m_Menues[menu]["Name"])
 			client:checkLastDamaged() 
 			client:transferMoney(shop.m_BankAccount, shop.m_Menues[menu]["Price"], "Essen", "Gameplay", "Food")
-			client:sendInfo(_("%s wünscht guten Appetit!", client, shop.m_Name))
+			client:sendInfo(_("%s wünscht guten Appetit!", client, _(shop.m_Name, client)))
 		else
 			client:sendError(_("Du hast nicht genug Geld dabei!", client))
 		end
@@ -169,7 +169,7 @@ function ShopManager:buyItem(shopId, item, amount)
 
 			if client:getInventory():giveItem(item, amount, value) then
 				client:transferMoney(shop.m_BankAccount, shop.m_Items[item]*amount, "Item-Einkauf", "Gameplay", "Item")
-				client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, shop.m_Name))
+				client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, _(shop.m_Name, client)))
 			else
 				--client:sendError(_("Die maximale Anzahl dieses Items beträgt %d!", client, client:getInventory():getMaxItemAmount(item)))
 				return
@@ -199,7 +199,7 @@ function ShopManager:buyClothes(shopId, typeId, clotheId)
 					client:addClothesPermanently(texture, model, typeId)
 				end
 				client:giveAchievement(23)
-				client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, shop.m_Name))
+				client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, _(shop.m_Name, client)))
 				if clothesData.Price > 0 then
 					client:transferMoney(shop.m_BankAccount, clothesData.Price, "Kleidungs-Kauf", "Gameplay", "Clothes")
 				end
@@ -234,7 +234,7 @@ function ShopManager:buyWeaponFromItemShop(shopId, weaponId)
 
 					StatisticsLogger:addAmmunationLog(client, "Shop", toJSON({[weaponId] = ammo}), price)
 					client:transferMoney(shop.m_BankAccount, price, "Shop-Einkauf", "Gameplay", "Weapon")
-					client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, shop.m_Name))
+					client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, _(shop.m_Name, client)))
 				else
 					client:sendError(_("Du hast bereits ein/e(n) %s auf dem Platz der/des %s!", client, WEAPON_NAMES[client:getWeapon(getSlotFromWeapon(weaponId))], WEAPON_NAMES[weaponId]))
 				end
@@ -316,7 +316,7 @@ function ShopManager:barBuyDrink(shopId, item, amount)
 	if shop.m_Items[item] then
 		if client:getMoney() >= shop.m_Items[item]*amount then
 			client:transferMoney(shop.m_BankAccount, shop.m_Items[item]*amount, "Item-Einkauf", "Gameplay", "Item")
-			client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, shop.m_Name))
+			client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, _(shop.m_Name, client)))
 
 			local instance = ItemManager.Map[item]
 			if instance.use then

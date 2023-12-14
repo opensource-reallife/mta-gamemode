@@ -8,9 +8,60 @@
 MTAFixes = inherit(Singleton)
 
 function MTAFixes:constructor()
+	self.m_RunSpeedBugIsMovingLeft = false
+	self.m_RunSpeedBugIsMovingRight = false
+	self.m_RunSpeedBugIsSprinting = false
+	self.m_RunSpeedBugIsAiming = false
+
+	bindKey("aim_weapon", "down", function()
+		self.m_RunSpeedBugIsAiming = true
+	end)
+	bindKey("aim_weapon", "up", function()
+		self.m_RunSpeedBugIsAiming = false
+	end)
+
+	bindKey("jump", "down", function()
+		self.m_RunSpeedBugIsJumping = true
+	end)
+	bindKey("jump", "up", function()
+		self.m_RunSpeedBugIsJumping = false
+	end)
+
+	bindKey("right", "down", function()
+		self.m_RunSpeedBugIsMovingRight = true
+	end)
+	bindKey("right", "up", function()
+		self.m_RunSpeedBugIsMovingRight = false
+	end)
+
+	bindKey("left", "down", function()
+		self.m_RunSpeedBugIsMovingLeft = true
+	end)
+	bindKey("left", "up", function()
+		self.m_RunSpeedBugIsMovingLeft = false
+	end)
+
+	bindKey("sprint", "down", function()
+		self.m_RunSpeedBugIsSprinting = true
+	end)
+	bindKey("sprint", "up", function()
+		self.m_RunSpeedBugIsSprinting = false
+	end)
+
+	bindKey("forwards", "down", bind(self.fixRunSpeedBug, self))
+	bindKey("backwards", "down", bind(self.fixRunSpeedBug, self))
+
 	self:dft_pathnode_teleport()
 	--bindKey("steer_forward", "down", bind(self.fixBikeSpeedBug, self))
 	bindKey("horn", "down", bind(self.fixHydraulicsOxygenBug, self))
+end
+
+function MTAFixes:fixRunSpeedBug()
+	if self.m_RunSpeedBugIsAiming and self.m_RunSpeedBugIsJumping and self.m_RunSpeedBugIsSprinting and (self.m_RunSpeedBugIsMovingLeft or self.m_RunSpeedBugIsMovingRight) then
+		WarningBox:new(_"Die Nutzung des Laufbugs ist nicht erlaubt!")
+		toggleAllControls(false)
+		Timer(function() toggleAllControls(true) end, 300, 1)
+	end
 end
 
 function MTAFixes:dft_pathnode_teleport()

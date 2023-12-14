@@ -186,6 +186,12 @@ SHOP_TYPES = {
 		["Interior"] = {0, Vector3(0, 0, 0)},
 		["Class"] = ItemShop,
 		["disabled"] = not FIREWORK_SHOP_ACTIVE
+	},
+	[26] = {
+		["Name"] = "Suspekter Typ",
+		["Ped"] = {32, Vector3(511.70, -1703.02, 800.72), 180},
+		["Interior"] = {18, Vector3(0, 0, 0)},
+		["Class"] = ItemShop,
 	}
 }
 
@@ -268,6 +274,9 @@ SHOP_ITEMS = {
 		["Römische Kerzen Batterie"] = 250,
 		["Kugelbombe"] = 100,
 		["Böller"] = 50,
+	},
+	["Suspekter Typ"] = {
+		["Hacking-Kit"] = 1000,
 	}
 }
 

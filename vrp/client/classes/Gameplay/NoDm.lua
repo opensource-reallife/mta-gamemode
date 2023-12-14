@@ -115,12 +115,12 @@ end
 
 function NoDm:renderNoDmImage()
 	local target = screenWidth*0.15
-	if self.m_currentImagePosition < target then self.m_currentImagePosition = self.m_currentImagePosition +10 end
+	if self.m_currentImagePosition < target then self.m_currentImagePosition = self.m_currentImagePosition + 10 end
 
 	local px = screenWidth-self.m_currentImagePosition
-	local py = screenHeight/2
+	local py = screenHeight / 2
 	if not Phone:getSingleton():isOpen() then
-		dxDrawImage(px,py,screenWidth*0.15,screenWidth*0.08,"files/images/Other/nodm.png")
+		dxDrawImage(px,py,screenWidth*0.15,screenWidth*0.075,"files/images/Other/nodm.png")
 	end
 	if localPlayer:getFactionId() == 1 and localPlayer:getPublicSync("Faction:Duty") then return end
 	if localPlayer:getFactionId() == 2 and localPlayer:getPublicSync("Faction:Duty") then return end

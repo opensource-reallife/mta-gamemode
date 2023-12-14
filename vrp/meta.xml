@@ -2242,6 +2242,7 @@
 	<vrpfile src="files/images/Inventory/items/Items/Schuh.png" />
 	<vrpfile src="files/images/Inventory/items/Items/Trash.png" />
 	<vrpfile src="files/images/Inventory/items/Items/EmptyBottle.png" />
+	<vrpfile src="files/images/Inventory/items/Items/HackingKit.png" />
 
 	<vrpfile src="files/images/Inventory/items/Essen/Burger.png" />
 	<vrpfile src="files/images/Inventory/items/Essen/Pizza.png" />
@@ -3600,7 +3601,6 @@
 	<include resource="Contrast" />
 	<include resource="Detail" />
 	<include resource="RoadShine" />
-	<!--include resource="dynamic_lighting" /-->
 	<include resource="SkyBox" />
 	<include resource="DoF" />
 	<include resource="VehicleReflections" />

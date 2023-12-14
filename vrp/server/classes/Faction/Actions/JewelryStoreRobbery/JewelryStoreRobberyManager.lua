@@ -104,7 +104,7 @@ function JewelryStoreRobberyManager:constructor()
 	self.m_ShopPed:setFrozen(true)
     self.m_ShopPed.onTargetted = bind(self.Event_PedTargetted, self)
 
-	self.m_MinJewelryRobberyStateMembers = 3
+	self.m_MinJewelryRobberyStateMembers = 2
 
 	self.m_Players = {}
 	setmetatable(self.m_Players, { __mode = "v" })
@@ -323,8 +323,8 @@ function JewelryStoreRobberyManager:Event_PedTargetted(ped, attacker)
 				return false
 			end
 
-			if FactionState:getSingleton():countPlayers() < self.m_MinJewelryRobberyStateMembers and not DEBUG then
-				attacker:sendError(_("Es müssen mindestens %d Staatsfraktionisten online sein!", attacker, self.m_MinJewelryRobberyStateMembers))
+			if FactionState:getSingleton():countPlayers() < JEWELRY_MIN_MEMBERS then
+				attacker:sendError(_("Es müssen mindestens %d Staatsfraktionisten online sein!", attacker, JEWELRY_MIN_MEMBERS))
 				return false
 			end
 

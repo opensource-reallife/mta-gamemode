@@ -90,7 +90,7 @@ function PrisonBreakManager:BombArea_Place(bombArea, player)
 		return false
 	end
 
-	if FactionState:getSingleton():countPlayers() < PrisonBreakManager.OfficerCount then
+	if FactionState:getSingleton():countPlayers() < PRISONBREAK_MIN_MEMBERS then
 		player:sendError(_("Es sind nicht genügend Staatsfraktionisten online!", player))
 		return false
 	end

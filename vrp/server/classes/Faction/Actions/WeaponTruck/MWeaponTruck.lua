@@ -11,7 +11,7 @@ MWeaponTruck = inherit(Singleton)
 
 function MWeaponTruck:constructor()
 	self:createStartPoint(-1869.14, 1421.49, 6.2, "evil")
-	self:createStartPoint(117.28, 1884.58, 17, "state")
+	self:createStartPoint(2736.51, -2457.10, 12.67, "state")
 	self.m_CurrentWT = false
 	self.m_CurrentType = ""
 	self.m_BankAccount = BankServer.get("action.trucks")
@@ -78,8 +78,8 @@ function MWeaponTruck:Event_onWeaponTruckLoad(boxContentTable)
 
 		if faction:isEvilFaction() then
 			if client:isFactionDuty() then
-				if FactionState:getSingleton():countPlayers() < WEAPONTRUCK_MIN_MEMBERS["evil"] and not DEBUG then
-					client:sendError(_("Es müssen mindestens 3 Staatsfraktionisten online sein!", client))
+				if FactionState:getSingleton():countPlayers() < WEAPONTRUCK_MIN_MEMBERS["evil"] then
+					client:sendError(_("Es müssen mindestens %d Staatsfraktionisten online sein!", client, WEAPONTRUCK_MIN_MEMBERS["evil"]))
 					return
 				end
 				self.m_CurrentType = "evil"
@@ -89,8 +89,8 @@ function MWeaponTruck:Event_onWeaponTruckLoad(boxContentTable)
 			end
 		elseif faction:isStateFaction() then
 			if client:isFactionDuty() then
-				if FactionEvil:getSingleton():countPlayers() < WEAPONTRUCK_MIN_MEMBERS["state"] and not DEBUG then
-					client:sendError(_("Es müssen mindestens 3 Spieler böser Fraktionen online sein!", client))
+				if FactionEvil:getSingleton():countPlayers() < WEAPONTRUCK_MIN_MEMBERS["state"] then
+					client:sendError(_("Es müssen mindestens %d Spieler böser Fraktionen online sein!", client, WEAPONTRUCK_MIN_MEMBERS["state"]))
 					return
 				end
 				self.m_CurrentType = "state"

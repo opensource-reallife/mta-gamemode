@@ -44,7 +44,7 @@ function FactionState:constructor()
 	self.m_InteriorGarageEntrance:addExitEvent(function( player) player:triggerEvent("setOcclusion", true) end)
 
 
-	self.ms_IllegalItems = {"Kokain", "Weed", "Heroin", "Shrooms", "Diebesgut", "Sprengstoff"}
+	self.ms_IllegalItems = {"Kokain", "Weed", "Heroin", "Shrooms", "Diebesgut", "Sprengstoff", "Hacking-Kit"}
 
 	self.m_BankAccountServer = BankServer.get("faction.state")
 
@@ -908,7 +908,10 @@ function FactionState:getFullReasonFromShortcut(reason)
 	elseif string.lower(reason) == "wvk" then
         reason = "Waffenverkauf"
         amount = 2
-    elseif string.lower(reason) == "svr" or string.lower(reason) == "auto" then
+	elseif string.lower(reason) == "dw" or string.lower(reason) == "dd" then
+        reason = "Drogen wegwerfen"
+        amount = 2
+    elseif string.lower(reason) == "svr" or string.lower(reason) == "carrob" or string.lower(reason) == "auto" then
         reason = "Autohaus-Überfall"
         amount = 3
 	elseif string.lower(reason) == "bs" or string.lower(reason) == "wn" then
@@ -929,7 +932,7 @@ function FactionState:getFullReasonFromShortcut(reason)
     elseif string.lower(reason) == "haus" or string.lower(reason) == "hr" then
         reason = "Hauseinbruch"
         amount = 3
-    elseif string.lower(reason) == "bombe" then
+    elseif string.lower(reason) == "bombe" or string.lower(reason) == "sprengstoff" or string.lower(reason) == "tnt" then
         reason = "Mitführen von Sprengstoff"
         amount = 3
     elseif string.lower(reason) == "raub" or string.lower(reason) == "rob" then
@@ -1619,7 +1622,11 @@ function FactionState:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, pl
 	local faction = client:getFaction()
 	if faction:isStateFaction() then
 		if self:isPlayerInDutyPickup(client) or wasted then
+			local group = client:getGroup()
 			if client:isFactionDuty() then
+				if group and group.m_Markers[client] and isElement(group.m_Markers[client]) then
+					group.m_Markers[client]:setSize(0.4)
+				end
 				if wasted then
 					--client:takeAllWeapons()
 					takeAllWeapons(client) -- due to attached weapons
@@ -1655,6 +1662,9 @@ function FactionState:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, pl
 					--return false
 					--client:triggerEvent("companyForceOffduty")
 					CompanyManager:getSingleton():companyForceOffduty(client)
+				end
+				if group and group.m_Markers[client] and isElement(group.m_Markers[client]) then
+					group.m_Markers[client]:setSize(0)
 				end
 				client:setFactionDuty(true)
 				client:setBadge(FACTION_STATE_BADGES[faction:getId()], ("%s %s"):format(factionBadgeId[faction:getId()][faction:getPlayerRank(client)], client:getId()), nil)

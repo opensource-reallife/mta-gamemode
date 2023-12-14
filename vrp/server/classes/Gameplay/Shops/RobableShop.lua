@@ -48,7 +48,7 @@ function RobableShop:Ped_Targetted(ped, attacker)
 	if attacker:getGroup() then
 		if attacker:getGroup() == self.m_AttackerGroup then return false end -- prevent error toasts when the robbers of the current rob attack the shop ped
 		if attacker:getGroup():getType() == "Gang" then
-			if not (attacker:getFaction() and attacker:getFaction():isStateFaction()) then
+			--if not (attacker:getFaction() and attacker:getFaction():isStateFaction()) then
 				if not attacker:isFactionDuty() then
 					if not timestampCoolDown(ROBSHOP_LAST_ROB, ROBSHOP_PAUSE) then
 						attacker:sendError(_("Der nächste Shop-Überfall ist am/um möglich: %s!", attacker, getOpticalTimestamp(ROBSHOP_LAST_ROB+ROBSHOP_PAUSE)))
@@ -76,9 +76,9 @@ function RobableShop:Ped_Targetted(ped, attacker)
 				else
 					attacker:sendError(_("Du bist im Dienst, du darfst keinen Überfall machen!", attacker))
 				end
-			else
-				attacker:sendError(_("Du bist Polizist, du darfst keinen Überfall machen!", attacker))
-			end
+			--else
+			--		attacker:sendError(_("Du bist Polizist, du darfst keinen Überfall machen!", attacker))
+			--end
 		else
 			attacker:sendError(_("Du bist Mitglied einer privaten Firma! Nur Gangs können überfallen!", attacker))
 		end

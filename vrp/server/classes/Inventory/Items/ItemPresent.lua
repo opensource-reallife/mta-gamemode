@@ -18,7 +18,7 @@ function ItemPresent:destructor()
 end
 
 function ItemPresent:use(player)
-    local random = Randomizer:get(1, 6)
+    local random = Randomizer:get(0, 3)
 
     player:getInventory():removeItem("Päckchen", 1)
     player:meChat(true, _("öffnet ein Päckchen...", player))
