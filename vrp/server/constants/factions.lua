@@ -14,6 +14,7 @@ factionAirDropPoint = {}
 factionDTDestination = {}  -- position, rotation, skinId, name
 EVIL_FACTION_SPAWN_POINT = Vector3(2816.75, -1166.49, 1029.17) -- position inside the standard evil faction interior
 EVIL_FACTION_SPAWN_INTERIOR = 8
+MAX_NEEDHELP_DURATION = 1000 * 60 * 15
 
 
 

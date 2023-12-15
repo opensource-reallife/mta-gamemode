@@ -729,6 +729,7 @@ function Player:sendInfo(text, timeout, title)		self:triggerEvent("infoBox", tex
 function Player:sendSuccess(text, timeout, title)	self:triggerEvent("successBox", text)	end
 
 function Player:sendShortMessage(text, ...) self:triggerEvent("shortMessageBox", text, ...)	end
+function Player:deleteShortMessage(text) self:triggerEvent("shortMessageDelete", text) end
 
 function Player:sendTrayNotification(text, icon, sound)	self:triggerEvent("sendTrayNotification", text, icon, sound)	end
 
@@ -1181,6 +1182,10 @@ end
 function Player:togglePhone(status)
 	self.m_PhoneOn = status
 	self:setPublicSync("Phone", status)
+
+	if not status and self:getFaction() and self:getFaction():isEvilFaction() then
+		FactionManager:getSingleton():Event_stopNeedhelp(self)
+	end
 end
 
 function Player:isPhoneEnabled()

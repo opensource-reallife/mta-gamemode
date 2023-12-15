@@ -21,7 +21,7 @@ function FactionManager:constructor()
 	"factionToggleWeapon", "factionDiplomacyAnswer", "factionChangePermission", "factionRequestSkinSelection", 
 	"factionPlayerSelectSkin", "factionUpdateSkinPermissions", "factionRequestSkinSelectionSpecial" , 
 	"factionEquipmentOptionRequest", "factionEquipmentOptionSubmit", "factionPlayerNeedhelp", "factionStorageSelectedWeapons",
-	"stopFactionRespawnAnnouncement", "factionReceiveWeaponTruckShopInfos", "factionReceiveArmsDealerShopInfos"}
+	"stopFactionRespawnAnnouncement", "factionReceiveWeaponTruckShopInfos", "factionReceiveArmsDealerShopInfos", "factionStopNeedhelp"}
 
 	addEventHandler("getFactions", root, bind(self.Event_getFactions, self))
 	addEventHandler("factionRequestInfo", root, bind(self.Event_factionRequestInfo, self))
@@ -55,6 +55,7 @@ function FactionManager:constructor()
 	addEventHandler("factionStorageSelectedWeapons", root, bind(self.Event_storageSelecteWeapons, self))
 	addEventHandler("stopFactionRespawnAnnouncement", root, bind(self.Event_stopRespawnAnnoucement, self))
 	addEventHandler("factionReceiveArmsDealerShopInfos", root, bind(self.Event_factionReceiveArmsDealerShopInfos, self))
+	addEventHandler("factionStopNeedhelp", root, bind(self.Event_stopNeedhelp, self))
 
 	addCommandHandler("needhelp",bind(self.Command_needhelp, self))
 
@@ -62,6 +63,19 @@ function FactionManager:constructor()
 	FactionRescue:new()
 	FactionInsurgent:new()
 	FactionEvil:new(self.EvilFactions)
+
+
+	PlayerManager:getSingleton():getQuitHook():register(
+		function(player)
+			self:Event_stopNeedhelp(player)
+		end
+	)
+
+	PlayerManager:getSingleton():getWastedHook():register(
+		function(player)
+			self:Event_stopNeedhelp(player)
+		end
+	)
 end
 
 function FactionManager:destructor()
@@ -191,13 +205,14 @@ end
 function FactionManager:Command_needhelp(player)
 	local faction = player:getFaction()
 	local player = player
+	
 	if faction then
 		if player:isFactionDuty() then
+			if not player.m_ActiveNeedHelpRepeat and player.m_ActiveNeedHelpRepeat ~= nil then return end
 			if player:getInterior() == 0 and player:getDimension() == 0 then
-				if player.m_ActiveNeedHelp then return false end
 				local rankName = faction:getRankName(faction:getPlayerRank(player))
 				local color = {math.random(0, 255), math.random(0, 255), math.random(0, 255)}
-				
+				--sendShortMessage
 				if faction:isStateFaction() then
 					visibility = {factionType = "State", duty = true}
 					for k, onlinePlayer in pairs(FactionState:getSingleton():getOnlinePlayers(true, true)) do
@@ -224,19 +239,32 @@ function FactionManager:Command_needhelp(player)
 						onlinePlayer:sendShortMessage(_("%s %s benötigt Hilfe!", onlinePlayer, rankName, player:getName()), "Unterstützung erforderlich", color, 20000)
 					end
 				end
+				player.m_ActiveNeedHelpRepeat = false
 
-				local blip = Blip:new("Marker.png", player.position.x, player.position.y, visibility, 9999, color)
-					blip:setDisplayText(player.name)
-					blip:attach(player)
-
-				player.m_ActiveNeedHelp = true
-
-				setTimer(function()
-					blip:delete()
-					if isElement(player) then
-						player.m_ActiveNeedHelp = false
-					end
+				if isTimer(player.m_ActiveNeedHelpRepeatTimer) then
+					killTimer(player.m_ActiveNeedHelpRepeatTimer)
+				end
+				player.m_ActiveNeedHelpRepeatTimer = setTimer(function()
+					player.m_ActiveNeedHelpRepeat = true 
 				end, 20000, 1)
+
+				if not player.m_ActiveNeedHelp then 
+					player:sendShortMessage(_("Du benötigst keine Unterstützung mehr? Klicke hier.", player), "Unterstützung angefordert", color, MAX_NEEDHELP_DURATION, "factionStopNeedhelp")
+
+					local blip = Blip:new("Marker.png", player.position.x, player.position.y, visibility, 9999, color)
+						blip:setDisplayText(player.name)
+						blip:attach(player)
+
+					player.m_ActiveNeedHelp = true
+					player.m_ActiveNeedHelpBlip = blip
+
+					player.m_ActiveNeedHelpTimer = setTimer(function()
+						blip:delete()
+						if isElement(player) then
+							player.m_ActiveNeedHelp = false
+						end
+					end, MAX_NEEDHELP_DURATION, 1)
+				end
 			else
 				player:sendError(_("Du kannst hier keine Hilfe anfordern!", player))
 			end
@@ -245,6 +273,26 @@ function FactionManager:Command_needhelp(player)
 		end
 	else
 		player:sendError(_("Du bist nicht in der richtigen Fraktion!", player))
+	end
+end
+
+function FactionManager:Event_stopNeedhelp(player)
+	player = player and player or client
+
+	player:deleteShortMessage(_("Du benötigst keine Unterstützung mehr? Klicke hier.", player))
+	player.m_ActiveNeedHelp = false
+	player.m_ActiveNeedHelpRepeat = true 
+	
+	if player.m_ActiveNeedHelpBlip then
+		delete(player.m_ActiveNeedHelpBlip)
+	end
+
+	if isTimer(player.m_ActiveNeedHelpTimer) then
+		killTimer(player.m_ActiveNeedHelpTimer)
+	end
+
+	if isTimer(player.m_ActiveNeedHelpRepeatTimer) then
+		killTimer(player.m_ActiveNeedHelpRepeatTimer)
 	end
 end
 
@@ -280,6 +328,7 @@ function FactionManager:Event_factionQuit()
 		client:sendWarning(_("Als Leader kannst du nicht die Fraktion verlassen!", client))
 		return
 	end
+	self:Event_stopNeedhelp(client)
 	faction:removePlayer(client)
 	client:sendSuccess(_("Du hast die Fraktion erfolgreich verlassen!", client))
 	faction:addLog(client, "Fraktion", "hat die Fraktion verlassen!")

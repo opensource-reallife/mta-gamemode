@@ -1654,6 +1654,7 @@ function FactionState:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, pl
 				RadioCommunication:getSingleton():allowPlayer(client, false)
 				if not wasted then faction:updateDutyGUI(client) end
 				Guns:getSingleton():setWeaponInStorage(client, false, false)
+				FactionManager:getSingleton():Event_stopNeedhelp(client)
 				--//fix
 			else
 				if client:getPublicSync("Company:Duty") and client:getCompany() then

@@ -476,6 +476,7 @@ function FactionEvil:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, pla
 	if faction:isEvilFaction() then
 		if wasted or (client.m_CurrentDutyPickup and getDistanceBetweenPoints3D(client.position, client.m_CurrentDutyPickup.position) <= 10) then
 			self:setPlayerDuty(client, not client:isFactionDuty(), wasted, preferredSkin, dontChangeSkin)
+			FactionManager:getSingleton():Event_stopNeedhelp(client)
 		else
 			client:sendError(_("Du bist zu weit entfernt!", client))
 		end
