@@ -13,6 +13,8 @@ ShopManager.ShopVehicle = {}
 function ShopManager:constructor()
 	self:loadShops()
 	self:loadVehicleShops()
+	self:loadFCVehicleShops()
+
 	addRemoteEvents{"foodShopBuyMenu", "shopBuyItem", "shopBuyWeapon", "shopBuyClothes", "vehicleBuy", "shopOpenGUI", "shopBuy", "shopSell",
 	"barBuyDrink", "barShopMusicChange", "barShopMusicStop", "barShopStartStripper", "barShopStopStripper",
 	"shopOpenBankGUI", "shopBankDeposit", "shopBankWithdraw", "shopOnTattooSelection", "ammunationBuyItem", "onAmmunationAppOrder", 
@@ -106,6 +108,13 @@ function ShopManager:loadVehicleShops()
 		end
 		local shop = self:getFromId(row.ShopId, true)
 		shop:addVehicle(row.Id, row.Model, row.Name, row.Category, row.Price, row.Level, Vector3(row.X, row.Y, row.Z), Vector3(row.RX, row.RY, row.RZ), row.TemplateId, row.CurrentStock, row.MaxStock)
+	end
+end
+
+function ShopManager:loadFCVehicleShops()
+	local result = sql:queryFetch("SELECT * FROM ??_fc_vehicle_shops", sql:getPrefix())
+    for k, row in ipairs(result) do
+		FCVehicleShop:new(row.Id, row.Name, row.NPC, row.Spawn, row.Type, row.TypeId)
 	end
 end
 

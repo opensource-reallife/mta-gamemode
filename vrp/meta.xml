@@ -371,6 +371,7 @@
 	<script src="server/classes/Gameplay/Shops/CluckinBell.lua" type="server"/>
 	<script src="server/classes/Gameplay/Shops/RustyBrown.lua" type="server"/>
 	<script src="server/classes/Gameplay/Shops/VehicleShop.lua" type="server"/>
+	<script src="server/classes/Gameplay/Shops/FCVehicleShop.lua" type="server"/>
 	<script src="server/classes/Gameplay/Shops/GasStationShop.lua" type="server"/>
 	<script src="server/classes/Gameplay/Shops/CJClothes.lua" type="server"/>
 	<script src="server/classes/Gameplay/Shops/Ammunation.lua" type="server"/>
@@ -978,6 +979,7 @@
     <script src="client/classes/GUIForms/Shop/PlayHouseShopGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Shop/SkinShopGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Shop/VehicleShopGUI.lua" type="client" />
+	<!-- <script src="client/classes/GUIForms/Shop/FCVehicleShopGUI.lua" type="client" /> -->
 
     <script src="client/classes/GUIForms/Vehicle/PremiumVehicleGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Vehicle/TexturePreviewGUI.lua" type="client" />
