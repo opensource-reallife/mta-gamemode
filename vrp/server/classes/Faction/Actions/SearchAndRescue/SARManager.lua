@@ -8,7 +8,7 @@
 
 SARManager = inherit(Singleton)
 
-local SAR_TIME_MIN = 180 -- in minutes
+local SAR_TIME_MIN = 120 -- in minutes
 local SAR_TIME_MAX = 240 -- in minutes
 local SAR_MIN_PLAYERS = 2
 local SAR_MAX_CONCURRENT = 1
@@ -24,7 +24,7 @@ function SARManager:constructor()
         [5] = {"Baustelle", "Mehrere Personen wurden auf einer Baustelle in San Fierro verletzt.", -2077.28, 210.26, 15},
         [6] = {"Flughafen SF", "Intensivpatienten sind aus dem Krankenhaus geflohen und haben sich auf dem Flughafen in San Fierro versteckt.", -1484.24, -371.95, 25},
         [7] = {"Pilzwald", "Wanderer haben in einem Waldstück nahe Los Santos giftige psychedelische Pilze gegessen und sich dann verirrt.", -765.67, -1957.65, 15},
-        [8] = {"Waldstück", "Eine Fernsehteam ist gestern Nacht auf der Suche nach einem paranormalen Wesen im Wald verschwunden.", 2455.09, -666.58, 10},
+        [8] = {"Waldstück", "Ein Fernsehteam ist gestern Nacht auf der Suche nach einem paranormalen Wesen im Wald verschwunden.", 2455.09, -666.58, 10},
         [9] = {"Ölfeld", "Arbeiter auf einem Ölfeld haben einen Hitzeschlag erlitten und sind umgekippt.", 563.75, 1368.96, 15},
         [10] = {"Las Barrancas", "Ein Irrer hat in Las Barrancas mehrere Personen schwer verletzt.", -792.27, 1522.06, 15},
         [11] = {"Arco del Oeste", "Unbekannten Quellen zufolge planen Kultisten im Gebiet von Arco del Oeste einen Massenselbstmord.", -789.55, 2425.74, 15},
