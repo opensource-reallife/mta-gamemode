@@ -368,10 +368,19 @@ function FactionManager:Event_factionWithdraw(amount)
 		return
 	end
 
-	faction:transferMoney(client, amount, "Fraktion-Auslage", "Faction", "Deposit")
-	faction:addLog(client, "Kasse", "hat "..toMoneyString(amount).." aus der Kasse genommen!")
-	self:sendInfosToClient(client)
-	faction:refreshBankAccountGUI(client)
+	local limit = faction:isStateFaction() and 450000 or 150000
+	if faction:getMoney() - amount >= limit then
+		faction:transferMoney(client, amount, "Fraktion-Auslage", "Faction", "Deposit")
+		faction:addLog(client, "Kasse", "hat "..toMoneyString(amount).." aus der Kasse genommen!")
+		self:sendInfosToClient(client)
+		faction:refreshBankAccountGUI(client)
+	else
+		if faction:isStateFaction() then
+			client:sendError(_("In der Fraktionskasse müssen sich mindestens 450.000$ befinden!", client))
+		else
+			client:sendError(_("In der Fraktionskasse müssen sich mindestens 150.000$ befinden!", client))
+		end
+	end
 end
 
 function FactionManager:Event_factionAddPlayer(player)

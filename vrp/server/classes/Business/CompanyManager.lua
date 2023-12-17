@@ -139,12 +139,18 @@ function CompanyManager:Event_companyWithdraw(amount)
 		return
 	end
 
-	if company:transferMoney(client, amount, "Unternehmen-Auslage", "Company", "Withdraw") then
+	if company:getMoney() < amount then
+		client:sendError(_("In der Unternehmenskasse befindet sich nicht genügend Geld!", client))
+		return
+	end
+
+	if company:getMoney() - amount >= 150000 then
+		company:transferMoney(client, amount, "Unternehmen-Auslage", "Company", "Withdraw")
 		company:addLog(client, "Kasse", "hat "..toMoneyString(amount).." aus der Kasse genommen!")
 		self:sendInfosToClient(client)
 		company:refreshBankAccountGUI(client)
 	else
-		client:sendError(_("In der Unternehmenskasse befindet sich nicht genügend Geld!", client))
+		client:sendError(_("In der Unternehmenskasse müssen sich mindestens 150.000$ befinden!", client))
 	end
 end
 
