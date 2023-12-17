@@ -9,11 +9,11 @@
 WeaponTruck = inherit(Object)
 WeaponTruck.Time = 20*60*1000 -- in ms
 WeaponTruck.spawnPos = {
-	["evil"] = {-1869.58, 1430.02, 7.62, 224},
+	["evil"] = {-2105.01, -2293.40, 31.20, 320},
 	["state"] = {2745.73, -2465.86, 13.97, 270}
 }
 WeaponTruck.loadMarkerPos = {
-	["evil"] = Vector3(-1873.56, 1434.15, 7.18),
+	["evil"] = Vector3(-2108.96, -2298.05, 30.62),
 	["state"] = Vector3(2740.16, -2465.79, 13.65)
 }
 WeaponTruck.attachCords = {
@@ -22,10 +22,10 @@ WeaponTruck.attachCords = {
 }
 WeaponTruck.boxSpawnCords = {
 	["evil"] = {
-		Vector3(-1875.75, 1416, 6.2), Vector3(-1875.75, 1416, 6.9),
-		Vector3(-1873.74, 1415, 6.2), Vector3(-1873.74, 1415, 6.9),
-		Vector3(-1875.27, 1414, 6.2), Vector3(-1875.27, 1414, 6.9),
-		Vector3(-1873.11, 1413, 6.2), Vector3(-1873.11, 1413, 6.9)
+		Vector3(-2109.62, -2310.05, 29.68), Vector3(-2112.80, -2307.43, 29.68),
+		Vector3(-2113.80, -2306.35, 29.68), Vector3(-2115.17, -2305.23, 29.68),
+		Vector3(-2116.54, -2304.10, 29.68), Vector3(-2118.38, -2302.59, 29.68),
+		Vector3(-2119.78, -2301.44, 29.68), Vector3(-2120.78, -2300.61, 29.68)
 				},
 	["state"] = {
 		Vector3(2734.53, -2470.60, 12.65), Vector3(2736.73, -2465.89, 12.65),
