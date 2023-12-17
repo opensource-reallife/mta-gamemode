@@ -108,8 +108,8 @@ function Townhall:constructor()
 
 
 	--// WT PED SF
-	local itemSpawnerPed4 = Ped.create(307, Vector3(-1869.94, 1422.34, 7.18))
-	itemSpawnerPed4:setRotation(Vector3(0, 0, 220))
+	local itemSpawnerPed4 = Ped.create(307, Vector3(-2103.76, -2277.80, 30.62))
+	itemSpawnerPed4:setRotation(Vector3(0, 0, 320))
 	itemSpawnerPed4.Name = _"Illegaler Waffentruck"
 	itemSpawnerPed4.Description = _"Hier startet der Waffentruck!"
 	itemSpawnerPed4.Func = function() end

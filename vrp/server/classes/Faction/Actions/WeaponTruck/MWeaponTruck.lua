@@ -10,7 +10,7 @@ MWeaponTruck = inherit(Singleton)
 
 
 function MWeaponTruck:constructor()
-	self:createStartPoint(-1869.14, 1421.49, 6.2, "evil")
+	self:createStartPoint(-2103.16, -2276.99, 29.68, "evil")
 	self:createStartPoint(2736.51, -2457.10, 12.67, "state")
 	self.m_CurrentWT = false
 	self.m_CurrentType = ""

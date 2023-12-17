@@ -4154,3 +4154,6 @@ msgstr "is tampering with the ATM!"
 
 msgid "Suspekter Typ"
 msgstr "Suspicious dude"
+
+msgid "Waffentraining"
+msgstr "Weapons training"
