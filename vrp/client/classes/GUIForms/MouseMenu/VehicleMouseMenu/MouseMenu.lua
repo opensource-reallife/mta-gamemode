@@ -65,7 +65,16 @@ function VehicleMouseMenu:constructor(posX, posY, element)
 				end
 			):setIcon(FontAwesomeSymbols.Player)
 		end
-		if getElementData(element, "OwnerName") == localPlayer.name or (getElementData(element, "GroupType") and localPlayer:getGroupName() == getElementData(element, "OwnerName")) or (getElementData(element, "OwnerType") == "faction" and localPlayer:getFaction():getId() == getElementData(element, "OwnerID")) or (getElementData(element, "OwnerType") == "company" and localPlayer:getCompany():getId() == getElementData(element, "OwnerID")) or hasLocalPlayerKey then
+
+		local ownerType = getElementData(element, "OwnerType")
+		local ownerId = getElementData(element, "OwnerID")
+		local ownerName = getElementData(element, "OwnerName")
+
+		if (ownerType == "player" and localPlayer:getId() == ownerId) or 
+		(ownerType == "group" and localPlayer:getGroupName() == ownerName) or
+		(ownerType == "faction" and localPlayer:getFaction() and localPlayer:getFaction():getId() == ownerId) or 
+		(ownerType == "company" and localPlayer:getCompany() and localPlayer:getCompany():getId() == ownerId) or 
+		hasLocalPlayerKey then
 			if (getElementData(element, "GroupType") and getElementData(element, "GroupType") == "Firma") then
 				if getElementData(element, "isRented") ~= true then
 					if getElementData(element, "forRent") ~= true then
