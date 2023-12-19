@@ -81,7 +81,7 @@ function LocalPlayer:constructor()
 	local col = createColRectangle(1034.28, -1389.45, 1210.74-1034.28, 1389.45-1253.37) --hospital
 	self.m_NoOcclusionZone = NonOcclusionZone:new(col)
 
-	local col2 = createColRectangle(2401.71, -2190.33, 210, 150) -- mech and tow
+	local col2 = createColRectangle(802.48, -1314.53, 951.69-802.48, 1314.53-1155.58) -- mech and tow
 	self.m_NoOcclusionZone = NonOcclusionZone:new(col2)
 
 	local col3 =  createColCuboid(972.42, -1131.07, 12.07, 52, 52, 30) -- yakuza base

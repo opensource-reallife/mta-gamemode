@@ -4,18 +4,18 @@ addRemoteEvents{"mechanicRepair", "mechanicRepairConfirm", "mechanicRepairCancel
 function MechanicTow:constructor()
 	self.m_PendingQuestions = {}
 
-	local safe = createObject(2332, 2456.191, -2106.406, 12.9, 0, 0, 270)
+	local safe = createObject(2332, 857.594, -1182.628, 17.569, 0, 0, 270)
 	safe:setScale(0.7)
 	self:setSafe(safe)
 
-	self.m_TowColShape = createColRectangle(2649.02, -2122.29, 18.5, 10.5)
+	self.m_TowColShape = createColRectangle(861.296, -1258.862, 14, 17)
 
-	local blip = Blip:new("CarLot.png", 2465.677, -2093.584, root, 400)
+	local blip = Blip:new("CarLot.png", 913.83, -1234.65, root, 400)
 	blip:setOptionalColor({150, 150, 150})
 	blip:setDisplayText("Autohof", BLIP_CATEGORY.VehicleMaintenance)
 
 	local id = self:getId()
-	local blip = Blip:new("House.png", 2481.79, -2097.76, {company = id}, 400, {companyColors[id].r, companyColors[id].g, companyColors[id].b})
+	local blip = Blip:new("House.png", 857.594, -1182.628, {company = id}, 400, {companyColors[id].r, companyColors[id].g, companyColors[id].b})
 	blip:setDisplayText(self:getName(), BLIP_CATEGORY.Company)
 
 	self.m_FillAccept = bind(MechanicTow.FillAccept, self)
@@ -232,7 +232,7 @@ function MechanicTow:Event_mechanicTakeVehicle()
 	source:setDimension(0)
 	source:setInterior(0)
 	local x, y, z, rotation = unpack(Randomizer:getRandomTableValue(MechanicTow.SpawnPositions))
-	local text = "im Hinterhof"
+	local text = "hinter dir"
 	if source:isAirVehicle() and source:getModel() ~= 460 then
 		x, y, z, rotation = 2008.82, -2453.75, 13, 120 -- ls airport east
 		text = "am Flughafen in Los Santos"
@@ -560,8 +560,8 @@ function MechanicTow:checkLeviathanTowing(player, vehicle)
 end
 
 MechanicTow.SpawnPositions = {
-	{2434.95, -2130.05, 12.5, 270},
-	{2434.95,  -2138.81, 12.5, 270},
+	{904.833, -1183.605, 16, 180},
+	{900.833, -1183.605, 16, 180},
 	--{833.2, -1198.1, 17.70, 180},
 	--{1091.7, -1198.3, 17.70, 180},
 	--
