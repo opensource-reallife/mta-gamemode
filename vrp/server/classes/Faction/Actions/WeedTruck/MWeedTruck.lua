@@ -50,8 +50,8 @@ function MWeedTruck:onStartPointHit(hitElement, matchingDimension)
 			if faction:isEvilFaction() and hitElement:isFactionDuty() then
 				if PermissionsManager:getSingleton():isPlayerAllowedToStart(hitElement, "faction", "WeedTruck") then
 					if ActionsCheck:getSingleton():isActionAllowed(hitElement) then
-						if FactionState:getSingleton():countPlayers() < WEEDTRUCK_MIN_MEMBERS then
-							hitElement:sendError(_("Es müssen mindestens %d Staatsfraktionisten online sein!",hitElement, WEEDTRUCK_MIN_MEMBERS))
+						if FactionState:getSingleton():countPlayers(true, true) < WEEDTRUCK_MIN_MEMBERS then
+							hitElement:sendError(_("Es müssen mindestens %d Staatsfraktionisten im Dienst sein!", hitElement, WEEDTRUCK_MIN_MEMBERS))
 							return false
 						end
 						QuestionBox:new(hitElement, _("Möchtest du einen Weed-Truck starten? Kosten: %s", hitElement, toMoneyString(MWeedTruck.Settings["costs"])), "weedTruckStart", false, source, 10)

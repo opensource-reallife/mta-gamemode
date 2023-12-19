@@ -146,7 +146,7 @@ function StateEvidence:Event_startEvidenceTruck()
 	if client:isFactionDuty() and client:getFaction() and client:getFaction():isStateFaction() then
 		if PermissionsManager:getSingleton():isPlayerAllowedToStart(client, "faction", "StateEvidenceTruck") then
 			if ActionsCheck:getSingleton():isActionAllowed(client) then
-				if FactionEvil:getSingleton():countPlayers() >= EVIDENCETRUCK_MIN_MEMBERS then
+				if FactionEvil:getSingleton():countPlayers(true, false) >= EVIDENCETRUCK_MIN_MEMBERS then
 					local evObj
 					local totalMoney = 0
 					local objToDelete = {}
@@ -175,7 +175,7 @@ function StateEvidence:Event_startEvidenceTruck()
 						client:sendError(_("In der Asservatenkammer befindet sich zu wenig Material!", client))
 					end
 				else
-					client:sendError(_("Es müssen mindestens %d Spieler böser Fraktionen online sein!", client, EVIDENCETRUCK_MIN_MEMBERS))
+					client:sendError(_("Es müssen mindestens %d Spieler böser Fraktionen aktiv sein!", client, EVIDENCETRUCK_MIN_MEMBERS))
 				end
 			end
 		else

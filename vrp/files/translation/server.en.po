@@ -937,8 +937,8 @@ msgstr "Your ally %s has started a robbery! See how you can support them!"
 msgid "%s hat einen Raubüberfall gestartet! Ihr habt 5 Minuten Zeit, bevor das SAPD alarmiert wird!"
 msgstr "%s has started a robbery! You have 5 minutes before SAPD is alerted!"
 
-msgid "Es müssen mindestens %d Staatsfraktionisten online sein!"
-msgstr "There must be at least %d state factionists online!"
+msgid "Es müssen mindestens %d Staatsfraktionisten im Dienst sein!"
+msgstr "There must be at least %d state factionists on duty!"
 
 msgid "Es ist noch nicht genug Geld in den Tresoren!"
 msgstr "There's not enough money in the vaults yet!"
@@ -999,12 +999,6 @@ msgstr "Fire %d stored."
 
 msgid "Feuer %d gelöscht."
 msgstr "Fire %d deleted."
-
-msgid "Es müssen mindestens %d Staatsfraktionisten online sein!"
-msgstr "There must be at least 3 state factionists online!"
-
-msgid "Es müssen mindestens %d Spieler böser Fraktionen online sein!"
-msgstr "There must be at least 3 players of evil factions online!"
 
 msgid "Den Waffentruck können nur Mitglieder böser Fraktionen starten!"
 msgstr "Only members of evil factions can start the weapon truck!"
