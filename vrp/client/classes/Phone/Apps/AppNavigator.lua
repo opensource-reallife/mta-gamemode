@@ -54,14 +54,17 @@ end
 
 AppNavigator.Positions = {
 	["Allgemein"] = {
-		["Noobspawn"] = Vector3(1481.33, -1765.05, 18.80),
-		["Flughafen LS"] = Vector3(1993.06, -2187.38, 13.23),
-		["Premium-Bereich"] = Vector3(1246.52, -2055.33, 59.53),
 		["Stadthalle"] = Vector3(1481.22, -1749.11, 15.45),
+		["Billigklamotten"] = Vector3(2244.641, -1664.586, 15.477),
+		["Fahrschule"] =  Vector3(1779.07, -1725.88, 13.55),
+		["Billigautohändler"] = Vector3(1098.83, -1240.20, 15.55),
 		["Tuning-Shop"] = Vector3(1035.58, -1028.90, 32.10),
-		["Gebrauchtwagenhändler"] = Vector3(1098.83, -1240.20, 15.55),
-		["Kart-Strecke"] = Vector3(1262.375, 188.479, 19.5),
 		["Schrottplatz"] = Vector3(2198.86, -1977.55, 13.56),
+		["Krankenhaus"] = Vector3(1183.632, -1323.526, 13.576),
+		["Paintball"] = Vector3(1324.733, -1559.327, 13.540),
+		["Kartbahn"] = Vector3(1262.375, 188.479, 19.5),
+		["ColorCars"] = Vector3(2693.501, -1703.685, 11.502),
+		-- ["Premium-Bereich"] = Vector3(1246.52, -2055.33, 59.53),
 	},
 	["Jobs"] = {
 		["Pizza-Lieferant"] = Vector3(2096.89, -1826.28, 13.24),
@@ -71,16 +74,15 @@ AppNavigator.Positions = {
 		["Logistiker LS Hafen"] = Vector3(2409.07, -2471.10, 13.30),
 		["Farmer"] = Vector3(-53.69, 78.28, 2.79),
 		["Straßenreinigung"] = Vector3(219.49, -1429.61, 13.0),
-		["Schatzsucher"] = Vector3(706.22, -1699.38, 3.12),
+		-- ["Schatzsucher"] = Vector3(706.22, -1699.38, 3.12),
 		["Gabelstapler"] = Vector3(93.67, -205.68,  1.23),
 		["Kiesgruben-Job"] = Vector3(590.71, 868.91, -42.50),
 		["Holzfäller"] = Vector3(1026.51, -437.73, 54.24),
-		["Boxer"] = Vector3(2219.51, -1715.47, 13.34),
+		-- ["Boxer"] = Vector3(2219.51, -1715.47, 13.34),
 	},
 	["Unternehmen"] = {
 		["San News"] =     Vector3(762.05, -1343.33, 13.20),
-		["Fahrschule"] =  Vector3(1779.07, -1725.88, 13.55),
-		["Mechaniker"] =  Vector3(2416.29, -2089.54, 13.41),
+		["Mechaniker"] =  Vector3(913.83, -1234.65, 16.97),
 		["Public Transport"] =	 Vector3(1791.10, -1901.46, 13.08),
 	},
 	["Fraktionen"] = {}, -- get loaded dynamically!
