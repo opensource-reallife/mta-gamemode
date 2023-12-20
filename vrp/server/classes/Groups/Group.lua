@@ -30,7 +30,7 @@ function Group:constructor(Id, name, type, money, playTime, lastNameChange, rank
 	self.m_MarkersAttached = false
 	self.m_BankAccountServer = BankServer.get("group")
 	self.m_Settings = UserGroupSettings:new(USER_GROUP_TYPES.Group, Id)
-	self.m_VehicleExtraSlots = vehicleExtraSlots
+	self.m_VehicleExtraSlots = vehicleExtraSlots or 0
 
 	self.m_BankAccount = BankAccount.loadByOwner(self.m_Id, BankAccountTypes.Group)
 	if not self.m_BankAccount then
