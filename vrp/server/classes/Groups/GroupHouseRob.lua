@@ -84,12 +84,22 @@ function GroupHouseRob:Event_OnSellAccept()
 			local inv = client:getInventory()
 			if inv then
 				local amount = inv:getItemAmount("Diebesgut")
-				local randomPrice = math.random( 500,1000)
+				local randomPrice = math.random(250, 1000)
 				local pay = amount * randomPrice
 				inv:removeAllItem("Diebesgut")
 				self.m_BankServerAccount:transferMoney(client, pay, "Verkauf von Diebesware", "Group", "HouseRob")
 				client:meChat(true, "streckt seine Hand aus und nimmt einen Umschlag mit Scheinen entgegen!")
 				client:sendPedChatMessage(client.m_ClickPed:getData("Ped:Name"), "Gutes Geschäft. Komm wieder wenn du mehr hast!")
+				-- Give Wanteds
+				if chance(3) then
+					setTimer(function(client)
+						if client and isElement(client) then
+							client:sendWarning(_("Deine illegalen Aktivitäten wurden von einem Augenzeugen an das SAPD gemeldet!", client))
+							client:giveWanteds(2)
+							client:sendMessage(_("Verbrechen begangen: %s, %d Wanted/s", client, _("Handel mit illegalen Gegenständen", client), 2), 255, 255, 0)
+						end
+					end, math.random(2000, 10000), 1, client)
+				end
 			end
 		end
 	end

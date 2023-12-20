@@ -32,9 +32,9 @@ function WeedBeggar:sellWeed(player, amount)
 			if chance(3) then
 				setTimer(function()
 					if player and isElement(player) then
-					player:sendWarning("Deine illegalen Aktivitäten wurden von einem Augenzeugen an das SAPD gemeldet!")
-					player:giveWanteds(2)
-					player:sendMessage("Verbrechen begangen: Drogenhandel, 2 Wanteds", 255, 255, 0)
+						player:sendWarning(_("Deine illegalen Aktivitäten wurden von einem Augenzeugen an das SAPD gemeldet!", player))
+						player:giveWanteds(2)
+						player:sendMessage(_("Verbrechen begangen: %s, %d Wanted/s", player, _("Handel mit illegalen Gegenständen", player), 2), 255, 255, 0)
 					end
 				end, math.random(2000, 10000), 1)
 			end

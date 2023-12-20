@@ -133,7 +133,7 @@ function TollStation:buyToll(player)
 	end
 end
 
-function TollStation:onPedWasted(_, killer)
+function TollStation:onPedWasted(totalAmmo, killer)
 	local killer = killer
 	if killer then
 		if killer:getType() == "vehicle" then
@@ -145,9 +145,9 @@ function TollStation:onPedWasted(_, killer)
 
 			-- Give Wanteds
 			setTimer(function()
-				killer:sendWarning("Dein Mord wurde von einem Augenzeugen an das SAPD gemeldet!")
+				killer:sendWarning(_("Deine illegalen Aktivitäten wurden von einem Augenzeugen an das SAPD gemeldet!", killer))
 				killer:giveWanteds(4)
-				killer:sendMessage("Verbrechen begangen: Mord, 4 Wanteds", 255, 255, 0)
+				killer:sendMessage(_("Verbrechen begangen: %s, %d Wanted/s", killer, _("Mord", killer), 4), 255, 255, 0)
 			end, math.random(2000, 10000), 1)
 
 			-- Send the News to the San News Company

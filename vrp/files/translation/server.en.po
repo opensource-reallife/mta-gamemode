@@ -4154,3 +4154,18 @@ msgstr "Weapons training"
 
 msgid "Eigenwunsch"
 msgstr "Personal wish"
+
+msgid "Deine illegalen Aktivitäten wurden von einem Augenzeugen an das SAPD gemeldet!"
+msgstr "Your illegal activities have been reported to the SAPD by an eyewitness!"
+
+msgid "Verbrechen begangen: %s, %d Wanted/s"
+msgstr "Crime committed: %s, %d Wanted/s"
+
+msgid "Handel mit illegalen Gegenständen"
+msgstr "Trading with illegal Items"
+
+msgid "Automaten-Raub"
+msgstr "Vending machine rob"
+
+msgid "Mord"
+msgstr "Murder"

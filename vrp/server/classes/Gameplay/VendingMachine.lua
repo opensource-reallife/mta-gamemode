@@ -50,10 +50,10 @@ function VendingMachine.Event_vendingRob()
 		-- Play animation
 		client:setAnimation("BOMBER", "BOM_Plant", -1, false, true, false, false)
 
-		-- Give wage
+		-- Give wage and wanteds
 		client:giveWanteds(1)
-		client:sendMessage("Verbrechen begangen: Automaten-Raub, 1 Wanted", 255, 255, 0)
-		BankServer.get("gameplay.vending_machine"):transferMoney(client, math.random(10, 100), "Automaten-Raub", "Gameplay", "VendingMachineRob")
+		client:sendMessage(_("Verbrechen begangen: %s, %d Wanted/s", client, _("Automaten-Raub", client), 1), 255, 255, 0)
+		BankServer.get("gameplay.vending_machine"):transferMoney(client, math.random(10, 100), _("Automaten-Raub", client), "Gameplay", "VendingMachineRob")
 
 		-- give Achievement
 		client:giveAchievement(19)
