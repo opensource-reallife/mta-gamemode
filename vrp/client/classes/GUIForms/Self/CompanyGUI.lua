@@ -27,7 +27,7 @@ function CompanyGUI:constructor()
 	self.m_CompanyNameLabel = GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.96, self.m_Height*0.10, "", tabAllgemein)
 	GUILabel:new(self.m_Width*0.02, self.m_Height*0.12, self.m_Width*0.25, self.m_Height*0.06, _"Rang:", tabAllgemein)
 	self.m_CompanyRankLabel = GUILabel:new(self.m_Width*0.3, self.m_Height*0.12, self.m_Width*0.4, self.m_Height*0.06, "", tabAllgemein)
---	self.m_CompanyQuitButton = GUIButton:new(self.m_Width*0.74, self.m_Height*0.02, self.m_Width*0.25, self.m_Height*0.07, _"Fraktion verlassen", tabAllgemein):setBackgroundColor(Color.Red)::setBarEnabled(true)
+	self.m_CompanyQuitButton = GUIButton:new(self.m_Width*0.69, self.m_Height*0.02, self.m_Width*0.30, self.m_Height*0.07, _"Unternehmen verlassen", tabAllgemein):setBackgroundColor(Color.Red):setBarEnabled(true)
 	GUILabel:new(self.m_Width*0.02, self.m_Height*0.20, self.m_Width*0.25, self.m_Height*0.06, _"Mitglieder:", tabAllgemein)
 	self.m_CompanyPlayersLabel = GUILabel:new(self.m_Width*0.3, self.m_Height*0.20, self.m_Width*0.7, self.m_Height*0.06, "", tabAllgemein)
 
@@ -118,7 +118,7 @@ function CompanyGUI:constructor()
 	self.m_CompanyPlayerPermissionsButton:setEnabled(false)
 
 	self.m_TabPanel.onTabChanged = bind(self.TabPanel_TabChanged, self)
-	--self.m_CompanyQuitButton.onLeftClick = bind(self.CompanyQuitButton_Click, self)
+	self.m_CompanyQuitButton.onLeftClick = bind(self.CompanyQuitButton_Click, self)
 	--self.m_CompanyMoneyDepositButton.onLeftClick = bind(self.CompanyMoneyDepositButton_Click, self)
 	--self.m_CompanyMoneyWithdrawButton.onLeftClick = bind(self.CompanyMoneyWithdrawButton_Click, self)
 	self.m_CompanyAddPlayerButton.onLeftClick = bind(self.CompanyAddPlayerButton_Click, self)
@@ -344,9 +344,18 @@ function CompanyGUI:CompanyForumSyncButton_Click()
 	ForumPermissionsGUI:new("company", localPlayer:getCompany().m_Id)
 end
 
+function CompanyGUI:CompanyQuitButton_Click()
+	self:close()
+
+	HistoryQuitGUI:new(function(reason)
+		triggerServerEvent("companyQuit", root, reason)
+	end)
+end
+
 function CompanyGUI:CompanyRemovePlayerButton_Click()
 	local selectedItem = self.m_CompanyPlayersGrid:getSelectedItem()
 	if selectedItem and selectedItem.Id then
+		self:close()
 
 		HistoryUninviteGUI:new(function(internal, external)
 			triggerServerEvent("companyDeleteMember", root, selectedItem.Id, internal, external)

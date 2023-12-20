@@ -35,7 +35,7 @@ function FactionGUI:constructor()
 	self.m_FactionNextActionLabel = GUILabel:new(self.m_Width*0.3, self.m_Height*0.18, self.m_Width*0.7, self.m_Height*0.06, "", tabAllgemein)
 	GUILabel:new(self.m_Width*0.02, self.m_Height*0.26, self.m_Width*0.25, self.m_Height*0.06, _"Mitglieder:", tabAllgemein)
 	self.m_FactionPlayersLabel = GUILabel:new(self.m_Width*0.3, self.m_Height*0.26, self.m_Width*0.7, self.m_Height*0.06, "", tabAllgemein)
-	--self.m_FactionQuitButton = GUIButton:new(self.m_Width*0.74, self.m_Height*0.02, self.m_Width*0.25, self.m_Height*0.07, _"Fraktion verlassen", tabAllgemein):setBackgroundColor(Color.Red):setBarEnabled(true)
+	self.m_FactionQuitButton = GUIButton:new(self.m_Width*0.74, self.m_Height*0.02, self.m_Width*0.25, self.m_Height*0.07, _"Fraktion verlassen", tabAllgemein):setBackgroundColor(Color.Red):setBarEnabled(true)
 
 	GUILabel:new(self.m_Width*0.02, self.m_Height*0.33, self.m_Width*0.25, self.m_Height*0.1, _"Kasse:", tabAllgemein)
 	GUILabel:new(self.m_Width*0.02, self.m_Height*0.43, self.m_Width*0.25, self.m_Height*0.06, _"Inhalt:", tabAllgemein)
@@ -113,7 +113,7 @@ function FactionGUI:constructor()
 	self.m_tabGangwar = self.m_TabPanel:addTab(_"Gangwar")
 
 	self.m_TabPanel.onTabChanged = bind(self.TabPanel_TabChanged, self)
---	self.m_FactionQuitButton.onLeftClick = bind(self.FactionQuitButton_Click, self)
+	self.m_FactionQuitButton.onLeftClick = bind(self.FactionQuitButton_Click, self)
 	self.m_FactionAddPlayerButton.onLeftClick = bind(self.FactionAddPlayerButton_Click, self)
 	self.m_FactionRemovePlayerButton.onLeftClick = bind(self.FactionRemovePlayerButton_Click, self)
 	self.m_FactionRankUpButton.onLeftClick = bind(self.FactionRankUpButton_Click, self)
@@ -719,6 +719,14 @@ function FactionGUI:FactionForumSyncButton_Click()
 	-- triggerServerEvent("factionForumSync", root)
 	self:close()
 	ForumPermissionsGUI:new("faction", localPlayer:getFaction().m_Id)
+end
+
+function FactionGUI:FactionQuitButton_Click()
+	self:close()
+
+	HistoryQuitGUI:new(function(reason)
+		triggerServerEvent("factionQuit", root, reason)
+	end)
 end
 
 function FactionGUI:FactionRemovePlayerButton_Click()

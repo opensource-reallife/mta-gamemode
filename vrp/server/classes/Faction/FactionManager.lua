@@ -299,13 +299,13 @@ end
 function FactionManager:sendInfosToClient(client)
 	local faction = client:getFaction()
 	local wpn = {}
-	if faction:isEvilFaction() then
+	if faction and faction:isEvilFaction() then
 		for i, v in pairs(factionWeaponDepotInfo) do
 			if v["Waffe"] ~= 0 then
 				wpn[i] = true
 			end
 		end
-	else
+	elseif faction then
 		wpn = table.merge(faction.m_ValidWeapons, faction.m_SpecialWeapons["Weapons"])
 	end
 
@@ -320,18 +320,21 @@ function FactionManager:sendInfosToClient(client)
 	end
 end
 
-function FactionManager:Event_factionQuit()
+function FactionManager:Event_factionQuit(reason)
 	local faction = client:getFaction()
-	if not faction then return end
 
+	if not faction then return end
 	if faction:getPlayerRank(client) == FactionRank.Leader then
 		client:sendWarning(_("Als Leader kannst du nicht die Fraktion verlassen!", client))
 		return
 	end
+
 	self:Event_stopNeedhelp(client)
+	HistoryPlayer:getSingleton():addLeaveEntry(client.m_Id, client.m_Id, faction.m_Id, "faction", faction:getPlayerRank(client.m_Id), reason, _("Eigenwunsch", client))
 	faction:removePlayer(client)
 	client:sendSuccess(_("Du hast die Fraktion erfolgreich verlassen!", client))
 	faction:addLog(client, "Fraktion", "hat die Fraktion verlassen!")
+
 	self:sendInfosToClient(client)
 	Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(client.m_Id)
 end

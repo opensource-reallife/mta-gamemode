@@ -4151,3 +4151,6 @@ msgstr "Suspicious dude"
 
 msgid "Waffentraining"
 msgstr "Weapons training"
+
+msgid "Eigenwunsch"
+msgstr "Personal wish"

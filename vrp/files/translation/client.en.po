@@ -4823,3 +4823,15 @@ msgstr "Hacking-Kit"
 
 msgid "Eignet sich hervorragend für Bankautomaten"
 msgstr "Great for hacking ATMs"
+
+msgid "Fraktion verlassen"
+msgstr "Leave faction"
+
+msgid "Unternehmen verlassen"
+msgstr "Leave company"
+
+msgid "Kündigen"
+msgstr "Quit"
+
+msgid "Du musst einen Grund angeben!"
+msgstr "You have to provide a reason!"

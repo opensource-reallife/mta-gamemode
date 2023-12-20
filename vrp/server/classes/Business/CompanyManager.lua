@@ -19,6 +19,7 @@ function CompanyManager:constructor()
 
 	addEventHandler("getCompanies", root, bind(self.Event_getCompanies, self))
 	addEventHandler("companyRequestInfo", root, bind(self.Event_companyRequestInfo, self))
+	addEventHandler("companyQuit", root, bind(self.Event_companyQuit, self))
 	addEventHandler("companyDeposit", root, bind(self.Event_companyDeposit, self))
 	addEventHandler("companyWithdraw", root, bind(self.Event_companyWithdraw, self))
 	addEventHandler("companyAddPlayer", root, bind(self.Event_companyAddPlayer, self))
@@ -98,14 +99,16 @@ function CompanyManager:sendInfosToClient(client)
 	end
 end
 
-function CompanyManager:Event_companyQuit()
+function CompanyManager:Event_companyQuit(reason)
 	local company = client:getCompany()
-	if not company then return end
 
+	if not company then return end
 	if company:getPlayerRank(client) == CompanyRank.Leader then
 		client:sendWarning(_("Als Leader kannst du nicht das Unternehmen verlassen!", client))
 		return
 	end
+
+	HistoryPlayer:getSingleton():addLeaveEntry(client.m_Id, client.m_Id, company.m_Id, "company", company:getPlayerRank(client.m_Id), reason, _("Eigenwunsch", client))
 	company:removePlayer(client)
 	client:sendSuccess(_("Du hast das Unternehmen erfolgreich verlassen!", client))
     company:addLog(client, "Unternehmen", "hat das Unternehmen verlassen!")
