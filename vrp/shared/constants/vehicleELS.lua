@@ -1002,6 +1002,44 @@ ELS_PRESET = {
             }
         },
     },
+    ["Rescue_RCVan"] = {
+        hasSiren = true,
+        headlightSequence = true,
+		lightBar = {0, 0.8, 1.12, 1.05, "red"},
+        sequenceCount = 2,
+        sequenceDuration = 300,
+        light = {
+            r1 = {-0.7, 0.8, 1.19, 0.3, 255, 10, 0},
+            r3 = {-0.3, 0.8, 1.19, 0.3, 255, 10, 0},
+            w = {0, 0.8, 1.19, 0.4, 255, 255, 255, 0},
+            b1 = {0.7, 0.8, 1.19, 0.3, 255, 10, 0},
+            b3 = {0.3, 0.8, 1.19, 0.3, 255, 10, 0},
+            y1 = {0.72, -2.54, 0.92, 0.2, 255, 145, 0, 0},
+			y2 = {-0.72, -2.54, 0.92, 0.2, 255, 145, 0, 0},
+        },
+        sequence = {
+            [1] = {
+				b1 = {strobe = {150, 150, 255, 0}},
+				r1 = {strobe = {150, 150, 255, 0}},
+				r3 = {strobe = {100, 100, 255, 100}},
+                b3 = {strobe = {100, 100, 255, 100}},
+                w = {strobe = false},
+                y1 = {strobe = {100, 50, 255, 100}},
+				y2 = {strobe = false},
+				vehicle_light = {"l", {255, 10, 0}},
+            },
+            [2] = {
+				r3 = {strobe = {150, 150, 255, 0}},
+				b3 = {strobe = {150, 150, 255, 0}},
+				b1 = {strobe = {100, 100, 255, 100}},
+                r1 = {strobe = {100, 100, 255, 100}},
+				w = {strobe = {100, 50, 255, 0}},
+                y1 = {strobe = false},
+				y2 = {strobe = {100, 50, 255, 100}},
+				vehicle_light = {"r", {255, 10, 0}},
+            }
+        },
+    },
     [525] = { --Towtruck
         sequenceCount = 1,
         sequenceDuration = 1000,
@@ -1304,7 +1342,6 @@ ELS_PRESET = {
             }
         },
     },
-
     ["DFT_Transporter"] = { 
 		lightBar = {0, 3.8, 1.45, 1.4, "orange"},
         sequenceCount = 1,
