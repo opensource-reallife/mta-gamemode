@@ -473,7 +473,7 @@ function Admin:Event_adminTriggerFunction(func, target, reason, duration, admin)
 	if func == "aduty" or func == "smode" then
 		if admin:getRank() == RANK.Ticketsupporter then
 			self:toggleTicketSupportMode(admin)
-		else
+		elseif admin:getRank() >= RANK.Supporter then
 			self:toggleSupportMode(admin)
 		end
 	elseif func == "clearchat" then
