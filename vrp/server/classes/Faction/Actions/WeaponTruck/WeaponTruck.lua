@@ -69,6 +69,7 @@ function WeaponTruck:constructor(driver, boxContent, totalAmount, type)
 	self.m_BankAccountServer = BankServer.get("action.weapon_truck")
 
 	TollStation.openAll()
+	FactionState:getSingleton():forceOpenAreaGates()
 
 	local dest
 	local EvilBlipVisible = {}
@@ -173,6 +174,10 @@ function WeaponTruck:destructor()
 	end
 	killTimer(self.m_WaterCheckTimer)
 	if isTimer(self.m_WaterNotificationTimer) then killTimer(self.m_WaterNotificationTimer) end
+
+	setTimer(function()
+		FactionState:getSingleton():forceCloseAreaGates()
+	end, 300000, 1)
 end
 
 
