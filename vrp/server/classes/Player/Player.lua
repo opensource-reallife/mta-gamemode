@@ -1006,6 +1006,12 @@ function Player:payDay()
 	local points_total = 0
 
 	--Income:
+	if not self:getFaction() and not self:getCompany() then
+		income = income + PAYDAY_UNEMPLOYED
+		BankServer.get("server.bank"):transferMoney({self, true, true}, PAYDAY_UNEMPLOYED, "Bürgergeld", "Bank", "Interest", {silent = true})
+		self:addPaydayText("income", _("Bürgergeld", self), PAYDAY_UNEMPLOYED)
+	end
+
 	if self:getFaction() then
 		income_faction = self:getFaction():paydayPlayer(self)
 		points_total = points_total + self:getFaction():getPlayerRank(self)
@@ -1015,6 +1021,7 @@ function Player:payDay()
 			self:addPaydayText("income", _("%s-Lohn", self, self:getFaction():getShortName()), income_faction)
 		end
 	end
+
 	if self:getCompany() then
 		income_company = self:getCompany():paydayPlayer(self)
 		points_total = points_total + self:getCompany():getPlayerRank(self)
@@ -1024,6 +1031,7 @@ function Player:payDay()
 			self:addPaydayText("income", _("%s-Lohn", self, self:getCompany():getShortName()), income_company)
 		end
 	end
+	
 	if self:getGroup() then
 		income_group = self:getGroup():paydayPlayer(self)
 		points_total = points_total + self:getGroup():getPlayerRank(self)
@@ -1054,6 +1062,7 @@ function Player:payDay()
 		end
 	end
 
+	--[[
 	income_interest = math.floor(self:getBankMoney() * 0.01)
 	if income_interest > 1500 then income_interest = 1500 end
 	if income_interest > 0 then
@@ -1068,7 +1077,8 @@ function Player:payDay()
 		income = income + PAYDAY_NOOB_BONUS
 		BankServer.get("server.bank"):transferMoney({self, true, true}, PAYDAY_NOOB_BONUS, "Willkommens-Bonus", "Gameplay", "NoobBonus", {silent = true})
 		self:addPaydayText("income", _("Willkommens-Bonus", self), PAYDAY_NOOB_BONUS)
-	end
+	end 
+	]]
 
 	--Outgoing
 	local temp_bank_money = self:getBankMoney() + income

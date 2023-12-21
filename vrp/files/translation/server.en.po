@@ -3478,7 +3478,7 @@ msgid "Du konntest die Miete von %s's Haus nicht bezahlen."
 msgstr "You couldn't pay the rent on %s' house."
 
 msgid "Dir wurde ein Wanted erlassen!"
-msgstr "You were deprived of a Wanted!"
+msgstr "One of your wanteds was removed!"
 
 msgid "Du hast %s Punkte bekommen."
 msgstr "You got %s points."
@@ -4169,3 +4169,12 @@ msgstr "Vending machine rob"
 
 msgid "Mord"
 msgstr "Murder"
+
+msgid "Bürgergeld"
+msgstr "Unemployment benefit"
+
+msgid "Lohnsteuer"
+msgstr "Income tax"
+
+msgid "Grundsteuer"
+msgstr "Property tax"

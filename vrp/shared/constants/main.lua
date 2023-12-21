@@ -36,9 +36,10 @@ SNOW_SHADERS_ENABLED = true -- getRealTime().month == 11 or getRealTime().month 
 FIREWORK_ENABLED = true -- can users use firework?
 FIREWORK_SHOP_ACTIVE = false -- can users buy firework at the user meetup point?
 
--- BONI:
+-- PAYDAY:
 PAYDAY_NOOB_BONUS = 500 -- dollar
 PAYDAY_NOOB_BONUS_MAX_PLAYTIME = 50 -- hours
+PAYDAY_UNEMPLOYED = 500
 
 --TEXTURES:
 TEXTURE_STATUS = {

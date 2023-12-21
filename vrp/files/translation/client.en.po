@@ -365,7 +365,7 @@ msgid "Einkommen"
 msgstr "Income"
 
 msgid "Ausgaben"
-msgstr "Expenditure"
+msgstr "Expenses"
 
 msgid "weitere Informationen"
 msgstr "other details"
