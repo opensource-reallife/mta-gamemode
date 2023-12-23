@@ -15,8 +15,8 @@ function DeathmatchManager:constructor()
 	--self:addSign(Vector3(-33.5, 1374.9, 8.2), 274, "ZombieSurvival.png")
 
 	-- Sniper Game
-	--createObject (3863, -531.09998, 1972.7, 60.8, 0, 0, 156)
-	--self:addSign(Vector3(-534.09998, 1975.4, 59.5), 142, "SniperGame.png")
+	createObject (3863, -531.09998, 1972.7, 60.8, 0, 0, 156)
+	self:addSign(Vector3(-534.09998, 1975.4, 59.5), 142, "SniperGame.png")
 end
 
 function DeathmatchManager:addSign(pos, rotZ, image)

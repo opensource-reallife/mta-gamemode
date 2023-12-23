@@ -19,11 +19,11 @@ SniperGame.Positions = {
 }
 
 function SniperGame.initalize()
-	--[[
-	--local sniperPed = createPed(162 ,-531.40, 1972.36, 60.56, 333.32)
-	--sniperPed:setFrozen(true)
-	--local sniperMarker = createMarker(-530.19, 1974.61, 59.5, "cylinder", 1, 255, 0, 0, 125)
-	--Blip:new("SniperGame.png", -530.19, 1974.61) -- Todo: Change Blip
+	local sniperPed = createPed(162 ,-531.40, 1972.36, 60.56, 333.32)
+	sniperPed:setFrozen(true)
+	local sniperMarker = createMarker(-530.19, 1974.61, 59.5, "cylinder", 1, 255, 0, 0, 125)
+	local b = Blip:new("SniperGame.png", -530.19, 1974.61)
+	b:setDisplayText("Sniper Game", BLIP_CATEGORY.Leisure)
 
 	addEventHandler("onMarkerHit", sniperMarker, function(hitElement, dim)
 		if hitElement:getType() == "player" and dim and not hitElement.vehicle then
@@ -47,10 +47,9 @@ function SniperGame.initalize()
 			ped:kill(client, 34, 9)
 			client:giveWeapon(34, 2, true)
 		else
-			ped:setAnimation("ped", "WOMAN_walknorm")
+			ped:setAnimation("ped", "walk_civi")
 		end
 	end)
-	]]
 end
 
 function SniperGame:constructor()
@@ -183,9 +182,9 @@ function SniperGame:spawnPed(pos, rot)
 	local ped = createPed(183, pos, rot)
 	ped:setDimension(self.m_Dimension)
 	if math.random(0,5) == 5 then
-		ped:setAnimation("ped", "woman_run")
+		ped:setAnimation("ped", "run_civi")
 	else
-		ped:setAnimation("ped", "WOMAN_walknorm")
+		ped:setAnimation("ped", "walk_civi")
 	end
 	for player, score in pairs(self.m_PedKills) do
 		if player and isElement(player) then

@@ -154,8 +154,9 @@ function DeathmatchManager:constructor()
 
 	self:loadServerLobbys()
 	self.m_BankServer = BankServer.get("gameplay.deathmatch")
-	local b = Blip:new("SniperGame.png", 1327.88, -1556.25)
+	local b = Blip:new("Paintball.png", 1327.88, -1556.25)
 	b:setDisplayText("Paintball-Arena", BLIP_CATEGORY.Leisure)
+	b:setOptionalColor({255, 56, 253})
 	self.m_Marker = createMarker(1327.88, -1556.25, 13.55, "corona", 2, 255, 125, 0)
 	addEventHandler("onMarkerHit", self.m_Marker, function(hitElement, dim)
 		if hitElement:getType() == "player" and not hitElement.vehicle and dim and hitElement:isLoggedIn() then
