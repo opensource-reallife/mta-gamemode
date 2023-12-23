@@ -12,9 +12,14 @@ function BankPcMouseMenu:constructor(posX, posY, element)
 
 	self:addItem(_("Bank Computer")):setTextColor(Color.Orange)
 
-	self:addItem("Tresortür öffnen",
+	local itemText = "Tresortür öffnen"
+	if localPlayer:getFaction():isStateFaction() then
+		itemText = "Tresortür verriegeln"
+	end
+
+	self:addItem(itemText,
 		function ()
-			triggerServerEvent("bankRobberyPcHack", localPlayer)
+			triggerServerEvent("bankRobberyPcHack", localPlayer, element)
 		end
 	)
 

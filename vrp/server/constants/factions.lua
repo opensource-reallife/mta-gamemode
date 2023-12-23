@@ -12,28 +12,27 @@ factionNavigationpoint = {}
 factionSpawnpoint = {}
 factionAirDropPoint = {}
 factionDTDestination = {}  -- position, rotation, skinId, name
+
 EVIL_FACTION_SPAWN_POINT = Vector3(2816.75, -1166.49, 1029.17) -- position inside the standard evil faction interior
 EVIL_FACTION_SPAWN_INTERIOR = 8
 MAX_NEEDHELP_DURATION = 1000 * 60 * 15
-
-
 
 FACTION_STATE_WT_DESTINATION = Vector3(1598.78064, -1611.63953, 12.5)
 WEAPONTRUCK_NAME = {["evil"] = "Waffentruck", ["state"] = "Staats-Waffentruck"}
 WEAPONTRUCK_NAME_SHORT = {["evil"] = "Waffentruck", ["state"] = "Staats-WT"}
 
 WEAPONTRUCK_MIN_MEMBERS = {["evil"] = 0, ["state"] = 0}
-BANKROB_MIN_MEMBERS = DEBUG and 0 or 1
-CASINOHEIST_MIN_MEMBERS = DEBUG and 0 or 2
-WEEDTRUCK_MIN_MEMBERS = DEBUG and 0 or 1
+BANKROB_MIN_MEMBERS = DEBUG and 0 or 2
+CASINOHEIST_MIN_MEMBERS = DEBUG and 0 or 3
+WEEDTRUCK_MIN_MEMBERS = DEBUG and 0 or 2
 EVIDENCETRUCK_MIN_MEMBERS = DEBUG and 0 or 1
 ARMSDEALER_MIN_MEMBERS = DEBUG and 0 or 1
-SHOPROB_MIN_MEMBERS = DEBUG and 0 or 1
-HOUSEROB_MIN_MEMBERS = DEBUG and 0 or 1
+SHOPROB_MIN_MEMBERS = DEBUG and 0 or 2
+HOUSEROB_MIN_MEMBERS = DEBUG and 0 or 2
 JEWELRY_MIN_MEMBERS = DEBUG and 0 or 2
-PRISONBREAK_MIN_MEMBERS = DEBUG and 0 or 2
+PRISONBREAK_MIN_MEMBERS = DEBUG and 0 or 1
 SHOP_VEHICLE_ROB_MIN_MEMBERS = DEBUG and 0 or 2
-CHRISTMASTRUCK_MIN_MEMBERS = DEBUG and 0 or 1 --deactivate after christmas
+CHRISTMASTRUCK_MIN_MEMBERS = DEBUG and 0 or 2 --deactivate after christmas
 MIN_PLAYERS_FOR_FIRE = 2
 MIN_PLAYERS_FOR_VEHICLE_FIRE = 1
 

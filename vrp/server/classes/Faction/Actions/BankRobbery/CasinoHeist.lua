@@ -183,8 +183,6 @@ function CasinoHeist:startAlarm()
 	triggerClientEvent("bankAlarm", root, unpack(self.m_MarkedPosition)) --back
 end
 
-
-
 function CasinoHeist:openSafeDoor()
 	local pos = self.m_SafeDoor:getPosition()
 	self.m_SafeDoor:move(3000, 2145.44, 1626.16, pos.z, 0, 0, 100, "InOutQuad")

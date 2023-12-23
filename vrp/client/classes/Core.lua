@@ -130,6 +130,7 @@ function Core:ready() --onClientResourceStart
 	TrainManager:new()
 	FireManager:new()
 	SARManager:new()
+	BankRobberyManager:new()
 	VehicleInteraction:new()
 	EventManager:new()
 	DMRaceEvent:new()

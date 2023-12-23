@@ -1,8 +1,8 @@
 -- ****************************************************************************
 -- *
 -- *  PROJECT:     vRoleplay
--- *  FILE:        server/classes/BankRobbery.lua
--- *  PURPOSE:     Bank robbery class
+-- *  FILE:        server/classes/Faction/Actions/BankRobbery/BankPalomino.lua
+-- *  PURPOSE:     Bank Palomino class
 -- *
 -- ****************************************************************************
 
@@ -104,7 +104,6 @@ function BankPalomino:build()
 end
 
 function BankPalomino:startRob(player)
-
 	self:createTruck(2337.54, 16.67, 26.61, 0) --this first ad startRobGeneral unfreezes the truck
 	self:startRobGeneral(player)
 
@@ -136,7 +135,18 @@ function BankPalomino:spawnGuards()
 				self.m_GuardPed1:startShooting(hitElement)
 			end
 		end
+	end)
 
+	self.m_GuardPed2 = GuardActor:new(Vector3(2309.21, 14.94, 26.53))
+	self.m_GuardPed2:setRotation(0, 0, 180, "default", true)
+	self.m_GuardPed2:setFrozen(true)
+	self.m_GuardPed2.Colshape = createColCuboid(2314.4 ,1.15 ,25 ,2.5 ,21.45 , 4)
+	addEventHandler("onColShapeHit", self.m_GuardPed2.Colshape, function(hitElement, dim)
+		if dim and hitElement.type == "player" then
+			if hitElement:getFaction() and hitElement:getFaction():isEvilFaction() then
+				self.m_GuardPed2:startShooting(hitElement)
+			end
+		end
 	end)
 end
 

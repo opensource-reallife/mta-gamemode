@@ -29,6 +29,25 @@ function BankRobbery:virtual_constructor(...)
     BankRobbery.constructor(self, ...)
 end
 
+function BankRobbery:triggerStatistics()
+	local timeLeft, timeSafeOpen = false, false
+
+	if self.m_Timer and self.m_Timer:isValid() then
+		timeLeft = self.m_Timer:getDetails()
+	end
+
+	local openVaultTimer = BankRobberyManager:getSingleton().m_OpenVaulTimer
+	if openVaultTimer and openVaultTimer:isValid() then
+		timeSafeOpen = openVaultTimer:getDetails()
+	end
+
+	if self.m_AlarmTriggered then
+		local onlinePlayersState = FactionState:getSingleton():getOnlinePlayers(true, true)
+		triggerClientEvent(onlinePlayersState, "refreshBankRobStats", resourceRoot, timeLeft, timeSafeOpen)
+	end
+	-- triggerClientEvent(self:getEvilPeople(), "refreshBankRobStats", resourceRoot, timeLeft, timeSafeOpen)
+end
+
 function BankRobbery:spawnPed(skin, pos, rot)
 	if isElement(self.m_Ped) then
 		destroyElement(self.m_Ped)
@@ -52,9 +71,15 @@ function BankRobbery:destroyRob()
 
 	local tooLatePlayers = getElementsWithinColShape(self.m_SecurityRoomShape, "player")
 	if tooLatePlayers then
-		for key, player in pairs( tooLatePlayers) do
-			killPed(player)
-			player:sendInfo("Du bist im abgeschlossenen Raum verendet!")
+		for key, player in pairs(tooLatePlayers) do
+			if self.m_Name == "Bank" then
+				local offsetX = Randomizer:get(1, 5) / 3
+				local offsetY = Randomizer:get(1, 5) / 3
+				player:setPosition(2314.40 + offsetX, -4.25 + offsetY, 26.74)
+			else
+				player:kill()
+				player:sendInfo("Du bist im abgeschlossenen Raum verendet!")
+			end
 		end
 	end
 	triggerClientEvent("bankAlarmStop", root)
@@ -139,6 +164,10 @@ function BankRobbery:destroyRob()
 	if self.m_BlipPC then
 		self.m_BlipPC:setOptionalColor({27, 125, 47})
 	end
+
+	if self.m_StatisticsTimer and self.m_StatisticsTimer:isValid() then
+		self.m_StatisticsTimer:destroy()
+	end
 end
 
 function BankRobbery:onHelpColHit(hitElement, matchingDimension)
@@ -168,6 +197,7 @@ function BankRobbery:startRobGeneral(player) --ped got targeted
 	self.m_CircuitBreakerPlayers = {}
 	self.m_MoneyBags = {}
 	self:setAllTrucksActive(true)
+	self.m_StatisticsTimer = Timer(bind(self.triggerStatistics, self), 1000, 0)
 
 	StatisticsLogger:getSingleton():addActionLog("BankRobbery", "start", self.m_RobPlayer, self.m_RobFaction, "faction")
 
@@ -255,6 +285,12 @@ end
 function BankRobbery:timeUp()
 	PlayerManager:getSingleton():breakingNews("Der Banküberfall ist beendet! Die Täter haben sich zu viel Zeit gelassen!")
 	Discord:getSingleton():outputBreakingNews("Der Banküberfall ist beendet! Die Täter haben sich zu viel Zeit gelassen!")
+	self:destroyRob()
+end
+
+function BankRobbery:sealSafeDoor()
+	PlayerManager:getSingleton():breakingNews("Der Banküberfall ist beendet! Der Tresor wurde verriegelt!")
+	self.m_BankAccountServer:transferMoney({"faction", 1, true}, Randomizer:get(15000, 30000), "Tresor verriegelt", "Action", "BankRobbery", {silent = true})
 	self:destroyRob()
 end
 
@@ -350,7 +386,8 @@ end
 
 function BankRobbery:Event_onSafeClicked(button, state, player)
 	if button == "left" and state == "down" then
-		if self:isPlayerParticipant(player) and player:getFaction():isEvilFaction() then
+		local faction = player:getFaction()
+		if self:isPlayerParticipant(player) and (faction:isEvilFaction() or faction:isStateFaction()) then
 			if self.m_IsBankrobRunning then
 				local position = source:getPosition()
 				local rotation = source:getRotation()

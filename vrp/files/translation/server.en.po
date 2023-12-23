@@ -4178,3 +4178,6 @@ msgstr "Income tax"
 
 msgid "Grundsteuer"
 msgstr "Property tax"
+
+msgid "Du kannst das gerade nicht tun!"
+msgstr "You can't do that right now!"
