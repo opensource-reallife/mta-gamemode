@@ -35,4 +35,5 @@ jobs:
           docker push ghcr.io/$GITHUB_REPOSITORY:$DOCKERTAG
   
   deploy:
+    needs: build
     uses: ./.github/workflows/deployment.yml
