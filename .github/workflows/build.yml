@@ -35,5 +35,4 @@ jobs:
           docker push ghcr.io/$GITHUB_REPOSITORY:$DOCKERTAG
   
   deploy:
-    runs-on: ubuntu-latest
     uses: ./.github/workflows/deployment.yml
