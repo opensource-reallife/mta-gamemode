@@ -101,10 +101,12 @@ function Gangwar:onAreaPayday()
 	local m_Owner
 	local areasInTotal = 0
 	for index, area in pairs( self.m_Areas ) do
-		m_Owner = area.m_Owner
-		if not payouts[m_Owner] then payouts[m_Owner] = 0 end
-		payouts[m_Owner] = payouts[m_Owner] + 1
-		areasInTotal = areasInTotal + 1
+		if area ~= false then
+			m_Owner = area.m_Owner
+			if not payouts[m_Owner] then payouts[m_Owner] = 0 end
+			payouts[m_Owner] = payouts[m_Owner] + 1
+			areasInTotal = areasInTotal + 1
+		then
 	end
 	if areasInTotal == 0 then return end
 	local amount = 0;
