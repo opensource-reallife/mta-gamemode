@@ -262,9 +262,9 @@ factionDTDestination[6] = {Vector3(1546.82, -1384.42, 14.02), 180, 294, "Leis Bu
 factionRankNames[7] = {
 [0] = "Newbie",
 [1] = "Hoody",
-[2] = "Homeboy",
-[3] = "Pimp",
-[4] = "Violent",
+[2] = "Crackhead",
+[3] = "Dealer",
+[4] = "Pimp",
 [5] = "Cuzz",
 [6] = "Junkie"
 }
