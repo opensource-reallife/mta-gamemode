@@ -524,16 +524,17 @@ GAS_STATIONS = {
 		evilStation = true,
 		fuelTypes = {"petrol", "diesel", "jetfuel"},
 	},]]
-	--[[{
+	{
 		name = "Triaden",
 		stations = {
-			{Vector3(1913.78, 964.34, 11.22), 185, 1},
+			{Vector3(1894.66, 966.42, 11.22), 180, 1},
+			{Vector3(1941.09, 1004.75, 53.20), 180, 1},
 		},
 		accessible =  {1, FactionStaticId.TRIAD},
 		nonInterior = true,
 		evilStation = true,
-		fuelTypes = {"petrol", "diesel"},
-	},]]
+		fuelTypes = {"petrol", "diesel", "jetfuel"},
+	},
 	{
 		name = "Grove Street",
 		stations = {
@@ -544,7 +545,7 @@ GAS_STATIONS = {
 		evilStation = true,
 		fuelTypes = {"petrol", "diesel", "jetfuel"},
 	},
-	{
+	--[[{
 		name = "Ballas",
 		stations = {
 			{Vector3(2241.83, -1443.94, 24.63), 90, 1},
@@ -553,7 +554,7 @@ GAS_STATIONS = {
 		nonInterior = true,
 		evilStation = true,
 		fuelTypes = {"petrol", "diesel", "jetfuel"},
-	},
+	},]]
 	--[[{
 		name = "Kartell",
 		stations = {
