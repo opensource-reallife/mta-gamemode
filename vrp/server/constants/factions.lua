@@ -360,23 +360,23 @@ factionDTDestination[10] = {Vector3(2764.33, -2235.26, 5.19), 272.27, 116, "Jos√
 
 -- ID 11 = Triads
 factionRankNames[11] = {
-	[0] = "Blue Lantern",
-	[1] = "49er",
-	[2] = "Straw Sandal",
-	[3] = "White Paper Fan",
-	[4] = "Red Pole",
-	[5] = "Intense Master",
-	[6] = "Dragon Head"
+    [0] = "Blue Lantern",
+    [1] = "Initiated Member",
+    [2] = "Pak Tsz Sin",
+    [3] = "Xiong Shou",
+    [4] = "Red Pole",
+    [5] = "Incense Master",
+    [6] = "Dragon Head"
 }
-factionColors[11] = {["r"] = 230,["g"] = 20,["b"] = 0}
-factionCarColors[11] = {["r"] = 40,["g"] = 0,["b"] = 0, ["r1"] = 40,["g1"] = 0,["b1"] = 0}
+factionColors[11] = {["r"] = 5,["g"] = 24,["b"] = 179}
+factionCarColors[11] = {["r"] = 5,["g"] = 24,["b"] = 179, ["r1"] = 5,["g1"] = 24,["b1"] = 179}
 factionSkins[11] = {[49]=true, [118]=true, [120]=true, [122]=true, [123]=true, [141]=true, [169]=true,[294]=true}
 factionWeapons[11] = {[22]=true, [24]=true, [25]=true, [29]=true, [30]=true, [31]=true, [33]=true}
 factionSpecialWeapons[11] = {
 	["Weapons"] = {[8]=true, [16]=true, [28]=true, [34]=true, [35]=true, [44]=true, [45]=true},
 	["Equipment"] = {["Fallschirm"]=true, ["DefuseKit"]=true, ["Rauchgranate"]=true, ["Gasmaske"]=true, ["SLAM"]=true},
 }
-evilFactionInteriorEnter[11] = Vector3(1923.46, 959.96, 11.0)
+evilFactionInteriorEnter[11] = Vector3(1923.46, 959.96, 10.82)
 factionWTDestination[11] = Vector3(1912.89, 935.21, 9.7)
 factionSpawnpoint[11] = {EVIL_FACTION_SPAWN_POINT, EVIL_FACTION_SPAWN_INTERIOR, 11}
 factionNavigationpoint[11] = evilFactionInteriorEnter[11]
