@@ -106,7 +106,7 @@ function Gangwar:onAreaPayday()
 			if not payouts[m_Owner] then payouts[m_Owner] = 0 end
 			payouts[m_Owner] = payouts[m_Owner] + 1
 			areasInTotal = areasInTotal + 1
-		then
+		end
 	end
 	if areasInTotal == 0 then return end
 	local amount = 0;
