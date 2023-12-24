@@ -55,6 +55,8 @@ function Gangwar:constructor( )
 			if row["active"] == 1 then
 				self.m_Areas[#self.m_Areas+1] = Area:new(row, self)
 				addEventHandler("onPickupHit", self.m_Areas[#self.m_Areas].m_Pickup, bind(Gangwar.Event_OnPickupHit, self))
+			else
+				self.m_Areas[#self.m_Areas+1] = false
 			end
 		end
 	end
@@ -199,7 +201,9 @@ function Gangwar:getAreas()
 	local sendTable = {}
 	local nowTimestamp = getRealTime().timestamp
 	for index, area in pairs(self.m_Areas) do
-		client:triggerEvent("gangwarLoadArea", area:getName(), area:getPosition(), area:getOwnerId(), area:getLastAttack(), nowTimestamp >= area:getLastAttack()+( GANGWAR_ATTACK_PAUSE*UNIX_TIMESTAMP_24HRS), area:getId())
+		if area ~= false then
+			client:triggerEvent("gangwarLoadArea", area:getName(), area:getPosition(), area:getOwnerId(), area:getLastAttack(), nowTimestamp >= area:getLastAttack()+( GANGWAR_ATTACK_PAUSE*UNIX_TIMESTAMP_24HRS), area:getId())
+		end
 	end
 	client:triggerEvent("gangwarLoadAttackLog", GangwarStatistics:getSingleton():getAttackLog())
 	client:triggerEvent("gangwarLoadTopList", GangwarStatistics.TopStats["Damage"], GangwarStatistics.TopStats["Kill"], GangwarStatistics.TopStats["MVP"], GangwarStatistics:getSingleton():getPlayerStats(client))
