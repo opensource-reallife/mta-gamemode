@@ -150,6 +150,8 @@ function SniperGame:removePlayer(player)
 	if MinigameManager:getSingleton():checkForFreaks(player) then
 		player:giveAchievement(22)
 	end
+
+	player.Minigame = nil
 end
 
 function SniperGame:getPlayers()
