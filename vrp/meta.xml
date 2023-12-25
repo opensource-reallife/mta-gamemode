@@ -3595,10 +3595,12 @@
 
 	<!-- Includes -->
 	<include resource="exo_maps" />
+	<include resource="orl_maps" />
 	<include resource="bone_attach" />
 	<include resource="reload"/>
 	<include resource="helicopterrope" />
 	<include resource="heligrab" />
+	<include resource="orl_models" />
 	<!-- Shaders -->
 	<include resource="Bloom" />
 	<include resource="Contrast" />

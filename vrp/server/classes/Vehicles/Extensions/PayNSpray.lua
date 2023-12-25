@@ -1,10 +1,12 @@
 PayNSpray = inherit(Object)
 
-function PayNSpray:constructor(x, y, z, garageId)
+function PayNSpray:constructor(x, y, z, garageId, blipHidden)
 	self.m_FixShape = createColSphere(x, y, z, 4)
-	self.m_Blip = Blip:new("PayNSpray.png", x, y, root, 600)
-	self.m_Blip:setDisplayText("Pay'N'Spray Autoreparatur", BLIP_CATEGORY.VehicleMaintenance)
-	self.m_Blip:setOptionalColor({67, 121, 98})
+	if not blipHidden then
+		self.m_Blip = Blip:new("PayNSpray.png", x, y, root, 600)
+		self.m_Blip:setDisplayText("Pay'N'Spray Autoreparatur", BLIP_CATEGORY.VehicleMaintenance)
+		self.m_Blip:setOptionalColor({67, 121, 98})
+	end
 	self.m_BankAccountServer = BankServer.get("vehicle.paynspray")
 	if garageId then
 		setGarageOpen(garageId, true)
@@ -146,6 +148,6 @@ function PayNSpray.initializeAll()
 	PayNSpray:new(-1420.49, 2582.37, 55.41, 40) -- El Quebrados
 	PayNSpray:new(720.26, -455.14, 16.34, 47) -- Dillimore
 
-	--local noobSpawn = PayNSpray:new(1444.860, -1790.127, 13.250)
-	--noobSpawn:createCustomDoor(13028, Vector3(1445.6, -1781.39, 16.1), Vector3(180, -90, 90))
+	local userMeetup = PayNSpray:new(1722.08, -1772.67, 13.62, nil, true)
+	userMeetup:createCustomDoor(13028, Vector3(1722.19, -1763.90, 16.1), Vector3(180, -90, 90))
 end
