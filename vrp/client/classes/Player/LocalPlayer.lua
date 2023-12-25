@@ -96,7 +96,7 @@ function LocalPlayer:constructor()
 	local col6 = createColCuboid( 1367.295,  -1282.958, 12, 30, 20, 10) -- ammunation ls downtown
 	self.m_NoOcclusionZone = NonOcclusionZone:new(col6)
 
-	local col7 = createColCuboid(1537.90, -1950.23, 10, 400, 400, 250) -- noobspawn
+	local col7 = createColCuboid(1537.90, -1950.23, 10, 400, 400, 250) -- user meetup point
 	self.m_NoOcclusionZone = NonOcclusionZone:new(col7)
 
 	NetworkMonitor:new()
