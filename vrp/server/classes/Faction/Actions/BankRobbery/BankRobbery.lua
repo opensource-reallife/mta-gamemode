@@ -290,6 +290,7 @@ end
 
 function BankRobbery:sealSafeDoor()
 	PlayerManager:getSingleton():breakingNews("Der Banküberfall ist beendet! Der Tresor wurde verriegelt!")
+	Discord:getSingleton():outputBreakingNews("Der Banküberfall ist beendet! Der Tresor wurde verriegelt!")
 	self.m_BankAccountServer:transferMoney({"faction", 1, true}, Randomizer:get(15000, 30000), "Tresor verriegelt", "Action", "BankRobbery", {silent = true})
 	self:destroyRob()
 end

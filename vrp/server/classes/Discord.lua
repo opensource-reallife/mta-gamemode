@@ -28,7 +28,7 @@ function Discord:outputBreakingNews( text )
 				username="Breaking News",
 			},
 		}
-		fetchRemote ( "", postData, function() end )
+		fetchRemote ( Config.get("DISCORD_WEBHOOK_URL"), postData, function() end )
 	else 
 		outputDebugString("Discord Breaking-News was not sent ( Debug-Mode )", 3)
 	end

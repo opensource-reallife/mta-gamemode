@@ -24,6 +24,8 @@ Config.register("WEB_ACCOUNT_PASSWORD", "string", "")
 
 Config.register("INGAME_WEB_SECRET", "string", "")
 
+Config.register("DISCORD_WEBHOOK_URL", "string", "")
+
 function Core:constructor()
 	outputServerLog("Initializing core...")
 	nextframe(function() --small hack to override the name meta-name
