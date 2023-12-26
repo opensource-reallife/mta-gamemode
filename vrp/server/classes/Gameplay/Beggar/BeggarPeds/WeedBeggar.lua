@@ -29,7 +29,7 @@ function WeedBeggar:sellWeed(player, amount)
 				end, 50, 1
 			)
 			-- Give Wanteds
-			if chance(3) then
+			if chance(5) then
 				setTimer(function()
 					if player and isElement(player) then
 						player:sendWarning(_("Deine illegalen Aktivitäten wurden von einem Augenzeugen an das SAPD gemeldet!", player))
