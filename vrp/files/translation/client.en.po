@@ -305,7 +305,7 @@ msgid "Du hast keine Firma/Gang!"
 msgstr "You have no firm/gang!"
 
 msgid "Ausweis / Kaufvertrag"
-msgstr "Identity card / purchase agreement"
+msgstr "ID / Sales contract"
 
 msgid "Fahrzeugverleih"
 msgstr "Car Rental"
@@ -3326,7 +3326,7 @@ msgid "Servertour starten"
 msgstr "Start Server Tour"
 
 msgid "Möchtest du eine Servertour starten? Nach Abschluss erhältst du Erfahrung und eine kleine Belohnung! (Wenn der Mauszeiger nicht aktiv ist, drücke 'B')"
-msgstr "Do you want to start a server tour? Upon completion you will receive experience and a small reward! (If the mouse pointer is not active, press 'B')"
+msgstr "Do you want to start a server tour? Upon completion you will receive some experience points and a small reward! (If the mouse pointer is not active, press 'B')"
 
 msgid "Halloween"
 msgstr "Halloween"
@@ -4312,9 +4312,6 @@ msgstr "Attention: %s / %s custom texture(s) are loaded"
 msgid "Deine lokale Zeit weicht von der Serverzeit um %s Sekunden ab."
 msgstr "Your local time differs from the server time by %s seconds."
 
-msgid "Möchtest du eine Server-Tour starten? Nach Abschluss erhälst du Erfahrung und eine kleine Belohnung! (Wenn der Mauszeiger nicht aktiv ist, drücke 'B')"
-msgstr "Do you want to start a server tour? After completion you will get experience and a small reward! (If the mouse pointer is not active, press 'B')"
-
 msgid "Das GPS wird vom runden Radar nicht unterstützt! Bitte wechsle das Design"
 msgstr "The GPS is not supported by the round radar! Please change the design"
 
@@ -4835,3 +4832,129 @@ msgstr "Quit"
 
 msgid "Du musst einen Grund angeben!"
 msgstr "You have to provide a reason!"
+
+msgid "Herzlich Willkommen"
+msgstr "Welcome to Los Santos"
+
+msgid "Ich führe dich ein wenig durch %s. Halte dich an meine Tipps und ein super Start ist dir sicher. Gelegentlich wartet auch eine Belohnung für eine Aufgabe auf dich! Folge dem Pfeil über deinem Kopf zur ersten Station!"
+msgstr "I'll guide you a bit through %s. Stick to my tips, and you'll surely have a great start. Sometimes, there's also a reward waiting for a task! Follow the arrow above your head to the first station!"
+
+msgid "Sehr gut! Du kannst nun mit der Taste 'B' das Klickmenü öffnen. Wenn du damit auf den NPC 'Ausweis / Kaufvertrag' oben am Schalter ganz rechts klickst, kannst du dir deinen Personalausweis beantragen."
+msgstr "Great! You can now open the click menu by pressing the 'B' key. If you click on the NPC 'ID / Sales contract' at the counter's top right with that, you can apply for your ID card."
+
+msgid "Stadthalle"
+msgstr "Townhall"
+
+msgid "Sobald du den Personalausweis gekauft hast, kannst du die Stadthalle wieder über den weißen Marker verlassen."
+msgstr "Once you've purchased the ID card, you can exit the town hall through the white marker again."
+
+msgid "In unmittelbarer Nähe (rechts) befindet sich außerdem das SAPD. Dort kannst du falls nötig Wanteds abbauen oder gegen ein wenig Geld dein Waffenlevel erhöhen."
+msgstr "In close proximity (to the right), you'll also find the SAPD. There, you can reduce your wanted level if necessary or increase your weapon skill for a small fee."
+
+msgid "Fahrschule"
+msgstr "Driving School"
+
+msgid "Du solltest dich jetzt um einen Führerschein kümmern."
+msgstr "You should take care of getting a driver's license now."
+
+msgid "Zunächst musst du im Gebäude die Theorieprüfung absolvieren, indem du auf den NPC im inneren klickst. Danach kannst du im gleichen Menü die Prüfung für den Autoführerschein machen."
+msgstr "First, you need to complete the theory test inside the building by clicking on the NPC. After that, you can take the driving license test in the same menu."
+
+msgid "Dein erstes Auto"
+msgstr "Your first car"
+
+msgid "Sobald du deinen Führerschein gemacht hast, solltest du dich um einen fahrbahren Untersatz kümmern. Folge dem Pfeil zum Billigautohändler! Du kannst dir am Eingang der Fahrschule ein Fahrzeug für den Weg ausleihen."
+msgstr "Once you've obtained your driver's license, you should look into getting a vehicle. Follow the arrow to the budget car dealer! You can also rent a vehicle at the entrance of the driving school for your way there."
+
+msgid "Hier hast du einen kleinen Bonus, kaufe dir davon ein Fahrzeug!"
+msgstr "Here's a little bonus for you, use it to buy yourself a vehicle!"
+
+msgid "Pimp my ride"
+msgstr "Pimp my ride"
+
+msgid "Dein Fahrzeug ist dir zu langsam oder dir gefällt die Farbe nicht? Kein Problem, im Tuningshop kannst du es aufmotzen."
+msgstr "Is your vehicle too slow for you or do you not like the color? No problem, you can tune it up at the tuning shop."
+
+msgid "Fahre einfach in die Garage und gönn dir ein paar Tuningteile!"
+msgstr "Simply drive into the garage and treat yourself to some tuning parts!"
+
+msgid "Hier müffelt was"
+msgstr "Something smells here"
+
+msgid "Riechst du das auch? Du solltest dringend deine Kleidung wechseln!"
+msgstr "Can you smell that too? You really should change your clothes!"
+
+msgid "Dies ist der billige Kleidungsshop. Wenn du willst kannst natürlich auch gehobene Kleidung im Westen der Stadt kaufen..."
+msgstr "This is the inexpensive clothing store. Of course, if you want, you can also buy upscale clothing in the western part of the city..."
+
+msgid "Fahrzeug verschwunden"
+msgstr "Missing vehicle"
+
+msgid "Kommen wir nun zum Unternehmen Mechanic & Tow. Fahre zum Abschlepphof!"
+msgstr "Let's move on to the company Mechanic & Tow. Drive to the towing yard!"
+
+msgid "Hier können abgeschleppte oder explodierte Fahrzeuge freigekauft werden. Schaue dazu links im Hof zum Glashaus."
+msgstr "Vehicles that have been towed or exploded can be reclaimed here. Look to the left in the courtyard for assistance."
+
+msgid "Pizza Pizza"
+msgstr "Pizza Pizza"
+
+msgid "Es wird nun Zeit das erste Geld zu verdienen, am besten wir fangen mit dem Austragen von Pizza an. Folge den Pfeil um zum Job zu kommen!"
+msgstr "It's time to start earning the first bit of money; it's best if we start with delivering pizzas. Follow the arrow to get to the job!"
+
+msgid "Du hast die Hauptfiliale von Well Stacked Pizza gefunden. Frag den Chef am besten ob er einen Job für dich hat. Öffne mit Taste 'B' das Klicksystem und nimm den Job an. Anschließend kannst du im roten Marker ein Fahrzeug zum Austragen spawnen."
+msgstr "You have found the main branch of Well Stacked Pizza. It's best to ask the manager if there's a job available for you. Press 'B' to open the menu system and accept the job. Then, you can spawn a delivery vehicle at the red marker."
+
+msgid "Money, Money, Money"
+msgstr "Money, Money, Money"
+
+msgid "Nachdem du gejobbt hast solltest du dein Geld in die Bank einzahlen. Fahre zum Bankautomaten beim PD!"
+msgstr "Once you've finished your shift, you should deposit your money in the bank. Head to the ATM at the PD!"
+
+msgid "Öffne nun das Klickmenü mit 'B' und klicke auf den Bankautomaten. In unserem Handy (Taste U) gibt es eine Bank-App um deinen Kontostand zu überprüfen oder Geld zu überweisen!"
+msgstr "Open the context menu by pressing 'B', then click on the ATM. On our phone (press 'U'), there's a banking app to check your account balance or transfer money!"
+
+msgid "Fishing? Still funny!"
+msgstr "Fishing? Still funny!"
+
+msgid "Der nächste Punkt auf unserer Liste ist der Angler Lutz. Folge einfach wieder dem Pfeil!"
+msgstr "The next point on our list is the fisherman Lutz. Just follow the arrow again!"
+
+msgid "Hier ist der Angelshop, weitere Infos zu unserem Angelsystem erhälst du im Hilfemenü (F1)"
+msgstr "Here is the fishing shop; you can find more information about our fishing system in the help menu (F1)."
+
+msgid "Boxing Association"
+msgstr "Boxing Association"
+
+msgid "Unser nächster Zwischenstopp führt uns zur Boxhalle!"
+msgstr "Our next stop takes us to the boxing hall!"
+
+msgid "In der Boxhalle kannst du gegen andere Spieler boxen. Ihr könnt optional einen Geldbetrag setzen und euch so mit gekonnten hieben etwas dazu verdienen."
+msgstr "In the boxing gym, you can box against other players. You have the option to place a wager, allowing you to earn a bit by skillfully landing punches."
+
+msgid "Alkohol ist auch eine Lösung"
+msgstr "Alcohol is also a solution"
+
+msgid "Puh viel geschafft. Machen wir nun einen Abstecher in eine Bar!"
+msgstr "Phew, accomplished a lot. Shall we now make a detour to a bar?"
+
+msgid "Es gibt zahlreiche Bars in Los Santos. Besitzer der Bar können Stripperinnen engagieren und Musik verwalten."
+msgstr "In Los Santos, there are numerous bars. Bar owners can hire strippers and manage music."
+
+msgid "Pferderennen"
+msgstr "Horse races"
+
+msgid "So, nun ab zum Pferderennen. Du findest dies im Norden von Los Santos."
+msgstr "Alright, off to the horse races. You'll find them in the north of Los Santos."
+
+msgid "Hier kannst du am täglichen Pferderennen teilnehmen. Gehe einfach ins Wettlokal und setze auf ein Pferd deiner Wahl!"
+msgstr "Here, you can participate in the daily horse races. Just head to the betting station and place your bet on a horse of your choice!"
+
+msgid "Formel 1 - Naja fast"
+msgstr "Formula 1 - Well, almost"
+
+msgid "Der letzte Punkt unserer Tour führt zu einem richtigen Highlight. Der %s Kartbahn!"
+msgstr "The final point of our tour leads to a real highlight. The %s go-kart track!"
+
+msgid "Hier kannst du Rennen gegen die Uhr fahren und neue Toptimes aufstellen. Das wars mit der Tour, weiter Hilfe findest du unter F1, /report oder im Forum!"
+msgstr "Here, you can race against the clock and set new top times. That's it for the tour; for further assistance, you can find help under F1, /report, or in the forum!"
