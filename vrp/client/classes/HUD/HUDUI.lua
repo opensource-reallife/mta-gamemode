@@ -289,6 +289,7 @@ function HUDUI:drawExo()
 	local r_os = 0
 	local hudStartX = math.floor(screenWidth-width-r_os)
 	local lebensanzeige = getElementHealth(self:getLocalTarget())
+	local hungeranzeige = self:getLocalTarget():getPrivateSync("Hunger")
 	local imageWidth = 303
 	local imageHeight = 322
 	local progressBarSpeed = 24000
@@ -325,8 +326,15 @@ function HUDUI:drawExo()
 		dxDrawImageSection(bar_x ,height*(186/imageHeight),bar_width*b_x,bar_height,scroll_,0,207*b_x,15,'files/images/HUD/exo/red_b.png',0,0,0,tocolor(255,255,255,200)) -- zweiter Balken
 	end
 
-	b_x = (getPedOxygenLevel(localPlayer))/(1000 + getPedStat(localPlayer, 22)*1.5 + getPedStat(localPlayer, 225)*1.5)
-	dxDrawImageSection(bar_x ,height*(218/imageHeight),bar_width*b_x,bar_height,scroll_,0,207*b_x,15,'files/images/HUD/exo/cyan_b.png',0,0,0,tocolor(255,255,255,200))
+	--b_x = (getPedOxygenLevel(localPlayer))/(1000 + getPedStat(localPlayer, 22)*1.5 + getPedStat(localPlayer, 225)*1.5)
+	--dxDrawImageSection(bar_x ,height*(218/imageHeight),bar_width*b_x,bar_height,scroll_,0,207*b_x,15,'files/images/HUD/exo/cyan_b.png',0,0,0,tocolor(255,255,255,200))
+
+	b_x = self:getLocalTarget():getPrivateSync("Hunger")/100
+	if b_x > (15*0.01) then
+		dxDrawImageSection(bar_x ,height*(218/imageHeight),bar_width*b_x,bar_height,scroll_,0,207*b_x,15,'files/images/HUD/exo/green_b.png',0,0,0,tocolor(255,255,255,200))
+	elseif b_x <= (15*0.01) and ( getTickCount() % 1000 > 500 ) then
+		dxDrawImageSection(bar_x ,height*(218/imageHeight),bar_width*b_x,bar_height,scroll_,0,207*b_x,15,'files/images/HUD/exo/green_b.png',0,0,0,tocolor(255,255,255,200)) -- zweiter Balken
+	end
 	
 	if prog >= 1 then
 		start_count = getTickCount()
@@ -339,7 +347,8 @@ function HUDUI:drawExo()
 
 	dxDrawText ("SCHUTZWESTE: "..math.floor(getPedArmor(self:getLocalTarget())).."%",screenWidth-width*0.5-r_os,width*0.475,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" ) --Money
 	dxDrawText ("LEBEN: "..lebensanzeige.."%",screenWidth-width*0.5-r_os,width*0.57,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" ) --Money
-	dxDrawText ("ATEMLUFT: "..math.floor((getPedOxygenLevel(localPlayer)*100)/(1000 + getPedStat(localPlayer, 22)*1.5 + getPedStat(localPlayer, 225)*1.5)).."%",screenWidth-width*0.5-r_os,width*0.675,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" ) --Money
+	dxDrawText ("HUNGER: "..hungeranzeige.."%",screenWidth-width*0.5-r_os,width*0.675,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" ) --Money
+	--dxDrawText ("ATEMLUFT: "..math.floor((getPedOxygenLevel(localPlayer)*100)/(1000 + getPedStat(localPlayer, 22)*1.5 + getPedStat(localPlayer, 225)*1.5)).."%",screenWidth-width*0.5-r_os,width*0.675,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" ) --Money
 	dxDrawImage(screenWidth-width*0.3-r_os,0,width*0.24,width*0.24, FileModdingHelper:getSingleton():getWeaponImage(self:getLocalTarget():getWeapon()))
 	local tAmmo = getPedTotalAmmo( self:getLocalTarget() )
 	local iClip = getPedAmmoInClip( self:getLocalTarget() )
@@ -436,20 +445,25 @@ function HUDUI:drawChart()
 		end
 	end
 
-	local health, armor = self:getLocalTarget():getHealth(), self:getLocalTarget():getArmor()
+	local health, armor, hunger = self:getLocalTarget():getHealth(), self:getLocalTarget():getArmor(), self:getLocalTarget():getPrivateSync("Hunger")
 	local oxygen = math.percent(getPedOxygenLevel(self:getLocalTarget()), (1000 + getPedStat(self:getLocalTarget(), 22)*1.5 + getPedStat(self:getLocalTarget(), 225)*1.5))
 	local dsc = core:get("HUD", "chartLabels", true)
 	local healthColor = Color.HUD_Red
 	if health <= 20 then --quick and dirty flash animation
 		healthColor = Color.changeAlphaRate(healthColor, getProgress("health-color", getTickCount()%1000 > 500))
 	end
+	local hungerColor = Color.HUD_Green
+	if hunger <= 20 then --quick and dirty flash animation
+		hungerColor = Color.changeAlphaRate(hungerColor, getProgress("hunger-color", getTickCount()%1000 > 500))
+	end
 	local oxygenColor = Color.HUD_Blue
 	if oxygen <= 50 then
-		oxygenColor = Color.changeAlphaRate(oxygenColor, getProgress("health-color", getTickCount()%1000 > 500))
+		oxygenColor = Color.changeAlphaRate(oxygenColor, getProgress("oxygen-color", getTickCount()%1000 > 500))
 	end
 
 	drawCol(1, 0, Color.Clear, ("%02d.%02d.%04d"):format(getRealTime().monthday, getRealTime().month+1, getRealTime().year+1900), FontAwesomeSymbols.Calendar, Color.HUD_Brown_D, "date", not core:get("HUD", "chartDateVisible", false))
 	drawCol(1, health, healthColor, dsc and math.ceil(health).."% Leben" or math.ceil(health), FontAwesomeSymbols.Heart, Color.HUD_Red_D, "health", health == 0)
+	drawCol(1, hunger, hungerColor, dsc and math.ceil(hunger).."% Hunger" or math.ceil(hunger), FontAwesomeSymbols.Utensils, Color.HUD_Green_D, "hunger", hunger == 0)
 	drawCol(1, armor, Color.HUD_Grey, dsc and math.ceil(armor).."% Schutzweste" or math.ceil(armor), FontAwesomeSymbols.Shield, Color.HUD_Grey_D, "armor", armor == 0)
 	drawCol(1, oxygen, oxygenColor, dsc and math.ceil(oxygen).."% Atemluft" or math.ceil(oxygen), FontAwesomeSymbols.Comment, Color.HUD_Blue_D, "oxygen", oxygen == 100)
 	drawCol(1, 0, Color.Clear, toMoneyString(self:getLocalTarget():getMoney()), FontAwesomeSymbols.Money, Color.HUD_Green_D, "money")

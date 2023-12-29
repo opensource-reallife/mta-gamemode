@@ -35,7 +35,6 @@ function LocalPlayer:constructor()
 	self.m_PlayerActionPermissions = {}
 	self.m_PlayerWeaponPermissions = {}
 
-
 	-- Since the local player exist only once, we can add the events here
 	addEventHandler("retrieveInfo", root, bind(self.Event_retrieveInfo, self))
 	addEventHandler("onClientPlayerWasted", root, bind(self.playerWasted, self))
@@ -66,6 +65,9 @@ function LocalPlayer:constructor()
 	addCommandHandler("anim", bind(self.startAnimation, self))
 
 	self.m_DeathRenderBind = bind(self.deathRender, self)
+
+	--Hungersystem
+	Timer(bind(self.hungerDecrease, self), 1000*60*Randomizer:get(45, 75), 0)
 
 	--Alcoholsystem
 	self.m_AlcoholDecreaseBind = bind(self.alcoholDecrease, self)
@@ -100,7 +102,6 @@ function LocalPlayer:constructor()
 	self.m_NoOcclusionZone = NonOcclusionZone:new(col7)
 
 	NetworkMonitor:new()
-
 end
 
 function LocalPlayer:getId()
@@ -1013,4 +1014,8 @@ end
 
 function LocalPlayer:getGroupVehicleExtraSlots()
 	return self:getData("GroupVehicleExtraSlots") or 0
+end
+
+function LocalPlayer:hungerDecrease()
+	triggerServerEvent("playerDecreaseHunger", localPlayer, Randomizer:get(5, 15))
 end

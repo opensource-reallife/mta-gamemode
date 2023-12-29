@@ -74,6 +74,7 @@ end
 
 --for new icons: https://fontawesome.com/icons?d=gallery&m=free -> search -> click on icon -> copy from subtitle (unicode glyph). name it after its original name in the table below
 FontAwesomeSymbols = {
+	Utensils = "",
 	Close = "",
 	Left = "",
 	ArrowsAlt = "",
