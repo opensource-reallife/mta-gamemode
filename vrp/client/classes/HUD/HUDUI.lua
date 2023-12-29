@@ -240,7 +240,7 @@ function HUDUI:drawVRPHealthArmor()
 		end
 	end
 
-	local left, top = screenWidth-0.25*screenWidth, 0.175*screenHeight
+	local left, top = screenWidth-0.25*screenWidth, 0.14*screenHeight
 	local width, height = 0.195*screenWidth, 0.0325*screenHeight
 
 	dxDrawRectangle(left, top, width, height,tocolor(0,0,0,150))
@@ -255,7 +255,7 @@ function HUDUI:drawVRPHealthArmor()
 	health = "Leben: "..math.floor(health).." %"
 	dxDrawText(health, left , top, left+width, top+height, Color.White, 1.2, "default-bold", "center", "center")
 
-	top =  0.21*screenHeight
+	top =  0.175*screenHeight
 
 	local armor = self:getLocalTarget():getArmor()
 	dxDrawRectangle(left, top, width, height, tocolor(0, 0, 0, 150))
@@ -263,6 +263,15 @@ function HUDUI:drawVRPHealthArmor()
 
 	local armor = "Schutzweste: "..math.floor(armor).." %"
 	dxDrawText(armor, left , top, left+width, top+height, Color.White, 1.2, "default-bold", "center", "center")
+
+	top =  0.21*screenHeight
+
+	local hunger = self:getLocalTarget():getPrivateSync("Hunger")
+	dxDrawRectangle(left, top, width, height, tocolor(0, 0, 0, 150))
+	dxDrawRectangle(left, top, width*hunger/100, height, tocolor(128, 0, 0))
+
+	local hunger = "Hunger: "..math.floor(hunger).." %"
+	dxDrawText(hunger, left , top, left+width, top+height, Color.White, 1.2, "default-bold", "center", "center")
 end
 
 function HUDUI:getZone()
