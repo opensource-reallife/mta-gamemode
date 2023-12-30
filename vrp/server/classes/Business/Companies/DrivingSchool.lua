@@ -1,5 +1,5 @@
 DrivingSchool = inherit(Company)
-DrivingSchool.LicenseCosts = {["car"] = 4500, ["bike"] = 2000, ["truck"] = 10000, ["heli"] = 50000, ["plane"] = 50000 }
+DrivingSchool.LicenseCosts = {["car"] = 2500, ["bike"] = 1500, ["truck"] = 6000, ["heli"] = 25000, ["plane"] = 25000 }
 DrivingSchool.TypeNames = {["car"] = "Autoführerschein", ["bike"] = "Motorradschein", ["truck"] = "LKW-Schein", ["heli"] = "Helikopterschein", ["plane"] = "Flugschein"}
 DrivingSchool.m_LessonVehicles = {}
 DrivingSchool.testRoute = {
