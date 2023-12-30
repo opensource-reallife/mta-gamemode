@@ -4970,3 +4970,36 @@ msgstr "Here, you can race against the clock and set new top times. That's it fo
 
 msgid "Um nicht ins AFK-Cafe zu kommen, gib folgenden Befehl ein: /noafk %s"
 msgstr "To avoid entering the AFK-Cafe, enter the following command: /noafk %s"
+
+msgid "Leben: %s %%"
+msgstr "Health: %s %%"
+
+msgid "Schutzweste: %s %%"
+msgstr "Armor: %s %%"
+
+msgid "Kein GPS-Signal"
+msgstr "No GPS-Signal"
+
+msgid "SCHUTZWESTE: %s%%"
+msgstr "ARMOR: %s%%"
+
+msgid "LEBEN: %s%%"
+msgstr "HEALTH: %s%%"
+
+msgid "ATEMLUFT: %s%%"
+msgstr "OXYGEN: %s%%"
+
+msgid "%s Std."
+msgstr "%s h"
+
+msgid "%s%% Leben"
+msgstr "%s%% Health"
+
+msgid "%s%% Schutzweste"
+msgstr "%s%% Armor"
+
+msgid "%s%% Atemluft"
+msgstr "%s%% Oxygen"
+
+msgid "%s Punkte"
+msgstr "%s Points"
