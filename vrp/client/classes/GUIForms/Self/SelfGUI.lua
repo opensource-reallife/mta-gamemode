@@ -43,7 +43,7 @@ SelfGUI.Stats = {
 	{
 		["Name"] = "Collectables_Collected",
 		["CustomStatistic"] = true,
-		["text"] = "eXo Logos gesammelt",
+		["text"] = "Sammelobjekte gefunden",
 		["value"] = function(value) return ("%s/%s"):format(value, COLLECTABLES_COUNT_PER_PLAYER) end
 	},
 	{
@@ -53,7 +53,7 @@ SelfGUI.Stats = {
 	},
 	{
 		["Name"] = "LegendaryFishCaught",
-		["text"] = "  davon Legendäre",
+		["text"] = "╚► davon Legendäre",
 		["value"] = function(value) return value end
 	},
 	{
