@@ -27,8 +27,8 @@ GANGWAR_ATTACK_PICKUPMODEL =  1313
 GANGWAR_PAYOUT_PER_PLAYER = 400
 GANGWAR_PAYOUT_PER_AREA = 800
 UNIX_TIMESTAMP_24HRS = 86400 --//86400
-GANGWAR_PAY_PER_DAMAGE = 5
-GANGWAR_PAY_PER_KILL = 1000
+GANGWAR_PAY_PER_DAMAGE = 10
+GANGWAR_PAY_PER_KILL = 1500
 PAYDAY_ACTION_BONUS = 2500
 --//
 addRemoteEvents{ "onLoadCharacter", "onDeloadCharacter", "Gangwar:onClientRequestAttack", "GangwarQuestion:disqualify", "gangwarGetAreas" }
@@ -128,7 +128,7 @@ function Gangwar:onAreaPayday()
 	end
 	local count = 0
 	for k, faction in pairs(FactionManager:getSingleton().Map) do
-		if faction:isEvilFaction() then
+		if faction:isEvilFaction() or faction.m_Id == 1 then
 			if areaCounts[faction] then
 				count = areaCounts[faction]
 			else
@@ -282,7 +282,7 @@ end
 function Gangwar:attackArea( player )
 	local faction = player.m_Faction
 	if faction then
-		if faction:isStateFaction() == true or faction.m_Id == 4 then
+		if faction.m_Id == 2 or faction.m_Id == 3 or faction.m_Id == 4 then
 			return player:sendError(_("Du bist nicht berechtigt am Gangwar teilzunehmen!",  player))
 		end
 		local id = player.m_Faction.m_Id
