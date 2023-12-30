@@ -809,7 +809,7 @@ function Group:payDay()
 	outgoingPermanently["Fahrzeugsteuern"] = 0
 
 	if self:getMoney() > 0 then
-		incomingPermanently["Zinsen"] = self:getMoney() > 300000 and math.floor(300000 * 0.0005) or math.floor(self:getMoney() * 0.0005)
+		incomingPermanently["Zinsen"] = self:getMoney() > 1000000 and math.floor(1000000 * 0.0005) or math.floor(self:getMoney() * 0.0005)
 	end
 
 	for index, vehicle in pairs(self:getVehicles()) do
@@ -832,8 +832,8 @@ function Group:payDay()
 		else
 			local money = self.m_PlayerActivity[id] * 10
 
-			if money > 100 then
-				money = 100
+			if money > 50 then
+				money = 50
 			end
 
 			incomingBonus["Spieler (offline)"] = incomingBonus["Spieler (offline)"] + money
