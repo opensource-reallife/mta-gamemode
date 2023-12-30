@@ -443,8 +443,8 @@ RC_UPGRADE_VEHICLE = {
 }
 
 RC_UPGRADE_VEHICLE_PRICE = {
-    [441] =     350000, -- RC Bandit
-    [464] =     500000, -- RC Baron
-    [501] =     750000, -- RC Goblin
-    [564] =     650000, -- RC Tiger
+    [441] =     200000, -- RC Bandit
+    [464] =     350000, -- RC Baron
+    [501] =     400000, -- RC Goblin
+    [564] =     250000, -- RC Tiger
 }
