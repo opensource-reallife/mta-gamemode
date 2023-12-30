@@ -70,7 +70,7 @@ function JewelryStoreRobbery:constructor(attacker, maxBags)
 	self.m_EvilDeliveryPedBlip:setDisplayText("Juwelierraub-Abgabe")
 	self.m_EvilDeliveryPedBlip:setZ(self.m_EvilDeliveryPed.position.z)
 
-	self.m_StateDeliveryPed = NPC:new(281, 1578.373, -1620.275, 13.547, 270)
+	self.m_StateDeliveryPed = NPC:new(281, -1597.85, 729.46, -4.91, 0)
     self.m_StateDeliveryPed:setImmortal(true)
 	self.m_StateDeliveryPed:setFrozen(true)
 	self.m_StateDeliveryPed:setData("clickable", true, true)
