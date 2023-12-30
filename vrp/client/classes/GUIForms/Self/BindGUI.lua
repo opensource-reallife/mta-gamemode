@@ -44,7 +44,7 @@ function BindGUI:constructor()
 
 	self.m_Footer = {}
 
-	self.m_AddBindButton = GUIButton:new(self.m_Width*0.63, 40, self.m_Width*0.35, self.m_Height*0.07, "neuen Bind hinzufügen", self.m_Window):setBackgroundColor(Color.Green)
+	self.m_AddBindButton = GUIButton:new(self.m_Width*0.63, 40, self.m_Width*0.35, self.m_Height*0.07, _"neuen Bind hinzufügen", self.m_Window):setBackgroundColor(Color.Green)
   	self.m_AddBindButton.onLeftClick = function()
 		self:changeFooter("new")
 		self.m_NewText:setText("")
@@ -307,7 +307,7 @@ function BindManageGUI:constructor(ownerType)
 	self.m_Grid:addColumn("Funktion", 0.2)
 	self.m_Grid:addColumn("Text", 0.8)
 
-	self.m_AddBindButton = GUIButton:new(self.m_Width*0.63, 40, self.m_Width*0.35, self.m_Height*0.07, "neuen Bind hinzufügen", self.m_Window):setBackgroundColor(Color.Green)
+	self.m_AddBindButton = GUIButton:new(self.m_Width*0.63, 40, self.m_Width*0.35, self.m_Height*0.07, _"neuen Bind hinzufügen", self.m_Window):setBackgroundColor(Color.Green)
   	self.m_AddBindButton.onLeftClick = function()
 		self:changeFooter("new")
 		self.m_NewText:setText("")

@@ -2900,10 +2900,19 @@ msgid "Ping"
 msgstr "Ping"
 
 msgid "Derzeit sind %d Spieler online"
-msgstr "Currently %d players are online"
+msgstr "Currently are %d players online"
+
+msgid "neuen Bind hinzufügen"
+msgstr "add new bind"
 
 msgid "Ping: %dms"
 msgstr "Ping: %dms"
+
+msgid "Filter (gesamte Liste)"
+msgstr "Filter (complete list)"
+
+msgid "Auswahl in Liste"
+msgstr "Selection in list"
 
 msgid "Score: %d"
 msgstr "Score: %d"
@@ -3926,7 +3935,7 @@ msgid "Keypad"
 msgstr "Keypad"
 
 msgid "Achtung! Da du den Low-Mode für Rauch benutzt wird dir evtl. kein Motorrauch angezeigt!"
-msgstr "Attention! Since you are using the low mode for smoke, you may not be shown any engine smoke!"
+msgstr "Warning! You activated Low-Mode for smoke. Smoke coming from tires and guns could not be visible anymore"
 
 msgid "Transmitter"
 msgstr "Transmitter"
@@ -4958,3 +4967,6 @@ msgstr "The final point of our tour leads to a real highlight. The %s go-kart tr
 
 msgid "Hier kannst du Rennen gegen die Uhr fahren und neue Toptimes aufstellen. Das wars mit der Tour, weiter Hilfe findest du unter F1, /report oder im Forum!"
 msgstr "Here, you can race against the clock and set new top times. That's it for the tour; for further assistance, you can find help under F1, /report, or in the forum!"
+
+msgid "Um nicht ins AFK-Cafe zu kommen, gib folgenden Befehl ein: /noafk %s"
+msgstr "To avoid entering the AFK-Cafe, enter the following command: /noafk %s"
