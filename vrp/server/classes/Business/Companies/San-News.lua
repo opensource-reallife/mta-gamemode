@@ -172,28 +172,32 @@ function SanNews:Event_advertisement(senderIndex, text, color, duration)
 
 		local costs = (length*AD_COST_PER_CHAR + AD_COST + durationExtra) * colorMultiplicator
 
-		if client:getBankMoney() >= costs then
-			if self.m_NextAd < getRealTime().timestamp then
-				client:transferBankMoney({self, nil, true}, costs, "San News Ad", "Company", "Ads")
-				self.m_NextAd = getRealTime().timestamp + AD_DURATIONS[duration] + AD_BREAK_TIME
-				StatisticsLogger:getSingleton():addAdvert(client, text)
+		if (client:getPlayTime() / 60) >= AD_MIN_PLAYTIME then
+			if client:getBankMoney() >= costs then
+				if self.m_NextAd < getRealTime().timestamp then
+					client:transferBankMoney({self, nil, true}, costs, "San News Ad", "Company", "Ads")
+					self.m_NextAd = getRealTime().timestamp + AD_DURATIONS[duration] + AD_BREAK_TIME
+					StatisticsLogger:getSingleton():addAdvert(client, text)
 
-				local sender = {referenz = "player", name = client:getName()}
-				if senderIndex == 2 and client:getGroup() and client:getGroup():getName() then
-					sender = {referenz = "group", name = client:getGroup():getName(), number = client:getGroup():getPhoneNumber()}
-				elseif senderIndex == 3 and client:getFaction() and client:getFaction():getShortName() then
-					sender = {referenz = "faction", name = client:getFaction():getShortName(), number = client:getFaction():getPhoneNumber()}
-				elseif senderIndex == 4 and client:getCompany() and client:getCompany():getShortName() then
-					sender = {referenz = "company", name = client:getCompany():getShortName(), number = client:getCompany():getPhoneNumber()}
+					local sender = {referenz = "player", name = client:getName()}
+					if senderIndex == 2 and client:getGroup() and client:getGroup():getName() then
+						sender = {referenz = "group", name = client:getGroup():getName(), number = client:getGroup():getPhoneNumber()}
+					elseif senderIndex == 3 and client:getFaction() and client:getFaction():getShortName() then
+						sender = {referenz = "faction", name = client:getFaction():getShortName(), number = client:getFaction():getPhoneNumber()}
+					elseif senderIndex == 4 and client:getCompany() and client:getCompany():getShortName() then
+						sender = {referenz = "company", name = client:getCompany():getShortName(), number = client:getCompany():getPhoneNumber()}
+					end
+
+					triggerClientEvent("showAd", client, sender, text, color, duration)
+				else
+					local next = self.m_NextAd - getRealTime().timestamp
+					client:sendError(_("Die nächste Werbung kann erst in %d Sekunden gesendet werden!", client, next))
 				end
-
-				triggerClientEvent("showAd", client, sender, text, color, duration)
 			else
-				local next = self.m_NextAd - getRealTime().timestamp
-				client:sendError(_("Die nächste Werbung kann erst in %d Sekunden gesendet werden!", client, next))
+				client:sendError(_("Du hast zu wenig Geld dabei! (%s$)", client, costs))
 			end
 		else
-			client:sendError(_("Du hast zu wenig Geld dabei! (%s$)", client, costs))
+			client:sendError(_("Du benötigst dafür mindestens %d Spielstunden!", client, AD_MIN_PLAYTIME))
 		end
 	end
 end

@@ -28,7 +28,7 @@ end
 
 function PickupWeapon:pickup(player)
 	if player and isElement(player) then
-		if ((player:getPlayTime() / 60) >=  3) or self.m_IgnoreHoursPlayed then
+		if ((player:getPlayTime() / 60) >= 3) or self.m_IgnoreHoursPlayed then
 			if not ( player:isFactionDuty() and player:getFaction():isStateFaction()) then
 				giveWeapon(player, self.m_WeaponID, self.m_Ammo, true)
 				client:sendSuccess(_("Du hast die Waffe erhalten!", client))
@@ -41,7 +41,7 @@ function PickupWeapon:pickup(player)
 			setTimer(setPedAnimation, 1200, 1, player, false)
 			delete(self)
 		else
-			player:sendError(_("Du hast zu wenig Spielstunden!", player))
+			player:sendError(_("Du benötigst dafür mindestens %d Spielstunden!", player, 3))
 		end
 	end
 end

@@ -4187,3 +4187,6 @@ msgstr "Property tax"
 
 msgid "Du kannst das gerade nicht tun!"
 msgstr "You can't do that right now!"
+
+msgid "Du benötigst dafür mindestens %d Spielstunden!"
+msgstr "You need at least %d played hours for this!"
