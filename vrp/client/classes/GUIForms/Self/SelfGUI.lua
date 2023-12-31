@@ -16,14 +16,14 @@ SelfGUI.Stats = {
 		["value"] =
 			function()
 				local hours, minutes = math.floor(localPlayer:getPlayTime()/60), (localPlayer:getPlayTime() - math.floor(localPlayer:getPlayTime()/60)*60)
-				return ("%s Stunde%s, %s Minute%s"):format(hours, hours == 1 and "" or "n", minutes, minutes == 1 and "" or "n")
+				return _("%s Stunde(n), %s Minute(n)", hours, minutes)
 			end
 	},
 	{
 		["Name"] = "AFKTime",
 		["Timer"] = 65000,
 		["text"] = "Aktuelle AFK-Zeit",
-		["value"] = function() local minutes = math.floor((localPlayer.m_AFKTime + localPlayer.m_CurrentAFKTime)/60/1000) return ("%s Minute%s"):format(minutes, minutes == 1 and "" or "n") end
+		["value"] = function() local minutes = math.floor((localPlayer.m_AFKTime + localPlayer.m_CurrentAFKTime)/60/1000) return _("%s Minute(n)", minutes) end
 	},
 	{
 		["Name"] = "Driven",
@@ -366,7 +366,7 @@ function SelfGUI:loadStatistics()
 	for i, data in pairs(SelfGUI.Stats) do
 		i = i - 1
 		local value = (data.CustomStatistic and localPlayer:getPrivateSync(data.Name) or localPlayer:getStatistics(data.Name)) or "-"
-		self.m_StatDescription[data.Name] = GUILabel:new(self.m_Width*0.02, self.m_Height*(0.11+i*0.06), self.m_Width*0.4, self.m_Height*0.06, _("%s:", data.text), self.m_TabStatistics)
+		self.m_StatDescription[data.Name] = GUILabel:new(self.m_Width*0.02, self.m_Height*(0.11+i*0.06), self.m_Width*0.4, self.m_Height*0.06, ("%s:"):format(_(data.text)), self.m_TabStatistics)
 		self.m_StatValue[data.Name] = GUILabel:new(self.m_Width*0.5, self.m_Height*(0.11+i*0.06), self.m_Width*0.4, self.m_Height*0.06, data.value(value), self.m_TabStatistics)
 
 		if not data.Timer then

@@ -2992,9 +2992,6 @@ msgstr "Fisherman level:"
 msgid "Einstellungen"
 msgstr "Settings"
 
-msgid "%s:"
-msgstr "%s:"
-
 msgid ", data.Name)"
 msgstr ", data.Name)"
 
@@ -5003,3 +5000,39 @@ msgstr "%s%% Oxygen"
 
 msgid "%s Punkte"
 msgstr "%s Points"
+
+msgid "Aktuelle AFK-Zeit"
+msgstr "Current AFK-Time"
+
+msgid "Gefahrene Kilometer"
+msgstr "Driven kilometres"
+
+msgid "Tode"
+msgstr "Deaths"
+
+msgid "Kills"
+msgstr "Kills"
+
+msgid "Sammelobjekte gefunden"
+msgstr "Collectables found"
+
+msgid "Fische gefangen"
+msgstr "Fishes caught"
+
+msgid "╚► davon Legendäre"
+msgstr "╚► of those Legendary"
+
+msgid "Fische verloren"
+msgstr "Fishes lost"
+
+msgid "Müll geangelt"
+msgstr "Caught trash"
+
+msgid "Sachen geworfen"
+msgstr "Things thrown"
+
+msgid "%s Stunde(n), %s Minute(n)"
+msgstr "%s Hour(s), %s Minute(s)"
+
+msgid "%s Minute(n)"
+msgstr "%s Minute(s)"
