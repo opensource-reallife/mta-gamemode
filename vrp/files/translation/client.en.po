@@ -319,6 +319,9 @@ msgstr "Equipment vehicle"
 msgid "Hier startet der Waffentruck!"
 msgstr "This is where the weapon truck starts!"
 
+msgid "Hier startet der Staatswaffentruck!"
+msgstr "This is where the state weapon truck starts!"
+
 msgid "Illegaler Waffentruck"
 msgstr "Illegal Arms Truck"
 
@@ -5057,3 +5060,114 @@ msgstr "Buy house from player"
 
 msgid "Haus verkaufen"
 msgstr "Sell house"
+
+msgid "Als Boxer musst du gegen andere Boxer antreten und diese im Kampf besiegen.\nGewinnst du den Kampf, gewinnst du ein Preisgeld.\nVerlierst du jedoch, gehst du leer aus."
+msgstr "As a boxer, you need to compete against other boxers and defeat them in combat.\nIf you win the fight, you earn a prize money.\nHowever, if you lose, you walk away with nothing."
+
+msgid "Als Farmer hast du 3 Aufgaben: sähen, ernten und beliefern.\nSpawne zu Anfang im roten Marker einen Traktor um mit diesem auf dem Feld hinter dem Marker zu sähen.\nAnschließend spawnst du dir einen Mähdrescher, mit welchem du nun deine Ernte einholst.\nAnschließend holst du dir deinen kleinen Pick up Truck (ebenfalls im roten Marker) und\nbelieferst den auf der Karte angezeigten Supermarkt ('Waypoint'-Blip)."
+msgstr "As a farmer, you have 3 tasks: seeding, harvesting, and delivering.\nAt the beginning, spawn a tractor in the red marker to sow seeds on the field behind the marker.\nNext, spawn a harvester to gather your crop.\nThen, get your small pick-up truck (also in the red marker) and deliver to the supermarket indicated on the map ('Waypoint' blip)."
+
+msgid "Als Logistiker ist es dein Job, Container zum anderen Verladezentrum zu fahren.\nDazu hast du einen DFT-300 zur Verfügung, den du dir am roten Marker erstellen kannst.\nAnschließend musst du unter den Ladekran fahren und warten bis der Container aufgeladen wurde.\nDein Ziel wird dir auf der Karte markiert."
+msgstr "As a logistician, your job is to transport containers to the other loading center.\nFor this, you have access to a DFT-300, which you can spawn at the red marker.\nNext, drive under the crane and wait for the container to be loaded.\nYour destination will be marked on the map."
+
+msgid "Als Holzfäller musst du die Bäume am Hügel (gelb markiert auf der Karte)\nfällen und sie zum Sägewerk fahren.\nSofern du genug Bäume gefällt hast schnappst du dir einen Flatbed und fährst in den blauen Marker, neben welchem sich ein Haufen von Bäumen angesammelt hat (deine gefällten Bäume).\nNun werden diese Bäume aufgeladen. Nachdem sie aufgeladen wurden musst du zum Sägewerk fahren (die rote Säge oder Punkt auf der Karte). Dort lieferst du sie ab."
+msgstr "As a logistician, your job is to transport containers to the other loading center.\nFor this, you have access to a DFT-300, which you can spawn at the red marker.\nNext, drive under the crane and wait for the container to be loaded.\nYour destination will be marked on the map."
+
+msgid "Als Straßenkehrer hast du die Aufgabe mithilfe der Kehrmaschine die Straßen von Los Santos sauberzuhalten.\nLaufe in den roten Marker und hole dir dein benötigtes Fahrzeug.\nSofern du es hast kannst du nun losfahren und über den auf der Straße liegenden Müll fahren um ihn aufzukehren."
+msgstr "As a street sweeper, your task is to keep the streets of Los Santos clean using the street sweeper.\nWalk into the red marker to get your required vehicle.\nOnce you have it, you can start driving and sweep over the trash lying on the road to clean it up."
+
+msgid "Du bist der Pilot eines Helikopters und musst Waren transportieren.\nDeinen Helikopter bekommst du beim roten Marker.\nMit diesem begibst du dich dann zum markierten Ort an den LS-Docks, wo Waren auf dich warten.\nLande darauf und fliege anschließend zum angegebenen Zielort!"
+msgstr "You are the pilot of a helicopter tasked with transporting goods.\nYou'll receive your helicopter at the red marker.\nUsing this, head to the marked location at the LS Docks, where goods await you.\nLand there and then fly to the designated destination!"
+
+msgid "Als Müllmann musst du mit deinem Müllwagen Abfalltonnen & Container abholen.\nIm roten Marker bekommst du dein benötigtes Fahrzeug.\nIn den Straßen von Los Santos sind Mülltonnen verteilt, neben denen du halten musst.\nFahre Anschließend zur Deponie zurück und lade deinen Müll in der Dump-Area aus."
+msgstr "As a garbage collector, your job is to pick up waste bins and containers with your garbage truck.\nAt the red marker, you'll receive your required vehicle.\nTrash bins are scattered throughout the streets of Los Santos; stop by them.\nThen, head back to the dump and unload your garbage at the dump area."
+
+msgid "Als Pizzalieferant hast du die Aufgabe die Ware des Pizza Stacks an die jeweiligen Orte zu liefern.\nDu erhälst deine Ware beim Pizza Stack ( Marker ) und lieferst Sie zum Ziel ( Ziel-Icon beim Radar ) ab.\nDesto schneller du dies schaffst, desto höher ist dein Bonus."
+msgstr "As a pizza delivery person, your task is to deliver Pizza Stack's goods to their respective locations.\nYou'll receive your goods at Pizza Stack (marker) and deliver them to the destination (target icon on the radar).\nThe faster you accomplish this, the higher your bonus."
+
+msgid "Wenn du Gabelstaplerfahrer bist, kannst du mit deinem Forklift Kisten aufladen.\nDiese musst du anschließend bei den LKW's abliefern.\nDeinen Forklift kannst du dir am roten Marker erstellen."
+msgstr "If you're a forklift driver, you can use your forklift to load crates.\nAfterward, you need to deliver them to the trucks.\nYou can spawn your forklift at the red marker."
+
+msgid "Als Schatzsucher fährst du hinaus aufs Meer um den Grund des Meeres nach Wertgegenständen\nabzusuchen. Anschließend hebst du diese in dein Schiff und entlädst sie am Hafen!\n\nDrücke 'Leertaste' um den 'Schatz' aufzunehmen."
+msgstr "As a treasure seeker, you venture out to the sea to search the ocean floor for valuables.\nThen, you lift them into your ship and unload them at the port!\n\nPress 'Spacebar' to pick up the 'treasure'."
+
+msgid "Der Job ist in 3 Arbeitsschritte aufgeteilt die verschiedene Spieler zu gleich ausführen können.\n\n1.) Abbau mit Spitzhacke: Baue die hellen Felsen direkt neben dem Dozer-Spawn mit der Spitzhacke ab. (Klicken zum Abbauen)\n\n2.) Einlagern: Lagere die abgebauten Gesteinsbrocken ein indem du diese mit dem Dozer in die Behälter schiebst.\n\n3.) Transport: Transportiere die eingelagerten Gesteinsbrocken mit dem Dumper aus der Kiesgrube. Zum Beladen fahre einfach unter ein Förderband."
+msgstr "The job is divided into 3 work steps that different players can perform simultaneously.\n\n1.) Mining with pickaxe: Mine the light-colored rocks right next to the Dozer spawn using the pickaxe. (Click to mine)\n\n2.) Storage: Store the mined rock blocks by pushing them into the containers using the Dozer.\n\n3.) Transport: Transport the stored rock blocks out of the quarry using the Dumper. To load, simply drive under a conveyor belt."
+
+msgid "Job: Boxer"
+msgstr "Job: Boxer"
+
+msgid "Job: Busfahrer"
+msgstr "Job: Bus Driver"
+
+msgid "Job: Bauer"
+msgstr "Job: Farmer"
+
+msgid "Job: Logistik"
+msgstr "Job: Logistician"
+
+msgid "Job: Holzfäller"
+msgstr "Job: Lumberjack"
+
+msgid "Job: Mechaniker"
+msgstr "Job: Mechanic"
+
+msgid "Job: Polizist"
+msgstr "Job: Police"
+
+msgid "Job: Straßenkehrer"
+msgstr "Job: Road Sweeper"
+
+msgid "Job: Müllmann"
+msgstr "Job: Trashman"
+
+msgid "Job: Service-Techniker"
+msgstr "Job: Service Technician"
+
+msgid "Job: Pizza-Lieferant"
+msgstr "Job: Pizza Delivery"
+
+msgid "Job: Helikopterpilot"
+msgstr "Job: Helicopter Pilot"
+
+msgid "Job: Gabelstapler-Fahrer"
+msgstr "Job: Forklift Operator"
+
+msgid "Job: Schatzsucher"
+msgstr "Job: Treasure Seeker"
+
+msgid "Job: Kiesgruben-Arbeiter"
+msgstr "Job: Gravel Quarry Worker"
+
+msgid "Kämpfe gegen Zombies bis zu deinem bitteren Tod! In der Area spawnen immer wieder gute Waffen,\ndie du dringend für deinen Überlebenskampf brauchst!"
+msgstr "Fight against zombies until your bitter end! Good weapons spawn regularly in the area, which you urgently need for your survival!"
+
+msgid "Minigame: GoJump"
+msgstr "Minigame: GoJump"
+
+msgid "Minigame: SideSwipe (Keine Highscores, da noch nicht fertig!)"
+msgstr "Minigame: SideSwipe (No highscores as it's not finished yet!)"
+
+msgid "Erledige alle gespawnten Peds mit gezielten Kopfschüssen bevor sie die gelbe Linie übertreten!"
+msgstr "Eliminate all spawned Peds with precise headshots before they cross the yellow line!"
+
+msgid "Steuere beide Autos mit den Tasten 'a' und 'd' oder Pfeilsten links, rechts. Weiche den Kästchen aus und sammel jeden Punkt."
+msgstr "Control both cars using 'a' and 'd' keys or left and right arrows. Dodge the boxes and collect every point."
+
+msgid "Das Ziel ist wie bei jedem Glücksspiel mit einer „Wette“ Geld zu gewinnen. Man setzt einen bestimmten Betrag\nein Feld und vertraut auf sein Glück!"
+msgstr "The goal is the same as any gambling game: to win money with a 'bet.' Place a certain amount on a field and rely on your luck!"
+
+msgid "Global"
+msgstr "Global"
+
+msgid "Jährlich"
+msgstr "Yearly"
+
+msgid "Monatlich"
+msgstr "Monthly"
+
+msgid "Wöchentlich"
+msgstr "Weekly"
+
+msgid "Täglich"
+msgstr "Daily"

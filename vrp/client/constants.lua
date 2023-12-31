@@ -103,12 +103,9 @@ MATERIAL_TYPES =
 HelpTextTitles = {
 	Jobs = {
 		Boxer = "Job: Boxer";
-		BusDriver = "Job: Busfahrer";
 		Farmer = "Job: Bauer";
 		Logistician = "Job: Logistik";
 		Lumberjack = "Job: Holzfäller";
-		Mechanic = "Job: Mechaniker";
-		Police = "Job: Polizist";
 		RoadSweeper = "Job: Straßenkehrer";
 		Trashman = "Job: Müllmann";
 		ServiceTechnician = "Job: Service-Techniker";
@@ -130,118 +127,26 @@ HelpTextTitles = {
 
 HelpTexts = {
 	Jobs = {
-		Boxer = [[
-			Als Boxer musst du gegen andere Boxer antreten und diese im Kampf besiegen.
-			Gewinnst du den Kampf, gewinnst du ein Preisgeld.
-			Verlierst du jedoch, gehst du leer aus.
-		]];
-		BusDriver = [[
-			Als Busfahrer musst du die Bürger von Los Santos von A nach B transportieren.
-			Im Grunde musst du nur dem roten Marker mit dem grauen Dreieck folgen und
-			kurz an den jeweiligen Bushaltestellen anhalten.
-
-			Wenn du keine Lust mehr hast und dine Tour beenden willst,
-			musst du nur aus dem Bus aussteigen und weglaufen.
-		]];
-		Farmer = [[
-			Als Farmer hast du 3 Aufgaben: sähen, ernten und beliefern.
-			Spawne zu Anfang im roten Marker einen Traktor um mit diesem auf dem Feld hinter dem Marker zu sähen.
-			Anschließend spawnst du dir einen Mähdrescher, mit welchem du nun deine Ernte einholst.
-			Anschließend holst du dir deinen kleinen Pick up Truck (ebenfalls im roten Marker) und
-			belieferst den auf der Karte angezeigten Supermarkt ("Waypoint"-Blip).
-		]];
-		Logistician = [[
-			Als Logistiker ist es dein Job, Container zum anderen Verladezentrum zu fahren.
-			Dazu hast du einen DFT-300 zur Verfügung, den du dir am roten Marker erstellen kannst.
-			Anschließend musst du unter den Ladekran fahren und warten bis der Container aufgeladen wurde.
-			Dein Ziel wird dir auf der Karte markiert.
-		]];
-		Lumberjack = [[
-			Als Holzfäller musst du die Bäume am Hügel (gelb markiert auf der Karte)
-			fällen und sie zum Sägewerk fahren.
-			Sofern du genug Bäume gefällt hast schnappst du dir einen Flatbed und fährst in den blauen Marker, neben welchem sich ein Haufen von Bäumen angesammelt hat (deine gefällten Bäume).
-			Nun werden diese Bäume aufgeladen. Nachdem sie aufgeladen wurden musst du zum Sägewerk fahren (die rote Säge oder Punkt auf der Karte). Dort lieferst du sie ab.
-		]];
-		Mechanic = [[
-			Als Mechaniker musst du die Autos deiner Mitbürger reparieren. Du reparierst sie, indem du auf das gewünschte Auto klickst und "reparieren" wählst.
-
-			ACHTUNG: im Fahrzeug muss sich ein Fahrer befinden!
-		]];
-		Police = [[
-			Als Polizist hast du die Aaufgabe die bösen Buben zu jagen.
-			Mithilfe deines Schlagstocks kannst du sie in das Gefängnis befördern.
-			Du kannst allerdings keine Wanteds verteilen, da diese automatisch vom System vergeben werden.
-			Um die Wanteds deiner Mitspieler einzusehen musst du den Polizeicomputer (F2) öffnen.
-
-			ACHTUNG: wenn dein Karma in den negativen Bereich fällt wirst du automatisch gefeuert!
-		]];
-		RoadSweeper = [[
-			Als Straßenkehrer hast du die Aufgabe mithilfe der Kehrmaschine die Straßen von Los Santos sauberzuhalten.
-			Laufe in den roten Marker und hole dir dein benötigtes Fahrzeug.
-			Sofern du es hast kannst du nun losfahren und über den auf der Straße liegenden Müll fahren um ihn aufzukehren.
-		]];
-		HeliTransport = [[
-			Du bist der Pilot eines Helikopters und musst Waren transportieren.
-			Deinen Helikopter bekommst du beim roten Marker.
-			Mit diesem begibst du dich dann zum markierten Ort an den LS-Docks, wo Waren auf dich warten.
-			Lande darauf und fliege anschließend zum angegebenen Zielort!
-		]];
-		Trashman = [[
-			Als Müllmann musst du mit deinem Müllwagen Abfalltonnen & Container abholen.
-			Im roten Marker bekommst du dein benötigtes Fahrzeug.
-			In den Straßen von Los Santos sind Mülltonnen verteilt, neben denen du halten musst.
-			Fahre Anschließend zur Deponie zurück und lade deinen Müll in der Dump-Area aus.
-		]];
-		ServiceTechnician = [[Todo]];
-		PizzaDelivery = [[
-			Als Pizzalieferant hast du die Aufgabe die Ware des Pizza Stacks an die jeweiligen Orte zu liefern.
-			Du erhälst deine Ware beim Pizza Stack ( Marker ) und lieferst Sie zum Ziel ( Ziel-Icon beim Radar ) ab.
-			Desto schneller du dies schaffst, desto höher ist dein Bonus.
-		]];
-		ForkLift = [[
-			Wenn du Gabelstaplerfahrer bist, kannst du mit deinem Forklift Kisten aufladen.
-			Diese musst du anschließend bei den LKW's abliefern.
-			Deinen Forklift kannst du dir am roten Marker erstellen.
-		]];
-		TreasureSeeker = [[
-			Als Schatzsucher fährst du hinaus aufs Meer um den Grund des Meeres nach Wertgegenständen
-			abzusuchen. Anschließend hebst du diese in dein Schiff und entlädst sie am Hafen!
-
-			Drücke 'Leertaste' um den "Schatz" aufzunehmen.
-		]];
-		Gravel = [[
-			Der Job ist in 3 Arbeitsschritte aufgeteilt die verschiedene Spieler zu gleich ausführen können.
-
-			1.) Abbau mit Spitzhacke: Baue die hellen Felsen direkt neben dem Dozer-Spawn mit der Spitzhacke ab. (Klicken zum Abbauen)
-
-			2.) Einlagern: Lagere die abgebauten Gesteinsbrocken ein indem du diese mit dem Dozer in die Behälter schiebst.
-
-			3.) Transport: Transportiere die eingelagerten Gesteinsbrocken mit dem Dumper aus der Kiesgrube. Zum Beladen fahre einfach unter ein Förderband.
-		]];
-
+		Boxer = "Als Boxer musst du gegen andere Boxer antreten und diese im Kampf besiegen.\nGewinnst du den Kampf, gewinnst du ein Preisgeld.\nVerlierst du jedoch, gehst du leer aus.";
+		Farmer = "Als Farmer hast du 3 Aufgaben: sähen, ernten und beliefern.\nSpawne zu Anfang im roten Marker einen Traktor um mit diesem auf dem Feld hinter dem Marker zu sähen.\nAnschließend spawnst du dir einen Mähdrescher, mit welchem du nun deine Ernte einholst.\nAnschließend holst du dir deinen kleinen Pick up Truck (ebenfalls im roten Marker) und\nbelieferst den auf der Karte angezeigten Supermarkt ('Waypoint'-Blip).";
+		Logistician = "Als Logistiker ist es dein Job, Container zum anderen Verladezentrum zu fahren.\nDazu hast du einen DFT-300 zur Verfügung, den du dir am roten Marker erstellen kannst.\nAnschließend musst du unter den Ladekran fahren und warten bis der Container aufgeladen wurde.\nDein Ziel wird dir auf der Karte markiert.";
+		Lumberjack = "Als Holzfäller musst du die Bäume am Hügel (gelb markiert auf der Karte)\nfällen und sie zum Sägewerk fahren.\nSofern du genug Bäume gefällt hast schnappst du dir einen Flatbed und fährst in den blauen Marker, neben welchem sich ein Haufen von Bäumen angesammelt hat (deine gefällten Bäume).\nNun werden diese Bäume aufgeladen. Nachdem sie aufgeladen wurden musst du zum Sägewerk fahren (die rote Säge oder Punkt auf der Karte). Dort lieferst du sie ab.";
+		RoadSweeper = "Als Straßenkehrer hast du die Aufgabe mithilfe der Kehrmaschine die Straßen von Los Santos sauberzuhalten.\nLaufe in den roten Marker und hole dir dein benötigtes Fahrzeug.\nSofern du es hast kannst du nun losfahren und über den auf der Straße liegenden Müll fahren um ihn aufzukehren.";
+		HeliTransport = "Du bist der Pilot eines Helikopters und musst Waren transportieren.\nDeinen Helikopter bekommst du beim roten Marker.\nMit diesem begibst du dich dann zum markierten Ort an den LS-Docks, wo Waren auf dich warten.\nLande darauf und fliege anschließend zum angegebenen Zielort!";
+		Trashman = "Als Müllmann musst du mit deinem Müllwagen Abfalltonnen & Container abholen.\nIm roten Marker bekommst du dein benötigtes Fahrzeug.\nIn den Straßen von Los Santos sind Mülltonnen verteilt, neben denen du halten musst.\nFahre Anschließend zur Deponie zurück und lade deinen Müll in der Dump-Area aus.";
+		ServiceTechnician = "Todo";
+		PizzaDelivery = "Als Pizzalieferant hast du die Aufgabe die Ware des Pizza Stacks an die jeweiligen Orte zu liefern.\nDu erhälst deine Ware beim Pizza Stack ( Marker ) und lieferst Sie zum Ziel ( Ziel-Icon beim Radar ) ab.\nDesto schneller du dies schaffst, desto höher ist dein Bonus.";
+		ForkLift = "Wenn du Gabelstaplerfahrer bist, kannst du mit deinem Forklift Kisten aufladen.\nDiese musst du anschließend bei den LKW's abliefern.\nDeinen Forklift kannst du dir am roten Marker erstellen.";
+		TreasureSeeker = "Als Schatzsucher fährst du hinaus aufs Meer um den Grund des Meeres nach Wertgegenständen\nabzusuchen. Anschließend hebst du diese in dein Schiff und entlädst sie am Hafen!\n\nDrücke 'Leertaste' um den 'Schatz' aufzunehmen.";
+		Gravel = "Der Job ist in 3 Arbeitsschritte aufgeteilt die verschiedene Spieler zu gleich ausführen können.\n\n1.) Abbau mit Spitzhacke: Baue die hellen Felsen direkt neben dem Dozer-Spawn mit der Spitzhacke ab. (Klicken zum Abbauen)\n\n2.) Einlagern: Lagere die abgebauten Gesteinsbrocken ein indem du diese mit dem Dozer in die Behälter schiebst.\n\n3.) Transport: Transportiere die eingelagerten Gesteinsbrocken mit dem Dumper aus der Kiesgrube. Zum Beladen fahre einfach unter ein Förderband.";
 	};
 	Minigames = {
-		ZombieSurvival = [[
-			Kämpfe gegen Zombies bis zu deinem bitteren Tod! In der Area spawnen immer wieder gute Waffen,
-			die du dringend für deinen Überlebenskampf brauchst!
-		]];
-		GoJump = [[
-			Minigame: GoJump
-		]];
-		SideSwipe = [[
-			Minigame: SideSwipe (Keine Highscores, da noch nicht fertig!)
-		]];
-		SniperGame = [[
-			Erledige alle gespawnten Peds mit gezielten Kopfschüssen bevor sie die gelbe Linie übertreten!
-		]];
-		TCars = [[
-			Steuere beide Autos mit den Tasten 'a' und 'd' oder Pfeilsten links, rechts. Weiche den Kästchen aus und sammel jeden Punkt.
-		]];
-		Roulette = [[
-			Das Ziel ist wie bei jedem Glücksspiel mit einer „Wette“ Geld zu gewinnen. Man setzt einen bestimmten Betrag
-			ein Feld und vertraut auf sein Glück!
-		]];
-
+		ZombieSurvival = "Kämpfe gegen Zombies bis zu deinem bitteren Tod! In der Area spawnen immer wieder gute Waffen,\ndie du dringend für deinen Überlebenskampf brauchst!";
+		GoJump = "Minigame: GoJump";
+		SideSwipe = "Minigame: SideSwipe (Keine Highscores, da noch nicht fertig!)";
+		SniperGame = "Erledige alle gespawnten Peds mit gezielten Kopfschüssen bevor sie die gelbe Linie übertreten!";
+		TCars = "Steuere beide Autos mit den Tasten 'a' und 'd' oder Pfeilsten links, rechts. Weiche den Kästchen aus und sammel jeden Punkt.";
+		Roulette = "Das Ziel ist wie bei jedem Glücksspiel mit einer „Wette“ Geld zu gewinnen. Man setzt einen bestimmten Betrag\nein Feld und vertraut auf sein Glück!";
 	};
 };
 

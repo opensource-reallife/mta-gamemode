@@ -60,7 +60,7 @@ function MinigameGUI:constructor(game)
 	GUIForm.constructor(self, screenWidth/2-600/2, screenHeight/2-250/2, 600, 250)
 	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, data["title"], true, true, self)
 	self.m_Image = GUIImage:new(10, 40, 300, 200, data["image"], self)
-	self.m_Description = GUILabel:new(320, 40, 270, 100, data["description"], self):setFont(VRPFont(24))
+	self.m_Description = GUILabel:new(320, 40, 270, 100, _(data["description"]), self):setFont(VRPFont(24))
 
 	self.m_PlayButton = GUIButton:new(320, 210, 270, 30, _"Spielen", self):setBackgroundColor(Color.Green):setBarEnabled(true)
 	self.m_PlayButton.onLeftClick = function()
