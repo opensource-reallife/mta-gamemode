@@ -7,6 +7,8 @@
 -- ****************************************************************************
 AppSanNews = inherit(PhoneApp)
 
+MIN_PLAYTIME_FOR_AD = 25
+
 local ColorTable = {
 	["Orange"] = Color.Orange,
 	["Grün"] = Color.Green,
@@ -72,7 +74,8 @@ function AppSanNews:onOpen(form)
 
 	self.m_SubmitButton.onLeftClick =
 		function()
-			if localPlayer:isInPrison() then return ErrorBox:new(_"Du kannst im Prison keine Werbung schalten.") end
+			if localPlayer:isInPrison() or localPlayer:isInJail() then return ErrorBox:new(_"Du kannst im Knast / Prison keine Werbung schalten!") end
+			if localPlayer:getPlayTime()/60 <= MIN_PLAYTIME_FOR_AD then return ErrorBox:new(_("Du kannst erst ab %s Spielstunden eine Werbung schalten!", MIN_PLAYTIME_FOR_AD)) end
 			local senderName = self.m_SenderNameChanger:getIndex()
 			--we have to do this because otherwise we can't get the correct ad type if some options are not added in the first place
 			local senderIndex = 1
