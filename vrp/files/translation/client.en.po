@@ -5219,3 +5219,9 @@ msgstr "Deactivated"
 
 msgid "Alle optionalen Texturen (Custom-Texturen, etc.) sind ausgeschaltet und werden nicht geladen."
 msgstr "All optional textures (custom textures, etc.) are turned off and will not be loaded."
+
+msgid "Du kannst im Knast / Prison keine Werbung schalten!"
+msgstr "You can't advertise in jail / prison!"
+
+msgid "Du kannst erst ab %s Spielstunden eine Werbung schalten!"
+msgstr "You can only place an advertisement after %s hours of play!"
