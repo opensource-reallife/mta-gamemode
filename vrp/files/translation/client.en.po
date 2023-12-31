@@ -5171,3 +5171,51 @@ msgstr "Weekly"
 
 msgid "Täglich"
 msgstr "Daily"
+
+msgid "Zivilisten"
+msgstr "Civilians"
+
+msgid "HUD"
+msgstr "HUD"
+
+msgid "Radar"
+msgstr "Radar"
+
+msgid "Chat"
+msgstr "Chat"
+
+msgid "Nametag/Reddot"
+msgstr "Nametag/Reddot"
+
+msgid "Texturen"
+msgstr "Textures"
+
+msgid "Sounds / Radio"
+msgstr "Sounds / Radio"
+
+msgid "Event"
+msgstr "Event"
+
+msgid "Sprache"
+msgstr "Language"
+
+msgid "Radio Sounds"
+msgstr "Radio sounds"
+
+msgid "In der Nähe laden"
+msgstr "Load when nearby"
+
+msgid "In diesem Modus werden Fahrzeug-Texturen erst geladen, wenn ein entsprechendes Fahrzeug in deiner Nähe ist. Dies führt dazu, dass du nur die Texturen lädst, welche du auch benötigst.\nSinnvoll bei Graifkkarten mit wenig Videospeicher"
+msgstr "In this mode, vehicle textures are loaded only when a corresponding vehicle is near you. This results in loading only the textures you actually need. Useful for graphics cards with limited video memory."
+
+msgid "Beim Joinen laden"
+msgstr "Load when joining"
+
+msgid "In diesem Modus werden beim einloggen alle Fahrzeug-Texturen geladen.\nAchtung: Dies führt zu einem Standbild von mehreren Sekunden! Anschließend müssen jedoch keine Texturen mehr geladen werden.\nSinnvoll bei Grafikkarten mit viel Videospeicher!"
+msgstr "In this mode, all vehicle textures are loaded upon logging in. Caution: This results in a freeze for several seconds! However, after that, no more textures need to be loaded. Useful for graphics cards with ample video memory!"
+
+msgid "Deaktiviert"
+msgstr "Deactivated"
+
+msgid "Alle optionalen Texturen (Custom-Texturen, etc.) sind ausgeschaltet und werden nicht geladen."
+msgstr "All optional textures (custom textures, etc.) are turned off and will not be loaded."

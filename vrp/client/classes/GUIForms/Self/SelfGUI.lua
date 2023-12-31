@@ -297,7 +297,7 @@ function SelfGUI:constructor()
 	local SettingsTable = {"HUD", "Radar", "Chat", "Spawn", "Nametag/Reddot", "Texturen", "Fahrzeuge", "Waffen", "Sounds / Radio", "Shader", "Server-Tour", "Tastenzuordnung", "Sonstiges", "Event", "Sprache"}
 	local item
 	for index, setting in pairs(SettingsTable) do
-		item = self.m_SettingsGrid:addItem(setting)
+		item = self.m_SettingsGrid:addItem(_(setting))
 		item.onLeftClick = function()
 			self:onSettingChange(setting)
 		end
@@ -1203,9 +1203,9 @@ function SelfGUI:onSettingChange(setting)
 	elseif setting == "Texturen" then
 		GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.9, self.m_Height*0.07, _"Fahrzeug-Textur Modus", self.m_SettingBG)
 		self.m_TextureModeChange = GUIChanger:new(self.m_Width*0.02, self.m_Height*0.09, self.m_Width*0.55, self.m_Height*0.07, self.m_SettingBG)
-		self.m_TextureModeChange:addItem("In der Nähe laden")
-		self.m_TextureModeChange:addItem("Beim Joinen laden")
-		self.m_TextureModeChange:addItem("Deaktiviert")
+		self.m_TextureModeChange:addItem(_"In der Nähe laden")
+		self.m_TextureModeChange:addItem(_"Beim Joinen laden")
+		self.m_TextureModeChange:addItem(_"Deaktiviert")
 		self.m_TextureModeChange.onChange = function(text, index)
 			core:set("Other", "TextureMode", index)
 			self.m_InfoLabel:setText(_(TEXTURE_SYSTEM_HELP[index]))

@@ -137,7 +137,7 @@ function ScoreboardGUI:refresh()
 	end
 	self.m_CountRow = 0
 	self.m_CountColumn = 0
-	self:addPlayerCount("Zivilisten", self.m_FactionCount[0] or 0, self.m_FactionAFKCount[0] or 0, tocolor(255, 255, 255))
+	self:addPlayerCount(_"Zivilisten", self.m_FactionCount[0] or 0, self.m_FactionAFKCount[0] or 0, tocolor(255, 255, 255))
 
 	for id, faction in pairs(FactionManager.Map) do
 		if id ~= 13 then -- Hide Insurgent count (Insurgent = Civilian)
