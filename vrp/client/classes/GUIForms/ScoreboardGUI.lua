@@ -188,6 +188,8 @@ function ScoreboardGUI:insertPlayers()
 			ping = "AFK"
 		elseif player:isInJail() then
 			ping = "Knast"
+		elseif player:getPublicSync("gangwarParticipant") then
+			ping = "GW"
 		else
 			ping = player:getPing().."ms"
 		end
@@ -242,6 +244,8 @@ function ScoreboardGUI:insertPlayers()
 			item:setColumnColor(8, Color.Red)
 		elseif ping == "Knast" then
 			item:setColumnColor(8, Color.Yellow)
+		elseif ping == "GW" then
+			item:setColumnColor(8, Color.Red)
 		end
 	end
 end
