@@ -40,60 +40,60 @@ function ServerSettings:constructor()
 			FORUM_LOGIN = toboolean(row.Value)
 		end
 
-		if row.Index == "MinMemberWeapontruck" then
-			WEAPONTRUCK_MIN_MEMBERS = DEBUG and 0 or tonumber(row.Value)
+		if row.Index == "MinMembersWeapontruck" then
+			WEAPONTRUCK_MIN_MEMBERS = tonumber(row.Value)
 		end
 
-		if row.Index == "MinMemberBankrob" then
-			BANKROB_MIN_MEMBERS = DEBUG and 0 or tonumber(row.Value)
+		if row.Index == "MinMembersBankrob" then
+			BANKROB_MIN_MEMBERS = tonumber(row.Value)
 		end
 
-		if row.Index == "MinMemberCasinoHeist" then
-			CASINOHEIST_MIN_MEMBERS = DEBUG and 0 or tonumber(row.Value)
+		if row.Index == "MinMembersCasinoHeist" then
+			CASINOHEIST_MIN_MEMBERS = tonumber(row.Value)
 		end
 
-		if row.Index == "MinMemberWeedtruck" then
-			WEEDTRUCK_MIN_MEMBERS = DEBUG and 0 or tonumber(row.Value)
+		if row.Index == "MinMembersWeedtruck" then
+			WEEDTRUCK_MIN_MEMBERS = tonumber(row.Value)
 		end
 
-		if row.Index == "MinMemberEvidencetruck" then
-			EVIDENCETRUCK_MIN_MEMBERS = DEBUG and 0 or tonumber(row.Value)
+		if row.Index == "MinMembersEvidencetruck" then
+			EVIDENCETRUCK_MIN_MEMBERS = tonumber(row.Value)
 		end
 
-		if row.Index == "MinMemberArmsdealer" then
-			ARMSDEALER_MIN_MEMBERS = DEBUG and 0 or tonumber(row.Value)
+		if row.Index == "MinMembersArmsdealer" then
+			ARMSDEALER_MIN_MEMBERS = tonumber(row.Value)
 		end
 
-		if row.Index == "MinMemberShoprob" then
-			SHOPROB_MIN_MEMBERS = DEBUG and 0 or tonumber(row.Value)
+		if row.Index == "MinMembersShoprob" then
+			SHOPROB_MIN_MEMBERS = tonumber(row.Value)
 		end
 
-		if row.Index == "MinMemberHouserob" then
-			HOUSEROB_MIN_MEMBERS = DEBUG and 0 or tonumber(row.Value)
+		if row.Index == "MinMembersHouserob" then
+			HOUSEROB_MIN_MEMBERS = tonumber(row.Value)
 		end
 
-		if row.Index == "MinMemberJewelry" then
-			JEWELRY_MIN_MEMBERS = DEBUG and 0 or tonumber(row.Value)
+		if row.Index == "MinMembersJewelry" then
+			JEWELRY_MIN_MEMBERS = tonumber(row.Value)
 		end
 
-		if row.Index == "MinMemberPrisonBreak" then
-			PRISONBREAK_MIN_MEMBERS = DEBUG and 0 or tonumber(row.Value)
+		if row.Index == "MinMembersPrisonBreak" then
+			PRISONBREAK_MIN_MEMBERS = tonumber(row.Value)
 		end
 
-		if row.Index == "MinMemberVehicleShop" then
-			SHOP_VEHICLE_ROB_MIN_MEMBERS = DEBUG and 0 or tonumber(row.Value)
+		if row.Index == "MinMembersVehicleShop" then
+			SHOP_VEHICLE_ROB_MIN_MEMBERS = tonumber(row.Value)
 		end
 
-		if row.Index == "MinMemberChristmastruck" then
-			CHRISTMASTRUCK_MIN_MEMBERS = DEBUG and 0 or tonumber(row.Value)
+		if row.Index == "MinMembersChristmastruck" then
+			CHRISTMASTRUCK_MIN_MEMBERS = tonumber(row.Value)
 		end
 
-		if row.Index == "MinMemberFire" then
-			MIN_PLAYERS_FOR_FIRE = DEBUG and 0 or tonumber(row.Value)
+		if row.Index == "MinMembersFire" then
+			MIN_PLAYERS_FOR_FIRE = tonumber(row.Value)
 		end
 
-		if row.Index == "MinMemberVehicleFire" then
-			MIN_PLAYERS_FOR_VEHICLE_FIRE = DEBUG and 0 or tonumber(row.Value)
+		if row.Index == "MinMembersVehicleFire" then
+			MIN_PLAYERS_FOR_VEHICLE_FIRE = tonumber(row.Value)
 		end
 
 		self.m_Settings[row.Index] = row.Value
