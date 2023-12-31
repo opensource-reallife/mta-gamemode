@@ -147,7 +147,7 @@ function GroupHouseRob:startNewRob( house, player )
 		local group = player:getGroup()
 		if group then
 			if group:getType() == "Gang" then
-				if not player:isFactionDuty() then
+				if not player:isFactionDuty() or not player:isCompanyDuty() then
 					if FactionState:getSingleton():countPlayers(true, true) < HOUSEROB_MIN_MEMBERS then
 						player:sendError(_("Es müssen mindestens %d Staatsfraktionisten im Dienst sein!", player, HOUSEROB_MIN_MEMBERS))
 						return false
@@ -168,7 +168,7 @@ function GroupHouseRob:startNewRob( house, player )
 						player:sendError(_("Dieses Haus wurde bereits ausgeraubt!", player))
 					end
 				else
-					player:sendError(_("Du bist im Dienst, du darfst keinen Hausraub machen!", player))
+					player:sendError(_("Du kannst im Fraktions- oder Unternehmensdienst keinen Hausraub starten!", player))
 				end
 			end
 		end

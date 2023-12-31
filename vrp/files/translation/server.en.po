@@ -2239,11 +2239,11 @@ msgstr "There is not enough money in the  shop cash register to rob!"
 msgid "Du bist im Dienst, du darfst keinen Überfall machen!"
 msgstr "You're on duty, you're not supposed to do a robbery!"
 
-msgid "Du bist im Dienst, du darfst keinen Hausraub machen!"
-msgstr "You're on duty, you're not allowed to rob a house!"
+msgid "Du kannst im Fraktions- oder Unternehmensdienst keinen Hausraub starten!"
+msgstr "You can't start a house rob while on faction or company duty!"
 
-msgid "Da du im Dienst bist erhältst du keine Items."
-msgstr "As you are on duty, you will not receive any items."
+msgid "Da du im Fraktions-/Unternehmensdienst bist erhältst du keine Items!"
+msgstr "Since you're on faction/company duty, you won't receive any items!"
 
 msgid "Du bist Polizist, du darfst keinen Überfall machen!"
 msgstr "You're a policeman, you can't do a robbery!"

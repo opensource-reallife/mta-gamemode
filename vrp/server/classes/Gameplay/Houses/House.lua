@@ -624,11 +624,8 @@ function House:giveRobItem( player )
 		local group = player:getGroup()
 		if group and self.m_RobGroup then
 			if group == self.m_RobGroup then
-				if player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty() then
-					player:sendError(_("Da du im Dienst bist erhältst du keine Items.", player))
-					return
-				elseif player:getFaction() and player:getFaction():isEvilFaction() and player:isFactionDuty() then
-					player:sendError(_("Da du im Dienst bist erhältst du keine Items.", player))
+				if player:isFactionDuty() or player:isCompanyDuty() then
+					player:sendError(_("Da du im Fraktions-/Unternehmensdienst bist erhältst du keine Items!", player))
 					return
 				else
 					local item = GroupHouseRob:getSingleton():getRandomItem()
