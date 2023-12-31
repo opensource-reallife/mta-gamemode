@@ -5036,3 +5036,24 @@ msgstr "%s Hour(s), %s Minute(s)"
 
 msgid "%s Minute(n)"
 msgstr "%s Minute(s)"
+
+msgid "Grundpreis: %s"
+msgstr "Base price: %s"
+
+msgid "Verkaufspreis: %s"
+msgstr "Selling price: %s"
+
+msgid "Garage: %s"
+msgstr "Garage: %s"
+
+msgid "Verkauf beenden"
+msgstr "End sale"
+
+msgid "Zum Verkauf anbieten"
+msgstr "Offer for sale"
+
+msgid "Haus von Spieler kaufen"
+msgstr "Buy house from player"
+
+msgid "Haus verkaufen"
+msgstr "Sell house"
