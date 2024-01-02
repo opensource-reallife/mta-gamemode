@@ -1034,7 +1034,7 @@ function FactionState:sendMessageWithRank(text, r, g, b, minRank, withPrefix, ..
 	local r = r or self.m_StateColor.r
 	local g = g or self.m_StateColor.g
 	local b = b or self.m_StateColor.b
-	local prefix = withPrefix and "[Staat] #ffffff" or ""
+	local prefix = withPrefix and "[Staat]#ffffff" or ""
 
 	for k, player in pairs(self:getOnlinePlayers()) do
 		if player:getFaction():getPlayerRank(player) >= (minRank or 0) then
@@ -1065,7 +1065,7 @@ function FactionState:sendStateChatMessage(sourcePlayer, message)
 		local text = ("%s %s: %s"):format(rankName,getPlayerName(sourcePlayer), message)
 		for k, player in pairs(self:getOnlinePlayers()) do
 			if getElementData(player, "StateChatEnabled") then
-				player:sendMessage(("[Staat] #ffffff %s"):format(text), self.m_StateColor.r, self.m_StateColor.g, self.m_StateColor.b, true)
+				player:sendMessage(("[Staat]#ffffff %s"):format(text), self.m_StateColor.r, self.m_StateColor.g, self.m_StateColor.b, true)
 			end
 			if player ~= sourcePlayer then
 				receivedPlayers[#receivedPlayers+1] = player
