@@ -12,6 +12,7 @@ CompanyManager.Map = {}
 function CompanyManager:constructor()
 	PublicTransport:new()
 	MechanicTow:new()
+	SanNews:new()
 
 	triggerServerEvent("getCompanies", localPlayer)
 	addRemoteEvents{"loadClientCompany", "companyForceOffduty", "startCompanyRespawnAnnouncement", "stopCompanyRespawnAnnoucement"}

@@ -957,6 +957,11 @@
     <script src="client/classes/GUIForms/Race/RaceCreateLobbyGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Race/RaceLobbyGUI.lua" type="client" />
 
+    <script src="client/classes/GUIForms/SANNews/SANNewsAdsGUI.lua" type="client" />
+    <script src="client/classes/GUIForms/SANNews/SANNewsAdsOverviewGUI.lua" type="client" />
+    <script src="client/classes/GUIForms/SANNews/SANNewsAdsNewCustomerGUI.lua" type="client" />
+    <script src="client/classes/GUIForms/SANNews/SANNewsAdsSettingsGUI.lua" type="client" />
+
     <script src="client/classes/GUIForms/Self/AchievementGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Self/BindGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Self/CompanyGUI.lua" type="client" />
@@ -1123,6 +1128,7 @@
 	<script src="client/classes/Business/Companies/PublicTransport.lua" type="client"/>
 	<script src="client/classes/Business/Companies/MechanicTow.lua" type="client"/>
 	<script src="client/classes/Business/Companies/DrivingSchool.lua" type="client"/>
+	<script src="client/classes/Business/Companies/San-News.lua" type="client"/>
 
 
 	<!-- Jobs -->
@@ -3325,6 +3331,9 @@
 	<vrpfile src="files/audio/halloween/laser.mp3" />
 	<vrpfile src="files/audio/halloween/scarymusic.mp3" />
 	<vrpfile src="files/audio/halloween/smokescream.mp3" />
+	
+	<!-- San News -->
+	<vrpfile src="files/audio/sannews/adSound.ogg" />
 
 	<!-- Models -->
 	<vrpfile src="files/models/piss.dff" />

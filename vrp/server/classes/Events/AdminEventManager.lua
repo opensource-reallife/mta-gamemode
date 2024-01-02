@@ -133,3 +133,10 @@ function AdminEventManager:sendData(player)
 	end
 end
 
+function AdminEventManager:isEventRunning()
+	if self.m_EventRunning then 
+		return true 
+	else
+		return false 
+	end
+end

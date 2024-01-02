@@ -42,6 +42,7 @@ PERMISSIONS_INFO = { -- name = {{type, id} type = 0 for all, {faction min rank, 
 	["startVehicleImport"] =	{{2, {CompanyStaticId.EPT}}, {["faction"] = nil, ["company"] = 0, ["group"] = nil}},
 	["startStreetRace"] =		{{2, {CompanyStaticId.SANNEWS}}, {["faction"] = nil, ["company"] = 0, ["group"] = nil}},
 	["addBlip"] =				{{2, {CompanyStaticId.SANNEWS}}, {["faction"] = nil, ["company"] = 0, ["group"] = nil}}, -- also includes remove
+	["editAds"] =				{{2, {CompanyStaticId.SANNEWS}}, {["faction"] = nil, ["company"] = 0, ["group"] = nil}}, -- also includes remove
 	["useSpeedCam"]	=			{{1, {FactionStaticId.SAPD}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}},
 	["useRhino"]	=			{{1, {FactionStaticId.MBT}}, {["faction"] = 1, ["company"] = nil, ["group"] = nil}},
 	["useHydra"]	=			{{1, {FactionStaticId.MBT}}, {["faction"] = 1, ["company"] = nil, ["group"] = nil}},
@@ -98,6 +99,7 @@ PERMISSION_NAMES = {
 	["startVehicleImport"] =	"Fahrzeugimport starten",
 	["startStreetRace"] =		"Straßenrennen starten",
 	["addBlip"] =				"Blips hinzufügen/entfernen",
+	["editAds"] =				"Werbungen anpassen",
 	["useSpeedCam"] =			"Blitzer aufstellen",
 	["useRhino"] =				"Rhino benutzen",
 	["useHydra"] =				"Hydra benutzen",
