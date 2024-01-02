@@ -24,8 +24,8 @@ function Townhall:constructor()
 	activitiesInfoPed.Name = _"Stadthalle: Aktivitäten"
 	activitiesInfoPed.Description = _"Für mehr Infos klicke mich an!"
 	activitiesInfoPed.Type = 2
-	self.m_Peds[#self.m_Peds + 1] = activitiesInfoPed
-	]]
+	self.m_Peds[#self.m_Peds + 1] = activitiesInfoPed ]]
+
 	-- Groups
 	--// Group create ped
 	local groupInfoPed = Ped.create(9, Vector3(2758.87, -2374.48, 819.24))
@@ -97,7 +97,6 @@ function Townhall:constructor()
 	itemSpawnerPed2.Func = function() end
 	self.m_Peds[#self.m_Peds + 1] = itemSpawnerPed2
 
-
 	--// WT PED AREA
 	local itemSpawnerPed3 = Ped.create(287, Vector3(2734.81, -2457.07, 13.65))
 	itemSpawnerPed3:setRotation(Vector3(0, 0, 270))
@@ -106,7 +105,6 @@ function Townhall:constructor()
 	itemSpawnerPed3.Func = function() end
 	self.m_Peds[#self.m_Peds + 1] = itemSpawnerPed3
 
-
 	--// WT PED SF
 	local itemSpawnerPed4 = Ped.create(307, Vector3(-2103.76, -2277.80, 30.62))
 	itemSpawnerPed4:setRotation(Vector3(0, 0, 320))
@@ -114,7 +112,6 @@ function Townhall:constructor()
 	itemSpawnerPed4.Description = _"Hier startet der Waffentruck!"
 	itemSpawnerPed4.Func = function() end
 	self.m_Peds[#self.m_Peds + 1] = itemSpawnerPed4
-
 
 	--// VEHICLE SPAWNER RESCUE
 	local itemSpawnerPed5 = Ped.create(171, Vector3(1180.90, -1331.90, 13.58))
@@ -125,15 +122,13 @@ function Townhall:constructor()
 	self.m_Peds[#self.m_Peds + 1] = itemSpawnerPed5
 
 	--// RESCUE BASE HEAL PED
-
 	local itemSpawnerPed6 = Ped.create(70, Vector3(1172.33, -1321.48, 15.40))
 	itemSpawnerPed6:setRotation(Vector3(0, 0, 270))
 	itemSpawnerPed6.Name = _"Erste Hilfe"
 	itemSpawnerPed6.Description = _"Klicke mich für Heilung an!"
 	itemSpawnerPed6.Func = function() triggerServerEvent("factionRescuePlayerHealBase", localPlayer) end
 	self.m_Peds[#self.m_Peds + 1] = itemSpawnerPed6
-	
-	
+
 	--// TOWN HALL JOB LIST 
 	local itemSpawnerPed7 = Ped.create(70, Vector3(2750.27, -2374.66, 819.24))
 	itemSpawnerPed7:setRotation(Vector3(0, 0, 180))
@@ -143,7 +138,14 @@ function Townhall:constructor()
 	itemSpawnerPed7.Func = function() JobHelpGUI:new() end
 	--itemSpawnerPed7.Func = function() HelpGUI:getSingleton():openLexiconPage(LexiconPages.JobOverview) end --no lexicon pages available 
 	self.m_Peds[#self.m_Peds + 1] = itemSpawnerPed7
-	
+
+	--// LS PIER FERRIS WHEEL PED
+	local ferrisWheelPed = Ped.create(189, Vector3(379.57, -2020.66, 7.83), 50)
+	ferrisWheelPed:setRotation(Vector3(0, 0, 90))
+	ferrisWheelPed.Name = _"Riesenrad"
+	ferrisWheelPed.Description = _"Klicke hier für Informationen!"
+	ferrisWheelPed.Func = function() FerrisWheelGUI:new() end
+	self.m_Peds[#self.m_Peds + 1] = ferrisWheelPed
 
 	--// DT PED 
 	local itemSpawnerPed8 = Ped.create(1, Vector3(-1096.38, -1614.74, 76.37))
