@@ -28,8 +28,13 @@ function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, 
 	self.m_Invitations = {}
 	self.m_RankNames = factionRankNames[Id]
 	self.m_Skins = factionSkins[Id]
-	self.m_SpecialSkin = false
-	for i, v in pairs(self.m_Skins) do if tonumber(self:getSetting("Skin", i, 0)) == -1 then self.m_SpecialSkin = i end end
+	
+	if factionType == "State" then
+		self.m_SpecialSkin = factionSpecialSkins[Id] or {}
+	else 
+		for i, v in pairs(self.m_Skins) do if tonumber(self:getSetting("Skin", i, 0)) == -1 then self.m_SpecialSkin = i end end
+	end
+	
 	self.m_ValidWeapons = factionWeapons[Id]
 	self.m_SpecialWeapons = factionSpecialWeapons[Id]
 	self.m_Color = factionColors[Id]
@@ -284,13 +289,16 @@ function Faction:changeSkin(player, skinId)
 				player:sendWarning(_("Deine ausgewählte Kleidung ist erst ab Rang %s verfügbar, dir wurde eine andere gegeben.", player, minRank))
 				player:setModel(self:getSkinsForRank(playerRank)[1])
 			end
+		elseif self:isStateFaction() and self.m_SpecialSkin[skinId] then
+			player:setModel(skinId)
 		else
 			--player:sendWarning(_("Deine ausgewählte Kleidung ist nicht mehr verfügbar, dir wurde eine andere gegeben.", player, minRank))
 			-- ^useless if player switches faction
 			player:setModel(self:getSkinsForRank(playerRank)[1])
 		end
+		
 		if self:isStateFaction() then
-			if skinId == 285 then
+			if self.m_SpecialSkin[skinId] then
 				player:getInventory():giveItem("Kevlar", 1)
 				player:setData("Faction:InSpecialDuty", true, true)
 			else
@@ -1121,4 +1129,16 @@ function Faction:reloadPlayerLimit()
 	local newLimit = result[1]["PlayerLimit"] or 0
 	self.m_PlayerLimit = newLimit > 0 and true or false
 	self.m_MaxPlayers = newLimit
+end
+
+function Faction:getAllSpecialSkins(first)
+	local tab = {}
+
+	for skinId, state in pairs(self.m_SpecialSkin) do
+		if state then
+			table.insert(tab, skinId)
+		end
+	end
+
+	return tab
 end

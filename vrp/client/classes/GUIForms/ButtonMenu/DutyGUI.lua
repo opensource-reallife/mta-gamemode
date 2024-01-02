@@ -24,7 +24,7 @@ function DutyGUI:loadFactionItems(fac, isOnDuty, specialSkin)
         if fac:isStateFaction() then
             self:addItem(_"Dienst beenden", Color.Red, bind(self.itemEvent, self, "factionStateToggleDuty")):setBarEnabled(false)
             self:addItem(_"Kleidung wechseln", Color.Accent, bind(self.itemEvent, self, "factionRequestSkinSelection"))
-            if specialSkin then self:addItem(_"Einsatzkleidung", Color.Accent, bind(self.itemEvent, self, "factionRequestSkinSelectionSpecial", core:get("Cache", "LastFactionSkin"))) end
+            self:addItem(_"SWAT-Modus", Color.Accent, bind(self.itemEvent, self, "factionRequestSkinSelectionSpecial", core:get("Cache", "LastFactionSkin"))):setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "enterSWATMode"))
             self:addItem(_"Ausrüsten", Color.Accent, bind(self.itemEvent, self, "factionStateRearm"))
             self:addItem(_"Waffen einlagern", Color.Accent, bind(self.openWeaponStoreGUI, self))
         elseif fac:isEvilFaction() then
