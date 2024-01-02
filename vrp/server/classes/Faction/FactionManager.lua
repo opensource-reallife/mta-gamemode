@@ -921,7 +921,7 @@ function FactionManager:Event_setPlayerDutySkin(skinId)
 		client:sendError(_("Du bist nicht im Dienst deiner Fraktion aktiv!", client))
 		return
 	end
-	if table.find(client:getFaction():getAllSpecialSkins(), client:getModel()) then
+	if client:getFaction():isStateFaction() and table.find(client:getFaction():getAllSpecialSkins(), client:getModel()) then
 		client:sendError(_("Verlasse zuerst den SWAT-Modus!", client))
 		return
 	end
