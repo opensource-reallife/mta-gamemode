@@ -61,7 +61,9 @@ function PublicTransport:start(player) -- on start duty
 			shopsToSend = shopsToSend.."\n"..shop:getName()
 		end
 	end
-	player:sendInfo(("Folgende Autohäuser benötigen dringend Fahrzeuge:%s"):format(shopsToSend))
+	if shopsToSend ~= "" then
+		player:sendInfo(("Folgende Autohäuser benötigen dringend Fahrzeuge:%s"):format(shopsToSend))
+	end
 end
 
 function PublicTransport:destuctor()
