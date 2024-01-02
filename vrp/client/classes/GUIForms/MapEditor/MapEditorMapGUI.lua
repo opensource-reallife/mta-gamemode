@@ -143,8 +143,6 @@ function MapEditorMapGUI:constructor()
 		end
 	end
 
-	self.m_ObjectNameLoadTime = 50
-
 	self.m_Blips = {}
     
     self.m_ReceiveBind = bind(self.receiveInfos, self)
@@ -186,7 +184,6 @@ end
 function MapEditorMapGUI:receiveObjectInfos(objectTable, removalsTable)
 	self.m_ObjectTable = objectTable
 	local objects = MapEditor:getSingleton():getObjectXML()
-	local timeToAdd = 0
     
 	for key, data in ipairs(objectTable) do
 		local objectModel = data[1]:getModel()
@@ -196,13 +193,8 @@ function MapEditorMapGUI:receiveObjectInfos(objectTable, removalsTable)
 		item.onLeftClick = function()
 			nextframe(function() MapEditor:getSingleton():selectObject(self.m_ObjectTable[self.m_ObjectGrid:getSelectedItem():getColumnText(2)][1], "normal") end)
 		end
-		setTimer(
-			function()
-				local objectName = MapEditor:getSingleton():getWorldModelName(objectModel) or "-none-"
-				item:setColumnText(3, objectName)
-			end
-		, self.m_ObjectNameLoadTime+timeToAdd, 1)
-		timeToAdd = timeToAdd+self.m_ObjectNameLoadTime
+		local objectName = MapEditor:getSingleton():getWorldModelName(objectModel) or "-none-"
+		item:setColumnText(3, objectName)
 	end
 	for key, data in pairs(removalsTable) do
 		local objectModel = data.worldModelId
@@ -211,13 +203,8 @@ function MapEditorMapGUI:receiveObjectInfos(objectTable, removalsTable)
 		item.onLeftClick = function()
 			nextframe(function() MapEditor:getSingleton():selectObject(data) end)
 		end
-		setTimer(
-			function()
-				local objectName = MapEditor:getSingleton():getWorldModelName(objectModel) or "-none- [Low LOD]"
-				item:setColumnText(3, objectName)
-			end
-		, self.m_ObjectNameLoadTime+timeToAdd, 1)
-		timeToAdd = timeToAdd+self.m_ObjectNameLoadTime
+		local objectName = MapEditor:getSingleton():getWorldModelName(objectModel) or "-none- [Low LOD]"
+		item:setColumnText(3, objectName)
 	end
 end
 

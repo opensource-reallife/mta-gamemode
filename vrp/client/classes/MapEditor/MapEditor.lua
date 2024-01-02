@@ -28,6 +28,19 @@ function MapEditor:constructor()
     self.m_ObjectXML = xmlLoadFile("files/data/objects.xml")
     self.m_Shader = dxCreateShader("files/shader/mapeditorColorize.fx")
     self.m_DeleteMessage = "Du bist im Begriff ein World-Object der Standard Map zu entfernen, denke lieber zwei Mal nach, ob Du wirklich dieses Objekt entfernen willst!"
+    self.m_ObjectNames = { }
+
+    for key, node in pairs(xmlNodeGetChildren(self.m_ObjectXML)) do
+        for k, subnode in pairs(xmlNodeGetChildren(node)) do
+            if xmlNodeGetAttribute(subnode, "model") then
+                self.m_ObjectNames[xmlNodeGetAttribute(subnode, "model")] = xmlNodeGetAttribute(subnode, "name")
+            else
+                for sk, subsubnode in pairs(xmlNodeGetChildren(subnode)) do
+                    self.m_ObjectNames[xmlNodeGetAttribute(subsubnode, "model")] = xmlNodeGetAttribute(subsubnode, "name")
+                end
+            end
+        end
+    end
 end
 
 function MapEditor:destructor()
@@ -433,22 +446,7 @@ function MapEditor:renderBoundingBox(object)
 end
 
 function MapEditor:getWorldModelName(id)
-	local objects = MapEditor:getSingleton():getObjectXML()
-    for key, node in pairs(xmlNodeGetChildren(objects)) do
-        for k, subnode in pairs(xmlNodeGetChildren(node)) do
-            if xmlNodeGetAttribute(subnode, "model") then
-                if xmlNodeGetAttribute(subnode, "model") == tostring(id) then
-					return xmlNodeGetAttribute(subnode, "name")
-				end
-            else
-                for sk, subsubnode in pairs(xmlNodeGetChildren(subnode)) do
-                    if xmlNodeGetAttribute(subsubnode, "model") == tostring(id) then
-                    	return xmlNodeGetAttribute(subsubnode, "name")
-					end
-                end
-            end
-        end
-    end
+    return self.m_ObjectNames[tostring(id)]
 end
 
 function MapEditor:findMatchingObjects(name)
