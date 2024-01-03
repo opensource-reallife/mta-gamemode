@@ -239,7 +239,7 @@ function Inventory:getItemPlacesByName(item)
 			end
 		end
 	else
-		outputDebugString("[INV] Unglültiges Item: "..item)
+		outputDebugString("[INV] Ungültiges Item: "..item)
 	end
 
 	return placeTable
@@ -317,7 +317,7 @@ function Inventory:getFreePlacesForItem(item)
 		if places > itemMax then places = itemMax	end
 		return places
 	else
-		outputDebugString("[INV] Unglültiges Item: "..item)
+		outputDebugString("[INV] Ungültiges Item: "..item)
 	end
 
 	return 0
@@ -400,7 +400,7 @@ function Inventory:getPlaceForItem(item, itemAmount)
 
 		return false
 	else
-		outputDebugString("[INV] Unglültiges Item: "..item)
+		outputDebugString("[INV] Ungültiges Item: "..item)
 	end
 end
 
@@ -439,7 +439,7 @@ function Inventory:getItemAmount(item, inStack)
 
 		return amount
 	else
-		outputDebugString("[INV] Unglültiges Item: "..item)
+		outputDebugString("[INV] Ungültiges Item: "..item)
 	end
 end
 
