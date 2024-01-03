@@ -193,7 +193,7 @@ function MapEditorMapGUI:receiveInfos(mapTable, categories)
 	end
 
 	self.m_FilterChanger:clear()
-	self.m_FilterChanger.m_Items[1] = "Keine"
+	self.m_FilterChanger.m_Items[1] = "Alle"
 	self.m_FilterChanger.m_Items[2] = "Ohne Kategorie"
 	for i, v in pairs(MapEditor:getSingleton():getAllCategories()) do
 		self.m_FilterChanger:addItem(v)
