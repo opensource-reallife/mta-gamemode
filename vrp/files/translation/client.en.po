@@ -4573,10 +4573,10 @@ msgid "Permaban"
 msgstr "Permaban"
 
 msgid "Mods sperren"
-msgstr "Lock mods"
+msgstr "Disable mods"
 
 msgid "Mods freigeben"
-msgstr "Share mods"
+msgstr "Enable mods"
 
 msgid "specten"
 msgstr "spectate"
@@ -4615,7 +4615,7 @@ msgid "Unban"
 msgstr "Unban"
 
 msgid "NickChange"
-msgstr "NickChange"
+msgstr "Nickchange"
 
 msgid "Rangstandard"
 msgstr "Rank Standard"
