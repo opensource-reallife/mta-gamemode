@@ -5241,7 +5241,7 @@ msgstr "Stored"
 msgid "Ein Set Kleidung."
 msgstr "A set of clothes."
 
-msgid "Kleidgung"
+msgid "Kleidung"
 msgstr "Clothes"
 
 msgid "Bambusstange"
