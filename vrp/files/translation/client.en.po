@@ -5234,3 +5234,6 @@ msgstr "You cannot treat yourself during the gangwar."
 
 msgid "Du kannst dich nicht behandeln, während du ein Schloss knackst."
 msgstr "You can't treat yourself while you're picking a lock."
+
+msgid "Gelagert"
+msgstr "Stored"

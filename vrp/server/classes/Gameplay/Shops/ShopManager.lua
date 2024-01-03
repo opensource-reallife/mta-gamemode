@@ -92,7 +92,7 @@ end
 function ShopManager:loadVehicleShops()
 	local result = sql:queryFetch("SELECT * FROM ??_vehicle_shops", sql:getPrefix())
     for k, row in ipairs(result) do
-		local instance = VehicleShop:new(row.Id, row.Name, row.Marker, row.NPC, row.Spawn, row.Image, row.Owner, row.Price, row.Money)
+		local instance = VehicleShop:new(row.Id, row.Name, row.Marker, row.NPC, row.Spawn, row.Image, row.Owner, row.Price, row.Money, toboolean(row.RandomizeStock))
 		ShopManager.VehicleShopsMap[row.Id] = instance
 		if row.Blip then
 			instance:addBlip(row.Blip)

@@ -15,10 +15,10 @@ function VehicleShopGUI:constructor(rangeElement)
 
 	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, "Vehicle shop", false, true, self)
 	self.m_VehicleList = GUIGridList:new(0, self.m_Height/7+30, self.m_Width, self.m_Height-self.m_Height/7-self.m_Height/14-30, self.m_Window)
-	self.m_VehicleList:addColumn("Name", 0.43)
-	self.m_VehicleList:addColumn("Level", 0.11)
-	self.m_VehicleList:addColumn("Preis", 0.2)
-	self.m_VehicleList:addColumn("auf Lager", 0.15)
+	self.m_VehicleList:addColumn(_"Name", 0.43)
+	self.m_VehicleList:addColumn(_"Level", 0.11)
+	self.m_VehicleList:addColumn(_"Preis", 0.2)
+	self.m_VehicleList:addColumn(_"Gelagert", 0.15)
 	self.m_ShopImage = GUIImage:new(0, 30, self.m_Width, self.m_Height/7, "files/images/Shops/CouttSchutz.png", self.m_Window)
 	GUILabel:new(6, self.m_Height-self.m_Height/14, self.m_Width*0.5, self.m_Height/14, _"Doppelklick zum Kaufen", self.m_Window):setFont(VRPFont(self.m_Height*0.045)):setAlignY("center")
 
@@ -70,7 +70,7 @@ function VehicleShopGUI:setVehicleList(list)
 	for k, v in pairs(list) do
 		for i = 1, #v do
 			vehicleCount = vehicleCount + 1
-			local stock = v[i][5] == -1 and "Ja" or ("%s/%s"):format(v[i][4], v[i][5])
+			local stock = ((v[i][5] == -1 and _"Ja") or (v[i][5] == 0 and "%s") or ("%s/%s")):format(v[i][4], v[i][5])
 			local item = self.m_VehicleList:addItem(VehicleCategory:getSingleton():getModelName(k), v[i][3], toMoneyString(v[i][2]), stock)
 			item.VehicleId = k
 			item.VehicleIndex = i
