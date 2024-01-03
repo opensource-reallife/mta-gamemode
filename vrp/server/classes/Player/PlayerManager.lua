@@ -472,32 +472,36 @@ function PlayerManager:playerWasted(killer, killerWeapon, bodypart)
 				if killer:isFactionDuty() then
 					local wantedLevel = client:getWanteds()
 					if wantedLevel > 0 then
-						local jailTime = wantedLevel * JAIL_TIME_PER_WANTED_KILL
-						local factionBonus = JAIL_COSTS[wantedLevel]
-						killer:giveAchievement(64)
-						client:sendInfo(_("Du wurdest außer Gefecht gesetzt!", client))
-						client.m_DeathInJail = true
-						-- Pay some money to faction, xp to the policeman
-						local factionBonus = JAIL_COSTS[wantedLevel]
-						if client:getFaction() and client:getFaction():isEvilFaction() then
-							factionBonus = JAIL_COSTS[wantedLevel]/2
-						end
-						local splitmoney = (factionBonus / 2)
-						FactionState:getSingleton().m_BankAccountServer:transferMoney(killer:getFaction(), splitmoney, "Arrest", "Faction", "ArrestKill")
-						FactionState:getSingleton():payArrestBonus(killer, splitmoney)
-						killer:givePoints(wantedLevel)
-						PlayerManager:getSingleton():sendShortMessage(_("%s wurde soeben von %s für %d Minuten eingesperrt! Strafe: %d$", client, client:getName(), killer:getName(), jailTime, factionBonus), "Staat")
-						StatisticsLogger:getSingleton():addArrestLog(client, wantedLevel, jailTime, killer, 0)
-						killer:getFaction():addLog(killer, "Knast", "hat "..client:getName().." für "..jailTime.."min. eingesperrt!")
-						outputChatBox(_("Du hast den Spieler %s außer Gefecht gesetzt und er wird ins Gefängnis transportiert!", killer, getPlayerName(client)),killer,0,0,190)
-						-- Give Achievements
-						if wantedLevel > 4 then
-							killer:giveAchievement(48)
+						if killer:getPublicSync("gangwarParticipant") and client:getPublicSync("gangwarParticipant") then
+							killer:sendError(_("Der Spieler wird aufgrund der beidseitigen Teilnahme am Gangwar nicht eingesperrt!", killer))
 						else
-							killer:giveAchievement(47)
+							local jailTime = wantedLevel * JAIL_TIME_PER_WANTED_KILL
+							local factionBonus = JAIL_COSTS[wantedLevel]
+							killer:giveAchievement(64)
+							client:sendInfo(_("Du wurdest außer Gefecht gesetzt!", client))
+							client.m_DeathInJail = true
+							-- Pay some money to faction, xp to the policeman
+							local factionBonus = JAIL_COSTS[wantedLevel]
+							if client:getFaction() and client:getFaction():isEvilFaction() then
+								factionBonus = JAIL_COSTS[wantedLevel]/2
+							end
+							local splitmoney = (factionBonus / 2)
+							FactionState:getSingleton().m_BankAccountServer:transferMoney(killer:getFaction(), splitmoney, "Arrest", "Faction", "ArrestKill")
+							FactionState:getSingleton():payArrestBonus(killer, splitmoney)
+							killer:givePoints(wantedLevel)
+							PlayerManager:getSingleton():sendShortMessage(_("%s wurde soeben von %s für %d Minuten eingesperrt! Strafe: %d$", client, client:getName(), killer:getName(), jailTime, factionBonus), "Staat")
+							StatisticsLogger:getSingleton():addArrestLog(client, wantedLevel, jailTime, killer, 0)
+							killer:getFaction():addLog(killer, "Knast", "hat "..client:getName().." für "..jailTime.."min. eingesperrt!")
+							outputChatBox(_("Du hast den Spieler %s außer Gefecht gesetzt und er wird ins Gefängnis transportiert!", killer, getPlayerName(client)),killer,0,0,190)
+							-- Give Achievements
+							if wantedLevel > 4 then
+								killer:giveAchievement(48)
+							else
+								killer:giveAchievement(47)
+							end
+							client:triggerEvent("playerWasted", true)
+							return
 						end
-						client:triggerEvent("playerWasted", true)
-						return
 					end
 				end
 			end

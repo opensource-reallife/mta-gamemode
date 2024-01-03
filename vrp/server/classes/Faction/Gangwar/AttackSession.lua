@@ -180,14 +180,16 @@ function AttackSession:isParticipantInList( player )
 end
 
 function AttackSession:removeParticipant( player )
-	for index = 1,#self.m_Participants do
-		if self.m_Participants[index] == player then
-			table.remove( self.m_Participants, index )
+	nextframe(function()
+		for index = 1,#self.m_Participants do
+			if self.m_Participants[index] == player then
+				table.remove( self.m_Participants, index )
+			end
 		end
-	end
-	player:setPublicSync("gangwarParticipant", false) 
-	self:synchronizeLists( )
-	self:sessionCheck()
+		player:setPublicSync("gangwarParticipant", false)
+		self:synchronizeLists( )
+		self:sessionCheck()
+	end)
 end
 
 function AttackSession:isPlayerDisqualified( player )
@@ -419,19 +421,21 @@ end
 function AttackSession:stopClients( bNoOutput )
 	local allGangwarPlayers = {}
 	self:destroyTeamBlips()
-	for k, v in ipairs(self.m_Faction1:getOnlinePlayers()) do
-		v:triggerEvent("AttackClient:stopClient")
-		allGangwarPlayers[#allGangwarPlayers+1] = v
-		v:setPublicSync("gangwarParticipant", false) 
-	end
-	for k, v in ipairs(self.m_Faction2:getOnlinePlayers()) do
-		v:triggerEvent("AttackClient:stopClient")
-		allGangwarPlayers[#allGangwarPlayers+1] = v
-		v:setPublicSync("gangwarParticipant", false) 
-	end
-	if not bNoOutput then
-		GangwarStatistics:getSingleton():collectDamage(self.m_AreaObj.m_ID, allGangwarPlayers)
-	end
+	nextframe(function()
+		for k, v in ipairs(self.m_Faction1:getOnlinePlayers()) do
+			v:triggerEvent("AttackClient:stopClient")
+			allGangwarPlayers[#allGangwarPlayers+1] = v
+			v:setPublicSync("gangwarParticipant", false) 
+		end
+		for k, v in ipairs(self.m_Faction2:getOnlinePlayers()) do
+			v:triggerEvent("AttackClient:stopClient")
+			allGangwarPlayers[#allGangwarPlayers+1] = v
+			v:setPublicSync("gangwarParticipant", false) 
+		end
+		if not bNoOutput then
+			GangwarStatistics:getSingleton():collectDamage(self.m_AreaObj.m_ID, allGangwarPlayers)
+		end
+	end)
 end
 
 function AttackSession:notifyFaction1( )
