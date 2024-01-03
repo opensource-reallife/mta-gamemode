@@ -189,7 +189,7 @@ function Account.loginSuccess(player, Id, Username, ForumId, RegisterDate, Teams
 	end
 
 	player:loadCharacter()
-	player:spawn()
+	nextframe(function() player:spawn() end)
 	player:triggerEvent("loginsuccess", pwhash)
 
 	if not FORUM_LOGIN then
