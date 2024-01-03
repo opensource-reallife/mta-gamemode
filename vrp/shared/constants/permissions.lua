@@ -12,7 +12,7 @@ PERMISSIONS_INFO = { -- name = {{type, id} type = 0 for all, {faction min rank, 
 	["editWeaponPermissions"] =	{{0}, {["faction"] = 4, ["company"] = nil, ["group"] = nil}},
 	["editDiplomacy"] =			{{1, {FactionStaticId.LCN, FactionStaticId.YAKUZA, FactionStaticId.GROVE, FactionStaticId.BALLAS, FactionStaticId.OUTLAWS, FactionStaticId.VATOS, FactionStaticId.TRIAD, FactionStaticId.BRIGADA}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}}, -- f done
 	["startGangWar"] =			{{1, {FactionStaticId.SAPD, FactionStaticId.LCN, FactionStaticId.YAKUZA, FactionStaticId.GROVE, FactionStaticId.BALLAS, FactionStaticId.OUTLAWS, FactionStaticId.VATOS, FactionStaticId.TRIAD, FactionStaticId.BRIGADA}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}}, -- f done
-	-----["joinGangWar"] =			{{1, {FactionStaticId.LCN, FactionStaticId.YAKUZA, FactionStaticId.GROVE, FactionStaticId.BALLAS, FactionStaticId.OUTLAWS, FactionStaticId.VATOS, FactionStaticId.TRIAD, FactionStaticId.BRIGADA}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}}, -- f done
+	["joinGangWar"] =			{{1, {FactionStaticId.SAPD, FactionStaticId.LCN, FactionStaticId.YAKUZA, FactionStaticId.GROVE, FactionStaticId.BALLAS, FactionStaticId.OUTLAWS, FactionStaticId.VATOS, FactionStaticId.TRIAD, FactionStaticId.BRIGADA}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}}, -- f done
 	["editBinds"] =				{{0}, {["faction"] = 4, ["company"] = 3, ["group"] = nil}},
 	["editEquipment"] =			{{0}, {["faction"] = 4, ["company"] = nil, ["group"] = nil}},
 	["editActionPermissions"] =	{{0}, {["faction"] = 4, ["company"] = nil, ["group"] = 0}},
@@ -68,7 +68,7 @@ PERMISSION_NAMES = {
 	["editWeaponPermissions"] =	"Waffenberechtigung verwalten",
 	["editDiplomacy"] =			"Diplomatie verwalten",
 	["startGangWar"] =			"Gangwar starten",
-	-----["joinGangWar"] =			"Am Gangwar teilnehmen",
+	["joinGangWar"] =			"Am Gangwar teilnehmen",
 	["editBinds"] =				"Binds verwalten",
 	["editEquipment"] =			"Equipmentrechte verwalten",
 	["editActionPermissions"] =	"Aktionsrechte verwalten",
