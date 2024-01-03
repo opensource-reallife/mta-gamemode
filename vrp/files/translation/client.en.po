@@ -5237,3 +5237,336 @@ msgstr "You can't treat yourself while you're picking a lock."
 
 msgid "Gelagert"
 msgstr "Stored"
+
+msgid "Ein Set Kleidung."
+msgstr "A set of clothes."
+
+msgid "Kleidgung"
+msgstr "Clothes"
+
+msgid "Bambusstange"
+msgstr "Bamboo stick"
+
+msgid "Wollen fangen Fische?"
+msgstr "Want to catch fish?"
+
+msgid "Swatschild"
+msgstr "Swat shield"
+
+msgid "Handelsvertrag"
+msgstr "Commercial contract"
+
+msgid "Wird zum Fahrzeughandel benötigt"
+msgstr "Required for vehicle trade"
+
+msgid "Personalausweis und Führerschein"
+msgstr "ID card and driver's license"
+
+msgid "Weed"
+msgstr "Weed"
+
+msgid "Burger"
+msgstr "Burger"
+
+msgid "Benzinkanister"
+msgstr "Petrol can"
+
+msgid "Chips"
+msgstr "Chips"
+
+msgid "Fernglas"
+msgstr "Binoculars"
+
+msgid "Medikit"
+msgstr "Medikit"
+
+msgid "Radio"
+msgstr "Radio"
+
+msgid "Wuerfel"
+msgstr "Dice"
+
+msgid "Zigarette"
+msgstr "Cigarette"
+
+msgid "Pfeffermunition"
+msgstr "Pepper munition"
+
+msgid "Weed-Samen"
+msgstr "Weed seeds"
+
+msgid "Shrooms"
+msgstr "Shrooms"
+
+msgid "Pommes"
+msgstr "Fries"
+
+msgid "Snack"
+msgstr "Snack"
+
+msgid "Bier"
+msgstr "Beer"
+
+msgid "eXoPad"
+msgstr "eXoPad"
+
+msgid "Gameboy"
+msgstr "Gameboy"
+
+msgid "Mats"
+msgstr "Mats"
+
+msgid "Kaffee"
+msgstr "Kaffee"
+
+msgid "Fische"
+msgstr "Fishes"
+
+msgid "Zeitung"
+msgstr "Newspaper"
+
+msgid "Ecstasy"
+msgstr "Ecstasy"
+
+msgid "Heroin"
+msgstr "Heroine"
+
+msgid "Kokain"
+msgstr "Cocaine"
+
+msgid "Reparaturkit"
+msgstr "Repair kit"
+
+msgid "Suessigkeiten"
+msgstr "Sweets"
+
+msgid "Kürbis"
+msgstr "Pumpkin"
+
+msgid "Päckchen"
+msgstr "Packets"
+
+msgid "Gluehwein"
+msgstr "Mulled wine"
+
+msgid "Lebkuchen"
+msgstr "Gingerbread"
+
+msgid "Shot"
+msgstr "Shot"
+
+msgid "Wuerstchen"
+msgstr "Sausages"
+
+msgid "Mautpass"
+msgstr "Toll pass"
+
+msgid "Keks"
+msgstr "Cookie"
+
+msgid "Helm"
+msgstr "Helmet"
+
+msgid "Maske"
+msgstr "Mask"
+
+msgid "Kuheuter mit Pommes"
+msgstr "Cow's udder with fries"
+
+msgid "Zombie-Burger"
+msgstr "Zombie-Burger"
+
+msgid "Weihnachtsmütze"
+msgstr "Christmas hat"
+
+msgid "Barrikade"
+msgstr "Barricade"
+
+msgid "Sprengstoff"
+msgstr "Explosives"
+
+msgid "Pizza"
+msgstr "Pizza"
+
+msgid "Pilz"
+msgstr "Mushroom"
+
+msgid "Kanne"
+msgstr "Jug"
+
+msgid "Blitzer"
+msgstr "Speed camera"
+
+msgid "Nagel-Band"
+msgstr "Nail tape"
+
+msgid "Whiskey"
+msgstr "Whiskey"
+
+msgid "Sex on the Beach"
+msgstr "Sex on the Beach"
+
+msgid "Pina Colada"
+msgstr "Pina Colada"
+
+msgid "Monster"
+msgstr "Monster"
+
+msgid "Cuba-Libre"
+msgstr "Cuba-Libre"
+
+msgid "Donutbox"
+msgstr "Donut box"
+
+msgid "Donut"
+msgstr "Donut"
+
+msgid "Motorcross-Helm"
+msgstr "Motorcross helmet"
+
+msgid "Pot-Helm"
+msgstr "Pot helmet"
+
+msgid "Gasmaske"
+msgstr "Gas mask"
+
+msgid "Kevlar"
+msgstr "Kevlar"
+
+msgid "Tragetasche"
+msgstr "Carrier bag"
+
+msgid "Diebesgut"
+msgstr "Stolen goods"
+
+msgid "Kleine Kühltasche"
+msgstr "Small cooler bag"
+
+msgid "Kühltasche"
+msgstr "Cooler bag"
+
+msgid "Kühlbox"
+msgstr "Cooler box"
+
+msgid "Einsatzhelm"
+msgstr "Mission helmet"
+
+msgid "Köder"
+msgstr "Bait"
+
+msgid "Osterei"
+msgstr "Easter egg"
+
+msgid "Hasenohren"
+msgstr "Bunny ears"
+
+msgid "Warnkegel"
+msgstr "Warning cone"
+
+msgid "Apfel"
+msgstr "Apple"
+
+msgid "Apfelbaum-Samen"
+msgstr "Apple tree seeds"
+
+msgid "Trashcan"
+msgstr "Trashcan"
+
+msgid "Taser"
+msgstr "Taser"
+
+msgid "Zuckerstange"
+msgstr "Candy cane"
+
+msgid "Keypad"
+msgstr "Keypad"
+
+msgid "Tor"
+msgstr "Gate"
+
+msgid "Eingang"
+msgstr "Entrance"
+
+msgid "Rakete"
+msgstr "Rocket"
+
+msgid "Rohrbombe"
+msgstr "Pipe bomb"
+
+msgid "Raketen Batterie"
+msgstr "Rocket battery"
+
+msgid "Römische Kerze"
+msgstr "Roman candle"
+
+msgid "Römische Kerzen Batterie"
+msgstr "Roman candles battery"
+
+msgid "Kugelbombe"
+msgstr "Ball bomb"
+
+msgid "Böller"
+msgstr "Firecrackers"
+
+msgid "SLAM"
+msgstr "SLAM"
+
+msgid "Rauchgranate"
+msgstr "Smoke grenade"
+
+msgid "Transmitter"
+msgstr "Transmitter"
+
+msgid "Stern"
+msgstr "Star"
+
+msgid "Keycard"
+msgstr "Keycard"
+
+msgid "Blumen-Samen"
+msgstr "Flower seeds"
+
+msgid "DefuseKit"
+msgstr "DefuseKit"
+
+msgid "Fischlexikon"
+msgstr "Fish lexicon"
+
+msgid "Angelrute"
+msgstr "Fishing rod"
+
+msgid "Profi Angelrute"
+msgstr "Professional fishing rod"
+
+msgid "Legendäre Angelrute"
+msgstr "Legendary fishing rod"
+
+msgid "Leuchtköder"
+msgstr "Glow bait"
+
+msgid "Pilkerköder"
+msgstr "Pilchard bait"
+
+msgid "Schwimmer"
+msgstr "Floater"
+
+msgid "Spinner"
+msgstr "Spinner"
+
+msgid "Clubkarte"
+msgstr "Club card"
+
+msgid "Flasche"
+msgstr "Bottle"
+
+msgid "Abfall"
+msgstr "Waste"
+
+msgid "Schuh"
+msgstr "Shoe"
+
+msgid "Lebkuchen-Maske"
+msgstr "Gingerbread mask"
+
+msgid "Hacking-Kit"
+msgstr "Hacking-Kit"

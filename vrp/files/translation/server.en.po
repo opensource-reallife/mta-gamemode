@@ -4193,3 +4193,9 @@ msgstr "You need at least %d played hours for this!"
 
 msgid "Der Spieler wird aufgrund der beidseitigen Teilnahme am Gangwar nicht eingesperrt!"
 msgstr "The player will not be imprisoned due to mutual participation in the gang war!"
+
+msgid "Es wurde kein Spieler gefunden!"
+msgstr "No player has been found!"
+
+msgid "Du benötigst keine Unterstützung mehr? Klicke hier."
+msgstr "Don't need any more support? Click here."
