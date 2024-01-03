@@ -4190,3 +4190,6 @@ msgstr "You can't do that right now!"
 
 msgid "Du benötigst dafür mindestens %d Spielstunden!"
 msgstr "You need at least %d played hours for this!"
+
+msgid "Der Spieler wird aufgrund der beidseitigen Teilnahme am Gangwar nicht eingesperrt!"
+msgstr "The player will not be imprisoned due to mutual participation in the gang war!"
