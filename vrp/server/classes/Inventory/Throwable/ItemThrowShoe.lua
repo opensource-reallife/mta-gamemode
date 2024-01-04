@@ -43,7 +43,7 @@ end
 function ItemThrowShoe:use(player)
 	if Fishing:getSingleton():isPlayerFishing(player) then return player:sendError(_("Pack erst deine Angel weg!")) end
 	if not player:getThrowingObject() then 
-		player:meChat(true, false, "zieht einen Schuh.")
+		player:meChat(true, "zieht einen Schuh.")
 		player:sendInfo(_("Der Schuh ist bereit!", player))
 		ThrowObject:new(player, ItemThrowShoe.Model, 1654, ItemThrowShoe.OffsetMatrix)
 			:setThrowCallback(bind(self.Event_throwCallback, self))
@@ -55,7 +55,7 @@ function ItemThrowShoe:use(player)
 		if player:getThrowingObject():getModel() == ItemThrowShoe.Model then 
 			player:getThrowingObject():delete()
 			player:setThrowingObject(nil)
-			player:meChat(true, false, "legt den Schuh weg.")
+			player:meChat(true, "legt den Schuh weg.")
 			player:sendInfo(_("Der Schuh wurde zurückgelegt!", player))
 		end
 	end

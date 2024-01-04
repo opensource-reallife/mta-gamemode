@@ -17,7 +17,7 @@ end
 function ItemRepairKit:use(player)
 	if player.vehicle then
 		if player.vehicle:getHealth() <= 310  then
-			player:meChat(true, false, "steigt aus und legt einige Kabel an den Motor an!")
+			player:meChat(true, "steigt aus und legt einige Kabel an den Motor an!")
 			local irandom = math.random(1,100)
 			if irandom >= 50 then
 				setElementHealth(player.vehicle, 500)
@@ -26,7 +26,7 @@ function ItemRepairKit:use(player)
 				player:getInventory():removeItem(self:getName(), 1)
 			else
 				player:getInventory():removeItem(self:getName(), 1)
-				player:meChat(true, false, "brennt die angelegten Kabel nach einigen Versuchen durch!")
+				player:meChat(true, "brennt die angelegten Kabel nach einigen Versuchen durch!")
 				player:sendInfo(_("Das Reparaturkit ist zerstört!", player))
 			end
 		else

@@ -90,7 +90,7 @@ function GroupHouseRob:Event_OnSellAccept()
 				pay = pay * Randomizer:get(1, 3)
 				inv:removeAllItem("Diebesgut")
 				self.m_BankServerAccount:transferMoney(client, pay, "Verkauf von Diebesware", "Group", "HouseRob")
-				client:meChat(true, false, "streckt seine Hand aus und nimmt einen Umschlag mit Scheinen entgegen!")
+				client:meChat(true, "streckt seine Hand aus und nimmt einen Umschlag mit Scheinen entgegen!")
 				client:sendPedChatMessage(client.m_ClickPed:getData("Ped:Name"), "Gutes Geschäft. Komm wieder wenn du mehr hast!")
 				-- Give Wanteds
 				if chance(5) then
@@ -129,12 +129,12 @@ function GroupHouseRob:Event_onClickPed(  m, s, player)
 			if inv then
 				local thiefItems = inv:getItemAmount("Diebesgut")
 				if thiefItems > 0 then
-					player:meChat(true, false, "nickt mit dem Kopf.")
+					player:meChat(true, "nickt mit dem Kopf.")
 					player.m_ClickPed = source
 					player:sendPedChatMessage( source:getData("Ped:Name"), "Lass mich mal sehen!")
 					player:triggerEvent("showHouseRobSellGUI", source)
 				else
-					player:meChat(true, false, "schüttelt den Kopf.")
+					player:meChat(true, "schüttelt den Kopf.")
 					player:sendPedChatMessage( source:getData("Ped:Name"), "Hmm... Komm wieder wenn du etwas hast!")
 				end
 			end

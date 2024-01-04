@@ -453,7 +453,7 @@ function PlayerManager:playerWasted(killer, killerWeapon, bodypart)
 	for key, obj in ipairs(getAttachedElements(client)) do
 		if obj:getData("MoneyBag") then
 			detachElements(obj, client)
-			client:meChat(true, false, "lies einen Geldbeutel fallen")
+			client:meChat(true, "lies einen Geldbeutel fallen")
 		end
 	end
 
@@ -652,7 +652,7 @@ function PlayerManager:playerChat(message, messageType, translatableBind)
 		Admin:getSingleton():outputSpectatingChat(source, "C", message, phonePartner, playersToSend)
 		cancelEvent()
 	elseif messageType == 1 then
-		source:meChat(false, false, message)
+		source:meChat(false, message)
 
 		Admin:getSingleton():outputSpectatingChat(source, "M", message)
 		cancelEvent()
@@ -803,7 +803,7 @@ function PlayerManager:Command_playerShrug(source, cmd)
 		return
 	end
 	source:setLastChatMessage(text)
-	source:meChat(true, false, text)
+	source:meChat(true, text)
 	if source.isTasered then return	end
 	if source.vehicle then return end
 	setPedAnimation(source, "shop", "SHP_HandsUp_Scr", 400, false, false, true, false)

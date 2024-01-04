@@ -30,6 +30,7 @@ BindGUI.Functions = {
 }
 
 MAX_PARAMETER_LENGTH = 37
+MAX_PARAMETER_LENGTH_MANAGE = 62
 
 addRemoteEvents{"bindReceive"}
 
@@ -155,7 +156,7 @@ function BindGUI:loadLocalBinds()
 		else
 			keys = table.concat({BindGUI.Modifiers[data.keys[1]] and BindGUI.Modifiers[data.keys[1]] or data.keys[1]:upper(), BindGUI.Modifiers[data.keys[2]] and BindGUI.Modifiers[data.keys[2]] or data.keys[2]:upper()}, " + ")
 		end
-		item = self.m_Grid:addItem(data.action.name, string.short(tMessage, MAX_PARAMETER_LENGTH), keys)
+		item = self.m_Grid:addItem(data.action.name, string.short(tMessage or "", MAX_PARAMETER_LENGTH), keys)
 		item.index = index
 		item.type = "local"
 		item.action =  data.action.name
@@ -190,7 +191,12 @@ function BindGUI:Event_onReceive(type, id, binds)
 	local item
 	self.m_Grid:addItemNoClick(BindGUI.Headers[type], "", "")
 	for id, data in pairs(binds) do
-		item = self.m_Grid:addItem(data["Func"], string.short(data["Message"], MAX_PARAMETER_LENGTH), "-")
+		local tMessage = data["Message"]
+		if localPlayer:getLocale() == "en" and data["MessageEN"] and data["MessageEN"] ~= "" then
+			tMessage = data["MessageEN"]
+		end
+
+		item = self.m_Grid:addItem(data["Func"], string.short(tMessage or "", MAX_PARAMETER_LENGTH), "-")
 		item.type = "server"
 		item.action =  data["Func"]
 		item.parameterDE =  data["Message"]
@@ -432,7 +438,7 @@ function BindManageGUI:Event_onReceive(type, id, binds)
 			tMessage = data["MessageEN"]
 		end
 
-		local item = self.m_Grid:addItem(data["Func"], tMessage)
+		local item = self.m_Grid:addItem(data["Func"], string.short(tMessage or "", MAX_PARAMETER_LENGTH_MANAGE))
 		item.action =  data["Func"]
 		item.parameter =  data["Message"]
 		item.parameterEN =  data["MessageEN"]

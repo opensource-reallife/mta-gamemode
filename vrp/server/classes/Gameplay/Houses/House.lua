@@ -494,7 +494,7 @@ function House:enterHouse(player)
 
 	local int, x, y, z = unpack(HOUSE_INTERIOR_TABLE[self.m_InteriorID])
 	if isRobberEntering  then
-		player:meChat(true, false, "betritt das Haus an der kaputten Tür vorbei!")
+		player:meChat(true, "betritt das Haus an der kaputten Tür vorbei!")
 		if player.m_LastRobHouse then
 			if player.m_LastRobHouse ~= self then
 				player:triggerEvent("onClientStartHouseRob", int, self, {x,y,z})
@@ -507,7 +507,7 @@ function House:enterHouse(player)
 			self.hasRobbedHouse[player:getId()] = true
 		end
 	else
-		player:meChat(true, false, "öffnet die Tür und betritt das Haus!")
+		player:meChat(true, "öffnet die Tür und betritt das Haus!")
 	end
 
 	player:setPosition(x, y, z)
@@ -531,7 +531,7 @@ function House:ringDoorBell(player)
 		end
 	end
 	player:playSound("files/audio/door_bell.wav")
-	player:meChat(true, false, "klingelt an der Haustür!")
+	player:meChat(true, "klingelt an der Haustür!")
 	player.m_HouseDoorBellCooldown = true
 	local timeForResponse = EVENT_HALLOWEEN and math.random(15000, 25000) or 5000
 	local playerId = player:getId()
@@ -589,10 +589,10 @@ function House:leaveHouse(player)
 		end
 	end
 	if isRobberLeaving then
-		player:meChat(true, false, "verlässt das Haus!")
+		player:meChat(true, "verlässt das Haus!")
 		player:triggerEvent("onClientEndHouseRob")
 	else
-		player:meChat(true, false, "öffnet die Tür und verlässt das Haus!")
+		player:meChat(true, "öffnet die Tür und verlässt das Haus!")
 	end
 	self:removePlayerFromList(player)
 	player:setPosition(self.m_Pos)
@@ -610,7 +610,7 @@ function House:tryRob( player )
 	if bContinue then
 		if self.m_LockStatus then
 			self.m_LockStatus = false
-			player:meChat(true, false, "holt zu einem Kick aus und tritt gegen die Tür!")
+			player:meChat(true, "holt zu einem Kick aus und tritt gegen die Tür!")
 			player:districtChat("Der Klang von aufbrechenden Holz ertönt durch die Gegend!")
 			self.m_RobGroup = player:getGroup()
 			self.m_RobGroup.m_CurrentRobbing = self

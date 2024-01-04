@@ -369,7 +369,7 @@ function Vehicle:toggleEngine(player)
 		end
 
 		if VEHICLE_BIKES[self:getModel()] then
-			player:meChat(true, false, "verschließt sein Fahrradschloss!")
+			player:meChat(true, "verschließt sein Fahrradschloss!")
 		end
 
 		local occs = self:getOccupants()
@@ -397,7 +397,7 @@ function Vehicle:toggleEngine(player)
 
 			if player and not getVehicleEngineState(self) then
 				if VEHICLE_BIKES[self:getModel()] then -- Bikes
-					player:meChat(true, false, "öffnet sein Fahrradschloss!")
+					player:meChat(true, "öffnet sein Fahrradschloss!")
 					self:setEngineState(state)
 					return true
 				else

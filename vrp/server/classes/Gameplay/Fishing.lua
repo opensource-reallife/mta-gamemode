@@ -336,7 +336,7 @@ end
 
 function Fishing:FishEscape()
 	if not self.m_Players[client] then return end
-	client:meChat(true, false, "hat einen Fisch verloren!")
+	client:meChat(true, "hat einen Fisch verloren!")
 	client:increaseStatistics("FishLost")
 end
 

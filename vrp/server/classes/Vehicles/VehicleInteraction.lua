@@ -168,7 +168,7 @@ end
 function VehicleInteraction:doStateAction(vehicle)
 	if not vehicle.isTuningChecked then
 		vehicle.isTuningChecked = true
-		client:meChat(true, false, "schaut im Motorraum nach einem Radarwarngerät.")
+		client:meChat(true, "schaut im Motorraum nach einem Radarwarngerät.")
 		client:setAnimation("BAR", "Barserve_give", 0, true)
 		toggleAllControls(client, false)
 
@@ -180,7 +180,7 @@ function VehicleInteraction:doStateAction(vehicle)
 			if getDistanceBetweenPoints3D(vehicle:getPosition(), player:getPosition()) <= 7 then
 				local hasDetector = vehicle:hasRadarDetector()
 
-				player:meChat(true, false, ("konnte %sein Radarwarngerät finden."):format(not hasDetector and "k" or ""))
+				player:meChat(true, ("konnte %sein Radarwarngerät finden."):format(not hasDetector and "k" or ""))
 				player:sendInfo(_("%sRadarwarngerät gefunden", player, not hasDetector and "kein " or ""))
 			end
 		end, 7500, 1, client, vehicle)

@@ -43,7 +43,7 @@ end
 function ItemThrowBottle:use(player)
 	if Fishing:getSingleton():isPlayerFishing(player) then return player:sendError(_("Pack erst deine Angel weg!")) end
 	if not player:getThrowingObject() then 
-		player:meChat(true, false, "zieht eine Flasche.")
+		player:meChat(true, "zieht eine Flasche.")
 		player:sendInfo(_("Die Flasche ist bereit!", player))
 		ThrowObject:new(player, ItemThrowBottle.Model, 1654, ItemThrowBottle.OffsetMatrix)
 			:setThrowCallback(bind(self.Event_throwCallback, self))
@@ -55,7 +55,7 @@ function ItemThrowBottle:use(player)
 		if player:getThrowingObject():getModel() == ItemThrowBottle.Model then 
 			player:getThrowingObject():delete()
 			player:setThrowingObject(nil)
-			player:meChat(true, false, "legt die Flasche weg.")
+			player:meChat(true, "legt die Flasche weg.")
 			player:sendInfo(_("Die Flasche wurde zurückgelegt!", player))
 		end
 	end

@@ -23,7 +23,7 @@ function ItemDrugs:destructor()
 end
 
 function ItemDrugs:use( player )
-	player:meChat(true, false, ItemDrugs.Texts[self:getName()].."!")
+	player:meChat(true, ItemDrugs.Texts[self:getName()].."!")
 
 	player:giveAchievement(73)
 end

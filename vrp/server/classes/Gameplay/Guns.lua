@@ -573,7 +573,7 @@ function Guns:destroyProtectionHelmet(attacker, target)
 			if math.random(1,8) == 1 then
 				target:getInventory():removeItem("Einsatzhelm", 1)
 				destroyElement(target.m_Helmet)
-				target:meChat(true, false, "wird von einer Kugel am Helm getroffen, welcher zerspringt!")
+				target:meChat(true, "wird von einer Kugel am Helm getroffen, welcher zerspringt!")
 				target.m_IsWearingHelmet = false
 				target.m_Helmet = false
 				target:setData("isFaceConcealed", false)
@@ -591,7 +591,7 @@ function Guns:destroyKevlar(attacker, target)
 		if target.m_Shirt:getData("isProtectingChest") then
 			target:getInventory():removeItem("Kevlar", 1)
 			destroyElement(target.m_Shirt)
-			target:meChat(true, false, "Kevlarweste wurde aufgrund der zu hohen Belastung unbrauchbar!")
+			target:meChat(true, "Kevlarweste wurde aufgrund der zu hohen Belastung unbrauchbar!")
 			target.m_IsWearingShirt = false
 			target.m_Shirt = false
 			target.m_KevlarShotsCount = nil
