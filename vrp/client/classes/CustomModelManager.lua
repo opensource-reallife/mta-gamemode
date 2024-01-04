@@ -56,10 +56,10 @@ function CustomModelManager:constructor()
 	self:loadImportDFF("files/models/buildings/ammunation.dff", 4552)
 	self:loadImportCOL("files/models/buildings/ammunation_int.col", 18049)
 	self:loadImportDFF("files/models/buildings/ammunation_int.dff", 18049)
-	self:loadImportCOL("files/models/buildings/ammunation2.col", 5106)
+	--[[self:loadImportCOL("files/models/buildings/ammunation2.col", 5106)
 	self:loadImportDFF("files/models/buildings/ammunation2.dff", 5106)
 	self:loadImportCOL("files/models/buildings/ammunation2_int.col", 18033)
-	self:loadImportDFF("files/models/buildings/ammunation2_int.dff", 18033)
+	self:loadImportDFF("files/models/buildings/ammunation2_int.dff", 18033)]]
 
 	--ferris wheel
 	self:loadImportCOL("files/models/objects/ferrisWheel/ferrisBase.col", FERRIS_IDS.Base)

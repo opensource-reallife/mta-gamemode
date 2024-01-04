@@ -15,9 +15,9 @@ AmmuNationGUI.Data = {
 		WeaponPosition = Vector3(1380.47, -1279.32, 13.7),
 		CameraMatrix = {Vector3(1375.70, -1279.30, 15.90), Vector3(1380.47, -1279.32, 14)}
 	},
-	["Ammunation South"] = {
-		WeaponPosition = Vector3(2380.06, -1985.14, 13.7),
-		CameraMatrix = {Vector3(2375.70, -1985.14, 15.90), Vector3(2380.06, -1985.14, 14)}
+	["Ammunation"] = {
+		WeaponPosition = Vector3(290.33, -110.50, 1002),
+		CameraMatrix = {Vector3(288.98, -109.38, 1003), Vector3(290.33, -110.50, 1002)}
 	},
 }
 
