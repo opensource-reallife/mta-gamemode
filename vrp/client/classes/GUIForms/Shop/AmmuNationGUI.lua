@@ -11,11 +11,11 @@ inherit(Singleton, AmmuNationGUI)
 addRemoteEvents{"showAmmunationMenu", "refreshAmmunationMenu"}
 
 AmmuNationGUI.Data = {
-	["Ammunation Central"] = {
+	["Ammu-Nation Downtown"] = {
 		WeaponPosition = Vector3(1380.47, -1279.32, 13.7),
 		CameraMatrix = {Vector3(1375.70, -1279.30, 15.90), Vector3(1380.47, -1279.32, 14)}
 	},
-	["Ammunation"] = {
+	["Ammu-Nation"] = {
 		WeaponPosition = Vector3(290.33, -110.50, 1002),
 		CameraMatrix = {Vector3(288.98, -109.38, 1003), Vector3(290.33, -110.50, 1002)}
 	},
@@ -35,7 +35,7 @@ local weaponModels = {
 
 function AmmuNationGUI:constructor(ped)
 	GUIForm.constructor(self, 10, screenHeight*0.25, 300, screenHeight*0.5, true, false, ped)
-	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, "Ammunation", true, true, self)
+	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, "Ammu-Nation", true, true, self)
 
 	self.m_WeaponList = GUIGridList:new(5, 35, self.m_Width-10, self.m_Height-35-65, self)
 	self.m_WeaponList:addColumn(_"Name", 0.75)

@@ -4039,9 +4039,6 @@ msgstr "You cannot place objects on vehicles."
 msgid "Du musst in der Nähe der Zielposition sein!"
 msgstr "You must be close to the target position!"
 
-msgid "Ammunation"
-msgstr "Ammunition"
-
 msgid "Bestellen"
 msgstr "Order"
 
@@ -4062,9 +4059,6 @@ msgstr "remove"
 
 msgid "Links-Shift halten um 10-fache Muniton zu bestellen."
 msgstr "Hold left shift key to order 10 times as much ammunition."
-
-msgid "Ammunation App"
-msgstr "Ammunation App"
 
 msgid "Dein Waffenlevel ist zu niedrig! (Benötigt: %i)"
 msgstr "Your weapon level is too low! (Requires %i)"

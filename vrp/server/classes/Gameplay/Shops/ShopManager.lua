@@ -281,7 +281,7 @@ function ShopManager:buyWeapon(shopId, itemType, weaponId, amount)
 				end
 
 				StatisticsLogger:addAmmunationLog(client, "Shop", toJSON({[weaponId] = weaponAmount}), price)
-				client:transferMoney(shop.m_BankAccount, price, "Ammunation-Einkauf", "Gameplay", "Weapon")
+				client:transferMoney(shop.m_BankAccount, price, "Ammu-Nation Einkauf", "Gameplay", "Weapon")
 			else
 				client:sendError(_("Du hast nicht genug Geld dabei!", client))
 				return
@@ -500,7 +500,7 @@ function ShopManager:onAmmunationAppOrder(weaponTable)
 		if client:getBankMoney() >= totalAmount then
 			if totalAmount > 0 then
 
-				client:transferBankMoney(BankServer.get("shop.ammunation"), totalAmount, "AmmuNation Bestellung", "Shop", "Ammunation")
+				client:transferBankMoney(BankServer.get("shop.ammunation"), totalAmount, "Ammu-Nation Bestellung", "Shop", "Ammunation")
 				StatisticsLogger:getSingleton():addAmmunationLog(client, "Bestellung", toJSON(weaponTable), totalAmount)
 				self:createOrder(client, weaponTable)
 			else

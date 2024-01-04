@@ -261,6 +261,8 @@ function Shop:addBlip(blip)
 	if blip == "Bar.png" then
 		b:setDisplayText("Bar / Club", BLIP_CATEGORY.Leisure)
 		b:setOptionalColor({245, 160, 199})
+	elseif self.m_TypeDataName == "Ammu-Nation Downtown" then
+		b:setDisplayText("Ammu-Nation", BLIP_CATEGORY.Shop)
 	else
 		b:setDisplayText(self.m_TypeDataName, BLIP_CATEGORY.Shop)
 	end

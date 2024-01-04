@@ -8,7 +8,7 @@
 AppAmmunation = inherit(PhoneApp)
 
 function AppAmmunation:constructor()
-	PhoneApp.constructor(self, "Ammu Nation", "IconAmmuNation.png")
+	PhoneApp.constructor(self, "Ammu-Nation", "IconAmmuNation.png")
 end
 
 function AppAmmunation:onOpen(form)
@@ -19,14 +19,8 @@ function AppAmmunation:onOpen(form)
 	self.m_TabPanel = GUIPhoneTabPanel:new(0, 0, form.m_Width, form.m_Height, form)
 	self.m_Tabs = {}
 	self.m_Tabs["Info"] = self.m_TabPanel:addTab(_"Information", FontAwesomeSymbols.Info)
-	GUILabel:new(10, 10, 200, 50, _"Ammunation", self.m_Tabs["Info"])
-	GUILabel:new(10, 65, form.m_Width-20, 22, _[[
-		Hier kannst du den Lieferservice von Ammunation nutzen.
-		Wähle einfach die gewünschten Produkte aus und klicke auf bestellen.
-		Für die Lieferung wird ein Aufschlag von 50% berechnet.
-
-		Das Geld wird bequem vom Konto abgebucht!
-	]], self.m_Tabs["Info"]):setMultiline(true)
+	GUILabel:new(10, 10, 200, 50, "Ammu-Nation", self.m_Tabs["Info"])
+	GUILabel:new(10, 65, form.m_Width-20, 22, _"Hier kannst du den Ammu-Nation Lieferservice nutzen. Wähle dazu einfach die gewünschten Produkte aus und klicke auf bestellen. Für die Lieferung wird ein Aufschlag von 50%% berechnet.", self.m_Tabs["Info"]):setMultiline(true)
 	self.m_Tabs["Order"] = self.m_TabPanel:addTab(_"Bestellen", FontAwesomeSymbols.CartPlus)
 	GUILabel:new(10, 10, 200, 50, _"Bestellen:", self.m_Tabs["Order"])
 	self.m_WeaponChanger = GUIChanger:new(10, 65, 240, 30, self.m_Tabs["Order"])
@@ -44,7 +38,7 @@ function AppAmmunation:onOpen(form)
 	self.m_WeaponChanger.onChange = function(text)
 		self:onWeaponChange(text)
 	end
-	self.m_WeaponName = GUILabel:new(10, 105, 240, 20, _"Ammunation", self.m_Tabs["Order"]):setAlignX("center")
+	self.m_WeaponName = GUILabel:new(10, 105, 240, 20, "Ammu-Nation", self.m_Tabs["Order"]):setAlignX("center")
 	self.m_WeaponImage = GUIImage:new(90, 130, 60, 60, "files/images/Other/trans.png", self.m_Tabs["Order"])
 	self.m_CartLabel = GUILabel:new(10, 200, 245, 30, _"In den Warenkorb legen:", self.m_Tabs["Order"])
 	self.m_WeaponBuyBtn = GUIButton:new(10, 240, 240, 25, "Waffe (0$)", self.m_Tabs["Order"])
@@ -82,8 +76,7 @@ function AppAmmunation:onOpen(form)
 	self.m_OrderBtnCart:setBackgroundColor(Color.Green)
 	self.m_OrderBtnCart.onLeftClick = bind(self.order,self)
 	self:getPlayerWeapons()
-	ShortMessage:new(_("Links-Shift halten um 10-fache Muniton zu bestellen."), _"Ammunation App", {0, 102, 102})
-
+	ShortMessage:new(_("Links-Shift halten um 10-fache Muniton zu bestellen."), "Ammu-Nation App", {0, 102, 102})
 end
 
 function AppAmmunation:addItemToCart(typ)
