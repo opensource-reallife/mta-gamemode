@@ -24,9 +24,6 @@ function BindManager:constructor()
 end
 
 function BindManager:Event_OnBindTrigger(name, parameters, parametersEN)
-	parameters = tostring(parameters)
-	parametersEN = tostring(parametersEN)
-
 	local translatableBind = true
 	local old = self.m_BindTranslations[parameters]
 
@@ -93,7 +90,7 @@ function BindManager:loadBinds(id)
 			["Message"] = row.Message,
 			["MessageEN"] = row.MessageEN,
 		}
-		if row.Message ~= "" then
+		if row.MessageEN and row.MessageEN ~= "" then
 			self.m_BindTranslations[row.Message] = row.MessageEN
 		end
 		if not self.m_BindsPerOwner[row.OwnerType] then self.m_BindsPerOwner[row.OwnerType] = {} end

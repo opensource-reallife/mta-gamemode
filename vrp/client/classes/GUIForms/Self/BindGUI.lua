@@ -143,8 +143,8 @@ function BindGUI:loadLocalBinds()
 	local binds = BindManager:getSingleton():getBinds()
 
 	for index, data in pairs(binds) do
-		local tMessage = data.action.parametersDE
-		if (localPlayer:getLocale() == "en" or (not data.action.parametersDE or data.action.parametersDE == "")) 
+		local tMessage = data.action.parameters
+		if (localPlayer:getLocale() == "en" or (not data.action.parameters or data.action.parameters == "")) 
 			and data.action.parametersEN and data.action.parametersEN ~= "" then
 			tMessage = data.action.parametersEN
 		end
@@ -160,7 +160,7 @@ function BindGUI:loadLocalBinds()
 		item.index = index
 		item.type = "local"
 		item.action =  data.action.name
-		item.parameterDE =  data.action.parametersDE
+		item.parameterDE =  data.action.parameters
 		item.parameterEN =  data.action.parametersEN
 		item.onLeftClick = bind(self.onBindSelect, self, item, index)
 	end
