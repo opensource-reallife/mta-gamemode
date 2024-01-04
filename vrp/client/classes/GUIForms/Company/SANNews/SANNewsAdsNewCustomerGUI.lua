@@ -1,7 +1,7 @@
 -- ****************************************************************************
 -- *
 -- *  PROJECT:     vRoleplay
--- *  FILE:        client/classes/GUIForms/SANNews/SANNewsAdsNewCustomerGUI.lua
+-- *  FILE:        client/classes/GUIForms/Company/SANNews/SANNewsAdsNewCustomerGUI.lua
 -- *  PURPOSE:     SAN News Ads New Customer GUI class
 -- *
 -- ****************************************************************************
@@ -31,16 +31,13 @@ function SANNewsAdsNewCustomerGUI:constructor(theCurrentCustomers)
 
     GUIForm.constructor(self, screenWidth/2-300, screenHeight/2-230, 600, 460)
 
-    self.m_TabPanel = GUITabPanel:new(0, 0, self.m_Width, self.m_Height, self)
-	self.m_CloseButton = GUIButton:new(self.m_Width-30, 0, 30, 30, FontAwesomeSymbols.Close, self):setFont(FontAwesome(20)):setBarEnabled(false):setBackgroundColor(Color.Clear):setBackgroundHoverColor(Color.Red):setHoverColor(Color.White):setFontSize(1)
-	self.m_CloseButton.onLeftClick = function() self:close() end
+    self.m_SANNewsNewCustomer = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"SAN News", false, true, self)
+    self.m_SANNewsNewCustomer:addBackButton(function () SANNewsAdsOverviewGUI:getSingleton():show() end)
+    self.m_SANNewsNewCustomer:deleteOnClose(true)
 
-	self.m_BackButton = GUIButton:new(self.m_Width-60, 0, 30, 30, FontAwesomeSymbols.Left, self):setFont(FontAwesome(20)):setBarEnabled(false):setBackgroundColor(Color.Clear):setBackgroundHoverColor(Color.Accent):setHoverColor(Color.White):setFontSize(1)
-	self.m_BackButton.onLeftClick = function() self:close() SANNewsAdsOverviewGUI:getSingleton():show() Cursor:show() end
-
-    GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.11, _"Kunde hinzufügen", self)
-    GUILabel:new(self.m_Width*0.02, self.m_Height*0.15, self.m_Width*0.8, self.m_Height*0.07, _"Kundentyp wählen:", self)
-    self.m_typeOfCustomer = GUIChanger:new(self.m_Width*0.02, self.m_Height*0.22, self.m_Width*0.96, self.m_Height*0.06, self)
+    GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.11, _"Kunde hinzufügen", self.m_SANNewsNewCustomer)
+    GUILabel:new(self.m_Width*0.02, self.m_Height*0.15, self.m_Width*0.8, self.m_Height*0.07, _"Kundentyp wählen:", self.m_SANNewsNewCustomer)
+    self.m_typeOfCustomer = GUIChanger:new(self.m_Width*0.02, self.m_Height*0.22, self.m_Width*0.96, self.m_Height*0.06, self.m_SANNewsNewCustomer)
     local customerTypes = {"Faction","Company","Group","Player"}
 
     for i=1, #customerTypes do 
@@ -59,7 +56,7 @@ end
 function SANNewsAdsNewCustomerGUI:onCustomerTypeChange(customerType)
 
     if self.m_bg then delete(self.m_bg) end
-    self.m_bg = GUIRectangle:new(self.m_Width*0.0, self.m_Height*0.30, self.m_Width*1, self.m_Height*0.70, tocolor(0, 0, 0, 0), self)
+    self.m_bg = GUIRectangle:new(self.m_Width*0.0, self.m_Height*0.30, self.m_Width*1, self.m_Height*0.70, tocolor(0, 0, 0, 0), self.m_SANNewsNewCustomer)
 
     if customerType == "Faction" then 
         GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.07, _"Fraktion wählen:", self.m_bg)
@@ -94,37 +91,30 @@ function SANNewsAdsNewCustomerGUI:onCustomerTypeChange(customerType)
         end
 
     elseif customerType == "Company" then 
-
         self.m_companyID = false 
         self.m_companyName = false
 
         GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.07, _"Unternehmen wählen:", self.m_bg)
         self.m_companyChanger = GUIChanger:new(self.m_Width*0.02, self.m_Height*0.09, self.m_Width*0.96, self.m_Height*0.06, self.m_bg)
         
-        local companyList = {[1] = "Fahrschule", [2] = "Mech & Tow", [3] = "San News", [4] = "Public Transport"}
+        local companyList = CompanyManager:getSingleton():getCompanyNames()
         for k, v in ipairs(companyList) do 
             self.m_companyChanger:addItem(companyList[k])
         end
         self.m_companyChanger:setIndex(1)
-        self.m_companyName = "Fahrschule"
-        self.m_companyID = 1
+        
+        local currentName = self.m_companyChanger:getIndex()
+        self.m_currentCompany = CompanyManager:getSingleton():getFromName(currentName)
+        self.m_companyID = self.m_currentCompany:getId()
 
         self.m_companyChanger.onChange = function ()
-            self.m_companyName = self.m_companyChanger:getIndex()
-            if self.m_companyName == "Fahrschule" then 
-                self.m_companyID = 1
-            elseif self.m_companyName == "Mech & Tow" then 
-                self.m_companyID = 2
-            elseif self.m_companyName == "San News" then 
-                self.m_companyID = 3
-            elseif self.m_companyName == "Public Transport" then 
-                self.m_companyID = 4
-            end
+            local currentName = self.m_companyChanger:getIndex()
+            self.m_currentCompany = CompanyManager:getSingleton():getFromName(currentName)
+            self.m_companyID = self.m_currentCompany:getId()
         end
 
         self.m_companyButton = GUIButton:new(self.m_Width*0.02, self.m_Height*0.55, self.m_Width*0.96, self.m_Height*0.07, _"Kunde hinzufügen", self.m_bg)
         self.m_companyButton.onLeftClick = function ()
-            
             for k, v in pairs(self.m_currentCustomers) do 
                 if self.m_companyID == self.m_currentCustomers[k]["customerUniqueID"] and self.m_currentCustomers[k]["customerType"] == "Company" then 
                     ErrorBox:new(_"Das gewählte Unternehmen ist bereits Kunde.")

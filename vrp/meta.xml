@@ -418,7 +418,7 @@
 	<script src="server/classes/Business/Company.lua" type="server"/>
 	<script src="server/classes/Business/Companies/DrivingSchool.lua" type="server"/>
 	<script src="server/classes/Business/Companies/Mechanic-Tow.lua" type="server"/>
-	<script src="server/classes/Business/Companies/San-News.lua" type="server"/>
+	<script src="server/classes/Business/Companies/SanNews.lua" type="server"/>
 	<script src="server/classes/Business/Companies/PublicTransport.lua" type="server"/>
 	<script src="server/classes/Business/CompanyManager.lua" type="server"/>
 	<script src="server/classes/Business/VehicleImportManager.lua" type="server"/>
@@ -865,6 +865,11 @@
     <script src="client/classes/GUIForms/Company/DrivingSchool/DrivingSchoolStudentGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Company/DrivingSchool/DrivingSchoolTheoryGUI.lua" type="client" />
 
+	<script src="client/classes/GUIForms/Company/SANNews/SANNewsAdsGUI.lua" type="client" />
+    <script src="client/classes/GUIForms/Company/SANNews/SANNewsAdsOverviewGUI.lua" type="client" />
+    <script src="client/classes/GUIForms/Company/SANNews/SANNewsAdsNewCustomerGUI.lua" type="client" />
+    <script src="client/classes/GUIForms/Company/SANNews/SANNewsAdsSettingsGUI.lua" type="client" />
+
     <script src="client/classes/GUIForms/Company/BusRouteInformationGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Company/FuelTankGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Company/PublicTransportTaxoMeterGUI.lua" type="client" />
@@ -956,11 +961,6 @@
 
     <script src="client/classes/GUIForms/Race/RaceCreateLobbyGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Race/RaceLobbyGUI.lua" type="client" />
-
-    <script src="client/classes/GUIForms/SANNews/SANNewsAdsGUI.lua" type="client" />
-    <script src="client/classes/GUIForms/SANNews/SANNewsAdsOverviewGUI.lua" type="client" />
-    <script src="client/classes/GUIForms/SANNews/SANNewsAdsNewCustomerGUI.lua" type="client" />
-    <script src="client/classes/GUIForms/SANNews/SANNewsAdsSettingsGUI.lua" type="client" />
 
     <script src="client/classes/GUIForms/Self/AchievementGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Self/BindGUI.lua" type="client" />
@@ -1128,7 +1128,7 @@
 	<script src="client/classes/Business/Companies/PublicTransport.lua" type="client"/>
 	<script src="client/classes/Business/Companies/MechanicTow.lua" type="client"/>
 	<script src="client/classes/Business/Companies/DrivingSchool.lua" type="client"/>
-	<script src="client/classes/Business/Companies/San-News.lua" type="client"/>
+	<script src="client/classes/Business/Companies/SanNews.lua" type="client"/>
 
 
 	<!-- Jobs -->

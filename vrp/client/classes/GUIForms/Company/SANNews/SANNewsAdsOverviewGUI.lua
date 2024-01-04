@@ -1,7 +1,7 @@
 -- ****************************************************************************
 -- *
 -- *  PROJECT:     vRoleplay
--- *  FILE:        client/classes/GUIForms/SANNews/SANNewsAdsOverViewGUI.lua
+-- *  FILE:        client/classes/GUIForms/Company/SANNews/SANNewsAdsOverViewGUI.lua
 -- *  PURPOSE:     SAN News Ads Overview GUI class
 -- *
 -- ****************************************************************************
@@ -21,14 +21,11 @@ function SANNewsAdsOverviewGUI:constructor(theAds)
 
     GUIForm.constructor(self, screenWidth/2-300, screenHeight/2-230, 600, 460)
 
-	self.m_TabPanel = GUITabPanel:new(0, 0, self.m_Width, self.m_Height, self)
-	self.m_CloseButton = GUIButton:new(self.m_Width-30, 0, 30, 30, FontAwesomeSymbols.Close, self):setFont(FontAwesome(20)):setBarEnabled(false):setBackgroundColor(Color.Clear):setBackgroundHoverColor(Color.Red):setHoverColor(Color.White):setFontSize(1)
-	self.m_CloseButton.onLeftClick = function() self:close() end
+    self.m_SANNewsAdsOverview = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"SAN News", false, true, self)
+    self.m_SANNewsAdsOverview:addBackButton(function () CompanyGUI:getSingleton():show() end)
+    self.m_SANNewsAdsOverview:deleteOnClose(true)
 
-	self.m_BackButton = GUIButton:new(self.m_Width-60, 0, 30, 30, FontAwesomeSymbols.Left, self):setFont(FontAwesome(20)):setBarEnabled(false):setBackgroundColor(Color.Clear):setBackgroundHoverColor(Color.Accent):setHoverColor(Color.White):setFontSize(1)
-	self.m_BackButton.onLeftClick = function() self:close() CompanyGUI:getSingleton():show() Cursor:show() end
-
-    self.m_CustomerList = GUIGridList:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.3, self.m_Height*0.75, self)
+    self.m_CustomerList = GUIGridList:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.3, self.m_Height*0.75, self.m_SANNewsAdsOverview)
 	self.m_CustomerList:addColumn(_"Derzeitige Kunden:", 1)
 	
     local item
@@ -39,7 +36,7 @@ function SANNewsAdsOverviewGUI:constructor(theAds)
         end
     end
 
-    self.m_CustomerAdd = GUIButton:new(self.m_Width*0.02, self.m_Height*0.80, self.m_Width*0.14, self.m_Height*0.07, FontAwesomeSymbols.Plus, self):setFont(FontAwesome(20)):setBarEnabled(false):setTooltip(_"Kunde hinzufügen", "button", true)
+    self.m_CustomerAdd = GUIButton:new(self.m_Width*0.02, self.m_Height*0.80, self.m_Width*0.14, self.m_Height*0.07, FontAwesomeSymbols.Plus, self.m_SANNewsAdsOverview):setFont(FontAwesome(20)):setBarEnabled(false):setTooltip(_"Kunde hinzufügen", "button", true)
     self.m_CustomerAdd.onLeftClick = function()
 		self:close()
         local currentCustomers = {}
@@ -56,7 +53,7 @@ function SANNewsAdsOverviewGUI:constructor(theAds)
         SANNewsAdsNewCustomerGUI:new(currentCustomers)
 	end
 
-    self.m_CustomerRemove = GUIButton:new(self.m_Width*0.17, self.m_Height*0.80, self.m_Width*0.14, self.m_Height*0.07, FontAwesomeSymbols.Minus, self):setFont(FontAwesome(20)):setBarEnabled(false):setTooltip(_"Ausgewählten Kunden entfernen", "button", true):setEnabled(false)
+    self.m_CustomerRemove = GUIButton:new(self.m_Width*0.17, self.m_Height*0.80, self.m_Width*0.14, self.m_Height*0.07, FontAwesomeSymbols.Minus, self.m_SANNewsAdsOverview):setFont(FontAwesome(20)):setBarEnabled(false):setTooltip(_"Ausgewählten Kunden entfernen", "button", true):setEnabled(false)
     self.m_CustomerRemove.onLeftClick = function ()
         ShortMessageQuestion:new(
             _"Willst du den ausgewählten Kunden samt aller Daten entfernen?",
@@ -76,13 +73,13 @@ function SANNewsAdsOverviewGUI:constructor(theAds)
         )
     end
 
-    self.m_RefreshCustomerList = GUIButton:new(self.m_Width*0.02, self.m_Height*0.89, self.m_Width*0.14, self.m_Height*0.07, FontAwesomeSymbols.Refresh, self):setFont(FontAwesome(20)):setBarEnabled(false):setTooltip(_"Kundendaten neu laden", "button", true)
+    self.m_RefreshCustomerList = GUIButton:new(self.m_Width*0.02, self.m_Height*0.89, self.m_Width*0.14, self.m_Height*0.07, FontAwesomeSymbols.Refresh, self.m_SANNewsAdsOverview):setFont(FontAwesome(20)):setBarEnabled(false):setTooltip(_"Kundendaten neu laden", "button", true)
     self.m_RefreshCustomerList.onLeftClick = function ()
         self:close()
         triggerServerEvent("sanNewsAdsRefreshCustomers", localPlayer)
     end
     
-    self.m_AdSettings = GUIButton:new(self.m_Width*0.17, self.m_Height*0.89, self.m_Width*0.14, self.m_Height*0.07, FontAwesomeSymbols.Cogs, self):setFont(FontAwesome(20)):setBarEnabled(false):setTooltip(_"Einstellungen", "button", true)
+    self.m_AdSettings = GUIButton:new(self.m_Width*0.17, self.m_Height*0.89, self.m_Width*0.14, self.m_Height*0.07, FontAwesomeSymbols.Cogs, self.m_SANNewsAdsOverview):setFont(FontAwesome(20)):setBarEnabled(false):setTooltip(_"Einstellungen", "button", true)
     self.m_AdSettings.onLeftClick = function ()
         self:close()
         local settings = {self.m_sanNewsAds["theSettings"]["AdsMainTimer"], self.m_sanNewsAds["theSettings"]["AdsActive"]}
@@ -96,7 +93,7 @@ end
 function SANNewsAdsOverviewGUI:onCustomerChange(customerID)
         
     if self.m_bg then delete(self.m_bg) end
-    self.m_bg = GUIRectangle:new(self.m_Width*0.34, self.m_Height*0.02, self.m_Width*0.66, self.m_Height*0.96, tocolor(0, 0, 0, 0), self)
+    self.m_bg = GUIRectangle:new(self.m_Width*0.34, self.m_Height*0.02, self.m_Width*0.66, self.m_Height*0.96, tocolor(0, 0, 0, 0), self.m_SANNewsAdsOverview)
 
     self.m_currentCustomerID = customerID
     self.m_CustomerRemove:setEnabled(true)
@@ -262,9 +259,9 @@ function SANNewsAdsOverviewGUI:onCustomerChange(customerID)
         end
 
         if next(self.m_ChangesMade) == nil then
-            self:close()
-            CompanyGUI:getSingleton():show()
-            Cursor:show()
+            -- self:close()
+            -- CompanyGUI:getSingleton():show()
+            -- Cursor:show()
             return
         end
 
@@ -290,9 +287,5 @@ function SANNewsAdsOverviewGUI:onCustomerChange(customerID)
         triggerServerEvent("sanNewsAdsSaveSettingsForCustomerFromClient", localPlayer, sendTable)
 
         self.m_ChangesMade = {}
-
-        self:close()
-        CompanyGUI:getSingleton():show()
-        Cursor:show()
 	end
 end

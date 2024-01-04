@@ -1,7 +1,7 @@
 -- ****************************************************************************
 -- *
 -- *  PROJECT:     vRoleplay
--- *  FILE:        client/classes/Business/Companies/San-News.lua
+-- *  FILE:        client/classes/Business/Companies/SanNews.lua
 -- *  PURPOSE:     SAN News class
 -- *
 -- ****************************************************************************

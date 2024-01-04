@@ -1,7 +1,7 @@
 -- ****************************************************************************
 -- *
 -- *  PROJECT:     vRoleplay
--- *  FILE:        client/classes/GUIForms/SANNews/SANNewsAdsSettingsGUI.lua
+-- *  FILE:        client/classes/GUIForms/Company/SANNews/SANNewsAdsSettingsGUI.lua
 -- *  PURPOSE:     SAN News Ads Settings GUI class
 -- *
 -- ****************************************************************************
@@ -20,20 +20,17 @@ function SANNewsAdsSettingsGUI:constructor(settings)
 
     GUIForm.constructor(self, screenWidth/2-300, screenHeight/2-130, 600, 260)
 
-    self.m_TabPanel = GUITabPanel:new(0, 0, self.m_Width, self.m_Height, self)
-	self.m_CloseButton = GUIButton:new(self.m_Width-30, 0, 30, 30, FontAwesomeSymbols.Close, self):setFont(FontAwesome(20)):setBarEnabled(false):setBackgroundColor(Color.Clear):setBackgroundHoverColor(Color.Red):setHoverColor(Color.White):setFontSize(1)
-	self.m_CloseButton.onLeftClick = function() self:close() end
+    self.m_SANNewsAdsSettings = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"SAN News", false, true, self)
+    self.m_SANNewsAdsSettings:addBackButton(function () SANNewsAdsOverviewGUI:getSingleton():show() end)
+    self.m_SANNewsAdsSettings:deleteOnClose(true)
 
-	self.m_BackButton = GUIButton:new(self.m_Width-60, 0, 30, 30, FontAwesomeSymbols.Left, self):setFont(FontAwesome(20)):setBarEnabled(false):setBackgroundColor(Color.Clear):setBackgroundHoverColor(Color.Accent):setHoverColor(Color.White):setFontSize(1)
-	self.m_BackButton.onLeftClick = function() self:close() SANNewsAdsOverviewGUI:getSingleton():show() Cursor:show() end
-
-    GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.13, _"Einstellungen", self)
+    GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.13, _"Einstellungen", self.m_SANNewsAdsSettings)
     
-    GUILabel:new(self.m_Width*0.02, self.m_Height*0.20, self.m_Width*0.8, self.m_Height*0.1, _"Zeitintervall zwischen einzelnen Werbungen in Minuten:", self)
+    GUILabel:new(self.m_Width*0.02, self.m_Height*0.20, self.m_Width*0.8, self.m_Height*0.1, _"Zeitintervall zwischen einzelnen Werbungen in Minuten:", self.m_SANNewsAdsSettings)
     
     local adIntervalOptions = {5,10,15,20,30,60,120}
     local theAdIntervalFocusNumber = 0
-    self.m_adIntervalChanger = GUIChanger:new(self.m_Width*0.02, self.m_Height*0.31, self.m_Width*0.96, self.m_Height*0.12, self)
+    self.m_adIntervalChanger = GUIChanger:new(self.m_Width*0.02, self.m_Height*0.31, self.m_Width*0.96, self.m_Height*0.12, self.m_SANNewsAdsSettings)
     for i = 1, #adIntervalOptions do 
         self.m_adIntervalChanger:addItem(adIntervalOptions[i])
         if adIntervalOptions[i] == self.m_Settings[1] then 
@@ -50,7 +47,7 @@ function SANNewsAdsSettingsGUI:constructor(settings)
         end
     end
 
-    self.m_adsActiveCheckBox = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.50, self.m_Width*0.35, self.m_Height*0.07, _"Werbesystem aktiv", self)
+    self.m_adsActiveCheckBox = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.50, self.m_Width*0.35, self.m_Height*0.07, _"Werbesystem aktiv", self.m_SANNewsAdsSettings)
     if self.m_Settings[2] == 1 then 
         self.m_adsActiveCheckBox:setChecked(true)
     else
@@ -68,7 +65,7 @@ function SANNewsAdsSettingsGUI:constructor(settings)
         end
     end
 
-    self.m_saveSettingsButton = GUIButton:new(self.m_Width*0.02, self.m_Height*0.75, self.m_Width*0.96, self.m_Height*0.13, _"Speichern", self):setBarEnabled(true)
+    self.m_saveSettingsButton = GUIButton:new(self.m_Width*0.02, self.m_Height*0.75, self.m_Width*0.96, self.m_Height*0.13, _"Speichern", self.m_SANNewsAdsSettings):setBarEnabled(true)
 
     self.m_saveSettingsButton.onLeftClick = function ()
         self:close()

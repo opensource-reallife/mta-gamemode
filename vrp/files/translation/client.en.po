@@ -5772,14 +5772,8 @@ msgstr "Select language:"
 msgid "Werbezeile "
 msgstr "Ad line "
 
+msgid "Werbezeile %s"
+msgstr "Ad line %s"
+
 msgid "Fehlerhafte Eingabe im Preis-Feld."
 msgstr "Incorrect input in costs-field."
-
-
-
-
-
-
-
-
-

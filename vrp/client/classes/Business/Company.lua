@@ -30,6 +30,22 @@ function CompanyManager:getFromId(id)
 	return CompanyManager.Map[id]
 end
 
+function CompanyManager:getFromName(name)
+	for i, company in pairs(self.Map) do
+		if company.m_NameShort == name then
+			return company
+		end
+	end
+end
+
+function CompanyManager:getCompanyNames()
+	local table = {}
+	for id, company in pairs(CompanyManager.Map) do
+		table[id] = company:getShortName()
+	end
+	return table
+end
+
 function CompanyManager:companyForceOffduty()
 	if localPlayer:getPublicSync("Company:Duty") then
 		triggerServerEvent("companyToggleDuty", localPlayer, true, false, true)

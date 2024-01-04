@@ -17,7 +17,11 @@ function SanNews:constructor()
 			AdsActive = 1
 		}
 	}
-	self:loadAllAdData()
+	
+	nextframe(function()
+		self:loadAllAdData()
+	end)
+	
 	self:InitTimeManagement()
 
 	local safe = createObject(2332, 732.40, -1341.90, 13, 0, 0, 90)
@@ -54,8 +58,6 @@ function SanNews:constructor()
 
 	addCommandHandler("news", bind(self.Event_news, self))
 	addCommandHandler("sannews", bind(self.Event_sanNewsMessage, self), false, false)
-	
-	addCommandHandler("news_ad", bind(self.deliverAds, self))	-- ### DELETE this line
 end
 
 function SanNews:destructor()
@@ -84,7 +86,9 @@ function SanNews:loadAllAdData()
 		end
 
 		if row.customerType == "Company" then 
-			theCustomerName = row.customerName		-- ### CompanyManager:getSingleton():getFromId() not working, therefore this solution
+			local com = CompanyManager:getSingleton():getFromId(row.customerUniqueID)
+			theCustomerName = com:getShortName()
+			outputChatBox("Company:" .. theCustomerName)
 		end
 
 		if row.customerType == "Group" then 
@@ -95,6 +99,9 @@ function SanNews:loadAllAdData()
 		if row.customerType == "Player" then 
 			theCustomerName = Account.getNameFromId(row.customerUniqueID)
 		end
+
+		local prepareAdText = fromJSON(row.adText)
+		local prepareAdTextEN = fromJSON(row.adTextEN)
 
 		self.m_sanNewsAds["theAds"][row.customerID] = {
 			customerID = row.customerID,
@@ -113,18 +120,18 @@ function SanNews:loadAllAdData()
 			maxPerDay = row.maxPerDay,
 			deliveredThisDay = row.deliveredThisDay,
 			adText = {
-				[1] = row.adText1,
-				[2] = row.adText2,
-				[3] = row.adText3,
-				[4] = row.adText4,
-				[5] = row.adText5
+				[1] = prepareAdText["1"],
+				[2] = prepareAdText["2"],
+				[3] = prepareAdText["3"],
+				[4] = prepareAdText["4"],
+				[5] = prepareAdText["5"]
 			},
 			adTextEN = {
-				[1] = row.adText1EN,
-				[2] = row.adText2EN,
-				[3] = row.adText3EN,
-				[4] = row.adText4EN,
-				[5] = row.adText5EN
+				[1] = prepareAdTextEN["1"],
+				[2] = prepareAdTextEN["2"],
+				[3] = prepareAdTextEN["3"],
+				[4] = prepareAdTextEN["4"],
+				[5] = prepareAdTextEN["5"]
 			}
 		} 
 
@@ -147,6 +154,7 @@ function SanNews:AdRefreshCustomers()
         	return
     	end
 		if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "editAds") then return end
+		self.m_sanNewsAds["theAds"] = {}
 		self:loadAllAdData()
 		self:AdsUpdateToClient()
 	end
@@ -176,8 +184,9 @@ function SanNews:AdSettings(data)
 			return 
 		end
 
-		-- sql:queryExec("UPDATE ??_sannewssettings SET AdsActive = ?, AdsMainTimer = ? WHERE ID = ?", sql:getPrefix(), self.m_sanNewsAds["theSettings"]["AdsActive"], self.m_sanNewsAds["theSettings"]["AdsMainTimer"], 1)
 		sql:queryExec("UPDATE ??_sannewssettings SET AdsActive = ?, AdsMainTimer = ?", sql:getPrefix(), self.m_sanNewsAds["theSettings"]["AdsActive"], self.m_sanNewsAds["theSettings"]["AdsMainTimer"])
+
+		client:sendSuccess(_("Änderungen gespeichert.", client))
 
 		if self.m_sanNewsAds["theSettings"]["AdsActive"] == 0 then 
 			if isTimer(self.m_sanNewsAds["theSettings"]["AdsMainTimerObj"]) then killTimer(self.m_sanNewsAds["theSettings"]["AdsMainTimerObj"]) end
@@ -381,12 +390,19 @@ function SanNews:deliverAds()
 		end
 	end
 
+	local adLanguageFallback = false 
+	if adLinesInEnglish <= 0 then 
+		adLanguageFallback = true 
+	end
+
 	triggerClientEvent(root, "sanNewsAdsSound", root)
 
 	outputChatBox("#FFFFFF▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁", root, 255, 200, 20, true)
 	outputChatBox("#FFFFFFWerbung │ #67D68E" .. self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["customerName"], playersInGerman, 255, 200, 20, true)
 	outputChatBox("#FFFFFFAd │ #67D68E" .. self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["customerName"], playersInEnglish, 255, 200, 20, true)
 	outputChatBox("#FFFFFF▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔", root, 255, 200, 20, true)
+
+	if adLinesInGerman <= 0 and adLinesInEnglish <= 0 then return end
 
 	local currentAdDeliveredLines = 1
 
@@ -396,15 +412,25 @@ function SanNews:deliverAds()
 			outputChatBox("#67D68E" .. adLinesToShowInGerman[currentAdDeliveredLines], playersInGerman, 255, 200, 20, true)
 		end
 		if adLinesInGerman < currentAdDeliveredLines and endOfGermanAds == false then
-			outputChatBox("#FFFFFF▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁", playersInGerman, 255, 200, 20, true)
+			if adLanguageFallback then 
+				outputChatBox("#FFFFFF▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁", root, 255, 200, 20, true)
+			else
+				outputChatBox("#FFFFFF▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁", playersInGerman, 255, 200, 20, true)
+			end
 			endOfGermanAds = true
 		end
-		if adLinesInEnglish >= currentAdDeliveredLines then 
-			outputChatBox("#67D68E" .. adLinesToShowInEnglish[currentAdDeliveredLines], playersInEnglish, 255, 200, 20, true)
-		end
-		if adLinesInEnglish < currentAdDeliveredLines and endOfEnglishAds == false then
-			outputChatBox("#FFFFFF▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁", playersInEnglish, 255, 200, 20, true)
-			endOfEnglishAds = true
+		if adLanguageFallback then 
+			if adLinesInGerman >= currentAdDeliveredLines then 
+				outputChatBox("#67D68E" .. adLinesToShowInGerman[currentAdDeliveredLines], playersInEnglish, 255, 200, 20, true)
+			end
+		else
+			if adLinesInEnglish >= currentAdDeliveredLines then 
+				outputChatBox("#67D68E" .. adLinesToShowInEnglish[currentAdDeliveredLines], playersInEnglish, 255, 200, 20, true)
+			end
+			if adLinesInEnglish < currentAdDeliveredLines and endOfEnglishAds == false then
+				outputChatBox("#FFFFFF▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁", playersInEnglish, 255, 200, 20, true)
+				endOfEnglishAds = true
+			end
 		end
 		currentAdDeliveredLines = currentAdDeliveredLines + 1
 	end, self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["deliveringSpeed"] * 1000, 6)
@@ -449,7 +475,11 @@ function SanNews:AdsUpdateFromClient(table)
 
 		-- ### More sanitization?
 
-		sql:queryExec("UPDATE ??_sannewsads SET adText1 = ?, adText2 = ?, adText3 = ?, adText4 = ?, adText5 = ?, adText1EN = ?, adText2EN = ?, adText3EN = ?, adText4EN = ?, adText5EN = ? WHERE customerID = ?", sql:getPrefix(), self.m_sanNewsAds["theAds"][customerID]["adText"][1], self.m_sanNewsAds["theAds"][customerID]["adText"][2], self.m_sanNewsAds["theAds"][customerID]["adText"][3], self.m_sanNewsAds["theAds"][customerID]["adText"][4], self.m_sanNewsAds["theAds"][customerID]["adText"][5], self.m_sanNewsAds["theAds"][customerID]["adTextEN"][1], self.m_sanNewsAds["theAds"][customerID]["adTextEN"][2], self.m_sanNewsAds["theAds"][customerID]["adTextEN"][3], self.m_sanNewsAds["theAds"][customerID]["adTextEN"][4], self.m_sanNewsAds["theAds"][customerID]["adTextEN"][5], customerID)
+		local jsonAdText = toJSON(self.m_sanNewsAds["theAds"][customerID]["adText"])
+		local jsonAdTextEN = toJSON(self.m_sanNewsAds["theAds"][customerID]["adTextEN"])
+
+		sql:queryExec("UPDATE ??_sannewsads SET adText = ?, adTextEN = ? WHERE customerID = ?", sql:getPrefix(), jsonAdText, jsonAdTextEN, customerID)
+		client:sendSuccess(_("Änderungen gespeichert.", client))
 	end
 end
 
@@ -474,34 +504,28 @@ function SanNews:CreateNewAdCustomerFromClient(customerTypeA, customerUniqueIDA)
 
 		if customerTypeA == "Faction" then 
 			local fac = FactionManager:getSingleton():getFromId(customerUniqueIDA)
-			if fac then 	-- ### if-exists-Abfrage überflüssig?
+			if fac then 	
 				name = fac:getShortName()
 			else 
 				return
 			end
 		elseif customerTypeA == "Company" then 
-			-- CompanyManager:getSingleton():getFromId() not working, therefore: ###
-			if customerUniqueIDA == 1 then 
-				name = "Fahrschule"
-			elseif customerUniqueIDA == 2 then 
-				name = "Mech & Tow"
-			elseif customerUniqueIDA == 3 then 
-				name = "San News"
-			elseif customerUniqueIDA == 4 then 
-				name = "Public Transport"
+			local com = CompanyManager:getSingleton():getFromId(customerUniqueIDA)
+			if com then 
+				name = com:getShortName()
 			else
-				return 
+				return
 			end
 		elseif customerTypeA == "Group" then 
 			local gro = GroupManager:getSingleton():getFromId(customerUniqueIDA)
-			if gro then 	-- ### if-exists-Abfrage überflüssig?
+			if gro then 
 				name = gro:getName()	
 			else
 				return
 			end
 		elseif customerTypeA == "Player" then 
 			local pla = Account.getNameFromId(customerUniqueIDA)
-			if pla then 	-- ### if-exists-Abfrage überflüssig?
+			if pla then 
 				name = pla 
 			else
 				return
@@ -523,7 +547,25 @@ function SanNews:CreateNewAdCustomerFromClient(customerTypeA, customerUniqueIDA)
 		else
 			local currentLastEntry = self.m_sanNewsAds["theAds"][currentNumberOfEntries]["customerID"]
 			newCustomerID = currentLastEntry + 1
-		end
+		end 
+
+		local preparedAdText = {
+			[1] = "fdg",
+			[2] = "dfg",
+			[3] = "dfg",
+			[4] = "dfg",
+			[5] = "dfg"
+		}
+		local preparedAdTextEN = {
+			[1] = "",
+			[2] = "",
+			[3] = "",
+			[4] = "",
+			[5] = ""
+		}
+
+		local jsonAdText = toJSON(preparedAdText)
+		local jsonAdTextEN = toJSON(preparedAdTextEN)
 		
 		self.m_sanNewsAds["theAds"][newCustomerID] = {
 			customerID = newCustomerID,
@@ -546,14 +588,14 @@ function SanNews:CreateNewAdCustomerFromClient(customerTypeA, customerUniqueIDA)
 				[2] = "",
 				[3] = "",
 				[4] = "",
-				[5] = ""
+				[5] = "",
 			},
 			adTextEN = {
 				[1] = "",
 				[2] = "",
 				[3] = "",
 				[4] = "",
-				[5] = ""
+				[5] = "",
 			}
 		}
 
@@ -563,7 +605,9 @@ function SanNews:CreateNewAdCustomerFromClient(customerTypeA, customerUniqueIDA)
 		else
 			aa = 0
 		end
-		sql:queryExec("INSERT INTO ??_sannewsads (customerID, customerName, minPlayersOnlineToDeliverAds, deliveringSpeed, isActive, moneyPerAd, adStartTimeEveryDay, adEndTimeEveryDay, adText1, adText2, adText3, adText4, adText5, adText1EN, adText2EN, adText3EN, adText4EN, adText5EN, lastDeliveryDate, lastDeliveryTime, timesDelivered, customerType, customerUniqueID, maxPerDay, deliveredThisDay) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", sql:getPrefix(), self.m_sanNewsAds["theAds"][newCustomerID]["customerID"], self.m_sanNewsAds["theAds"][newCustomerID]["customerName"], self.m_sanNewsAds["theAds"][newCustomerID]["minPlayersOnlineToDeliverAds"], self.m_sanNewsAds["theAds"][newCustomerID]["deliveringSpeed"], aa, self.m_sanNewsAds["theAds"][newCustomerID]["moneyPerAd"], self.m_sanNewsAds["theAds"][newCustomerID]["adStartTimeEveryDay"], self.m_sanNewsAds["theAds"][newCustomerID]["adEndTimeEveryDay"], self.m_sanNewsAds["theAds"][newCustomerID]["adText"][1], self.m_sanNewsAds["theAds"][newCustomerID]["adText"][2], self.m_sanNewsAds["theAds"][newCustomerID]["adText"][3], self.m_sanNewsAds["theAds"][newCustomerID]["adText"][4], self.m_sanNewsAds["theAds"][newCustomerID]["adText"][5], self.m_sanNewsAds["theAds"][newCustomerID]["adTextEN"][1], self.m_sanNewsAds["theAds"][newCustomerID]["adTextEN"][2], self.m_sanNewsAds["theAds"][newCustomerID]["adTextEN"][3], self.m_sanNewsAds["theAds"][newCustomerID]["adTextEN"][4], self.m_sanNewsAds["theAds"][newCustomerID]["adTextEN"][5], self.m_sanNewsAds["theAds"][newCustomerID]["lastDeliveryDate"], self.m_sanNewsAds["theAds"][newCustomerID]["lastDeliveryTime"], self.m_sanNewsAds["theAds"][newCustomerID]["timesDelivered"], self.m_sanNewsAds["theAds"][newCustomerID]["customerType"], self.m_sanNewsAds["theAds"][newCustomerID]["customerUniqueID"], self.m_sanNewsAds["theAds"][newCustomerID]["maxPerDay"], self.m_sanNewsAds["theAds"][newCustomerID]["deliveredThisDay"])
+		sql:queryExec("INSERT INTO ??_sannewsads (customerID, customerName, minPlayersOnlineToDeliverAds, deliveringSpeed, isActive, moneyPerAd, adStartTimeEveryDay, adEndTimeEveryDay, adText, adTextEN, lastDeliveryDate, lastDeliveryTime, timesDelivered, customerType, customerUniqueID, maxPerDay, deliveredThisDay) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", sql:getPrefix(), self.m_sanNewsAds["theAds"][newCustomerID]["customerID"], self.m_sanNewsAds["theAds"][newCustomerID]["customerName"], self.m_sanNewsAds["theAds"][newCustomerID]["minPlayersOnlineToDeliverAds"], self.m_sanNewsAds["theAds"][newCustomerID]["deliveringSpeed"], aa, self.m_sanNewsAds["theAds"][newCustomerID]["moneyPerAd"], self.m_sanNewsAds["theAds"][newCustomerID]["adStartTimeEveryDay"], self.m_sanNewsAds["theAds"][newCustomerID]["adEndTimeEveryDay"], jsonAdText, jsonAdTextEN, self.m_sanNewsAds["theAds"][newCustomerID]["lastDeliveryDate"], self.m_sanNewsAds["theAds"][newCustomerID]["lastDeliveryTime"], self.m_sanNewsAds["theAds"][newCustomerID]["timesDelivered"], self.m_sanNewsAds["theAds"][newCustomerID]["customerType"], self.m_sanNewsAds["theAds"][newCustomerID]["customerUniqueID"], self.m_sanNewsAds["theAds"][newCustomerID]["maxPerDay"], self.m_sanNewsAds["theAds"][newCustomerID]["deliveredThisDay"])
+
+		client:sendSuccess(_("Kunde hinzugefügt.", client))
 
 		self:AdsUpdateToClient()
 	end
@@ -665,6 +709,8 @@ function SanNews:AdsSaveSettingsForCustomerFromClient(sendTable)
 			end
 			
 			sql:queryExec("UPDATE ??_sannewsads SET isActive = ?, moneyPerAd = ?, minPlayersOnlineToDeliverAds = ?, deliveringSpeed = ?, adStartTimeEveryDay = ?, adEndTimeEveryDay = ?, maxPerDay = ? WHERE customerID = ?", sql:getPrefix(), aa, self.m_sanNewsAds["theAds"][customerID]["moneyPerAd"], self.m_sanNewsAds["theAds"][customerID]["minPlayersOnlineToDeliverAds"], self.m_sanNewsAds["theAds"][customerID]["deliveringSpeed"], self.m_sanNewsAds["theAds"][customerID]["adStartTimeEveryDay"], self.m_sanNewsAds["theAds"][customerID]["adEndTimeEveryDay"], self.m_sanNewsAds["theAds"][customerID]["maxPerDay"], customerID)
+		
+			client:sendSuccess(_("Änderungen gespeichert.", client))
 		end
 	else
 	end
