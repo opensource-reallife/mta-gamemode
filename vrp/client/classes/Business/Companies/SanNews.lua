@@ -9,7 +9,7 @@
 SanNews = inherit(Singleton)
 
 function SanNews:constructor()
-    self.m_sanNewsAds = {}
+    self.m_SanNewsAds = {}
     addRemoteEvents{"sanNewsAdsLoadForClient", "sanNewsAdsSound"}
     addEventHandler("sanNewsAdsLoadForClient", root, bind(self.loadAds, self))
     addEventHandler("sanNewsAdsSound", root, bind(self.playAdsSound, self))
@@ -17,14 +17,14 @@ end
 
 function SanNews:loadAds(theAds)
     if theAds then
-        self.m_sanNewsAds = theAds
+        self.m_SanNewsAds = theAds
     else
         return 
     end
     if SANNewsAdsOverviewGUI:isInstantiated() then
         delete(SANNewsAdsOverviewGUI:getSingleton())
     end
-    SANNewsAdsOverviewGUI:new(self.m_sanNewsAds)
+    SANNewsAdsOverviewGUI:new(self.m_SanNewsAds)
 end
 
 function SanNews:playAdsSound()

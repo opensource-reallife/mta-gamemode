@@ -9,7 +9,7 @@ function SanNews:constructor()
 	self.m_onPlayerChatFunc = bind(self.Event_onPlayerChat, self)
 	self.m_SanNewsMessageEnabled = false
 	self.m_RunningEvent = false
-	self.m_sanNewsAds = {
+	self.m_SanNewsAds = {
 		theAds = {},
 		theSettings = {
 			AdsMainTimerObj = false,
@@ -72,12 +72,6 @@ function SanNews:loadAllAdData()
 	if not adSettings then return end	-- ### Überflüssig? Was passiert bei fehlerhafter SQL-Abfrage?
 
 	for k, row in pairs(result) do
-		local aa
-		if row.isActive == 1 then 
-			aa = true 
-		else
-			aa = false 
-		end
 
 		local theCustomerName
 		if row.customerType == "Faction" then 
@@ -88,7 +82,6 @@ function SanNews:loadAllAdData()
 		if row.customerType == "Company" then 
 			local com = CompanyManager:getSingleton():getFromId(row.customerUniqueID)
 			theCustomerName = com:getShortName()
-			outputChatBox("Company:" .. theCustomerName)
 		end
 
 		if row.customerType == "Group" then 
@@ -103,12 +96,12 @@ function SanNews:loadAllAdData()
 		local prepareAdText = fromJSON(row.adText)
 		local prepareAdTextEN = fromJSON(row.adTextEN)
 
-		self.m_sanNewsAds["theAds"][row.customerID] = {
+		self.m_SanNewsAds["theAds"][row.customerID] = {
 			customerID = row.customerID,
 			customerName = theCustomerName,
 			minPlayersOnlineToDeliverAds = row.minPlayersOnlineToDeliverAds,
 			deliveringSpeed = row.deliveringSpeed,
-			isActive = aa,
+			isActive = toboolean(row.isActive),
 			moneyPerAd = row.moneyPerAd,
 			adStartTimeEveryDay = row.adStartTimeEveryDay,
 			adEndTimeEveryDay = row.adEndTimeEveryDay,
@@ -134,16 +127,12 @@ function SanNews:loadAllAdData()
 				[5] = prepareAdTextEN["5"]
 			}
 		} 
-
-		if theCustomerName ~= row.customerName then 
-			sql:queryExec("UPDATE ??_sannewsads SET customerName = ? WHERE customerID = ?", sql:getPrefix(), theCustomerName, row.customerID)
-		end
 	end
 
 	for k, row in pairs(adSettings) do
 		if k == 1 then 
-			self.m_sanNewsAds["theSettings"]["AdsMainTimer"] = tonumber(row.AdsMainTimer)
-			self.m_sanNewsAds["theSettings"]["AdsActive"] = tonumber(row.AdsActive)
+			self.m_SanNewsAds["theSettings"]["AdsMainTimer"] = tonumber(row.AdsMainTimer)
+			self.m_SanNewsAds["theSettings"]["AdsActive"] = tonumber(row.AdsActive)
 		end
 	end
 end
@@ -154,7 +143,7 @@ function SanNews:AdRefreshCustomers()
         	return
     	end
 		if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "editAds") then return end
-		self.m_sanNewsAds["theAds"] = {}
+		self.m_SanNewsAds["theAds"] = {}
 		self:loadAllAdData()
 		self:AdsUpdateToClient()
 	end
@@ -172,24 +161,24 @@ function SanNews:AdSettings(data)
 
 		for i = 1, #intervalOptions do 
 			if data[1] == intervalOptions[i] then 
-				self.m_sanNewsAds["theSettings"]["AdsMainTimer"] = data[1]
+				self.m_SanNewsAds["theSettings"]["AdsMainTimer"] = data[1]
 			end
 		end
 
 		if data[2] == 0 then 
-			self.m_sanNewsAds["theSettings"]["AdsActive"] = 0
+			self.m_SanNewsAds["theSettings"]["AdsActive"] = 0
 		elseif data[2] == 1 then 
-			self.m_sanNewsAds["theSettings"]["AdsActive"] = 1
+			self.m_SanNewsAds["theSettings"]["AdsActive"] = 1
 		else
 			return 
 		end
 
-		sql:queryExec("UPDATE ??_sannewssettings SET AdsActive = ?, AdsMainTimer = ?", sql:getPrefix(), self.m_sanNewsAds["theSettings"]["AdsActive"], self.m_sanNewsAds["theSettings"]["AdsMainTimer"])
+		sql:queryExec("UPDATE ??_sannewssettings SET AdsActive = ?, AdsMainTimer = ?", sql:getPrefix(), self.m_SanNewsAds["theSettings"]["AdsActive"], self.m_SanNewsAds["theSettings"]["AdsMainTimer"])
 
 		client:sendSuccess(_("Änderungen gespeichert.", client))
 
-		if self.m_sanNewsAds["theSettings"]["AdsActive"] == 0 then 
-			if isTimer(self.m_sanNewsAds["theSettings"]["AdsMainTimerObj"]) then killTimer(self.m_sanNewsAds["theSettings"]["AdsMainTimerObj"]) end
+		if self.m_SanNewsAds["theSettings"]["AdsActive"] == 0 then 
+			if isTimer(self.m_SanNewsAds["theSettings"]["AdsMainTimerObj"]) then killTimer(self.m_SanNewsAds["theSettings"]["AdsMainTimerObj"]) end
 		else
 			self:InitTimeManagement()
 		end
@@ -199,29 +188,25 @@ function SanNews:AdSettings(data)
 end
 
 function SanNews:InitTimeManagement()
-	if isTimer(self.m_sanNewsAds["theSettings"]["AdsMainTimerObj"]) then killTimer(self.m_sanNewsAds["theSettings"]["AdsMainTimerObj"]) end
-	self.m_sanNewsAds["theSettings"]["AdsMainTimerObj"] = setTimer(function ()
+	if isTimer(self.m_SanNewsAds["theSettings"]["AdsMainTimerObj"]) then killTimer(self.m_SanNewsAds["theSettings"]["AdsMainTimerObj"]) end
+	self.m_SanNewsAds["theSettings"]["AdsMainTimerObj"] = setTimer(function ()
 		self:deliverAds()
-	end, self.m_sanNewsAds["theSettings"]["AdsMainTimer"] * 60 * 1000, 0)
+	end, self.m_SanNewsAds["theSettings"]["AdsMainTimer"] * 60 * 1000, 0)
 end
 
 function SanNews:deliverAds()
-	if self.m_sanNewsAds["theSettings"]["AdsActive"] == 0 then return end
+	if self.m_SanNewsAds["theSettings"]["AdsActive"] == 0 then return end
 
 	if AdminEventManager:getSingleton():isEventRunning() then return end
 
-	local customerCount = 0
-	for k, v in pairs(self.m_sanNewsAds["theAds"]) do 
-		customerCount = customerCount + 1
+	if table.size(self.m_SanNewsAds["theAds"]) <= 0 then
+		return
 	end
-	if customerCount <= 0 then 
-		return 
-	end
-	
+
 	local whereActive = {}
-	for k, Ad in pairs(self.m_sanNewsAds["theAds"]) do 
-		if self.m_sanNewsAds["theAds"][k]["isActive"] then 
-			table.insert(whereActive, self.m_sanNewsAds["theAds"][k]["customerID"])
+	for k, Ad in pairs(self.m_SanNewsAds["theAds"]) do 
+		if self.m_SanNewsAds["theAds"][k]["isActive"] then 
+			table.insert(whereActive, self.m_SanNewsAds["theAds"][k]["customerID"])
 		end
 	end
 	if #whereActive < 1 then return end
@@ -241,8 +226,8 @@ function SanNews:deliverAds()
 
 	local whereEnoughPlayersOnline = {}
 	for k, Ad in pairs(whereActive) do 
-		if currentPlayerCount >= self.m_sanNewsAds["theAds"][Ad]["minPlayersOnlineToDeliverAds"] then 
-			table.insert(whereEnoughPlayersOnline, self.m_sanNewsAds["theAds"][Ad]["customerID"])
+		if currentPlayerCount >= self.m_SanNewsAds["theAds"][Ad]["minPlayersOnlineToDeliverAds"] then 
+			table.insert(whereEnoughPlayersOnline, self.m_SanNewsAds["theAds"][Ad]["customerID"])
 		end
 	end
 	if #whereEnoughPlayersOnline < 1 then return end
@@ -257,22 +242,22 @@ function SanNews:deliverAds()
 
 	local whereInsideTimeframe = {}
 	for k, Ad in pairs(whereEnoughPlayersOnline) do 
-		local startTime1 = self.m_sanNewsAds["theAds"][Ad]["adStartTimeEveryDay"]
-		local endTime1 = self.m_sanNewsAds["theAds"][Ad]["adEndTimeEveryDay"]
+		local startTime1 = self.m_SanNewsAds["theAds"][Ad]["adStartTimeEveryDay"]
+		local endTime1 = self.m_SanNewsAds["theAds"][Ad]["adEndTimeEveryDay"]
 		
 		if startTime1 == endTime1 then 
-			table.insert(whereInsideTimeframe, self.m_sanNewsAds["theAds"][Ad]["customerID"])
+			table.insert(whereInsideTimeframe, self.m_SanNewsAds["theAds"][Ad]["customerID"])
 		elseif startTime1 < endTime1 then 
 			if startTime1 <= hours and endTime1 > hours then 
-				table.insert(whereInsideTimeframe, self.m_sanNewsAds["theAds"][Ad]["customerID"])
+				table.insert(whereInsideTimeframe, self.m_SanNewsAds["theAds"][Ad]["customerID"])
 			end
 		elseif startTime1 > endTime1 then 
 			if startTime1 <= hours and hours < 24 then 
-				table.insert(whereInsideTimeframe, self.m_sanNewsAds["theAds"][Ad]["customerID"])
+				table.insert(whereInsideTimeframe, self.m_SanNewsAds["theAds"][Ad]["customerID"])
 			elseif hours < endTime1 and hours >= 0 then 
-				table.insert(whereInsideTimeframe, self.m_sanNewsAds["theAds"][Ad]["customerID"])
+				table.insert(whereInsideTimeframe, self.m_SanNewsAds["theAds"][Ad]["customerID"])
 			elseif endTime == 0 and hours == 23 then 
-				table.insert(whereInsideTimeframe, self.m_sanNewsAds["theAds"][Ad]["customerID"])
+				table.insert(whereInsideTimeframe, self.m_SanNewsAds["theAds"][Ad]["customerID"])
 			else 
 			end
 		else
@@ -283,42 +268,42 @@ function SanNews:deliverAds()
 	local currentDate = string.format("%04d-%02d-%02d", year+1900, month+1, monthDay)
 	local whereMaxPerDayLimitNotReached = {}
 	for k, Ad in pairs(whereInsideTimeframe) do 
-		if currentDate ~= self.m_sanNewsAds["theAds"][Ad]["lastDeliveryDate"] then 
-			self.m_sanNewsAds["theAds"][Ad]["deliveredThisDay"] = 0
+		if currentDate ~= self.m_SanNewsAds["theAds"][Ad]["lastDeliveryDate"] then 
+			self.m_SanNewsAds["theAds"][Ad]["deliveredThisDay"] = 0
 		end
-		if self.m_sanNewsAds["theAds"][Ad]["maxPerDay"] > self.m_sanNewsAds["theAds"][Ad]["deliveredThisDay"] then
-			table.insert(whereMaxPerDayLimitNotReached, self.m_sanNewsAds["theAds"][Ad]["customerID"])
+		if self.m_SanNewsAds["theAds"][Ad]["maxPerDay"] > self.m_SanNewsAds["theAds"][Ad]["deliveredThisDay"] then
+			table.insert(whereMaxPerDayLimitNotReached, self.m_SanNewsAds["theAds"][Ad]["customerID"])
 		end 
 	end
 	if #whereMaxPerDayLimitNotReached < 1 then return end
 
 	local finalAdCandidates = {}
 	for k, Ad in pairs(whereMaxPerDayLimitNotReached) do 
-		if self.m_sanNewsAds["theAds"][Ad]["moneyPerAd"] == 0 then
-			table.insert (finalAdCandidates, self.m_sanNewsAds["theAds"][Ad]["customerID"])
-		elseif self.m_sanNewsAds["theAds"][Ad]["customerType"] == "Company" then
-			local theCustomerObj = CompanyManager:getSingleton():getFromId(self.m_sanNewsAds["theAds"][Ad]["customerUniqueID"])
+		if self.m_SanNewsAds["theAds"][Ad]["moneyPerAd"] == 0 then
+			table.insert (finalAdCandidates, self.m_SanNewsAds["theAds"][Ad]["customerID"])
+		elseif self.m_SanNewsAds["theAds"][Ad]["customerType"] == "Company" then
+			local theCustomerObj = CompanyManager:getSingleton():getFromId(self.m_SanNewsAds["theAds"][Ad]["customerUniqueID"])
 			if not theCustomerObj then return end		-- if-exists-Abfrage überflüssig? ###
-			if theCustomerObj:getMoney() >= self.m_sanNewsAds["theAds"][Ad]["moneyPerAd"] then 
-				table.insert(finalAdCandidates, self.m_sanNewsAds["theAds"][Ad]["customerID"])
+			if theCustomerObj:getMoney() >= self.m_SanNewsAds["theAds"][Ad]["moneyPerAd"] then 
+				table.insert(finalAdCandidates, self.m_SanNewsAds["theAds"][Ad]["customerID"])
 			end
-		elseif self.m_sanNewsAds["theAds"][Ad]["customerType"] == "Faction" then 
-			local theCustomerObj = FactionManager:getSingleton():getFromId(self.m_sanNewsAds["theAds"][Ad]["customerUniqueID"])
+		elseif self.m_SanNewsAds["theAds"][Ad]["customerType"] == "Faction" then 
+			local theCustomerObj = FactionManager:getSingleton():getFromId(self.m_SanNewsAds["theAds"][Ad]["customerUniqueID"])
 			if not theCustomerObj then return end		-- if-exists-Abfrage überflüssig? ###
-			if theCustomerObj:getMoney() >= self.m_sanNewsAds["theAds"][Ad]["moneyPerAd"] then 
-				table.insert(finalAdCandidates, self.m_sanNewsAds["theAds"][Ad]["customerID"])
+			if theCustomerObj:getMoney() >= self.m_SanNewsAds["theAds"][Ad]["moneyPerAd"] then 
+				table.insert(finalAdCandidates, self.m_SanNewsAds["theAds"][Ad]["customerID"])
 			end
-		elseif self.m_sanNewsAds["theAds"][Ad]["customerType"] == "Group" then 
-			local theCustomerObj = GroupManager:getSingleton():getFromId(self.m_sanNewsAds["theAds"][Ad]["customerUniqueID"])
+		elseif self.m_SanNewsAds["theAds"][Ad]["customerType"] == "Group" then 
+			local theCustomerObj = GroupManager:getSingleton():getFromId(self.m_SanNewsAds["theAds"][Ad]["customerUniqueID"])
 			if not theCustomerObj then return end		-- if-exists-Abfrage überflüssig? ###
-			if theCustomerObj:getMoney() >= self.m_sanNewsAds["theAds"][Ad]["moneyPerAd"] then 
-				table.insert(finalAdCandidates, self.m_sanNewsAds["theAds"][Ad]["customerID"])
+			if theCustomerObj:getMoney() >= self.m_SanNewsAds["theAds"][Ad]["moneyPerAd"] then 
+				table.insert(finalAdCandidates, self.m_SanNewsAds["theAds"][Ad]["customerID"])
 			end
-		elseif self.m_sanNewsAds["theAds"][Ad]["customerType"] == "Player" then
-			local currentPlayerMoney = BankAccount.loadByOwner(self.m_sanNewsAds["theAds"][Ad]["customerUniqueID"], 1):getMoney()
+		elseif self.m_SanNewsAds["theAds"][Ad]["customerType"] == "Player" then
+			local currentPlayerMoney = BankAccount.loadByOwner(self.m_SanNewsAds["theAds"][Ad]["customerUniqueID"], 1):getMoney()
 			if not currentPlayerMoney then return end		-- if-exists-Abfrage überflüssig? ###
-			if currentPlayerMoney >= self.m_sanNewsAds["theAds"][Ad]["moneyPerAd"] then 
-				table.insert(finalAdCandidates, self.m_sanNewsAds["theAds"][Ad]["customerID"])
+			if currentPlayerMoney >= self.m_SanNewsAds["theAds"][Ad]["moneyPerAd"] then 
+				table.insert(finalAdCandidates, self.m_SanNewsAds["theAds"][Ad]["customerID"])
 			end
 		else
 		end
@@ -331,13 +316,13 @@ function SanNews:deliverAds()
 	local randomAdToBeDeliveredRandomizer = math.random(#finalAdCandidates)
 	local randomAdToBeDelivered = finalAdCandidates[randomAdToBeDeliveredRandomizer]
 
-	self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["lastDeliveryDate"] = string.format("%04d-%02d-%02d", year+1900, month+1, monthDay)
-	self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["lastDeliveryTime"] = string.format("%02d:%02d:%02d", hours, minutes, seconds)
-	self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["timesDelivered"] = self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["timesDelivered"] + 1
-	self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["deliveredThisDay"] = self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["deliveredThisDay"] + 1
-	sql:queryExec("UPDATE ??_sannewsads SET lastDeliveryDate = ?, lastDeliveryTime = ?, timesDelivered = ?, deliveredThisDay = ? WHERE customerID = ?", sql:getPrefix(), self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["lastDeliveryDate"], self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["lastDeliveryTime"], self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["timesDelivered"], self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["deliveredThisDay"], randomAdToBeDelivered)
+	self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["lastDeliveryDate"] = string.format("%04d-%02d-%02d", year+1900, month+1, monthDay)
+	self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["lastDeliveryTime"] = string.format("%02d:%02d:%02d", hours, minutes, seconds)
+	self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["timesDelivered"] = self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["timesDelivered"] + 1
+	self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["deliveredThisDay"] = self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["deliveredThisDay"] + 1
+	sql:queryExec("UPDATE ??_sannewsads SET lastDeliveryDate = ?, lastDeliveryTime = ?, timesDelivered = ?, deliveredThisDay = ? WHERE customerID = ?", sql:getPrefix(), self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["lastDeliveryDate"], self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["lastDeliveryTime"], self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["timesDelivered"], self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["deliveredThisDay"], randomAdToBeDelivered)
 	
-	if self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["moneyPerAd"] ~= 0 then 
+	if self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["moneyPerAd"] ~= 0 then 
 		local theRecipient = "San News"
 		local sanNewsObj = CompanyManager:getSingleton():getFromName(theRecipient) and CompanyManager:getSingleton():getFromName(theRecipient):getId() or false
 		if not sanNewsObj then return end		-- if-exists-Abfrage überflüssig? ###
@@ -345,24 +330,24 @@ function SanNews:deliverAds()
 		if not sanNewsBankAccount then return end 		-- if-exists-Abfrage überflüssig? ###
 
 		local customerBankAccount
-		if self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["customerType"] == "Company" then 
-			customerBankAccount = BankAccount.loadByOwner(self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["customerUniqueID"], 3)
-		elseif self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["customerType"] == "Faction" then 
-			if self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["customerUniqueID"] == 1 or self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["customerUniqueID"] == 2 or self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["customerUniqueID"] == 3 then
+		if self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["customerType"] == "Company" then 
+			customerBankAccount = BankAccount.loadByOwner(self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["customerUniqueID"], 3)
+		elseif self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["customerType"] == "Faction" then 
+			if self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["customerUniqueID"] == 1 or self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["customerUniqueID"] == 2 or self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["customerUniqueID"] == 3 then
 				customerBankAccount = FactionState:getSingleton().m_BankAccountServer
 			else
-				customerBankAccount = BankAccount.loadByOwner(self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["customerUniqueID"], 2)
+				customerBankAccount = BankAccount.loadByOwner(self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["customerUniqueID"], 2)
 			end
-			customerBankAccount = BankAccount.loadByOwner(self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["customerUniqueID"], 2)
-		elseif self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["customerType"] == "Group" then
-			customerBankAccount = BankAccount.loadByOwner(self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["customerUniqueID"], 8)
-		elseif self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["customerType"] == "Player" then
-			customerBankAccount = BankAccount.loadByOwner(self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["customerUniqueID"], 1)
+			customerBankAccount = BankAccount.loadByOwner(self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["customerUniqueID"], 2)
+		elseif self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["customerType"] == "Group" then
+			customerBankAccount = BankAccount.loadByOwner(self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["customerUniqueID"], 8)
+		elseif self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["customerType"] == "Player" then
+			customerBankAccount = BankAccount.loadByOwner(self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["customerUniqueID"], 1)
 		else
 			return
 		end
 
-		customerBankAccount:transferMoney(sanNewsBankAccount, self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["moneyPerAd"], self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["customerName"], "San News", "Werbung")
+		customerBankAccount:transferMoney(sanNewsBankAccount, self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["moneyPerAd"], self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["customerName"], "San News", "Werbung")
 		customerBankAccount:save()
 		sanNewsBankAccount:save()
 
@@ -376,14 +361,14 @@ function SanNews:deliverAds()
 	local endOfGermanAds = false 
 	local endOfEnglishAds = false
 
-	for k, v in ipairs(self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["adText"]) do
+	for k, v in ipairs(self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["adText"]) do
 		if v ~= "" then 
 			table.insert(adLinesToShowInGerman, v)
 			adLinesInGerman = adLinesInGerman + 1
 		end
 	end
 	
-	for k, v in ipairs(self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["adTextEN"]) do
+	for k, v in ipairs(self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["adTextEN"]) do
 		if v ~= "" then 
 			table.insert(adLinesToShowInEnglish, v)
 			adLinesInEnglish = adLinesInEnglish + 1
@@ -398,8 +383,8 @@ function SanNews:deliverAds()
 	triggerClientEvent(root, "sanNewsAdsSound", root)
 
 	outputChatBox("#FFFFFF▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁", root, 255, 200, 20, true)
-	outputChatBox("#FFFFFFWerbung │ #67D68E" .. self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["customerName"], playersInGerman, 255, 200, 20, true)
-	outputChatBox("#FFFFFFAd │ #67D68E" .. self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["customerName"], playersInEnglish, 255, 200, 20, true)
+	outputChatBox("#FFFFFFWerbung │ #67D68E" .. self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["customerName"], playersInGerman, 255, 200, 20, true)
+	outputChatBox("#FFFFFFAd │ #67D68E" .. self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["customerName"], playersInEnglish, 255, 200, 20, true)
 	outputChatBox("#FFFFFF▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔", root, 255, 200, 20, true)
 
 	if adLinesInGerman <= 0 and adLinesInEnglish <= 0 then return end
@@ -433,7 +418,7 @@ function SanNews:deliverAds()
 			end
 		end
 		currentAdDeliveredLines = currentAdDeliveredLines + 1
-	end, self.m_sanNewsAds["theAds"][randomAdToBeDelivered]["deliveringSpeed"] * 1000, 6)
+	end, self.m_SanNewsAds["theAds"][randomAdToBeDelivered]["deliveringSpeed"] * 1000, 6)
 end
 
 function SanNews:AdsUpdateToClient()
@@ -442,7 +427,7 @@ function SanNews:AdsUpdateToClient()
         	return
     	end
 		if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "editAds") then return end
-		client:triggerEvent("sanNewsAdsLoadForClient", self.m_sanNewsAds)
+		client:triggerEvent("sanNewsAdsLoadForClient", self.m_SanNewsAds)
 	end
 end
 
@@ -459,7 +444,7 @@ function SanNews:AdsUpdateFromClient(table)
 
 		for k, v in ipairs(table["DE"]) do 
 			if string.len(table["DE"][k]) <= 240 then 
-				self.m_sanNewsAds["theAds"][customerID]["adText"][k] = table["DE"][k]
+				self.m_SanNewsAds["theAds"][customerID]["adText"][k] = table["DE"][k]
 			else
 				return 
 			end
@@ -467,7 +452,7 @@ function SanNews:AdsUpdateFromClient(table)
 		
 		for k, v in ipairs(table["EN"]) do 
 			if string.len(table["EN"][k]) <= 240 then 
-				self.m_sanNewsAds["theAds"][customerID]["adTextEN"][k] = table["EN"][k]
+				self.m_SanNewsAds["theAds"][customerID]["adTextEN"][k] = table["EN"][k]
 			else
 				return 
 			end
@@ -475,8 +460,8 @@ function SanNews:AdsUpdateFromClient(table)
 
 		-- ### More sanitization?
 
-		local jsonAdText = toJSON(self.m_sanNewsAds["theAds"][customerID]["adText"])
-		local jsonAdTextEN = toJSON(self.m_sanNewsAds["theAds"][customerID]["adTextEN"])
+		local jsonAdText = toJSON(self.m_SanNewsAds["theAds"][customerID]["adText"])
+		local jsonAdTextEN = toJSON(self.m_SanNewsAds["theAds"][customerID]["adTextEN"])
 
 		sql:queryExec("UPDATE ??_sannewsads SET adText = ?, adTextEN = ? WHERE customerID = ?", sql:getPrefix(), jsonAdText, jsonAdTextEN, customerID)
 		client:sendSuccess(_("Änderungen gespeichert.", client))
@@ -535,9 +520,9 @@ function SanNews:CreateNewAdCustomerFromClient(customerTypeA, customerUniqueIDA)
 		end
 
 		local currentNumberOfEntries = 0
-		for k,v in pairs(self.m_sanNewsAds["theAds"]) do 
-			if self.m_sanNewsAds["theAds"][k]["customerID"] > currentNumberOfEntries then 
-				currentNumberOfEntries = self.m_sanNewsAds["theAds"][k]["customerID"]
+		for k,v in pairs(self.m_SanNewsAds["theAds"]) do 
+			if self.m_SanNewsAds["theAds"][k]["customerID"] > currentNumberOfEntries then 
+				currentNumberOfEntries = self.m_SanNewsAds["theAds"][k]["customerID"]
 			end
 		end
 		
@@ -545,7 +530,7 @@ function SanNews:CreateNewAdCustomerFromClient(customerTypeA, customerUniqueIDA)
 		if currentNumberOfEntries == 0 then 
 			newCustomerID = 1
 		else
-			local currentLastEntry = self.m_sanNewsAds["theAds"][currentNumberOfEntries]["customerID"]
+			local currentLastEntry = self.m_SanNewsAds["theAds"][currentNumberOfEntries]["customerID"]
 			newCustomerID = currentLastEntry + 1
 		end 
 
@@ -567,7 +552,7 @@ function SanNews:CreateNewAdCustomerFromClient(customerTypeA, customerUniqueIDA)
 		local jsonAdText = toJSON(preparedAdText)
 		local jsonAdTextEN = toJSON(preparedAdTextEN)
 		
-		self.m_sanNewsAds["theAds"][newCustomerID] = {
+		self.m_SanNewsAds["theAds"][newCustomerID] = {
 			customerID = newCustomerID,
 			customerName = name,
 			minPlayersOnlineToDeliverAds = 1,
@@ -599,13 +584,8 @@ function SanNews:CreateNewAdCustomerFromClient(customerTypeA, customerUniqueIDA)
 			}
 		}
 
-		local aa
-		if self.m_sanNewsAds["theAds"][newCustomerID]["isActive"] then 
-			aa = 1
-		else
-			aa = 0
-		end
-		sql:queryExec("INSERT INTO ??_sannewsads (customerID, customerName, minPlayersOnlineToDeliverAds, deliveringSpeed, isActive, moneyPerAd, adStartTimeEveryDay, adEndTimeEveryDay, adText, adTextEN, lastDeliveryDate, lastDeliveryTime, timesDelivered, customerType, customerUniqueID, maxPerDay, deliveredThisDay) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", sql:getPrefix(), self.m_sanNewsAds["theAds"][newCustomerID]["customerID"], self.m_sanNewsAds["theAds"][newCustomerID]["customerName"], self.m_sanNewsAds["theAds"][newCustomerID]["minPlayersOnlineToDeliverAds"], self.m_sanNewsAds["theAds"][newCustomerID]["deliveringSpeed"], aa, self.m_sanNewsAds["theAds"][newCustomerID]["moneyPerAd"], self.m_sanNewsAds["theAds"][newCustomerID]["adStartTimeEveryDay"], self.m_sanNewsAds["theAds"][newCustomerID]["adEndTimeEveryDay"], jsonAdText, jsonAdTextEN, self.m_sanNewsAds["theAds"][newCustomerID]["lastDeliveryDate"], self.m_sanNewsAds["theAds"][newCustomerID]["lastDeliveryTime"], self.m_sanNewsAds["theAds"][newCustomerID]["timesDelivered"], self.m_sanNewsAds["theAds"][newCustomerID]["customerType"], self.m_sanNewsAds["theAds"][newCustomerID]["customerUniqueID"], self.m_sanNewsAds["theAds"][newCustomerID]["maxPerDay"], self.m_sanNewsAds["theAds"][newCustomerID]["deliveredThisDay"])
+		local aa = fromboolean(self.m_SanNewsAds["theAds"][newCustomerID]["isActive"])
+		sql:queryExec("INSERT INTO ??_sannewsads (customerID, customerName, minPlayersOnlineToDeliverAds, deliveringSpeed, isActive, moneyPerAd, adStartTimeEveryDay, adEndTimeEveryDay, adText, adTextEN, lastDeliveryDate, lastDeliveryTime, timesDelivered, customerType, customerUniqueID, maxPerDay, deliveredThisDay) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", sql:getPrefix(), self.m_SanNewsAds["theAds"][newCustomerID]["customerID"], self.m_SanNewsAds["theAds"][newCustomerID]["customerName"], self.m_SanNewsAds["theAds"][newCustomerID]["minPlayersOnlineToDeliverAds"], self.m_SanNewsAds["theAds"][newCustomerID]["deliveringSpeed"], aa, self.m_SanNewsAds["theAds"][newCustomerID]["moneyPerAd"], self.m_SanNewsAds["theAds"][newCustomerID]["adStartTimeEveryDay"], self.m_SanNewsAds["theAds"][newCustomerID]["adEndTimeEveryDay"], jsonAdText, jsonAdTextEN, self.m_SanNewsAds["theAds"][newCustomerID]["lastDeliveryDate"], self.m_SanNewsAds["theAds"][newCustomerID]["lastDeliveryTime"], self.m_SanNewsAds["theAds"][newCustomerID]["timesDelivered"], self.m_SanNewsAds["theAds"][newCustomerID]["customerType"], self.m_SanNewsAds["theAds"][newCustomerID]["customerUniqueID"], self.m_SanNewsAds["theAds"][newCustomerID]["maxPerDay"], self.m_SanNewsAds["theAds"][newCustomerID]["deliveredThisDay"])
 
 		client:sendSuccess(_("Kunde hinzugefügt.", client))
 
@@ -621,8 +601,8 @@ function SanNews:RemoveAdCustomerFromClient(id)
 		if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "editAds") then return end
 		if not id then return end
 		if tonumber(id) == nil then return end
-		if self.m_sanNewsAds["theAds"][id]["customerID"] == id then 
-			self.m_sanNewsAds["theAds"][id] = nil 
+		if self.m_SanNewsAds["theAds"][id]["customerID"] == id then 
+			self.m_SanNewsAds["theAds"][id] = nil 
 			sql:queryExec("DELETE FROM ??_sannewsads WHERE customerID = ?", sql:getPrefix(), id)
 			self:AdsUpdateToClient()
 		else 
@@ -647,24 +627,24 @@ function SanNews:AdsSaveSettingsForCustomerFromClient(sendTable)
 		for k,v in pairs(sendTable) do
 			if not sendTable[k]["custID"] then return end
 			if sendTable[k]["custID"] == nil then return end
-			if not self.m_sanNewsAds["theAds"][sendTable[k]["custID"]] then return end
+			if not self.m_SanNewsAds["theAds"][sendTable[k]["custID"]] then return end
 
 			local customerID = sendTable[k]["custID"]
 			
 			if sendTable[k]["isActive"] == true or sendTable[k]["isActive"] == false then 
-				self.m_sanNewsAds["theAds"][customerID]["isActive"] = sendTable[k]["isActive"]
+				self.m_SanNewsAds["theAds"][customerID]["isActive"] = sendTable[k]["isActive"]
 			end
 
 			if tonumber(sendTable[k]["moneyPerAd"]) ~= nil then
 				if tonumber(sendTable[k]["moneyPerAd"]) >= 0 then 
-					self.m_sanNewsAds["theAds"][customerID]["moneyPerAd"] = tonumber(sendTable[k]["moneyPerAd"])
+					self.m_SanNewsAds["theAds"][customerID]["moneyPerAd"] = tonumber(sendTable[k]["moneyPerAd"])
 				end
 			end
 			
 			if tonumber(sendTable[k]["minPlayersOnlineToDeliverAds"]) ~= nil then
 				for i = 1, #minPlayerChangerOptions do 
 					if sendTable[k]["minPlayersOnlineToDeliverAds"] == minPlayerChangerOptions[i] then 
-						self.m_sanNewsAds["theAds"][customerID]["minPlayersOnlineToDeliverAds"] = tonumber(sendTable[k]["minPlayersOnlineToDeliverAds"])
+						self.m_SanNewsAds["theAds"][customerID]["minPlayersOnlineToDeliverAds"] = tonumber(sendTable[k]["minPlayersOnlineToDeliverAds"])
 					end
 				end
 			end
@@ -672,7 +652,7 @@ function SanNews:AdsSaveSettingsForCustomerFromClient(sendTable)
 			if tonumber(sendTable[k]["deliveringSpeed"]) ~= nil then
 				for i = 1, #speedOfDeliveryChangerOptions do 
 					if sendTable[k]["deliveringSpeed"] == speedOfDeliveryChangerOptions[i] then 
-						self.m_sanNewsAds["theAds"][customerID]["deliveringSpeed"] = tonumber(sendTable[k]["deliveringSpeed"])
+						self.m_SanNewsAds["theAds"][customerID]["deliveringSpeed"] = tonumber(sendTable[k]["deliveringSpeed"])
 					end
 				end
 			end
@@ -680,7 +660,7 @@ function SanNews:AdsSaveSettingsForCustomerFromClient(sendTable)
 			if tonumber(sendTable[k]["adStartTimeEveryDay"]) ~= nil then
 				for i = 1, #timeChangerOptions do 
 					if sendTable[k]["adStartTimeEveryDay"] == timeChangerOptions[i] then 
-						self.m_sanNewsAds["theAds"][customerID]["adStartTimeEveryDay"] = tonumber(sendTable[k]["adStartTimeEveryDay"])
+						self.m_SanNewsAds["theAds"][customerID]["adStartTimeEveryDay"] = tonumber(sendTable[k]["adStartTimeEveryDay"])
 					end
 				end
 			end
@@ -688,7 +668,7 @@ function SanNews:AdsSaveSettingsForCustomerFromClient(sendTable)
 			if tonumber(sendTable[k]["adEndTimeEveryDay"]) ~= nil then
 				for i = 1, #timeChangerOptions do 
 					if sendTable[k]["adEndTimeEveryDay"] == timeChangerOptions[i] then 
-						self.m_sanNewsAds["theAds"][customerID]["adEndTimeEveryDay"] = tonumber(sendTable[k]["adEndTimeEveryDay"])
+						self.m_SanNewsAds["theAds"][customerID]["adEndTimeEveryDay"] = tonumber(sendTable[k]["adEndTimeEveryDay"])
 					end
 				end
 			end
@@ -696,19 +676,19 @@ function SanNews:AdsSaveSettingsForCustomerFromClient(sendTable)
 			if tonumber(sendTable[k]["maxPerDay"]) ~= nil then
 				for i = 1, #maxPerDayChangerOptions do 
 					if sendTable[k]["maxPerDay"] == maxPerDayChangerOptions[i] then 
-						self.m_sanNewsAds["theAds"][customerID]["maxPerDay"] = tonumber(sendTable[k]["maxPerDay"])
+						self.m_SanNewsAds["theAds"][customerID]["maxPerDay"] = tonumber(sendTable[k]["maxPerDay"])
 					end
 				end
 			end
 
 			local aa
-			if self.m_sanNewsAds["theAds"][customerID]["isActive"] then 
+			if self.m_SanNewsAds["theAds"][customerID]["isActive"] then 
 				aa = 1
 			else
 				aa = 0
 			end
 			
-			sql:queryExec("UPDATE ??_sannewsads SET isActive = ?, moneyPerAd = ?, minPlayersOnlineToDeliverAds = ?, deliveringSpeed = ?, adStartTimeEveryDay = ?, adEndTimeEveryDay = ?, maxPerDay = ? WHERE customerID = ?", sql:getPrefix(), aa, self.m_sanNewsAds["theAds"][customerID]["moneyPerAd"], self.m_sanNewsAds["theAds"][customerID]["minPlayersOnlineToDeliverAds"], self.m_sanNewsAds["theAds"][customerID]["deliveringSpeed"], self.m_sanNewsAds["theAds"][customerID]["adStartTimeEveryDay"], self.m_sanNewsAds["theAds"][customerID]["adEndTimeEveryDay"], self.m_sanNewsAds["theAds"][customerID]["maxPerDay"], customerID)
+			sql:queryExec("UPDATE ??_sannewsads SET isActive = ?, moneyPerAd = ?, minPlayersOnlineToDeliverAds = ?, deliveringSpeed = ?, adStartTimeEveryDay = ?, adEndTimeEveryDay = ?, maxPerDay = ? WHERE customerID = ?", sql:getPrefix(), aa, self.m_SanNewsAds["theAds"][customerID]["moneyPerAd"], self.m_SanNewsAds["theAds"][customerID]["minPlayersOnlineToDeliverAds"], self.m_SanNewsAds["theAds"][customerID]["deliveringSpeed"], self.m_SanNewsAds["theAds"][customerID]["adStartTimeEveryDay"], self.m_SanNewsAds["theAds"][customerID]["adEndTimeEveryDay"], self.m_SanNewsAds["theAds"][customerID]["maxPerDay"], customerID)
 		
 			client:sendSuccess(_("Änderungen gespeichert.", client))
 		end
@@ -971,4 +951,11 @@ function SanNews:Event_sanNewsMessage(player, cmd, ...)
 	else
 		player:sendError(_("Die SanNews hat /sannews derzeit deaktiviert!", player))
 	end
+end
+function tranlsate(player, string)
+	if player:getLocale() == "de" then
+		return string
+	end
+
+	return translations[string] or string
 end

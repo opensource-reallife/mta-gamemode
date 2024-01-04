@@ -17,6 +17,9 @@ function SANNewsAdsGUI:constructor(customizeAdsTable, customerID)
         return
     end
     
+    self.m_AdLineLabel = {}
+    self.m_SanNewsEditLine = {}
+
     self.m_AdData = customizeAdsTable
     self.m_AdData["customerID"] = customerID
     self.m_ChangesMade = false
@@ -62,37 +65,20 @@ function SANNewsAdsGUI:constructor(customizeAdsTable, customerID)
 end
 
 function SANNewsAdsGUI:onAdLanguageChange(adLanguage)
-    if self.m_bg then delete(self.m_bg) end
+    if self.m_bg then 
+        delete(self.m_bg) 
+        self.m_AdLineLabel = {}
+        self.m_SanNewsEditLine = {}
+    end
     self.m_bg = GUIRectangle:new(self.m_Width*0.0, self.m_Height*0.20, self.m_Width*1, self.m_Height*0.65, tocolor(0, 0, 0, 0), self.m_SANNewsAds)
 
-    self.m_AdLineOneLabel = GUILabel:new(self.m_Width*0.05, self.m_Height*0.05, self.m_Width*0.25, self.m_Height*0.06, _("Werbezeile %s", "1:"), self.m_bg)
-        self.m_sanNewsEditLineOne = GUIEdit:new(self.m_Width*0.05, self.m_Height*0.11, self.m_Width * 0.9, self.m_Height*0.05, self.m_bg):setText(self.m_AdData[adLanguage][1]):setMaxLength(240)
-        self.m_sanNewsEditLineOne.onChange = function ()
-            self.m_AdData[adLanguage][1] = self.m_sanNewsEditLineOne:getText()
+    for i = 1, 5 do
+        self.m_AdLineLabel[i] = GUILabel:new(self.m_Width*0.05, self.m_Height* (i == 1 and 0.05 or 0.05 + (i - 1) * 0.12), self.m_Width*0.25, self.m_Height*0.06, _("Werbezeile %s:", i), self.m_bg)
+    
+        self.m_SanNewsEditLine[i] = GUIEdit:new(self.m_Width*0.05, self.m_Height* (i == 1 and 0.11 or 0.11 + (i - 1) * 0.12), self.m_Width * 0.9, self.m_Height*0.05, self.m_bg):setText(self.m_AdData[adLanguage][i]):setMaxLength(240)
+        self.m_SanNewsEditLine[i].onChange = function ()
+            self.m_AdData[adLanguage][i] = self.m_SanNewsEditLine[i]:getText()
             self.m_ChangesMade = true      
         end
-        self.m_AdLineTwoLabel = GUILabel:new(self.m_Width*0.05, self.m_Height*0.17, self.m_Width*0.25, self.m_Height*0.06, _("Werbezeile %s", "2:"), self.m_bg)
-        self.m_sanNewsEditLineTwo = GUIEdit:new(self.m_Width*0.05, self.m_Height*0.23, self.m_Width * 0.9, self.m_Height*0.05, self.m_bg):setText(self.m_AdData[adLanguage][2]):setMaxLength(240)
-        self.m_sanNewsEditLineTwo.onChange = function ()
-            self.m_AdData[adLanguage][2] = self.m_sanNewsEditLineTwo:getText()
-            self.m_ChangesMade = true
-        end
-        self.m_AdLineThreeLabel = GUILabel:new(self.m_Width*0.05, self.m_Height*0.29, self.m_Width*0.25, self.m_Height*0.06, _("Werbezeile %s", "3:"), self.m_bg)
-        self.m_sanNewsEditLineThree = GUIEdit:new(self.m_Width*0.05, self.m_Height*0.35, self.m_Width * 0.9, self.m_Height*0.05, self.m_bg):setText(self.m_AdData[adLanguage][3]):setMaxLength(240)
-        self.m_sanNewsEditLineThree.onChange = function ()
-            self.m_AdData[adLanguage][3] = self.m_sanNewsEditLineThree:getText()
-            self.m_ChangesMade = true
-        end
-        self.m_AdLineFourLabel = GUILabel:new(self.m_Width*0.05, self.m_Height*0.41, self.m_Width*0.25, self.m_Height*0.06, _("Werbezeile %s", "4:"), self.m_bg)
-        self.m_sanNewsEditLineFour = GUIEdit:new(self.m_Width*0.05, self.m_Height*0.47, self.m_Width * 0.9, self.m_Height*0.05, self.m_bg):setText(self.m_AdData[adLanguage][4]):setMaxLength(240)
-        self.m_sanNewsEditLineFour.onChange = function ()
-            self.m_AdData[adLanguage][4] = self.m_sanNewsEditLineFour:getText()
-            self.m_ChangesMade = true
-        end
-        self.m_AdLineFiveLabel = GUILabel:new(self.m_Width*0.05, self.m_Height*0.53, self.m_Width*0.25, self.m_Height*0.06, _("Werbezeile %s", "5:"), self.m_bg)
-        self.m_sanNewsEditLineFive = GUIEdit:new(self.m_Width*0.05, self.m_Height*0.59, self.m_Width * 0.9, self.m_Height*0.05, self.m_bg):setText(self.m_AdData[adLanguage][5]):setMaxLength(240)
-        self.m_sanNewsEditLineFive.onChange = function ()
-            self.m_AdData[adLanguage][5] = self.m_sanNewsEditLineFive:getText()
-            self.m_ChangesMade = true
-        end
+    end
 end

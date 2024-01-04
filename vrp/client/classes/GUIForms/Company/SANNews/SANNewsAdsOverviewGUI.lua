@@ -11,7 +11,7 @@ inherit(Singleton, SANNewsAdsOverviewGUI)
 
 function SANNewsAdsOverviewGUI:constructor(theAds)
     if theAds then 
-        self.m_sanNewsAds = theAds
+        self.m_SanNewsAds = theAds
     else
         return
     end
@@ -29,8 +29,8 @@ function SANNewsAdsOverviewGUI:constructor(theAds)
 	self.m_CustomerList:addColumn(_"Derzeitige Kunden:", 1)
 	
     local item
-    for k,v in pairs(self.m_sanNewsAds["theAds"]) do
-        item = self.m_CustomerList:addItem(self.m_sanNewsAds["theAds"][k]["customerName"])
+    for k,v in pairs(self.m_SanNewsAds["theAds"]) do
+        item = self.m_CustomerList:addItem(self.m_SanNewsAds["theAds"][k]["customerName"])
         item.onLeftClick = function () 
             self:onCustomerChange(k)
         end
@@ -40,11 +40,11 @@ function SANNewsAdsOverviewGUI:constructor(theAds)
     self.m_CustomerAdd.onLeftClick = function()
 		self:close()
         local currentCustomers = {}
-        for k, v in pairs(self.m_sanNewsAds["theAds"]) do 
+        for k, v in pairs(self.m_SanNewsAds["theAds"]) do 
             currentCustomers[k] = {
-                customerName = self.m_sanNewsAds["theAds"][k]["customerName"],
-                customerUniqueID = self.m_sanNewsAds["theAds"][k]["customerUniqueID"],
-                customerType = self.m_sanNewsAds["theAds"][k]["customerType"]
+                customerName = self.m_SanNewsAds["theAds"][k]["customerName"],
+                customerUniqueID = self.m_SanNewsAds["theAds"][k]["customerUniqueID"],
+                customerType = self.m_SanNewsAds["theAds"][k]["customerType"]
             }
         end
         if SANNewsAdsNewCustomerGUI:isInstantiated() then
@@ -55,7 +55,7 @@ function SANNewsAdsOverviewGUI:constructor(theAds)
 
     self.m_CustomerRemove = GUIButton:new(self.m_Width*0.17, self.m_Height*0.80, self.m_Width*0.14, self.m_Height*0.07, FontAwesomeSymbols.Minus, self.m_SANNewsAdsOverview):setFont(FontAwesome(20)):setBarEnabled(false):setTooltip(_"Ausgewählten Kunden entfernen", "button", true):setEnabled(false)
     self.m_CustomerRemove.onLeftClick = function ()
-        ShortMessageQuestion:new(
+        QuestionBox:new(
             _"Willst du den ausgewählten Kunden samt aller Daten entfernen?",
             function()
                 if self.m_currentCustomerID then 
@@ -82,7 +82,7 @@ function SANNewsAdsOverviewGUI:constructor(theAds)
     self.m_AdSettings = GUIButton:new(self.m_Width*0.17, self.m_Height*0.89, self.m_Width*0.14, self.m_Height*0.07, FontAwesomeSymbols.Cogs, self.m_SANNewsAdsOverview):setFont(FontAwesome(20)):setBarEnabled(false):setTooltip(_"Einstellungen", "button", true)
     self.m_AdSettings.onLeftClick = function ()
         self:close()
-        local settings = {self.m_sanNewsAds["theSettings"]["AdsMainTimer"], self.m_sanNewsAds["theSettings"]["AdsActive"]}
+        local settings = {self.m_SanNewsAds["theSettings"]["AdsMainTimer"], self.m_SanNewsAds["theSettings"]["AdsActive"]}
         if SANNewsAdsSettingsGUI:isInstantiated() then
             delete(SANNewsAdsSettingsGUI:getSingleton())
         end
@@ -98,24 +98,24 @@ function SANNewsAdsOverviewGUI:onCustomerChange(customerID)
     self.m_currentCustomerID = customerID
     self.m_CustomerRemove:setEnabled(true)
 
-    GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.07, self.m_sanNewsAds["theAds"][customerID]["customerName"], self.m_bg)
+    GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.07, self.m_SanNewsAds["theAds"][customerID]["customerName"], self.m_bg)
 
     self.m_isActive = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.09, self.m_Width*0.35, self.m_Height*0.04, _"Werbung aktiv", self.m_bg)
 		self.m_isActive:setFont(VRPFont(25))
 		self.m_isActive:setFontSize(1)
-		self.m_isActive:setChecked(self.m_sanNewsAds["theAds"][customerID]["isActive"])
+		self.m_isActive:setChecked(self.m_SanNewsAds["theAds"][customerID]["isActive"])
 		self.m_isActive.onChange = function (state)
-			self.m_sanNewsAds["theAds"][customerID]["isActive"] = state
+			self.m_SanNewsAds["theAds"][customerID]["isActive"] = state
             if not self.m_ChangesMade[customerID] then
                 self.m_ChangesMade[customerID] = true
             end
       	end
 
     GUILabel:new(self.m_Width*0.02, self.m_Height*0.15, self.m_Width*0.8, self.m_Height*0.05, _"Preis je geschalteter Werbung in $:", self.m_bg)
-    self.m_currentMoney = GUIEdit:new(self.m_Width*0.02, self.m_Height*0.20, self.m_Width * 0.6, self.m_Height*0.06, self.m_bg):setText(self.m_sanNewsAds["theAds"][customerID]["moneyPerAd"])
+    self.m_currentMoney = GUIEdit:new(self.m_Width*0.02, self.m_Height*0.20, self.m_Width * 0.6, self.m_Height*0.06, self.m_bg):setText(self.m_SanNewsAds["theAds"][customerID]["moneyPerAd"])
     self.m_currentMoney.onChange = function ()
         if self.m_currentMoney then 
-            self.m_sanNewsAds["theAds"][customerID]["moneyPerAd"] = tonumber(self.m_currentMoney:getText())
+            self.m_SanNewsAds["theAds"][customerID]["moneyPerAd"] = tonumber(self.m_currentMoney:getText())
             if not self.m_ChangesMade[customerID] then
                 self.m_ChangesMade[customerID] = true
             end
@@ -130,7 +130,7 @@ function SANNewsAdsOverviewGUI:onCustomerChange(customerID)
     local theFocusNumber = 0
     for i=1, #minPlayerChangerOptions do 
         self.m_minPlayers:addItem(minPlayerChangerOptions[i])
-        if minPlayerChangerOptions[i] == self.m_sanNewsAds["theAds"][customerID]["minPlayersOnlineToDeliverAds"] then 
+        if minPlayerChangerOptions[i] == self.m_SanNewsAds["theAds"][customerID]["minPlayersOnlineToDeliverAds"] then 
             theFocusNumber = i
         end
 	end
@@ -138,7 +138,7 @@ function SANNewsAdsOverviewGUI:onCustomerChange(customerID)
 
 	self.m_minPlayers.onChange = function ()
         if self.m_minPlayers then 
-            self.m_sanNewsAds["theAds"][customerID]["minPlayersOnlineToDeliverAds"] = self.m_minPlayers:getIndex()
+            self.m_SanNewsAds["theAds"][customerID]["minPlayersOnlineToDeliverAds"] = self.m_minPlayers:getIndex()
             if not self.m_ChangesMade[customerID] then
                 self.m_ChangesMade[customerID] = true
             end
@@ -153,7 +153,7 @@ function SANNewsAdsOverviewGUI:onCustomerChange(customerID)
     local theFocusNumberSpeedOfDelivery = 1
     for i=1, #speedOfDeliveryChangerOptions do 
         self.m_speedOfDelivery:addItem(speedOfDeliveryChangerOptions[i])
-        if speedOfDeliveryChangerOptions[i] == self.m_sanNewsAds["theAds"][customerID]["deliveringSpeed"] then 
+        if speedOfDeliveryChangerOptions[i] == self.m_SanNewsAds["theAds"][customerID]["deliveringSpeed"] then 
             theFocusNumberSpeedOfDelivery = i
         end
 	end
@@ -161,7 +161,7 @@ function SANNewsAdsOverviewGUI:onCustomerChange(customerID)
     
     self.m_speedOfDelivery.onChange = function ()
         if self.m_speedOfDelivery then 
-            self.m_sanNewsAds["theAds"][customerID]["deliveringSpeed"] = self.m_speedOfDelivery:getIndex()
+            self.m_SanNewsAds["theAds"][customerID]["deliveringSpeed"] = self.m_speedOfDelivery:getIndex()
             if not self.m_ChangesMade[customerID] then
                 self.m_ChangesMade[customerID] = true
             end
@@ -175,7 +175,7 @@ function SANNewsAdsOverviewGUI:onCustomerChange(customerID)
     local theFocusNumberMaxPerDay = 0
     for i=1, #maxPerDayChangerOptions do 
         self.m_maxPerDay:addItem(maxPerDayChangerOptions[i])
-        if maxPerDayChangerOptions[i] == self.m_sanNewsAds["theAds"][customerID]["maxPerDay"] then 
+        if maxPerDayChangerOptions[i] == self.m_SanNewsAds["theAds"][customerID]["maxPerDay"] then 
             theFocusNumberMaxPerDay = i 
         end
     end
@@ -183,7 +183,7 @@ function SANNewsAdsOverviewGUI:onCustomerChange(customerID)
 
     self.m_maxPerDay.onChange = function ()
         if self.m_maxPerDay then 
-            self.m_sanNewsAds["theAds"][customerID]["maxPerDay"] = self.m_maxPerDay:getIndex()
+            self.m_SanNewsAds["theAds"][customerID]["maxPerDay"] = self.m_maxPerDay:getIndex()
             if not self.m_ChangesMade[customerID] then
                 self.m_ChangesMade[customerID] = true
             end
@@ -197,7 +197,7 @@ function SANNewsAdsOverviewGUI:onCustomerChange(customerID)
     local theFocusNumberStartTime = 0
     for i=1, #startTimeChangerOptions do 
         self.m_startTime:addItem(startTimeChangerOptions[i])
-        if startTimeChangerOptions[i] == self.m_sanNewsAds["theAds"][customerID]["adStartTimeEveryDay"] then 
+        if startTimeChangerOptions[i] == self.m_SanNewsAds["theAds"][customerID]["adStartTimeEveryDay"] then 
             theFocusNumberStartTime = i
         end
 	end
@@ -205,7 +205,7 @@ function SANNewsAdsOverviewGUI:onCustomerChange(customerID)
     
     self.m_startTime.onChange = function ()
         if self.m_startTime then 
-            self.m_sanNewsAds["theAds"][customerID]["adStartTimeEveryDay"] = self.m_startTime:getIndex()
+            self.m_SanNewsAds["theAds"][customerID]["adStartTimeEveryDay"] = self.m_startTime:getIndex()
             if not self.m_ChangesMade[customerID] then
                 self.m_ChangesMade[customerID] = true
             end
@@ -218,7 +218,7 @@ function SANNewsAdsOverviewGUI:onCustomerChange(customerID)
     local theFocusNumberEndTime = 0
     for i=1, #endTimeChangerOptions do 
         self.m_endTime:addItem(endTimeChangerOptions[i])
-        if endTimeChangerOptions[i] == self.m_sanNewsAds["theAds"][customerID]["adEndTimeEveryDay"] then 
+        if endTimeChangerOptions[i] == self.m_SanNewsAds["theAds"][customerID]["adEndTimeEveryDay"] then 
             theFocusNumberEndTime = i
         end
 	end
@@ -226,23 +226,23 @@ function SANNewsAdsOverviewGUI:onCustomerChange(customerID)
 	
     self.m_endTime.onChange = function ()
         if self.m_endTime then 
-            self.m_sanNewsAds["theAds"][customerID]["adEndTimeEveryDay"] = self.m_endTime:getIndex()
+            self.m_SanNewsAds["theAds"][customerID]["adEndTimeEveryDay"] = self.m_endTime:getIndex()
             if not self.m_ChangesMade[customerID] then
                 self.m_ChangesMade[customerID] = true
             end
         end
     end
 
-    GUILabel:new(self.m_Width*0.02, self.m_Height*0.71, self.m_Width*0.8, self.m_Height*0.05, _"Anzahl bisher geschalteter Werbungen: " .. self.m_sanNewsAds["theAds"][customerID]["timesDelivered"], self.m_bg)
-    GUILabel:new(self.m_Width*0.02, self.m_Height*0.76, self.m_Width*0.8, self.m_Height*0.05, _"Letzte Werbeschaltung: " .. self.m_sanNewsAds["theAds"][customerID]["lastDeliveryDate"] .. ", " .. self.m_sanNewsAds["theAds"][customerID]["lastDeliveryTime"], self.m_bg)
+    GUILabel:new(self.m_Width*0.02, self.m_Height*0.71, self.m_Width*0.8, self.m_Height*0.05, _"Anzahl bisher geschalteter Werbungen: " .. self.m_SanNewsAds["theAds"][customerID]["timesDelivered"], self.m_bg)
+    GUILabel:new(self.m_Width*0.02, self.m_Height*0.76, self.m_Width*0.8, self.m_Height*0.05, _"Letzte Werbeschaltung: " .. self.m_SanNewsAds["theAds"][customerID]["lastDeliveryDate"] .. ", " .. self.m_SanNewsAds["theAds"][customerID]["lastDeliveryTime"], self.m_bg)
 
     self.m_customizeAdsButton = GUIButton:new(self.m_Width*0.02, self.m_Height*0.83, self.m_Width*0.29, self.m_Height*0.07, _"Werbezeilen anpassen", self.m_bg):setBarEnabled(true)
 	self.m_customizeAdsButton.onLeftClick = function()
 		self:close()
         local customizeAdsTable = {
-            customerName = self.m_sanNewsAds["theAds"][customerID]["customerName"],
-            DE = self.m_sanNewsAds["theAds"][customerID]["adText"],
-            EN = self.m_sanNewsAds["theAds"][customerID]["adTextEN"]
+            customerName = self.m_SanNewsAds["theAds"][customerID]["customerName"],
+            DE = self.m_SanNewsAds["theAds"][customerID]["adText"],
+            EN = self.m_SanNewsAds["theAds"][customerID]["adTextEN"]
         }
         if SANNewsAdsGUI:isInstantiated() then
 		 	delete(SANNewsAdsGUI:getSingleton())
@@ -268,19 +268,19 @@ function SANNewsAdsOverviewGUI:onCustomerChange(customerID)
         local sendTable = {}
 
         for k, v in pairs(self.m_ChangesMade) do 
-            if tonumber(self.m_sanNewsAds["theAds"][k]["moneyPerAd"]) == nil or tonumber(self.m_sanNewsAds["theAds"][k]["moneyPerAd"]) < 0 then 
+            if tonumber(self.m_SanNewsAds["theAds"][k]["moneyPerAd"]) == nil or tonumber(self.m_SanNewsAds["theAds"][k]["moneyPerAd"]) < 0 then 
                 ErrorBox:new(_"Fehlerhafte Eingabe im Preis-Feld.")
                 return
             end
             sendTable[k] = {
-                custID = self.m_sanNewsAds["theAds"][k]["customerID"],
-                isActive = self.m_sanNewsAds["theAds"][k]["isActive"],
-                moneyPerAd = self.m_sanNewsAds["theAds"][k]["moneyPerAd"],
-                minPlayersOnlineToDeliverAds = self.m_sanNewsAds["theAds"][k]["minPlayersOnlineToDeliverAds"],
-                deliveringSpeed = self.m_sanNewsAds["theAds"][k]["deliveringSpeed"],
-                adStartTimeEveryDay = self.m_sanNewsAds["theAds"][k]["adStartTimeEveryDay"],
-                adEndTimeEveryDay = self.m_sanNewsAds["theAds"][k]["adEndTimeEveryDay"],
-                maxPerDay = self.m_sanNewsAds["theAds"][k]["maxPerDay"]
+                custID = self.m_SanNewsAds["theAds"][k]["customerID"],
+                isActive = self.m_SanNewsAds["theAds"][k]["isActive"],
+                moneyPerAd = self.m_SanNewsAds["theAds"][k]["moneyPerAd"],
+                minPlayersOnlineToDeliverAds = self.m_SanNewsAds["theAds"][k]["minPlayersOnlineToDeliverAds"],
+                deliveringSpeed = self.m_SanNewsAds["theAds"][k]["deliveringSpeed"],
+                adStartTimeEveryDay = self.m_SanNewsAds["theAds"][k]["adStartTimeEveryDay"],
+                adEndTimeEveryDay = self.m_SanNewsAds["theAds"][k]["adEndTimeEveryDay"],
+                maxPerDay = self.m_SanNewsAds["theAds"][k]["maxPerDay"]
             }
         end
 
