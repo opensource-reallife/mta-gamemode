@@ -214,13 +214,8 @@ function ScoreboardGUI:insertPlayers()
 
 		if player:getFaction() then
 			local color = player:getFaction():getColor()
-			if player:getFaction():isInsurgentFaction() then -- Hide Insurgent color (Insurgent = Civilian)
+			if player:getFaction():isInsurgentFaction() or not player:getPublicSync("Faction:Duty") then -- Hide Insurgent color (Insurgent = Civilian) / Dont show player faction color when off duty
 				item:setColumnColor(3, tocolor(255, 255, 255))
-			elseif not player:getPublicSync("Faction:Duty") then -- Tint faction color when off duty
-				local newR = color.r + (255 - color.r) * 0.85
-				local newG = color.g + (255 - color.g) * 0.85
-				local newB = color.b + (255 - color.b) * 0.85
-				item:setColumnColor(3, tocolor(newR, newG, newB))
 			else
 				item:setColumnColor(3, tocolor(color.r, color.g, color.b))
 			end
