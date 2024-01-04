@@ -1625,7 +1625,7 @@ function Player:endPrison()
 	end
 end
 
-function Player:meChat(system, text, format, translateFormat)
+function Player:meChat(system, text, format, translateFormat, isBind)
 	if self:isDead() then
 		return
 	end
@@ -1639,12 +1639,14 @@ function Player:meChat(system, text, format, translateFormat)
 		if system == true then
 			message = ("★ %s %s"):format(senderName, _(text, playersToSend[index], translateFormat and _(format, playersToSend[index]) or format))
 		else
-			message = ("%s %s"):format(senderName, text) 
+			local tText = text
+			if isBind then
+				tText = BindManager:getSingleton():translateBind(text, playersToSend[index])
+			end
+
+			message = ("%s %s"):format(senderName, tText) 
 		end
 		outputChatBox(message, playersToSend[index], 255, 105, 180)
-		if playersToSend[index] ~= self then
-			receivedPlayers[#receivedPlayers+1] = playersToSend[index]:getName()
-		end
 	end
 end
 

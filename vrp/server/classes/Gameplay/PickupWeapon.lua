@@ -35,7 +35,7 @@ function PickupWeapon:pickup(player)
 			else
 				StateEvidence:getSingleton():addWeaponWithMunitionToEvidence(player, self.m_WeaponID, self.m_Ammo)
 			end
-			player:meChat(true, "kniet sich nieder und hebt eine Waffe auf!")
+			player:meChat(true, false, "kniet sich nieder und hebt eine Waffe auf!")
 			setPedAnimation( player, PICKUP_ANIMATION_BLOCK, PICKUP_ANIMATION_NAME, 500, false, false, false)
 			setTimer(setPedAnimation, 1000, 1, player, "carry", "crry_prtial", 200, false )
 			setTimer(setPedAnimation, 1200, 1, player, false)

@@ -25,7 +25,7 @@ function ItemTaser:use(player)
 		if getTickCount() - player.m_LastTaserSwitch < 1500 then return end
 		if weapon == 23 then
 		 	player:takeWeapon(23)
-			player:meChat(true, "steckt seinen Taser weg.")
+			player:meChat(true, false, "steckt seinen Taser weg.")
 			player.m_LastTaserSwitch = getTickCount()
 			if self.m_PlayerSecondWeapon[player] then
 				player:giveWeapon(unpack(self.m_PlayerSecondWeapon[player]))
@@ -34,7 +34,7 @@ function ItemTaser:use(player)
 		else
 			player:giveWeapon(23, 9999)
 			self.m_PlayerSecondWeapon[player] = {weapon, ammo}
-			player:meChat(true, "zieht seinen Taser.")
+			player:meChat(true, false, "zieht seinen Taser.")
 			player.m_LastTaserSwitch = getTickCount()
 		end
 	else

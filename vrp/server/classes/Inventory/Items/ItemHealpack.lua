@@ -17,6 +17,6 @@ function ItemHealpack:destructor()
 end
 
 function ItemHealpack:use(player)
-	player:meChat(true, "benutzt ein Medikit!")
+	player:meChat(true, false, "benutzt ein Medikit!")
 	player:setHealth(100)
 end

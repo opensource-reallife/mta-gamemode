@@ -9,6 +9,7 @@ BindManager = inherit(Singleton)
 
 function BindManager:constructor()
     self.m_Binds = {}
+	self.m_BindTranslations = {}
 	self.m_BindsPerOwner = {}
 	self:loadBinds()
 
@@ -22,15 +23,65 @@ function BindManager:constructor()
 
 end
 
-function BindManager:Event_OnBindTrigger(name, parameters)
+function BindManager:Event_OnBindTrigger(name, parameters, parametersEN)
+	parameters = tostring(parameters)
+	parametersEN = tostring(parametersEN)
+
+	local translatableBind = true
+	local old = self.m_BindTranslations[parameters]
+
+	if (not parameters or parameters == "") and (not parametersEN or parametersEN == "") then
+		return -- empty message
+	end
+
+	if parameters and parameters ~= "" then
+		if (not self.m_BindTranslations[parameters] or self.m_BindTranslations[parameters] ~= parametersEN) and parametersEN and parametersEN ~= "" then
+			self.m_BindTranslations[parameters] = parametersEN
+		end
+	else
+		parameters = parametersEN
+		translatableBind = false
+	end
 
     if name == "say" then
-        PlayerManager:getSingleton():playerChat(parameters, 0, client)
+        PlayerManager:getSingleton():playerChat(parameters, 0, translatableBind)
 	elseif name == "me" then
-		client:meChat(false, parameters)
+		client:meChat(false, parameters, false, false, translatableBind)
+	elseif name == "s" then
+		PlayerManager:getSingleton():sendPlayerScream(client, parameters, translatableBind)
+	elseif name == "l" then
+		PlayerManager:getSingleton():sendPlayerWhisper(client, parameters, translatableBind)
+	elseif name == "t" then
+		if client.m_Faction then
+			if client.m_Faction:getId() >= 1 and client.m_Faction:getId() <= 3 then
+				if client.m_Faction and client.m_Faction:isStateFaction() then
+					FactionState:getSingleton():sendStateChatMessage(client, parameters, translatableBind)
+				end
+			else
+				client.m_Faction:sendChatMessage(client, parameters, translatableBind)
+			end
+		end
+	elseif name == "f" then
+		if client.m_Group then
+			client.m_Group:sendChatMessage(client, parameters, translatableBind)
+		end
+	elseif name == "b" then
+		if client.m_Faction then
+			local bndFaction = client.m_Faction:getAllianceFaction()
+			if bndFaction then
+				client.m_Faction:sendBndChatMessage(client, parameters, bndFaction, translatableBind)
+				bndFaction:sendBndChatMessage(client, parameters, bndFaction, translatableBind)
+			else
+				client:sendError(_("Eure Allianz hat kein Bündnis!", client))
+			end
+		end
+	--[[elseif name == "g" then
+		client:meChat(false, true, parameters)]]
 	else
         executeCommandHandler(name, client, parameters)
     end
+
+	self.m_BindTranslations[parameters] = old
 end
 
 function BindManager:loadBinds(id)
@@ -39,8 +90,12 @@ function BindManager:loadBinds(id)
 	for k, row in ipairs(result) do
 		self.m_Binds[row.Id] = {
 			["Func"] = row.Func,
-			["Message"] = row.Message
+			["Message"] = row.Message,
+			["MessageEN"] = row.MessageEN,
 		}
+		if row.Message ~= "" then
+			self.m_BindTranslations[row.Message] = row.MessageEN
+		end
 		if not self.m_BindsPerOwner[row.OwnerType] then self.m_BindsPerOwner[row.OwnerType] = {} end
 		if not self.m_BindsPerOwner[row.OwnerType][row.Owner] then self.m_BindsPerOwner[row.OwnerType][row.Owner] = {} end
 		self.m_BindsPerOwner[row.OwnerType][row.Owner][row.Id] = self.m_Binds[row.Id]
@@ -84,7 +139,7 @@ function BindManager:isManager(player, type)
 	end
 end
 
-function BindManager:Event_editBind(ownerType, id, func, message)
+function BindManager:Event_editBind(ownerType, id, func, message, messageEN)
 	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, ownerType, "editBinds") then
 		client:sendError(_("Du bist nicht berechtigt Binds zu editieren!", client))
 		return
@@ -99,10 +154,15 @@ function BindManager:Event_editBind(ownerType, id, func, message)
 	if self.m_BindsPerOwner[ownerType][ownerId][id] and self.m_Binds[id] then
 		self.m_Binds[id] = {
 			["Func"] = func,
-			["Message"] = message
+			["Message"] = message,
+			["MessageEN"] = messageEN
 		}
+		if message ~= "" then
+			self.m_BindTranslations[message] = messageEN
+		end
+
 		self.m_BindsPerOwner[ownerType][ownerId][id] = self.m_Binds[id]
-		sql:queryExec("UPDATE ??_binds SET Func = ?, Message = ?, Creator = ? WHERE Id = ?", sql:getPrefix(), func, message, client:getId(), id)
+		sql:queryExec("UPDATE ??_binds SET Func = ?, Message = ?, MessageEN = ?, Creator = ? WHERE Id = ?", sql:getPrefix(), func, message, messageEN, client:getId(), id)
 		client:sendSuccess(_("Bind erfolgreich geändert!", client))
 	else
 		client:sendError(_("Bind nicht gefunden!", client))
@@ -123,6 +183,7 @@ function BindManager:Event_deleteBind(ownerType, id)
 		return
 	end
 	if self.m_BindsPerOwner[ownerType][ownerId][id] and self.m_Binds[id] then
+		self.m_BindTranslations[self.m_Binds[id]["Message"]] = nil
 		self.m_Binds[id] = nil
 		self.m_BindsPerOwner[ownerType][ownerId][id] = nil
 		sql:queryExec("DELETE FROM ??_binds WHERE Id = ?", sql:getPrefix(), id)
@@ -133,7 +194,7 @@ function BindManager:Event_deleteBind(ownerType, id)
 	client:triggerEvent("bindReceive", ownerType, ownerId, self.m_BindsPerOwner[ownerType][ownerId])
 end
 
-function BindManager:Event_addBind(ownerType, func, message)
+function BindManager:Event_addBind(ownerType, func, message, messageEN)
 	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, ownerType, "editBinds") then
 		client:sendError(_("Du bist nicht berechtigt Binds hinzuzufügen!", client))
 		return
@@ -146,13 +207,28 @@ function BindManager:Event_addBind(ownerType, func, message)
 	end
 	if not self.m_BindsPerOwner[ownerType] then self.m_BindsPerOwner[ownerType] = {} end
 	if not self.m_BindsPerOwner[ownerType][ownerId] then self.m_BindsPerOwner[ownerType][ownerId] = {} end
-	sql:queryExec("INSERT INTO ??_binds (OwnerType, Owner, Func, Message, Creator) VALUES (?, ?, ?, ?, ?)", sql:getPrefix(), ownerType, ownerId, func, message, client:getId())
+	sql:queryExec("INSERT INTO ??_binds (OwnerType, Owner, Func, Message, MessageEN, Creator) VALUES (?, ?, ?, ?, ?, ?)", sql:getPrefix(), ownerType, ownerId, func, message, messageEN, client:getId())
 	local id = sql:lastInsertId()
 	self.m_Binds[id] = {
 			["Func"] = func,
-			["Message"] = message
+			["Message"] = message,
+			["MessageEN"] = messageEN
 		}
 	self.m_BindsPerOwner[ownerType][ownerId][id] = self.m_Binds[id]
+	if message ~= "" then
+		self.m_BindTranslations[message] = messageEN
+	end
 	client:sendSuccess(_("Bind erfolgreich hinzugefügt!", client))
 	client:triggerEvent("bindReceive", ownerType, ownerId, self.m_BindsPerOwner[ownerType][ownerId])
+end
+
+function BindManager:translateBind(string, player)
+	if player:getLocale() == "de" then
+		return string
+	end
+	return self.m_BindTranslations[string] or string
+end
+
+function BindManager:getTranslation(string)
+	return self.m_BindTranslations[string] or string
 end

@@ -1050,17 +1050,17 @@ function VehicleManager:Event_OnVehicleCrash(loss)
 					end
 					if sForce < 0.85 then
 						if not player.m_lastInjuryMe then
-							player:meChat(true, "wird im Fahrzeug umhergeschleudert!")
+							player:meChat(true, false, "wird im Fahrzeug umhergeschleudert!")
 							player.m_lastInjuryMe = tickCount
 						elseif player.m_lastInjuryMe + 5000 <= tickCount then
-							player:meChat(true, "wird im Fahrzeug umhergeschleudert!")
+							player:meChat(true, false, "wird im Fahrzeug umhergeschleudert!")
 							player.m_lastInjuryMe = tickCount
 						end
 						setPedAnimation(player, "ped", "hit_walk",700,true,false,false)
 						setTimer(setPedAnimation, 700,2, player, nil)
 					elseif sForce >= 0.85 then
 						if not player.m_SeatBelt then
-							player:meChat(true, "erleidet innere Blutungen durch den Aufprall!")
+							player:meChat(true, false, "erleidet innere Blutungen durch den Aufprall!")
 							if  source:getVehicleType() ~= VehicleType.Bike and not VEHICLE_BIKES[source] then
 								removePedFromVehicle(player) -- causes network trouble for the client
 								setPedAnimation(player, "crack", "crckdeth2", 5000, false, false, false)
@@ -1068,10 +1068,10 @@ function VehicleManager:Event_OnVehicleCrash(loss)
 							end
 						elseif player.m_SeatBelt == source then
 							if not player.m_lastInjuryMe then
-								player:meChat(true, "wird im Fahrzeug umhergeschleudert!")
+								player:meChat(true, false, "wird im Fahrzeug umhergeschleudert!")
 								player.m_lastInjuryMe = tickCount
 							elseif player.m_lastInjuryMe + 5000 <= tickCount then
-								player:meChat(true, "wird im Fahrzeug umhergeschleudert!")
+								player:meChat(true, false, "wird im Fahrzeug umhergeschleudert!")
 								player.m_lastInjuryMe = tickCount
 							end
 						end

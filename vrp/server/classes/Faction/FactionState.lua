@@ -1054,7 +1054,7 @@ function FactionState:sendShortMessageWithRank(text, minRank, title, color, ...)
 end
 
 
-function FactionState:sendStateChatMessage(sourcePlayer, message)
+function FactionState:sendStateChatMessage(sourcePlayer, message, translatableBind)
 	if not getElementData(sourcePlayer, "StateChatEnabled") then return sourcePlayer:sendError(_("Du hast den Staatschat deaktiviert!", sourcePlayer)) end
 	local faction = sourcePlayer:getFaction()
 	if faction and faction:isStateFaction() == true then
@@ -1062,20 +1062,40 @@ function FactionState:sendStateChatMessage(sourcePlayer, message)
 		local rank = faction:getPlayerRank(playerId)
 		local rankName = faction:getRankName(rank)
 		local receivedPlayers = {}
+		local receivedPlayersDE = {}
+		local receivedPlayersEN = {}
 		local text = ("%s %s: %s"):format(rankName,getPlayerName(sourcePlayer), message)
 		for k, player in pairs(self:getOnlinePlayers()) do
 			if getElementData(player, "StateChatEnabled") then
+				local tMessage = message
+				if translatableBind then
+					tMessage = BindManager:getSingleton():translateBind(message, player)
+				end
+				local text = ("%s %s: %s"):format(rankName,getPlayerName(sourcePlayer), tMessage)
+
 				player:sendMessage(("[Staat]#ffffff %s"):format(text), self.m_StateColor.r, self.m_StateColor.g, self.m_StateColor.b, true)
 			end
 			if player ~= sourcePlayer then
 				receivedPlayers[#receivedPlayers+1] = player
+				if player:getLocale() == "de" then
+					receivedPlayersDE[#receivedPlayersDE+1] = player
+				else
+					receivedPlayersEN[#receivedPlayersEN+1] = player
+				end
 			end
 		end
-		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "state", message, receivedPlayers)
+
+		if translatableBind then
+			StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "state", message, receivedPlayersDE)
+			StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "state", BindManager:getSingleton():getTranslation(message), receivedPlayersEN)
+		else
+			StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "state", message, receivedPlayers)
+		end
+		
 	end
 end
 
-function FactionState:outputMegaphone(player, ...)
+function FactionState:outputMegaphone(player, message, translatableBind)
 	local faction = player:getFaction()
 	if faction and faction:isStateFaction() == true then
 		if player:isFactionDuty() then
@@ -1083,16 +1103,33 @@ function FactionState:outputMegaphone(player, ...)
 				local playerId = player:getId()
 				local playersToSend = player:getPlayersInChatRange(3)
 				local receivedPlayers = {}
-				local text = ("[[ %s %s: %s ]]"):format(faction:getShortName(), player:getName(), table.concat({...}, " "))
+				local receivedPlayersDE = {}
+				local receivedPlayersEN = {}
 				for index = 1,#playersToSend do
+					local tMessage = message
+					if translatableBind then
+						tMessage = BindManager:getSingleton():translateBind(message, playersToSend[index])
+					end
+					local text = ("[[ %s %s: %s ]]"):format(faction:getShortName(), player:getName(), tMessage)
+
 					playersToSend[index]:sendMessage(text, 255, 255, 0)
 					if playersToSend[index] ~= player then
 						receivedPlayers[#receivedPlayers+1] = playersToSend[index]
+						if playersToSend[index]:getLocale() == "de" then
+							receivedPlayersDE[#receivedPlayersDE+1] = playersToSend[index]
+						else
+							receivedPlayersEN[#receivedPlayersEN+1] = playersToSend[index]
+						end
 					end
 				end
 
-				StatisticsLogger:getSingleton():addChatLog(player, "chat", text, receivedPlayers)
-				FactionState:getSingleton():addBugLog(player, "(Megafon)", text)
+				if translatableBind then
+					StatisticsLogger:getSingleton():addChatLog(player, "chat", message, receivedPlayersDE)
+					StatisticsLogger:getSingleton():addChatLog(player, "chat", BindManager:getSingleton():getTranslation(message), receivedPlayersEN)
+				else
+					StatisticsLogger:getSingleton():addChatLog(player, "chat", message, receivedPlayers)
+				end
+				FactionState:getSingleton():addBugLog(player, "(Megafon)", message, translatableBind)
 				return true
 			else
 				player:sendError(_("Du sitzt in keinem Fraktions-Fahrzeug!", player))
@@ -1359,7 +1396,7 @@ function FactionState:Event_JailPlayer(player, bail, CUTSCENE, police, force, pF
 					self.m_BankAccountServer:transferMoney(policeman:getFaction(), splitmoney, "Arrest", "Faction", "Arrest")
 					self:payArrestBonus(policeman, splitmoney)
 					policeman:givePoints(wantedLevel)
-					PlayerManager:getSingleton():sendShortMessage(_("%s wurde soeben von %s für %d Minuten eingesperrt! Strafe: %d$", player, player:getName(), policeman:getName(), jailTime, factionBonus), "Staat")
+					PlayerManager:getSingleton():sendShortMessage(("%s wurde soeben von %s für %d Minuten eingesperrt! Strafe: %d$"):format(player:getName(), policeman:getName(), jailTime, factionBonus), "Staat")
 					StatisticsLogger:getSingleton():addArrestLog(player, wantedLevel, jailTime, policeman, bailcosts)
 					policeman:getFaction():addLog(policeman, "Knast", "hat "..player:getName().." für "..jailTime.."min. eingesperrt!")
 					-- Give Achievements
@@ -2057,16 +2094,22 @@ function FactionState:Event_freePlayer(target)
 	end
 end
 
-function FactionState:addBugLog(player, func, msg)
+function FactionState:addBugLog(player, func, msg, isBind)
 	self:refreshBugs()
 	if not self:isBugActive() then return end
-	local range = CHAT_TALK_RANGE
 
+	local range = CHAT_TALK_RANGE
 	if func == "flüstert" then
 		range = CHAT_WHISPER_RANGE
 	elseif func == "schreit" then
 		range = CHAT_SCREAM_RANGE
 	end
+
+	local msgEN
+	if isBind then
+		msgEN = BindManager:getSingleton():getTranslation(msg)
+	end
+
 
 	for id, bugData in pairs(self.m_Bugs) do
 		if bugData["element"] and isElement(bugData["element"]) then
@@ -2077,6 +2120,7 @@ function FactionState:addBugLog(player, func, msg)
 
 				local logId = #self.m_Bugs[id]["log"]+1
 				self.m_Bugs[id]["log"][logId] = player:getName().." "..func..": "..msg
+				self.m_Bugs[id]["logEN"][logId] = msgEN and (player:getName().." "..func..": "..msgEN) or nil
 				self.m_Bugs[id]["lastMessage"] = getTickCount()
 			end
 		end
@@ -2134,6 +2178,7 @@ function FactionState:Event_attachBug()
 		self.m_Bugs[id] = {
 			["element"] = source,
 			["log"] = {},
+			["logEN"] = {},
 			["active"] = true,
 			["lastMessage"] = 0,
 		}
@@ -2161,6 +2206,7 @@ function FactionState:Event_bugAction(action, id)
 		elseif action == "clearLog" then
 			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "clearBugLog") then
 				self.m_Bugs[id]["log"] = {}
+				self.m_Bugs[id]["logEN"] = {}
 				client:sendSuccess(_("Du hast den Log der Wanze %d gelöscht!", client, id))
 			else
 				client:sendError(_("Du bist nicht berechtigt den Log von Wanzen zu löschen", client))

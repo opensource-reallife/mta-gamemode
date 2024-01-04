@@ -991,7 +991,7 @@ function FactionRescue:addVehicleFire(veh)
 	end, zone)
 end
 
-function FactionRescue:outputMegaphone(player, ...)
+function FactionRescue:outputMegaphone(player, message, translatableBind)
 	local faction = player:getFaction()
 	if faction and faction:isRescueFaction() == true then
 		if player:isFactionDuty() then
@@ -999,16 +999,33 @@ function FactionRescue:outputMegaphone(player, ...)
 				local playerId = player:getId()
 				local playersToSend = player:getPlayersInChatRange(3)
 				local receivedPlayers = {}
-				local text = ("[[ %s %s: %s ]]"):format(faction:getShortName(), player:getName(), table.concat({...}, " "))
+				local receivedPlayersDE = {}
+				local receivedPlayersEN = {}
 				for index = 1,#playersToSend do
+					local tMessage = message
+					if translatableBind then
+						tMessage = BindManager:getSingleton():translateBind(message, playersToSend[index])
+					end
+					local text = ("[[ %s %s: %s ]]"):format(faction:getShortName(), player:getName(), tMessage)
+					
 					playersToSend[index]:sendMessage(text, 255, 255, 0)
 					if playersToSend[index] ~= player then
-						receivedPlayers[#receivedPlayers+1] = playersToSend[index]
+						receivedPlayers[#receivedPlayers + 1] = playersToSend[index]
+						if playersToSend[index]:getLocale() == "de" then
+							receivedPlayersDE[#receivedPlayersDE+1] = playersToSend[index]
+						else
+							receivedPlayersEN[#receivedPlayersEN+1] = playersToSend[index]
+						end
 					end
 				end
+				if translatableBind then
+					StatisticsLogger:getSingleton():addChatLog(player, "chat", message, receivedPlayersDE)
+					StatisticsLogger:getSingleton():addChatLog(player, "chat", BindManager:getSingleton():getTranslation(message), receivedPlayersEN)
+				else
+					StatisticsLogger:getSingleton():addChatLog(player, "chat", message, receivedPlayers)
+				end
 
-				StatisticsLogger:getSingleton():addChatLog(player, "chat", text, receivedPlayers)
-				FactionState:getSingleton():addBugLog(player, "(Megafon)", text)
+				FactionState:getSingleton():addBugLog(player, "(Megafon)", message, translatableBind)
 				return true
 			else
 				player:sendError(_("Du sitzt in keinem Fraktions-Fahrzeug!", player))

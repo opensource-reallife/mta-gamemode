@@ -658,7 +658,7 @@ function Faction:sendSuccess(text)
 	end
 end
 
-function Faction:sendChatMessage(sourcePlayer, message)
+function Faction:sendChatMessage(sourcePlayer, message, translatableBind)
 	if not getElementData(sourcePlayer, "FactionChatEnabled") then return sourcePlayer:sendError(_("Du hast den Fraktionschat deaktiviert!", sourcePlayer)) end
 	--if self:isEvilFaction() or (self:isStateFaction() or self:isRescueFaction() and sourcePlayer:isFactionDuty()) then
 		local lastMsg, msgTimeSent = sourcePlayer:getLastChatMessage()
@@ -672,38 +672,75 @@ function Faction:sendChatMessage(sourcePlayer, message)
 		local rank = self.m_Players[playerId]
 		local rankName = self.m_RankNames[rank]
 		local receivedPlayers = {}
+		local receivedPlayersDE = {}
+		local receivedPlayersEN = {}
 		local r,g,b = self.m_Color["r"],self.m_Color["g"],self.m_Color["b"]
 		message = message:gsub("%%", "%%%%")
-		local text = ("%s %s: %s"):format(rankName,getPlayerName(sourcePlayer), message)
+
+
 		for k, player in ipairs(self:getOnlinePlayers()) do
 			if getElementData(player, "FactionChatEnabled") then
+				local tMessage = message
+				if translatableBind then
+					tMessage = BindManager:getSingleton():translateBind(message, player)
+				end
+				local text = ("%s %s: %s"):format(rankName,getPlayerName(sourcePlayer), tMessage)
+
 				player:sendMessage(text, r, g, b)
 			end
 			if player ~= sourcePlayer then
-	            receivedPlayers[#receivedPlayers+1] = player
-	        end
+				receivedPlayers[#receivedPlayers + 1] = player
+				if player:getLocale() == "de" then
+					receivedPlayersDE[#receivedPlayersDE+1] = player
+				else
+					receivedPlayersEN[#receivedPlayersEN+1] = player
+				end
+			end
 		end
-		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "faction:"..self.m_Id, message, receivedPlayers)
+		if translatableBind then
+			StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "faction:"..self.m_Id, message, receivedPlayersDE)
+			StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "faction:"..self.m_Id, BindManager:getSingleton():getTranslation(message), receivedPlayersEN)
+		else
+			StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "faction:"..self.m_Id, message, receivedPlayers)
+		end
+		
 	--else
 	--	sourcePlayer:sendError(_("Du bist nicht im Dienst!", sourcePlayer))
 	--end
 end
 
-function Faction:sendBndChatMessage(sourcePlayer, message, alliance)
+function Faction:sendBndChatMessage(sourcePlayer, message, alliance, translatableBind)
 	if not getElementData(sourcePlayer, "AllianceChatEnabled") then return sourcePlayer:sendError(_("Du hast den Bündnischat deaktiviert!", sourcePlayer)) end
 	local playerId = sourcePlayer:getId()
 	local receivedPlayers = {}
+    local receivedPlayersDE = {}
+    local receivedPlayersEN = {}
 	local r,g,b = 20, 140, 0
-	local text = ("[Bündnis] %s: %s"):format(getPlayerName(sourcePlayer), message)
 	for k, player in ipairs(self:getOnlinePlayers()) do
 		if getElementData(player, "AllianceChatEnabled") then
+			local tMessage = message
+			if translatableBind then
+				tMessage = BindManager:getSingleton():translateBind(message, player)
+			end
+			local text = ("[Bündnis] %s: %s"):format(getPlayerName(sourcePlayer), message)
+
 			player:sendMessage(text, r, g, b)
 		end
 		if player ~= sourcePlayer then
-			receivedPlayers[#receivedPlayers+1] = player
-		end
+			receivedPlayers[#receivedPlayers + 1] = player
+			if player:getLocale() == "de" then
+				receivedPlayersDE[#receivedPlayersDE+1] = player
+			else
+				receivedPlayersEN[#receivedPlayersEN+1] = player
+			end
+        end
 	end
-	StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "factionBnd:"..self.m_Id, message, receivedPlayers)
+	if translatableBind then
+		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "faction:"..self.m_Id, message, receivedPlayersDE)
+		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "faction:"..self.m_Id, BindManager:getSingleton():getTranslation(message), receivedPlayersEN)
+	else
+		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "faction:"..self.m_Id, message, receivedPlayers)
+	end
 end
 
 function Faction:respawnVehicles(player)
