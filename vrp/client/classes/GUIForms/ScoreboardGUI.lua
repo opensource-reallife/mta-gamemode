@@ -147,7 +147,8 @@ function ScoreboardGUI:refresh()
 	end
 	for id, company in ipairs(CompanyManager.Map) do
 		if id ~= 1 then -- Hide Driving School count
-			self:addPlayerCount(company:getShortName(), self.m_CompanyCount[id] or 0, self.m_CompanyAFKCount[id] or 0)
+			local color = company:getColor()
+			self:addPlayerCount(company:getShortName(), self.m_CompanyCount[id] or 0, self.m_CompanyAFKCount[id] or 0, tocolor(color.r, color.g, color.b))
 		end
 	end
 
@@ -226,6 +227,11 @@ function ScoreboardGUI:insertPlayers()
 					item:setColumnColor(4, tocolor(colorFMS[1], colorFMS[2], colorFMS[3]))
 				end
 			end
+		end
+
+		if player:getCompany() and player:getPublicSync("Company:Duty") then
+			local color = player:getCompany():getColor()
+			item:setColumnColor(5, tocolor(color.r, color.g, color.b))
 		end
 
 		if player.getPublicSync and player:getPublicSync("supportMode") or player:getPublicSync("ticketsupportMode") then 
