@@ -20,7 +20,11 @@ function WeedBeggar:sellWeed(player, amount)
 				},
 				points = math.ceil(20 * amount/200),
 			})
-			player:meChat(true, ("übergibt %s %s"):format(self.m_Name, amount > 100 and "eine große Tüte" or "eine Tüte"))
+			if amount > 100 then
+				player:meChat(true, "übergibt %s eine große Tüte", self.m_Name, false)
+			else
+				player:meChat(true, "übergibt %s eine Tüte", self.m_Name, false)
+			end
 			self:sendMessage(player, BeggarPhraseTypes.Thanks)
 			-- Despawn the Beggar
 			setTimer(

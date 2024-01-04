@@ -445,7 +445,7 @@ end
 
 function Inventory:throwItem(item, bag, id, place, name)
 	self.m_Owner:sendInfo(_("Du hast das Item (%s) weggeworfen!", self.m_Owner,name))
-	self.m_Owner:meChat(true, "zerstört "..name.."!")
+	self.m_Owner:meChat(true, "zerstört %s!", name, true)
 	local value = self:getItemValueByBag(bag,place)
 	WearableManager:getSingleton():removeWearable( self.m_Owner, name, value )
 	self:removeItemFromPlace(bag, place)

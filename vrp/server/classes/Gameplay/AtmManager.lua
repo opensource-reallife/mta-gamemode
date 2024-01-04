@@ -88,7 +88,7 @@ function AtmManager:Event_onStartHacking(atm)
             end
         end
         if client:getInventory():removeItem("Hacking-Kit", 1) then
-            client:meChat(true, _("macht sich am Bankautomaten zu schaffen!", client))
+            client:meChat(true, "macht sich am Bankautomaten zu schaffen!")
             client.m_LastAtmHacked = atm
             triggerClientEvent(client, "startCircuitBreaker", client, "onAtmHackSuccess", "onAtmHackFail", atm)
         else

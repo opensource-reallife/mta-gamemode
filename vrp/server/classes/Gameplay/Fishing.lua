@@ -244,7 +244,7 @@ function Fishing:FishHit(location, castPower)
 				end
 			end
 		end
-		client:meChat(true, ("zieht %s aus dem Wasser!"):format(randomMessage))
+		client:meChat(true, "zieht %s aus dem Wasser!", randomMessage)
 		client:increaseStatistics("FishBadCatch")
 		return
 	end
@@ -317,8 +317,8 @@ function Fishing:FishCaught()
 				self:increaseFishCaughtCount(fishId)
 
 				StatisticsLogger:getSingleton():addfishCaughtLogs(client, fishName, size, tbl.location, fishId)
-				client:sendInfo(("Du hast ein(e) %s gefangen.\nGröße: %scm"):format(fishName, size, newFishRecord and "(Rekord!)" or ""))
-				client:meChat(true, ("hat ein(e) %s gefangen. Größe: %scm %s"):format(fishName, size, newFishRecord and "(Rekord!)" or ""))
+				client:sendInfo(("Du hast eine(n) %s gefangen.\nGröße: %scm"):format(fishName, size, newFishRecord and "(Rekord!)" or ""))
+				client:meChat(true, "hat eine(n) %s gefangen.", fishName, true)
 				return
 			end
 

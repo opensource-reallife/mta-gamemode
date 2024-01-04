@@ -50,13 +50,13 @@ function WearablePortables:use(player, itemId, bag, place, itemName)
 		exports.bone_attach:attachElementToBone(obj, player, 11, 0, yOffset, zOffset, rotX , rotY, rotZ)
 		player.m_Portables = obj
 		player.m_IsWearingPortables = itemName
-		player:meChat(true, "nimmt "..objName.." in die Hand!")
+		player:meChat(true, "nimmt %s in die Hand!", objName, true)
 	elseif player.m_IsWearingPortables == itemName and player.m_Portables then --// if the player clicks onto the same Portables once more remove it
 		destroyElement(player.m_Portables)
 		self.m_Portabless[player] = nil
 		player.m_IsWearingPortables = false
 		player.m_Portables = false
-		player:meChat(true, "legt "..WearablePortables.objectTable[itemName][9].." nieder!")
+		player:meChat(true, "legt %s nieder!", WearablePortables.objectTable[itemName][9], true)
 	else --// else the player must have clicked on another Portables otherwise this instance of the class would have not been called
 		if isElement(player.m_Portables) then
 			destroyElement(player.m_Portables)
@@ -73,6 +73,6 @@ function WearablePortables:use(player, itemId, bag, place, itemName)
 		exports.bone_attach:attachElementToBone(obj, player, 11, 0, yOffset, zOffset, rotX, rotY, rotZ)
 		player.m_Portables = obj
 		player.m_IsWearingPortables = itemName
-		player:meChat(true, "legt "..WearablePortables.objectTable[itemName][8].." nieder!")
+		player:meChat(true, "legt %s nieder!", WearablePortables.objectTable[itemName][8], true)
 	end
 end

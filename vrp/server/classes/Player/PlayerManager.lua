@@ -204,7 +204,7 @@ function PlayerManager:Event_OnDeathPedWasted( pPed )
 		if pPed and isElement(pPed) then
 			local owner = pPed.m_ExecutedPlayer
 			if owner then
-				client:meChat(true, "setzte "..getPlayerName(owner).." ein Ende!")
+				client:meChat(true, "setzte %s ein Ende!", getPlayerName(owner))
 				setElementData(pPed, "NPC:isDyingPed", false)
 				owner:dropReviveWeapons()
 				owner:dropReviveMoney()

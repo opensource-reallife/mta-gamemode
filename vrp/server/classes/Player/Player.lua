@@ -1625,30 +1625,30 @@ function Player:endPrison()
 	end
 end
 
-function Player:meChat(system, ...)
+function Player:meChat(system, text, format, translateFormat)
 	if self:isDead() then
 		return
 	end
 
-	local argTable = { ... }
-	local text = table.concat ( argTable , " " )
 	local playersToSend = self:getPlayersInChatRange( 1 )
 	local systemText = ""
 	local receivedPlayers = {}
-	local message = ("%s %s"):format(self:getName(), text)
-	if system == true then systemText = "★" end
-	for index = 1,#playersToSend do
-		outputChatBox(("%s %s"):format(systemText, message), playersToSend[index], 255,105,180)
+	local senderName = self:getName()
+	local message = ""
+	for index = 1, #playersToSend do
+		if system == true then
+			message = ("★ %s %s"):format(senderName, _(text, playersToSend[index], translateFormat and _(format, playersToSend[index]) or format))
+		else
+			message = ("%s %s"):format(senderName, text) 
+		end
+		outputChatBox(message, playersToSend[index], 255, 105, 180)
 		if playersToSend[index] ~= self then
 			receivedPlayers[#receivedPlayers+1] = playersToSend[index]:getName()
 		end
-		--[[if not system then  
-			StatisticsLogger:getSingleton():addChatLog(self, "me", text, receivedPlayers)
-		end]]
 	end
 end
 
-function Player:sendPedChatMessage( name, ...)
+function Player:sendPedChatMessage(name, ...)
 	if self:isDead() then
 		return
 	end

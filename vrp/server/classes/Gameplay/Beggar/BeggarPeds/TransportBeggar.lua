@@ -19,7 +19,7 @@ function TransportBeggar:acceptTransport(player)
 				local pos = Randomizer:getRandomTableValue(BeggarTransportPositions)
 				self:warpIntoVehicle(veh, seat)
 
-				player:meChat(true, ("bittet %s in sein Fahrzeug"):format(self.m_Name))
+				player:meChat(true, "bittet %s in sein Fahrzeug", self.m_Name, false)
 				self:sendMessage(player, BeggarPhraseTypes.Destination, getZoneName(pos.x, pos.y, pos.z))
 				player.beggarTransportVehicle = veh
 				player.beggarTransportStartPos = player.position
@@ -48,7 +48,7 @@ function TransportBeggar:acceptTransport(player)
 							player:giveCombinedReward("Bettler-Transport", {
 								points = math.ceil(7*distance),
 							})
-							player:meChat(true, ("lässt %s aus seinem Fahrzeug"):format(self.m_Name))
+							player:meChat(true, "lässt %s aus seinem Fahrzeug", self.m_Name, false)
 							self:sendMessage(player, BeggarPhraseTypes.Thanks)
 							self:deleteTransport(player)
 							return

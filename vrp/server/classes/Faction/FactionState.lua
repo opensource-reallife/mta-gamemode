@@ -633,7 +633,7 @@ function FactionState:Command_uncuff( source, cmd, target )
 								if source:isFactionDuty() then
 									if targetPlayer:isStateCuffed() then
 										self:uncuffPlayer(targetPlayer)
-										source:meChat(true,"nimmt die Handschellen von "..targetPlayer:getName().." ab!")
+										source:meChat(true, "nimmt die Handschellen von %s ab!", targetPlayer:getName(), false)
 										targetPlayer:triggerEvent("updateCuffImage", false)
 									else
 										source:sendError("Der Spieler ist nicht gefesselt!")
@@ -684,7 +684,7 @@ function FactionState:Event_CuffSuccess( target )
 					toggleControl(target, "action", false)
 					target:setStateCuffed(true)
 					setPedWalkingStyle(target, 123)
-					source:meChat(true,"legt "..target:getName().." Handschellen an!")
+					source:meChat(true, "legt %s Handschellen an!", target:getName(), false)
 					source:triggerEvent("CountdownStop", "Gefesselt in", 10)
 					target:triggerEvent("CountdownStop", "Gefesselt in", 10)
 					target:triggerEvent("updateCuffImage", true)
@@ -1868,7 +1868,7 @@ local faction = client:getFaction()
 				client:sendError(_("Du kannst den Spieler nicht in einem Fahrzeug auf Alkohol testen!", target))
 				return
 			end
-			client:meChat(true, ("führt einen Alkoholtest an %s durch!"):format(target:getName()))
+			client:meChat(true, "führt einen Alkoholtest an %s durch!", target:getName(), false)
 			target:meChat(true, "pustet in das Röhrchen des Alkohol-Schnelltesters...")
 			setTimer(function(player, target)
 				player:sendInfo(_("Du hast einen Alkoholtest an %s durchgeführt!\nErgebnis: %s Promille", player, target:getName(), target.m_AlcoholLevel))
@@ -1893,12 +1893,12 @@ end
 
 function FactionState:Event_acceptShowLicense(player, target)
 	player:triggerEvent("showIDCard", target)
-	target:meChat(true, _("nickt.", target))
-	player:meChat(true, _("sieht sich den Führerschein von %s an.", player, target:getName()))
+	target:meChat(true, "nickt.")
+	player:meChat(true, "sieht sich den Führerschein von %s an.", target:getName(), false)
 end
 
 function FactionState:Event_declineShowLicense(player, target)
-	target:meChat(true, _("schüttelt den Kopf.", target))
+	target:meChat(true, "schüttelt den Kopf.")
 end
 
 function FactionState:Event_givePANote(target, note)
