@@ -87,7 +87,7 @@ factionBadgeId[1] = {
 
 factionColors[1] = {["r"] = 0,["g"] = 200,["b"] = 255}
 factionCarColors[1] = {["r"] = 0,["g"] = 0,["b"] = 0, ["r1"] = 255,["g1"] = 255,["b1"] = 255}
-factionSkins[1] = {[93]=true,[265]=true, [266]=true, [267]=true,[280]=true,[281]=true,[282]=true, [283]=true, [284]=true, [288]=true}
+factionSkins[1] = {[3]=true, [4]=true, [119]=true, [93]=true,[265]=true, [266]=true, [267]=true,[280]=true,[281]=true,[282]=true, [283]=true, [284]=true, [288]=true}
 factionSpecialSkins[1] = {[285] = true}
 factionWeapons[1] = {[3]=true,[22]=true,[24]=true, [25]=true, [29]=true, [31]=true}
 factionSpecialWeapons[1] = {
