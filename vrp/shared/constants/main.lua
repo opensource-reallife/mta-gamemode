@@ -594,6 +594,7 @@ SkinInfo = {
 	[204] = {"Karate Teacher", math.huge, -1},
 	[252] = {"Naked Valet", math.huge, -1},
 	[254] = {"Biker Drug Dealer", math.huge, -1},
+	[290] = {"Rose", math.huge, -1},
 	[304] = {"Kendl Johnson", math.huge, -1},
 	[305] = {"Jethro", math.huge, -1},
 
