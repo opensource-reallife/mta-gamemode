@@ -532,7 +532,6 @@ SkinInfo = {
 	[92] = {"Skaterin", 75000, 9},
 	[151] = {"Jeansrock, schwarze Brille", 60000, 9},
 	[152] = {"Zöpfe, rot karierter Rock", 50000, 9},
-	-- [178] = {"Domina", 85000, 9},
 	[209] = {"Donutladen", 90000, 9},
 	[228] = {"Business-Anzug, schwarz", 100000, 9},
 	[233] = {"Weißes Shirt, Jeans", 70000, 9},
@@ -563,6 +562,7 @@ SkinInfo = {
 	[310] = {"Zombie", math.huge, -1},
 
 	-- other skins
+	[260] = {"Construction Worker", math.huge, -1}, --Adminskin
 	[155] = {"Pizzalieferant", math.huge, -1},
 	[78] = {"Obdachloser", math.huge, -1},
 	[79] = {"Obdachloser", math.huge, -1},
@@ -574,6 +574,40 @@ SkinInfo = {
 	[212] = {"Obdachloser", math.huge, -1},
 	[230] = {"Obdachloser", math.huge, -1},
 	[239] = {"Obdachloser", math.huge, -1},
+	[178] = {"Domina", math.huge, -1},
+
+	--unused skins
+	[27] = {"Construction Worker", math.huge, -1},
+	[57] = {"Oriental Ped", math.huge, -1},
+	[60] = {"Normal Ped", math.huge, -1},
+	[69] = {"Normal Ped", math.huge, -1},
+	[72] = {"Hippy", math.huge, -1},
+	[75] = {"Prostitute", math.huge, -1},
+	[87] = {"Stripper", math.huge, -1},
+	[145] = {"Crack Maker", math.huge, -1},
+	[146] = {"Crack Maker", math.huge, -1},
+	[150] = {"Businesswoman", math.huge, -1},
+	[153] = {"Construction Worker", math.huge, -1},
+	[171] = {"Blackjack Dealer", math.huge, -1},
+	[172] = {"Casino croupier", math.huge, -1},
+	[203] = {"Karate Teacher", math.huge, -1},
+	[204] = {"Karate Teacher", math.huge, -1},
+	[252] = {"Naked Valet", math.huge, -1},
+	[254] = {"Biker Drug Dealer", math.huge, -1},
+	[304] = {"Kendl Johnson", math.huge, -1},
+	[305] = {"Jethro", math.huge, -1},
+
+	--unused special skins
+	[3] = {"Country Police Officer", math.huge, -1},
+	[4] = {"SFPD Bike Cop", math.huge, -1},
+	[5] = {"Barry 'Big Bear' Thorne", math.huge, -1},
+	[6] = {"Female Valet", math.huge, -1},
+	[8] = {"Cab Driver", math.huge, -1},
+	[65] = {"Airport Worker", math.huge, -1},
+	[86] = {"Hispanic Girl", math.huge, -1},
+	[119] = {"LVPD Bike Cop", math.huge, -1},
+	[273] = {"Chinese Claude", math.huge, -1},
+	[289] = {"Airport Worker", math.huge, -1},
 }
 
 Tasks = {
