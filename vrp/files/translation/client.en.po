@@ -880,6 +880,9 @@ msgstr "Change clothes"
 msgid "Einsatzkleidung"
 msgstr "Operational clothing"
 
+msgid "SWAT-Modus"
+msgstr "SWAT-Mode"
+
 msgid "Ausrüsten"
 msgstr "Equip"
 
