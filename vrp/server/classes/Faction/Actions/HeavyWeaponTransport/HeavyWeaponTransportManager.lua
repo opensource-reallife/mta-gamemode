@@ -25,10 +25,10 @@ function HeavyWeaponTransportManager:onPedClick(button, state, player)
 			if ActionsCheck:getSingleton():isActionAllowed(player) then
 				player:triggerEvent("openArmsDealerGUI", source, "state")
 			else
-				player:sendWarning(_("Du kannst derzeit keine Aktion starten."))
+				player:sendWarning(_("Du kannst derzeit keine Aktion starten.", player))
 			end
 		else
-			player:sendWarning(_("Du bist nicht im Dienst."))
+			player:sendWarning(_("Du bist nicht im Dienst.", player))
 		end
 	end
 end
