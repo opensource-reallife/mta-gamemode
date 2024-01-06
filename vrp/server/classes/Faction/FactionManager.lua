@@ -77,8 +77,11 @@ function FactionManager:constructor()
 		end
 	)
 
-	GlobalTimer:getSingleton():registerEvent(bind(self.startHappyHour, self), "HappyHourBegin", nil, 18, 49)
-    GlobalTimer:getSingleton():registerEvent(bind(self.endHappyHour, self), "HappyHourEnd", nil, 18, 50)
+	GlobalTimer:getSingleton():registerEvent(bind(self.startHappyHour, self), "HappyHourBegin", nil, 10, 30)
+    GlobalTimer:getSingleton():registerEvent(bind(self.endHappyHour, self), "HappyHourEnd", nil, 12, 00)
+
+	GlobalTimer:getSingleton():registerEvent(bind(self.startHappyHour, self), "HappyHourBegin", nil, 15, 30)
+    GlobalTimer:getSingleton():registerEvent(bind(self.endHappyHour, self), "HappyHourEnd", nil, 16, 30)
 end
 
 function FactionManager:destructor()
