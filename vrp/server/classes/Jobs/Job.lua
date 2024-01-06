@@ -6,9 +6,11 @@
 -- *
 -- ****************************************************************************
 Job = inherit(Singleton)
+
 function Job:constructor()
 	self.m_DontEndOnVehicleDestroy = false
 	self.m_OnJobVehicleDestroyBind = bind(self.onJobVehicleDestroy, self)
+	self.m_Multiplicator = 0
 end
 
 function Job:getId()
@@ -17,6 +19,14 @@ end
 
 function Job:setId(Id)
 	self.m_Id = Id
+end
+
+function Job:getMultiplicator()
+	return self.m_Multiplicator / 100 + 1
+end
+
+function Job:setMultiplicator(mult)
+	self.m_Multiplicator = mult
 end
 
 function Job:requireVehicle(player)
@@ -100,4 +110,3 @@ function Job:countPlayers()
 end
 
 Job.start = pure_virtual
-

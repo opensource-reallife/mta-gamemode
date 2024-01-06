@@ -193,6 +193,7 @@ function Player:loadCharacter()
 	}
 	self:triggerEvent("retrieveInfo", info)
 	self:triggerEvent("retrieveWebSecret", Config.get("INGAME_WEB_SECRET"))
+	self:triggerEvent("receiveJobMultiplicators", JobManager:getSingleton().m_JobMultiplicators)
 
 	-- Send initial sync
 	self:sendInitialSync()
