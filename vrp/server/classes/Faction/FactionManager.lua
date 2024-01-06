@@ -102,7 +102,7 @@ function FactionManager:loadFactions()
 			playerActionPermissions[factionRow.Id] = fromJSON(factionRow.FactionActionPermissions)
 		end
 
-		local instance = Faction:new(row.Id, row.Name_Short, row.Name_Shorter, row.Name, row.BankAccount, {players, playerLoans, playerWeapons, playerPermissions, playerWeaponPermissions, playerActionPermissions}, row.RankLoans, row.RankSkins, row.RankWeapons, row.Depot, row.Type, row.Diplomacy, row.RankPermissions, row.RankActions, row.PlayerLimit)
+		local instance = Faction:new(row.Id, row.Name_Short, row.Name_Shorter, row.Name, row.BankAccount, {players, playerLoans, playerWeapons, playerPermissions, playerWeaponPermissions, playerActionPermissions}, row.RankLoans, row.RankSkins, row.RankWeapons, row.Depot, row.Type, row.Diplomacy, row.RankPermissions, row.RankActions, row.PlayerLimit, row.MaxVehicles, row.VehicleLimits)
 		FactionManager.Map[row.Id] = instance
 		count = count + 1
 	end

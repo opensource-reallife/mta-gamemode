@@ -53,6 +53,8 @@ PERMISSIONS_INFO = { -- name = {{type, id} type = 0 for all, {faction min rank, 
 	["clearBugLog"]	=			{{1, {FactionStaticId.FBI}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}},
 	["disableBug"]	=			{{1, {FactionStaticId.FBI}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}},
 	["changePermissions"] =		{{0}, {["faction"] = 5, ["company"] = 4, ["group"] = 5}},
+	["buyVehicle"] = 			{{0}, {["faction"] = 5, ["company"] = 4, ["group"] = nil}},
+	["scrapVehicle"] = 			{{0}, {["faction"] = 5, ["company"] = 4, ["group"] = nil}}
 }
 
 PERMISSION_NAMES = {
@@ -109,6 +111,8 @@ PERMISSION_NAMES = {
 	["manageImmoDepot"] =		"Immobilien Depot verwalten",
 	["changePermissions"] =		"Rechte verwalten (Beinhaltet Vollzugriff)",
 	["buyExtraVehicleSlots"] =	"Fahrzeugeslots kaufen",
+	["buyVehicle"] = 			"Fahrzeug kaufen",
+	["scrapVehicle"] = 			"Fahrzeug verschrotten"
 }
 
 ACTION_PERMISSIONS_INFO = {
