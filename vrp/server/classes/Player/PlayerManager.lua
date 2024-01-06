@@ -508,6 +508,12 @@ function PlayerManager:playerWasted(killer, killerWeapon, bodypart)
 		end
 	end
 
+	if Guns:getSingleton():isSuicideJailEscape(client, killer) then
+		FactionState:getSingleton():setJailForSuicideEscape(client, client.m_LastCopAttack)
+		client:triggerEvent("playerWasted", true)
+		return
+	end
+
 	-- Start death
 	client:triggerEvent("playerWasted")
 

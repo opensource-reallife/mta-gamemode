@@ -1422,9 +1422,7 @@ function FactionState:Event_JailPlayer(player, bail, CUTSCENE, police, force, pF
 		local wantedLevel = player:getWanteds()
 		local jailTime = wantedLevel * JAIL_TIME_PER_WANTED_KILL
 		local factionBonus = JAIL_COSTS[wantedLevel]
-		if player:getFaction() and player:getFaction():isEvilFaction() then
-			factionBonus = JAIL_COSTS[wantedLevel]/2
-		end
+
 		if bail then
 			bailcosts = BAIL_PRICES[wantedLevel]
 			player:setJailBail(bailcosts)
@@ -1468,6 +1466,46 @@ function FactionState:Event_JailPlayer(player, bail, CUTSCENE, police, force, pF
 			if isElement(player) then player:giveAchievement(31) end
 		end, 14000, 1, player)
 		player.m_DeathInJail = nil
+	end
+end
+
+function FactionState:setJailForSuicideEscape(player, police)
+	local isOffline
+	local policeman = police
+	if type(police) == "number" then
+		local policeman2, isOffline2 = DatabasePlayer.get(policeman)
+		if isOffline2 then
+			policeman2:load(true)
+		end
+		policeman = policeman2
+		isOffline = isOffline2
+	end
+
+	local wantedLevel = player:getWanteds()
+	local jailTime = wantedLevel * JAIL_TIME_PER_WANTED_KILL
+	local factionBonus = JAIL_COSTS[wantedLevel]
+
+	player.m_DeathInJail = true
+	-- Pay some money to faction, xp to the policeman
+	local factionBonus = JAIL_COSTS[wantedLevel]
+
+	local splitmoney = (factionBonus / 2)
+	FactionState:getSingleton().m_BankAccountServer:transferMoney(policeman:getFaction(), splitmoney, "Arrest", "Faction", "ArrestKill")
+	FactionState:getSingleton():payArrestBonus(policeman, splitmoney)
+	policeman:givePoints(wantedLevel)
+	PlayerManager:getSingleton():sendShortMessage(("%s wurde soeben von %s für %d Minuten eingesperrt! Strafe: %d$"):format(player:getName(), isOffline and Account.getNameFromId(police) or policeman:getName(), jailTime, factionBonus), "Staat")
+	StatisticsLogger:getSingleton():addArrestLog(player, wantedLevel, jailTime, policeman:getId(), 0)
+	policeman:getFaction():addLog(policeman:getId(), "Knast", "hat "..player:getName().." für "..jailTime.."min. eingesperrt!")
+
+	-- Give Achievements
+	if wantedLevel > 4 then
+		policeman:giveAchievement(48)
+	else
+		policeman:giveAchievement(47)
+	end
+
+	if isOffline then
+		delete(policeman)
 	end
 end
 

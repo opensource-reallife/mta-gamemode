@@ -218,6 +218,7 @@ end
 
 function StatisticsLogger:addArrestLog(player, wanteds, duration, policeMan, bail)
     local userId = 0
+	local policeId = 0
 	if isElement(player) then userId = player:getId() else userId = player or 0 end
 	if isElement(policeMan) then policeId = policeMan:getId() else policeId = policeMan or 0 end
 	sqlLogs:queryExec("INSERT INTO ??_Arrest (UserId, Wanteds, Duration, PoliceId, Bail, Date) VALUES(?, ?, ?, ?, ?, NOW())",

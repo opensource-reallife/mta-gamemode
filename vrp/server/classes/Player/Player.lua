@@ -599,9 +599,15 @@ function Player:respawn(position, rotation, bJailSpawn)
 	if self:getExecutionPed() then delete(self:getExecutionPed()) end
 
 	WearableManager:getSingleton():removeAllWearables(self)
-	if self.m_DeathInJail then
+	if self.m_SuicideEscape then
+		FactionState:getSingleton():Event_JailPlayer(self, false, true, self.m_LastCopAttack)
+	elseif self.m_DeathInJail then
 		FactionState:getSingleton():Event_JailPlayer(self, false, true, false, true)
 	end
+		
+	self.m_LastCopAttackTime = 0
+	self.m_LastCopAttack = nil
+	self.m_SuicideEscape = false
 
 	if self:isPremium() then
 		self:setArmor(100)

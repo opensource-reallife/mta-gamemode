@@ -722,7 +722,7 @@ function Faction:sendBndChatMessage(sourcePlayer, message, alliance, translatabl
 			if translatableBind then
 				tMessage = BindManager:getSingleton():translateBind(message, player)
 			end
-			local text = ("[Bündnis] %s: %s"):format(getPlayerName(sourcePlayer), message)
+			local text = ("[Bündnis] %s: %s"):format(getPlayerName(sourcePlayer), tMessage)
 
 			player:sendMessage(text, r, g, b)
 		end

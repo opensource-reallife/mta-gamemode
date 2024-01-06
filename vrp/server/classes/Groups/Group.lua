@@ -523,7 +523,7 @@ function Group:sendChatMessage(sourcePlayer, message, translatableBind)
 			if translatableBind then
 				tMessage = BindManager:getSingleton():translateBind(message, player)
 			end
-			local text = ("[%s] %s %s: %s"):format(self:getName(), rankName, sourcePlayer:getName(), message)
+			local text = ("[%s] %s %s: %s"):format(self:getName(), rankName, sourcePlayer:getName(), tMessage)
 
 			player:sendMessage(text, 0, 255, 150)
 		end

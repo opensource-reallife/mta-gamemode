@@ -62,6 +62,10 @@ function BindManager:Event_OnBindTrigger(name, parameters, parametersEN)
 		if client.m_Group then
 			client.m_Group:sendChatMessage(client, parameters, translatableBind)
 		end
+	elseif name == "u" then
+		if client:getCompany() then
+			client:getCompany():sendChatMessage(client, parameters, translatableBind)
+		end
 	elseif name == "b" then
 		if client.m_Faction then
 			local bndFaction = client.m_Faction:getAllianceFaction()
