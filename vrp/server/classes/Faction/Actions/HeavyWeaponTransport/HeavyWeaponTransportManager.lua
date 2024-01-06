@@ -20,15 +20,15 @@ end
 function HeavyWeaponTransportManager:onPedClick(button, state, player)
     local faction = player:getFaction()
 
-	if
-		button ~= "left"
-		or state ~= "down"
-		or not faction
-		or not faction:isStateFaction()
-        or not player:isFactionDuty()
-		or not ActionsCheck:getSingleton():isActionAllowed(player)
-	then
-		return
+	if button ~= "left" or state ~= "down" then
+		if faction and faction:isStateFaction() and player:isFactionDuty() then
+			if ActionsCheck:getSingleton():isActionAllowed(player) then
+				player:triggerEvent("openArmsDealerGUI", source, "state")
+			else
+				player:sendWarning(_("Du kannst derzeit keine Aktion starten."))
+			end
+		else
+			player:sendWarning(_("Du bist nicht im Dienst."))
+		end
 	end
-	player:triggerEvent("openArmsDealerGUI", source, "state")
 end
