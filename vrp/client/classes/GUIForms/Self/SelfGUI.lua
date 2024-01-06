@@ -1436,15 +1436,8 @@ function SelfGUI:onSettingChange(setting)
 		end
 	elseif setting == "Sounds / Radio" then
 		GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.07, _"Sounds", self.m_SettingBG)
-		self.m_HallelujaSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.09, self.m_Width*0.9, self.m_Height*0.04, _"Halleluja-Sound beim sterben", self.m_SettingBG)
-		self.m_HallelujaSound:setFont(VRPFont(25))
-		self.m_HallelujaSound:setFontSize(1)
-		self.m_HallelujaSound:setChecked(core:get("Sounds", "Halleluja", true))
-		self.m_HallelujaSound.onChange = function (state)
-			core:set("Sounds", "Halleluja", state)
-		end
 
-		self.m_HitSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.15, self.m_Width*0.9, self.m_Height*0.04, _"Sound beim Treffen eines Spielers", self.m_SettingBG)
+		self.m_HitSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.09, self.m_Width*0.9, self.m_Height*0.04, _"Sound beim Treffen eines Spielers", self.m_SettingBG)
 		self.m_HitSound:setFont(VRPFont(25))
 		self.m_HitSound:setFontSize(1)
 		self.m_HitSound:setChecked(core:get("Sounds", "HitBell", true))
@@ -1452,7 +1445,7 @@ function SelfGUI:onSettingChange(setting)
 			core:set("Sounds", "HitBell", state)
 		end
 
-		self.m_FireworkSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.21, self.m_Width*0.9, self.m_Height*0.04, _"Feuerwerke anderer Spieler", self.m_SettingBG)
+		self.m_FireworkSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.15, self.m_Width*0.9, self.m_Height*0.04, _"Feuerwerke anderer Spieler", self.m_SettingBG)
 		self.m_FireworkSound:setFont(VRPFont(25))
 		self.m_FireworkSound:setFontSize(1)
 		self.m_FireworkSound:setChecked(core:get("Sounds", "Fireworks", true))
@@ -1460,7 +1453,7 @@ function SelfGUI:onSettingChange(setting)
 			core:set("Sounds", "Fireworks", state)
 		end
 
-		self.m_NaviSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.27, self.m_Width*0.9, self.m_Height*0.04, _"Navigations Sprachansagen", self.m_SettingBG)
+		self.m_NaviSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.21, self.m_Width*0.9, self.m_Height*0.04, _"Navigations Sprachansagen", self.m_SettingBG)
 		self.m_NaviSound:setFont(VRPFont(25))
 		self.m_NaviSound:setFontSize(1)
 		self.m_NaviSound:setChecked(core:get("Sounds", "Navi", true))
@@ -1468,7 +1461,7 @@ function SelfGUI:onSettingChange(setting)
 			core:set("Sounds", "Navi", state)
 		end
 
-		self.m_InteriorSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.33, self.m_Width*0.9, self.m_Height*0.04, _"Interior Sounds", self.m_SettingBG)
+		self.m_InteriorSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.27, self.m_Width*0.9, self.m_Height*0.04, _"Interior Sounds", self.m_SettingBG)
 		self.m_InteriorSound:setFont(VRPFont(25))
 		self.m_InteriorSound:setFontSize(1)
 		self.m_InteriorSound:setChecked(core:get("Sounds", "Interiors", true))
@@ -1477,8 +1470,7 @@ function SelfGUI:onSettingChange(setting)
 			setInteriorSoundsEnabled(state)
 		end
 
-
-		self.m_StaticNoiseRadio = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.39, self.m_Width*0.9, self.m_Height*0.04, _"Funkkanal Rauschen", self.m_SettingBG)
+		self.m_StaticNoiseRadio = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.33, self.m_Width*0.9, self.m_Height*0.04, _"Funkkanal Rauschen", self.m_SettingBG)
 		self.m_StaticNoiseRadio:setFont(VRPFont(25))
 		self.m_StaticNoiseRadio:setFontSize(1)
 		self.m_StaticNoiseRadio:setChecked(core:get("Sounds", "StaticNoise", true))
@@ -1486,7 +1478,7 @@ function SelfGUI:onSettingChange(setting)
 			core:set("Sounds", "StaticNoise", state)
 		end
 
-		self.m_AllowRadioSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.45, self.m_Width*0.9, self.m_Height*0.04, _"Radio Sounds", self.m_SettingBG)
+		self.m_AllowRadioSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.39, self.m_Width*0.9, self.m_Height*0.04, _"Radio Sounds", self.m_SettingBG)
 		self.m_AllowRadioSound:setFont(VRPFont(25))
 		self.m_AllowRadioSound:setFontSize(1)
 		self.m_AllowRadioSound:setChecked(core:get("Sounds", "RadioSound", true))

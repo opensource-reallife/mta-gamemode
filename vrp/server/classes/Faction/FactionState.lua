@@ -1686,9 +1686,10 @@ end
 
 function FactionState:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, player)
 	if not client then client = player end
+	
 	if wasted then
 		client:removeFromVehicle()
-		client.m_WasOnDuty = true
+		client:setPublicSync("Faction:WasDuty", true)
 	end
 
 	if getPedOccupiedVehicle(client) then

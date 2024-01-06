@@ -378,20 +378,16 @@ function LocalPlayer:onDeathTimerUp()
 		destroyElement(self.m_DeathAudio)
 	end
 
-	local soundLength = 20 -- Length of Halleluja in Seconds
-	if core:get("Sounds", "Halleluja", true) and fileExists("files/audio/Halleluja.mp3") then
-		self.m_Halleluja = playSound("files/audio/Halleluja.mp3")
-		soundLength = self.m_Halleluja:getLength()
-	end
+	local flightTime = 20
 	triggerServerEvent("destroyPlayerWastedPed",localPlayer)
-	ShortMessage:new(_"Dir konnte leider niemand mehr helfen!\nBut... have a good flight to heaven!", (soundLength-1)*1000)
+	ShortMessage:new(_"Dir konnte leider niemand mehr helfen!\nBut... have a good flight to heaven!", (flightTime-1)*1000)
 
 	-- render camera drive
 	resetSkyGradient()
 	removeEventHandler("onClientPreRender", root, self.m_CameraOnTop)
 	self.m_Add = 3
 	addEventHandler("onClientPreRender", root, self.m_DeathRenderBind)
-	fadeCamera(false, soundLength)
+	fadeCamera(false, flightTime)
 
 	setTimer(
 		function()
@@ -402,15 +398,54 @@ function LocalPlayer:onDeathTimerUp()
 			-- now death gui
 			DeathGUI:new(self:getPublicSync("DeathTime"),
 				function()
-					local spawnAtHospial = core:get("Other", "RescueSpawnAfterDeath", false)
-					HUDRadar:getSingleton():show()
-					HUDUI:getSingleton():show()
-					showChat(true)
+					local spawnAtHospital = core:get("Other", "RescueSpawnAfterDeath", false)
+
 					-- Trigger it back to the Server (TODO: Maybe is this Event unsafe..?)
-					triggerServerEvent("factionRescueWastedFinished", localPlayer, spawnAtHospial)
+					triggerServerEvent("factionRescueWastedFinished", localPlayer, spawnAtHospital)
+
+					local soundLength = 0
+					local wasDuty = localPlayer:getPublicSync("Faction:WasDuty")
+					
+					if (wasDuty and spawnAtHospital or not wasDuty or not localPlayer:getFaction()) and Randomizer:get(1, 1000) == 420 then
+						localPlayer:giveAchievement(112)
+
+						soundLength = 20
+						if fileExists("files/audio/Halleluja.mp3") then
+							self.m_Halleluja = playSound("files/audio/Halleluja.mp3")
+							soundLength = self.m_Halleluja:getLength()
+						end
+
+						local x, y, z = 1177.80, -1323.94, 106.2
+			
+						-- Disable damage while resurrecting
+						addEventHandler("onClientPlayerDamage", root, cancelEvent)
+			
+						HUDUI:getSingleton():hide()
+						localPlayer:setRotation(0, 0, 270)
+						Camera.setTarget(localPlayer)
+						addEventHandler("onClientPreRender", root,
+							function(deltaTime)
+								z = z-0.005*deltaTime
+								localPlayer:setPosition(x, y, z)
+								if z <= 14.2 then
+									removeEventHandler("onClientPreRender", root, getThisFunction())
+									removeEventHandler("onClientPlayerDamage", root, cancelEvent)
+								end
+							end
+						)
+					end
+
+					-- Wait with GUI for Halleluja
+					setTimer(
+						function()
+							HUDRadar:getSingleton():show()
+							HUDUI:getSingleton():show()
+							showChat(true)
+						end, soundLength*1000, 1
+					)
 				end
 			)
-		end, soundLength*1000, 1
+		end, flightTime*1000, 1
 	)
 end
 

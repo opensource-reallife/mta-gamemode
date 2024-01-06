@@ -208,7 +208,7 @@ factionSpecialWeapons[4] = {
 	["Weapons"] = {},
 	["Equipment"] = {},
 }
-factionSpawnpoint[4] = {Vector3(1076.01, -1380.27, 13.71), 0, 0}
+factionSpawnpoint[4] = {Vector3(1076.03, -1378.52, 13.69), 0, 0}
 factionNavigationpoint[4] = Vector3(1095.01, -1337.27, 13.71)
 
 -- ID 5 = La Cosa Nostra:

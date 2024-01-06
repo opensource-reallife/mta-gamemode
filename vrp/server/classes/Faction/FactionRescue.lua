@@ -196,6 +196,12 @@ end
 
 function FactionRescue:Event_toggleDuty(type, wasted, prefSkin, dontChangeSkin, player)
 	if not client then client = player end
+
+	if wasted then
+		client:removeFromVehicle()
+		client:setPublicSync("Faction:WasDuty", true)
+	end
+
 	local faction = client:getFaction()
 	if faction:isRescueFaction() then
 		if getDistanceBetweenPoints3D(client.position, client.m_CurrentDutyPickup.position) <= 10 or wasted then
@@ -628,13 +634,15 @@ function FactionRescue:removePedDeathPickup(ped)
 	end
 end
 
-function FactionRescue:Event_OnPlayerWastedFinish(spawnAtHospial)
+function FactionRescue:Event_OnPlayerWastedFinish(spawnAtHospital)
 	source:setCameraTarget(source)
 	source:fadeCamera(true, 1)
 
-	if source:getFaction() and source.m_WasOnDuty and not source.m_DeathInJail and source.m_JailTime == 0 then
-		if not spawnAtHospial then 
-			source.m_WasOnDuty = false
+	if source:getFaction() and client:getPublicSync("Faction:WasDuty") and not source.m_DeathInJail and source.m_JailTime == 0 then
+		if not source:getPublicSync("Faction:Duty") then
+			source:setPublicSync("Faction:WasDuty", false)
+		end
+		if not spawnAtHospital then 
 			local position = factionSpawnpoint[source:getFaction():getId()]
 			source:respawn(position[1])
 			source:setInterior(position[2])
