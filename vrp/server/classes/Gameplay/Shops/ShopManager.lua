@@ -8,6 +8,7 @@
 ShopManager = inherit(Singleton)
 ShopManager.Map = {}
 ShopManager.VehicleShopsMap = {}
+ShopManager.FCVehicleShopsMap = {}
 ShopManager.ShopVehicle = {}
 
 function ShopManager:constructor()
@@ -18,7 +19,7 @@ function ShopManager:constructor()
 	addRemoteEvents{"foodShopBuyMenu", "shopBuyItem", "shopBuyWeapon", "shopBuyClothes", "vehicleBuy", "shopOpenGUI", "shopBuy", "shopSell",
 	"barBuyDrink", "barShopMusicChange", "barShopMusicStop", "barShopStartStripper", "barShopStopStripper",
 	"shopOpenBankGUI", "shopBankDeposit", "shopBankWithdraw", "shopOnTattooSelection", "ammunationBuyItem", "onAmmunationAppOrder", 
-	"requestVehicleShops", "editVehicleShop", "onVehicleShopOpen","barRequestShopItems", "barRentStrippers"
+	"requestVehicleShops", "editVehicleShop", "onVehicleShopOpen","barRequestShopItems", "barRentStrippers", "buyFCVehicle"
 	}
 
 	addEventHandler("foodShopBuyMenu", root, bind(self.foodShopBuyMenu, self))
@@ -47,6 +48,7 @@ function ShopManager:constructor()
 	addEventHandler("barRentStrippers", root, bind(self.barRentStripper, self))
 	addEventHandler("requestVehicleShops", root, bind(self.onRequestVehicleShops, self))
 	addEventHandler("editVehicleShop", root, bind(self.editShopVehicle, self))
+	addEventHandler("buyFCVehicle", root, bind(self.buyFCVehicle, self))
 	addEventHandler("shopOpenGUI", root, function(id)
 		if ShopManager.Map[id] then
 			ShopManager.Map[id]:onItemMarkerHit(client, true)
@@ -114,7 +116,7 @@ end
 function ShopManager:loadFCVehicleShops()
 	local result = sql:queryFetch("SELECT * FROM ??_fc_vehicle_shops", sql:getPrefix())
     for k, row in ipairs(result) do
-		FCVehicleShop:new(row.Id, row.Name, row.NPC, row.Spawn, row.Type, row.TypeId)
+		ShopManager.FCVehicleShopsMap[row.Id] = FCVehicleShop:new(row.Id, row.Name, row.NPC, row.VehicleSpawn, row.AircraftSpawn, row.BoatSpawn, row.Factions, row.Companies)
 	end
 end
 
@@ -583,4 +585,8 @@ function ShopManager:editShopVehicle( shop, model, index, property, value)
 	else 
 		client:sendError(_("Ein Fehler ist aufgetreten, Fahrzeug nicht gefunden!", client))
 	end
+end
+
+function ShopManager:buyFCVehicle(shop, vehicleId)
+	ShopManager.FCVehicleShopsMap[shop]:buyVehicle(client, vehicleId)
 end

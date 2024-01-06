@@ -973,13 +973,13 @@
     <script src="client/classes/GUIForms/Shop/AmmuNationGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Shop/BarShopGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Shop/ClothesShopGUI.lua" type="client" />
+	<script src="client/classes/GUIForms/Shop/FCVehicleShopGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Shop/FoodShopGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Shop/GasStationShopGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Shop/ItemShopGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Shop/PlayHouseShopGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Shop/SkinShopGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Shop/VehicleShopGUI.lua" type="client" />
-	<!-- <script src="client/classes/GUIForms/Shop/FCVehicleShopGUI.lua" type="client" /> -->
 
     <script src="client/classes/GUIForms/Vehicle/PremiumVehicleGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Vehicle/TexturePreviewGUI.lua" type="client" />

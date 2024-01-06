@@ -7,38 +7,52 @@
 -- ****************************************************************************
 FCVehicleShop = inherit(Object)
 
-function FCVehicleShop:constructor(id, name, npc, spawn, type, typeId)
+function FCVehicleShop:constructor(id, name, npc, vehicleSpawn, aircraftSpawn, boatSpawn, factions, companies)
+	self.m_Id = id
 	self.m_Name = name
-
 	self.m_BankAccountServer = BankServer.get("server.fc_vehicle_shop")
-
 	self.m_VehicleList = {}
 
-	local npcData = fromJSON(npc)
-	local spawnPos = fromJSON(spawn)
-
-	self.m_FactionOrCompany = false
-	self.m_Blip = false
-	if type == 2 then
-		self.m_FactionOrCompany = FactionManager:getSingleton():getFromId(typeId)
-		self.m_Blip = Blip:new("CarShop.png", npcData["posX"], npcData["posY"], {faction = typeId}, 400, {factionColors[typeId].r, factionColors[typeId].g, factionColors[typeId].b})
-	elseif type == 3 then
-		self.m_FactionOrCompany = CompanyManager:getSingleton():getFromId(typeId)
-		self.m_Blip = Blip:new("CarShop.png", npcData["posX"], npcData["posY"], {company = typeId}, 400, {companyColors[typeId].r, companyColors[typeId].g, companyColors[typeId].b})
-	else
-		return false
+	local result = sql:queryFetch("SELECT * FROM ??_fc_vehicle_shop_veh", sql:getPrefix())
+	for k, row in pairs(result) do
+		self.m_VehicleList[row.Id] = {
+			model = row.Model,
+			price = row.Price,
+			description = row.Description,
+			ownerId = row.OwnerId,
+			ownerType = row.OwnerType,
+			color = fromJSON(row.Color),
+			textures = fromJSON(row.Textures),
+			elsPreset = row.ELSPreset
+		}
 	end
-	self.m_Blip:setDisplayText(_("Autohaus - %s", client, tostring(self.m_FactionOrCompany:getName())), BLIP_CATEGORY.Shop)
 
-	self.m_Ped = NPC:new(self.m_FactionOrCompany:getRandomSkin(), npcData["posX"], npcData["posY"], npcData["posZ"], npcData["rotZ"])
+	self.m_Factions = factions and fromJSON(factions) or {}
+	self.m_Companies = companies and fromJSON(companies) or {}
+
+	self.m_VehicleSpawn = fromJSON(vehicleSpawn)
+	self.m_VehicleNonCollisionCol = createColSphere(self.m_VehicleSpawn.posX, self.m_VehicleSpawn.posY, self.m_VehicleSpawn.posZ, 10)
+	self.m_VehicleNonCollisionCol:setData("NonCollisionArea", {players = true}, true)
+
+	self.m_AircraftSpawn = fromJSON(aircraftSpawn)
+	self.m_AircraftNonCollisionCol = createColSphere(self.m_AircraftSpawn.posX, self.m_AircraftSpawn.posY, self.m_AircraftSpawn.posZ, 10)
+	self.m_AircraftNonCollisionCol:setData("NonCollisionArea", {players = true}, true)
+
+	self.m_BoatSpawn = fromJSON(aircraftSpawn)
+	self.m_BoatNonCollisionCol = createColSphere(self.m_BoatSpawn.posX, self.m_BoatSpawn.posY, self.m_BoatSpawn.posZ, 10)
+	self.m_BoatNonCollisionCol:setData("NonCollisionArea", {players = true}, true)
+
+
+	local npcData = fromJSON(npc)
+
+	self.m_Blip = Blip:new("CarShop.png", npcData["posX"], npcData["posY"], {faction = self.m_Factions, company = self.m_Companies}, 400)
+	self.m_Blip:setDisplayText(self.m_Name, BLIP_CATEGORY.Shop)
+	self.m_Blip:setOptionalColor({37, 78, 108})
+
+	self.m_Ped = NPC:new(npcData["skinId"], npcData["posX"], npcData["posY"], npcData["posZ"], npcData["rotZ"])
 	ElementInfo:new(self.m_Ped, _("Fahrzeugverkauf", client), 1.3)
 	self.m_Ped:setImmortal(true)
 	self.m_Ped:setFrozen(true)
-
-	self.m_Spawn = {spawnPos["posX"], spawnPos["posY"], spawnPos["posZ"], spawnPos["rotZ"]}
-	self.m_NonCollissionCol = createColSphere(spawnPos["posX"], spawnPos["posY"], spawnPos["posZ"], 10)
-	self.m_NonCollissionCol:setData("NonCollisionArea", {players = true}, true)
-
 	self.m_Ped:setData("clickable", true, true)
 	addEventHandler("onElementClicked", self.m_Ped, function(button, state, player)
 		if button == "left" and state == "down" then
@@ -48,13 +62,99 @@ function FCVehicleShop:constructor(id, name, npc, spawn, type, typeId)
 end
 
 function FCVehicleShop:Event_onShopOpen(player)
-	
+	if player:getFaction() and player:isFactionDuty() and self.m_Factions[player:getFaction():getId()] then
+		player:triggerEvent("showFCVehicleShopGUI", self.m_Id, self.m_Name, player:getFaction().m_VehicleLimits, player:getFaction().m_Vehicles, player:getFaction().m_MaxVehicles, self.m_VehicleList, self.m_Ped)
+	elseif player:getCompany() and player:isCompanyDuty() and self.m_Companies[player:getCompany():getId()] then
+		player:triggerEvent("showFCVehicleShopGUI", self.m_Id, self.m_Name, player:getCompany().m_VehicleLimits, player:getCompany().m_Vehicles, player:getCompany().m_MaxVehicles, self.m_VehicleList, self.m_Ped)
+	end
 end
 
-function FCVehicleShop:buyVehicle()
+function FCVehicleShop:buyVehicle(player, vehicleId)
+	local vehData = self.m_VehicleList[vehicleId]
+	local vehType = VehicleCategory:getSingleton():getCategoryName(VehicleCategory:getSingleton():getModelCategory(vehData.model))
+	local color = vehData.color
+	local spawnPos = self.m_VehicleSpawn
 
+	if player:getFaction() and player:isFactionDuty() and self.m_Factions[player:getFaction():getId()] then
+		if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "faction", "buyVehicle") then
+			player:sendError(_("Du bist nicht berechtigt weitere Fraktionsfahrzeuge zu kaufen!", player))
+			return
+		end
+		if #player:getFaction().m_Vehicles >= player:getFaction().m_MaxVehicles then
+			player:sendError(_("Du bist nicht berechtigt weitere Fraktionsfahrzeuge zu kaufen!", player))
+			return
+		end
+		local current, limit = FCVehicleShop.getVehicleLimit(vehData.model, player:getFaction().m_VehicleLimits, player:getFaction().m_Vehicles)
+		if current >= limit then
+			player:sendError(_("Maximale Anzahl bereits erreicht!", player))
+			return
+		end
+		if not player:getFaction():transferMoney(self.m_BankAccountServer, vehData.price, ("Fraktions Fahrzeugkauf von %s"):format(player:getName()), "Faction", "VehicleBought") then
+			player:sendError(_("Deine Fraktion hat nicht genug Geld!", player))
+			return
+		end
+
+		ownerId = player:getFaction():getId()
+		ownerType = VehicleTypes.Faction
+	elseif player:getCompany() and player:isCompanyDuty() and self.m_Companies[player:getCompany():getId()] then
+		if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "company", "buyVehicle") then
+			player:sendError(_("Du bist nicht berechtigt weitere Unternehmensfahrzeuge zu kaufen!", player))
+			return
+		end
+		if #player:getCompany().m_Vehicles >= player:getCompany().m_MaxVehicles then
+			player:sendError(_("Du bist nicht berechtigt weitere Unternehmensfahrzeuge zu kaufen!", player))
+			return
+		end
+		local current, limit = FCVehicleShop.getVehicleLimit(vehData.model, player:getCompany().m_VehicleLimits, player:getCompany().m_Vehicles)
+		if current >= limit then
+			player:sendError(_("Maximale Anzahl bereits erreicht!", player))
+			return
+		end
+		if not player:getCompany():transferMoney(self.m_BankAccountServer, vehData.price, ("Unternehmens Fahrzeugkauf von %s"):format(player:getName()), "Company", "VehicleBought") then
+			player:sendError(_("Dein Unternehmen hat nicht genug Geld!", player))
+			return
+		end
+
+		ownerId = player:getCompany():getId()
+		ownerType = VehicleTypes.Company
+	end
+	
+	if vehType == "Boot" then
+		spawnPos = self.m_BoatSpawn
+	elseif vehType == "Helikopter" or vehType == "Propellerflugzeug" or vehType == "Düsenflugzeug" then
+		spawnPos = self.m_AircraftSpawn
+	end
+
+	local veh = VehicleManager:getSingleton():createNewVehicle(ownerId, ownerType, vehData.model, spawnPos.posX, spawnPos.posY, spawnPos.posZ, 0, 0, spawnPos.rotZ, 0, 0, vehData.price)
+
+	for textureName, texturePath in pairs(vehData.textures) do
+		veh:getTunings():addTexture(texturePath, textureName)
+	end
+	veh:setELSPreset(vehData.elsPreset)
+	veh:setColor(color.r1, color.g1, color.b1, color.r2, color.g2, color.b2)
+	veh:getTunings():saveColors()
+	veh:getTunings():applyTuning()
 end
 
 function FCVehicleShop:addVehicle()
 
+end
+
+function FCVehicleShop.getVehicleLimit(model, vehicleLimits, currentVehicles)
+	local current = 0
+	local limit = 0
+
+	for id, max in pairs(vehicleLimits) do
+		if id == model then
+			limit = max
+		end
+	end
+
+	for k, vehicle in pairs(currentVehicles) do
+		if vehicle:getModel() == model then
+			current = current + 1
+		end
+	end
+
+	return current, limit
 end
