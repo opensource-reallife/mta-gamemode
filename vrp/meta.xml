@@ -265,7 +265,6 @@
 	<script src="server/classes/Gameplay/Minigames/CasinoWheel/CasinoWheelManager.lua" type="server"/>
 	<script src="server/classes/Gameplay/Minigames/CasinoWheel/CasinoWheel.lua" type="server"/>
 
-
 	<script src="server/classes/Gameplay/Minigames/BlackJack/BlackJackManager.lua" type="server"/>
 	<script src="server/classes/Gameplay/Minigames/BlackJack/BlackJack.lua" type="server"/>
 	<script src="server/classes/Gameplay/Minigames/BlackJack/BlackJackCards.lua" type="server"/>
@@ -388,6 +387,8 @@
 	<script src="server/classes/Gameplay/NPCs/TargetableNPC.lua" type="server"/>
 
 	<script src="server/classes/Gameplay/AtmManager.lua" type="server"/>
+	
+	<script src="server/classes/Gameplay/HappyHourManager.lua" type="server"/>
 
 	<script src="server/classes/MapEditor/MapLoader.lua" type="server" />
 	<script src="server/classes/MapEditor/MapEditor.lua" type="server" />
