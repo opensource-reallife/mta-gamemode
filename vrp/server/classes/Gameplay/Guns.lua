@@ -139,7 +139,7 @@ function Guns:Event_onClientDamage(target, weapon, bodypart, loss, isMelee)
 	if target:getData("RcVehicle") then 
 		return
 	end
-	if attacker:getFaction() and attacker:getFaction():isStateFaction() and attacker:isFactionDuty() then
+	if attacker:getFaction() and attacker:getFaction():isStateFaction() and attacker:isFactionDuty() and target:getWanteds() > 0 then
 		target.m_LastCopAttackTime = getRealTime().timestamp
 		target.m_LastCopAttack = attacker:getId()
 	end
@@ -254,11 +254,11 @@ function Guns:Event_OnWasted(totalAmmo, killer, weapon, bodypart)
 			end
 		end
 
-		if self:isSuicideJailEscape(source, killer) then
+		if self:isSuicideJailEscape(source, killer) and weapon ~= 50 and weapon ~= 63 then
 			source:sendInfo(_("Du wurdest aufgrund deines Selbstmordes ins Gefängnis befördert", source))
 
 			if source.m_LastCopAttack and isElement(DatabasePlayer.Map[source.m_LastCopAttack]) then
-				source.m_LastCopAttack:sendInfo(_("Der Spieler %s wurde aufgrund von Selbstmord ins Gefängnis befördert", source.m_LastCopAttack, source:getName()))
+				DatabasePlayer.Map[source.m_LastCopAttack]:sendInfo(_("Der Spieler %s wurde aufgrund von Selbstmord ins Gefängnis befördert", DatabasePlayer.Map[source.m_LastCopAttack], source:getName()))
 			end
 		end
 	end
@@ -620,6 +620,10 @@ function Guns:onClientSelfHarm(weapon, bodypart, loss)
 end
 
 function Guns:isSuicideJailEscape(target, killer)
+	if target:getWanteds() <= 0 then
+		return false
+	end
+
 	if killer and target ~= killer then
 		return false
 	end
