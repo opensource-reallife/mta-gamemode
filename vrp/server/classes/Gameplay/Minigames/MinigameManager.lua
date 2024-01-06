@@ -66,6 +66,8 @@ function MinigameManager:addHooks()
 	PlayerManager:getSingleton():getWastedHook():register(
 		function(player)
 			if player.Minigame then
+				player:respawn(player:getPosition())
+				FactionRescue:getSingleton():removePedDeathPickup(player)
 				player:triggerEvent("abortDeathGUI", true)
 				player.Minigame:removePlayer(player)
 				return true
