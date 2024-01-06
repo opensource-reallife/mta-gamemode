@@ -18,7 +18,7 @@ function DutyGUI:constructor(isFaction, id, isOnDuty, specialSkin)
 end
 
 function DutyGUI:loadFactionItems(fac, isOnDuty, specialSkin)
-    self.m_Window:setTitleBarText("Ausrüstung ("..fac:getShortName()..")")
+    self.m_Window:setTitleBarText(_("%s - Ausrüstung", fac:getShortName()))
     
     if isOnDuty then
         if fac:isStateFaction() then
@@ -51,7 +51,7 @@ function DutyGUI:loadFactionItems(fac, isOnDuty, specialSkin)
 end
 
 function DutyGUI:loadCompanyItems(cmp, isOnDuty)
-    self.m_Window:setTitleBarText(cmp:getShortName().." HQ")
+    self.m_Window:setTitleBarText(_("%s HQ", cmp:getShortName()))
     
     if isOnDuty then
         self:addItem(_"Dienst beenden", Color.Red, bind(self.itemEvent, self, "companyToggleDuty"))

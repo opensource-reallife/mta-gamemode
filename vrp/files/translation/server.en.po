@@ -4229,3 +4229,27 @@ msgstr "You have been given a new task! Go to the marker on the map."
 
 msgid "Servicetechniker-Job"
 msgstr "Service technician job"
+
+msgid "Fahrzeugverkauf"
+msgstr "Vehicle sales"
+
+msgid "Stellenmarker"
+msgstr "Surrender marker"
+
+msgid "Ausrüstungskiste"
+msgstr "Equipment box"
+
+msgid "Der Spieler %s hat sich gestellt!"
+msgstr "The player %s has turned himself in!"
+
+msgid "%s ist dem Event beigetreten!"
+msgstr "%s joined the event!"
+
+msgid "Spawnpunkt wurde geändert."
+msgstr "Spawn point has been changed."
+
+msgid "Du bist nicht im Dienst."
+msgstr "You are not on duty."
+
+msgid "Du kannst derzeit keine Aktion starten."
+msgstr "You cannot start an action at this time."

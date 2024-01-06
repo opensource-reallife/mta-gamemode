@@ -76,7 +76,7 @@ function Event:getId()
 end
 
 function Event:join(player)
-	self:sendMessage("%s ist dem Event beigetreten!", 255, 255, 0, getPlayerName(player))
+	self:sendMessage(_("%s ist dem Event beigetreten!", client), 255, 255, 0, getPlayerName(player))
 	table.insert(self.m_Players, player)
 
 	if self.onJoin then self:onJoin(player) end

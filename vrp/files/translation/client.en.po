@@ -5579,3 +5579,9 @@ msgstr "As a service technician, you're on your way to customer locations to sol
 
 msgid "Multiplikator"
 msgstr "Multiplicator"
+
+msgid "%s HQ"
+msgstr "%s HQ"
+
+msgid "%s - Ausrüstung"
+msgstr "%s - Equipment"

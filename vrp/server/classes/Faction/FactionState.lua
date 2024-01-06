@@ -182,7 +182,7 @@ function FactionState:createSelfArrestMarker( pos, int, dim )
 		end
 	end)
 
-	ElementInfo:new(marker, "Stellenmarker")
+	ElementInfo:new(marker, _("Stellenmarker", client))
 end
 
 function FactionState:createEquipmentEvidence( pos, int, dim, rot )
@@ -193,7 +193,7 @@ function FactionState:createEquipmentEvidence( pos, int, dim, rot )
 	box:setData("clickable",true,true)
 	addEventHandler("onElementClicked", box, bind(self.Event_OnEvidenceEquipmentClick, self))
 	self.m_EvidenceEquipmentBox[#self.m_EvidenceEquipmentBox+1] = box
-	ElementInfo:new(box, "Ausrüstungskiste", 2)
+	ElementInfo:new(box, _("Ausrüstungskiste", client), 2)
 end
 
 function FactionState:Event_OnEvidenceEquipmentClick(button, state, player)
@@ -305,7 +305,7 @@ function FactionState:Event_OnConfirmSelfArrest()
 	bailcosts = BAIL_PRICES[wantedLevel]
 	client:setJailBail(bailcosts)
 	StatisticsLogger:getSingleton():addArrestLog(client, wantedLevel, jailTime, client, bailcosts)
-	self:sendMessage("Der Spieler "..client:getName().." hat sich gestellt!", 0, 0,200)
+	self:sendMessage(_("Der Spieler %s hat sich gestellt!", client, client:getName()), 0, 0,200)
 end
 
 function FactionState:loadLSPD(factionId)
