@@ -1129,7 +1129,7 @@ function FactionManager:startHappyHour()
 	MIN_PLAYERS_FOR_VEHICLE_FIRE =
 	]]
 
-	triggerClientEvent("breakingNews", root, _("Die Happy Hour startet. Die Aktionsbedingungen sind nun verringert."), "HappyHour", {23, 94, 42}, {0, 0, 0})
+	triggerClientEvent("breakingNews", root, _("Die Happy Hour beginnt. Die Aktionsstartbedingungen sind von einigen Aktionen nun verringert."), "HappyHour", {44, 148, 12}, {0, 0, 0})
 end
 
 function FactionManager:endHappyHour()
@@ -1148,5 +1148,5 @@ function FactionManager:endHappyHour()
 	MIN_PLAYERS_FOR_FIRE = self.m_MinMembers["MinMembersFire"]
 	MIN_PLAYERS_FOR_VEHICLE_FIRE = self.m_MinMembers["MinMembersVehicleFire"]
 
-	triggerClientEvent("breakingNews", root, _("Die Happy Hour endet. Die Aktionsbedingungen sind zurückgesetzt."), "HappyHour", {23, 94, 42}, {0, 0, 0})
+	triggerClientEvent("breakingNews", root, _("Die Happy Hour endet. Die Aktionsstartbedingungen sind nun zurückgesetzt."), "HappyHour", {44, 148, 12}, {0, 0, 0})
 end
