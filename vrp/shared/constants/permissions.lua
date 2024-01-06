@@ -109,7 +109,8 @@ PERMISSION_NAMES = {
 	["manageImmoDepot"] =		"Immobilien Depot verwalten",
 	["changePermissions"] =		"Rechte verwalten (Beinhaltet Vollzugriff)",
 	["buyExtraVehicleSlots"] =	"Fahrzeugeslots kaufen",
-	["buyVehicle"] = 			"Fahrzeug kaufen"
+	["buyVehicle"] = 			"Fahrzeug kaufen",
+	["scrapVehicle"] = 			"Fahrzeug verschrotten"
 }
 
 ACTION_PERMISSIONS_INFO = {
