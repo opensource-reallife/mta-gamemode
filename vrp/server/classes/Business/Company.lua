@@ -12,7 +12,7 @@ function Company.onInherit(derivedClass)
   Company.DerivedClasses[#Company.DerivedClasses+1] = derivedClass
 end
 
-function Company:constructor(Id, Name, ShortName, ShorterName, Creator, players, lastNameChange, bankAccountId, Settings, rankLoans, rankSkins, rankPermissions, playerLimit)
+function Company:constructor(Id, Name, ShortName, ShorterName, Creator, players, lastNameChange, bankAccountId, Settings, rankLoans, rankSkins, rankPermissions, playerLimit, maxVehicles, vehicleLimits)
 	self.m_Id = Id
 	self.m_Name = Name
 	self.m_ShortName = ShortName
@@ -53,6 +53,15 @@ function Company:constructor(Id, Name, ShortName, ShorterName, Creator, players,
 
 	self.m_PlayerLimit = playerLimit > 0 and true or false
 	self.m_MaxPlayers = playerLimit
+
+	self.m_MaxVehicles = maxVehicles
+
+	local limits = fromJSON(vehicleLimits) or {}
+	local temp = {}
+	for k, v in pairs(limits) do
+		temp[tonumber(k)] = v
+	end
+	self.m_VehicleLimits = temp
 
 	if not DEBUG then
 		Async.create(
