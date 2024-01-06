@@ -5567,3 +5567,12 @@ msgstr "Gingerbread mask"
 
 msgid "Hacking-Kit"
 msgstr "Hacking-Kit"
+
+msgid "Hilfe, hilfe, große Not!"
+msgstr "Help, help, great distress!"
+
+msgid "Job: Service-Techniker"
+msgstr "Job: Service technician"
+
+msgid "Als Service-Techniker bist du unterwegs zu Kundenstandorten, um technische Probleme zu lösen.\nDu wirst mit Fragen zu verschiedenen IT-Bereichen konfrontiert – von Hardware bis Software.\nDeine Aufgabe ist es, die richtigen Lösungen zu finden, um den Kunden zu helfen.\n\nBeachte: Falsche Antworten bedeuten kein verdientes Geld!"
+msgstr "As a service technician, you're on your way to customer locations to solve technical issues.\nYou'll be confronted with questions covering various IT areas—from hardware to software.\nYour task is to find the right solutions to assist the customers.\n\nNote: Wrong answers mean no earned money!"

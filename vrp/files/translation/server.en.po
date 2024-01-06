@@ -4199,3 +4199,33 @@ msgstr "No player has been found!"
 
 msgid "Du benötigst keine Unterstützung mehr? Klicke hier."
 msgstr "Don't need any more support? Click here."
+
+msgid "Job angenommen! Gehe zum roten Marker um ein Fahrzeug zu erhalten."
+msgstr "Job accepted! Go to the red marker to get a vehicle."
+
+msgid "Begib dich nun zum Kunden. Folge dazu der Markierung auf der Karte."
+msgstr "Now go to the customer. Follow the marker on the map."
+
+msgid "Kunde"
+msgstr "Customer"
+
+msgid "Du bist in keinem Jobfahrzeug!"
+msgstr "You're not in a job vehicle!"
+
+msgid "Du konntest einen Teil der Probleme lösen! Kehre zum Büro zurück, um eine neue Aufgabe zu erhalten."
+msgstr "You were able to solve some of the problems! Return to the office to receive a new task."
+
+msgid "Du konntest alle Probleme lösen! Kehre zum Büro zurück, um eine neue Aufgabe zu erhalten."
+msgstr "You were able to solve all the problems! Return to the office to receive a new task."
+
+msgid "Du konntest dem Kunden nicht helfen! Kehre zum Büro zurück, um eine neue Aufgabe zu erhalten."
+msgstr "You couldn't help the customer! Return to the office to receive a new task."
+
+msgid "Büro"
+msgstr "Office"
+
+msgid "Du hast eine neue Aufgabe erhalten! Begib dich zur Markierung auf der Karte."
+msgstr "You have been given a new task! Go to the marker on the map."
+
+msgid "Servicetechniker-Job"
+msgstr "Service technician job"

@@ -564,7 +564,8 @@
 	<script src="server/classes/Jobs/JobForkLift.lua" type="server"/>
 	<script src="server/classes/Jobs/JobTreasureSeeker.lua" type="server"/>
 	<script src="server/classes/Jobs/JobGravel.lua" type="server"/>
-
+	<script src="server/classes/Jobs/JobServiceTechnician.lua" type="server" />
+	<script src="server/classes/Jobs/JobServiceTechnicianTask.lua" type="server" />
 
 	<!-- AI -->
 	<script src="server/classes/AI/ActorManager.lua" type="server"/>
@@ -1135,6 +1136,7 @@
 	<script src="client/classes/Jobs/JobForkLift.lua" type="client"/>
 	<script src="client/classes/Jobs/JobTreasureSeeker.lua" type="client"/>
 	<script src="client/classes/Jobs/JobGravel.lua" type="client"/>
+	<script src="client/classes/Jobs/JobServiceTechnician.lua" type="client" />
 
 	<!-- Groups -->
 	<!--<script src="client/classes/Groups/GangArea.lua" type="client"/>-->
@@ -1957,6 +1959,7 @@
 	<vrpfile src="files/images/Radar/Blips/Cinema.png"/>
 	<vrpfile src="files/images/Radar/Blips/ColorCars.png"/>
 	<vrpfile src="files/images/Radar/Blips/RcShop.png"/>
+	<vrpfile src="files/images/Radar/Blips/ServiceTechnician.png"/>
 
 	<vrpfile src="files/images/Jobs/HeaderLogistician.png"/>
 	<vrpfile src="files/images/Jobs/HeaderTrashman.png"/>

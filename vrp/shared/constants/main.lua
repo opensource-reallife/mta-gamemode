@@ -73,6 +73,7 @@ JOB_LEVEL_LUMBERJACK = 6
 JOB_LEVEL_HELITRANSPORT = 6
 JOB_LEVEL_FARMER = 8
 JOB_LEVEL_GRAVEL = 8
+JOB_LEVEL_SERVICETECHNICIAN = 1
 JOB_LEVEL_BOXER = 10
 
 BLIP_CATEGORY = {
@@ -865,6 +866,7 @@ LexiconPages = {
 	JobFarmer = "18",
 	JobGravel = "20",
 	JobBoxer = "24",
+	JobServiceTechnician = "62",
 	ActionBankRobbery = "28",
 	ActionWeaponTruck = "32",
 	ActionWeedTruck = "30",

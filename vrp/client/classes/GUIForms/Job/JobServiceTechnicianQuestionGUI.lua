@@ -11,7 +11,6 @@ inherit(Singleton, JobServiceTechnicianQuestionGUI)
 function JobServiceTechnicianQuestionGUI:constructor()
 	GUIForm.constructor(self, screenWidth/2-screenWidth*0.3*0.5, screenHeight/2-screenHeight*0.3*0.5, screenWidth*0.3, screenHeight*0.4)--screenHeight*0.3
 	self.m_Questions = false
-	self.m_CurrentQuestionId = false
 	self.m_Answers = {}
 
 	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Hilfe, hilfe, große Not!", true, true, self)
@@ -30,20 +29,20 @@ end
 function JobServiceTechnicianQuestionGUI:setQuestions(questions)
 	self.m_Questions = questions
 	self.m_CurrentQuestion = 1
-	self:setQuestion(self.m_Questions[1])
+	self:setQuestion(self.m_Questions[1][localPlayer:getLocale()])
 	self.m_Answers = {}
 end
 
 function JobServiceTechnicianQuestionGUI:setQuestion(questionInfo)
-	local question, answer1, answer2, answer3, answer4, questionId = unpack(questionInfo)
+	local question, answer1, answer2, answer3, answer4 = unpack(questionInfo)
 	self.m_QuestionLabel:setText(question)
 
-	local order = Randomizer:getRandomOf(4, {answer1, answer2, answer3, answer4})
+	local order = Randomizer:getRandomOf(4, {answer1[1], answer2[1], answer3[1], answer4[1]})
 	self.m_AnswersRadio[1]:setText(order[1])
 	self.m_AnswersRadio[2]:setText(order[2])
 	self.m_AnswersRadio[3]:setText(order[3])
 	self.m_AnswersRadio[4]:setText(order[4])
-	self.m_CurrentQuestionId = questionId
+    self.m_AnswersRadio[1]:setChecked(true)
 end
 
 function JobServiceTechnicianQuestionGUI:NextButton_Click()
@@ -56,7 +55,7 @@ function JobServiceTechnicianQuestionGUI:NextButton_Click()
     if radio then
         local index = table.find(self.m_AnswersRadio, radio)
         if index then
-            self.m_Answers[self.m_CurrentQuestionId] = {index = index, text = radio:getText()}
+            self.m_Answers[self.m_CurrentQuestion] = {index = index, text = radio:getText()}
         end
     end
 
@@ -71,11 +70,11 @@ function JobServiceTechnicianQuestionGUI:NextButton_Click()
     end
 
     self.m_CurrentQuestion = self.m_CurrentQuestion + 1
-    self:setQuestion(self.m_Questions[self.m_CurrentQuestion])
+    self:setQuestion(self.m_Questions[self.m_CurrentQuestion][localPlayer:getLocale()])
 
     -- Get current
-    if self.m_Answers[self.m_CurrentQuestionId] then
-        self.m_AnswerGroup:setCheckedRadioButton(self.m_AnswersRadio[self.m_Answers[self.m_CurrentQuestionId].index])
+    if self.m_Answers[self.m_CurrentQuestion] then
+        self.m_AnswerGroup:setCheckedRadioButton(self.m_AnswersRadio[self.m_Answers[self.m_CurrentQuestion].index])
     end
 end
 
