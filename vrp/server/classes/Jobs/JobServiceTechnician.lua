@@ -69,7 +69,7 @@ end
 function JobServiceTechnician:stop(player)
     self.m_VehicleSpawner:toggleForPlayer(player, false)
     self:destroyJobVehicle(player)
-    self.m_Tasks[player]:delete()
+    if self.m_Tasks[player] then self.m_Tasks[player]:delete() end
 end
 
 function JobServiceTechnician:onVehicleSpawn(player,vehicleModel,vehicle)
