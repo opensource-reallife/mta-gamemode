@@ -20,7 +20,7 @@ function JobManager:constructor()
 		JobHeliTransport:new();
 		JobLogistician:new();
 		JobForkLift:new();
-		--JobTreasureSeeker:new();
+		JobTreasureSeeker:new();
 		JobGravel:new();
 		--JobBoxer:new();
 	}

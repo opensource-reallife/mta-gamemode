@@ -3243,8 +3243,8 @@ msgstr "Do you want to keep working?"
 msgid "Du hast keinen Müll aufgeladen!"
 msgstr "You didn't load up trash!"
 
-msgid "Du hast eine%s für %d$ verkauft!"
-msgstr "You sold a%s for %d$!"
+msgid "Du hast %s für %d$ verkauft!"
+msgstr "You sold %s for %d$!"
 
 msgid "Du hast kein Objekt dabei!"
 msgstr "You don't have an object on you!"
@@ -3261,8 +3261,8 @@ msgstr "You already have an object on the ship!\nUnload it at the starting point
 msgid "Das gefundene Objekt wird angehoben! Bitte warten!"
 msgstr "The found object is lifted! Please wait!"
 
-msgid "Glückwunsch, du hast eine%s gefunden!\nBringe das Fundstück zum Startpunkt!"
-msgstr "Congratulations, you found a%s!\nBring the find to the starting point!"
+msgid "Du hast %s gefunden!\nBringe das Fundstück zum Startpunkt oder werfe es mit der Rücktaste zurück ins Meer!"
+msgstr "You've found %s!\nTake the found item to the starting point or use backspace to throw it back into the sea!"
 
 msgid "Schatzsucher-Job"
 msgstr "Treasure hunting job"
@@ -4253,3 +4253,48 @@ msgstr "You are not on duty."
 
 msgid "Du kannst derzeit keine Aktion starten."
 msgstr "You cannot start an action at this time."
+
+msgid "Das Boot muss dafür stillstehen!"
+msgstr "The boat needs to stand still for that!"
+
+msgid "eine Waschmaschine"
+msgstr "a washing machine"
+
+msgid "eine Holzkiste"
+msgstr "a wooden crate"
+
+msgid "einen Briefkasten"
+msgstr "a mailbox"
+
+msgid "eine Kiste"
+msgstr "a box"
+
+msgid "eine Waffenkiste"
+msgstr "a weapon crate"
+
+msgid "ein radioaktives Fass"
+msgstr "a radioactive barrel"
+
+msgid "einen Fernseher"
+msgstr "a television"
+
+msgid "eine große Holzkiste"
+msgstr "a large wooden crate"
+
+msgid "eine Mülltonne"
+msgstr "a trash can"
+
+msgid "einen Recyclingcontainer"
+msgstr "a recycling bin"
+
+msgid "eine Munitionskiste"
+msgstr "an ammo crate"
+
+msgid "ein paar Ölfässer"
+msgstr "a few oil barrels"
+
+msgid "eine Klimaanlage"
+msgstr "an air conditioner"
+
+msgid "ein Ladenschild"
+msgstr "a store sign"

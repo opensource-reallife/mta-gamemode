@@ -74,7 +74,7 @@ function Job:onJobVehicleDestroy()
 	local player = source.jobPlayer
 
 	if not self.m_DontEndOnVehicleDestroy then
-		nextframe( -- Workarround to avoid Stack Overflow
+		nextframe( -- Workaround to avoid Stack Overflow
 			function()
 				if player and player.setJob then
 					player:setJob(nil)
