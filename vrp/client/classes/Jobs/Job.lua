@@ -66,10 +66,6 @@ function Job:getName()
 	return self.m_Name
 end
 
-function Job:setJobLevel(level)
-	self.m_Level = level
-end
-
 function Job:setMultiplicator(mult)
 	self.m_Multiplicator = mult
 end

@@ -82,3 +82,11 @@ function JobServiceTechnician:nextTask(player)
     if self.m_Tasks[player] then self.m_Tasks[player]:delete() end
     self.m_Tasks[player] = JobServiceTechnicianTask:new(player)
 end
+
+function JobServiceTechnician:checkRequirements(player)
+	if not (player:getJobLevel() >= JOB_LEVEL_SERVICETECHNICIAN) then
+		player:sendError(_("Für diesen Job benötigst du mindestens Joblevel %d", player, JOB_LEVEL_SERVICETECHNICIAN))
+		return false
+	end
+	return true
+end
