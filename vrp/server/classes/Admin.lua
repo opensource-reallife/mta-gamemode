@@ -1930,5 +1930,5 @@ function Admin:reloadFCVehicleShop(player, cmd, shopId)
 	end
 
 	ShopManager.FCVehicleShopsMap[shopId]:reload()
-	player:sendSuccess(_("Shop #%d neugeladen!", player))
+	player:sendSuccess(_("Shop #%d neugeladen!", player, shopId))
 end
