@@ -22,7 +22,7 @@ function StateEvidence:constructor()
     addEventHandler("State:startEvidenceTruck", root, bind(self.Event_startEvidenceTruck,self))
 	
 	self.m_Pickups = {}
-	self:createEvidencePickup(1584.78, -1682.48, 15.00)
+	self:createEvidencePickup(1584.43, -1682.75, 15.00)
 	self:createEvidencePickup(1579.43, -1691.53, 5.92, 0, 5)
 	self:loadObjectData()
 end
