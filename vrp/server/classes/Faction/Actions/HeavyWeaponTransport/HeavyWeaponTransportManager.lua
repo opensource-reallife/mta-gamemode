@@ -20,6 +20,10 @@ end
 function HeavyWeaponTransportManager:onPedClick(button, state, player)
     local faction = player:getFaction()
 
+	if not player or not self.m_Ped or Vector3(player.position - self.m_Ped.position):getLength() > 5 then
+		return 
+	end 
+
 	if button ~= "left" or state ~= "down" then
 		if faction and faction:isStateFaction() and player:isFactionDuty() then
 			if ActionsCheck:getSingleton():isActionAllowed(player) then

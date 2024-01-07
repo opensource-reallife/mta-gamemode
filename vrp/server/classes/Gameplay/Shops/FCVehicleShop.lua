@@ -46,6 +46,8 @@ function FCVehicleShop:constructor(id, name, npc, vehicleSpawn, aircraftSpawn, b
 	self.m_Ped:setData("clickable", true, true)
 	addEventHandler("onElementClicked", self.m_Ped, function(button, state, player)
 		if button == "left" and state == "down" then
+			player.m_VehicleShop = self
+			player.m_VehicleShopMarker = self.m_Ped
 			self:Event_onShopOpen(player)
 		end
 	end)
@@ -73,6 +75,9 @@ function FCVehicleShop:reload()
 end
 
 function FCVehicleShop:Event_onShopOpen(player)
+	if not player or not player.m_VehicleShopMarker or Vector3(player.position - player.m_VehicleShopMarker.position):getLength() > 5 then
+		return 
+	end 
 	if player:getFaction() and player:isFactionDuty() and self.m_Factions[player:getFaction():getId()] then
 		player:triggerEvent("showFCVehicleShopGUI", self.m_Id, self.m_Name, player:getFaction().m_VehicleLimits, player:getFaction().m_Vehicles, player:getFaction().m_MaxVehicles, self.m_VehicleList[VehicleTypes.Faction][player:getFaction():getId()], self.m_Ped)
 	elseif player:getCompany() and player:isCompanyDuty() and self.m_Companies[player:getCompany():getId()] then
