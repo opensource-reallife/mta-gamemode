@@ -132,6 +132,8 @@ function FCVehicleShop:buyVehicle(player, vehicleId)
 	end
 
 	local veh = VehicleManager:getSingleton():createNewVehicle(ownerId, ownerType, vehData.model, spawnPos.posX, spawnPos.posY, spawnPos.posZ, 0, 0, spawnPos.rotZ, 0, 0, vehData.price)
+	
+	warpPedIntoVehicle(player, veh)
 
 	for textureName, texturePath in pairs(vehData.textures) do
 		veh:getTunings():addTexture(texturePath, textureName)
