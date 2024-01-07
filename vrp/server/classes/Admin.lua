@@ -54,6 +54,7 @@ function Admin:constructor()
     addCommandHandler("addCompanyVehicle", bind(self.addCompanyVehicle, self))
 
 	addCommandHandler("addVehicleToFCShop", bind(self.addVehicleToFCShop, self))
+	addCommandHandler("reloadFCVehicleShop", bind(self.reloadFCVehicleShop, self))
 
     local adminCommandBind = bind(self.command, self)
 	self.m_ToggleJetPackBind = bind(self.toggleJetPack, self)
@@ -1877,13 +1878,13 @@ function Admin:addVehicleToFCShop(player, cmd, shopId, price, ownerId, ownerType
 	local ownerId = tonumber(ownerId)
 	local ownerType = tonumber(ownerType)
 
-	if not shopId or not price or not ownerId or not ownerType then
-		outputChatBox("Syntax: /addVehicleToFCShop [shopId] [price] [ownerId] [ownerType]", player, 255, 0, 0, true)
+	if player:getRank() < ADMIN_RANK_PERMISSION["addVehicleToFCShop"] then
+		player:sendError(_("Du bist nicht berechtigt!", player))
 		return
 	end
 
-	if player:getRank() < ADMIN_RANK_PERMISSION["addVehicleToFCShop"] then
-		player:sendError(_("Du bist nicht berechtigt!", player))
+	if not shopId or not price or not ownerId or not ownerType then
+		outputChatBox("Syntax: /addVehicleToFCShop [shopId] [price] [ownerId] [ownerType]", player, 255, 0, 0, true)
 		return
 	end
 
@@ -1906,17 +1907,28 @@ function Admin:addVehicleToFCShop(player, cmd, shopId, price, ownerId, ownerType
 	if sql:queryExec("INSERT INTO ??_fc_vehicle_shop_veh (Model, Price, Description, OwnerId, OwnerType, Color, Textures, ELSPreset) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
 		sql:getPrefix(), player.vehicle.model, price, name, ownerId, ownerType, toJSON(color), toJSON(textures), elsPreset) 
 	then
-		ShopManager.FCVehicleShopsMap[shopId].m_VehicleList[sql:lastInsertId()] = {
-			model = player.vehicle.model,
-			price = price,
-			description = name,
-			ownerId = ownerId,
-			ownerType = ownerType,
-			color = color,
-			textures = textures,
-			elsPreset = elsPreset
-		}
-
 		player:sendSuccess(_("Fahrzeug %s zu Shop #%d hinzugefügt!", player, name, shopId))
 	end
+end
+
+function Admin:reloadFCVehicleShop(player, cmd, shopId)
+	local shopId = tonumber(shopId)
+
+	if player:getRank() < ADMIN_RANK_PERMISSION["addVehicleToFCShop"] then
+		player:sendError(_("Du bist nicht berechtigt!", player))
+		return
+	end
+
+	if not shopId then
+		outputChatBox("Syntax: /reloadFCVehicleShop [shopId]", player, 255, 0, 0, true)
+		return
+	end
+
+	if not ShopManager.FCVehicleShopsMap[shopId] then
+		player:sendError(_("Shop existiert nicht!", player))
+		return
+	end
+
+	ShopManager.FCVehicleShopsMap[shopId]:reload()
+	player:sendSuccess(_("Shop #%d neugeladen!", player))
 end
