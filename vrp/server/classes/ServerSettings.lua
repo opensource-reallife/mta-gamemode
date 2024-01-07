@@ -96,6 +96,18 @@ function ServerSettings:constructor()
 			MIN_PLAYERS_FOR_VEHICLE_FIRE = tonumber(row.Value)
 		end
 
+		if row.Index == "MinMembersSAR" then
+			SAR_MIN_PLAYERS = tonumber(row.Value)
+		end
+
+		if row.Index == "MinTimeSAR" then
+			SAR_TIME_MIN = tonumber(row.Value)
+		end
+
+		if row.Index == "MaxTimeSAR" then
+			SAR_TIME_MAX = tonumber(row.Value)
+		end
+
 		self.m_Settings[row.Index] = row.Value
 	end
 end
