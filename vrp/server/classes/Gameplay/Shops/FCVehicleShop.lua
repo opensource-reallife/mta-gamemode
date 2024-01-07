@@ -77,10 +77,10 @@ end
 function FCVehicleShop:Event_onShopOpen(player)
 	if not player or not player.m_VehicleShopMarker or Vector3(player.position - player.m_VehicleShopMarker.position):getLength() > 5 then
 		return 
-	end 
-	if player:getFaction() and player:isFactionDuty() and self.m_Factions[player:getFaction():getId()] then
+	end
+	if player:getFaction() and player:isFactionDuty() and table.find(self.m_Factions, player:getFaction():getId()) then
 		player:triggerEvent("showFCVehicleShopGUI", self.m_Id, self.m_Name, player:getFaction().m_VehicleLimits, player:getFaction().m_Vehicles, player:getFaction().m_MaxVehicles, self.m_VehicleList[VehicleTypes.Faction][player:getFaction():getId()], self.m_Ped)
-	elseif player:getCompany() and player:isCompanyDuty() and self.m_Companies[player:getCompany():getId()] then
+	elseif player:getCompany() and player:isCompanyDuty() and table.find(self.m_Companies, player:getCompany():getId()) then
 		player:triggerEvent("showFCVehicleShopGUI", self.m_Id, self.m_Name, player:getCompany().m_VehicleLimits, player:getCompany().m_Vehicles, player:getCompany().m_MaxVehicles, self.m_VehicleList[VehicleTypes.Company][player:getCompany():getId()], self.m_Ped)
 	else
 		player:sendError(_("Du bist nicht OnDuty oder der Händler liefert nicht an deine Fraktion/dein Unternehmen!", player))
@@ -91,7 +91,7 @@ function FCVehicleShop:buyVehicle(player, vehicleId)
 	local vehData
 	local vehType
 
-	if player:getFaction() and player:isFactionDuty() and self.m_Factions[player:getFaction():getId()] then
+	if player:getFaction() and player:isFactionDuty() and table.find(self.m_Faction, player:getFaction():getId()) then
 		vehData = self.m_VehicleList[VehicleTypes.Faction][player:getFaction():getId()][vehicleId]
 		vehType = VehicleCategory:getSingleton():getCategoryName(VehicleCategory:getSingleton():getModelCategory(vehData.model))
 
@@ -115,7 +115,7 @@ function FCVehicleShop:buyVehicle(player, vehicleId)
 
 		ownerId = player:getFaction():getId()
 		ownerType = VehicleTypes.Faction
-	elseif player:getCompany() and player:isCompanyDuty() and self.m_Companies[player:getCompany():getId()] then
+	elseif player:getCompany() and player:isCompanyDuty() and table.find(self.m_Companies, player:getCompany():getId()) then
 		vehData = self.m_VehicleList[VehicleTypes.Company][player:getCompany():getId()][vehicleId]
 		vehType = VehicleCategory:getSingleton():getCategoryName(VehicleCategory:getSingleton():getModelCategory(vehData.model))
 
