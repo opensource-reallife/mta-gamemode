@@ -53,6 +53,8 @@ function Admin:constructor()
     addCommandHandler("addFactionVehicle", bind(self.addFactionVehicle, self))
     addCommandHandler("addCompanyVehicle", bind(self.addCompanyVehicle, self))
 
+	addCommandHandler("addVehicleToFCShop", bind(self.addVehicleToFCShop, self))
+
     local adminCommandBind = bind(self.command, self)
 	self.m_ToggleJetPackBind = bind(self.toggleJetPack, self)
 	self.m_DeleteArrowBind = bind(self.deleteArrow, self)
@@ -1869,3 +1871,52 @@ function Admin:Event_adminStopVehicleForRent(reason)
 	end
 end
 
+function Admin:addVehicleToFCShop(player, cmd, shopId, price, ownerId, ownerType)
+	local shopId = tonumber(shopId)
+	local price = tonumber(price)
+	local ownerId = tonumber(ownerId)
+	local ownerType = tonumber(ownerType)
+
+	if not shopId or not price or not ownerId or not ownerType then
+		outputChatBox("Syntax: /addVehicleToFCShop [shopId] [price] [ownerId] [ownerType]", player, 255, 0, 0, true)
+		return
+	end
+
+	if player:getRank() < ADMIN_RANK_PERMISSION["addVehicleToFCShop"] then
+		player:sendError(_("Du bist nicht berechtigt!", player))
+		return
+	end
+
+	if not ShopManager.FCVehicleShopsMap[shopId] then
+		player:sendError(_("Shop existiert nicht!", player))
+		return
+	end
+
+	if not player.vehicle then
+		player:sendError(_("Du musst in einem Fahrzeug sitzen!", player))
+		return
+	end
+
+	local name = VehicleCategory:getSingleton():getModelName(player.vehicle.model)
+	local r1, g1, b1, r2, g2, b2 = player.vehicle:getColor(true)
+	local color = {r1 = r1, g1 = g1, b1 = b1, r2 = r2, g2 = g2, b2 = b2}
+	local textures = player.vehicle:getTunings().m_Tuning.Texture
+	local elsPreset = player.vehicle.m_ELSPreset
+
+	if sql:queryExec("INSERT INTO ??_fc_vehicle_shop_veh (Model, Price, Description, OwnerId, OwnerType, Color, Textures, ELSPreset) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
+		sql:getPrefix(), player.vehicle.model, price, name, ownerId, ownerType, toJSON(color), toJSON(textures), elsPreset) 
+	then
+		ShopManager.FCVehicleShopsMap[shopId].m_VehicleList[sql:lastInsertId()] = {
+			model = player.vehicle.model,
+			price = price,
+			description = name,
+			ownerId = ownerId,
+			ownerType = ownerType,
+			color = color,
+			textures = textures,
+			elsPreset = elsPreset
+		}
+
+		player:sendSuccess(_("Fahrzeug %s zu Shop #%d hinzugefügt!", player, name, shopId))
+	end
+end
