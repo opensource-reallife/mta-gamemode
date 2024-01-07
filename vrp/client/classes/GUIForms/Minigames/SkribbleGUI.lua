@@ -29,7 +29,7 @@ function SkribbleGUI:constructor()
 	self.m_PlayersGrid = GUIGridGridList:new(1, 2, 5, 14, self.m_Window)
 	self.m_PlayersGrid:addColumn(_"Spieler", .5)
 	self.m_PlayersGrid:addColumn(_"Punkte", .3)
-	self.m_PlayersGrid:addColumn(_"", .2)
+	self.m_PlayersGrid:addColumn("", .2)
 
 	self.m_Skribble = GUIGridSkribble:new(6, 2, 19, 13, self.m_Window)
 

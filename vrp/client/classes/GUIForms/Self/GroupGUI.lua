@@ -60,7 +60,7 @@ function GroupGUI:constructor()
 
 	
 	self.m_GroupPlayersGrid = GUIGridList:new(self.m_Width*0.02, self.m_Height*0.05, self.m_Width*0.6, self.m_Height*0.8, tabMitglieder)
-	self.m_GroupPlayersGrid:addColumn(_"", 0.06)
+	self.m_GroupPlayersGrid:addColumn("", 0.06)
 	self.m_GroupPlayersGrid:addColumn(_"Spieler", 0.44)
 	self.m_GroupPlayersGrid:addColumn(_"Rang", 0.18)
 	self.m_GroupPlayersGrid:addColumn(_"Aktivität", 0.27)

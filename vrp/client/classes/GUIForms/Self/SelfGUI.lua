@@ -1220,7 +1220,7 @@ function SelfGUI:onSettingChange(setting)
 			end
 		end
 
-		self.m_InfoLabel = GUILabel:new(self.m_Width*0.02, self.m_Height*0.19, self.m_Width*0.6, self.m_Height*0.055, _"", self.m_SettingBG)
+		self.m_InfoLabel = GUILabel:new(self.m_Width*0.02, self.m_Height*0.19, self.m_Width*0.6, self.m_Height*0.055, "", self.m_SettingBG)
 
 		local currentMode = core:get("Other", "TextureMode", TEXTURE_LOADING_MODE.DEFAULT)
 		self.m_TextureModeChange:setIndex(currentMode, true)

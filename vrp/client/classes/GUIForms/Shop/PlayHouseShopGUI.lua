@@ -30,7 +30,7 @@ function PlayHouseShopGUI:constructor(marker)
 	self.m_ShopItems:addColumn(_"Gegenstand", 0.6)
 	self.m_ShopItems:addColumn(_"Preis", 0.4)
 	
-	self.m_ItemDescription = GUIGridLabel:new(8, 5, 4, 4, _"", self)
+	self.m_ItemDescription = GUIGridLabel:new(8, 5, 4, 4, "", self)
 	self.m_ItemImage = GUIGridImage:new(8, 2, 4, 3, "files/images/Inventory/items/Items/Clubcard.png", self)
 	self.m_ItemImage:setVisible(false)
 	
