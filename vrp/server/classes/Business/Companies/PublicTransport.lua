@@ -398,6 +398,7 @@ function PublicTransport:startBusTour_Driver(player, nextStation, line)
 			money = 0,
 			stations = 0,
 		}
+		player:startNavigationTo(Vector3(x, y, z))
 	end
 end
 
@@ -509,15 +510,15 @@ function PublicTransport:BusStop_Hit(player, matchingDimension)
 				money = {
 					mode = "give",
 					bank = true,
-					amount = math.round(100 * (dist/1000)),
+					amount = math.round(200 * (dist/1000)),
 					toOrFrom = self.m_BankAccountServer,
 					category = "Company",
 					subcategory = "Bus"
 				},
 				points = math.round(5 * (dist/1000)),--5 / km
 			})
-			self.m_BankAccountServer:transferMoney({self, nil, true}, math.round(100 * (dist/1000)), ("Busfahrt Linie %d von %s"):format(line, player:getName()), "Company", "Bus")
-			player.Bus_Statistics.money = player.Bus_Statistics.money + math.round(100 * (dist/1000))
+			self.m_BankAccountServer:transferMoney({self, nil, true}, math.round(600 * (dist/1000)), ("Busfahrt Linie %d von %s"):format(line, player:getName()), "Company", "Bus")
+			player.Bus_Statistics.money = player.Bus_Statistics.money + math.round(600 * (dist/1000))
 			player.Bus_Statistics.stations = player.Bus_Statistics.stations + 1
 		end
 
@@ -529,6 +530,7 @@ function PublicTransport:BusStop_Hit(player, matchingDimension)
 		player.Bus_Blip = Blip:new("Marker.png", x, y, player, 9999, PublicTransport.ms_BusLineData[line].color)
 		player.Bus_Blip:setZ(z)
 		player.Bus_Blip:setDisplayText("Bushaltestelle")
+		player:startNavigationTo(Vector3(x, y, z))
 
 		if isElement(self.m_BusStops[stopId].marker[vehicle]) then
 			destroyElement(self.m_BusStops[stopId].marker[vehicle])
