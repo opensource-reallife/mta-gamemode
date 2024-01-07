@@ -11,21 +11,7 @@ function FCVehicleShop:constructor(id, name, npc, vehicleSpawn, aircraftSpawn, b
 	self.m_Id = id
 	self.m_Name = name
 	self.m_BankAccountServer = BankServer.get("server.fc_vehicle_shop")
-	self.m_VehicleList = {}
-
-	local result = sql:queryFetch("SELECT * FROM ??_fc_vehicle_shop_veh", sql:getPrefix())
-	for k, row in pairs(result) do
-		self.m_VehicleList[row.Id] = {
-			model = row.Model,
-			price = row.Price,
-			description = row.Description,
-			ownerId = row.OwnerId,
-			ownerType = row.OwnerType,
-			color = fromJSON(row.Color),
-			textures = fromJSON(row.Textures),
-			elsPreset = row.ELSPreset
-		}
-	end
+	self:reload()
 
 	self.m_Factions = factions and fromJSON(factions) or {}
 	self.m_Companies = companies and fromJSON(companies) or {}
@@ -65,23 +51,45 @@ function FCVehicleShop:constructor(id, name, npc, vehicleSpawn, aircraftSpawn, b
 	end)
 end
 
+function FCVehicleShop:reload()
+	self.m_VehicleList = {}
+
+	local result = sql:queryFetch("SELECT * FROM ??_fc_vehicle_shop_veh", sql:getPrefix())
+	for k, row in pairs(result) do
+		if not self.m_VehicleList[row.OwnerType] then self.m_VehicleList[row.OwnerType] = {} end
+		if not self.m_VehicleList[row.OwnerType][row.OwnerId] then self.m_VehicleList[row.OwnerType][row.OwnerId] = {} end
+		
+		self.m_VehicleList[row.OwnerType][row.OwnerId][row.Id] = {
+			model = row.Model,
+			price = row.Price,
+			description = row.Description,
+			ownerId = row.OwnerId,
+			ownerType = row.OwnerType,
+			color = fromJSON(row.Color),
+			textures = fromJSON(row.Textures),
+			elsPreset = row.ELSPreset
+		}
+	end
+end
+
 function FCVehicleShop:Event_onShopOpen(player)
 	if player:getFaction() and player:isFactionDuty() and self.m_Factions[player:getFaction():getId()] then
-		player:triggerEvent("showFCVehicleShopGUI", self.m_Id, self.m_Name, player:getFaction().m_VehicleLimits, player:getFaction().m_Vehicles, player:getFaction().m_MaxVehicles, self.m_VehicleList, self.m_Ped)
+		player:triggerEvent("showFCVehicleShopGUI", self.m_Id, self.m_Name, player:getFaction().m_VehicleLimits, player:getFaction().m_Vehicles, player:getFaction().m_MaxVehicles, self.m_VehicleList[VehicleTypes.Faction][player:getFaction():getId()], self.m_Ped)
 	elseif player:getCompany() and player:isCompanyDuty() and self.m_Companies[player:getCompany():getId()] then
-		player:triggerEvent("showFCVehicleShopGUI", self.m_Id, self.m_Name, player:getCompany().m_VehicleLimits, player:getCompany().m_Vehicles, player:getCompany().m_MaxVehicles, self.m_VehicleList, self.m_Ped)
+		player:triggerEvent("showFCVehicleShopGUI", self.m_Id, self.m_Name, player:getCompany().m_VehicleLimits, player:getCompany().m_Vehicles, player:getCompany().m_MaxVehicles, self.m_VehicleList[VehicleTypes.Company][player:getCompany():getId()], self.m_Ped)
 	else
 		player:sendError(_("Du bist nicht OnDuty oder der Händler liefert nicht an deine Fraktion/dein Unternehmen!", player))
 	end
 end
 
 function FCVehicleShop:buyVehicle(player, vehicleId)
-	local vehData = self.m_VehicleList[vehicleId]
-	local vehType = VehicleCategory:getSingleton():getCategoryName(VehicleCategory:getSingleton():getModelCategory(vehData.model))
-	local color = vehData.color
-	local spawnPos = self.m_VehicleSpawn
+	local vehData
+	local vehType
 
 	if player:getFaction() and player:isFactionDuty() and self.m_Factions[player:getFaction():getId()] then
+		vehData = self.m_VehicleList[VehicleTypes.Faction][player:getFaction():getId()][vehicleId]
+		vehType = VehicleCategory:getSingleton():getCategoryName(VehicleCategory:getSingleton():getModelCategory(vehData.model))
+
 		if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "faction", "buyVehicle") then
 			player:sendError(_("Du bist nicht berechtigt weitere Fraktionsfahrzeuge zu kaufen!", player))
 			return
@@ -103,6 +111,9 @@ function FCVehicleShop:buyVehicle(player, vehicleId)
 		ownerId = player:getFaction():getId()
 		ownerType = VehicleTypes.Faction
 	elseif player:getCompany() and player:isCompanyDuty() and self.m_Companies[player:getCompany():getId()] then
+		vehData = self.m_VehicleList[VehicleTypes.Company][player:getCompany():getId()][vehicleId]
+		vehType = VehicleCategory:getSingleton():getCategoryName(VehicleCategory:getSingleton():getModelCategory(vehData.model))
+
 		if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "company", "buyVehicle") then
 			player:sendError(_("Du bist nicht berechtigt weitere Unternehmensfahrzeuge zu kaufen!", player))
 			return
@@ -124,6 +135,9 @@ function FCVehicleShop:buyVehicle(player, vehicleId)
 		ownerId = player:getCompany():getId()
 		ownerType = VehicleTypes.Company
 	end
+
+	local color = vehData.color
+	local spawnPos = self.m_VehicleSpawn
 	
 	if vehType == "Boot" then
 		spawnPos = self.m_BoatSpawn
