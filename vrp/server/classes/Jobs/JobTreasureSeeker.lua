@@ -220,7 +220,7 @@ function JobTreasureSeeker:drop(player, key, keyState)
 					setTimer(function()
 						if isElement(veh) then
 							veh.Magnet.Object:destroy()
-							player:sendInfo("Du hast das Objekt zurück ins Meer geworfen!")
+							player:sendInfo(_("Du hast das Objekt zurück ins Meer geworfen!", player))
 							self:loadTreasure(player)
 							self.m_IsDropping[player] = false
 						end
