@@ -45,11 +45,15 @@ function FCVehicleShop:constructor(id, name, npc, vehicleSpawn, aircraftSpawn, b
 
 	local npcData = fromJSON(npc)
 
-	self.m_Blip = Blip:new("CarShop.png", npcData["posX"], npcData["posY"], {faction = self.m_Factions, company = self.m_Companies}, 400)
-	self.m_Blip:setDisplayText(self.m_Name, BLIP_CATEGORY.Shop)
-	self.m_Blip:setOptionalColor({37, 78, 108})
+	if (not npcData["interior"] or npcData["interior"] == 0) and (not npcData["dimension"] or npcData["dimension"] == 0) then
+		self.m_Blip = Blip:new("CarShop.png", npcData["posX"], npcData["posY"], {faction = self.m_Factions, company = self.m_Companies}, 400)
+		self.m_Blip:setDisplayText(self.m_Name, BLIP_CATEGORY.Shop)
+		self.m_Blip:setOptionalColor({37, 78, 108})
+	end
 
 	self.m_Ped = NPC:new(npcData["skinId"], npcData["posX"], npcData["posY"], npcData["posZ"], npcData["rotZ"])
+	self.m_Ped:setInterior(npcData["interior"] or 0)
+	self.m_Ped:setInterior(npcData["dimension"] or 0)
 	ElementInfo:new(self.m_Ped, _("Fahrzeugverkauf", client), 1.3)
 	self.m_Ped:setImmortal(true)
 	self.m_Ped:setFrozen(true)
@@ -66,6 +70,8 @@ function FCVehicleShop:Event_onShopOpen(player)
 		player:triggerEvent("showFCVehicleShopGUI", self.m_Id, self.m_Name, player:getFaction().m_VehicleLimits, player:getFaction().m_Vehicles, player:getFaction().m_MaxVehicles, self.m_VehicleList, self.m_Ped)
 	elseif player:getCompany() and player:isCompanyDuty() and self.m_Companies[player:getCompany():getId()] then
 		player:triggerEvent("showFCVehicleShopGUI", self.m_Id, self.m_Name, player:getCompany().m_VehicleLimits, player:getCompany().m_Vehicles, player:getCompany().m_MaxVehicles, self.m_VehicleList, self.m_Ped)
+	else
+		player:sendError(_("Du bist nicht OnDuty oder der Händler liefert nicht an deine Fraktion/dein Unternehmen!", player))
 	end
 end
 
