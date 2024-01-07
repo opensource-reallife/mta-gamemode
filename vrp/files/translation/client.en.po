@@ -4611,7 +4611,7 @@ msgstr "Mod ban: -"
 msgid "Unban"
 msgstr "Unban"
 
-msgid "NickChange"
+msgid "Nickchange"
 msgstr "Nickchange"
 
 msgid "Rangstandard"
