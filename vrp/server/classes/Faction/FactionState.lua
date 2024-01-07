@@ -11,8 +11,7 @@ local radarRange = 20
   -- implement by children
 
 function FactionState:constructor()
-	self:createArrestZone(1564.92, -1693.55, 5.89, 0, 5) -- PD garare
-	self:createArrestZone(218.470, 118.571, 999.016, 10)
+	self:createArrestZone(1564.92, -1693.55, 5.89, 0, 5) -- PD garage
 	self:createArrestZone(1578.50, -1682.24, 15.0)-- PD cells
 	self:createArrestZone(1564.38, -1702.57, 28.40) --PD roof
 	self:createArrestZone(163.05, 1904.10, 18.67) -- Area
@@ -39,10 +38,9 @@ function FactionState:constructor()
 	--self.m_InstantTeleportCol:addEnterEvent(function( player) player:triggerEvent("setOcclusion", false) end)
 	--self.m_InstantTeleportCol:addExitEvent(function( player) player:triggerEvent("setOcclusion", true) end)
 
-	self.m_InteriorGarageEntrance = InteriorEnterExit:new(Vector3(215.60, 126.05, 1003), Vector3(1568.64, -1690.16, 5.89), 180, 180, 0, 5, 10) -- pd exit
-	self.m_InteriorGarageEntrance:addEnterEvent(function( player) player:triggerEvent("setOcclusion", false) end)
-	self.m_InteriorGarageEntrance:addExitEvent(function( player) player:triggerEvent("setOcclusion", true) end)
-
+	--self.m_InteriorGarageEntrance = InteriorEnterExit:new(Vector3(215.60, 126.05, 1003), Vector3(1568.64, -1690.16, 5.89), 180, 180, 0, 5, 10) -- pd exit
+	--self.m_InteriorGarageEntrance:addEnterEvent(function( player) player:triggerEvent("setOcclusion", false) end)
+	--self.m_InteriorGarageEntrance:addExitEvent(function( player) player:triggerEvent("setOcclusion", true) end)
 
 	self.ms_IllegalItems = {"Kokain", "Weed", "Heroin", "Shrooms", "Diebesgut", "Sprengstoff", "Hacking-Kit"}
 
@@ -55,7 +53,7 @@ function FactionState:constructor()
 	end
 
 	self.m_SelfBailMarker = {}
-	self:createSelfArrestMarker(  Vector3(240.81, 112.71, 1003.22), 10, 0 )
+	self:createSelfArrestMarker(Vector3(1561.80, -1678.16, 16.20))
 
 	self.m_EvidenceEquipmentBox = {}
 	self:createEquipmentEvidence(Vector3( 1538.44, -1708.12, 5.22), 0, 5, 133)
@@ -153,9 +151,9 @@ end
 function FactionState:destructor()
 end
 
-function FactionState:createSelfArrestMarker( pos, int, dim )
-	self.m_Ped = NPC:new(280, 253.7, 117.3, 1003.2)
-	self.m_Ped:setRotation(Vector3(0, 0, 90))
+function FactionState:createSelfArrestMarker(pos, int, dim)
+	self.m_Ped = NPC:new(280, 1561.79, -1680.42, 16.20)
+	self.m_Ped:setRotation(Vector3(0, 0, 0))
 	self.m_Ped:setImmortal(true)
 	self.m_Ped:setFrozen(true)
 	local marker = createPickup(pos, 3, 1247, 10)
@@ -309,13 +307,7 @@ function FactionState:Event_OnConfirmSelfArrest()
 end
 
 function FactionState:loadLSPD(factionId)
-	self:createDutyPickup(237.83, 108.86, 1003.23, 10) -- PD Interior
-
-	self.m_DutyNPC = NPC:new(280, 238.89999, 112.6, 1003.2, 270)
-	self.m_DutyNPC:setImmortal(true)
-	self.m_DutyNPC:setDimension(0)
-	self.m_DutyNPC:setInterior(10)
-
+	self:createDutyPickup(1562.30, -1683.30, 16.20) -- PD Interior
 	self:createDutyPickup(1530.21, -1671.66, 6.22, 0, 5) -- PD Garage
 
 	self:createTakeItemsPickup(Vector3(1543.96, -1707.26, 5.59), 0, 5)
@@ -353,14 +345,11 @@ function FactionState:loadLSPD(factionId)
 	--InteriorEnterExit:new(Vector3(1564.84, -1666.84, 28.40), Vector3(226.65, 75.95, 1005.04), 0, 0, 6, 0) -- LSPD Roof
 
 	local elevator = Elevator:new()
-	elevator:addStation("Dach - Heliports", Vector3(1564.84, -1666.84, 28.40), 90, 0, 0)
-	elevator:addStation("Innenraum", Vector3(237.89, 114.82, 1010.22), 84, 10, 0)
-	elevator:addStation("UG Garage", Vector3(1525.16, -1678.17, 5.89), 270, 0, 5)
+	elevator:addStation("UG Garage", Vector3(1568.65, -1690.97, 5.89), 270, 0, 5)
+	elevator:addStation("Erdgeschoss", Vector3(1567.73, -1687.24, 16.20), 84)
+	elevator:addStation("Dach - Heliports", Vector3(1564.94, -1666.13, 28.40), 90)
 
-
-
-	local safe = createObject(2332, 233.01, 115.26, 1002.8)
-	safe:setInterior(10)
+	local safe = createObject(2332, 1559.90, -1647.80, 17, 0, 0, 90)
 	FactionManager:getSingleton():getFromId(factionId):setSafe(safe)
 end
 
@@ -398,7 +387,6 @@ function FactionState:loadFBI(factionId)
 
 	InteriorEnterExit:new(Vector3(1211.5996, -1750.0996, 13.6), Vector3(267.03, -23.87, 1032.20), 220, 0, 10) -- main entrance
 	InteriorEnterExit:new(Vector3(1219.20, -1812.25, 16.59), Vector3(259.91, -74.91, 1037.35), 0, 180, 10) -- back entrance / parking lot
-
 end
 
 function FactionState:loadArmy(factionId)

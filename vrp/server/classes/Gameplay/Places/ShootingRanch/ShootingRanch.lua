@@ -25,8 +25,7 @@ ShootingRanch.Trainings = {
 }
 
 function ShootingRanch:constructor()
-	InteriorEnterExit:new(Vector3(-7188.08, -2488.68, 32.36), Vector3(252.13, 117.37, 1003), 0, 270, 10, 0, 0, 0):setCustomText("Ausgang", _"Waffentraining")
-
+	InteriorEnterExit:new(Vector3(-7188.01, -2488.13, 32.36), Vector3(1560.33, -1671.58, 16.20), 0, 180):setCustomText("Ausgang", _"Waffentraining")
 
 	self.m_ShootingRanchMarker = createMarker(-7190.96, -2482.61, 31.4, "cylinder", 1, 0, 255, 0, 200)
 	addEventHandler("onMarkerHit", self.m_ShootingRanchMarker, function(hitElement, dim)

@@ -46,7 +46,6 @@ function InteriorManager:createDefaultInteriors()
 
     -- Copied over from InteriorEnterExit
 	local data = {
-		{1554.8, -1675.7, 16, 246.39999, 107.6, 1003, 0, 90, 10},
         {1567.91, -1898.01, 13.56, 460.56, -88.65, 999.55, 90, 0, 4},
 	}
 
