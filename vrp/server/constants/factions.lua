@@ -96,7 +96,7 @@ factionSpecialWeapons[1] = {
 }
 factionWTDestination[1] = Vector3(1588.28, -1627.34, 12.38)
 factionSWTDestination[1] = Vector3(145.95, 1917.67, 17.58)
-factionSpawnpoint[1] = {Vector3(228.09, 110.949, 1003.219), 10, 0}
+factionSpawnpoint[1] = {Vector3(1558.31, -1684.71, 16.20), 0, 0}
 factionAirDropPoint[1] = Vector3(281.39, 2501.79, 16.48)
 factionNavigationpoint[1] = Vector3(1552.278, -1675.725, 12.6)
 factionDTDestination[1] = {Vector3(1209.12, -1752.04, 13.59), 55.41, 155, 166, "Agent K."}
