@@ -4974,6 +4974,9 @@ msgstr "Health: %s %%"
 msgid "Schutzweste: %s %%"
 msgstr "Armor: %s %%"
 
+msgid "Hunger: %s %%"
+msgstr "Hunger: %s %%"
+
 msgid "Kein GPS-Signal"
 msgstr "No GPS-Signal"
 
@@ -4986,6 +4989,9 @@ msgstr "HEALTH: %s%%"
 msgid "ATEMLUFT: %s%%"
 msgstr "OXYGEN: %s%%"
 
+msgid "HUNGER: %s%%"
+msgstr "HUNGER: %s%%"
+
 msgid "%s Std."
 msgstr "%s h"
 
@@ -4997,6 +5003,9 @@ msgstr "%s%% Armor"
 
 msgid "%s%% Atemluft"
 msgstr "%s%% Oxygen"
+
+msgid "%s%% Hunger"
+msgstr "%s%% Hunger"
 
 msgid "%s Punkte"
 msgstr "%s Points"

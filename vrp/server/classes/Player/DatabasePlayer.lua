@@ -1130,11 +1130,11 @@ function DatabasePlayer:setHunger(hunger)
 
 		if hunger > 100 then
 			self.m_Hunger = 100
-		elseif hunger <= 20 then
+		elseif hunger <= 20 and hunger >= 1 then
 			self:toggleControl("sprint", false)
-			self:sendWarning(_("Du musst dringend etwas essen, sonst verhungerst du!", self))
+			self:sendWarning(_("Du musst dringend etwas essen, sonst sirbst du!", self))
 		elseif hunger <= 0 then
-			self:sendShortMessage(_("Du wurdest wegen akuter Mangelernährung ins Krankenhaus befördert!", self))
+			self:sendShortMessage(_("Du wurdest wegen akuter Mangelernährung außer Gefecht gesetzt!", self))
 			self:setHunger(Randomizer:get(40, 60))
 			self:kill()
 		end

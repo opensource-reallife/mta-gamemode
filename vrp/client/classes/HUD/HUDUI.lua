@@ -280,7 +280,7 @@ function HUDUI:drawVRPHealthArmor()
 	dxDrawRectangle(left, top, width, height, tocolor(0, 0, 0, 150))
 	dxDrawRectangle(left, top, width*hunger/100, height, tocolor(128, 0, 0))
 
-	local hunger = "Hunger: "..math.floor(hunger).." %"
+	local hunger = _("Hunger: %s %%", math.floor(hunger))
 	dxDrawText(hunger, left , top, left+width, top+height, Color.White, 1.2, "default-bold", "center", "center")
 end
 
