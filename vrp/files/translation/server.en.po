@@ -4299,8 +4299,8 @@ msgstr "an air conditioner"
 msgid "ein Ladenschild"
 msgstr "a store sign"
 
-msgid "Du hast das Objekt zurück ins Meer geworfen!
-msgstr "You threw the object back into the sea!
+msgid "Du hast das Objekt zurück ins Meer geworfen!"
+msgstr "You threw the object back into the sea!"
 
 msgid "Du musst dringend etwas essen, sonst sirbst du!"
 msgstr "You have to eat something urgently, otherwise you'll die!"
