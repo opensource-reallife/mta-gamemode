@@ -56,7 +56,7 @@ end
 function FCVehicleShop:reload()
 	self.m_VehicleList = {}
 
-	local result = sql:queryFetch("SELECT * FROM ??_fc_vehicle_shop_veh", sql:getPrefix())
+	local result = sql:queryFetch("SELECT * FROM ??_fc_vehicle_shop_veh WHERE ShopId = ?", sql:getPrefix(), self.m_Id)
 	for k, row in pairs(result) do
 		if not self.m_VehicleList[row.OwnerType] then self.m_VehicleList[row.OwnerType] = {} end
 		if not self.m_VehicleList[row.OwnerType][row.OwnerId] then self.m_VehicleList[row.OwnerType][row.OwnerId] = {} end
