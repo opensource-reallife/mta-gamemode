@@ -43,7 +43,7 @@ function ItemAlcohol:use(player)
 		exports.bone_attach:attachElementToBone(item, player, 12, 0, 0.05, 0.1, 0, -90, 0)
 	end
 
-	player:meChat(true, " "..ItemSettings["Text"].."!")
+	player:meChat(true, ItemSettings["Text"].."!")
 	if ItemSettings["Health"] > 0 then
 		StatisticsLogger:getSingleton():addHealLog(client, ItemSettings["Health"], "Item "..self:getName())
 		client:checkLastDamaged() 

@@ -12,7 +12,7 @@ function Company.onInherit(derivedClass)
   Company.DerivedClasses[#Company.DerivedClasses+1] = derivedClass
 end
 
-function Company:constructor(Id, Name, ShortName, ShorterName, Creator, players, lastNameChange, bankAccountId, Settings, rankLoans, rankSkins, rankPermissions, playerLimit)
+function Company:constructor(Id, Name, ShortName, ShorterName, Creator, players, lastNameChange, bankAccountId, Settings, rankLoans, rankSkins, rankPermissions, playerLimit, maxVehicles, vehicleLimits)
 	self.m_Id = Id
 	self.m_Name = Name
 	self.m_ShortName = ShortName
@@ -53,6 +53,15 @@ function Company:constructor(Id, Name, ShortName, ShorterName, Creator, players,
 
 	self.m_PlayerLimit = playerLimit > 0 and true or false
 	self.m_MaxPlayers = playerLimit
+
+	self.m_MaxVehicles = maxVehicles
+
+	local limits = fromJSON(vehicleLimits) or {}
+	local temp = {}
+	for k, v in pairs(limits) do
+		temp[tonumber(k)] = v
+	end
+	self.m_VehicleLimits = temp
 
 	if not DEBUG then
 		Async.create(
@@ -260,7 +269,7 @@ function Company:getRankName(rank)
 end
 
 
-function Company:sendChatMessage(sourcePlayer,message)
+function Company:sendChatMessage(sourcePlayer,message, translatableBind)
 	if not getElementData(sourcePlayer, "CompanyChatEnabled") then return sourcePlayer:sendError(_("Du hast den Unternehmenschat deaktiviert!", sourcePlayer)) end
 	local lastMsg, msgTimeSent = sourcePlayer:getLastChatMessage()
 	if getTickCount()-msgTimeSent < (message == lastMsg and CHAT_SAME_MSG_REPEAT_COOLDOWN or CHAT_MSG_REPEAT_COOLDOWN) then -- prevent chat spam
@@ -272,18 +281,37 @@ function Company:sendChatMessage(sourcePlayer,message)
 	local playerId = sourcePlayer:getId()
 	local rank = self.m_Players[playerId]
 	local rankName = self.m_RankNames[rank]
-    local receivedPlayers = {}
+	local receivedPlayers = {}
+    local receivedPlayersDE = {}
+    local receivedPlayersEN = {}
 	message = message:gsub("%%", "%%%%")
-	local text = ("%s %s: %s"):format(rankName, sourcePlayer:getName(), message)
+
 	for k, player in ipairs(self:getOnlinePlayers()) do
 		if getElementData(player, "CompanyChatEnabled") then
+			local tMessage = message
+			if translatableBind then
+				tMessage = BindManager:getSingleton():translateBind(message, player)
+			end
+			local text = ("%s %s: %s"):format(rankName, sourcePlayer:getName(), tMessage)	
+
 			player:sendMessage(text, 100, 150, 250)
         end
 		if player ~= sourcePlayer then
-            receivedPlayers[#receivedPlayers+1] = player
+			receivedPlayers[#receivedPlayers + 1] = player
+			if player:getLocale() == "de" then
+				receivedPlayersDE[#receivedPlayersDE+1] = player
+			else
+				receivedPlayersEN[#receivedPlayersEN+1] = player
+			end
         end
 	end
-    StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "company:"..self.m_Id, message, receivedPlayers)
+	if translatableBind then
+		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "company:"..self.m_Id, message, receivedPlayersDE)
+		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "company:"..self.m_Id, BindManager:getSingleton():getTranslation(message), receivedPlayersEN)
+	else
+		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "company:"..self.m_Id, message, receivedPlayers)
+	end
+
 end
 
 function Company:invitePlayer(player)

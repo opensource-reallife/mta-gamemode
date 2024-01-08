@@ -15,7 +15,7 @@ addRemoteEvents{"openSkinSelectGUI"}
 ]]
 
 local images_per_row = 5
-function SkinSelectGUI:constructor(skinTable, groupId, groupType, editable, allSkins)
+function SkinSelectGUI:constructor(skinTable, groupId, groupType, editable, allSkins, skinType)
 
 	local skin_count = skinTable and type(skinTable) == "table" and table.size(skinTable) or 0
 	local areaHeight = math.min(math.ceil(skin_count/5)*5, 10)
@@ -25,9 +25,11 @@ function SkinSelectGUI:constructor(skinTable, groupId, groupType, editable, allS
 	for i, v in pairs(skinTable) do
 		if allSkins[v] ~= -1 then table.insert(self.m_SkinTable, v) end
 	end
+
 	self.m_AllSkins = allSkins
-	self.m_SkinsEditable = editable -- boolean
+	self.m_SkinsEditable = editable -- boolean	
 	self.m_GroupId = groupId
+	self.m_SkinType = skinType
 	self.m_GroupType = groupType
 	GUIWindow.updateGrid()
 	self.m_Width = grid("x", 16)
@@ -45,9 +47,6 @@ function SkinSelectGUI:constructor(skinTable, groupId, groupType, editable, allS
 end
 
 function SkinSelectGUI:virtual_destructor()
-	if isTimer(self.m_SkinUpdateTimer) then
-		killTimer(self.m_SkinUpdateTimer)
-	end
 	if self.m_Edit then
 		ErrorBox:new(_"Einstellungen wurden nicht gespeichert (Bitte zuerst Edit-Modus beenden)!")
 	end
@@ -81,12 +80,12 @@ function SkinSelectGUI:loadSkins()
 				core:set("Cache", "LastCompanySkin", skinId)
 			end
 		end
-		if self.m_Edit then
+		if self.m_Edit and self.m_SkinType ~= "special" then
 			local changer = GUIGridChanger:new(x, y + h - 1, w, 1, self.m_ScrollableArea)
 			for i = 0, (self.m_GroupType == "company" and 5 or 6) do
 				changer:addItem("Rang "..i)
 			end
-			if self.m_GroupType == "faction" then
+			if self.m_GroupType == "faction" and not (self.m_GroupId == 1 or self.m_GroupId == 2 or self.m_GroupId == 3) then
 				changer:addItem("Spezial")
 			end
 			if self.m_AllSkins[skinId] == -1 then --special skin
@@ -95,7 +94,7 @@ function SkinSelectGUI:loadSkins()
 				changer:setIndex(self.m_AllSkins[skinId] + 1, true)
 			end
 			changer.onChange = function(item, index)
-				if index == #changer.m_Items and self.m_GroupType == "faction" then  --special skin
+				if index == #changer.m_Items and self.m_GroupType == "faction" and not (self.m_GroupId == 1 or self.m_GroupId == 2 or self.m_GroupId == 3) then  --special skin
 					self.m_AllSkins[skinId] = -1
 				else
 					self.m_AllSkins[skinId] = index - 1
@@ -107,7 +106,6 @@ function SkinSelectGUI:loadSkins()
 end
 
 function SkinSelectGUI:setEditable()
-	if isTimer(self.m_SkinUpdateTimer) then return end
 	if self.m_Edit then -- perform checks if changes are valid
 		local specials = 0
 		local rank0s = 0
@@ -133,10 +131,10 @@ function SkinSelectGUI:setEditable()
 
 end
 
-function SkinSelectGUI.open(skinTable, groupId, groupType, editable, allSkins)
+function SkinSelectGUI.open(skinTable, groupId, groupType, editable, allSkins, skinType)
 	if SkinSelectGUI:isInstantiated() then
 		delete(SkinSelectGUI:getSingleton())
 	end
-	SkinSelectGUI:new(skinTable, groupId, groupType, editable, allSkins)
+	SkinSelectGUI:new(skinTable, groupId, groupType, editable, allSkins, skinType)
 end
 addEventHandler("openSkinSelectGUI", root, SkinSelectGUI.open)

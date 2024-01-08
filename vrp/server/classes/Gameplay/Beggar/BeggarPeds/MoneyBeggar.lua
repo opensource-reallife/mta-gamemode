@@ -20,7 +20,11 @@ function MoneyBeggar:giveBeggarMoney(player, money)
 				},
 				points = 1,
 			})
-			player:meChat(true, ("übergibt %s %s"):format(self.m_Name, money == 1 and "einen Schein" or "ein paar Scheine"))
+			if money == 1 then
+				player:meChat(true, "übergibt %s einen Schein", self.m_Name, false)
+			else
+				player:meChat(true, "übergibt %s ein paar Scheine", self.m_Name, false)
+			end
 			self:sendMessage(player, BeggarPhraseTypes.Thanks)
 
 			-- give Achievement

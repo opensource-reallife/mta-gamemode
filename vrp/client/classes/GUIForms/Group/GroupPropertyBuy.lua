@@ -100,7 +100,7 @@ function GroupPropertyBuy:LocateButton_Click()
 		if item.position then
 			local blipPos = Vector2(item.position.x, item.position.y)
 			ShortMessage:new("Klicke um die Immobilie auf der Karte zu markieren.\n(Beachte, dass du nicht in einem Interior sein darfst)", "Immobilie", false, -1, function()
-				GPS:getSingleton():startNavigationTo(item.Position)
+				GPS:getSingleton():startNavigationTo(item.position)
 			end, false, blipPos, {{path = "Marker.png", pos = blipPos}})
 		else
 			ErrorBox:new(_"Fehler: Haus hat keine Position")

@@ -33,7 +33,7 @@ function HouseGUI:constructor(ownerName, price, rentprice, isValidRob, isClosed,
 	self.m_OwnerLbl = GUIGridLabel:new(1, 0.8, 6, 1, _("Besitzer: %s", ownerName or "Niemand"), self.m_Window)
 	self.m_PriceLbl = GUIGridLabel:new(1, 1.5, 5, 1, _("Grundpreis: %s", toMoneyString(price)), self.m_Window)
 	self.m_SalePriceLbl = GUIGridLabel:new(1, 2.3, 6, 1, _("Verkaufspreis: %s", toMoneyString(salePrice)), self.m_Window):setColor(Color.LightBlue):setVisible((salePrice and salePrice > 0) or false)
-	self.m_GarageLbl = GUIGridLabel:new(1, 3.1, 4, 1, _("Garage: %s", garage), self.m_Window)
+	self.m_GarageLbl = GUIGridLabel:new(1, 3.1, 4, 1, _("Garage: %s", _(garage)), self.m_Window)
 
 	if not ownerName then
 		self.m_BuyBtn = GUIGridButton:new(1, 4, 6, 1, _"Haus kaufen", self.m_Window):setBackgroundColor(Color.Green)
@@ -138,10 +138,10 @@ function HouseGUI:loadOwnerOptions()
 	self.m_SaveRentBtn.onLeftClick = bind(HouseGUI.saveRent, self)
 	self.m_RemoveRentBtn.onLeftClick = bind(HouseGUI.saveRent, self, true)
 
-	self.m_SetForSaleBtn = GUIGridButton:new(7, 9, 6, 1, _("%s", self.m_ForSale and "Verkauf beenden" or "Zum Verkauf anbieten"), self.m_Window):setBackgroundColor(Color.Orange)
+	self.m_SetForSaleBtn = GUIGridButton:new(7, 9, 6, 1, ("%s"):format(self.m_ForSale and _"Verkauf beenden" or _"Zum Verkauf anbieten"), self.m_Window):setBackgroundColor(Color.Orange)
 	self.m_SetForSaleBtn.onLeftClick = bind(self.openPriceQuestionBox, self)
 
-	self.m_SellBtn = GUIGridButton:new(7, 10, 6, 1, "Haus verkaufen", self.m_Window):setBackgroundColor(Color.Red)
+	self.m_SellBtn = GUIGridButton:new(7, 10, 6, 1, _"Haus verkaufen", self.m_Window):setBackgroundColor(Color.Red)
 	self.m_SellBtn.onLeftClick = bind(HouseGUI.sellHouse, self)
 end
 

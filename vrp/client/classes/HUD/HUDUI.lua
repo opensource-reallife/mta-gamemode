@@ -252,7 +252,7 @@ function HUDUI:drawVRPHealthArmor()
 		dxDrawRectangle(left, top, width*health/100, height, color)
 	end
 
-	health = "Leben: "..math.floor(health).." %"
+	health = _("Leben: %s %%", math.floor(health))
 	dxDrawText(health, left , top, left+width, top+height, Color.White, 1.2, "default-bold", "center", "center")
 
 	top =  0.175*screenHeight
@@ -261,7 +261,7 @@ function HUDUI:drawVRPHealthArmor()
 	dxDrawRectangle(left, top, width, height, tocolor(0, 0, 0, 150))
 	dxDrawRectangle(left, top, width*armor/100, height, tocolor(0, 0, 128))
 
-	local armor = "Schutzweste: "..math.floor(armor).." %"
+	local armor = _("Schutzweste: %s %%", math.floor(armor))
 	dxDrawText(armor, left , top, left+width, top+height, Color.White, 1.2, "default-bold", "center", "center")
 
 	top =  0.21*screenHeight
@@ -284,7 +284,7 @@ function HUDUI:getZone()
 	else
 		zone = zone1.." - "..zone2
 	end
-	if zone == "Unknown - Unknown" then zone = "Kein GPS-Signal" end
+	if zone == "Unknown - Unknown" then zone = _"Kein GPS-Signal" end
 	return zone
 end
 
@@ -354,20 +354,20 @@ function HUDUI:drawExo()
 	if lebensanzeige > 0 and lebensanzeige < 1 then lebensanzeige = 1 end
 	lebensanzeige = math.floor(lebensanzeige)
 
-	dxDrawText ("SCHUTZWESTE: "..math.floor(getPedArmor(self:getLocalTarget())).."%",screenWidth-width*0.5-r_os,width*0.475,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" ) --Money
-	dxDrawText ("LEBEN: "..lebensanzeige.."%",screenWidth-width*0.5-r_os,width*0.57,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" ) --Money
-	dxDrawText ("HUNGER: "..hungeranzeige.."%",screenWidth-width*0.5-r_os,width*0.675,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" ) --Money
-	--dxDrawText ("ATEMLUFT: "..math.floor((getPedOxygenLevel(localPlayer)*100)/(1000 + getPedStat(localPlayer, 22)*1.5 + getPedStat(localPlayer, 225)*1.5)).."%",screenWidth-width*0.5-r_os,width*0.675,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" ) --Money
+	dxDrawText (_("SCHUTZWESTE: %s%%", math.floor(getPedArmor(self:getLocalTarget()))),screenWidth-width*0.5-r_os,width*0.475,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
+	dxDrawText (_("LEBEN: %s%%", lebensanzeige),screenWidth-width*0.5-r_os,width*0.57,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
+	dxDrawText (_("HUNGER: %s%%", hungeranzeige),screenWidth-width*0.5-r_os,width*0.675,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
+	--dxDrawText (_("ATEMLUFT: %s%%", math.floor((getPedOxygenLevel(localPlayer)*100)/(1000 + getPedStat(localPlayer, 22)*1.5 + getPedStat(localPlayer, 225)*1.5))),screenWidth-width*0.5-r_os,width*0.675,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
 	dxDrawImage(screenWidth-width*0.3-r_os,0,width*0.24,width*0.24, FileModdingHelper:getSingleton():getWeaponImage(self:getLocalTarget():getWeapon()))
 	local tAmmo = getPedTotalAmmo( self:getLocalTarget() )
 	local iClip = getPedAmmoInClip( self:getLocalTarget() )
 	local weaponSlot = getPedWeaponSlot(self:getLocalTarget())
 	if weaponSlot >= 2 then
-		dxDrawText ( iClip.."-"..tAmmo-iClip,hudStartX+width*0.5, height*0.125,width*0.5, height*0.28, tocolor ( 255,255,255,255 ), 1.1*width*0.0039, "sans","left","top" ) --Money
+		dxDrawText ( iClip.."-"..tAmmo-iClip,hudStartX+width*0.5, height*0.125,width*0.5, height*0.28, tocolor ( 255,255,255,255 ), 1.1*width*0.0039, "sans","left","top" )
 	end
-	dxDrawText(math.floor(self:getLocalTarget():getPlayTime()/60).." Std.",hudStartX+width*0.5, height*0.77,width*0.5, height*0.08, tocolor ( 255,255,255,255 ), 0.9*width*0.0039, "sans","left","top" ) --Money
+	dxDrawText(_("%s Std.", math.floor(self:getLocalTarget():getPlayTime()/60)),hudStartX+width*0.5, height*0.77,width*0.5, height*0.08, tocolor ( 255,255,255,255 ), 0.9*width*0.0039, "sans","left","top" )
 
-	dxDrawText(self:getLocalTarget():getWanteds() or 0,hudStartX+width*0.89, height*0.77,width*0.5, height*0.08, tocolor ( 255,255,255,255 ), 0.9*width*0.0039, "sans","left","top" ) --Money
+	dxDrawText(self:getLocalTarget():getWanteds() or 0,hudStartX+width*0.89, height*0.77,width*0.5, height*0.08, tocolor ( 255,255,255,255 ), 0.9*width*0.0039, "sans","left","top" )
 
 
 	--[[if getPedWeapon(localPlayer) > 9  then
@@ -471,12 +471,12 @@ function HUDUI:drawChart()
 	end
 
 	drawCol(1, 0, Color.Clear, ("%02d.%02d.%04d"):format(getRealTime().monthday, getRealTime().month+1, getRealTime().year+1900), FontAwesomeSymbols.Calendar, Color.HUD_Brown_D, "date", not core:get("HUD", "chartDateVisible", false))
-	drawCol(1, health, healthColor, dsc and math.ceil(health).."% Leben" or math.ceil(health), FontAwesomeSymbols.Heart, Color.HUD_Red_D, "health", health == 0)
-	drawCol(1, hunger, hungerColor, dsc and math.ceil(hunger).."% Hunger" or math.ceil(hunger), FontAwesomeSymbols.Utensils, Color.HUD_Green_D, "hunger", hunger == 0)
-	drawCol(1, armor, Color.HUD_Grey, dsc and math.ceil(armor).."% Schutzweste" or math.ceil(armor), FontAwesomeSymbols.Shield, Color.HUD_Grey_D, "armor", armor == 0)
-	drawCol(1, oxygen, oxygenColor, dsc and math.ceil(oxygen).."% Atemluft" or math.ceil(oxygen), FontAwesomeSymbols.Comment, Color.HUD_Blue_D, "oxygen", oxygen == 100)
+	drawCol(1, health, healthColor, dsc and _("%s%% Leben", math.ceil(health)) or math.ceil(health), FontAwesomeSymbols.Heart, Color.HUD_Red_D, "health", health == 0)
+	drawCol(1, hunger, hungerColor, dsc and _("%s%% Hunger", math.ceil(hunger)) or math.ceil(hunger), FontAwesomeSymbols.Utensils, Color.HUD_Green_D, "hunger", hunger == 0)
+	drawCol(1, armor, Color.HUD_Grey, dsc and _("%s%% Schutzweste", math.ceil(armor)) or math.ceil(armor), FontAwesomeSymbols.Shield, Color.HUD_Grey_D, "armor", armor == 0)
+	drawCol(1, oxygen, oxygenColor, dsc and _("%s%% Atemluft", math.ceil(oxygen)) or math.ceil(oxygen), FontAwesomeSymbols.Comment, Color.HUD_Blue_D, "oxygen", oxygen == 100)
 	drawCol(1, 0, Color.Clear, toMoneyString(self:getLocalTarget():getMoney()), FontAwesomeSymbols.Money, Color.HUD_Green_D, "money")
-	drawCol(1, 0, Color.Clear, dsc and localPlayer:getPoints().." Punkte" or localPlayer:getPoints(), FontAwesomeSymbols.Points, Color.HUD_Lime_D, "points", not core:get("HUD", "chartPointLevelVisible", true))
+	drawCol(1, 0, Color.Clear, dsc and _("%s Punkte", localPlayer:getPoints()) or localPlayer:getPoints(), FontAwesomeSymbols.Points, Color.HUD_Lime_D, "points", not core:get("HUD", "chartPointLevelVisible", true))
 	drawCol(1, 0, Color.Clear, getZoneName(getElementPosition(self:getLocalTarget())), FontAwesomeSymbols.Waypoint, Color.HUD_Brown_D, "zone", self:getLocalTarget():getInterior() ~= 0 or not core:get("HUD", "chartZoneVisible", true))
 
 	drawCol(2, 0, Color.Clear, ("%02d:%02d"):format(getRealTime().hour, getRealTime().minute), false, Color.Clear, "clock")

@@ -137,7 +137,7 @@ function ScoreboardGUI:refresh()
 	end
 	self.m_CountRow = 0
 	self.m_CountColumn = 0
-	self:addPlayerCount("Zivilisten", self.m_FactionCount[0] or 0, self.m_FactionAFKCount[0] or 0, tocolor(255, 255, 255))
+	self:addPlayerCount(_"Zivilisten", self.m_FactionCount[0] or 0, self.m_FactionAFKCount[0] or 0, tocolor(255, 255, 255))
 
 	for id, faction in pairs(FactionManager.Map) do
 		if id ~= 13 then -- Hide Insurgent count (Insurgent = Civilian)
@@ -147,7 +147,8 @@ function ScoreboardGUI:refresh()
 	end
 	for id, company in ipairs(CompanyManager.Map) do
 		if id ~= 1 then -- Hide Driving School count
-			self:addPlayerCount(company:getShortName(), self.m_CompanyCount[id] or 0, self.m_CompanyAFKCount[id] or 0)
+			local color = company:getColor()
+			self:addPlayerCount(company:getShortName(), self.m_CompanyCount[id] or 0, self.m_CompanyAFKCount[id] or 0, tocolor(color.r, color.g, color.b))
 		end
 	end
 
@@ -188,6 +189,8 @@ function ScoreboardGUI:insertPlayers()
 			ping = "AFK"
 		elseif player:isInJail() then
 			ping = "Knast"
+		elseif player:getPublicSync("gangwarParticipant") then
+			ping = "GW"
 		else
 			ping = player:getPing().."ms"
 		end
@@ -212,7 +215,7 @@ function ScoreboardGUI:insertPlayers()
 
 		if player:getFaction() then
 			local color = player:getFaction():getColor()
-			if player:getFaction():isInsurgentFaction() then -- Hide Insurgent color (Insurgent = Civilian)
+			if player:getFaction():isInsurgentFaction() or not player:getPublicSync("Faction:Duty") then -- Hide Insurgent color (Insurgent = Civilian) / Dont show player faction color when off duty
 				item:setColumnColor(3, tocolor(255, 255, 255))
 			else
 				item:setColumnColor(3, tocolor(color.r, color.g, color.b))
@@ -224,6 +227,11 @@ function ScoreboardGUI:insertPlayers()
 					item:setColumnColor(4, tocolor(colorFMS[1], colorFMS[2], colorFMS[3]))
 				end
 			end
+		end
+
+		if player:getCompany() and player:getPublicSync("Company:Duty") then
+			local color = player:getCompany():getColor()
+			item:setColumnColor(5, tocolor(color.r, color.g, color.b))
 		end
 
 		if player.getPublicSync and player:getPublicSync("supportMode") or player:getPublicSync("ticketsupportMode") then 
@@ -242,6 +250,8 @@ function ScoreboardGUI:insertPlayers()
 			item:setColumnColor(8, Color.Red)
 		elseif ping == "Knast" then
 			item:setColumnColor(8, Color.Yellow)
+		elseif ping == "GW" then
+			item:setColumnColor(8, Color.Red)
 		end
 	end
 end

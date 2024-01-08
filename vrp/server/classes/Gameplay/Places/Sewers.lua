@@ -281,17 +281,22 @@ end
 
 function Sewers:Event_onPedClick(button, state, player)
 	local faction = player:getFaction()
+    
+    if not player or not source or Vector3(player.position - source.position):getLength() > 5 then
+		return 
+	end 
 
-	if
-		button ~= "left"
-		or state ~= "down"
-		or not faction
-		or not faction:isEvilFaction()
-        or not player:isFactionDuty()
-	then
-		return
+	if button ~= "left" or state ~= "down" then
+		if faction and faction:isEvilFaction() and player:isFactionDuty() then
+			if ActionsCheck:getSingleton():isActionAllowed(player) then
+				player:triggerEvent("openArmsDealerGUI", source, "evil")
+			else
+				player:sendWarning(_("Du kannst derzeit keine Aktion starten.", player))
+			end
+		else
+			player:sendWarning(_("Du bist nicht im Dienst.", player))
+		end
 	end
-	player:triggerEvent("openArmsDealerGUI", source, "evil")
 end
 
 function Sewers:addKevlarToPed(ped)

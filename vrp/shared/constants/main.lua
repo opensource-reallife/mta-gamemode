@@ -1,5 +1,5 @@
 PROJECT_NAME = "OpenReallife"
-PROJECT_VERSION = "1.0.7"
+PROJECT_VERSION = "1.1.0"
 DISABLE_SENTRY = true
 DISABLE_INFLUX = true
 DISABLE_MIGRATION = true
@@ -30,9 +30,9 @@ MAX_WANTED_LEVEL = 12
 EVENT_EASTER = false
 EVENT_EASTER_SLOTMACHINES_ACTIVE = false
 EVENT_HALLOWEEN = false
-EVENT_CHRISTMAS = true -- quests, mostly REMEMBER TO ADD/REMOVE <vrpfile src="files/models/skins/kobold.txd" /> AND <vrpfile src="files/models/skins/kobold.dff" /> TO META.XML DUE TO BIG FILE SIZE
-EVENT_CHRISTMAS_MARKET = true -- (EVENT_CHRISTMAS and getRealTime().monthday >= 6 and getRealTime().monthday <= 26) -- determines whether the christmas market is enabled at pershing square (shops, ferris wheel, wheels of fortune)
-SNOW_SHADERS_ENABLED = true -- getRealTime().month == 11 or getRealTime().month == 0 -- disable them during summer time
+EVENT_CHRISTMAS = false -- quests, mostly REMEMBER TO ADD/REMOVE <vrpfile src="files/models/skins/kobold.txd" /> AND <vrpfile src="files/models/skins/kobold.dff" /> TO META.XML DUE TO BIG FILE SIZE
+EVENT_CHRISTMAS_MARKET = false -- (EVENT_CHRISTMAS and getRealTime().monthday >= 6 and getRealTime().monthday <= 26) -- determines whether the christmas market is enabled at pershing square (shops, ferris wheel, wheels of fortune)
+SNOW_SHADERS_ENABLED = getRealTime().month == 11 or getRealTime().month == 0 -- disable them during summer time
 FIREWORK_ENABLED = true -- can users use firework?
 FIREWORK_SHOP_ACTIVE = false -- can users buy firework at the user meetup point?
 
@@ -61,18 +61,17 @@ ALCOHOL_LOSS_INTERVAL =  5*60 -- IN SECONDS
 ALCOHOL_LOSS = 0.5 -- every 10 Minutes
 
 --JOB_LEVELS:
-JOB_LEVEL_MULTIPLICATOR = 20 -- In Percent
-
 JOB_LEVEL_PIZZA = 0
 JOB_LEVEL_SWEEPER = 0
 JOB_LEVEL_LOGISTICAN = 2
 JOB_LEVEL_TRASHMAN = 2
 JOB_LEVEL_TREASURESEEKER = 4
-JOB_LEVEL_FORKLIFT = 4
+JOB_LEVEL_FORKLIFT = 3
 JOB_LEVEL_LUMBERJACK = 6
-JOB_LEVEL_HELITRANSPORT = 6
+JOB_LEVEL_HELITRANSPORT = 5
 JOB_LEVEL_FARMER = 8
-JOB_LEVEL_GRAVEL = 8
+JOB_LEVEL_GRAVEL = 7
+JOB_LEVEL_SERVICETECHNICIAN = 1
 JOB_LEVEL_BOXER = 10
 
 BLIP_CATEGORY = {
@@ -249,6 +248,8 @@ ADMIN_RANK_PERMISSION = {
 
 	["createSkyscraper"] = RANK.Developer, -- also includes deleting
 	["addHouseToSkyscraper"] = RANK.Developer, -- also includes removing 
+
+	["addVehicleToFCShop"] = RANK.Developer,
 	
 	["pedMenu"] = RANK.Administrator,
 	["fireMenu"] = RANK.Supporter,
@@ -265,7 +266,7 @@ ADMIN_RANK_PERMISSION = {
 	["createNewMap"] = RANK.Moderator,
 	["setMapStatus"] = RANK.Moderator,
 	["remoteOpenMapEditor"] = RANK.Administrator,
-
+	["createNewCategory"] = RANK.Administrator,
 	--keypad-system
 	["placeKeypadObjects"] = RANK.Administrator, -- ItemKeyPad, ItemEntrance, ItemDoor
 }
@@ -532,7 +533,6 @@ SkinInfo = {
 	[92] = {"Skaterin", 75000, 9},
 	[151] = {"Jeansrock, schwarze Brille", 60000, 9},
 	[152] = {"Zöpfe, rot karierter Rock", 50000, 9},
-	-- [178] = {"Domina", 85000, 9},
 	[209] = {"Donutladen", 90000, 9},
 	[228] = {"Business-Anzug, schwarz", 100000, 9},
 	[233] = {"Weißes Shirt, Jeans", 70000, 9},
@@ -563,6 +563,7 @@ SkinInfo = {
 	[310] = {"Zombie", math.huge, -1},
 
 	-- other skins
+	[260] = {"Construction Worker", math.huge, -1}, --Adminskin
 	[155] = {"Pizzalieferant", math.huge, -1},
 	[78] = {"Obdachloser", math.huge, -1},
 	[79] = {"Obdachloser", math.huge, -1},
@@ -574,6 +575,41 @@ SkinInfo = {
 	[212] = {"Obdachloser", math.huge, -1},
 	[230] = {"Obdachloser", math.huge, -1},
 	[239] = {"Obdachloser", math.huge, -1},
+	[178] = {"Domina", math.huge, -1},
+
+	--unused skins
+	[27] = {"Construction Worker", math.huge, -1},
+	[57] = {"Oriental Ped", math.huge, -1},
+	[60] = {"Normal Ped", math.huge, -1},
+	[69] = {"Normal Ped", math.huge, -1},
+	[72] = {"Hippy", math.huge, -1},
+	[75] = {"Prostitute", math.huge, -1},
+	[87] = {"Stripper", math.huge, -1},
+	[145] = {"Crack Maker", math.huge, -1},
+	[146] = {"Crack Maker", math.huge, -1},
+	[150] = {"Businesswoman", math.huge, -1},
+	[153] = {"Construction Worker", math.huge, -1},
+	[171] = {"Blackjack Dealer", math.huge, -1},
+	[172] = {"Casino croupier", math.huge, -1},
+	[203] = {"Karate Teacher", math.huge, -1},
+	[204] = {"Karate Teacher", math.huge, -1},
+	[252] = {"Naked Valet", math.huge, -1},
+	[254] = {"Biker Drug Dealer", math.huge, -1},
+	[290] = {"Rose", math.huge, -1},
+	[304] = {"Kendl Johnson", math.huge, -1},
+	[305] = {"Jethro", math.huge, -1},
+
+	--unused special skins
+	[3] = {"Country Police Officer", math.huge, -1},
+	[4] = {"SFPD Bike Cop", math.huge, -1},
+	[5] = {"Barry 'Big Bear' Thorne", math.huge, -1},
+	[6] = {"Female Valet", math.huge, -1},
+	[8] = {"Cab Driver", math.huge, -1},
+	[65] = {"Airport Worker", math.huge, -1},
+	[86] = {"Hispanic Girl", math.huge, -1},
+	[119] = {"LVPD Bike Cop", math.huge, -1},
+	[273] = {"Chinese Claude", math.huge, -1},
+	[289] = {"Airport Worker", math.huge, -1},
 }
 
 Tasks = {
@@ -651,6 +687,7 @@ THREAD_PRIORITY_HIGHEST = 50
 AD_COST = 30
 AD_COST_PER_CHAR = 3
 AD_BREAK_TIME = 30 -- In Seconds
+AD_MIN_PLAYTIME = 10 -- In Hours
 
 AD_DURATIONS = {
 	["20 Sek."] = 20,
@@ -744,33 +781,28 @@ VEHICLE_SPAWN_OFFSETS = {
 }
 
 HOUSE_INTERIOR_TABLE = {
-	[1] = {1, 223.27027893066, 1287.4304199219, 1081.9130859375};
-	[2] = {5, 2233.8625488281, -1113.7662353516, 1050.8828125};
-	[3] = {8, 2365.224609375, -1135.1401367188, 1050.875};
-	[4] = {11, 2282.9448242188, -1139.9676513672, 1050.8984375};
-	[5] = {6, 2196.373046875, -1204.3984375, 1049.0234375};
-	[6] = {10, 2270.2353515625, -1210.4715576172, 1047.5625};
-	[7] = {6, 2309.1716308594, -1212.6801757813, 1049.0234375};
-	[8] = {1, 2217.1474609375, -1076.2725830078, 1050.484375};
-	[9] = {2, 2237.5483398438, -1081.1091308594, 1049.0234375};
-	[10] = {9, 2318.0712890625, -1026.2338867188, 1050.2109375};
-	[11] = {4, 260.99948120117, 1284.8186035156, 1080.2578125};
-	[12] = {5, 140.2495880127, 1366.5075683594, 1083.859375};
-	[13] = {9, 82.978126525879, 1322.5451660156, 1083.8662109375};
-	[14] = {15, -284.0530090332, 1471.0965576172, 1084.375};
-	[15] = {4, -260.75534057617, 1456.6932373047, 1084.3671875};
+	[1] = {1, 223.27, 1287.43, 1081.91};
+	[2] = {5, 2233.86, -1113.76, 1050.88};
+	[3] = {8, 2365.22, -1135.14, 1050.87};
+	[4] = {11, 2282.94, -1139.96, 1050.75};
+	[5] = {6, 2196.37, -1204.39, 1049.02};
+	[6] = {10, 2269.85, -1210.45, 1047.48};
+	[7] = {6, 2308.74, -1212.39, 1048.9};
+	[8] = {1, 2217.14, -1076.27, 1050.48};
+	[9] = {2, 2237.54, -1081.10, 1049.02};
+	[10] = {9, 2318.07, -1026.23, 1050.21};
+	[11] = {4, 260.99, 1284.81, 1080.25};
+	[12] = {5, 140.24, 1366.50, 1083.85};
+	[13] = {9, 82.97, 1322.54, 1083.86};
+	[14] = {15, -284.05, 1471.09, 1084.37};
+	[15] = {4, -260.75, 1456.69, 1084.36};
 	[16] = {8, -42.58, 1405.95, 1084.23};
-	[17] = {2, 2454.717041, -1700.871582, 1013.515197};
-	[18] = {1, 2527.654052, -1679.388305, 1015.515197};
-	[19] = {8, 2807.619873, -1171.899902, 1025.5234375};
-	[20] = {5, 318.564971, 1118.209960, 1083.5234375};
+	[17] = {2, 2468.07, -1698.29, 1013.3};
+	[18] = {1, 2525.21, -1679.39, 1015.3};
+	[19] = {8, 2807.57, -1173.78, 1025.35};
+	[20] = {5, 318.55, 1115.48, 1083.5};
 	[21] = {12, 2324.46, -1149.03, 1050.51};
-	[22] = {5, 1298.8719482422, -796.77032470703, 1083.6569824219};
-	[23] = {21, 1480.55, 1329.45, 13.09}; -- sewers
-	[24] = {21, 1530.05, 1475.21, 13.20}; -- sewers2
-	[25] = {17, -959.65, 1954.80, 9.5}; -- dam generator
-	[26] = {9, 313.95544, 957.64325, 2009.87683}; -- terror storage
-	[27] = {0, 506.76, -1521.03, 32.11}; -- terror office
+	[22] = {5, 1298.86, -796.24, 1083.65};
 }
 
 CompanyStaticId = {
@@ -834,6 +866,7 @@ LexiconPages = {
 	JobFarmer = "18",
 	JobGravel = "20",
 	JobBoxer = "24",
+	JobServiceTechnician = "62",
 	ActionBankRobbery = "28",
 	ActionWeaponTruck = "32",
 	ActionWeedTruck = "30",

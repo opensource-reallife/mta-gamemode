@@ -7,40 +7,97 @@
 -- ****************************************************************************
 JobServiceTechnicianTask = inherit(Object)
 
-function JobServiceTechnicianTask:virtual_constructor(player)
+addEvent("serviceTechnicianQuestionsRetrieve", true)
+
+function JobServiceTechnicianTask:constructor(player)
     local position = self:getRandomCoordinates()
     self.m_Marker = createMarker(position, "cylinder", 2, 255, 255, 0, 200, player)
-    self.m_Blip = Blip:new("Waypoint.png", position.x, position.y, player)
+    self.m_Blip = Blip:new("Marker.png", position.x, position.y, player, 9999)
+    self.m_Blip:setColor(BLIP_COLOR_CONSTANTS.Red)
+	self.m_Blip:setDisplayText(_"Kunde")
 
     addEventHandler("onMarkerHit", self.m_Marker, function(hitElement, matchingDimension)
         if player == hitElement and matchingDimension then
             local vehicle = hitElement:getOccupiedVehicle()
-            if vehicle then
+            if vehicle and vehicle == hitElement.jobVehicle then
+                hitElement:triggerEvent("openServiceTechnicianQuestionGraphicUserInterface", self:getQuestionSet(hitElement))
                 vehicle:setFrozen(true)
-                self:start(hitElement)
+                vehicle:setFrozen(false)
+            else
+                hitElement:sendError(_("Du bist in keinem Jobfahrzeug!", hitelement))
             end
         end
-    end
-    )
+    end)
+
+    self.m_OnQuestionsAnsweredBind = bind(self.onQuestionsAnswered, self)
+    addEventHandler("serviceTechnicianQuestionsRetrieve", root, self.m_OnQuestionsAnsweredBind)
 end
 
 function JobServiceTechnicianTask:destructor()
     self.m_Marker:destroy()
     self.m_Blip:delete()
+    removeEventHandler("serviceTechnicianQuestionsRetrieve", root, self.m_OnQuestionsAnsweredBind)
 end
 
 function JobServiceTechnicianTask:getRandomCoordinates()
-    return Vector3(self.ms_Coordinates[math.random(1, #self.ms_Coordinates)])
+    return Vector3(JobServiceTechnician:getSingleton().m_Positions[math.random(1, #JobServiceTechnician:getSingleton().m_Positions)])
 end
 
-JobServiceTechnicianTask.start = pure_virtual
+function JobServiceTechnicianTask:getQuestionSet(player)
+	return Randomizer:getRandomOf(1, JobServiceTechnician:getSingleton().m_Questions)
+end
 
-JobServiceTechnicianTask.ms_Coordinates = {
-    {929.06, -1499.16, 13.60},
-    {970.35, -1481.99, 13.60},
-    --[[{x, y, z},
-    {x, y, z},
-    {x, y, z},
-    {x, y, z},
-    {x, y, z}]]
-}
+function JobServiceTechnicianTask:onQuestionsAnswered(result)
+    local player = source
+    local answerCount = #result
+    local correctAnswers = 0
+    if result then -- todo: change this
+        for _, answerPlayer in pairs(result) do
+            for _, questionData in pairs(JobServiceTechnician:getSingleton().m_Questions) do
+                local questionLocaleData = questionData[player:getLocale()]
+                for _, answerData in pairs(questionLocaleData) do
+                    if type(answerData) == "table" then
+                        if answerData[2] and answerData[1] == answerPlayer then
+                            correctAnswers = correctAnswers + 1
+                        end
+                    end
+                end
+            end
+        end
+    end
+    if correctAnswers > 0 then
+        local pay = math.floor(50 * JOB_PAY_MULTIPLICATOR * JobServiceTechnician:getSingleton():getMultiplicator()) * (Randomizer:get(90, 110) / 100)
+		local points = math.round(pay / 50 * JOB_EXTRA_POINT_FACTOR)
+		player:givePoints(points)
+		StatisticsLogger:getSingleton():addJobLog(player, "jobServiceTechnician", nil, pay, nil, nil, points)
+		JobServiceTechnician:getSingleton().m_BankAccount:transferMoney({player, true}, pay, _("Servicetechniker-Job", player), "Job", "ServiceTechnician")
+        if correctAnswers < answerCount then
+            player:sendSuccess(_("Du konntest einen Teil der Probleme lösen! Kehre zum Büro zurück, um eine neue Aufgabe zu erhalten.", player))
+        else
+            player:sendSuccess(_("Du konntest alle Probleme lösen! Kehre zum Büro zurück, um eine neue Aufgabe zu erhalten.", player))
+        end
+    else
+        player:sendError(_("Du konntest dem Kunden nicht helfen! Kehre zum Büro zurück, um eine neue Aufgabe zu erhalten.", player))
+    end
+
+    self.m_Marker:destroy()
+    self.m_Marker = createMarker(932.00, -1723.53, 12.6, "cylinder", 2, 255, 255, 0, 200, player)
+    self.m_Blip:delete()
+    self.m_Blip = Blip:new("Marker.png", 932.00, -1723.53, player, 9999)
+    self.m_Blip:setColor(BLIP_COLOR_CONSTANTS.Red)
+	self.m_Blip:setDisplayText(_"Büro")
+
+    addEventHandler("onMarkerHit", self.m_Marker, function(hitElement, matchingDimension)
+        if player == hitElement and matchingDimension then
+            local vehicle = hitElement:getOccupiedVehicle()
+            if vehicle and vehicle == hitElement.jobVehicle then
+                vehicle:setFrozen(true)
+                vehicle:setFrozen(false)
+                player:sendInfo(_("Du hast eine neue Aufgabe erhalten! Begib dich zur Markierung auf der Karte.", player))
+                JobServiceTechnician:getSingleton():nextTask(player)
+            else
+                hitElement:sendError(_("Du bist in keinem Jobfahrzeug!", hitelement))
+            end
+        end
+    end)
+end

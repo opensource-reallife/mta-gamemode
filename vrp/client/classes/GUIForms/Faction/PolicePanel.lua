@@ -35,8 +35,8 @@ function PolicePanel:constructor()
 	self.m_PlayersGrid:addColumn(_"Firma/Gang", 0.3)
 
 	GUIGridLabel:new(10, 1, 6, 1, _"Spielerinformationen", self.m_Tabs[1]):setHeader("sub")
-	self.m_InfoTextLabel =	GUIGridLabel:new(10, 2, 4, 6, _"", self.m_Tabs[1]):setAlign("left", "top")
-	self.m_InfoDataLabel =	GUIGridLabel:new(12, 2, 4, 6, _"", self.m_Tabs[1]):setAlign("right", "top")
+	self.m_InfoTextLabel =	GUIGridLabel:new(10, 2, 4, 6, "", self.m_Tabs[1]):setAlign("left", "top")
+	self.m_InfoDataLabel =	GUIGridLabel:new(12, 2, 4, 6, "", self.m_Tabs[1]):setAlign("right", "top")
 
 	self.m_RefreshBtn = GUIGridIconButton:new(9, 10, FontAwesomeSymbols.Refresh, self.m_Tabs[1])
 	self.m_RefreshBtn.onLeftClick = function() self:loadPlayers() end
@@ -378,10 +378,14 @@ function PolicePanel:onSelectBug(id)
 
 		self.m_BugLogGrid:clear()
 		for index, msg in pairs(self.m_BugData[id]["log"]) do
-			item = self.m_BugLogGrid:addItem(msg)
+			local tMsg = msg
+			if localPlayer:getLocale() ~= "de" and self.m_BugData[id]["logEN"][index] and self.m_BugData[id]["logEN"][index] ~= "" then
+				tMsg = self.m_BugData[id]["logEN"][index]
+			end
+			local item = self.m_BugLogGrid:addItem(tMsg)
 			item:setFont(VRPFont(20))
 			item.onLeftClick = function()
-				ShortMessage:new(msg)
+				ShortMessage:new(tMsg)
 			end
 		end
 		if localPlayer:getFaction() and localPlayer:getFaction():getId() == 2 then

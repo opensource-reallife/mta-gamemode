@@ -92,7 +92,7 @@ function JobHeliTransport:onPickupLoad()
 			client:sendInfo(_("Dein Helikopter wurde wieder neu beladen.", client)) --TODO
 			local duration = getRealTime().timestamp - client.m_LastJobAction
 			client.m_LastJobAction = getRealTime().timestamp
-			local money = client:getData("JobHeliTransport:Money") * JOB_PAY_MULTIPLICATOR * (1 + client:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR)
+			local money = client:getData("JobHeliTransport:Money") * JOB_PAY_MULTIPLICATOR * self:getMultiplicator()
 			local points = math.round(money / 50 * JOB_EXTRA_POINT_FACTOR)
 			StatisticsLogger:getSingleton():addJobLog(client, "jobHeliTransport", duration, money, nil, nil, points)
 			self.m_BankAccount:transferMoney({client, true}, money, "Helitransport-Job", "Job", "HeliTransport")

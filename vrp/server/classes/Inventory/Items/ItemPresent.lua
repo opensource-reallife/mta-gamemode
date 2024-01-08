@@ -21,7 +21,7 @@ function ItemPresent:use(player)
     local random = Randomizer:get(1, 5)
 
     player:getInventory():removeItem("Päckchen", 1)
-    player:meChat(true, _("öffnet ein Päckchen...", player))
+    player:meChat(true, "öffnet ein Päckchen...")
 
     if random == 1 then
         player:getInventory():giveItem("Zuckerstange", 1)

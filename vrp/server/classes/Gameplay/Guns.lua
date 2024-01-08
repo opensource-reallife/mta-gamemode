@@ -47,7 +47,8 @@ function Guns:constructor()
 		setWeaponProperty(33, skill, "weapon_range", 160) -- GTA-Std: 100
 		setWeaponProperty(33, skill, "target_range", 160) -- GTA-Std: 55
 	end
-	addRemoteEvents{"onTaser", "onClientDamage", "onClientKill", "onClientWasted", "gunsLogMeleeDamage", "startGrenadeThrow", "disableGrenadeAimLeave", "Guns:onClientRocketLauncherFire"}
+	addRemoteEvents{"onTaser", "onClientDamage", "onClientKill", "onClientWasted", "gunsLogMeleeDamage",
+	 "startGrenadeThrow", "disableGrenadeAimLeave", "Guns:onClientRocketLauncherFire", "onClientSelfHarm"}
 	addEventHandler("onTaser", root, bind(self.Event_onTaser, self))
 	addEventHandler("onClientDamage", root, bind(self.Event_onClientDamage, self))
 	addEventHandler("gunsLogMeleeDamage", root, bind(self.Event_logMeleeDamage, self))
@@ -62,6 +63,7 @@ function Guns:constructor()
 	self.m_GrenadeBind = bind(self.activeGrenadeThrowMode, self)
 	addEventHandler("startGrenadeThrow", root, bind(self.startGrenadeThrow, self))
 	addEventHandler("disableGrenadeAimLeave", root, bind(self.disableGrenadeAimLeave, self))
+	addEventHandler("onClientSelfHarm", root, bind(self.onClientSelfHarm, self))
 end
 
 
@@ -136,6 +138,10 @@ function Guns:Event_onClientDamage(target, weapon, bodypart, loss, isMelee)
 	end
 	if target:getData("RcVehicle") then 
 		return
+	end
+	if attacker:getFaction() and attacker:getFaction():isStateFaction() and attacker:isFactionDuty() and target:getWanteds() > 0 then
+		target.m_LastCopAttackTime = getRealTime().timestamp
+		target.m_LastCopAttack = attacker:getId()
 	end
 	if weapon == 34 and bodypart == 9 then
 		if self:destroyProtectionHelmet(attacker, target) then
@@ -245,6 +251,14 @@ function Guns:Event_OnWasted(totalAmmo, killer, weapon, bodypart)
 						end
 					end
 				end
+			end
+		end
+
+		if self:isSuicideJailEscape(source, killer) and weapon ~= 50 and weapon ~= 63 then
+			source:sendInfo(_("Du wurdest aufgrund deines Selbstmordes ins Gefängnis befördert", source))
+
+			if source.m_LastCopAttack and isElement(DatabasePlayer.Map[source.m_LastCopAttack]) then
+				DatabasePlayer.Map[source.m_LastCopAttack]:sendInfo(_("Der Spieler %s wurde aufgrund von Selbstmord ins Gefängnis befördert", DatabasePlayer.Map[source.m_LastCopAttack], source:getName()))
 			end
 		end
 	end
@@ -600,3 +614,30 @@ function Guns:destroyKevlar(attacker, target)
 		end
 	end
 end
+
+function Guns:onClientSelfHarm(weapon, bodypart, loss)
+
+end
+
+function Guns:isSuicideJailEscape(target, killer)
+	if target:getWanteds() <= 0 then
+		return false
+	end
+
+	if killer and target ~= killer then
+		return false
+	end
+
+	if target.m_LastCopAttackTime and target.m_LastCopAttackTime + 3 * 60 > getRealTime().timestamp then
+		return true
+	end
+
+	return false
+end
+
+--[[		FactionState:getSingleton():Event_JailPlayer(target, false, false, target.m_LastCopAttack, true, 0, false, false)
+		target:sendInfo(_("Du wurdest aufgrund deines Selbstmordes ins Gefängnis befördert", target))
+
+		if target.m_LastCopAttack and isElement(target.m_LastCopAttack) then
+			target.m_LastCopAttack:sendInfo(_("Der Spieler %s wurde aufgrund von Selbstmord ins Gefängnis befördert", target.m_LastCopAttack))
+		end]]

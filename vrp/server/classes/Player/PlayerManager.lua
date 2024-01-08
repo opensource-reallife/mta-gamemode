@@ -205,7 +205,7 @@ function PlayerManager:Event_OnDeathPedWasted( pPed )
 		if pPed and isElement(pPed) then
 			local owner = pPed.m_ExecutedPlayer
 			if owner then
-				client:meChat(true, "setzte "..getPlayerName(owner).." ein Ende!")
+				client:meChat(true, "setzte %s ein Ende!", getPlayerName(owner))
 				setElementData(pPed, "NPC:isDyingPed", false)
 				owner:dropReviveWeapons()
 				owner:dropReviveMoney()
@@ -473,36 +473,46 @@ function PlayerManager:playerWasted(killer, killerWeapon, bodypart)
 				if killer:isFactionDuty() then
 					local wantedLevel = client:getWanteds()
 					if wantedLevel > 0 then
-						local jailTime = wantedLevel * JAIL_TIME_PER_WANTED_KILL
-						local factionBonus = JAIL_COSTS[wantedLevel]
-						killer:giveAchievement(64)
-						client:sendInfo(_("Du wurdest außer Gefecht gesetzt!", client))
-						client.m_DeathInJail = true
-						-- Pay some money to faction, xp to the policeman
-						local factionBonus = JAIL_COSTS[wantedLevel]
-						if client:getFaction() and client:getFaction():isEvilFaction() then
-							factionBonus = JAIL_COSTS[wantedLevel]/2
-						end
-						local splitmoney = (factionBonus / 2)
-						FactionState:getSingleton().m_BankAccountServer:transferMoney(killer:getFaction(), splitmoney, "Arrest", "Faction", "ArrestKill")
-						FactionState:getSingleton():payArrestBonus(killer, splitmoney)
-						killer:givePoints(wantedLevel)
-						PlayerManager:getSingleton():sendShortMessage(_("%s wurde soeben von %s für %d Minuten eingesperrt! Strafe: %d$", client, client:getName(), killer:getName(), jailTime, factionBonus), "Staat")
-						StatisticsLogger:getSingleton():addArrestLog(client, wantedLevel, jailTime, killer, 0)
-						killer:getFaction():addLog(killer, "Knast", "hat "..client:getName().." für "..jailTime.."min. eingesperrt!")
-						outputChatBox(_("Du hast den Spieler %s außer Gefecht gesetzt und er wird ins Gefängnis transportiert!", killer, getPlayerName(client)),killer,0,0,190)
-						-- Give Achievements
-						if wantedLevel > 4 then
-							killer:giveAchievement(48)
+						if killer:getPublicSync("gangwarParticipant") and client:getPublicSync("gangwarParticipant") then
+							killer:sendError(_("Der Spieler wird aufgrund der beidseitigen Teilnahme am Gangwar nicht eingesperrt!", killer))
 						else
-							killer:giveAchievement(47)
+							local jailTime = wantedLevel * JAIL_TIME_PER_WANTED_KILL
+							local factionBonus = JAIL_COSTS[wantedLevel]
+							killer:giveAchievement(64)
+							client:sendInfo(_("Du wurdest außer Gefecht gesetzt!", client))
+							client.m_DeathInJail = true
+							-- Pay some money to faction, xp to the policeman
+							local factionBonus = JAIL_COSTS[wantedLevel]
+							if client:getFaction() and client:getFaction():isEvilFaction() then
+								factionBonus = JAIL_COSTS[wantedLevel]/2
+							end
+							local splitmoney = (factionBonus / 2)
+							FactionState:getSingleton().m_BankAccountServer:transferMoney(killer:getFaction(), splitmoney, "Arrest", "Faction", "ArrestKill")
+							FactionState:getSingleton():payArrestBonus(killer, splitmoney)
+							killer:givePoints(wantedLevel)
+							PlayerManager:getSingleton():sendShortMessage(_("%s wurde soeben von %s für %d Minuten eingesperrt! Strafe: %d$", client, client:getName(), killer:getName(), jailTime, factionBonus), "Staat")
+							StatisticsLogger:getSingleton():addArrestLog(client, wantedLevel, jailTime, killer, 0)
+							killer:getFaction():addLog(killer, "Knast", "hat "..client:getName().." für "..jailTime.."min. eingesperrt!")
+							outputChatBox(_("Du hast den Spieler %s außer Gefecht gesetzt und er wird ins Gefängnis transportiert!", killer, getPlayerName(client)),killer,0,0,190)
+							-- Give Achievements
+							if wantedLevel > 4 then
+								killer:giveAchievement(48)
+							else
+								killer:giveAchievement(47)
+							end
+							client:triggerEvent("playerWasted", true)
+							return
 						end
-						client:triggerEvent("playerWasted", true)
-						return
 					end
 				end
 			end
 		end
+	end
+
+	if Guns:getSingleton():isSuicideJailEscape(client, killer) then
+		FactionState:getSingleton():setJailForSuicideEscape(client, client.m_LastCopAttack)
+		client:triggerEvent("playerWasted", true)
+		return
 	end
 
 	-- Start death
@@ -524,7 +534,7 @@ function PlayerManager:playerWasted(killer, killerWeapon, bodypart)
 end
 
 
-function PlayerManager:playerChat(message, messageType)
+function PlayerManager:playerChat(message, messageType, translatableBind)
 	if not source:isLoggedIn() then
 		cancelEvent()
 		return
@@ -562,38 +572,74 @@ function PlayerManager:playerChat(message, messageType)
 		local playersToSend = source:getPlayersInChatRange(1)
 		if not phonePartner then
 			local receivedPlayers = {}
+			local receivedPlayersDE = {}
+			local receivedPlayersEN = {}
 			for index = 1, #playersToSend do
+				local tMessage = message
+				if translatableBind then
+					tMessage = BindManager:getSingleton():translateBind(message, playersToSend[index])
+				end
+
 				if not source:getPublicSync("supportMode") then
-					outputChatBox(("%s sagt: %s"):format(getPlayerName(source), message), playersToSend[index], 220, 220, 220)
+					outputChatBox(("%s sagt: %s"):format(getPlayerName(source), tMessage), playersToSend[index], 220, 220, 220)
 				else
-					outputChatBox(("(%s) %s sagt: %s"):format(RANKSCOREBOARD[source:getRank() or 3] or "Admin", getPlayerName(source), message), playersToSend[index], 58, 186, 242)
+					outputChatBox(("(%s) %s sagt: %s"):format(RANKSCOREBOARD[source:getRank() or 3] or "Admin", getPlayerName(source), tMessage), playersToSend[index], 58, 186, 242)
 				end
 				if playersToSend[index] ~= source then
 					receivedPlayers[#receivedPlayers+1] = playersToSend[index]
+					if playersToSend[index]:getLocale() == "de" then
+						receivedPlayersDE[#receivedPlayersDE+1] = playersToSend[index]
+					else
+						receivedPlayersEN[#receivedPlayersEN+1] = playersToSend[index]
+					end
 				end
 			end
-			StatisticsLogger:getSingleton():addChatLog(source, "chat", message, receivedPlayers)
-			FactionState:getSingleton():addBugLog(source, "sagt", message)
+			if translatableBind then
+				StatisticsLogger:getSingleton():addChatLog(source, "chat", message, receivedPlayersDE)
+				StatisticsLogger:getSingleton():addChatLog(source, "chat", BindManager:getSingleton():getTranslation(message), receivedPlayersEN)
+			else
+				StatisticsLogger:getSingleton():addChatLog(source, "chat", message, receivedPlayers)
+			end
+
+			FactionState:getSingleton():addBugLog(source, "sagt", message, translatableBind)
 		else
 			-- Send handy message
-			outputChatBox(_("%s (Handy) sagt: %s", phonePartner, getPlayerName(source), message), phonePartner, 0, 255, 0)
-			outputChatBox(_("%s (Handy) sagt: %s", source, getPlayerName(source), message), source, 0, 255, 0)
+			outputChatBox(_("%s (Handy) sagt: %s", phonePartner, getPlayerName(source), BindManager:getSingleton():translateBind(message, phonePartner)), phonePartner, 0, 255, 0)
+			outputChatBox(_("%s (Handy) sagt: %s", source, getPlayerName(source), BindManager:getSingleton():translateBind(message, source)), source, 0, 255, 0)
 			StatisticsLogger:getSingleton():addChatLog(source, "phone", message, {phonePartner})
 			local receivedPlayers = {}
+			local receivedPlayersDE = {}
+			local receivedPlayersEN = {}
 			for index = 1, #playersToSend do
+				local tMessage = message
+				if translatableBind then
+					tMessage = BindManager:getSingleton():translateBind(message, playersToSend[index])
+				end
+
 				if playersToSend[index] ~= source then
 					if not source:getPublicSync("supportMode") then
-						outputChatBox(("%s (Handy) sagt: %s"):format(getPlayerName(source), message), playersToSend[index], 220, 220, 220)
+						outputChatBox(("%s (Handy) sagt: %s"):format(getPlayerName(source), tMessage), playersToSend[index], 220, 220, 220)
 					else
-						outputChatBox(("(%s) %s (Handy) sagt: %s"):format(RANKSCOREBOARD[source:getRank() or 3] or "Admin", getPlayerName(source), message), playersToSend[index], 58, 186, 242)
+						outputChatBox(("(%s) %s (Handy) sagt: %s"):format(RANKSCOREBOARD[source:getRank() or 3] or "Admin", getPlayerName(source), tMessage), playersToSend[index], 58, 186, 242)
 					end
 					--if not playersToSend[index] == source then
 						receivedPlayers[#receivedPlayers+1] = playersToSend[index]
+						if playersToSend[index]:getLocale() == "de" then
+							receivedPlayersDE[#receivedPlayersDE+1] = playersToSend[index]
+						else
+							receivedPlayersEN[#receivedPlayersEN+1] = playersToSend[index]
+						end
 					--end
 				end
 			end
-			StatisticsLogger:getSingleton():addChatLog(source, "chat", ("(Handy) %s"):format(message), receivedPlayers)
-			FactionState:getSingleton():addBugLog(source, "(Handy)", message)
+
+			if translatableBind then
+				StatisticsLogger:getSingleton():addChatLog(source, "chat", ("(Handy) %s"):format(message), receivedPlayersDE)
+				StatisticsLogger:getSingleton():addChatLog(source, "chat", ("(Handy) %s"):format(BindManager:getSingleton():getTranslation(message)), receivedPlayersEN)
+			else
+				StatisticsLogger:getSingleton():addChatLog(source, "chat", ("(Handy) %s"):format(message), receivedPlayers)
+			end
+			FactionState:getSingleton():addBugLog(source, "(Handy)", message, translatableBind)
 
 			if phonePartner and phonePartner:getName() == "PewX" and (message:lower():find("pewpew") or message:lower():find("pew pew")) then
 				Achievements["PewPew"](source)
@@ -620,13 +666,17 @@ function PlayerManager:playerChat(message, messageType)
 	end
 end
 
-function PlayerManager:Command_playerScream(source , cmd, ...)
+function PlayerManager:Command_playerScream(source, cmd, ...)
+	local argTable = { ... }
+	local text = table.concat ( argTable , " " )
+
+	self:sendPlayerScream(source, text, false)
+end
+
+function PlayerManager:sendPlayerScream(source, text, translatableBind)
 	if source:isDead() then
 		return
 	end
-
-	local argTable = { ... }
-	local text = table.concat ( argTable , " " )
 
 	local lastMsg, msgTimeSent = source:getLastChatMessage()
 	if getTickCount()-msgTimeSent < (text == lastMsg and CHAT_SAME_MSG_REPEAT_COOLDOWN or CHAT_MSG_REPEAT_COOLDOWN) then -- prevent chat spam
@@ -641,33 +691,56 @@ function PlayerManager:Command_playerScream(source , cmd, ...)
 
 	local playersToSend = source:getPlayersInChatRange(2)
 	local receivedPlayers = {}
+	local receivedPlayersDE = {}
+	local receivedPlayersEN = {}
 	local faction = source:getFaction()
 	if source:getOccupiedVehicle() and source:getOccupiedVehicle().isStateVehicle and source:getOccupiedVehicle():isStateVehicle() then
-		local success = FactionState:getSingleton():outputMegaphone(source, ...)
+		local success = FactionState:getSingleton():outputMegaphone(source, text, translatableBind)
 		if success then return true end -- cancel screaming if megaphone succeeds
 	end
 	if source:getOccupiedVehicle() and source:getOccupiedVehicle():getFaction() and source:getOccupiedVehicle():getFaction():isRescueFaction() then
-		local success = FactionRescue:getSingleton():outputMegaphone(source, ...)
+		local success = FactionRescue:getSingleton():outputMegaphone(source, text, translatableBind)
 		if success then return true end -- cancel screaming if megaphone succeeds
 	end
 	for index = 1,#playersToSend do
-		outputChatBox(("%s schreit: %s"):format(getPlayerName(source), text), playersToSend[index], 240, 240, 240)
+		local tText = text
+		if translatableBind then
+			tText = BindManager:getSingleton():translateBind(text, playersToSend[index])
+		end
+
+		outputChatBox(("%s schreit: %s"):format(getPlayerName(source), tText), playersToSend[index], 240, 240, 240)
 		if playersToSend[index] ~= source then
-            receivedPlayers[#receivedPlayers+1] = playersToSend[index]
+			receivedPlayers[#receivedPlayers+1] = playersToSend[index]
+			if playersToSend[index]:getLocale() == "de" then
+				receivedPlayersDE[#receivedPlayersDE+1] = playersToSend[index]
+			else
+				receivedPlayersEN[#receivedPlayersEN+1] = playersToSend[index]
+			end
         end
 	end
-	FactionState:getSingleton():addBugLog(source, "schreit", text)
-	StatisticsLogger:getSingleton():addChatLog(source, "scream", text, receivedPlayers)
+
+	if translatableBind then
+		StatisticsLogger:getSingleton():addChatLog(source, "scream", text, receivedPlayersDE)
+		StatisticsLogger:getSingleton():addChatLog(source, "scream", BindManager:getSingleton():getTranslation(text), receivedPlayersEN)
+	else
+		StatisticsLogger:getSingleton():addChatLog(source, "scream", text, receivedPlayers)
+	end
+
+	FactionState:getSingleton():addBugLog(source, "schreit", text, translatableBind)
 	Admin:getSingleton():outputSpectatingChat(source, "S", text, nil, playersToSend)
 end
 
 function PlayerManager:Command_playerWhisper(source , cmd, ...)
+	local argTable = { ... }
+	local text = table.concat(argTable , " ")
+
+	self:sendPlayerWhisper(source, text, false)
+end
+
+function PlayerManager:sendPlayerWhisper(source, text, translatableBind)
 	if source:isDead() then
 		return
 	end
-
-	local argTable = { ... }
-	local text = table.concat(argTable , " ")
 
 	local lastMsg, msgTimeSent = source:getLastChatMessage()
 	if getTickCount()-msgTimeSent < (text == lastMsg and CHAT_SAME_MSG_REPEAT_COOLDOWN or CHAT_MSG_REPEAT_COOLDOWN) then -- prevent chat spam
@@ -677,14 +750,33 @@ function PlayerManager:Command_playerWhisper(source , cmd, ...)
 
 	local playersToSend = source:getPlayersInChatRange(0)
 	local receivedPlayers = {}
+	local receivedPlayersDE = {}
+	local receivedPlayersEN = {}
 	for index = 1,#playersToSend do
-		outputChatBox(("%s flüstert: %s"):format(getPlayerName(source), text), playersToSend[index], 140, 140, 140)
+		local tText = text
+		if translatableBind then
+			tText = BindManager:getSingleton():translateBind(text, playersToSend[index])
+		end
+
+		outputChatBox(("%s flüstert: %s"):format(getPlayerName(source), tText), playersToSend[index], 140, 140, 140)
 		if playersToSend[index] ~= source then
 			receivedPlayers[#receivedPlayers+1] = playersToSend[index]
+			if playersToSend[index]:getLocale() == "de" then
+				receivedPlayersDE[#receivedPlayersDE+1] = playersToSend[index]
+			else
+				receivedPlayersEN[#receivedPlayersEN+1] = playersToSend[index]
+			end
 		end
 	end
-	FactionState:getSingleton():addBugLog(source, "flüstert", text)
-	StatisticsLogger:getSingleton():addChatLog(source, "whisper", text, receivedPlayers)
+
+	if translatableBind then
+		StatisticsLogger:getSingleton():addChatLog(source, "whisper", text, receivedPlayersDE)
+		StatisticsLogger:getSingleton():addChatLog(source, "whisper", BindManager:getSingleton():getTranslation(text), receivedPlayersEN)
+	else
+		StatisticsLogger:getSingleton():addChatLog(source, "whisper", text, receivedPlayers)
+	end
+
+	FactionState:getSingleton():addBugLog(source, "flüstert", text, translatableBind)
 	Admin:getSingleton():outputSpectatingChat(source, "W", text, nil, playersToSend)
 end
 

@@ -624,11 +624,12 @@ function House:giveRobItem( player )
 		local group = player:getGroup()
 		if group and self.m_RobGroup then
 			if group == self.m_RobGroup then
-				if player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty() then
+				if player:isFactionDuty() or player:isCompanyDuty() then
+					player:sendError(_("Da du im Fraktions-/Unternehmensdienst bist erhältst du keine Items!", player))
 					return
 				else
 					local item = GroupHouseRob:getSingleton():getRandomItem()
-					player:meChat(true, "entdeckt etwas und versucht es einzustecken. (("..item.."))")
+					player:meChat(true, "entdeckt etwas und versucht es einzustecken. ((%s))", item, true)
 					player:getInventory():giveItem("Diebesgut",1)
 				end
 			end
@@ -668,7 +669,7 @@ function House:breakDoor(player)
 	
 	if self.m_LockStatus then
 		self.m_LockStatus = false
-		player:meChat(true, _("nimmt anlauf und bricht die Tür auf.", player))
+		player:meChat(true, "nimmt anlauf und bricht die Tür auf.")
 	else
 		player:sendError(_("Die Tür ist bereits auf.", player))
 	end

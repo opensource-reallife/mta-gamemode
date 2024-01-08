@@ -51,15 +51,26 @@ function CustomModelManager:constructor()
 	self:loadImportCOL("files/models/buildings/fishshop.col", 6289)
 	self:loadImportTXD("files/models/buildings/fishshop.txd", 6289)
 	self:loadImportDFF("files/models/buildings/fishshop.dff", 6289)
+
 	--ammunation
 	self:loadImportCOL("files/models/buildings/ammunation.col", 4552)
 	self:loadImportDFF("files/models/buildings/ammunation.dff", 4552)
 	self:loadImportCOL("files/models/buildings/ammunation_int.col", 18049)
 	self:loadImportDFF("files/models/buildings/ammunation_int.dff", 18049)
-	self:loadImportCOL("files/models/buildings/ammunation2.col", 5106)
+	--[[self:loadImportCOL("files/models/buildings/ammunation2.col", 5106)
 	self:loadImportDFF("files/models/buildings/ammunation2.dff", 5106)
 	self:loadImportCOL("files/models/buildings/ammunation2_int.col", 18033)
-	self:loadImportDFF("files/models/buildings/ammunation2_int.dff", 18033)
+	self:loadImportDFF("files/models/buildings/ammunation2_int.dff", 18033)]]
+
+	--lspd
+	self:loadImportDFF("files/models/buildings/PD_garage.dff", 4232)
+	self:loadImportCOL("files/models/buildings/PD_garage.col", 4232)
+
+	self:loadImportDFF("files/models/buildings/PD_int.dff", 14846)
+	self:loadImportCOL("files/models/buildings/PD_int.col", 14846)
+
+	self:loadImportDFF("files/models/buildings/PD_main.dff", 3976)
+	self:loadImportCOL("files/models/buildings/PD_main.col", 3976)
 
 	--ferris wheel
 	self:loadImportCOL("files/models/objects/ferrisWheel/ferrisBase.col", FERRIS_IDS.Base)
@@ -256,8 +267,6 @@ function CustomModelManager:constructor()
 	self:loadShader("RoadSigns/parking2.png", "roadsign01_128")
 	--self:loadShader("RoadSigns/trans.png", "txgrass0_1")
 	self:loadShader("Other/trans.png", "txgrass1_1")
-
-
 end
 
 function CustomModelManager:loadImportDFF(filePath, modelId)

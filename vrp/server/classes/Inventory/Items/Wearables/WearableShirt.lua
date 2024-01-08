@@ -64,10 +64,10 @@ function WearableShirt:use(player, itemId, bag, place, itemName)
 		exports.bone_attach:attachElementToBone(obj, player, 3, 0, yOffset, zOffset, rotX , rotY, rotZ)
 		player.m_Shirt = obj
 		player.m_IsWearingShirt = itemName
-		player:meChat(true, "zieht "..objName.." an!")
+		player:meChat(true, "zieht %s an!", objName, true)
 		setElementData(player,"CanWeaponBeConcealed",bIsConceal)
 		if bConcealOutput then
-			player:meChat(true, "versteckt einige Waffen in seiner "..objName.."!")
+			player:meChat(true, "versteckt einige Waffen in seiner %s!", objName, true)
 		end
 		if bIsConceal then
 			triggerEvent("WeaponAttach:concealWeapons", player)
@@ -83,7 +83,7 @@ function WearableShirt:use(player, itemId, bag, place, itemName)
 		self.m_Shirts[player] = nil
 		player.m_IsWearingShirt = false
 		player.m_Shirt = false
-		player:meChat(true, "setzt "..WearableShirt.objectTable[itemName][8].." ab!")
+		player:meChat(true, "setzt %s ab!", WearableShirt.objectTable[itemName][8], true)
 		setElementData(player,"CanWeaponBeConcealed",false)
 		triggerEvent("WeaponAttach:unconcealWeapons", player)
 	else --// else the player must have clicked on another Shirt otherwise this instance of the class would have not been called
@@ -116,20 +116,20 @@ function WearableShirt:use(player, itemId, bag, place, itemName)
 			triggerEvent("WeaponAttach:concealWeapons", player)
 		end
 		if bConcealOutput then
-			player:meChat(true, "versteckt einige Waffen in seiner "..objName.."!")
+			player:meChat(true, "versteckt einige Waffen in seiner %s!", objName, true)
 		end
 		setElementDimension(obj, dim)
 		setElementInterior(obj, int)
 		setObjectScale(obj, scale)
 		setElementDoubleSided(obj,true)
-		setElementData(player,"CanWeaponBeConcealed",bIsConceal)
+		setElementData(player,"CanWeaponBeConcealed", bIsConceal)
 		if itemName == "Kevlar" then
 			obj:setData("isProtectingChest", true)
 		end
 		exports.bone_attach:attachElementToBone(obj, player, 3, 0, yOffset, zOffset, rotX, rotY, rotZ)
 		player.m_Shirt = obj
 		player.m_IsWearingShirt = itemName
-		player:meChat(true, "zieht "..objName.." an!")
+		player:meChat(true, "zieht %s an!", objName, true)
 	end
 end
 
@@ -138,7 +138,7 @@ function WearableShirt:destroyShirt(player)
 	self.m_Shirts[player] = nil
 	player.m_IsWearingShirt = false
 	player.m_Shirt = false
-	player:meChat(true, "setzt "..WearableShirt.objectTable[itemName][8].." ab!")
+	player:meChat(true, "setzt %s ab!", WearableShirt.objectTable[itemName][8], true)
 	setElementData(player,"CanWeaponBeConcealed",false)
 	triggerEvent("WeaponAttach:unconcealWeapons", player)
 end

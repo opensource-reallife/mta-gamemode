@@ -11,8 +11,8 @@ PERMISSIONS_INFO = { -- name = {{type, id} type = 0 for all, {faction min rank, 
 	["editRankSkins"] =			{{0}, {["faction"] = 4, ["company"] = 3, ["group"] = nil}},
 	["editWeaponPermissions"] =	{{0}, {["faction"] = 4, ["company"] = nil, ["group"] = nil}},
 	["editDiplomacy"] =			{{1, {FactionStaticId.LCN, FactionStaticId.YAKUZA, FactionStaticId.GROVE, FactionStaticId.BALLAS, FactionStaticId.OUTLAWS, FactionStaticId.VATOS, FactionStaticId.TRIAD, FactionStaticId.BRIGADA}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}}, -- f done
-	["startGangWar"] =			{{1, {FactionStaticId.LCN, FactionStaticId.YAKUZA, FactionStaticId.GROVE, FactionStaticId.BALLAS, FactionStaticId.OUTLAWS, FactionStaticId.VATOS, FactionStaticId.TRIAD, FactionStaticId.BRIGADA}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}}, -- f done
-	-----["joinGangWar"] =			{{1, {FactionStaticId.LCN, FactionStaticId.YAKUZA, FactionStaticId.GROVE, FactionStaticId.BALLAS, FactionStaticId.OUTLAWS, FactionStaticId.VATOS, FactionStaticId.TRIAD, FactionStaticId.BRIGADA}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}}, -- f done
+	["startGangWar"] =			{{1, {FactionStaticId.SAPD, FactionStaticId.LCN, FactionStaticId.YAKUZA, FactionStaticId.GROVE, FactionStaticId.BALLAS, FactionStaticId.OUTLAWS, FactionStaticId.VATOS, FactionStaticId.TRIAD, FactionStaticId.BRIGADA}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}}, -- f done
+	["joinGangWar"] =			{{1, {FactionStaticId.SAPD, FactionStaticId.LCN, FactionStaticId.YAKUZA, FactionStaticId.GROVE, FactionStaticId.BALLAS, FactionStaticId.OUTLAWS, FactionStaticId.VATOS, FactionStaticId.TRIAD, FactionStaticId.BRIGADA}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}}, -- f done
 	["editBinds"] =				{{0}, {["faction"] = 4, ["company"] = 3, ["group"] = nil}},
 	["editEquipment"] =			{{0}, {["faction"] = 4, ["company"] = nil, ["group"] = nil}},
 	["editActionPermissions"] =	{{0}, {["faction"] = 4, ["company"] = nil, ["group"] = 0}},
@@ -49,9 +49,12 @@ PERMISSIONS_INFO = { -- name = {{type, id} type = 0 for all, {faction min rank, 
 	["toggleAreaAlarm"]	=		{{1, {FactionStaticId.MBT}}, {["faction"] = 1, ["company"] = nil, ["group"] = nil}},
 	["setPaNote"]	=			{{1, {FactionStaticId.SAPD}}, {["faction"] = 5, ["company"] = nil, ["group"] = nil}},
 	["releaseFromJail"]	=		{{1, {FactionStaticId.SAPD, FactionStaticId.FBI, FactionStaticId.MBT}}, {["faction"] = 1, ["company"] = nil, ["group"] = nil}},
+	["enterSWATMode"]	=		{{1, {FactionStaticId.SAPD, FactionStaticId.FBI, FactionStaticId.MBT}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}},
 	["clearBugLog"]	=			{{1, {FactionStaticId.FBI}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}},
 	["disableBug"]	=			{{1, {FactionStaticId.FBI}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}},
 	["changePermissions"] =		{{0}, {["faction"] = 5, ["company"] = 4, ["group"] = 5}},
+	["buyVehicle"] = 			{{0}, {["faction"] = 5, ["company"] = 4, ["group"] = nil}},
+	["scrapVehicle"] = 			{{0}, {["faction"] = 5, ["company"] = 4, ["group"] = nil}}
 }
 
 PERMISSION_NAMES = {
@@ -67,7 +70,7 @@ PERMISSION_NAMES = {
 	["editWeaponPermissions"] =	"Waffenberechtigung verwalten",
 	["editDiplomacy"] =			"Diplomatie verwalten",
 	["startGangWar"] =			"Gangwar starten",
-	-----["joinGangWar"] =			"Am Gangwar teilnehmen",
+	["joinGangWar"] =			"Am Gangwar teilnehmen",
 	["editBinds"] =				"Binds verwalten",
 	["editEquipment"] =			"Equipmentrechte verwalten",
 	["editActionPermissions"] =	"Aktionsrechte verwalten",
@@ -83,7 +86,7 @@ PERMISSION_NAMES = {
 	["buyBIZ"] =				"Geschäfte kaufen",
 	["sellBIZ"] =				"Geschäfte verkaufen",
 	["withdrawBIZMoney"] =		"Kasse von Geschäften leeren",
-	["vehiclePark"] =			"Fahreuge parken",
+	["vehiclePark"] =			"Fahrzeuge parken",
 	["deleteGroup"] =			"Gruppe löschen",
 	["vehicleRespawn"] =		"Fahrzeuge respawnen",
 	["renameGroup"] =			"Gruppe umbenennen",
@@ -102,11 +105,14 @@ PERMISSION_NAMES = {
 	["toggleAreaAlarm"] =		"Area Alarm de/aktivieren",
 	["setPaNote"] =				"PA Note setzen",
 	["releaseFromJail"] =		"Spieler ausknasten",
+	["enterSWATMode"] =			"SWAT Modus betreten",
 	["clearBugLog"] =			"Wanzenlog leeren",
 	["disableBug"] =			"Wanze deaktivieren",
 	["manageImmoDepot"] =		"Immobilien Depot verwalten",
 	["changePermissions"] =		"Rechte verwalten (Beinhaltet Vollzugriff)",
 	["buyExtraVehicleSlots"] =	"Fahrzeugeslots kaufen",
+	["buyVehicle"] = 			"Fahrzeug kaufen",
+	["scrapVehicle"] = 			"Fahrzeug verschrotten"
 }
 
 ACTION_PERMISSIONS_INFO = {

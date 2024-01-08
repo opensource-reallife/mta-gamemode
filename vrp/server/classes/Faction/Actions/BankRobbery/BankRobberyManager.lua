@@ -48,6 +48,7 @@ function BankRobberyManager:stopRob()
 				end
 			end
 		end
+		self.m_OpenVaulTimer = false
 	end
 	self.m_IsBankrobRunning = false
 	self.m_CurrentBank = false

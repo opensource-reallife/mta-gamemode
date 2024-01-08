@@ -53,7 +53,6 @@ function SniperGame.initalize()
 end
 
 function SniperGame:constructor()
-
 	self.m_Dimension = math.random(1, 999) -- Testing
 	self.m_Peds = {}
 	self.m_PedKills = {}
@@ -76,7 +75,6 @@ function SniperGame:constructor()
 
 	self:addPed()
 	self:loadMap()
-
 end
 
 function SniperGame:destructor()
@@ -100,9 +98,7 @@ function SniperGame:destructor()
 	if isTimer(self.m_IncreaseTimer) then killTimer(self.m_IncreaseTimer) end
 	if isElement(self.m_TargetSphere) then self.m_TargetSphere:destroy() end
 	if isElement(self.m_PlayerSphere) then self.m_PlayerSphere:destroy() end
-
 end
-
 
 function SniperGame:onColshapeHit(hitElement, dim)
 	if hitElement:getType() == "ped" and dim then
@@ -110,8 +106,8 @@ function SniperGame:onColshapeHit(hitElement, dim)
 			if score then
 				player:sendInfo(_("Ein Ped hat die Linie überschritten! Score: %d", player, self.m_PedKills[player]))
 			end
+			self:removePlayer(player)
 		end
-		delete(self)
 	end
 end
 
@@ -152,6 +148,7 @@ function SniperGame:removePlayer(player)
 	end
 
 	player.Minigame = nil
+	self:delete()
 end
 
 function SniperGame:getPlayers()

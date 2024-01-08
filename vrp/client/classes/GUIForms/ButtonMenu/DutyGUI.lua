@@ -18,13 +18,13 @@ function DutyGUI:constructor(isFaction, id, isOnDuty, specialSkin)
 end
 
 function DutyGUI:loadFactionItems(fac, isOnDuty, specialSkin)
-    self.m_Window:setTitleBarText("Ausrüstung ("..fac:getShortName()..")")
+    self.m_Window:setTitleBarText(_("%s - Ausrüstung", fac:getShortName()))
     
     if isOnDuty then
         if fac:isStateFaction() then
             self:addItem(_"Dienst beenden", Color.Red, bind(self.itemEvent, self, "factionStateToggleDuty")):setBarEnabled(false)
             self:addItem(_"Kleidung wechseln", Color.Accent, bind(self.itemEvent, self, "factionRequestSkinSelection"))
-            if specialSkin then self:addItem(_"Einsatzkleidung", Color.Accent, bind(self.itemEvent, self, "factionRequestSkinSelectionSpecial", core:get("Cache", "LastFactionSkin"))) end
+            self:addItem(_"SWAT-Modus", Color.Accent, bind(self.itemEvent, self, "factionRequestSkinSelectionSpecial", core:get("Cache", "LastFactionSkin"))):setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "enterSWATMode"))
             self:addItem(_"Ausrüsten", Color.Accent, bind(self.itemEvent, self, "factionStateRearm"))
             self:addItem(_"Waffen einlagern", Color.Accent, bind(self.openWeaponStoreGUI, self))
         elseif fac:isEvilFaction() then
@@ -51,7 +51,7 @@ function DutyGUI:loadFactionItems(fac, isOnDuty, specialSkin)
 end
 
 function DutyGUI:loadCompanyItems(cmp, isOnDuty)
-    self.m_Window:setTitleBarText(cmp:getShortName().." HQ")
+    self.m_Window:setTitleBarText(_("%s HQ", cmp:getShortName()))
     
     if isOnDuty then
         self:addItem(_"Dienst beenden", Color.Red, bind(self.itemEvent, self, "companyToggleDuty"))

@@ -18,6 +18,7 @@ function Job:constructor(skin, posX, posY, posZ, rotZ, blipPath, blipColor, head
 	self.m_Tutorial = tutorial
 	self.m_LexiconPage = lexiconPage
 	self.m_Level = 0
+	self.m_Multiplicator = 0
 	-- Create a job marker
 	self.m_Ped = createPed(skin, posX, posY, posZ, rotZ)
 	setElementData(self.m_Ped, "clickable", true)
@@ -63,6 +64,10 @@ end
 
 function Job:getName()
 	return self.m_Name
+end
+
+function Job:setMultiplicator(mult)
+	self.m_Multiplicator = mult
 end
 
 Job.start = pure_virtual

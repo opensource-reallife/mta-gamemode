@@ -16,14 +16,14 @@ SelfGUI.Stats = {
 		["value"] =
 			function()
 				local hours, minutes = math.floor(localPlayer:getPlayTime()/60), (localPlayer:getPlayTime() - math.floor(localPlayer:getPlayTime()/60)*60)
-				return ("%s Stunde%s, %s Minute%s"):format(hours, hours == 1 and "" or "n", minutes, minutes == 1 and "" or "n")
+				return _("%s Stunde(n), %s Minute(n)", hours, minutes)
 			end
 	},
 	{
 		["Name"] = "AFKTime",
 		["Timer"] = 65000,
 		["text"] = "Aktuelle AFK-Zeit",
-		["value"] = function() local minutes = math.floor((localPlayer.m_AFKTime + localPlayer.m_CurrentAFKTime)/60/1000) return ("%s Minute%s"):format(minutes, minutes == 1 and "" or "n") end
+		["value"] = function() local minutes = math.floor((localPlayer.m_AFKTime + localPlayer.m_CurrentAFKTime)/60/1000) return _("%s Minute(n)", minutes) end
 	},
 	{
 		["Name"] = "Driven",
@@ -43,7 +43,7 @@ SelfGUI.Stats = {
 	{
 		["Name"] = "Collectables_Collected",
 		["CustomStatistic"] = true,
-		["text"] = "eXo Logos gesammelt",
+		["text"] = "Sammelobjekte gefunden",
 		["value"] = function(value) return ("%s/%s"):format(value, COLLECTABLES_COUNT_PER_PLAYER) end
 	},
 	{
@@ -53,7 +53,7 @@ SelfGUI.Stats = {
 	},
 	{
 		["Name"] = "LegendaryFishCaught",
-		["text"] = "  davon Legendäre",
+		["text"] = "╚► davon Legendäre",
 		["value"] = function(value) return value end
 	},
 	{
@@ -297,7 +297,7 @@ function SelfGUI:constructor()
 	local SettingsTable = {"HUD", "Radar", "Chat", "Spawn", "Nametag/Reddot", "Texturen", "Fahrzeuge", "Waffen", "Sounds / Radio", "Shader", "Server-Tour", "Tastenzuordnung", "Sonstiges", "Event", "Sprache"}
 	local item
 	for index, setting in pairs(SettingsTable) do
-		item = self.m_SettingsGrid:addItem(setting)
+		item = self.m_SettingsGrid:addItem(_(setting))
 		item.onLeftClick = function()
 			self:onSettingChange(setting)
 		end
@@ -366,7 +366,7 @@ function SelfGUI:loadStatistics()
 	for i, data in pairs(SelfGUI.Stats) do
 		i = i - 1
 		local value = (data.CustomStatistic and localPlayer:getPrivateSync(data.Name) or localPlayer:getStatistics(data.Name)) or "-"
-		self.m_StatDescription[data.Name] = GUILabel:new(self.m_Width*0.02, self.m_Height*(0.11+i*0.06), self.m_Width*0.4, self.m_Height*0.06, _("%s:", data.text), self.m_TabStatistics)
+		self.m_StatDescription[data.Name] = GUILabel:new(self.m_Width*0.02, self.m_Height*(0.11+i*0.06), self.m_Width*0.4, self.m_Height*0.06, ("%s:"):format(_(data.text)), self.m_TabStatistics)
 		self.m_StatValue[data.Name] = GUILabel:new(self.m_Width*0.5, self.m_Height*(0.11+i*0.06), self.m_Width*0.4, self.m_Height*0.06, data.value(value), self.m_TabStatistics)
 
 		if not data.Timer then
@@ -1203,9 +1203,9 @@ function SelfGUI:onSettingChange(setting)
 	elseif setting == "Texturen" then
 		GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.9, self.m_Height*0.07, _"Fahrzeug-Textur Modus", self.m_SettingBG)
 		self.m_TextureModeChange = GUIChanger:new(self.m_Width*0.02, self.m_Height*0.09, self.m_Width*0.55, self.m_Height*0.07, self.m_SettingBG)
-		self.m_TextureModeChange:addItem("In der Nähe laden")
-		self.m_TextureModeChange:addItem("Beim Joinen laden")
-		self.m_TextureModeChange:addItem("Deaktiviert")
+		self.m_TextureModeChange:addItem(_"In der Nähe laden")
+		self.m_TextureModeChange:addItem(_"Beim Joinen laden")
+		self.m_TextureModeChange:addItem(_"Deaktiviert")
 		self.m_TextureModeChange.onChange = function(text, index)
 			core:set("Other", "TextureMode", index)
 			self.m_InfoLabel:setText(_(TEXTURE_SYSTEM_HELP[index]))
@@ -1220,7 +1220,7 @@ function SelfGUI:onSettingChange(setting)
 			end
 		end
 
-		self.m_InfoLabel = GUILabel:new(self.m_Width*0.02, self.m_Height*0.19, self.m_Width*0.6, self.m_Height*0.055, _"", self.m_SettingBG)
+		self.m_InfoLabel = GUILabel:new(self.m_Width*0.02, self.m_Height*0.19, self.m_Width*0.6, self.m_Height*0.055, "", self.m_SettingBG)
 
 		local currentMode = core:get("Other", "TextureMode", TEXTURE_LOADING_MODE.DEFAULT)
 		self.m_TextureModeChange:setIndex(currentMode, true)
@@ -1436,15 +1436,8 @@ function SelfGUI:onSettingChange(setting)
 		end
 	elseif setting == "Sounds / Radio" then
 		GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.07, _"Sounds", self.m_SettingBG)
-		self.m_HallelujaSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.09, self.m_Width*0.9, self.m_Height*0.04, _"Halleluja-Sound beim sterben", self.m_SettingBG)
-		self.m_HallelujaSound:setFont(VRPFont(25))
-		self.m_HallelujaSound:setFontSize(1)
-		self.m_HallelujaSound:setChecked(core:get("Sounds", "Halleluja", true))
-		self.m_HallelujaSound.onChange = function (state)
-			core:set("Sounds", "Halleluja", state)
-		end
 
-		self.m_HitSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.15, self.m_Width*0.9, self.m_Height*0.04, _"Sound beim Treffen eines Spielers", self.m_SettingBG)
+		self.m_HitSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.09, self.m_Width*0.9, self.m_Height*0.04, _"Sound beim Treffen eines Spielers", self.m_SettingBG)
 		self.m_HitSound:setFont(VRPFont(25))
 		self.m_HitSound:setFontSize(1)
 		self.m_HitSound:setChecked(core:get("Sounds", "HitBell", true))
@@ -1452,7 +1445,7 @@ function SelfGUI:onSettingChange(setting)
 			core:set("Sounds", "HitBell", state)
 		end
 
-		self.m_FireworkSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.21, self.m_Width*0.9, self.m_Height*0.04, _"Feuerwerke anderer Spieler", self.m_SettingBG)
+		self.m_FireworkSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.15, self.m_Width*0.9, self.m_Height*0.04, _"Feuerwerke anderer Spieler", self.m_SettingBG)
 		self.m_FireworkSound:setFont(VRPFont(25))
 		self.m_FireworkSound:setFontSize(1)
 		self.m_FireworkSound:setChecked(core:get("Sounds", "Fireworks", true))
@@ -1460,7 +1453,7 @@ function SelfGUI:onSettingChange(setting)
 			core:set("Sounds", "Fireworks", state)
 		end
 
-		self.m_NaviSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.27, self.m_Width*0.9, self.m_Height*0.04, _"Navigations Sprachansagen", self.m_SettingBG)
+		self.m_NaviSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.21, self.m_Width*0.9, self.m_Height*0.04, _"Navigations Sprachansagen", self.m_SettingBG)
 		self.m_NaviSound:setFont(VRPFont(25))
 		self.m_NaviSound:setFontSize(1)
 		self.m_NaviSound:setChecked(core:get("Sounds", "Navi", true))
@@ -1468,7 +1461,7 @@ function SelfGUI:onSettingChange(setting)
 			core:set("Sounds", "Navi", state)
 		end
 
-		self.m_InteriorSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.33, self.m_Width*0.9, self.m_Height*0.04, _"Interior Sounds", self.m_SettingBG)
+		self.m_InteriorSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.27, self.m_Width*0.9, self.m_Height*0.04, _"Interior Sounds", self.m_SettingBG)
 		self.m_InteriorSound:setFont(VRPFont(25))
 		self.m_InteriorSound:setFontSize(1)
 		self.m_InteriorSound:setChecked(core:get("Sounds", "Interiors", true))
@@ -1477,8 +1470,7 @@ function SelfGUI:onSettingChange(setting)
 			setInteriorSoundsEnabled(state)
 		end
 
-
-		self.m_StaticNoiseRadio = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.39, self.m_Width*0.9, self.m_Height*0.04, _"Funkkanal Rauschen", self.m_SettingBG)
+		self.m_StaticNoiseRadio = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.33, self.m_Width*0.9, self.m_Height*0.04, _"Funkkanal Rauschen", self.m_SettingBG)
 		self.m_StaticNoiseRadio:setFont(VRPFont(25))
 		self.m_StaticNoiseRadio:setFontSize(1)
 		self.m_StaticNoiseRadio:setChecked(core:get("Sounds", "StaticNoise", true))
@@ -1486,7 +1478,7 @@ function SelfGUI:onSettingChange(setting)
 			core:set("Sounds", "StaticNoise", state)
 		end
 
-		self.m_AllowRadioSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.45, self.m_Width*0.9, self.m_Height*0.04, _"Radio Sounds", self.m_SettingBG)
+		self.m_AllowRadioSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.39, self.m_Width*0.9, self.m_Height*0.04, _"Radio Sounds", self.m_SettingBG)
 		self.m_AllowRadioSound:setFont(VRPFont(25))
 		self.m_AllowRadioSound:setFontSize(1)
 		self.m_AllowRadioSound:setChecked(core:get("Sounds", "RadioSound", true))

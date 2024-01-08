@@ -48,7 +48,7 @@ function StreetRaceEvent:onStart()
 			end
 
 			-- Tell player that we started the event
-			self:sendMessage("Das Event wurde gestartet!", 255, 255, 0)
+			self:sendMessage(_("Das Event wurde gestartet!", client), 255, 255, 0)
 
 			-- Set time out after 10min
 			self.m_TimeoutTimer = setTimer(function() delete(self) end, 10*60*1000, 1)
@@ -94,7 +94,7 @@ function StreetRaceEvent:colShapeHit(hitElement, matchingDimension)
 		self.m_Ranks[#self.m_Ranks+1] = hitElement
 
 		-- Tell all players that someone reached the destination
-		self:sendMessage("%s hat das Ziel als %d. erreicht", 255, 255, 0, getPlayerName(hitElement), #self.m_Ranks)
+		self:sendMessage(_("%s hat das Ziel als %d. erreicht", client), 255, 255, 0, getPlayerName(hitElement), #self.m_Ranks)
 
 		-- Give him some money
 		local moneyAmount = 100 * #self.m_Players / #self.m_Ranks
@@ -106,7 +106,7 @@ function StreetRaceEvent:colShapeHit(hitElement, matchingDimension)
 
 		-- Start countdown when the first player has reached the destination
 		if #self.m_Ranks == 1 then
-			self:sendMessage("Der erste Spieler hat das Ziel erreicht. Du hast du noch 1 Minute Zeit, um das Ziel zu erreichen!", 255, 255, 0)
+			self:sendMessage(_("Der erste Spieler hat das Ziel erreicht. Du hast du noch 1 Minute Zeit, um das Ziel zu erreichen!", client), 255, 255, 0)
 
 			-- Give him an Achievement
 			hitElement:giveAchievement(16)

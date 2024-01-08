@@ -7,13 +7,14 @@
 -- ****************************************************************************
 VehicleShop = inherit(Object)
 
-function VehicleShop:constructor(id, name, marker, npc, spawn, image, owner, price, money)
+function VehicleShop:constructor(id, name, marker, npc, spawn, image, owner, price, money, randomizeStock)
 	self.m_Id = id
 	self.m_Name = name
 	self.m_Image = image
 	self.m_BuyAble = price > 0 and true or false
 	self.m_OwnerId = owner
 	self.m_Money = money
+	self.m_RandomizeStock = randomizeStock
 	self.m_LastRob = self.m_LastRob or 0
 	self.m_BankAccountServer = BankServer.get("server.vehicle_shop")
 
@@ -154,6 +155,14 @@ function VehicleShop:addVehicle(Id, Model, Name, Category, Price, Level, Pos, Ro
 	self.m_VehicleList[Model][index].templateId = TemplateId or 0
 	self.m_VehicleList[Model][index].template =  TuningTemplateManager:getSingleton():getNameFromId( TemplateId ) or ""
 	self.m_VehicleList[Model][index].level = Level
+	if self.m_RandomizeStock then
+		if chance(1) then
+			CurrentStock = Randomizer:get(1, MaxStock)
+		else
+			CurrentStock = 0
+		end
+		MaxStock = 0
+	end
 	self.m_VehicleList[Model][index].currentStock = CurrentStock
 	self.m_VehicleList[Model][index].maxStock = MaxStock
 	self.m_VehicleList[Model][index].vehicle = TemporaryVehicle.create(Model, Pos, Rot)
@@ -184,15 +193,17 @@ function VehicleShop:internalSetVehicleStock(vehicleModel, index, stock)
 	if max == -1 then return end -- stock is not supported
 	assert(self.m_VehicleList[vehicleModel] and self.m_VehicleList[vehicleModel][index], ("invalid vehicle @internalSetVehicleStock, (%s, %s)"):format(tostring(vehicleModel), tostring(index))) 
 	
-	self.m_VehicleList[vehicleModel][index].currentStock = math.clamp(0, stock, max) 
+	self.m_VehicleList[vehicleModel][index].currentStock = math.clamp(0, stock, self.m_RandomizeStock and stock or max)
 	sql:queryExec("UPDATE ??_vehicle_shop_veh SET CurrentStock=? WHERE Id = ?", sql:getPrefix(), self.m_VehicleList[vehicleModel][index].currentStock, self.m_VehicleList[vehicleModel][index].id)
-	if (stock == 0) then
-		self.m_UrgentlyNeedsVehicles = true
+	
+	self.m_UrgentlyNeedsVehicles = false
+	if stock == 0 then
 		self.m_VehicleList[vehicleModel][index].vehicle:setDimension(PRIVATE_DIMENSION_SERVER)
-		CompanyManager:getSingleton():getFromId(CompanyStaticId.EPT)
-				:sendShortMessage(("Das Autohaus %s benötigt dringend neue Fahrzeuge vom Typ '%s'!"):format(self.m_Name, VehicleCategory:getSingleton():getModelName(vehicleModel)))
+		if max > 0 then
+			self.m_UrgentlyNeedsVehicles = true
+			CompanyManager:getSingleton():getFromId(CompanyStaticId.EPT):sendShortMessage(("Das Autohaus %s benötigt dringend neue Fahrzeuge vom Typ '%s'!"):format(self.m_Name, VehicleCategory:getSingleton():getModelName(vehicleModel)))
+		end
 	else
-		self.m_UrgentlyNeedsVehicles = false
 		self.m_VehicleList[vehicleModel][index].vehicle:setDimension(0)
 	end
 end

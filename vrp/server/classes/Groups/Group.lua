@@ -500,7 +500,7 @@ function Group:getOnlinePlayers()
 	return players
 end
 
-function Group:sendChatMessage(sourcePlayer, message)
+function Group:sendChatMessage(sourcePlayer, message, translatableBind)
 	if not getElementData(sourcePlayer, "GroupChatEnabled") then return sourcePlayer:sendError(_("Du hast den Gruppenchat deaktiviert!", sourcePlayer)) end
 	local lastMsg, msgTimeSent = sourcePlayer:getLastChatMessage()
 	if getTickCount()-msgTimeSent < (message == lastMsg and CHAT_SAME_MSG_REPEAT_COOLDOWN or CHAT_MSG_REPEAT_COOLDOWN) then -- prevent chat spam
@@ -513,17 +513,35 @@ function Group:sendChatMessage(sourcePlayer, message)
 	local rank = self.m_Players[playerId]
 	local rankName = self.m_RankNames[tostring(rank)]
 	local receivedPlayers = {}
+	local receivedPlayersDE = {}
+	local receivedPlayersEN = {}
 	message = message:gsub("%%", "%%%%")
-	local text = ("[%s] %s %s: %s"):format(self:getName(), rankName, sourcePlayer:getName(), message)
+
 	for k, player in ipairs(self:getOnlinePlayers()) do
 		if getElementData(player, "GroupChatEnabled") then
+			local tMessage = message
+			if translatableBind then
+				tMessage = BindManager:getSingleton():translateBind(message, player)
+			end
+			local text = ("[%s] %s %s: %s"):format(self:getName(), rankName, sourcePlayer:getName(), tMessage)
+
 			player:sendMessage(text, 0, 255, 150)
 		end
 		if player ~= sourcePlayer then
 			receivedPlayers[#receivedPlayers+1] = player
+			if player:getLocale() == "de" then
+				receivedPlayersDE[#receivedPlayersDE+1] = player
+			else
+				receivedPlayersEN[#receivedPlayersEN+1] = player
+			end
 		end
 	end
-	StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "group:"..self.m_Id, message, receivedPlayers)
+	if translatableBind then
+		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "group:"..self.m_Id, message, receivedPlayersDE)
+		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "group:"..self.m_Id, BindManager:getSingleton():getTranslation(message), receivedPlayersEN)
+	else
+		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "group:"..self.m_Id, message, receivedPlayers)
+	end
 end
 
 function Group:sendMessage(text, r, g, b, ...)
@@ -809,7 +827,7 @@ function Group:payDay()
 	outgoingPermanently["Fahrzeugsteuern"] = 0
 
 	if self:getMoney() > 0 then
-		incomingPermanently["Zinsen"] = self:getMoney() > 300000 and math.floor(300000 * 0.0005) or math.floor(self:getMoney() * 0.0005)
+		incomingPermanently["Zinsen"] = self:getMoney() > 1000000 and math.floor(1000000 * 0.0005) or math.floor(self:getMoney() * 0.0005)
 	end
 
 	for index, vehicle in pairs(self:getVehicles()) do
@@ -832,8 +850,8 @@ function Group:payDay()
 		else
 			local money = self.m_PlayerActivity[id] * 10
 
-			if money > 100 then
-				money = 100
+			if money > 50 then
+				money = 50
 			end
 
 			incomingBonus["Spieler (offline)"] = incomingBonus["Spieler (offline)"] + money

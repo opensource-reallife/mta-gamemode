@@ -381,7 +381,7 @@ function FactionEvil:Event_StartRaid(target)
 					end
 					target:sendMessage(_("Du wirst von %s (%s) überfallen!", target, client:getName(), client:getFaction():getShortName()), 255, 0, 0)
 					target:sendMessage(_("Lauf weg oder bleibe bis der Überfall beendet ist!", target), 255, 0, 0)
-					client:meChat(true, _("überfällt %s!", client, targetName))
+					client:meChat(true, "überfällt %s!", targetName, false)
 
 					target:triggerEvent("CountdownStop",  15, "Überfallen in")
 					target:triggerEvent("Countdown", 15, "Überfallen in")
@@ -402,8 +402,8 @@ function FactionEvil:Event_SuccessRaid(target)
 	local money = target:getMoney()
 	if money > 750 then money = 750 end
 	if money > 0 then
-		client:meChat(true,"überfällt "..target:getName().." erfolgreich!")
-		target:meChat(true, _("wurde erfolgreich von %s überfallen!", target, client:getName()))
+		client:meChat(true,"überfällt %s erfolgreich!", target:getName(), false)
+		target:meChat(true, "wurde erfolgreich von %s überfallen!", client:getName(), false)
 		target:transferMoney(client, money, "Überfall", "Faction", "Robbery")
 		client:triggerEvent("CountdownStop", "Überfallen in", 15)
 		target:triggerEvent("CountdownStop", "Überfallen in", 15)
@@ -416,7 +416,7 @@ end
 function FactionEvil:Event_FailedRaid(target)
 	target:sendSuccess(_("Du bist dem Überfall entkommen!", target))
 	client:sendWarning(_("Der Spieler ist dem Überfall entkommen!", client))
-	target:meChat(true, _("ist aus dem Überfall von %s entkommen!", target, client:getName()))
+	target:meChat(true, "ist aus dem Überfall von %s entkommen!", client:getName(), false)
 	StatisticsLogger:getSingleton():addRaidLog(client, target, 0, 0)
 end
 
@@ -464,9 +464,10 @@ end
 
 function FactionEvil:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, player)
 	if not client then client = player end
+	
 	if wasted then
 		client:removeFromVehicle()
-		client.m_WasOnDuty = true
+		client:setPublicSync("Faction:WasDuty", true)
 	end
 
 	if getPedOccupiedVehicle(client) then

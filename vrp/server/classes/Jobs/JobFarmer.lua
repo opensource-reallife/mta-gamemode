@@ -153,7 +153,7 @@ function JobFarmer:storeHit(hitElement, matchingDimension)
 			end
 			hitElement.m_HasSeeds = false
 
-			local income = self.m_CurrentSeeds[player] * MONEY_PER_SEED * JOB_PAY_MULTIPLICATOR * (1 + player:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR)
+			local income = self.m_CurrentSeeds[player] * MONEY_PER_SEED * JOB_PAY_MULTIPLICATOR * self:getMultiplicator()
 			local duration = getRealTime().timestamp - player.m_LastJobAction
 			player.m_LastJobAction = getRealTime().timestamp
 			local points = math.round(income / 50 * JOB_EXTRA_POINT_FACTOR)
@@ -296,7 +296,7 @@ function JobFarmer:deliveryHit (hitElement,matchingDimension)
 	if player and matchingDimension and getElementModel(hitElement) == getVehicleModelFromName("Walton") and hitElement == player.jobVehicle then
 		if self.m_CurrentPlants[player] and self.m_CurrentPlants[player] > 0 then
 			if hitElement.m_HasPlants then
-				local income = self.m_CurrentPlants[player] * MONEY_PER_PLANT * JOB_PAY_MULTIPLICATOR * (1 + player:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR)
+				local income = self.m_CurrentPlants[player] * MONEY_PER_PLANT * JOB_PAY_MULTIPLICATOR * self:getMultiplicator()
 				local duration = getRealTime().timestamp - player.m_LastJobAction
 				player.m_LastJobAction = getRealTime().timestamp
 				local points = math.round(income / 50 * JOB_EXTRA_POINT_FACTOR)
@@ -409,7 +409,7 @@ function JobFarmer:createPlant(position, vehicle)
 		setTimer(function (o) o.isFarmAble = true end, 1000*7.5, 1, object)
 		setElementVisibleTo(object, client, true)
 
-		local income = MONEY_PLANT_TRACTOR * JOB_PAY_MULTIPLICATOR * (1 + client:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR)
+		local income = MONEY_PLANT_TRACTOR * JOB_PAY_MULTIPLICATOR * self:getMultiplicator()
 		self.m_PlayerIncomeCache[client].tractor = self.m_PlayerIncomeCache[client].tractor + income
 		if self.m_PlayerIncomeCache[client].lastAction == 0 then
 			self.m_PlayerIncomeCache[client].lastAction = getRealTime().timestamp
@@ -431,7 +431,7 @@ function JobFarmer:collectPlant(hitElement, matchingDimension)
 			destroyElement(source.m_Plant)
 			destroyElement(source)
 
-			local income = MONEY_PLANT_HARVESTER * JOB_PAY_MULTIPLICATOR * (1 + player:getJobLevel() / 100 * JOB_LEVEL_MULTIPLICATOR)
+			local income = MONEY_PLANT_HARVESTER * JOB_PAY_MULTIPLICATOR * self:getMultiplicator()
 			self.m_PlayerIncomeCache[player].combine = self.m_PlayerIncomeCache[player].combine + income
 			if self.m_PlayerIncomeCache[player].lastAction == 0 then
 				self.m_PlayerIncomeCache[player].lastAction = getRealTime().timestamp

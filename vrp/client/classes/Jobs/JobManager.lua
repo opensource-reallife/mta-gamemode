@@ -7,6 +7,8 @@
 -- ****************************************************************************
 JobManager = inherit(Singleton)
 
+addRemoteEvents{"receiveJobMultiplicators"}
+
 function JobManager:constructor()
 	-- ATTENTION: Please use the same order server and clientside
 	self.m_Jobs = {
@@ -14,12 +16,12 @@ function JobManager:constructor()
 		JobRoadSweeper:new();
 		JobLumberjack:new();
 		JobFarmer:new();
-		--JobServiceTechnician:new();
+		JobServiceTechnician:new();
 		JobPizza:new();
 		JobHeliTransport:new();
 		JobLogistician:new();
 		JobForkLift:new();
-		--JobTreasureSeeker:new();
+		JobTreasureSeeker:new();
 		JobGravel:new();
 		--JobBoxer:new();
 	}
@@ -31,6 +33,12 @@ function JobManager:constructor()
 	addEvent("jobQuit", true)
 	addEventHandler("jobStart", root, bind(self.Event_jobStart, self))
 	addEventHandler("jobQuit", root, bind(self.Event_jobQuit, self))
+
+	addEventHandler("receiveJobMultiplicators", root, function(multTable)
+		for k, v in ipairs(self.m_Jobs) do
+			v:setMultiplicator(multTable[v:getId()])
+		end
+	end)
 end
 
 function JobManager:getFromId(jobId)

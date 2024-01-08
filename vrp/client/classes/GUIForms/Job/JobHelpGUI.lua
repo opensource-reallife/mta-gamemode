@@ -16,21 +16,24 @@ function JobHelpGUI:constructor()
 	self.m_InfoLabel:setFont(VRPFont(24))
 
 	self.m_JobList = GUIGridList:new(5, 60, self.m_Width-10, self.m_Height-60, self)
-	self.m_JobList:addColumn(_"Jobs", 0.7)
-	self.m_JobList:addColumn(_"Min. Job-Level", 0.3)
+	self.m_JobList:addColumn(_"Jobs", 0.5)
+	self.m_JobList:addColumn(_"Min. Job-Level", 0.25)
+	self.m_JobList:addColumn(_"Multiplikator", 0.25)
 
 	local pos
 	for index, job in pairs(JobManager:getSingleton().m_Jobs) do
-		pos = job.m_Ped:getPosition()
-		item = self.m_JobList:addItem(job.m_Name, job.m_Level)
-		item.onLeftDoubleClick = function () self:showJob( pos, job.m_Ped ) end
+		local mult = job.m_Multiplicator and ("+"..job.m_Multiplicator.."%") or " - "
+		item = self.m_JobList:addItem(job.m_Name, job.m_Level, mult)
+		item.onLeftDoubleClick = function () self:showJob(job.m_Ped:getPosition()) end
 	end
 end
 
-function JobHelpGUI:showJob( pos, ped )
-	if self.m_JobBlip then
-		delete(self.m_JobBlip)
+function JobHelpGUI:showJob(pedPos)
+	if self.m_JobList:getSelectedItem() and pedPos then
+		local item = self.m_JobList:getSelectedItem()
+		local blipPos = Vector2(pedPos.x, pedPos.y)
+		ShortMessage:new("Klicke um den Job auf der Karte zu markieren.\n(Beachte, dass du nicht in einem Interior sein darfst)", "Job", false, -1, function()
+			GPS:getSingleton():startNavigationTo(pedPos)
+		end, false, blipPos, {{path = "Marker.png", pos = blipPos}})
 	end
-	self.m_JobBlip = Blip:new("Marker.png", pos.x, pos.y,9999)
-	self.m_JobBlip:attachTo(ped)
 end

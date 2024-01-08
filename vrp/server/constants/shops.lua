@@ -149,17 +149,17 @@ SHOP_TYPES = {
 		["Class"] = GasStationShop
 	},
 	[21] = {
-		["Name"] = "Ammunation Central",
+		["Name"] = "Ammu-Nation Downtown",
 		["Marker"] = Vector3(1380.34, -1278, 12.6),
-		["Ped"] = {158, Vector3(1380.34, -1280.79, 13.54), 0},
+		["Ped"] = {179, Vector3(1380.34, -1280.3, 13.54), 0},
 		["Interior"] = {0, Vector3(0, 0, 0)},
 		["Class"] = Ammunation
 	},
 	[22] = {
-		["Name"] = "Ammunation South",
-		["Marker"] = Vector3(2379.96, -1986.57, 12.6),
-		["Ped"] = {158, Vector3(2379.84, -1984.17, 13.56), 180},
-		["Interior"] = {0, Vector3(0, 0, 0)},
+		["Name"] = "Ammu-Nation",
+		["Marker"] = Vector3(290.12, -109.78, 1001.52),
+		["Ped"] = {179, Vector3(290.29, -111.51, 1001.52), 0},
+		["Interior"] = {6, Vector3(296.91, -111.32, 1001.52)},
 		["Class"] = Ammunation
 	},
 	[23] = {
@@ -240,21 +240,21 @@ SHOP_ITEMS = {
 		["Cuba-Libre"] = 12
 	};
 	["Angel- / Outdoor-Shop"] = {
-		["Fischlexikon"] = 12500,
-		["Bambusstange"] = 150,
-		["Angelrute"] = 15000,
-		["Profi Angelrute"] = 40000,
-		["Legendäre Angelrute"] = 120000,
-		["Kleine Kühltasche"] = 50,
-		["Kühltasche"] = 100,
-		["Kühlbox"] = 250,
+		["Fischlexikon"] = 500,
+		["Bambusstange"] = 1500,
+		["Angelrute"] = 10000,
+		["Profi Angelrute"] = 30000,
+		["Legendäre Angelrute"] = 60000,
+		["Kleine Kühltasche"] = 500,
+		["Kühltasche"] = 1500,
+		["Kühlbox"] = 4000,
 		["Motorcross-Helm"] = 2000,
 		["Radio"] = 1700,
 		["Köder"] = 5,
 		["Leuchtköder"] = 40,
 		["Pilkerköder"] = 40,
-		["Schwimmer"] = 2500,
-		["Spinner"] = 5000,
+		["Schwimmer"] = 500,
+		["Spinner"] = 3500,
 	};
 	["Halloween Shop"] = {
 		["Kuheuter mit Pommes"] = 25,

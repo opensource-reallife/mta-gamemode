@@ -48,7 +48,7 @@ function ItemFood:use(player)
 
 	local ItemSettings = ItemFood.Settings[self:getName()]
 
-	player:meChat(true, ""..ItemSettings["Text"].."!")
+	player:meChat(true, ItemSettings["Text"].."!")
 	StatisticsLogger:getSingleton():addHealLog(client, ItemSettings["Health"], "Item "..self:getName())
 	
 	player:checkLastDamaged() 

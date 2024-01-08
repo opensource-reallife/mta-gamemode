@@ -147,24 +147,28 @@ function GroupHouseRob:startNewRob( house, player )
 		local group = player:getGroup()
 		if group then
 			if group:getType() == "Gang" then
-				if FactionState:getSingleton():countPlayers(true, true) < HOUSEROB_MIN_MEMBERS then
-					player:sendError(_("Es müssen mindestens %d Staatsfraktionisten im Dienst sein!", player, HOUSEROB_MIN_MEMBERS))
-					return false
-				end
-
-				if not self.m_HousesRobbed[house] then
-					if not self.m_GroupsRobCooldown[group] then
-						self.m_GroupsRobCooldown[group]  = getRealTime().timestamp - GroupHouseRob.COOLDOWN_TIME - 1
+				if not player:isFactionDuty() or not player:isCompanyDuty() then
+					if FactionState:getSingleton():countPlayers(true, true) < HOUSEROB_MIN_MEMBERS then
+						player:sendError(_("Es müssen mindestens %d Staatsfraktionisten im Dienst sein!", player, HOUSEROB_MIN_MEMBERS))
+						return false
 					end
-					if timestampCoolDown(self.m_GroupsRobCooldown[group], GroupHouseRob.COOLDOWN_TIME) then
-						self.m_GroupsRobCooldown[group]  = getRealTime().timestamp
-						self.m_HousesRobbed[house] = true
-						return true
+
+					if not self.m_HousesRobbed[house] then
+						if not self.m_GroupsRobCooldown[group] then
+							self.m_GroupsRobCooldown[group]  = getRealTime().timestamp - GroupHouseRob.COOLDOWN_TIME - 1
+						end
+						if timestampCoolDown(self.m_GroupsRobCooldown[group], GroupHouseRob.COOLDOWN_TIME) then
+							self.m_GroupsRobCooldown[group]  = getRealTime().timestamp
+							self.m_HousesRobbed[house] = true
+							return true
+						else
+							player:sendError(_("Ihr könnt noch nicht wieder ein Haus ausrauben!", player))
+						end
 					else
-						player:sendError(_("Ihr könnt noch nicht wieder ein Haus ausrauben!", player))
+						player:sendError(_("Dieses Haus wurde bereits ausgeraubt!", player))
 					end
 				else
-					player:sendError(_("Dieses Haus wurde bereits ausgeraubt!", player))
+					player:sendError(_("Du kannst im Fraktions- oder Unternehmensdienst keinen Hausraub starten!", player))
 				end
 			end
 		end

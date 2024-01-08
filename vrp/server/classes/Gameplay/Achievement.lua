@@ -23,6 +23,7 @@ Achievement.Client = {
 	--[87] = true, -- April Fools 2k17
 	[92] = true, -- Ramme ein Osterei
 	[98] = true, -- Pew Pew!
+	[112] = true, -- Halleluja!
 }
 
 function Achievement:constructor()

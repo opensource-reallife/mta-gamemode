@@ -9,7 +9,7 @@ Ban = {}
 
 
 function Ban.addBan(who, author, reason, duration, adminName)
-	local authorId = 0
+	local authorId = author
 	local authorName = adminName
 	if type(author) == "userdata" and getElementType(author) == "player" then
 		authorId = author:getId()

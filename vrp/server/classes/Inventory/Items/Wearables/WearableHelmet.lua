@@ -63,7 +63,7 @@ function WearableHelmet:use(player, itemId, bag, place, itemName)
 		player.m_HelmetPutOnTimer = setTimer(function() if player and isElement(player) and obj and isElement(obj) then exports.bone_attach:attachElementToBone(obj, player, 1, 0, yOffset, zOffset, rotX, 0, rotZ); setPedAnimation(player, nil) end end, 500, 1)
 		player.m_Helmet = obj
 		player.m_IsWearingHelmet = itemName
-		player:meChat(true, "zieht "..objName.." an!")
+		player:meChat(true, "zieht %s an!", objName, true)
 		player:setData("isFaceConcealed", isFaceConcealed)
 		if itemName == "Einsatzhelm" then
 			obj:setData("isProtectingHeadshot", true)
@@ -79,7 +79,7 @@ function WearableHelmet:use(player, itemId, bag, place, itemName)
 		player.m_Helmet = false
 		player:setData("isFaceConcealed", false)
 		if player.m_HelmetPutOnTimer then if isTimer(player.m_HelmetPutOnTimer) then killTimer(player.m_HelmetPutOnTimer) end end
-		player:meChat(true, "setzt "..WearableHelmet.objectTable[itemName][7].." ab!")
+		player:meChat(true, "setzt %s ab!", WearableHelmet.objectTable[itemName][7], true)
 		player:triggerEvent("onClientToggleHelmet", false, itemName)
 		player:setPublicSync("HelmetItem", false)
 	else --// else the player must have clicked on another helmet otherwise this instance of the class would have not been called
@@ -108,7 +108,7 @@ function WearableHelmet:use(player, itemId, bag, place, itemName)
 		player.m_HelmetPutOnTimer = setTimer(function() if player and isElement(player) and obj and isElement(obj) then exports.bone_attach:attachElementToBone(obj, player, 1, 0, yOffset, zOffset, rotX, 0, rotZ); setPedAnimation(player, nil) end end, 500, 1)
 		player.m_Helmet = obj
 		player.m_IsWearingHelmet = itemName
-		player:meChat(true, "zieht "..objName.." an!")
+		player:meChat(true, "zieht %s an!", objName, true)
 		player:setData("isFaceConcealed", isFaceConcealed)
 		if itemName == "Einsatzhelm" then
 			obj:setData("isProtectingHeadshot", true)

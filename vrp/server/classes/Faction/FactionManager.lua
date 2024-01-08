@@ -99,7 +99,7 @@ function FactionManager:loadFactions()
 			playerActionPermissions[factionRow.Id] = fromJSON(factionRow.FactionActionPermissions)
 		end
 
-		local instance = Faction:new(row.Id, row.Name_Short, row.Name_Shorter, row.Name, row.BankAccount, {players, playerLoans, playerWeapons, playerPermissions, playerWeaponPermissions, playerActionPermissions}, row.RankLoans, row.RankSkins, row.RankWeapons, row.Depot, row.Type, row.Diplomacy, row.RankPermissions, row.RankActions, row.PlayerLimit)
+		local instance = Faction:new(row.Id, row.Name_Short, row.Name_Shorter, row.Name, row.BankAccount, {players, playerLoans, playerWeapons, playerPermissions, playerWeaponPermissions, playerActionPermissions}, row.RankLoans, row.RankSkins, row.RankWeapons, row.Depot, row.Type, row.Diplomacy, row.RankPermissions, row.RankActions, row.PlayerLimit, row.MaxVehicles, row.VehicleLimits)
 		FactionManager.Map[row.Id] = instance
 		count = count + 1
 	end
@@ -921,6 +921,10 @@ function FactionManager:Event_setPlayerDutySkin(skinId)
 		client:sendError(_("Du bist nicht im Dienst deiner Fraktion aktiv!", client))
 		return
 	end
+	if client:getFaction():isStateFaction() and table.find(client:getFaction():getAllSpecialSkins(), client:getModel()) then
+		client:sendError(_("Verlasse zuerst den SWAT-Modus!", client))
+		return
+	end
 	client:sendInfo(_("Kleidung gewechselt.", client))
 	client:getFaction():changeSkin(client, skinId)
 end
@@ -936,7 +940,7 @@ function FactionManager:Event_UpdateSkinPermissions(skinTable)
 	end
 	for i, v in pairs(skinTable) do
 		client:getFaction():setSetting("Skin", i, v)
-		if v == -1 then
+		if v == -1 and not client:getFaction():isStateFaction() then
 			client:getFaction().m_SpecialSkin = i
 		end
 	end
@@ -953,15 +957,35 @@ function FactionManager:Event_setPlayerDutySkinSpecial(skinId)
 		return false
 	end
 	if not client:isFactionDuty() then return client:sendError(_("Du bist nicht im Dienst deiner Fraktion aktiv!", client)) end
-	if not client:getFaction().m_SpecialSkin or tonumber(client:getFaction():getSetting("Skin", client:getFaction().m_SpecialSkin, 0)) ~= -1 then
-		client:sendError(_("Fehler bei Spezial/Aktionskleidung, bitte wende dich an deinen Leader!", client))
-		return false
-	end
-	client:sendInfo(_("Kleidung gewechselt.", client))
-	if client:getModel() == client:getFaction().m_SpecialSkin then -- in special duty, stop it
-		client:getFaction():changeSkin(client, skinId)
-	else --start special duty
-		client:getFaction():changeSkin(client, client:getFaction().m_SpecialSkin)
+
+	if client:getFaction():isStateFaction() then
+		if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "enterSWATMode") then
+			return client:sendError(_("Du bist nicht berechtigt den SWAT Modus zu betreten", client))
+		end
+		
+		local f = client:getFaction()
+
+		if table.find(f:getAllSpecialSkins(), client:getModel()) then
+			return f:changeSkin(client, skinId)
+		end
+
+		if table.size(f:getAllSpecialSkins()) == 1 then
+			return f:changeSkin(client, f:getAllSpecialSkins()[1])
+		end
+
+		triggerClientEvent(client, "openSkinSelectGUI", client, f:getAllSpecialSkins(), f:getId(), "faction", false, f:getAllSkins(), "special")
+	else
+		if not client:getFaction().m_SpecialSkin or tonumber(client:getFaction():getSetting("Skin", client:getFaction().m_SpecialSkin, 0)) ~= -1 then
+			client:sendError(_("Fehler bei Spezial/Aktionskleidung, bitte wende dich an deinen Leader!", client))
+			return false
+		end
+
+		client:sendInfo(_("Kleidung gewechselt.", client))
+		if client:getModel() == client:getFaction().m_SpecialSkin then -- in special duty, stop it
+			client:getFaction():changeSkin(client, skinId)
+		else --start special duty
+			client:getFaction():changeSkin(client, client:getFaction().m_SpecialSkin)
+		end
 	end
 end
 

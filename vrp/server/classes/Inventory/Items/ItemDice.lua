@@ -15,5 +15,5 @@ function ItemDice:destructor()
 end
 
 function ItemDice:use(player)
-	player:meChat(true, "würfelt eine "..math.random(1,6).."!")
+	player:meChat(true, "würfelt eine %d!", math.random(1, 6), false)
 end

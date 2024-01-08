@@ -10,7 +10,7 @@ Faction = inherit(Object)
 
 -- implement by children
 
-function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, players, rankLoans, rankSkins, rankWeapons, depotId, factionType, diplomacy, rankPermissions, rankActions, playerLimit)
+function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, players, rankLoans, rankSkins, rankWeapons, depotId, factionType, diplomacy, rankPermissions, rankActions, playerLimit, maxVehicles, vehicleLimits)
 	self.m_Id = Id
 	self.m_Name_Short = name_short
 	self.m_ShorterName = name_shorter
@@ -28,8 +28,13 @@ function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, 
 	self.m_Invitations = {}
 	self.m_RankNames = factionRankNames[Id]
 	self.m_Skins = factionSkins[Id]
-	self.m_SpecialSkin = false
-	for i, v in pairs(self.m_Skins) do if tonumber(self:getSetting("Skin", i, 0)) == -1 then self.m_SpecialSkin = i end end
+	
+	if factionType == "State" then
+		self.m_SpecialSkin = factionSpecialSkins[Id] or {}
+	else 
+		for i, v in pairs(self.m_Skins) do if tonumber(self:getSetting("Skin", i, 0)) == -1 then self.m_SpecialSkin = i end end
+	end
+	
 	self.m_ValidWeapons = factionWeapons[Id]
 	self.m_SpecialWeapons = factionSpecialWeapons[Id]
 	self.m_Color = factionColors[Id]
@@ -63,6 +68,15 @@ function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, 
 
 	self.m_PlayerLimit = playerLimit > 0 and true or false
 	self.m_MaxPlayers = playerLimit
+
+	self.m_MaxVehicles = maxVehicles
+
+	local limits = fromJSON(vehicleLimits) or {}
+	local temp = {}
+	for k, v in pairs(limits) do
+		temp[tonumber(k)] = v
+	end
+	self.m_VehicleLimits = temp
 
 	if not DEBUG then
 		Async.create(
@@ -284,13 +298,16 @@ function Faction:changeSkin(player, skinId)
 				player:sendWarning(_("Deine ausgewählte Kleidung ist erst ab Rang %s verfügbar, dir wurde eine andere gegeben.", player, minRank))
 				player:setModel(self:getSkinsForRank(playerRank)[1])
 			end
+		elseif self:isStateFaction() and self.m_SpecialSkin[skinId] then
+			player:setModel(skinId)
 		else
 			--player:sendWarning(_("Deine ausgewählte Kleidung ist nicht mehr verfügbar, dir wurde eine andere gegeben.", player, minRank))
 			-- ^useless if player switches faction
 			player:setModel(self:getSkinsForRank(playerRank)[1])
 		end
+		
 		if self:isStateFaction() then
-			if skinId == 285 then
+			if self.m_SpecialSkin[skinId] then
 				player:getInventory():giveItem("Kevlar", 1)
 				player:setData("Faction:InSpecialDuty", true, true)
 			else
@@ -650,7 +667,7 @@ function Faction:sendSuccess(text)
 	end
 end
 
-function Faction:sendChatMessage(sourcePlayer, message)
+function Faction:sendChatMessage(sourcePlayer, message, translatableBind)
 	if not getElementData(sourcePlayer, "FactionChatEnabled") then return sourcePlayer:sendError(_("Du hast den Fraktionschat deaktiviert!", sourcePlayer)) end
 	--if self:isEvilFaction() or (self:isStateFaction() or self:isRescueFaction() and sourcePlayer:isFactionDuty()) then
 		local lastMsg, msgTimeSent = sourcePlayer:getLastChatMessage()
@@ -664,38 +681,75 @@ function Faction:sendChatMessage(sourcePlayer, message)
 		local rank = self.m_Players[playerId]
 		local rankName = self.m_RankNames[rank]
 		local receivedPlayers = {}
+		local receivedPlayersDE = {}
+		local receivedPlayersEN = {}
 		local r,g,b = self.m_Color["r"],self.m_Color["g"],self.m_Color["b"]
 		message = message:gsub("%%", "%%%%")
-		local text = ("%s %s: %s"):format(rankName,getPlayerName(sourcePlayer), message)
+
+
 		for k, player in ipairs(self:getOnlinePlayers()) do
 			if getElementData(player, "FactionChatEnabled") then
+				local tMessage = message
+				if translatableBind then
+					tMessage = BindManager:getSingleton():translateBind(message, player)
+				end
+				local text = ("%s %s: %s"):format(rankName,getPlayerName(sourcePlayer), tMessage)
+
 				player:sendMessage(text, r, g, b)
 			end
 			if player ~= sourcePlayer then
-	            receivedPlayers[#receivedPlayers+1] = player
-	        end
+				receivedPlayers[#receivedPlayers + 1] = player
+				if player:getLocale() == "de" then
+					receivedPlayersDE[#receivedPlayersDE+1] = player
+				else
+					receivedPlayersEN[#receivedPlayersEN+1] = player
+				end
+			end
 		end
-		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "faction:"..self.m_Id, message, receivedPlayers)
+		if translatableBind then
+			StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "faction:"..self.m_Id, message, receivedPlayersDE)
+			StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "faction:"..self.m_Id, BindManager:getSingleton():getTranslation(message), receivedPlayersEN)
+		else
+			StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "faction:"..self.m_Id, message, receivedPlayers)
+		end
+		
 	--else
 	--	sourcePlayer:sendError(_("Du bist nicht im Dienst!", sourcePlayer))
 	--end
 end
 
-function Faction:sendBndChatMessage(sourcePlayer, message, alliance)
+function Faction:sendBndChatMessage(sourcePlayer, message, alliance, translatableBind)
 	if not getElementData(sourcePlayer, "AllianceChatEnabled") then return sourcePlayer:sendError(_("Du hast den Bündnischat deaktiviert!", sourcePlayer)) end
 	local playerId = sourcePlayer:getId()
 	local receivedPlayers = {}
+    local receivedPlayersDE = {}
+    local receivedPlayersEN = {}
 	local r,g,b = 20, 140, 0
-	local text = ("[Bündnis] %s: %s"):format(getPlayerName(sourcePlayer), message)
 	for k, player in ipairs(self:getOnlinePlayers()) do
 		if getElementData(player, "AllianceChatEnabled") then
+			local tMessage = message
+			if translatableBind then
+				tMessage = BindManager:getSingleton():translateBind(message, player)
+			end
+			local text = ("[Bündnis] %s: %s"):format(getPlayerName(sourcePlayer), tMessage)
+
 			player:sendMessage(text, r, g, b)
 		end
 		if player ~= sourcePlayer then
-			receivedPlayers[#receivedPlayers+1] = player
-		end
+			receivedPlayers[#receivedPlayers + 1] = player
+			if player:getLocale() == "de" then
+				receivedPlayersDE[#receivedPlayersDE+1] = player
+			else
+				receivedPlayersEN[#receivedPlayersEN+1] = player
+			end
+        end
 	end
-	StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "factionBnd:"..self.m_Id, message, receivedPlayers)
+	if translatableBind then
+		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "faction:"..self.m_Id, message, receivedPlayersDE)
+		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "faction:"..self.m_Id, BindManager:getSingleton():getTranslation(message), receivedPlayersEN)
+	else
+		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "faction:"..self.m_Id, message, receivedPlayers)
+	end
 end
 
 function Faction:respawnVehicles(player)
@@ -1121,4 +1175,16 @@ function Faction:reloadPlayerLimit()
 	local newLimit = result[1]["PlayerLimit"] or 0
 	self.m_PlayerLimit = newLimit > 0 and true or false
 	self.m_MaxPlayers = newLimit
+end
+
+function Faction:getAllSpecialSkins(first)
+	local tab = {}
+
+	for skinId, state in pairs(self.m_SpecialSkin) do
+		if state then
+			table.insert(tab, skinId)
+		end
+	end
+
+	return tab
 end

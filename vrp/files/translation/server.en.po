@@ -2239,6 +2239,12 @@ msgstr "There is not enough money in the  shop cash register to rob!"
 msgid "Du bist im Dienst, du darfst keinen Überfall machen!"
 msgstr "You're on duty, you're not supposed to do a robbery!"
 
+msgid "Du kannst im Fraktions- oder Unternehmensdienst keinen Hausraub starten!"
+msgstr "You can't start a house rob while on faction or company duty!"
+
+msgid "Da du im Fraktions-/Unternehmensdienst bist erhältst du keine Items!"
+msgstr "Since you're on faction/company duty, you won't receive any items!"
+
 msgid "Du bist Polizist, du darfst keinen Überfall machen!"
 msgstr "You're a policeman, you can't do a robbery!"
 
@@ -3237,8 +3243,8 @@ msgstr "Do you want to keep working?"
 msgid "Du hast keinen Müll aufgeladen!"
 msgstr "You didn't load up trash!"
 
-msgid "Du hast eine%s für %d$ verkauft!"
-msgstr "You sold a%s for %d$!"
+msgid "Du hast %s für %d$ verkauft!"
+msgstr "You sold %s for %d$!"
 
 msgid "Du hast kein Objekt dabei!"
 msgstr "You don't have an object on you!"
@@ -3255,8 +3261,8 @@ msgstr "You already have an object on the ship!\nUnload it at the starting point
 msgid "Das gefundene Objekt wird angehoben! Bitte warten!"
 msgstr "The found object is lifted! Please wait!"
 
-msgid "Glückwunsch, du hast eine%s gefunden!\nBringe das Fundstück zum Startpunkt!"
-msgstr "Congratulations, you found a%s!\nBring the find to the starting point!"
+msgid "Du hast %s gefunden!\nBringe das Fundstück zum Startpunkt oder werfe es mit der Rücktaste zurück ins Meer!"
+msgstr "You've found %s!\nTake the found item to the starting point or use backspace to throw it back into the sea!"
 
 msgid "Schatzsucher-Job"
 msgstr "Treasure hunting job"
@@ -4181,3 +4187,117 @@ msgstr "Property tax"
 
 msgid "Du kannst das gerade nicht tun!"
 msgstr "You can't do that right now!"
+
+msgid "Du benötigst dafür mindestens %d Spielstunden!"
+msgstr "You need at least %d played hours for this!"
+
+msgid "Der Spieler wird aufgrund der beidseitigen Teilnahme am Gangwar nicht eingesperrt!"
+msgstr "The player will not be imprisoned due to mutual participation in the gang war!"
+
+msgid "Es wurde kein Spieler gefunden!"
+msgstr "No player has been found!"
+
+msgid "Du benötigst keine Unterstützung mehr? Klicke hier."
+msgstr "Don't need any more support? Click here."
+
+msgid "Job angenommen! Gehe zum roten Marker um ein Fahrzeug zu erhalten."
+msgstr "Job accepted! Go to the red marker to get a vehicle."
+
+msgid "Begib dich nun zum Kunden. Folge dazu der Markierung auf der Karte."
+msgstr "Now go to the customer. Follow the marker on the map."
+
+msgid "Kunde"
+msgstr "Customer"
+
+msgid "Du bist in keinem Jobfahrzeug!"
+msgstr "You're not in a job vehicle!"
+
+msgid "Du konntest einen Teil der Probleme lösen! Kehre zum Büro zurück, um eine neue Aufgabe zu erhalten."
+msgstr "You were able to solve some of the problems! Return to the office to receive a new task."
+
+msgid "Du konntest alle Probleme lösen! Kehre zum Büro zurück, um eine neue Aufgabe zu erhalten."
+msgstr "You were able to solve all the problems! Return to the office to receive a new task."
+
+msgid "Du konntest dem Kunden nicht helfen! Kehre zum Büro zurück, um eine neue Aufgabe zu erhalten."
+msgstr "You couldn't help the customer! Return to the office to receive a new task."
+
+msgid "Büro"
+msgstr "Office"
+
+msgid "Du hast eine neue Aufgabe erhalten! Begib dich zur Markierung auf der Karte."
+msgstr "You have been given a new task! Go to the marker on the map."
+
+msgid "Servicetechniker-Job"
+msgstr "Service technician job"
+
+msgid "Fahrzeugverkauf"
+msgstr "Vehicle sales"
+
+msgid "Stellenmarker"
+msgstr "Surrender marker"
+
+msgid "Ausrüstungskiste"
+msgstr "Equipment box"
+
+msgid "Der Spieler %s hat sich gestellt!"
+msgstr "The player %s has turned himself in!"
+
+msgid "%s ist dem Event beigetreten!"
+msgstr "%s joined the event!"
+
+msgid "Spawnpunkt wurde geändert."
+msgstr "Spawn point has been changed."
+
+msgid "Du bist nicht im Dienst."
+msgstr "You are not on duty."
+
+msgid "Du kannst derzeit keine Aktion starten."
+msgstr "You cannot start an action at this time."
+
+msgid "Das Boot muss dafür stillstehen!"
+msgstr "The boat needs to stand still for that!"
+
+msgid "eine Waschmaschine"
+msgstr "a washing machine"
+
+msgid "eine Holzkiste"
+msgstr "a wooden crate"
+
+msgid "einen Briefkasten"
+msgstr "a mailbox"
+
+msgid "eine Kiste"
+msgstr "a box"
+
+msgid "eine Waffenkiste"
+msgstr "a weapon crate"
+
+msgid "ein radioaktives Fass"
+msgstr "a radioactive barrel"
+
+msgid "einen Fernseher"
+msgstr "a television"
+
+msgid "eine große Holzkiste"
+msgstr "a large wooden crate"
+
+msgid "eine Mülltonne"
+msgstr "a trash can"
+
+msgid "einen Recyclingcontainer"
+msgstr "a recycling bin"
+
+msgid "eine Munitionskiste"
+msgstr "an ammo crate"
+
+msgid "ein paar Ölfässer"
+msgstr "a few oil barrels"
+
+msgid "eine Klimaanlage"
+msgstr "an air conditioner"
+
+msgid "ein Ladenschild"
+msgstr "a store sign"
+
+msgid "Du hast das Objekt zurück ins Meer geworfen!
+msgstr "You threw the object back into the sea!

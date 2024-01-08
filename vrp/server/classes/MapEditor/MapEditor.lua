@@ -9,7 +9,7 @@
 MapEditor = inherit(Singleton)
 addRemoteEvents{"MapEditor:placeObject", "MapEditor:requestControlForObject", "MapEditor:requestMapInfos", "MapEditor:requestObjectInfos", "MapEditor:createNewMap", "MapEditor:setMapStatus",
     "MapEditor:startMapEditing", "MapEditor:removeObject", "MapEditor:removeWorldModel", "MapEditor:restoreWorldModel", "MapEditor:requestEditingPlayers", "MapEditor:forceCloseEditor",
-    "MapEditor:changeSettings"}
+    "MapEditor:changeSettings", "MapEditor:createNewCategory"}
 
 function MapEditor:constructor()
     --map loading
@@ -20,6 +20,7 @@ function MapEditor:constructor()
     self.m_MapRequestBind = bind(self.sendMapInfosToClient, self)
     self.m_ObjectRequestBind = bind(self.sendObjectInfosToClient, self)
     self.m_NewMapBind = bind(self.createNewMap, self)
+    self.m_NewCategoryBind = bind(self.createNewCategory, self)
     self.m_MapStatusBind = bind(self.setMapStatus, self)
     self.m_StartEditingBind = bind(self.startMapEditing, self)
     self.m_ObjectRemoveBind = bind(self.removeObject, self)
@@ -35,6 +36,7 @@ function MapEditor:constructor()
     addEventHandler("MapEditor:requestMapInfos", root, self.m_MapRequestBind)
     addEventHandler("MapEditor:requestObjectInfos", root, self.m_ObjectRequestBind)
     addEventHandler("MapEditor:createNewMap", root, self.m_NewMapBind)
+    addEventHandler("MapEditor:createNewCategory", root, self.m_NewCategoryBind)
     addEventHandler("MapEditor:setMapStatus", root, self.m_MapStatusBind)
     addEventHandler("MapEditor:startMapEditing", root, self.m_StartEditingBind)
     addEventHandler("MapEditor:removeObject", root, self.m_ObjectRemoveBind)
@@ -62,7 +64,7 @@ function MapEditor:setPlayerInEditorMode(player, mapId, close)
     if not close then
         player.m_IsInEditorMode = true
         player.m_EditingMapId = mapId or 1
-        player:triggerEvent("MapEditor:enableClient", true, mapId)
+        player:triggerEvent("MapEditor:enableClient", true, mapId, MapLoader:getSingleton():getMapCategories())
     else
         player.m_IsInEditorMode = nil
         player.m_EditingMapId = nil
@@ -206,6 +208,14 @@ function MapEditor:sendMapInfosToClient(player)
     client:triggerEvent("MapEditorMapGUI:sendInfos", mapTable)
 end
 
+function MapEditor:sendMapCategoriesToClient(player)
+    if player then
+        client = player
+    end
+    local categories = MapLoader:getSingleton():getMapCategories()
+    client:triggerEvent("MapEditor:sendCategories", categories)
+end
+
 function MapEditor:sendObjectInfosToClient(id)
     local maps = MapLoader:getSingleton():getMaps()
     local mapremovals = MapLoader:getSingleton():getMapRemovals()
@@ -236,6 +246,24 @@ function MapEditor:createNewMap(name)
         client:sendError(_("Es existiert bereits eine Map mit dem Namen \"%s\"!", client, name))
     elseif result == true then
         client:sendSuccess(_("Map mit dem Namen \"%s\" erstellt!", client, name))
+        self:sendMapInfosToClient(client)
+    end
+end
+
+function MapEditor:createNewCategory(name)
+    if client:getRank() < ADMIN_RANK_PERMISSION["createNewCategory"] then
+        client:sendError(_("Du bist nicht berechtigt!", client))
+        return
+    end
+
+    local result = MapLoader:getSingleton():createNewCategory(name, client)
+    if result == "invalid name" then 
+        client:sendError(_("Du darfst in dem Kategorienamen nur alphanumerische Zeichen verwenden!", client))
+    elseif result == "already exists" then
+        client:sendError(_("Es existiert bereits eine Kategorie mit dem Namen \"%s\"!", client, name))
+    elseif result == true then
+        client:sendSuccess(_("Kategorie mit dem Namen \"%s\" erstellt!", client, name))
+        self:sendMapCategoriesToClient(client)
         self:sendMapInfosToClient(client)
     end
 end
@@ -307,6 +335,7 @@ function MapEditor:changeSettings(settingsTable)
     local activate = settingsTable[3]
     local saveObjects = settingsTable[4]
     local deactivatable = settingsTable[5]
+    local categorie = settingsTable[6]
 
     if name ~= false then
         local result = MapLoader:getSingleton():setMapName(id, name)
@@ -319,10 +348,12 @@ function MapEditor:changeSettings(settingsTable)
 
     MapLoader:getSingleton():setMapObjectSavingEnabled(id, saveObjects)
     MapLoader:getSingleton():setMapDeactivatable(id, deactivatable)
+    MapLoader:getSingleton():setMapCategory(id, categorie)
 
     if MapLoader:getSingleton():getMapStatus(id) ~= activate then
         self:setMapStatus(id, client)
     end
 
+    self:sendMapInfosToClient(client)
     client:sendSuccess("Einstellungen gespeichert!")
 end

@@ -58,7 +58,7 @@ function CompanyManager:loadCompanies()
 		end
 
 		if Company.DerivedClasses[row.Id] then
-			self:addRef(Company.DerivedClasses[row.Id]:new(row.Id, row.Name, row.Name_Short, row.Name_Shorter, row.Creator, {players, playerLoans, playerPermissions}, row.lastNameChange, row.BankAccount, fromJSON(row.Settings) or {["VehiclesCanBeModified"]=false}, row.RankLoans, row.RankSkins, row.RankPermissions, row.PlayerLimit))
+			self:addRef(Company.DerivedClasses[row.Id]:new(row.Id, row.Name, row.Name_Short, row.Name_Shorter, row.Creator, {players, playerLoans, playerPermissions}, row.lastNameChange, row.BankAccount, fromJSON(row.Settings) or {["VehiclesCanBeModified"]=false}, row.RankLoans, row.RankSkins, row.RankPermissions, row.PlayerLimit, row.MaxVehicles, row.VehicleLimits))
 		else
 			outputServerLog(("Company class for Id %s not found!"):format(row.Id))
 			--self:addRef(Company:new(row.Id, row.Name, row.Name_Short, row.Creator, players, row.lastNameChange, row.BankAccount, fromJSON(row.Settings) or {["VehiclesCanBeModified"]=false}, row.RankLoans, row.RankSkins))

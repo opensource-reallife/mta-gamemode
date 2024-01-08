@@ -7,15 +7,15 @@
 -- ****************************************************************************
 
 MapEditor = inherit(Singleton)
-addRemoteEvents{"MapEditor:enableClient", "MapEditor:giveControlPermission"}
+addRemoteEvents{"MapEditor:enableClient", "MapEditor:giveControlPermission", "MapEditor:sendCategories"}
 
-function MapEditor.enableClient(state, mapId)
-    MapEditor:new()
+function MapEditor.enableClient(state, mapId, categories)
+    MapEditor:new(categories)
     MapEditor:getSingleton():enableEditorMode(state, mapId)
 end
 addEventHandler("MapEditor:enableClient", root, MapEditor.enableClient)
 
-function MapEditor:constructor()
+function MapEditor:constructor(categories)
     self.m_ClickBind = bind(self.Event_onClientClick, self)
     self.m_DoubleClickBind = bind(self.Event_onClientDoubleClick, self)
     self.m_ObjectPlacedBind = bind(self.onObjectPlaced, self)
@@ -28,6 +28,22 @@ function MapEditor:constructor()
     self.m_ObjectXML = xmlLoadFile("files/data/objects.xml")
     self.m_Shader = dxCreateShader("files/shader/mapeditorColorize.fx")
     self.m_DeleteMessage = "Du bist im Begriff ein World-Object der Standard Map zu entfernen, denke lieber zwei Mal nach, ob Du wirklich dieses Objekt entfernen willst!"
+    self.m_ObjectNames = { }
+    self.m_Categories = categories
+
+    for key, node in pairs(xmlNodeGetChildren(self.m_ObjectXML)) do
+        for k, subnode in pairs(xmlNodeGetChildren(node)) do
+            if xmlNodeGetAttribute(subnode, "model") then
+                self.m_ObjectNames[xmlNodeGetAttribute(subnode, "model")] = xmlNodeGetAttribute(subnode, "name")
+            else
+                for sk, subsubnode in pairs(xmlNodeGetChildren(subnode)) do
+                    self.m_ObjectNames[xmlNodeGetAttribute(subsubnode, "model")] = xmlNodeGetAttribute(subsubnode, "name")
+                end
+            end
+        end
+    end
+
+    addEventHandler("MapEditor:sendCategories", root, bind(self.updateCategories, self))
 end
 
 function MapEditor:destructor()
@@ -433,22 +449,7 @@ function MapEditor:renderBoundingBox(object)
 end
 
 function MapEditor:getWorldModelName(id)
-	local objects = MapEditor:getSingleton():getObjectXML()
-    for key, node in pairs(xmlNodeGetChildren(objects)) do
-        for k, subnode in pairs(xmlNodeGetChildren(node)) do
-            if xmlNodeGetAttribute(subnode, "model") then
-                if xmlNodeGetAttribute(subnode, "model") == tostring(id) then
-					return xmlNodeGetAttribute(subnode, "name")
-				end
-            else
-                for sk, subsubnode in pairs(xmlNodeGetChildren(subnode)) do
-                    if xmlNodeGetAttribute(subsubnode, "model") == tostring(id) then
-                    	return xmlNodeGetAttribute(subsubnode, "name")
-					end
-                end
-            end
-        end
-    end
+    return self.m_ObjectNames[tostring(id)]
 end
 
 function MapEditor:findMatchingObjects(name)
@@ -496,4 +497,16 @@ end
 
 function MapEditor:areAllBoundingBoxesEnabled()
     return self.m_ShowAllMapObjects
+end
+
+function MapEditor:getAllCategories() 
+    return self.m_Categories
+end
+
+function MapEditor:getCategorieNameFromId(id)
+    return self.m_Categories[id]
+end
+
+function MapEditor:updateCategories(tbl)
+    self.m_Categories = tbl
 end

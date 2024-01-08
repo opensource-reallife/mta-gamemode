@@ -36,7 +36,8 @@
 	<!-- <map src="fraktionen/biker.map" /> -->
 	<map src="fraktionen/cosanostra.map" />
 	<map src="fraktionen/lspd.map" />
-	<map src="fraktionen/PD-interior.map" />
+	<map src="fraktionen/lspd-int.map" />
+	<!--<map src="fraktionen/PD-interior.map" />-->
 	<!--<map src="fraktionen/lspd-gate-access.map" />-->
 	<!--map src="fraktionen/PD-exit.map" /-->
 	<!--map src="fraktionen/PD-garage.map" /-->
@@ -95,12 +96,12 @@
 	<map src="jobs/helitransport.map" />
 	<map src="jobs/dumper.map" />
 
-	<map src="noobspawn_christmas.map" />
+	<!--<map src="noobspawn_christmas.map" />-->
 	<map src="noobspawn.map" />
 	<map src="prison.map" />
 
 	<map src="shop/ammunation.map" />
-	<map src="shop/ammunation2.map" />
+	<!--<map src="shop/ammunation2.map" />-->
 	<map src="shop/atrium.map" />
 	<map src="shop/gaertnerei.map" />
 	<map src="premium.map" />

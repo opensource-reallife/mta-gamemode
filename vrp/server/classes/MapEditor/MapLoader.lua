@@ -13,6 +13,7 @@ function MapLoader:constructor()
     self.m_MapRemovals = {} -- containts removed world objects !sorted by Map!
     self.m_MapInfos = {}
     self.m_Objects = {} -- containts !all! objects
+    self.m_Categories = {}
 end
 
 function MapLoader:destructor()
@@ -20,15 +21,19 @@ function MapLoader:destructor()
 
         for key, object in ipairs(map) do
             object:destroy()
-            
         end
     end
 end
 
 function MapLoader:loadAllFromDatabase()
+    local categories = sql:queryFetch("SELECT * FROM ??_map_editor_categories", sql:getPrefix())
+    for i, v in pairs(categories) do
+        self.m_Categories[v.Id] = v.Name
+    end
+    
     local maps = sql:queryFetch("SELECT * FROM ??_map_editor_maps", sql:getPrefix())
     for key, mRow in pairs(maps) do
-        self.m_MapInfos[mRow.Id] = {mRow.Name, Account.getNameFromId(mRow.Creator), mRow.Activated, mRow.SaveObjects, mRow.Deactivatable}
+        self.m_MapInfos[mRow.Id] = {mRow.Name, Account.getNameFromId(mRow.Creator), mRow.Activated, mRow.SaveObjects, mRow.Deactivatable, mRow.Category and mRow.Category or 0}
         if mRow.Activated == 1 then
             self:loadFromDatabase(mRow.Id)
         end
@@ -271,9 +276,24 @@ function MapLoader:createNewMap(name, creator)
 
     local result, numrows, insertId = sql:queryFetch("INSERT INTO ??_map_editor_maps (Name, Creator, SaveObjects, Activated, Deactivatable) VALUES(?, ?, ?, ?, ?)", sql:getPrefix(), name, creator:getId(), 1, 1, 1)
     if result then
-        self.m_MapInfos[insertId] = {name, creator:getName(), 1, 1, 1}
+        self.m_MapInfos[insertId] = {name, creator:getName(), 1, 1, 1, 0}
         self.m_Maps[insertId] = {}
         self.m_MapRemovals[insertId] = {}
+        return true
+    end
+end
+
+function MapLoader:createNewCategory(name)
+    if not name:match("^[a-zA-Z0-9_.%[%]]*$") then
+        return "invalid name"
+    end
+    if table.find(self.m_Categories, name) then
+        return "already exists"
+    end
+
+    local result = sql:queryExec("INSERT INTO ??_map_editor_categories (Name) VALUES(?)", sql:getPrefix(), name)
+    if result then
+        table.insert(self.m_Categories, name)
         return true
     end
 end
@@ -342,6 +362,14 @@ function MapLoader:setMapDeactivatable(id, state)
     end
 end
 
+function MapLoader:setMapCategory(id, categoryId)
+    local result = sql:queryExec("UPDATE ??_map_editor_maps SET Category = ? WHERE Id = ?", sql:getPrefix(), categoryId, id)
+    if result then
+        self.m_MapInfos[id][6] = categoryId
+        return true
+    end
+end
+
 function MapLoader:getMapInfos()
     return self.m_MapInfos
 end
@@ -360,4 +388,8 @@ end
 
 function MapLoader:getMapRemovals()
     return self.m_MapRemovals
+end
+
+function MapLoader:getMapCategories()
+    return self.m_Categories
 end

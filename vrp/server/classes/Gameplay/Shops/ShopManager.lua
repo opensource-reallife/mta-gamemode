@@ -8,15 +8,18 @@
 ShopManager = inherit(Singleton)
 ShopManager.Map = {}
 ShopManager.VehicleShopsMap = {}
+ShopManager.FCVehicleShopsMap = {}
 ShopManager.ShopVehicle = {}
 
 function ShopManager:constructor()
 	self:loadShops()
 	self:loadVehicleShops()
+	self:loadFCVehicleShops()
+
 	addRemoteEvents{"foodShopBuyMenu", "shopBuyItem", "shopBuyWeapon", "shopBuyClothes", "vehicleBuy", "shopOpenGUI", "shopBuy", "shopSell",
 	"barBuyDrink", "barShopMusicChange", "barShopMusicStop", "barShopStartStripper", "barShopStopStripper",
 	"shopOpenBankGUI", "shopBankDeposit", "shopBankWithdraw", "shopOnTattooSelection", "ammunationBuyItem", "onAmmunationAppOrder", 
-	"requestVehicleShops", "editVehicleShop", "onVehicleShopOpen","barRequestShopItems", "barRentStrippers"
+	"requestVehicleShops", "editVehicleShop", "onVehicleShopOpen","barRequestShopItems", "barRentStrippers", "buyFCVehicle"
 	}
 
 	addEventHandler("foodShopBuyMenu", root, bind(self.foodShopBuyMenu, self))
@@ -45,6 +48,7 @@ function ShopManager:constructor()
 	addEventHandler("barRentStrippers", root, bind(self.barRentStripper, self))
 	addEventHandler("requestVehicleShops", root, bind(self.onRequestVehicleShops, self))
 	addEventHandler("editVehicleShop", root, bind(self.editShopVehicle, self))
+	addEventHandler("buyFCVehicle", root, bind(self.buyFCVehicle, self))
 	addEventHandler("shopOpenGUI", root, function(id)
 		if ShopManager.Map[id] then
 			ShopManager.Map[id]:onItemMarkerHit(client, true)
@@ -92,7 +96,7 @@ end
 function ShopManager:loadVehicleShops()
 	local result = sql:queryFetch("SELECT * FROM ??_vehicle_shops", sql:getPrefix())
     for k, row in ipairs(result) do
-		local instance = VehicleShop:new(row.Id, row.Name, row.Marker, row.NPC, row.Spawn, row.Image, row.Owner, row.Price, row.Money)
+		local instance = VehicleShop:new(row.Id, row.Name, row.Marker, row.NPC, row.Spawn, row.Image, row.Owner, row.Price, row.Money, toboolean(row.RandomizeStock))
 		ShopManager.VehicleShopsMap[row.Id] = instance
 		if row.Blip then
 			instance:addBlip(row.Blip)
@@ -106,6 +110,13 @@ function ShopManager:loadVehicleShops()
 		end
 		local shop = self:getFromId(row.ShopId, true)
 		shop:addVehicle(row.Id, row.Model, row.Name, row.Category, row.Price, row.Level, Vector3(row.X, row.Y, row.Z), Vector3(row.RX, row.RY, row.RZ), row.TemplateId, row.CurrentStock, row.MaxStock)
+	end
+end
+
+function ShopManager:loadFCVehicleShops()
+	local result = sql:queryFetch("SELECT * FROM ??_fc_vehicle_shops", sql:getPrefix())
+    for k, row in ipairs(result) do
+		ShopManager.FCVehicleShopsMap[row.Id] = FCVehicleShop:new(row.Id, row.Name, row.NPC, row.VehicleSpawn, row.AircraftSpawn, row.BoatSpawn, row.Factions, row.Companies)
 	end
 end
 
@@ -281,7 +292,7 @@ function ShopManager:buyWeapon(shopId, itemType, weaponId, amount)
 				end
 
 				StatisticsLogger:addAmmunationLog(client, "Shop", toJSON({[weaponId] = weaponAmount}), price)
-				client:transferMoney(shop.m_BankAccount, price, "Ammunation-Einkauf", "Gameplay", "Weapon")
+				client:transferMoney(shop.m_BankAccount, price, "Ammu-Nation Einkauf", "Gameplay", "Weapon")
 			else
 				client:sendError(_("Du hast nicht genug Geld dabei!", client))
 				return
@@ -500,7 +511,7 @@ function ShopManager:onAmmunationAppOrder(weaponTable)
 		if client:getBankMoney() >= totalAmount then
 			if totalAmount > 0 then
 
-				client:transferBankMoney(BankServer.get("shop.ammunation"), totalAmount, "AmmuNation Bestellung", "Shop", "Ammunation")
+				client:transferBankMoney(BankServer.get("shop.ammunation"), totalAmount, "Ammu-Nation Bestellung", "Shop", "Ammunation")
 				StatisticsLogger:getSingleton():addAmmunationLog(client, "Bestellung", toJSON(weaponTable), totalAmount)
 				self:createOrder(client, weaponTable)
 			else
@@ -574,4 +585,8 @@ function ShopManager:editShopVehicle( shop, model, index, property, value)
 	else 
 		client:sendError(_("Ein Fehler ist aufgetreten, Fahrzeug nicht gefunden!", client))
 	end
+end
+
+function ShopManager:buyFCVehicle(shop, vehicleId)
+	ShopManager.FCVehicleShopsMap[shop]:buyVehicle(client, vehicleId)
 end

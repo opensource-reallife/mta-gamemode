@@ -72,6 +72,7 @@ function ItemSellContract:Event_OnTradeSuceed( player, price, car )
 						VehicleManager:getSingleton():removeRef( car, false)
 						car:setOwner( client )
 						car:setData("OwnerName", client.name, true)
+						car:setData("OwnerID", client:getId(), true)
 						VehicleManager:getSingleton():addRef( car, false)
 						car.m_Keys = {}
 						setElementData(car, "VehicleKeys", car.m_Keys)
