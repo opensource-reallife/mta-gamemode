@@ -67,8 +67,7 @@ function FCVehicleShop:reload()
 			description = row.Description,
 			ownerId = row.OwnerId,
 			ownerType = row.OwnerType,
-			color = fromJSON(row.Color),
-			textures = fromJSON(row.Textures),
+			tunings = fromJSON(row.Tunings),
 			elsPreset = row.ELSPreset
 		}
 	end
@@ -91,7 +90,7 @@ function FCVehicleShop:buyVehicle(player, vehicleId)
 	local vehData
 	local vehType
 
-	if player:getFaction() and player:isFactionDuty() and table.find(self.m_Faction, player:getFaction():getId()) then
+	if player:getFaction() and player:isFactionDuty() and table.find(self.m_Factions, player:getFaction():getId()) then
 		vehData = self.m_VehicleList[VehicleTypes.Faction][player:getFaction():getId()][vehicleId]
 		vehType = VehicleCategory:getSingleton():getCategoryName(VehicleCategory:getSingleton():getModelCategory(vehData.model))
 
@@ -156,13 +155,9 @@ function FCVehicleShop:buyVehicle(player, vehicleId)
 		warpPedIntoVehicle(player, veh)
 	end
 
-	for textureName, texturePath in pairs(vehData.textures) do
-		veh:getTunings():addTexture(texturePath, textureName)
-	end
-	veh:setELSPreset(vehData.elsPreset)
-	veh:setColor(color.r1, color.g1, color.b1, color.r2, color.g2, color.b2)
-	veh:getTunings():saveColors()
+	veh:getTunings().m_Tuning = vehData.tunings
 	veh:getTunings():applyTuning()
+	veh:setELSPreset(vehData.elsPreset)
 end
 
 function FCVehicleShop:addVehicle()

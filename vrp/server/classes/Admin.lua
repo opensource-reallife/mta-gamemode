@@ -1901,11 +1901,11 @@ function Admin:addVehicleToFCShop(player, cmd, shopId, price, ownerId, ownerType
 	local name = VehicleCategory:getSingleton():getModelName(player.vehicle.model)
 	local r1, g1, b1, r2, g2, b2 = player.vehicle:getColor(true)
 	local color = {r1 = r1, g1 = g1, b1 = b1, r2 = r2, g2 = g2, b2 = b2}
-	local textures = player.vehicle:getTunings().m_Tuning.Texture
+	local tunings = player.vehicle:getTunings().m_Tuning
 	local elsPreset = player.vehicle.m_ELSPreset
 
-	if sql:queryExec("INSERT INTO ??_fc_vehicle_shop_veh (Model, ShopId, Price, Description, OwnerId, OwnerType, Color, Textures, ELSPreset) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", 
-		sql:getPrefix(), player.vehicle.model, shopId, price, name, ownerId, ownerType, toJSON(color), toJSON(textures), elsPreset) 
+	if sql:queryExec("INSERT INTO ??_fc_vehicle_shop_veh (Model, ShopId, Price, Description, OwnerId, OwnerType, Tunings, ELSPreset) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
+		sql:getPrefix(), player.vehicle.model, shopId, price, name, ownerId, ownerType, toJSON(tunings), elsPreset) 
 	then
 		player:sendSuccess(_("Fahrzeug %s zu Shop #%d hinzugefügt!", player, name, shopId))
 	end
