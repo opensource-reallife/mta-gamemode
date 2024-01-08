@@ -138,6 +138,16 @@ function HUDUI:drawDefault()
 		local x = math.floor(screenWidth * 0.78)
 		local y = math.floor(screenHeight * 0.22 )
 		dxDrawText(("%s Wanteds"):format(self:getLocalTarget():getWanteds()), x, y, x + width, y + height, Color.White, 1.3, "pricedown", "center", "center")
+
+		local x = screenWidth * 0.85328
+		local y = screenHeight * 0.1252
+		local width = screenWidth * 0.0964285714285714
+		local height = screenHeight * 0.019047619047619
+		dxDrawImage(x, y, width, height, "files/images/HUD/hunger_empty.png")
+
+		local filledWidth = (self:getLocalTarget():getPrivateSync("Hunger") / 100) * width
+		local texWidth = filledWidth * 185 / width
+		dxDrawImageSection(x, y, filledWidth, height, 0, 0, texWidth, 21, "files/images/HUD/hunger_full.png")
 	end
 end
 

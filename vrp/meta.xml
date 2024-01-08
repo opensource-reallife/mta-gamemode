@@ -2035,6 +2035,8 @@
 	<vrpfile src="files/images/HUD/exo/red_b.png"/>
 	<vrpfile src="files/images/HUD/exo/cyan_b.png"/>
 
+	<vrpfile src="files/images/HUD/hunger_empty.png"/>
+	<vrpfile src="files/images/HUD/hunger_full.png"/>
 
 	<!-- group -->
 	<vrpfile src="files/images/Other/Enter.png"/>
