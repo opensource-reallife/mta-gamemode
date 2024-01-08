@@ -39,7 +39,7 @@ function FCVehicleShop:constructor(id, name, npc, vehicleSpawn, aircraftSpawn, b
 
 	self.m_Ped = NPC:new(npcData["skinId"], npcData["posX"], npcData["posY"], npcData["posZ"], npcData["rotZ"])
 	self.m_Ped:setInterior(npcData["interior"] or 0)
-	self.m_Ped:setInterior(npcData["dimension"] or 0)
+	self.m_Ped:setDimension(npcData["dimension"] or 0)
 	ElementInfo:new(self.m_Ped, _("Fahrzeugverkauf", client), 1.3)
 	self.m_Ped:setImmortal(true)
 	self.m_Ped:setFrozen(true)
@@ -56,7 +56,7 @@ end
 function FCVehicleShop:reload()
 	self.m_VehicleList = {}
 
-	local result = sql:queryFetch("SELECT * FROM ??_fc_vehicle_shop_veh", sql:getPrefix())
+	local result = sql:queryFetch("SELECT * FROM ??_fc_vehicle_shop_veh WHERE ShopId = ?", sql:getPrefix(), self.m_Id)
 	for k, row in pairs(result) do
 		if not self.m_VehicleList[row.OwnerType] then self.m_VehicleList[row.OwnerType] = {} end
 		if not self.m_VehicleList[row.OwnerType][row.OwnerId] then self.m_VehicleList[row.OwnerType][row.OwnerId] = {} end
@@ -67,8 +67,7 @@ function FCVehicleShop:reload()
 			description = row.Description,
 			ownerId = row.OwnerId,
 			ownerType = row.OwnerType,
-			color = fromJSON(row.Color),
-			textures = fromJSON(row.Textures),
+			tunings = fromJSON(row.Tunings),
 			elsPreset = row.ELSPreset
 		}
 	end
@@ -77,10 +76,10 @@ end
 function FCVehicleShop:Event_onShopOpen(player)
 	if not player or not player.m_VehicleShopMarker or Vector3(player.position - player.m_VehicleShopMarker.position):getLength() > 5 then
 		return 
-	end 
-	if player:getFaction() and player:isFactionDuty() and self.m_Factions[player:getFaction():getId()] then
+	end
+	if player:getFaction() and player:isFactionDuty() and table.find(self.m_Factions, player:getFaction():getId()) then
 		player:triggerEvent("showFCVehicleShopGUI", self.m_Id, self.m_Name, player:getFaction().m_VehicleLimits, player:getFaction().m_Vehicles, player:getFaction().m_MaxVehicles, self.m_VehicleList[VehicleTypes.Faction][player:getFaction():getId()], self.m_Ped)
-	elseif player:getCompany() and player:isCompanyDuty() and self.m_Companies[player:getCompany():getId()] then
+	elseif player:getCompany() and player:isCompanyDuty() and table.find(self.m_Companies, player:getCompany():getId()) then
 		player:triggerEvent("showFCVehicleShopGUI", self.m_Id, self.m_Name, player:getCompany().m_VehicleLimits, player:getCompany().m_Vehicles, player:getCompany().m_MaxVehicles, self.m_VehicleList[VehicleTypes.Company][player:getCompany():getId()], self.m_Ped)
 	else
 		player:sendError(_("Du bist nicht OnDuty oder der Händler liefert nicht an deine Fraktion/dein Unternehmen!", player))
@@ -91,7 +90,7 @@ function FCVehicleShop:buyVehicle(player, vehicleId)
 	local vehData
 	local vehType
 
-	if player:getFaction() and player:isFactionDuty() and self.m_Factions[player:getFaction():getId()] then
+	if player:getFaction() and player:isFactionDuty() and table.find(self.m_Factions, player:getFaction():getId()) then
 		vehData = self.m_VehicleList[VehicleTypes.Faction][player:getFaction():getId()][vehicleId]
 		vehType = VehicleCategory:getSingleton():getCategoryName(VehicleCategory:getSingleton():getModelCategory(vehData.model))
 
@@ -115,7 +114,7 @@ function FCVehicleShop:buyVehicle(player, vehicleId)
 
 		ownerId = player:getFaction():getId()
 		ownerType = VehicleTypes.Faction
-	elseif player:getCompany() and player:isCompanyDuty() and self.m_Companies[player:getCompany():getId()] then
+	elseif player:getCompany() and player:isCompanyDuty() and table.find(self.m_Companies, player:getCompany():getId()) then
 		vehData = self.m_VehicleList[VehicleTypes.Company][player:getCompany():getId()][vehicleId]
 		vehType = VehicleCategory:getSingleton():getCategoryName(VehicleCategory:getSingleton():getModelCategory(vehData.model))
 
@@ -156,13 +155,9 @@ function FCVehicleShop:buyVehicle(player, vehicleId)
 		warpPedIntoVehicle(player, veh)
 	end
 
-	for textureName, texturePath in pairs(vehData.textures) do
-		veh:getTunings():addTexture(texturePath, textureName)
-	end
-	veh:setELSPreset(vehData.elsPreset)
-	veh:setColor(color.r1, color.g1, color.b1, color.r2, color.g2, color.b2)
-	veh:getTunings():saveColors()
+	veh:getTunings().m_Tuning = vehData.tunings
 	veh:getTunings():applyTuning()
+	veh:setELSPreset(vehData.elsPreset)
 end
 
 function FCVehicleShop:addVehicle()
