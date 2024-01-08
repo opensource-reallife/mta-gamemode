@@ -39,7 +39,7 @@ function FCVehicleShop:constructor(id, name, npc, vehicleSpawn, aircraftSpawn, b
 
 	self.m_Ped = NPC:new(npcData["skinId"], npcData["posX"], npcData["posY"], npcData["posZ"], npcData["rotZ"])
 	self.m_Ped:setInterior(npcData["interior"] or 0)
-	self.m_Ped:setInterior(npcData["dimension"] or 0)
+	self.m_Ped:setDimension(npcData["dimension"] or 0)
 	ElementInfo:new(self.m_Ped, _("Fahrzeugverkauf", client), 1.3)
 	self.m_Ped:setImmortal(true)
 	self.m_Ped:setFrozen(true)
