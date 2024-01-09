@@ -132,13 +132,17 @@ end
 
 function HUDUI:drawDefault()
 	dxSetAspectRatioAdjustmentEnabled(true)
+
 	if self:getLocalTarget():getWanteds() > 0 then
 		local width = math.floor(screenWidth / 5.8)
 		local height = math.floor(screenHeight / 25)
 		local x = math.floor(screenWidth * 0.78)
 		local y = math.floor(screenHeight * 0.22 )
 		dxDrawText(("%s Wanteds"):format(self:getLocalTarget():getWanteds()), x, y, x + width, y + height, Color.White, 1.3, "pricedown", "center", "center")
+	end
 
+	local oxygen = math.percent(getPedOxygenLevel(self:getLocalTarget()), (1000 + getPedStat(self:getLocalTarget(), 22)*1.5 + getPedStat(self:getLocalTarget(), 225)*1.5))
+	if oxygen >= 100 then
 		local x = screenWidth * 0.85328
 		local y = screenHeight * 0.1252
 		local width = screenWidth * 0.0964285714285714
