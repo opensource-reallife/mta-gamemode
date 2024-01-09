@@ -342,6 +342,7 @@ function Vehicle:setCustomHorn(id)
 	self.m_CustomHorn = id
 	if self:getOccupant() then
 		local player = self:getOccupant()
+		if not type(id) == "number" then return end
 		if id > 0 then
 			bindKey(player, "j", "down", self.ms_CustomHornPlayBind)
 		else
