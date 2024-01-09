@@ -2029,6 +2029,7 @@
 	<vrpfile src="files/images/HUD/payday_money.png"/>
 
 	<vrpfile src="files/images/HUD/exo/bg.png"/>
+	<vrpfile src="files/images/HUD/exo/bg_oxy.png"/>
 	<vrpfile src="files/images/HUD/exo/armor.png"/>
 	<vrpfile src="files/images/HUD/exo/blue_b.png"/>
 	<vrpfile src="files/images/HUD/exo/green_b.png"/>

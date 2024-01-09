@@ -313,6 +313,7 @@ function HUDUI:drawExo()
 	local hudStartX = math.floor(screenWidth-width-r_os)
 	local lebensanzeige = getElementHealth(self:getLocalTarget())
 	local hungeranzeige = self:getLocalTarget():getPrivateSync("Hunger")
+	local atemluftanzeige = math.percent(getPedOxygenLevel(self:getLocalTarget()), (1000 + getPedStat(self:getLocalTarget(), 22)*1.5 + getPedStat(self:getLocalTarget(), 225)*1.5))
 	local imageWidth = 303
 	local imageHeight = 322
 	local progressBarSpeed = 24000
@@ -327,7 +328,11 @@ function HUDUI:drawExo()
 	local prog = elapsed / duration
 	local scroll_ = interpolateBetween(207,0,0,-207,0,0,prog,'Linear')
 	local time =  string.format("%02d:%02d",getRealTime().hour,getRealTime().minute)
-	dxDrawImage(hudStartX,1,math.floor(width),math.floor(height),'files/images/HUD/exo/bg.png')
+	if atemluftanzeige >= 100 then
+		dxDrawImage(hudStartX,1,math.floor(width),math.floor(height),'files/images/HUD/exo/bg.png')
+	else
+		dxDrawImage(hudStartX,1,math.floor(width),math.floor(height),'files/images/HUD/exo/bg_oxy.png')
+	end
 	dxDrawText (convertNumber(self:getLocalTarget():getMoney()),screenWidth-width*0.7-r_os,width*0.265,width,height, tocolor ( 255, 255, 255, 255 ), 1.2*width*0.0039, "default-bold" ) --Money
 	dxDrawText (time,screenWidth-width*0.22-r_os,width*0.265,width,height, tocolor ( 255, 255, 255, 255 ), 1.2*width*0.0039, "default" ) -- Clock
 	dxDrawText (self:getZone(),screenWidth-width*0.7-r_os,width*0.372,width,height, tocolor ( 255, 255, 255, 255 ), 1.02*width*0.0039, "default" ) -- ORT
@@ -349,14 +354,16 @@ function HUDUI:drawExo()
 		dxDrawImageSection(bar_x ,height*(186/imageHeight),bar_width*b_x,bar_height,scroll_,0,207*b_x,15,'files/images/HUD/exo/red_b.png',0,0,0,tocolor(255,255,255,200)) -- zweiter Balken
 	end
 
-	--b_x = (getPedOxygenLevel(localPlayer))/(1000 + getPedStat(localPlayer, 22)*1.5 + getPedStat(localPlayer, 225)*1.5)
-	--dxDrawImageSection(bar_x ,height*(218/imageHeight),bar_width*b_x,bar_height,scroll_,0,207*b_x,15,'files/images/HUD/exo/cyan_b.png',0,0,0,tocolor(255,255,255,200))
-
-	b_x = self:getLocalTarget():getPrivateSync("Hunger")/100
-	if b_x > (15*0.01) then
-		dxDrawImageSection(bar_x ,height*(218/imageHeight),bar_width*b_x,bar_height,scroll_,0,207*b_x,15,'files/images/HUD/exo/green_b.png',0,0,0,tocolor(255,255,255,200))
-	elseif b_x <= (15*0.01) and ( getTickCount() % 1000 > 500 ) then
-		dxDrawImageSection(bar_x ,height*(218/imageHeight),bar_width*b_x,bar_height,scroll_,0,207*b_x,15,'files/images/HUD/exo/green_b.png',0,0,0,tocolor(255,255,255,200)) -- zweiter Balken
+	if atemluftanzeige >= 100 then
+		b_x = self:getLocalTarget():getPrivateSync("Hunger")/100
+		if b_x > (15*0.01) then
+			dxDrawImageSection(bar_x ,height*(218/imageHeight),bar_width*b_x,bar_height,scroll_,0,207*b_x,15,'files/images/HUD/exo/green_b.png',0,0,0,tocolor(255,255,255,200))
+		elseif b_x <= (15*0.01) and ( getTickCount() % 1000 > 500 ) then
+			dxDrawImageSection(bar_x ,height*(218/imageHeight),bar_width*b_x,bar_height,scroll_,0,207*b_x,15,'files/images/HUD/exo/green_b.png',0,0,0,tocolor(255,255,255,200)) -- zweiter Balken
+		end
+	else
+		b_x = (getPedOxygenLevel(localPlayer))/(1000 + getPedStat(localPlayer, 22)*1.5 + getPedStat(localPlayer, 225)*1.5)
+		dxDrawImageSection(bar_x ,height*(218/imageHeight),bar_width*b_x,bar_height,scroll_,0,207*b_x,15,'files/images/HUD/exo/cyan_b.png',0,0,0,tocolor(255,255,255,200))
 	end
 	
 	if prog >= 1 then
@@ -370,8 +377,11 @@ function HUDUI:drawExo()
 
 	dxDrawText (_("SCHUTZWESTE: %s%%", math.floor(getPedArmor(self:getLocalTarget()))),screenWidth-width*0.5-r_os,width*0.475,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
 	dxDrawText (_("LEBEN: %s%%", lebensanzeige),screenWidth-width*0.5-r_os,width*0.57,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
-	dxDrawText (_("HUNGER: %s%%", hungeranzeige),screenWidth-width*0.5-r_os,width*0.675,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
-	--dxDrawText (_("ATEMLUFT: %s%%", math.floor((getPedOxygenLevel(localPlayer)*100)/(1000 + getPedStat(localPlayer, 22)*1.5 + getPedStat(localPlayer, 225)*1.5))),screenWidth-width*0.5-r_os,width*0.675,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
+	if atemluftanzeige >= 100 then
+		dxDrawText (_("HUNGER: %s%%", hungeranzeige),screenWidth-width*0.5-r_os,width*0.675,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
+	else
+		dxDrawText (_("ATEMLUFT: %s%%", math.floor(atemluftanzeige)),screenWidth-width*0.5-r_os,width*0.675,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
+	end
 	dxDrawImage(screenWidth-width*0.3-r_os,0,width*0.24,width*0.24, FileModdingHelper:getSingleton():getWeaponImage(self:getLocalTarget():getWeapon()))
 	local tAmmo = getPedTotalAmmo( self:getLocalTarget() )
 	local iClip = getPedAmmoInClip( self:getLocalTarget() )
