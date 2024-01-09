@@ -177,7 +177,7 @@ function VehicleShop:addVehicle(Id, Model, Name, Category, Price, Level, Pos, Ro
 	veh:setData("ShopVehicle", true, true)
 	veh:setData("ShopId", self.m_Id, true)
 	setVehicleDamageProof( veh , true)
-	if (CurrentStock == 0 and MaxStock ~= -1) then
+	if (CurrentStock == 0 and MaxStock >= 1) then
 		self.m_UrgentlyNeedsVehicles = true
 		self.m_VehicleList[Model][index].vehicle:setDimension(PRIVATE_DIMENSION_SERVER)
 	end
