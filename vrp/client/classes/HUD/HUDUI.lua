@@ -266,7 +266,7 @@ function HUDUI:drawVRPHealthArmor()
 		dxDrawRectangle(left, top, width*health/100, height, color)
 	end
 
-	health = _("Leben: %s %%", math.floor(health))
+	health = _("Leben: %s %%", math.ceil(health))
 	dxDrawText(health, left , top, left+width, top+height, Color.White, 1.2, "default-bold", "center", "center")
 
 	top =  0.175*screenHeight
@@ -275,7 +275,7 @@ function HUDUI:drawVRPHealthArmor()
 	dxDrawRectangle(left, top, width, height, tocolor(0, 0, 0, 150))
 	dxDrawRectangle(left, top, width*armor/100, height, tocolor(0, 0, 128))
 
-	local armor = _("Schutzweste: %s %%", math.floor(armor))
+	local armor = _("Schutzweste: %s %%", math.ceil(armor))
 	dxDrawText(armor, left , top, left+width, top+height, Color.White, 1.2, "default-bold", "center", "center")
 
 	top =  0.21*screenHeight
@@ -284,7 +284,7 @@ function HUDUI:drawVRPHealthArmor()
 	dxDrawRectangle(left, top, width, height, tocolor(0, 0, 0, 150))
 	dxDrawRectangle(left, top, width*hunger/100, height, tocolor(128, 0, 0))
 
-	local hunger = _("Hunger: %s %%", math.floor(hunger))
+	local hunger = _("Hunger: %s %%", math.ceil(hunger))
 	dxDrawText(hunger, left , top, left+width, top+height, Color.White, 1.2, "default-bold", "center", "center")
 end
 
@@ -372,15 +372,12 @@ function HUDUI:drawExo()
 	end
 	local r,g,b,a = 0,0,0,200
 
-	if lebensanzeige > 0 and lebensanzeige < 1 then lebensanzeige = 1 end
-	lebensanzeige = math.floor(lebensanzeige)
-
-	dxDrawText (_("SCHUTZWESTE: %s%%", math.floor(getPedArmor(self:getLocalTarget()))),screenWidth-width*0.5-r_os,width*0.475,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
-	dxDrawText (_("LEBEN: %s%%", lebensanzeige),screenWidth-width*0.5-r_os,width*0.57,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
+	dxDrawText (_("SCHUTZWESTE: %s%%", math.ceil(getPedArmor(self:getLocalTarget()))),screenWidth-width*0.5-r_os,width*0.475,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
+	dxDrawText (_("LEBEN: %s%%", math.ceil(lebensanzeige)),screenWidth-width*0.5-r_os,width*0.57,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
 	if atemluftanzeige >= 100 then
-		dxDrawText (_("HUNGER: %s%%", hungeranzeige),screenWidth-width*0.5-r_os,width*0.675,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
+		dxDrawText (_("HUNGER: %s%%", math.ceil(hungeranzeige)),screenWidth-width*0.5-r_os,width*0.675,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
 	else
-		dxDrawText (_("ATEMLUFT: %s%%", math.floor(atemluftanzeige)),screenWidth-width*0.5-r_os,width*0.675,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
+		dxDrawText (_("ATEMLUFT: %s%%", math.ceil(atemluftanzeige)),screenWidth-width*0.5-r_os,width*0.675,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
 	end
 	dxDrawImage(screenWidth-width*0.3-r_os,0,width*0.24,width*0.24, FileModdingHelper:getSingleton():getWeaponImage(self:getLocalTarget():getWeapon()))
 	local tAmmo = getPedTotalAmmo( self:getLocalTarget() )

@@ -67,7 +67,7 @@ function LocalPlayer:constructor()
 	self.m_DeathRenderBind = bind(self.deathRender, self)
 
 	--Hungersystem
-	Timer(bind(self.hungerDecrease, self), 1000*60*Randomizer:get(45, 75), 0)
+	Timer(bind(self.hungerDecrease, self), 1000*60, 0)
 
 	--Alcoholsystem
 	self.m_AlcoholDecreaseBind = bind(self.alcoholDecrease, self)
@@ -1052,5 +1052,5 @@ function LocalPlayer:getGroupVehicleExtraSlots()
 end
 
 function LocalPlayer:hungerDecrease()
-	triggerServerEvent("playerDecreaseHunger", localPlayer, Randomizer:get(5, 15))
+	triggerServerEvent("playerDecreaseHunger", localPlayer, Randomizer:get(0.25, 0.75))
 end

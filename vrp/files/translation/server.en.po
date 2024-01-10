@@ -4302,7 +4302,7 @@ msgstr "a store sign"
 msgid "Du hast das Objekt zurück ins Meer geworfen!"
 msgstr "You threw the object back into the sea!"
 
-msgid "Du musst dringend etwas essen, sonst sirbst du!"
+msgid "Du musst dringend etwas essen, sonst stirbst du!"
 msgstr "You have to eat something urgently, otherwise you'll die!"
 
 msgid "Du wurdest wegen akuter Mangelernährung außer Gefecht gesetzt!"
