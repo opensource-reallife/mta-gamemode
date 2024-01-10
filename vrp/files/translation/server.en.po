@@ -4301,3 +4301,9 @@ msgstr "a store sign"
 
 msgid "Du hast das Objekt zurück ins Meer geworfen!
 msgstr "You threw the object back into the sea!
+
+msgid "Die Happy Hour ist beendet! Die Aktionsstartbedingungen sind nun zurückgesetzt!"
+msgstr "The happy hour is over! The action start conditions are now reset!"
+
+msgid "Die Happy Hour hat begonnen! Die Aktionsstartbedingungen von einigen Aktionen sind nun verringert!"
+msgstr "The happy hour has begun! The start conditions of some actions are now reduced!"
