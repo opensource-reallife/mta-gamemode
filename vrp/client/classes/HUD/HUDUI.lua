@@ -149,7 +149,7 @@ function HUDUI:drawDefault()
 		local height = screenHeight * 0.019047619047619
 		dxDrawImage(x, y, width, height, "files/images/HUD/hunger_empty.png")
 
-		local filledWidth = (self:getLocalTarget():getPrivateSync("Hunger") / 100) * width
+		local filledWidth = (self:getLocalTarget():getPublicSync("Hunger") / 100) * width
 		local texWidth = filledWidth * 185 / width
 		dxDrawImageSection(x, y, filledWidth, height, 0, 0, texWidth, 21, "files/images/HUD/hunger_full.png")
 	end
@@ -280,7 +280,7 @@ function HUDUI:drawVRPHealthArmor()
 
 	top =  0.21*screenHeight
 
-	local hunger = self:getLocalTarget():getPrivateSync("Hunger")
+	local hunger = self:getLocalTarget():getPublicSync("Hunger")
 	dxDrawRectangle(left, top, width, height, tocolor(0, 0, 0, 150))
 	dxDrawRectangle(left, top, width*hunger/100, height, tocolor(128, 0, 0))
 
@@ -312,7 +312,7 @@ function HUDUI:drawExo()
 	local r_os = 0
 	local hudStartX = math.floor(screenWidth-width-r_os)
 	local lebensanzeige = getElementHealth(self:getLocalTarget())
-	local hungeranzeige = self:getLocalTarget():getPrivateSync("Hunger")
+	local hungeranzeige = self:getLocalTarget():getPublicSync("Hunger")
 	local atemluftanzeige = math.percent(getPedOxygenLevel(self:getLocalTarget()), (1000 + getPedStat(self:getLocalTarget(), 22)*1.5 + getPedStat(self:getLocalTarget(), 225)*1.5))
 	local imageWidth = 303
 	local imageHeight = 322
@@ -355,7 +355,7 @@ function HUDUI:drawExo()
 	end
 
 	if atemluftanzeige >= 100 then
-		b_x = self:getLocalTarget():getPrivateSync("Hunger")/100
+		b_x = self:getLocalTarget():getPublicSync("Hunger")/100
 		if b_x > (15*0.01) then
 			dxDrawImageSection(bar_x ,height*(218/imageHeight),bar_width*b_x,bar_height,scroll_,0,207*b_x,15,'files/images/HUD/exo/green_b.png',0,0,0,tocolor(255,255,255,200))
 		elseif b_x <= (15*0.01) and ( getTickCount() % 1000 > 500 ) then
@@ -475,7 +475,7 @@ function HUDUI:drawChart()
 		end
 	end
 
-	local health, armor, hunger = self:getLocalTarget():getHealth(), self:getLocalTarget():getArmor(), self:getLocalTarget():getPrivateSync("Hunger")
+	local health, armor, hunger = self:getLocalTarget():getHealth(), self:getLocalTarget():getArmor(), self:getLocalTarget():getPublicSync("Hunger")
 	local oxygen = math.percent(getPedOxygenLevel(self:getLocalTarget()), (1000 + getPedStat(self:getLocalTarget(), 22)*1.5 + getPedStat(self:getLocalTarget(), 225)*1.5))
 	local dsc = core:get("HUD", "chartLabels", true)
 	local healthColor = Color.HUD_Red

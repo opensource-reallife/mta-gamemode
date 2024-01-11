@@ -1144,7 +1144,7 @@ function DatabasePlayer:setHunger(hunger)
 		end
  
 		self.m_Hunger = hunger
-		self:setPrivateSync("Hunger", hunger)
+		self:setPublicSync("Hunger", hunger)
 	end
 end
 
