@@ -1052,5 +1052,5 @@ function LocalPlayer:getGroupVehicleExtraSlots()
 end
 
 function LocalPlayer:hungerDecrease()
-	triggerServerEvent("playerDecreaseHunger", localPlayer, Randomizer:get(0.25, 0.75))
+	triggerServerEvent("playerDecreaseHunger", localPlayer, Randomizer:get(25, 75) / 100)
 end
