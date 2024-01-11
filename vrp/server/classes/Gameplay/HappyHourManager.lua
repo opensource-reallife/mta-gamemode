@@ -52,7 +52,9 @@ function HappyHourManager:startHappyHour()
 	MIN_PLAYERS_FOR_VEHICLE_FIRE =
 	]]
 
-	triggerClientEvent("breakingNews", root, _("Die Happy Hour hat begonnen! Die Aktionsstartbedingungen von einigen Aktionen sind nun verringert!"), "HappyHour", {44, 148, 12}, {0, 0, 0})
+	for k, player in pairs(PlayerManager:getSingleton():getReadyPlayers()) do
+		triggerClientEvent(player, "breakingNews", resourceRoot, _("Die Happy Hour hat begonnen! Die Aktionsstartbedingungen von einigen Aktionen sind nun verringert!", player), "HappyHour", {44, 148, 12}, {0, 0, 0})
+	end
 end
 
 function HappyHourManager:endHappyHour()
@@ -71,5 +73,7 @@ function HappyHourManager:endHappyHour()
 	MIN_PLAYERS_FOR_FIRE = self.m_MinMembers["MinMembersFire"]
 	MIN_PLAYERS_FOR_VEHICLE_FIRE = self.m_MinMembers["MinMembersVehicleFire"]
 
-	triggerClientEvent("breakingNews", root, _("Die Happy Hour ist beendet! Die Aktionsstartbedingungen sind nun zurückgesetzt!"), "HappyHour", {44, 148, 12}, {0, 0, 0})
+	for k, player in pairs(PlayerManager:getSingleton():getReadyPlayers()) do
+		triggerClientEvent(player, "breakingNews", resourceRoot, _("Die Happy Hour ist beendet! Die Aktionsstartbedingungen sind nun zurückgesetzt!", player), "HappyHour", {44, 148, 12}, {0, 0, 0})
+	end
 end

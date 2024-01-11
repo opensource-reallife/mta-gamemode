@@ -4300,7 +4300,7 @@ msgid "ein Ladenschild"
 msgstr "a store sign"
 
 msgid "Du hast das Objekt zurück ins Meer geworfen!"
-msgstr "You threw the object back into the sea!
+msgstr "You threw the object back into the sea!"
 
 msgid "Die Happy Hour ist beendet! Die Aktionsstartbedingungen sind nun zurückgesetzt!"
 msgstr "The happy hour is over! The action start conditions are now reset!"
