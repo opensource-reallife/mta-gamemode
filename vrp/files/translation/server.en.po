@@ -4306,7 +4306,7 @@ msgid "Die Happy Hour ist beendet! Die Aktionsstartbedingungen sind nun zurückg
 msgstr "The happy hour is over! The action start conditions are now reset!"
 
 msgid "Die Happy Hour hat begonnen! Die Aktionsstartbedingungen von einigen Aktionen sind nun verringert!"
-msgstr "The happy hour has begun! The start conditions of some actions are now reduced!""
+msgstr "The happy hour has begun! The start conditions of some actions are now reduced!"
 
 msgid "Du musst dringend etwas essen, sonst stirbst du!"
 msgstr "You have to eat something urgently, otherwise you'll die!"
