@@ -17,15 +17,15 @@ function FCVehicleShop:constructor(id, name, npc, vehicleSpawn, aircraftSpawn, b
 	self.m_Companies = companies and fromJSON(companies) or {}
 
 	self.m_VehicleSpawn = fromJSON(vehicleSpawn)
-	self.m_VehicleNonCollisionCol = createColSphere(self.m_VehicleSpawn.posX, self.m_VehicleSpawn.posY, self.m_VehicleSpawn.posZ, 10)
+	self.m_VehicleNonCollisionCol = createColSphere(self.m_VehicleSpawn.posX, self.m_VehicleSpawn.posY, self.m_VehicleSpawn.posZ, 5)
 	self.m_VehicleNonCollisionCol:setData("NonCollisionArea", {players = true}, true)
 
 	self.m_AircraftSpawn = fromJSON(aircraftSpawn)
-	self.m_AircraftNonCollisionCol = createColSphere(self.m_AircraftSpawn.posX, self.m_AircraftSpawn.posY, self.m_AircraftSpawn.posZ, 10)
+	self.m_AircraftNonCollisionCol = createColSphere(self.m_AircraftSpawn.posX, self.m_AircraftSpawn.posY, self.m_AircraftSpawn.posZ, 5)
 	self.m_AircraftNonCollisionCol:setData("NonCollisionArea", {players = true}, true)
 
 	self.m_BoatSpawn = fromJSON(aircraftSpawn)
-	self.m_BoatNonCollisionCol = createColSphere(self.m_BoatSpawn.posX, self.m_BoatSpawn.posY, self.m_BoatSpawn.posZ, 10)
+	self.m_BoatNonCollisionCol = createColSphere(self.m_BoatSpawn.posX, self.m_BoatSpawn.posY, self.m_BoatSpawn.posZ, 5)
 	self.m_BoatNonCollisionCol:setData("NonCollisionArea", {players = true}, true)
 
 
@@ -149,15 +149,16 @@ function FCVehicleShop:buyVehicle(player, vehicleId)
 		spawnPos = self.m_AircraftSpawn
 	end
 
-	local veh = VehicleManager:getSingleton():createNewVehicle(ownerId, ownerType, vehData.model, spawnPos.posX, spawnPos.posY, spawnPos.posZ, 0, 0, spawnPos.rotZ, 0, 0, vehData.price)
+	local veh = VehicleManager:getSingleton():createNewVehicle(ownerId, ownerType, vehData.model, spawnPos.posX, spawnPos.posY, spawnPos.posZ, spawnPos.interior, spawnPos.dimension, spawnPos.rotZ, 0, 0, vehData.price)
 	
-	if vehType ~= "Sattelauflieger" and vehType ~= "Anhänger" then
-		warpPedIntoVehicle(player, veh)
-	end
+	--if vehType ~= "Sattelauflieger" and vehType ~= "Anhänger" then
+	--	warpPedIntoVehicle(player, veh)
+	--end
 
 	veh:getTunings().m_Tuning = vehData.tunings
 	veh:getTunings():applyTuning()
 	veh:setELSPreset(vehData.elsPreset)
+	veh:saveAdminChanges()
 end
 
 function FCVehicleShop:addVehicle()
