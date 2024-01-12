@@ -1124,7 +1124,7 @@ function DatabasePlayer:getVehicleExtraSlots()
 end
 
 function DatabasePlayer:setHunger(hunger)
-	if self:isActive() and (not self:isDead() or not self:isInJail() or not self:inAdminPrison()) then
+	if (not self.m_isAFK and (not self:isDead() or not self:getData("inJail") or not self:getData("inAdminPrison"))) or hunger > self.m_Hunger then
 		local hunger = math.min(100, hunger)
 
 		if self.m_AlcoholLevel <= 0 and not self:isStateCuffed() then
@@ -1139,8 +1139,8 @@ function DatabasePlayer:setHunger(hunger)
 			self:sendWarning(_("Du musst dringend etwas essen, sonst stirbst du!", self))
 		elseif hunger <= 0 then
 			self:sendShortMessage(_("Du wurdest wegen akuter Mangelernährung außer Gefecht gesetzt!", self))
-			self:setHunger(Randomizer:get(40, 60))
-			self:kill()
+			nextframe(function() self:kill() end)
+			hunger = Randomizer:get(40, 60)
 		end
  
 		self.m_Hunger = hunger
