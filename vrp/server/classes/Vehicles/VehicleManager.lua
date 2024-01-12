@@ -523,7 +523,7 @@ function VehicleManager:getPlayerVehicleById(playerId, vehicleId)
 	end
 end
 
-function VehicleManager:createNewVehicle(ownerId, ownerType, model, posX, posY, posZ, rotX, rotY, rotZ, premium, shopIndex, price, template)
+function VehicleManager:createNewVehicle(ownerId, ownerType, model, posX, posY, posZ, rotX, rotY, rotZ, premium, shopIndex, price, template, oldHandling)
 	-- owner, model, posX, posY, posZ, rotX, rotY, rotation, trunkId, premium
 	if type(ownerId) == "userdata" then
 		ownerId = ownerId:getId()
@@ -535,10 +535,11 @@ function VehicleManager:createNewVehicle(ownerId, ownerType, model, posX, posY, 
 	local rotY = rotY or 0
 	local rotZ = rotZ or 0
 	local premium = premium or 0
+	local oldHandling = oldHandling or ""
 	local price = price or 0
 	local shopIndex = shopIndex or 1
 
-	if sql:queryExec("INSERT INTO ??_vehicles (OwnerId, OwnerType, Model, PosX, PosY, PosZ, RotX, RotY, RotZ, Interior, Dimension, Premium, `Keys`, BuyPrice, ShopIndex) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?, '[[]]', ?, ?)", sql:getPrefix(), ownerId, ownerType, model, posX, posY, posZ, rotX, rotY, rotZ, premium, price, shopIndex) then
+	if sql:queryExec("INSERT INTO ??_vehicles (OwnerId, OwnerType, Model, PosX, PosY, PosZ, RotX, RotY, RotZ, Interior, Dimension, Premium, `Keys`, Handling, BuyPrice, ShopIndex) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?, '[[]]', ?, ?, ?)", sql:getPrefix(), ownerId, ownerType, model, posX, posY, posZ, rotX, rotY, rotZ, premium, oldHandling, price, shopIndex) then
 		return self:createVehicle(sql:lastInsertId(), template)
 	end
 	return false

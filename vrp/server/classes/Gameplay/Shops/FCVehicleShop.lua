@@ -31,7 +31,7 @@ function FCVehicleShop:constructor(id, name, npc, vehicleSpawn, aircraftSpawn, b
 
 	local npcData = fromJSON(npc)
 
-	if (not npcData["interior"] or npcData["interior"] == 0) and (not npcData["dimension"] or npcData["dimension"] == 0) then
+	if ( (not npcData["interior"] or npcData["interior"] == 0) and (not npcData["dimension"] or npcData["dimension"] == 0) ) or not toboolean(npcData["noBlip"]) then
 		self.m_Blip = Blip:new("CarShop.png", npcData["posX"], npcData["posY"], {faction = self.m_Factions, company = self.m_Companies}, 400)
 		self.m_Blip:setDisplayText(self.m_Name, BLIP_CATEGORY.Shop)
 		self.m_Blip:setOptionalColor({37, 78, 108})
@@ -67,6 +67,7 @@ function FCVehicleShop:reload()
 			description = row.Description,
 			ownerId = row.OwnerId,
 			ownerType = row.OwnerType,
+			handling = row.Handling,
 			tunings = fromJSON(row.Tunings),
 			elsPreset = row.ELSPreset
 		}
@@ -149,7 +150,7 @@ function FCVehicleShop:buyVehicle(player, vehicleId)
 		spawnPos = self.m_AircraftSpawn
 	end
 
-	local veh = VehicleManager:getSingleton():createNewVehicle(ownerId, ownerType, vehData.model, spawnPos.posX, spawnPos.posY, spawnPos.posZ, spawnPos.interior, spawnPos.dimension, spawnPos.rotZ, 0, 0, vehData.price)
+	local veh = VehicleManager:getSingleton():createNewVehicle(ownerId, ownerType, vehData.model, spawnPos.posX, spawnPos.posY, spawnPos.posZ, spawnPos.interior, spawnPos.dimension, spawnPos.rotZ, 0, 0, vehData.price, nil, vehData.handling)
 	
 	--if vehType ~= "Sattelauflieger" and vehType ~= "Anhänger" then
 	--	warpPedIntoVehicle(player, veh)
@@ -159,6 +160,8 @@ function FCVehicleShop:buyVehicle(player, vehicleId)
 	veh:getTunings():applyTuning()
 	veh:setELSPreset(vehData.elsPreset)
 	veh:saveAdminChanges()
+
+	player:sendShortMessage("Das neue Fahrzeug befindet sich an dieser Position!", "Position des Fahrzeugs", nil, -1, nil, nil, Vector2(spawnPos.posX, spawnPos.posY), {{path = "CarShop.png", pos = Vector2(spawnPos.posX, spawnPos.posY)}})
 end
 
 function FCVehicleShop:addVehicle()
