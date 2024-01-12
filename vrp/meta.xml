@@ -2038,6 +2038,8 @@
 
 	<vrpfile src="files/images/HUD/hunger_empty.png"/>
 	<vrpfile src="files/images/HUD/hunger_full.png"/>
+	<vrpfile src="files/images/HUD/wanteds_empty.png"/>
+	<vrpfile src="files/images/HUD/wanteds_full.png"/>
 
 	<!-- group -->
 	<vrpfile src="files/images/Other/Enter.png"/>

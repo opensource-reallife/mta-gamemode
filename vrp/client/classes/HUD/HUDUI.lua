@@ -133,12 +133,26 @@ end
 function HUDUI:drawDefault()
 	dxSetAspectRatioAdjustmentEnabled(true)
 
-	if self:getLocalTarget():getWanteds() > 0 then
-		local width = math.floor(screenWidth / 5.8)
-		local height = math.floor(screenHeight / 25)
-		local x = math.floor(screenWidth * 0.78)
-		local y = math.floor(screenHeight * 0.22 )
-		dxDrawText(("%s Wanteds"):format(self:getLocalTarget():getWanteds()), x, y, x + width, y + height, Color.White, 1.3, "pricedown", "center", "center")
+	local wanteds = self:getLocalTarget():getWanteds()
+	if wanteds > 0 then
+		local x = screenWidth * 0.7834
+		local y = screenHeight * 0.222
+		local width = screenWidth * 0.1658333333333333
+		local height = screenHeight * 0.0377142857142857
+		local filledWidth = (math.min(6, wanteds) / 6) * width
+		local texWidth = (filledWidth / width) * 199
+		local texX = (1 - (filledWidth / width)) * 199
+		dxDrawImage(x, y, width, height, "files/images/HUD/wanteds_empty.png")
+		dxDrawImageSection(x + (width - filledWidth), y, filledWidth, height, texX, 0, texWidth, 33, "files/images/HUD/wanteds_full.png")
+		
+		if wanteds > 6 then 
+			y = screenHeight * (0.222 + 0.042)
+			filledWidth = (math.min(6, wanteds - 6) / 6) * width
+			texWidth = (filledWidth / width) * 199
+			texX = (1 - (filledWidth / width)) * 199
+			dxDrawImage(x, y, width, height, "files/images/HUD/wanteds_empty.png")
+			dxDrawImageSection(x + (width - filledWidth), y, filledWidth, height, texX, 0, texWidth, 33, "files/images/HUD/wanteds_full.png")
+		end
 	end
 
 	local oxygen = math.percent(getPedOxygenLevel(self:getLocalTarget()), (1000 + getPedStat(self:getLocalTarget(), 22)*1.5 + getPedStat(self:getLocalTarget(), 225)*1.5))
