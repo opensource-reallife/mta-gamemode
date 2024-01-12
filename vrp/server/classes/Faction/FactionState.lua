@@ -17,8 +17,8 @@ function FactionState:constructor()
 	self:createArrestZone(163.05, 1904.10, 18.67) -- Area
 	self:createArrestZone(-1589.91, 715.65, -5.24) -- SF
 	self:createArrestZone(2281.71, 2431.59, 3.27) --lv
-	self:createArrestZone(1194.201, -1822.363, 13.582) -- FBI
-	self:createArrestZone(1240.056, -1746.687, 33.682) -- FBI roof
+	self:createArrestZone(1797.49, -1588.22, 13.51) -- FBI
+	self:createArrestZone(1808.47, -1548.04, 38.5) -- FBI roof
 	self.m_StateColor = {r = 3, g = 173, b = 252}
 
 	--self.m_GaragePorter = VehicleTeleporter:new(Vector3(1587.61, -1654.99, 13.43), Vector3(1597.39, -1671.34, 7.89), 180, 0, 4, 5, "cylinder" , 5, Vector3(0,0,3)) -- pd exit vehicle
@@ -56,9 +56,9 @@ function FactionState:constructor()
 	self:createSelfArrestMarker(Vector3(1561.80, -1678.16, 16.20))
 
 	self.m_EvidenceEquipmentBox = {}
-	self:createEquipmentEvidence(Vector3( 1538.44, -1708.12, 5.22), 0, 5, 133)
-	self:createEquipmentEvidence(Vector3( 136.93, 1857.62, 16.68), 0, 0, 275)
-	self:createEquipmentEvidence(Vector3( 1211.52, -1820.59, 12.60), 0, 0, 0)
+	self:createEquipmentEvidence(Vector3( 1538.44, -1708.12, 5.22), 0, 5, 133) --PD EquipmentDepot
+	self:createEquipmentEvidence(Vector3( 1766.91, -1547.54, 8.44), 0, 0, 224) --FBI EquipmentDepot
+	self:createEquipmentEvidence(Vector3( 136.93, 1857.62, 16.68), 0, 0, 275) --SASF EquipmentDepot
 
 
 	self.m_Items = {
@@ -355,9 +355,9 @@ end
 
 function FactionState:loadFBI(factionId)
 	self:createDutyPickup(275.85, -40.26, 1032.20, 10) -- FBI Interior
-	self:createDutyPickup(1214.813, -1813.902, 16.594) -- FBI backyard
+	self:createDutyPickup(1790.24, -1540.56, 9.81) -- FBI backyard
 
-	local blip = Blip:new("Police.png", 1219.20, -1812.31, {factionType = "State"}, 400, {factionColors[factionId].r, factionColors[factionId].g, factionColors[factionId].b})
+	local blip = Blip:new("Police.png", 1798.14, -1578.65, {factionType = "State"}, 400, {factionColors[factionId].r, factionColors[factionId].g, factionColors[factionId].b})
 		blip:setDisplayText(FactionManager:getSingleton():getFromId(factionId):getName(), BLIP_CATEGORY.Faction)
 
 	local safe = createObject(2332, 294.43, -22.6, 1031.7)
@@ -365,18 +365,19 @@ function FactionState:loadFBI(factionId)
 	FactionManager:getSingleton():getFromId(1):setSafe(safe)
 
 	local elevator = Elevator:new()
-	elevator:addStation("Heliport", Vector3(1242, -1777.0996, 33.7), 270)
+	elevator:addStation("Heliport", Vector3(1768.55, -1552.85, 38.97), 270)
 	elevator:addStation("Erdgeschoss", Vector3(296.49, -36.23, 1032.20), 90, 10)
+	elevator:addStation("Hinterhof", Vector3(1771.74, -1547.70, 9.93), 90)
 
-	self:createTakeItemsPickup(Vector3(1215.7, -1822.8, 13))
+	self:createTakeItemsPickup(Vector3(1774.88, -1539.01, 9.1))
 
-	local gateLeft = Gate:new(988, Vector3(1211, -1841.9004, 13.4), Vector3(0, 0, 0), Vector3(1206, -1841.9004, 13.4))
+	local gateLeft = Gate:new(2933, Vector3(1823.14, -1538.75, 14.26), Vector3(0, 0, 254), Vector3(1823.14, -1538.75, 10.56))
 	gateLeft.onGateHit = bind(self.onBarrierGateHit, self)
-	gateLeft:addGate(988, Vector3(1216.5, -1841.9004, 13.4), Vector3(0, 0, 0), Vector3(1221.9004, -1841.9004, 13.4))
+	--gateLeft:addGate(988, Vector3(1216.5, -1841.9004, 13.4), Vector3(0, 0, 0), Vector3(1221.9004, -1841.9004, 13.4))
 
-	local gateRight = Gate:new(988, Vector3(1267.4, -1841.9004, 13.4), Vector3(0, 0, 0), Vector3(1262, -1841.9004, 13.4))
+	local gateRight = Gate:new(2933, Vector3(1755.61, -1592, 14.24), Vector3(0, 0, 345.9), Vector3(1755.61, -1592, 10.4))
 	gateRight.onGateHit = bind(self.onBarrierGateHit, self)
-	gateRight:addGate(988, Vector3(1272.9004, -1841.9004, 13.4), Vector3(0, 0, 0), Vector3(1277.9004, -1841.9004, 13.4))
+	--gateRight:addGate(988, Vector3(1272.9004, -1841.9004, 13.4), Vector3(0, 0, 0), Vector3(1277.9004, -1841.9004, 13.4))
 
 	for i,v in pairs(gateLeft:getGateObjects()) do
 		VehicleTexture:new(v, "files/images/Textures/Faction/State/FBI_Logo.png", "ws_airsecurity", true)
@@ -385,8 +386,8 @@ function FactionState:loadFBI(factionId)
 		VehicleTexture:new(v, "files/images/Textures/Faction/State/FBI_Logo.png", "ws_airsecurity", true)
 	end
 
-	InteriorEnterExit:new(Vector3(1211.5996, -1750.0996, 13.6), Vector3(267.03, -23.87, 1032.20), 220, 0, 10) -- main entrance
-	InteriorEnterExit:new(Vector3(1219.20, -1812.25, 16.59), Vector3(259.91, -74.91, 1037.35), 0, 180, 10) -- back entrance / parking lot
+	InteriorEnterExit:new(Vector3(1798.14, -1578.65, 14.07), Vector3(267.03, -23.87, 1032.20), 220, 0, 10) -- main entrance
+	--InteriorEnterExit:new(Vector3(1219.20, -1812.25, 16.59), Vector3(259.91, -74.91, 1037.35), 0, 180, 10) -- back entrance / parking lot
 end
 
 function FactionState:loadArmy(factionId)
