@@ -506,9 +506,9 @@ function HUDUI:drawChart()
 	end
 
 	drawCol(1, 0, Color.Clear, ("%02d.%02d.%04d"):format(getRealTime().monthday, getRealTime().month+1, getRealTime().year+1900), FontAwesomeSymbols.Calendar, Color.HUD_Brown_D, "date", not core:get("HUD", "chartDateVisible", false))
+	drawCol(1, armor, Color.HUD_Grey, dsc and _("%s%% Schutzweste", math.ceil(armor)) or math.ceil(armor), FontAwesomeSymbols.Shield, Color.HUD_Grey_D, "armor", armor == 0)
 	drawCol(1, health, healthColor, dsc and _("%s%% Leben", math.ceil(health)) or math.ceil(health), FontAwesomeSymbols.Heart, Color.HUD_Red_D, "health", health == 0)
 	drawCol(1, hunger, hungerColor, dsc and _("%s%% Hunger", math.ceil(hunger)) or math.ceil(hunger), FontAwesomeSymbols.Utensils, Color.HUD_Green_D, "hunger", hunger == 0)
-	drawCol(1, armor, Color.HUD_Grey, dsc and _("%s%% Schutzweste", math.ceil(armor)) or math.ceil(armor), FontAwesomeSymbols.Shield, Color.HUD_Grey_D, "armor", armor == 0)
 	drawCol(1, oxygen, oxygenColor, dsc and _("%s%% Atemluft", math.ceil(oxygen)) or math.ceil(oxygen), FontAwesomeSymbols.Comment, Color.HUD_Blue_D, "oxygen", oxygen == 100)
 	drawCol(1, 0, Color.Clear, toMoneyString(self:getLocalTarget():getMoney()), FontAwesomeSymbols.Money, Color.HUD_Green_D, "money")
 	drawCol(1, 0, Color.Clear, dsc and _("%s Punkte", localPlayer:getPoints()) or localPlayer:getPoints(), FontAwesomeSymbols.Points, Color.HUD_Lime_D, "points", not core:get("HUD", "chartPointLevelVisible", true))
