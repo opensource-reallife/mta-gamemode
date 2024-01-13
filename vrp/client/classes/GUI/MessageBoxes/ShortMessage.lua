@@ -184,7 +184,8 @@ addEventHandler("shortMessageBox", root,
 			if onTimeout then
 				triggerServerEvent(onTimeout, root, unpack(additionalParameters))
 			end
-		end)
+		end,
+		...)
 	end
 )
 

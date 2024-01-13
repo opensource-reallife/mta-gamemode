@@ -161,7 +161,7 @@ function FCVehicleShop:buyVehicle(player, vehicleId)
 	veh:setELSPreset(vehData.elsPreset)
 	veh:saveAdminChanges()
 
-	player:sendShortMessage("Das neue Fahrzeug befindet sich an dieser Position!", "Position des Fahrzeugs", nil, -1, nil, nil, Vector2(spawnPos.posX, spawnPos.posY), {{path = "CarShop.png", pos = Vector2(spawnPos.posX, spawnPos.posY)}})
+	player:sendShortMessage("Das neue Fahrzeug befindet sich an dieser Position!", "Position des Fahrzeugs", false, -1, false, false, {x = spawnPos.posX, y = spawnPos.posY}, {{path = "Marker.png", pos = {x = spawnPos.posX, y = spawnPos.posY}}})
 end
 
 function FCVehicleShop:addVehicle()
