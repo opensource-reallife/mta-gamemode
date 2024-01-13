@@ -115,6 +115,7 @@ function BankRobbery:destroyRob()
 	self.m_HackableComputer:setData("bankPC", false, true)
 	if isElement(self.m_HackableComputer) then destroyElement(self.m_HackableComputer) end
 	if self.m_GuardPed1 then destroyElement( self.m_GuardPed1 ) end
+	if self.m_GuardPed2 then destroyElement( self.m_GuardPed2 ) end
 
 	if self.m_SafeGate then
 		for index, object in pairs(self.m_SafeGate) do
