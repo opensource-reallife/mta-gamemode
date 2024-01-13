@@ -1052,5 +1052,7 @@ function LocalPlayer:getGroupVehicleExtraSlots()
 end
 
 function LocalPlayer:hungerDecrease()
-	triggerServerEvent("playerDecreaseHunger", localPlayer, Randomizer:get(25, 75) / 100)
+	if not self:isAFK() and not self:isDead() and not self:isInJail() and not self:getData("inAdminPrison") then
+		triggerServerEvent("playerDecreaseHunger", localPlayer, Randomizer:get(25, 75) / 100)
+	end
 end
