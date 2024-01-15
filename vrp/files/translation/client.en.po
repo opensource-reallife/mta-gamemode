@@ -5655,18 +5655,6 @@ msgstr "Left Shift"
 msgid "Shift rechts"
 msgstr "Right Shift"
 
-msgid "Fraktion"
-msgstr "Faction"
-
-msgid "Unternehmen"
-msgstr "Company"
-
-msgid "Firma/Gang"
-msgstr "Group"
-
-msgid "Chat (/say)"
-msgstr "Chat (/say)"
-
 msgid "schreien (/s)"
 msgstr "shout (/s)"
 
@@ -5675,9 +5663,6 @@ msgstr "whisper (/l)"
 
 msgid "Fraktion (/t)"
 msgstr "Faction (/t)"
-
-msgid "me (/me)"
-msgstr "me (/me)"
 
 msgid "Unternehmen (/u)"
 msgstr "Company (/u)"
