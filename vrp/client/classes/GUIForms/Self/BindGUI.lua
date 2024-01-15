@@ -80,33 +80,33 @@ function BindGUI:constructor()
 	self.m_Footer["local"]["PlusLabel"] = GUIGridLabel:new(8, 13, 2, 1, " + ", self.m_Window):setAlign("center")
 	self.m_Footer["local"]["SelectedButton"] = GUIGridButton:new(10, 13, 7, 1, " ", self.m_Window):setBackgroundColor(Color.Accent):setFontSize(1.2)
   	self.m_Footer["local"]["SelectedButton"].onLeftClick = function () self:waitForKey() end
-	self.m_Footer["local"]["SaveBindButton"] = GUIGridButton:new(1, 14, 5, 1, "Speichern", self.m_Window):setBackgroundColor(Color.Green)
+	self.m_Footer["local"]["SaveBindButton"] = GUIGridButton:new(1, 14, 5, 1, _"Speichern", self.m_Window):setBackgroundColor(Color.Green)
 	self.m_Footer["local"]["SaveBindButton"].onLeftClick = function () self:saveBind() end
-	self.m_Footer["local"]["DeleteBindButton"] = GUIGridButton:new(7, 14, 5, 1, "Bind Löschen", self.m_Window):setBackgroundColor(Color.Red)
+	self.m_Footer["local"]["DeleteBindButton"] = GUIGridButton:new(7, 14, 5, 1, _"Bind Löschen", self.m_Window):setBackgroundColor(Color.Red)
 	self.m_Footer["local"]["DeleteBindButton"].onLeftClick = function () self:deleteBind() end
-	self.m_Footer["local"]["ChangeBindButton"] = GUIGridButton:new(12, 14, 5, 1, "Bind ändern", self.m_Window):setBackgroundColor(Color.Orange)
+	self.m_Footer["local"]["ChangeBindButton"] = GUIGridButton:new(12, 14, 5, 1, _"Bind ändern", self.m_Window):setBackgroundColor(Color.Orange)
 	self.m_Footer["local"]["ChangeBindButton"].onLeftClick = function () self:editBind() end
 
 	--Remote Bind
 	self.m_Footer["remote"] = {}
-	self.m_Footer["remote"]["CopyButton"] = GUIGridButton:new(1, 14, 16, 1, "Diesen Bind verwenden", self.m_Window):setBackgroundColor(Color.Green)
+	self.m_Footer["remote"]["CopyButton"] = GUIGridButton:new(1, 14, 16, 1, _"Diesen Bind verwenden", self.m_Window):setBackgroundColor(Color.Green)
 	self.m_Footer["remote"]["CopyButton"].onLeftClick = function () self:copyBind() end
 
 
 	--New Bind
 	self.m_Footer["new"] = {}
-	self.m_Footer["new"]["FunctionLabel"] = GUIGridLabel:new(1, 14, 3, 1, "Funktion:", self.m_Window)
+	self.m_Footer["new"]["FunctionLabel"] = GUIGridLabel:new(1, 14, 3, 1, _"Funktion:", self.m_Window)
 	self.m_Footer["new"]["FunctionChanger"] = GUIGridChanger:new(5, 14, 5, 1, self.m_Window):setBackgroundColor(Color.Accent)
 	for index, name in pairs(BindGUI.Functions) do
 		self.m_Footer["new"]["FunctionChanger"]:addItem(name)
 	end
-	self.m_Footer["new"]["GermanMsgLabel"] = GUIGridLabel:new(1, 10, 16, 1, "Nachricht (Deutsch):", self.m_Window)
+	self.m_Footer["new"]["GermanMsgLabel"] = GUIGridLabel:new(1, 10, 16, 1, _"Nachricht (Deutsch):", self.m_Window)
 	self.m_Footer["new"]["NewTextDE"] = GUIGridEdit:new(1, 11, 16, 1, self.m_Window)
-	self.m_Footer["new"]["EnglishMsgLabel"] = GUIGridLabel:new(1, 12, 16, 1, "Nachricht (Englisch):", self.m_Window)
+	self.m_Footer["new"]["EnglishMsgLabel"] = GUIGridLabel:new(1, 12, 16, 1, _"Nachricht (Englisch):", self.m_Window)
 	self.m_Footer["new"]["NewTextEN"] = GUIGridEdit:new(1, 13, 16, 1, self.m_Window)
-	self.m_Footer["new"]["AddNewBindButton"] = GUIGridButton:new(11, 14, 5, 1, "Hinzufügen", self.m_Window):setBackgroundColor(Color.Green):setVisible(false)
+	self.m_Footer["new"]["AddNewBindButton"] = GUIGridButton:new(11, 14, 5, 1, _"Hinzufügen", self.m_Window):setBackgroundColor(Color.Green):setVisible(false)
 	self.m_Footer["new"]["AddNewBindButton"].onLeftClick = function () self:editAddBind() end
-	self.m_Footer["new"]["EditBindButton"] = GUIGridButton:new(11, 14, 5, 1, "Ändern", self.m_Window):setBackgroundColor(Color.Orange):setVisible(false)
+	self.m_Footer["new"]["EditBindButton"] = GUIGridButton:new(11, 14, 5, 1, _"Ändern", self.m_Window):setBackgroundColor(Color.Orange):setVisible(false)
 	self.m_Footer["new"]["EditBindButton"].onLeftClick = function () self:editAddBind(self.m_SelectedBind) end
 
 	for index, footer in pairs(self.m_Footer) do
@@ -130,7 +130,7 @@ end
 function BindGUI:loadBinds()
 	self.m_Grid:clear()
 
-	self.m_Grid:addItemNoClick("Deine Binds", "", "")
+	self.m_Grid:addItemNoClick(_"Deine Binds", "", "")
 	self:loadLocalBinds()
 
 	triggerServerEvent("bindRequestPerOwner", localPlayer, "faction")
@@ -221,8 +221,8 @@ end
 
 function BindGUI:onBindSelect(item, index)
     self.m_SelectedBind = item
-	self.m_SelectedBindLabelDE:setText(("Text (Deutsch): %s"):format(item.parameterDE or "-"))
-	self.m_SelectedBindLabelEN:setText(("Text (English): %s"):format(item.parameterEN or "-"))
+	self.m_SelectedBindLabelDE:setText(_("Text (Deutsch): %s", item.parameterDE or "-"))
+	self.m_SelectedBindLabelEN:setText(_("Text (English): %s", item.parameterEN or "-"))
 	if item.type == "local" then
 		self:changeFooter("local")
 		if BindManager:getSingleton().m_Binds[index] and BindManager:getSingleton().m_Binds[index].keys then
@@ -358,8 +358,8 @@ function BindManageGUI:constructor(ownerType)
 	self.m_Window:deleteOnClose(true)
 
 	self.m_Grid = GUIGridGridList:new(1, 2, 16, 7, self)
-	self.m_Grid:addColumn("Funktion", 0.2)
-	self.m_Grid:addColumn("Text", 0.8)
+	self.m_Grid:addColumn(_"Funktion", 0.2)
+	self.m_Grid:addColumn(_"Text", 0.8)
 
 	self.m_Footer = {}
 
@@ -380,20 +380,20 @@ function BindManageGUI:constructor(ownerType)
 
 	--New Bind
 	self.m_Footer["new"] = {}
-	self.m_Footer["new"]["FunctionLabel"] = GUIGridLabel:new(1, 14, 3, 1, "Funktion:", self.m_Window)
+	self.m_Footer["new"]["FunctionLabel"] = GUIGridLabel:new(1, 14, 3, 1, _"Funktion:", self.m_Window)
 	self.m_Footer["new"]["FunctionChanger"] = GUIGridChanger:new(5, 14, 4, 1, self.m_Window):setBackgroundColor(Color.Accent)
 	for index, name in pairs(BindGUI.Functions) do
 		self.m_Footer["new"]["FunctionChanger"]:addItem(name)
 	end
-	self.m_Footer["new"]["GermanMsgLabel"] = GUIGridLabel:new(1, 10, 16, 1, "Nachricht (Deutsch):", self.m_Window)
+	self.m_Footer["new"]["GermanMsgLabel"] = GUIGridLabel:new(1, 10, 16, 1, _"Nachricht (Deutsch):", self.m_Window)
 	self.m_Footer["new"]["NewTextDE"] = GUIGridEdit:new(1, 11, 16, 1, self.m_Window)
-	self.m_Footer["new"]["EnglishMsgLabel"] = GUIGridLabel:new(1, 12, 16, 1, "Nachricht (Englisch):", self.m_Window)
+	self.m_Footer["new"]["EnglishMsgLabel"] = GUIGridLabel:new(1, 12, 16, 1, _"Nachricht (Englisch):", self.m_Window)
 	self.m_Footer["new"]["NewTextEN"] = GUIGridEdit:new(1, 13, 16, 1, self.m_Window)
-	self.m_Footer["new"]["AddNewBindButton"] = GUIGridButton:new(9, 14, 4, 1, "Speichern", self.m_Window):setBackgroundColor(Color.Green):setVisible(false)
+	self.m_Footer["new"]["AddNewBindButton"] = GUIGridButton:new(9, 14, 4, 1, _"Speichern", self.m_Window):setBackgroundColor(Color.Green):setVisible(false)
 	self.m_Footer["new"]["AddNewBindButton"].onLeftClick = function () self:editAddBind() end
-	self.m_Footer["new"]["EditBindButton"] = GUIGridButton:new(9, 14, 4, 1, "Ändern", self.m_Window):setBackgroundColor(Color.Orange):setVisible(false)
+	self.m_Footer["new"]["EditBindButton"] = GUIGridButton:new(9, 14, 4, 1, _"Ändern", self.m_Window):setBackgroundColor(Color.Orange):setVisible(false)
 	self.m_Footer["new"]["EditBindButton"].onLeftClick = function () self:editAddBind(self.m_SelectedBind) end
-	self.m_Footer["new"]["DeleteBindButton"] = GUIGridButton:new(13, 14, 4, 1, "Löschen", self.m_Window):setBackgroundColor(Color.Orange):setVisible(false)
+	self.m_Footer["new"]["DeleteBindButton"] = GUIGridButton:new(13, 14, 4, 1, _"Löschen", self.m_Window):setBackgroundColor(Color.Orange):setVisible(false)
 	self.m_Footer["new"]["DeleteBindButton"].onLeftClick = function () self:deleteBind() end
 
 	for index, footer in pairs(self.m_Footer) do

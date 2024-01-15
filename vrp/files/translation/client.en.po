@@ -5594,3 +5594,39 @@ msgstr "%s HQ"
 
 msgid "%s - Ausrüstung"
 msgstr "%s - Equipment"
+
+msgid "Bind Löschen"
+msgstr "Delete bind"
+
+msgid "Bind ändern"
+msgstr "Change bind"
+
+msgid "Diesen Bind verwenden"
+msgstr "Use this bind"
+
+msgid "Funktion:"
+msgstr "Function:"
+
+msgid "Nachricht (Deutsch):"
+msgstr "Message (German):"
+
+msgid "Nachricht (Englisch):"
+msgstr "Message (English)"
+
+msgid "Ändern"
+msgstr "Change"
+
+msgid "Deine Binds"
+msgstr "Your binds"
+
+msgid "Text (Deutsch): %s"
+msgstr "Message (German): %s"
+
+msgid "Text (English): %s"
+msgstr "Message (English): %s"
+
+msgid "Funktion"
+msgstr "Function"
+
+msgid "Text"
+msgstr "Message"
