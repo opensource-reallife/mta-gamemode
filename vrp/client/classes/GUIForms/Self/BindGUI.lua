@@ -43,9 +43,9 @@ function BindGUI:constructor()
 	self.m_Window:deleteOnClose(true)
 
 	self.m_Grid = GUIGridGridList:new(1, 2, 16, 7, self)
-	self.m_Grid:addColumn("Funktion", 0.15)
-	self.m_Grid:addColumn("Text", 0.52)
-	self.m_Grid:addColumn("Tasten", 0.28)
+	self.m_Grid:addColumn(_"Funktion", 0.15)
+	self.m_Grid:addColumn(_"Text", 0.52)
+	self.m_Grid:addColumn(_"Tasten", 0.28)
 
 	self.m_Binds = {}
 	self.m_Footer = {}
@@ -75,7 +75,7 @@ function BindGUI:constructor()
 	self.m_Footer["local"]["Key2"] = GUIGridLabel:new(10, 12, 7, 1, "Taste 2:", self.m_Window)
 	self.m_Footer["local"]["HelpChanger"] = GUIGridChanger:new(1, 13, 7, 1, self.m_Window):setBackgroundColor(Color.Accent)
 	for index, name in pairs(BindGUI.Modifiers) do
-		self.m_Footer["local"]["HelpChanger"]:addItem(name)
+		self.m_Footer["local"]["HelpChanger"]:addItem(_(name))
 	end
 	self.m_Footer["local"]["PlusLabel"] = GUIGridLabel:new(8, 13, 2, 1, " + ", self.m_Window):setAlign("center")
 	self.m_Footer["local"]["SelectedButton"] = GUIGridButton:new(10, 13, 7, 1, " ", self.m_Window):setBackgroundColor(Color.Accent):setFontSize(1.2)
@@ -98,7 +98,7 @@ function BindGUI:constructor()
 	self.m_Footer["new"]["FunctionLabel"] = GUIGridLabel:new(1, 14, 3, 1, _"Funktion:", self.m_Window)
 	self.m_Footer["new"]["FunctionChanger"] = GUIGridChanger:new(5, 14, 5, 1, self.m_Window):setBackgroundColor(Color.Accent)
 	for index, name in pairs(BindGUI.Functions) do
-		self.m_Footer["new"]["FunctionChanger"]:addItem(name)
+		self.m_Footer["new"]["FunctionChanger"]:addItem(_(name))
 	end
 	self.m_Footer["new"]["GermanMsgLabel"] = GUIGridLabel:new(1, 10, 16, 1, _"Nachricht (Deutsch):", self.m_Window)
 	self.m_Footer["new"]["NewTextDE"] = GUIGridEdit:new(1, 11, 16, 1, self.m_Window)
@@ -189,7 +189,7 @@ end
 
 function BindGUI:Event_onReceive(type, id, binds)
 	local item
-	self.m_Grid:addItemNoClick(BindGUI.Headers[type], "", "")
+	self.m_Grid:addItemNoClick(_(BindGUI.Headers[type]), "", "")
 	for id, data in pairs(binds) do
 		local tMessage = data["Message"]
 		if localPlayer:getLocale() == "en" and data["MessageEN"] and data["MessageEN"] ~= "" then
