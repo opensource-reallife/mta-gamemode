@@ -661,13 +661,13 @@ msgstr "Send player %s into the Prison"
 msgid "Spieler %s aus dem Prison entlassen?"
 msgstr "Release player %s from the Prison?"
 
-msgid "Unternehmen setzten"
+msgid "Unternehmen setzen"
 msgstr "Set company"
 
 msgid "Bitte wähle das gewünschte Unternehmen aus:"
 msgstr "Please select the desired company:"
 
-msgid "Fraktion setzten"
+msgid "Fraktion setzen"
 msgstr "Set faction"
 
 msgid "Bitte wähle die gewünschte Fraktion aus:"
@@ -4818,6 +4818,111 @@ msgstr "Present"
 msgid "Nettes Päckchen vom Weihnachtsmann"
 msgstr "A nice present from Santa Claus"
 
+msgid "Derzeitige Kunden:"
+msgstr "Current customers:"
+
+msgid "Kunde hinzufügen"
+msgstr "Add customer"
+
+msgid "Ausgewählten Kunden entfernen"
+msgstr "Remove current customer"
+
+msgid "Willst du den ausgewählten Kunden samt aller Daten entfernen?"
+msgstr "Do you really want to remove this customer with all its data?"
+
+msgid "Kundendaten neu laden"
+msgstr "Refresh customer data"
+
+msgid "Werbung aktiv"
+msgstr "Ads active"
+
+msgid "Preis je geschalteter Werbung in $:"
+msgstr "Cost per ad delivery in $:"
+
+msgid "Mindestanzahl von Spielern, damit Werbung geschaltet wird:"
+msgstr "Minimum number of players online to deliver the ad:"
+
+msgid "Zeit zw. Werbezeilen (in Sek):"
+msgstr "Time between ad lines (in sec): "
+
+msgid "Max. Werbeschaltungen pro Tag:"
+msgstr "Max. number of ads per day:"
+
+msgid "Werbung schalten zwischen (24-Stunden-Zählung):"
+msgstr "Deliver ads between (24-hour clock):"
+
+msgid "Anzahl bisher geschalteter Werbungen: %s"
+msgstr "Ads delivered so far: %s"
+
+msgid "Letzte Werbeschaltung: %s, %s"
+msgstr "Last ad delivered: %s, %s"
+
+msgid "Werbezeilen anpassen"
+msgstr "Change ad lines"
+
+msgid "Änderungen speichern"
+msgstr "Save changes"
+
+msgid "Zeitintervall zwischen einzelnen Werbungen in Minuten:"
+msgstr "Time interval between ads in minutes:"
+
+msgid "Werbesystem aktiv"
+msgstr "Ad system active"
+
+msgid "Kundentyp wählen:"
+msgstr "Chose customer type:"
+
+msgid "Fraktion wählen:"
+msgstr "Chose faction:"
+
+msgid "Die gewählte Fraktion ist bereits Kunde."
+msgstr "Chosen faction is already a customer."
+
+msgid "Unternehmen wählen:"
+msgstr "Chose company:"
+
+msgid "Das gewählte Unternehmen ist bereits Kunde."
+msgstr "Chosen company is already a customer."
+
+msgid "Suche nach einer Firma/Gang (mind. 3 Buchstaben eingeben):"
+msgstr "Search for a player's company/gang (enter at least 3 characters):"
+
+msgid "Gefundene Firmen/Gangs:"
+msgstr "Found companies/gangs:"
+
+msgid "Suche"
+msgstr "Search"
+
+msgid "Weniger als 3 Zeichen in der Suchzeile eingegeben."
+msgstr "Less than 3 characters entered in search field."
+
+msgid "Die gewählte Gruppe ist bereits Kunde."
+msgstr "Chosen player's company/group is already a customer."
+
+msgid "Suche nach einem Spieler (mind. 3 Buchstaben eingeben):"
+msgstr "Search for a player (enter at least 3 characters):"
+
+msgid "Gefundene Spieler:"
+msgstr "Found players:"
+
+msgid "Der gewählte Spieler ist bereits Kunde."
+msgstr "Chosen player is already a customer."
+
+msgid "Kunde: %s"
+msgstr "Customer: %s"
+
+msgid "Sprache wählen:"
+msgstr "Select language:"
+
+msgid "Werbezeile "
+msgstr "Ad line "
+
+msgid "Werbezeile %s"
+msgstr "Ad line %s"
+
+msgid "Fehlerhafte Eingabe im Preis-Feld."
+msgstr "Incorrect input in costs-field."
+
 msgid "Die Nutzung des Laufbugs ist nicht erlaubt!"
 msgstr "The use of the run speed bug is not allowed!"
 
@@ -5240,6 +5345,118 @@ msgstr "You cannot treat yourself during the gangwar."
 
 msgid "Du kannst dich nicht behandeln, während du ein Schloss knackst."
 msgstr "You can't treat yourself while you're picking a lock."
+
+msgid "Soll der Kunde für die erzwungene Werbeschaltung zahlen?"
+msgstr "Should the customer pay for the forced delivery of this ad?"
+
+msgid "Schaltung erzwingen"
+msgstr "Force ad delivery"
+
+msgid "Event-Modus"
+msgstr "Event-Mode"
+
+msgid "Zahlungen"
+msgstr "Payments"
+
+msgid "Autorisiere oder deautorisiere Zahlungen aus Werbeverträgen mit den SAN News."
+msgstr "Authorize or deauthorize payments from advertising contracts with SAN News."
+
+msgid "Zahlung autorisieren"
+msgstr "Authorize payment"
+
+msgid "Zahlung deautorisieren"
+msgstr "Deauthorize payment"
+
+msgid "Kostenpflichtige Verträge"
+msgstr "Fee-based contracts"
+
+msgid "Keine Zahlungen zu (de-)autorisieren."
+msgstr "No payments to (de-)authorize."
+
+msgid "Kosten pro Schaltung: %s $"
+msgstr "Cost per ad: %s $"
+
+msgid "Mindestzahl Spieler online für Schaltung: %s"
+msgstr "Min. num. of players online to deliver ad: %s"
+
+msgid "Maximale Schaltungen pro Tag: %s"
+msgstr "Maximum number of ads per day: %s"
+
+msgid "Schalten zwischen %s und %s Uhr"
+msgstr "Deliver ads between %s and %s o'clock"
+
+msgid "Zahlung autorisiert."
+msgstr "Payment authorized."
+
+msgid "Zahlung nicht autorisiert."
+msgstr "Payment not authorized."
+
+msgid "Soll die Werbung kostenpflichtig (nur wenn Bedingungen erfüllt sind: wird als reguläre Werbeschaltung gezählt) oder kostenlos geschaltet werden?"
+msgstr "Should the advertising be charged (only if conditions are met: counts as regular ad delivery) or free of charge?"
+
+msgid "Kostenpflichtig"
+msgstr "Charged"
+
+msgid "Kostenlos"
+msgstr "Free of charge"
+
+
+
+msgid "Soll der Kunde für die erzwungene Werbeschaltung zahlen?"
+msgstr "Should the customer pay for the forced delivery of this ad?"
+
+msgid "Schaltung erzwingen"
+msgstr "Force ad delivery"
+
+msgid "Event-Modus"
+msgstr "Event-Mode"
+
+msgid "Zahlungen"
+msgstr "Payments"
+
+msgid "Autorisiere oder deautorisiere Zahlungen aus Werbeverträgen mit den SAN News."
+msgstr "Authorize or deauthorize payments from advertising contracts with SAN News."
+
+msgid "Zahlung autorisieren"
+msgstr "Authorize payment"
+
+msgid "Zahlung deautorisieren"
+msgstr "Deauthorize payment"
+
+msgid "Kostenpflichtige Verträge"
+msgstr "Fee-based contracts"
+
+msgid "Keine Zahlungen zu (de-)autorisieren."
+msgstr "No payments to (de-)authorize."
+
+msgid "Kosten pro Schaltung: %s $"
+msgstr "Cost per ad: %s $"
+
+msgid "Mindestzahl Spieler online für Schaltung: %s"
+msgstr "Min. num. of players online to deliver ad: %s"
+
+msgid "Maximale Schaltungen pro Tag: %s"
+msgstr "Maximum number of ads per day: %s"
+
+msgid "Schalten zwischen %s und %s Uhr"
+msgstr "Deliver ads between %s and %s o'clock"
+
+msgid "Zahlung autorisiert."
+msgstr "Payment authorized."
+
+msgid "Zahlung nicht autorisiert."
+msgstr "Payment not authorized."
+
+msgid "Soll die Werbung kostenpflichtig (nur wenn Bedingungen erfüllt sind: wird als reguläre Werbeschaltung gezählt) oder kostenlos geschaltet werden?"
+msgstr "Should the advertising be charged (only if conditions are met: counts as regular ad delivery) or free of charge?"
+
+msgid "Kostenpflichtig"
+msgstr "Charged"
+
+msgid "Kostenlos"
+msgstr "Free of charge"
+
+
 
 msgid "Gelagert"
 msgstr "Stored"

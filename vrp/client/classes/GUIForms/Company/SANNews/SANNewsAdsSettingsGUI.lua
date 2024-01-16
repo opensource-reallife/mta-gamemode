@@ -28,7 +28,7 @@ function SANNewsAdsSettingsGUI:constructor(settings)
     
     GUILabel:new(self.m_Width*0.02, self.m_Height*0.20, self.m_Width*0.8, self.m_Height*0.1, _"Zeitintervall zwischen einzelnen Werbungen in Minuten:", self.m_SANNewsAdsSettings)
     
-    local adIntervalOptions = {5,10,15,20,30,60,120}
+    local adIntervalOptions = SN_AD_SETTINGS_INTERVAL_OPTIONS
     local theAdIntervalFocusNumber = 0
     self.m_adIntervalChanger = GUIChanger:new(self.m_Width*0.02, self.m_Height*0.31, self.m_Width*0.96, self.m_Height*0.12, self.m_SANNewsAdsSettings)
     for i = 1, #adIntervalOptions do 

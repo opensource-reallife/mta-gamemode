@@ -17,8 +17,11 @@ local ColorTable = {
 function AppSanNews:constructor()
 	PhoneApp.constructor(self, "SanNews", "IconSanNews.png")
 	
-	addRemoteEvents{"receiveFuelPrices"}
+	addRemoteEvents{"receiveFuelPrices", "receiveContractData"}
 	addEventHandler("receiveFuelPrices", localPlayer, bind(self.Event_receiveFuelPrices, self))
+	addEventHandler("receiveContractData", localPlayer, bind(self.Event_receiveContractData, self))
+
+	self.m_ContractData = {}
 end
 
 function AppSanNews:onOpen(form)
@@ -91,10 +94,57 @@ function AppSanNews:onOpen(form)
 	self.m_FuelPriceGrid = GUIGridList:new(10, 40, form.m_Width-20, form.m_Height-90, tab)
 	self.m_FuelPriceGrid:addColumn("Aktuelle Tankpreise", 0.4)
 	self.m_FuelPriceGrid:addColumn("", 0.6)
-	
+
+	self.m_Tabs["Contracts"] = self.m_TabPanel:addTab(_"Zahlungen", FontAwesomeSymbols.Book)
+	tab = self.m_Tabs["Contracts"]
+
+	self.m_CurrentContract = false
+
+	GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.01, tab.m_Width*0.98, tab.m_Height*0.12, _"Zahlungen", self.m_Tabs["Contracts"]):setMultiline(true)
+	GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.15, tab.m_Width*0.98, tab.m_Height*0.05, _"Autorisiere oder deautorisiere Zahlungen aus Werbeverträgen mit den SAN News.", self.m_Tabs["Contracts"]):setMultiline(true)
+
+	self.m_ContractInfo = GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.68, tab.m_Width*0.98, tab.m_Height*0.05, _"", self.m_Tabs["Contracts"])
+	self.m_ContractInfo:hide()
+	self.m_MinPlayersInfo = GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.72, tab.m_Width*0.98, tab.m_Height*0.05, _"", self.m_Tabs["Contracts"])
+	self.m_MinPlayersInfo:hide()
+	self.m_MaxPerDayInfo = GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.76, tab.m_Width*0.98, tab.m_Height*0.05, _"", self.m_Tabs["Contracts"])
+	self.m_MaxPerDayInfo:hide()
+	self.m_StartEndInfo = GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.80, tab.m_Width*0.98, tab.m_Height*0.05, _"", self.m_Tabs["Contracts"])
+	self.m_StartEndInfo:hide()
+
+	self.m_AcceptAndCancelButton = GUIButton:new(tab.m_Width*0.02, tab.m_Height*0.87, tab.m_Width*0.96, tab.m_Height*0.09, _"Zahlung autorisieren", self.m_Tabs["Contracts"]):setEnabled(false)
+	self.m_AcceptAndCancelButton:hide()
+	self.m_PaymentList = GUIGridList:new(tab.m_Width*0.02, tab.m_Height*0.30, tab.m_Width*0.96, tab.m_Height*0.36, self.m_Tabs["Contracts"])
+	self.m_PaymentList:addColumn(_"Kostenpflichtige Verträge", 1)
+	self.m_PaymentListNoItemInfoLabel = GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.38, tab.m_Width*0.98, tab.m_Height*0.08, _"", self.m_Tabs["Contracts"]):setMultiline(true)
+
+	self.m_AcceptAndCancelButton.onLeftClick = function()
+		if not self.m_CurrentContract then return end
+		self.m_AcceptAndCancelButton:setEnabled(false)
+		self.m_AcceptAndCancelButton:hide()
+		self.m_ContractInfo:hide()
+		self.m_MinPlayersInfo:hide()
+		self.m_MaxPerDayInfo:hide()
+		self.m_StartEndInfo:hide()
+		local sendData = {
+			customerID = self.m_ContractData[self.m_CurrentContract]["customerID"],
+			customerUniqueID = self.m_ContractData[self.m_CurrentContract]["customerUniqueID"],
+			customerType = self.m_ContractData[self.m_CurrentContract]["customerType"],
+		}
+		if self.m_ContractData[self.m_CurrentContract]["customerPaymentStatus"] == 0 then 
+			sendData["customerPaymentStatus"] = 1
+		else
+			sendData["customerPaymentStatus"] = 0
+		end
+		triggerServerEvent("sanNewsPaymentAccept", localPlayer, sendData)
+	end
+
 	self.m_TabPanel.onTabChanged = function(tabId)
 		if tabId == self.m_Tabs["FuelPrices"].TabIndex then
 			triggerServerEvent("requestFuelPrices", localPlayer)
+		end
+		if tabId == self.m_Tabs["Contracts"].TabIndex then 
+			triggerServerEvent("sanNewsGetAdPaymentData", localPlayer)
 		end
 	end
 end
@@ -133,8 +183,6 @@ function AppSanNews:calcCosts()
 		self.m_SubmitButton:setEnabled(true)
 	end
 end
-
-
 
 local currentAd
 addEvent("showAd", true)
@@ -194,6 +242,44 @@ function AppSanNews:Event_receiveFuelPrices(infoTbl)
 			local item = self.m_FuelPriceGrid:addItem(FUEL_NAME[type], _("%s$", math.round(price * priceMult, 1)))
 			item.onLeftDoubleClick = function()
 				GPS:getSingleton():startNavigationTo(Vector3(info[2][1], info[2][2], info[2][3]))
+			end
+		end
+	end
+end
+
+function AppSanNews:Event_receiveContractData(table)
+	
+	self.m_ContractData = table
+
+	if (table["Faction"] == false and table["Company"] == false and table["Group"] == false and table["Player"] == false) then 
+		self.m_PaymentList:hide()
+		self.m_AcceptAndCancelButton:hide()
+		self.m_PaymentListNoItemInfoLabel:setText(_"Keine Zahlungen zu (de-)autorisieren.")
+	end
+	
+	self.m_PaymentList:clear()
+	
+	for k, v in pairs(table) do 
+		if table[k] then 
+			local item = self.m_PaymentList:addItem(table[k]["customerName"])
+			item.onLeftClick = function ()
+				self.m_CurrentContract = k 
+				self.m_ContractInfo:setText(_("Kosten pro Schaltung: %s $", table[k]["customerPay"]))
+				self.m_ContractInfo:show()
+				self.m_MinPlayersInfo:setText(_("Mindestzahl Spieler online für Schaltung: %s", table[k]["minPlayers"]))
+				self.m_MinPlayersInfo:show()
+				self.m_MaxPerDayInfo:setText(_("Maximale Schaltungen pro Tag: %s", table[k]["maxPerDay"]))
+				self.m_MaxPerDayInfo:show()
+				self.m_StartEndInfo:setText(_("Schalten zwischen %s und %s Uhr", table[k]["startTime"], table[k]["endTime"]))
+				self.m_StartEndInfo:show()
+
+				if table[k]["customerPaymentStatus"] == 0 then 
+					self.m_AcceptAndCancelButton:setText(_"Zahlung autorisieren")
+				else
+					self.m_AcceptAndCancelButton:setText(_"Zahlung deautorisieren")
+				end
+				self.m_AcceptAndCancelButton:show()
+				self.m_AcceptAndCancelButton:setEnabled(true)					
 			end
 		end
 	end

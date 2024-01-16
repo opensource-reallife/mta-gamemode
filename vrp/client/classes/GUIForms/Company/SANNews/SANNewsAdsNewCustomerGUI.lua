@@ -38,7 +38,7 @@ function SANNewsAdsNewCustomerGUI:constructor(theCurrentCustomers)
     GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.11, _"Kunde hinzufügen", self.m_SANNewsNewCustomer)
     GUILabel:new(self.m_Width*0.02, self.m_Height*0.15, self.m_Width*0.8, self.m_Height*0.07, _"Kundentyp wählen:", self.m_SANNewsNewCustomer)
     self.m_typeOfCustomer = GUIChanger:new(self.m_Width*0.02, self.m_Height*0.22, self.m_Width*0.96, self.m_Height*0.06, self.m_SANNewsNewCustomer)
-    local customerTypes = {"Faction","Company","Group","Player"}
+    local customerTypes = {_"Fraktion",_"Unternehmen",_"Firma/Gang",_"Spieler"}
 
     for i=1, #customerTypes do 
         self.m_typeOfCustomer:addItem(customerTypes[i])
@@ -48,8 +48,19 @@ function SANNewsAdsNewCustomerGUI:constructor(theCurrentCustomers)
     self:onCustomerTypeChange("Faction")
 
     self.m_typeOfCustomer.onChange = function ()
-        local k = self.m_typeOfCustomer:getIndex()
-        self:onCustomerTypeChange(k)
+        local customerType = self.m_typeOfCustomer:getIndex()
+        if customerType == _"Fraktion" then 
+            customerType = "Faction"
+        elseif customerType == _"Unternehmen" then 
+            customerType = "Company"
+        elseif customerType == _"Firma/Gang" then 
+            customerType = "Group"
+        elseif customerType == _"Spieler" then 
+            customerType = "Player"
+        else
+            return 
+        end
+        self:onCustomerTypeChange(customerType)
     end
 end
 

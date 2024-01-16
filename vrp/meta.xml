@@ -1057,6 +1057,7 @@
     <script src="client/classes/GUIForms/PlantGUI.lua" type="client" />
     <script src="client/classes/GUIForms/PlayerPermissionsGUI.lua" type="client" />
     <script src="client/classes/GUIForms/QuestionBox.lua" type="client" />
+    <script src="client/classes/GUIForms/QuestionBoxExtended.lua" type="client" />
     <script src="client/classes/GUIForms/RadioCommunicationGUI.lua" type="client" />
     <script src="client/classes/GUIForms/RankPermissionsGUI.lua" type="client" />
     <script src="client/classes/GUIForms/ScoreboardGUI.lua" type="client" />

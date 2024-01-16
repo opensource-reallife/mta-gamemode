@@ -80,11 +80,10 @@ function CompanyGUI:constructor()
 			triggerServerEvent("sanNewsSendAdDataToClient", localPlayer)
 		end
 	
-		-- self.m_EventButton = GUIButton:new(self.m_Width*0.7, self.m_Height*0.84, self.m_Width*0.28, self.m_Height*0.07, _"Event", tabAllgemein):setBarEnabled(true)
-		-- self.m_EventButton.onLeftClick = function()
-		-- 	self:close()
-		-- 	triggerServerEvent("sanNewsEventActive", localPlayer)
-		-- end
+		self.m_EventButton = GUIButton:new(self.m_Width*0.7, self.m_Height*0.84, self.m_Width*0.28, self.m_Height*0.07, _"Event-Modus", tabAllgemein):setBarEnabled(true)
+		self.m_EventButton.onLeftClick = function()
+			triggerServerEvent("sanNewsEventModeToggle", localPlayer)
+		end
 	end
 
 	self.m_BindButton = GUIButton:new(self.m_Width*0.36, self.m_Height*0.6, self.m_Width*0.3, self.m_Height*0.07, _"Binds verwalten", tabAllgemein):setBarEnabled(true)
@@ -287,7 +286,8 @@ function CompanyGUI:Event_companyRetrieveInfo(id, name, rank, money, players, ra
 				self.m_SanNewsAddBlip:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("company", "addBlip"))
 				self.m_SanNewsDeleteBlips:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("company", "addBlip"))
 				self.m_SanNewsStartStreetrace:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("company", "startStreetRace"))
-				self.m_CustomAdsButton:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("company", "editAds"))
+				self.m_CustomAdsButton:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("company", "seeAdsForceAds"))
+				self.m_EventButton:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("company", "eventMode"))
 			end
 		end
 	end

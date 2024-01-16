@@ -30,7 +30,7 @@ function SANNewsAdsGUI:constructor(customizeAdsTable, customerID)
     self.m_SANNewsAds:addBackButton(function () SANNewsAdsOverviewGUI:getSingleton():show() end)
     self.m_SANNewsAds:deleteOnClose(true)
 
-    self.m_CustomerName = GUILabel:new(self.m_Width*0.05, self.m_Height*0.03, self.m_Width*0.7, self.m_Height*0.1, _"Kunde: " .. self.m_AdData["customerName"], self.m_SANNewsAds)
+    self.m_CustomerName = GUILabel:new(self.m_Width*0.05, self.m_Height*0.03, self.m_Width*0.7, self.m_Height*0.1, _("Kunde: %s", self.m_AdData["customerName"]), self.m_SANNewsAds)
 
     GUILabel:new(self.m_Width*0.05, self.m_Height*0.12, self.m_Width*0.8, self.m_Height*0.06, _"Sprache wählen:", self.m_SANNewsAds)
     self.m_AdLanguageChanger = GUIChanger:new(self.m_Width*0.05, self.m_Height*0.18, self.m_Width*0.9, self.m_Height*0.06, self.m_SANNewsAds)
@@ -47,7 +47,8 @@ function SANNewsAdsGUI:constructor(customizeAdsTable, customerID)
         self:onAdLanguageChange(self.m_AdLanguageChanger:getIndex())
     end
 
-    self.m_TheOKButton = GUIButton:new(self.m_Width*0.05, self.m_Height*0.88, self.m_Width*0.28, self.m_Height*0.07, _"Änderungen speichern", self.m_SANNewsAds)
+    self.m_TheOKButton = GUIButton:new(self.m_Width*0.05, self.m_Height*0.88, self.m_Width*0.33, self.m_Height*0.07, _"Änderungen speichern", self.m_SANNewsAds)
+    self.m_TheOKButton:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("company", "editAds"))
     self.m_TheOKButton.onLeftClick = function()
         self:close()
         if self.m_ChangesMade then

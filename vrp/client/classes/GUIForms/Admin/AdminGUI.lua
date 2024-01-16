@@ -522,7 +522,7 @@ function AdminGUI:onPlayerButtonClick(func)
 				end)
 	elseif func == "setCompany" then
 		local companyTable = {[0] = "Kein Unternehmen", [1] = "Fahrschule", [2] = "Mech & Tow", [3] = "San News", [4] = "Public Transport"}
-		ChangerBoxWithCheck:new(_"Unternehmen setzten",
+		ChangerBoxWithCheck:new(_"Unternehmen setzen",
 				_"Bitte wähle das gewünschte Unternehmen aus:",companyTable, {0, 1, 2, 3, 4, 5}, _"In Fraktionsverlauf vermerken?",
 				function (companyId, rank, state)
 					if state then
@@ -536,7 +536,7 @@ function AdminGUI:onPlayerButtonClick(func)
 	elseif func == "setFaction" then
 		local factionTable = FactionManager:getSingleton():getFactionNames()
 		factionTable[0] = "Keine Fraktion"
-		ChangerBoxWithCheck:new(_"Fraktion setzten",
+		ChangerBoxWithCheck:new(_"Fraktion setzen",
 				_"Bitte wähle die gewünschte Fraktion aus:",factionTable, {0, 1, 2, 3, 4, 5, 6}, _"In Fraktionsverlauf vermerken?",
 				function (factionId, rank, state)
 					if state then

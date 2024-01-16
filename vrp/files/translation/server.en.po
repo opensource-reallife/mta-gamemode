@@ -4322,3 +4322,48 @@ msgstr "Changes saved."
 
 msgid "Kunde hinzugefügt."
 msgstr "Customer added."
+
+msgid "Der Kunde hat nicht genügend Geld auf dem Konto."
+msgstr "Customer has not enough money."
+
+msgid "Werbeschaltungen können nur alle 5 Minuten erzwungen werden."
+msgstr "Forced ad delivery is only available every 5 minutes."
+
+msgid "Event-Modus deaktiviert."
+msgstr "Event-Mode deactivated."
+
+msgid "Event-Modus aktiviert."
+msgstr "Event-Mode activated."
+
+msgid "Werbeschaltungen können nur alle 5 Minuten erzwungen werden."
+msgstr "Forced advertising is only allowed every 5 minutes."
+
+msgid "Bedingungen sind nicht erfüllt."
+msgstr "Conditions are not fulfilled."
+
+msgid "Kunde entfernt."
+msgstr "Customer removed."
+
+msgid "Zahlung autorisiert."
+msgstr "Payment authorized."
+
+msgid "Zahlung deautorisiert."
+msgstr "Payment deauthorized."
+
+msgid "Event-Modus muss aktiviert werden."
+msgstr "Event-Mode must be activated."
+
+msgid "Event-Modus aktiviert. Werbung kann deshalb nicht geschaltet werden."
+msgstr "Event mode activated. Advertising can therefore not be forced."
+
+msgid "Während Admin-Events können Werbungen nicht geschaltet werden."
+msgstr "Advertisements cannot be forced during admin events."
+
+msgid "Es wird gerade bereits eine Werbung geschaltet."
+msgstr "An advertisement is currently already running."
+
+msgid "#FFFFFFWerbung │ #67D68E%s"
+msgstr "#FFFFFFAd │ #67D68E%s"
+
+
+
