@@ -9,9 +9,9 @@
 SANNewsAdsOverviewGUI = inherit(GUIForm)
 inherit(Singleton, SANNewsAdsOverviewGUI)
 
-function SANNewsAdsOverviewGUI:constructor(Ads)
-    if Ads then 
-        self.m_SanNewsAds = Ads
+function SANNewsAdsOverviewGUI:constructor(ads)
+    if ads then 
+        self.m_SanNewsAds = ads
     else
         return
     end
@@ -105,15 +105,20 @@ function SANNewsAdsOverviewGUI:onCustomerChange(customerID)
 
     GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.07, self.m_SanNewsAds["Ads"][customerID]["customerName"], self.m_bg)
 
-    self.m_IsPaymentAccepted = GUILabel:new(self.m_Width*0.33, self.m_Height*0.09, self.m_Width*0.30, self.m_Height*0.05, _"", self.m_bg)
+    self.m_IsPaymentAccepted = GUILabel:new(self.m_Width*0.25, self.m_Height*0.09, self.m_Width*0.65, self.m_Height*0.045, _"", self.m_bg)
     
     if self.m_SanNewsAds["Ads"][customerID]["moneyPerAd"] > 0 then 
         if self.m_SanNewsAds["Ads"][customerID]["paymentAcceptance"]["paymentAccepted"] == 1 then 
-            self.m_IsPaymentAccepted:setText(_"Zahlung autorisiert.")
+            self.m_IsPaymentAccepted:setText(_"Zahlung ist autorisiert.")
+            self.m_IsPaymentAccepted:setColor(Color.Green)
         else 
-            self.m_IsPaymentAccepted:setText(_"Zahlung nicht autorisiert.")
+            self.m_IsPaymentAccepted:setText(_"Zahlungsautorisierung erforderlich.")
             self.m_IsPaymentAccepted:setColor(Color.Red)
         end
+    end
+    if self.m_SanNewsAds["Ads"][customerID]["moneyPerAd"] == 0 then 
+        self.m_IsPaymentAccepted:setText(_"Zahlungsautorisierung nicht erforderlich.")
+        self.m_IsPaymentAccepted:setColor(Color.Green)
     end
 
     self.m_isActive = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.09, self.m_Width*0.35, self.m_Height*0.04, _"Werbung aktiv", self.m_bg)
@@ -131,9 +136,11 @@ function SANNewsAdsOverviewGUI:onCustomerChange(customerID)
     self.m_currentMoney = GUIEdit:new(self.m_Width*0.02, self.m_Height*0.20, self.m_Width*0.6, self.m_Height*0.06, self.m_bg):setText(self.m_SanNewsAds["Ads"][customerID]["moneyPerAd"]):setMaxLength(5)
     self.m_currentMoney.onChange = function ()
         if self.m_currentMoney then 
-            self.m_SanNewsAds["Ads"][customerID]["moneyPerAd"] = tonumber(self.m_currentMoney:getText())
-            if not self.m_ChangesMade[customerID] then
-                self.m_ChangesMade[customerID] = true
+            if tonumber(self.m_currentMoney:getText()) ~= nil then 
+                self.m_SanNewsAds["Ads"][customerID]["moneyPerAd"] = tonumber(self.m_currentMoney:getText())
+                if not self.m_ChangesMade[customerID] then
+                    self.m_ChangesMade[customerID] = true
+                end
             end
         end
     end

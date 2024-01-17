@@ -5280,11 +5280,11 @@ msgstr "Maximum number of ads per day: %s"
 msgid "Schalten zwischen %s und %s Uhr"
 msgstr "Deliver ads between %s and %s o'clock"
 
-msgid "Zahlung autorisiert."
-msgstr "Payment authorized."
+msgid "Zahlung ist autorisiert."
+msgstr "Payment is authorized."
 
-msgid "Zahlung nicht autorisiert."
-msgstr "Payment not authorized."
+msgid "Zahlungsautorisierung erforderlich."
+msgstr "Payment authorization required."
 
 msgid "Soll die Werbung kostenpflichtig (nur wenn Bedingungen erfüllt sind: wird als reguläre Werbeschaltung gezählt) oder kostenlos geschaltet werden?"
 msgstr "Should the advertising be charged (only if conditions are met: counts as regular ad delivery) or free of charge?"
@@ -5885,3 +5885,6 @@ msgstr "Ad line %s"
 
 msgid "Fehlerhafte Eingabe im Preis-Feld."
 msgstr "Incorrect input in costs-field."
+
+msgid "Zahlungsautorisierung nicht erforderlich."
+msgstr "Payment authorization not required."

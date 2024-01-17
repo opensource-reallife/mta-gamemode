@@ -4365,5 +4365,20 @@ msgstr "An advertisement is currently already running."
 msgid "#FFFFFFWerbung │ #67D68E%s"
 msgstr "#FFFFFFAd │ #67D68E%s"
 
+msgid "Der Kunde hat die Zahlung nicht autorisiert."
+msgstr "The customer has not authorized the payment."
 
+msgid "Die erforderliche Mindestanzahl von Spielern ist nicht online."
+msgstr "The required minimum number of players is not online."
 
+msgid "Der vorgegebene Zeitraum ist nicht eingehalten."
+msgstr "The specified timeframe has not been met."
+
+msgid "Die maximale Anzahl von Werbeschaltungen pro Tag wurde für diesen Kunden bereits erreicht."
+msgstr "The maximum number of ad deliveries per day has already been reached for this customer."
+
+msgid "Der Kunde verfügt nicht über ein ausreichendes Kontoguthaben."
+msgstr "The customer does not have a sufficient account balance."
+
+msgid "Werbezahlungen können jetzt in der SAN-News-App autorisiert werden."
+msgstr "Advertising payments can now be authorized in the SAN News app."

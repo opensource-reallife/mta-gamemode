@@ -15,9 +15,9 @@ function SanNews:constructor()
     addEventHandler("sanNewsAdsSound", root, bind(self.playAdsSound, self))
 end
 
-function SanNews:loadAds(Ads)
-    if Ads then
-        self.m_SanNewsAds = Ads
+function SanNews:loadAds(ads)
+    if ads then
+        self.m_SanNewsAds = ads
     else
         return 
     end

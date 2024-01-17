@@ -603,39 +603,33 @@ function SanNews:forceAd(customerID, withConditions)
 		if self.m_SanNewsAds["Ads"][customerID] then 
 			local currentTime = getRealTime()
 			if withConditions then 
-				local whereActive = self:whereAdIsActive({customerID})
-				if not whereActive then
-					client:sendError(_("Bedingungen sind nicht erfüllt.", client))
-					return
-				end 
-
-				local whereMoneyPerAdIsZeroOrWherePaymentAccepted = self:whereMoneyPerAdIsZeroOrWherePaymentAccepted(whereActive)
+				local whereMoneyPerAdIsZeroOrWherePaymentAccepted = self:whereMoneyPerAdIsZeroOrWherePaymentAccepted({customerID})
 				if not whereMoneyPerAdIsZeroOrWherePaymentAccepted then 
-					client:sendError(_("Bedingungen sind nicht erfüllt.", client))
+					client:sendError(_("Der Kunde hat die Zahlung nicht autorisiert.", client))
 					return
 				end
 
 				local whereEnoughPlayersOnline = self:whereEnoughPlayersAreOnline(whereMoneyPerAdIsZeroOrWherePaymentAccepted)
 				if not whereEnoughPlayersOnline then 
-					client:sendError(_("Bedingungen sind nicht erfüllt.", client))
+					client:sendError(_("Die erforderliche Mindestanzahl von Spielern ist nicht online.", client))
 					return
 				end 
 
 				local whereInsideTimeframe = self:whereAdIsInsideTimeFrame(whereEnoughPlayersOnline, currentTime)
 				if not whereInsideTimeframe then 
-					client:sendError(_("Bedingungen sind nicht erfüllt.", client))
+					client:sendError(_("Der vorgegebene Zeitraum ist nicht eingehalten.", client))
 					return
 				end
 
 				local whereMaxPerDayLimitNotReached = self:whereAdDayLimitIsNotReached(whereInsideTimeframe, currentTime)
 				if not whereMaxPerDayLimitNotReached then 
-					client:sendError(_("Bedingungen sind nicht erfüllt.", client))
+					client:sendError(_("Die maximale Anzahl von Werbeschaltungen pro Tag wurde für diesen Kunden bereits erreicht.", client))
 					return
 				end
 
 				local whereEnoughMoneyForAd = self:whereEnoughMoneyForAd(whereMaxPerDayLimitNotReached)
 				if not whereEnoughMoneyForAd then 
-					client:sendError(_("Bedingungen sind nicht erfüllt.", client))
+					client:sendError(_("Der Kunde verfügt nicht über ein ausreichendes Kontoguthaben.", client))
 					return
 				end
 
@@ -978,6 +972,40 @@ function SanNews:AdsSaveSettingsForCustomerFromClient(sendTable)
 			
 				sql:queryExec("UPDATE ??_sannewsads SET isActive = ?, moneyPerAd = ?, minPlayersOnlineToDeliverAds = ?, deliveringSpeed = ?, adStartTimeEveryDay = ?, adEndTimeEveryDay = ?, maxPerDay = ?, paymentAcceptance = ? WHERE customerID = ?", sql:getPrefix(), aa, self.m_SanNewsAds["Ads"][customerID]["moneyPerAd"], self.m_SanNewsAds["Ads"][customerID]["minPlayersOnlineToDeliverAds"], self.m_SanNewsAds["Ads"][customerID]["deliveringSpeed"], self.m_SanNewsAds["Ads"][customerID]["adStartTimeEveryDay"], self.m_SanNewsAds["Ads"][customerID]["adEndTimeEveryDay"], self.m_SanNewsAds["Ads"][customerID]["maxPerDay"], paymentAcceptanceJSON, customerID)
 			
+				if self.m_SanNewsAds["Ads"][customerID]["moneyPerAd"] ~= 0 then 
+					for k, player in pairs(getElementsByType("player")) do 
+						local fac = player:getFaction()
+						local com = player:getCompany()
+						local gro = player:getGroup()
+						
+						if self.m_SanNewsAds["Ads"][customerID]["customerType"] == "Faction" then 
+							if fac:getId() == self.m_SanNewsAds["Ads"][customerID]["customerUniqueID"] then 
+								if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "faction", "authAdPayment") then 
+									player:sendInfo(_("Werbezahlungen können jetzt in der SAN-News-App autorisiert werden.", player))
+								end
+							end
+						end
+						if self.m_SanNewsAds["Ads"][customerID]["customerType"] == "Company" then 
+							if com:getId() == self.m_SanNewsAds["Ads"][customerID]["customerUniqueID"] then 
+								if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "company", "authAdPayment") then 
+									player:sendInfo(_("Werbezahlungen können jetzt in der SAN-News-App autorisiert werden.", player))
+								end
+							end
+						end
+						if self.m_SanNewsAds["Ads"][customerID]["customerType"] == "Group" then
+							if gro:getId() == self.m_SanNewsAds["Ads"][customerID]["customerUniqueID"] then 
+								if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "group", "authAdPayment") then 
+									player:sendInfo(_("Werbezahlungen können jetzt in der SAN-News-App autorisiert werden.", player))
+								end
+							end
+						end
+						if self.m_SanNewsAds["Ads"][customerID]["customerType"] == "Player" then
+							if player:getId() == self.m_SanNewsAds["Ads"][customerID]["customerUniqueID"] and self.m_SanNewsAds["Ads"][customerID]["customerType"] == "Player" then 
+								player:sendInfo(_("Werbezahlungen können jetzt in der SAN-News-App autorisiert werden.", player))
+							end
+						end
+					end
+				end
 			else
 				sql:queryExec("UPDATE ??_sannewsads SET isActive = ?, moneyPerAd = ?, minPlayersOnlineToDeliverAds = ?, deliveringSpeed = ?, adStartTimeEveryDay = ?, adEndTimeEveryDay = ?, maxPerDay = ? WHERE customerID = ?", sql:getPrefix(), aa, self.m_SanNewsAds["Ads"][customerID]["moneyPerAd"], self.m_SanNewsAds["Ads"][customerID]["minPlayersOnlineToDeliverAds"], self.m_SanNewsAds["Ads"][customerID]["deliveringSpeed"], self.m_SanNewsAds["Ads"][customerID]["adStartTimeEveryDay"], self.m_SanNewsAds["Ads"][customerID]["adEndTimeEveryDay"], self.m_SanNewsAds["Ads"][customerID]["maxPerDay"], customerID)
 			end
