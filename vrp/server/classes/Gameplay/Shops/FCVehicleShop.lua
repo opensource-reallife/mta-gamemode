@@ -31,7 +31,7 @@ function FCVehicleShop:constructor(id, name, npc, vehicleSpawn, aircraftSpawn, b
 
 	local npcData = fromJSON(npc)
 
-	if ( (not npcData["interior"] or npcData["interior"] == 0) and (not npcData["dimension"] or npcData["dimension"] == 0) ) or not toboolean(npcData["noBlip"]) then
+	if ( (not npcData["interior"] or npcData["interior"] == 0) and (not npcData["dimension"] or npcData["dimension"] == 0) ) and not toboolean(npcData["noBlip"]) then
 		self.m_Blip = Blip:new("CarShop.png", npcData["posX"], npcData["posY"], {faction = self.m_Factions, company = self.m_Companies}, 400)
 		self.m_Blip:setDisplayText(self.m_Name, BLIP_CATEGORY.Shop)
 		self.m_Blip:setOptionalColor({37, 78, 108})
