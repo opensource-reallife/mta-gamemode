@@ -259,7 +259,7 @@ function Player:loadCharacterInfo()
 		return
 	end
 
-	local row = sql:asyncQueryFetchSingle("SELECT PlayTime, Health, Armor, Weapons, UniqueInterior, IsDead, BetaPlayer, TakeWeaponsOnLogin, RadioCommunication FROM ??_character WHERE Id = ?", sql:getPrefix(), self.m_Id)
+	local row = sql:asyncQueryFetchSingle("SELECT PlayTime, Health, Armor, Hunger, Weapons, UniqueInterior, IsDead, BetaPlayer, TakeWeaponsOnLogin, RadioCommunication FROM ??_character WHERE Id = ?", sql:getPrefix(), self.m_Id)
 	if not row then
 		return false
 	end
@@ -275,6 +275,7 @@ function Player:loadCharacterInfo()
 	-- Load health data
 	self.m_Health = row.Health
 	self.m_Armor = row.Armor
+	self.m_Hunger = row.Hunger
 	self.m_StartTime = row.PlayTime
 	self.m_PlayTimeAtLastSave = row.PlayTime
 	self.m_LoginTime = getRealTime().timestamp
@@ -413,8 +414,8 @@ function Player:save()
 		end
 		local timeDiff = self:getPlayTime() - self.m_PlayTimeAtLastSave
 		DatabasePlayer.save(self)
-		sql:queryExec("UPDATE ??_character SET PosX = ?, PosY = ?, PosZ = ?, Interior = ?, Dimension = ?, UniqueInterior = ?,Skin = ?, Health = ?, Armor = ?, Weapons = ?, PlayTime = PlayTime + ?, SpawnWithFacSkin = ?, IsDead =? WHERE Id = ?", sql:getPrefix(),
-			x, y, z, interior, dimension, self.m_UniqueInterior, sSkin, math.floor(sHealth), math.floor(sArmor), toJSON(weapons, true), timeDiff, spawnWithFac, self.m_IsDead or 0, self.m_Id)
+		sql:queryExec("UPDATE ??_character SET PosX = ?, PosY = ?, PosZ = ?, Interior = ?, Dimension = ?, UniqueInterior = ?,Skin = ?, Health = ?, Armor = ?, Weapons = ?, PlayTime = PlayTime + ?, SpawnWithFacSkin = ?, IsDead =?, Hunger = ? WHERE Id = ?", sql:getPrefix(),
+			x, y, z, interior, dimension, self.m_UniqueInterior, sSkin, math.floor(sHealth), math.floor(sArmor), toJSON(weapons, true), timeDiff, spawnWithFac, self.m_IsDead or 0, self.m_Hunger, self.m_Id)
 
 		VehicleManager:getSingleton():savePlayerVehicles(self)
 
@@ -1882,4 +1883,31 @@ function Player:getVehicleCountWithoutPrem()
 		end
 	end
 	return nonPremCarsCount
+end
+
+function Player:setHunger(hunger)
+	local hunger = math.min(100, hunger)
+
+	if self.m_AlcoholLevel <= 0 and not self:isStateCuffed() then
+		if hunger <= 20 then
+			self:toggleControl("sprint", false)
+		else
+			self:toggleControl("sprint", true)
+		end
+	end
+	
+	if hunger == 20 or hunger == 10 or hunger == 5 then
+		self:sendWarning(_("Du musst dringend etwas essen, sonst stirbst du!", self))
+	elseif hunger <= 0 then
+		self:sendShortMessage(_("Du wurdest wegen akuter Mangelernährung außer Gefecht gesetzt!", self))
+		nextframe(function() self:kill() end)
+		hunger = Randomizer:get(40, 60)
+	end
+
+	self.m_Hunger = hunger
+	self:setPublicSync("Hunger", hunger)
+end
+
+function Player:getHunger()
+	return self.m_Hunger
 end
