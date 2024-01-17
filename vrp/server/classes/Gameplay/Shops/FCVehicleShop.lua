@@ -24,7 +24,7 @@ function FCVehicleShop:constructor(id, name, npc, vehicleSpawn, aircraftSpawn, b
 	self.m_AircraftNonCollisionCol = createColSphere(self.m_AircraftSpawn.posX, self.m_AircraftSpawn.posY, self.m_AircraftSpawn.posZ, 5)
 	self.m_AircraftNonCollisionCol:setData("NonCollisionArea", {players = true}, true)
 
-	self.m_BoatSpawn = fromJSON(aircraftSpawn)
+	self.m_BoatSpawn = fromJSON(boatSpawn)
 	self.m_BoatNonCollisionCol = createColSphere(self.m_BoatSpawn.posX, self.m_BoatSpawn.posY, self.m_BoatSpawn.posZ, 5)
 	self.m_BoatNonCollisionCol:setData("NonCollisionArea", {players = true}, true)
 
