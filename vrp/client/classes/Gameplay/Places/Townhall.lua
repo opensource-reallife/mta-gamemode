@@ -139,6 +139,14 @@ function Townhall:constructor()
 	--itemSpawnerPed7.Func = function() HelpGUI:getSingleton():openLexiconPage(LexiconPages.JobOverview) end --no lexicon pages available 
 	self.m_Peds[#self.m_Peds + 1] = itemSpawnerPed7
 
+	--// VEHICLE SPAWNER JAIL
+	local itemSpawnerPed8 = Ped.create(171, Vector3(-468.34, -544.60, 25.53))
+	itemSpawnerPed8:setRotation(Vector3(0, 0, 86))
+	itemSpawnerPed8.Name = _"Fahrzeugverleih"
+	itemSpawnerPed8.Description = _("Fahrzeug für %s$ ausleihen!", VEHICLE_RENTAL_PRICE)
+	itemSpawnerPed8.Func = function() end
+	self.m_Peds[#self.m_Peds + 1] = itemSpawnerPed8
+
 	--// LS PIER FERRIS WHEEL PED
 	local ferrisWheelPed = Ped.create(189, Vector3(379.57, -2020.66, 7.83), 50)
 	ferrisWheelPed:setRotation(Vector3(0, 0, 90))
