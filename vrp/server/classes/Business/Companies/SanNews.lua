@@ -883,6 +883,8 @@ function SanNews:AdsSaveSettingsForCustomerFromClient(sendTable)
 			local customerID = sendTable[k]["custID"]
 
 			local notOnlyIsActiveHasChanged = false
+			local nowMoreToPay = false
+			local onlyMoneyPerAdHasChanged = true
 			
 			if sendTable[k]["isActive"] == true or sendTable[k]["isActive"] == false then 
 				self.m_SanNewsAds["Ads"][customerID]["isActive"] = sendTable[k]["isActive"]
@@ -893,6 +895,9 @@ function SanNews:AdsSaveSettingsForCustomerFromClient(sendTable)
 					if self.m_SanNewsAds["Ads"][customerID]["moneyPerAd"] ~= tonumber(sendTable[k]["moneyPerAd"]) then 
 						notOnlyIsActiveHasChanged = true 
 					end
+					if self.m_SanNewsAds["Ads"][customerID]["moneyPerAd"] < tonumber(sendTable[k]["moneyPerAd"]) then 
+						nowMoreToPay = true
+					end
 					self.m_SanNewsAds["Ads"][customerID]["moneyPerAd"] = tonumber(sendTable[k]["moneyPerAd"])
 				end
 			end
@@ -902,6 +907,7 @@ function SanNews:AdsSaveSettingsForCustomerFromClient(sendTable)
 					if sendTable[k]["minPlayersOnlineToDeliverAds"] == minPlayerChangerOptions[i] then 
 						if self.m_SanNewsAds["Ads"][customerID]["minPlayersOnlineToDeliverAds"] ~= tonumber(sendTable[k]["minPlayersOnlineToDeliverAds"]) then 
 							notOnlyIsActiveHasChanged = true
+							onlyMoneyPerAdHasChanged = false
 						end
 						self.m_SanNewsAds["Ads"][customerID]["minPlayersOnlineToDeliverAds"] = tonumber(sendTable[k]["minPlayersOnlineToDeliverAds"])
 					end
@@ -913,6 +919,7 @@ function SanNews:AdsSaveSettingsForCustomerFromClient(sendTable)
 					if sendTable[k]["deliveringSpeed"] == speedOfDeliveryChangerOptions[i] then 
 						if self.m_SanNewsAds["Ads"][customerID]["deliveringSpeed"] ~= tonumber(sendTable[k]["deliveringSpeed"]) then 
 							notOnlyIsActiveHasChanged = true
+							onlyMoneyPerAdHasChanged = false
 						end
 						self.m_SanNewsAds["Ads"][customerID]["deliveringSpeed"] = tonumber(sendTable[k]["deliveringSpeed"])
 					end
@@ -924,6 +931,7 @@ function SanNews:AdsSaveSettingsForCustomerFromClient(sendTable)
 					if sendTable[k]["adStartTimeEveryDay"] == timeChangerOptions[i] then 
 						if self.m_SanNewsAds["Ads"][customerID]["adStartTimeEveryDay"] ~= tonumber(sendTable[k]["adStartTimeEveryDay"]) then 
 							notOnlyIsActiveHasChanged = true 
+							onlyMoneyPerAdHasChanged = false
 						end
 						self.m_SanNewsAds["Ads"][customerID]["adStartTimeEveryDay"] = tonumber(sendTable[k]["adStartTimeEveryDay"])
 					end
@@ -934,7 +942,8 @@ function SanNews:AdsSaveSettingsForCustomerFromClient(sendTable)
 				for i = 1, #timeChangerOptions do 
 					if sendTable[k]["adEndTimeEveryDay"] == timeChangerOptions[i] then 
 						if self.m_SanNewsAds["Ads"][customerID]["adEndTimeEveryDay"] ~= tonumber(sendTable[k]["adEndTimeEveryDay"]) then 
-							notOnlyIsActiveHasChanged = true 
+							notOnlyIsActiveHasChanged = true
+							onlyMoneyPerAdHasChanged = false 
 						end
 						self.m_SanNewsAds["Ads"][customerID]["adEndTimeEveryDay"] = tonumber(sendTable[k]["adEndTimeEveryDay"])
 					end
@@ -946,6 +955,7 @@ function SanNews:AdsSaveSettingsForCustomerFromClient(sendTable)
 					if sendTable[k]["maxPerDay"] == maxPerDayChangerOptions[i] then 
 						if self.m_SanNewsAds["Ads"][customerID]["maxPerDay"] ~= tonumber(sendTable[k]["maxPerDay"]) then 
 							notOnlyIsActiveHasChanged = true 
+							onlyMoneyPerAdHasChanged = false
 						end
 						self.m_SanNewsAds["Ads"][customerID]["maxPerDay"] = tonumber(sendTable[k]["maxPerDay"])
 					end
@@ -960,48 +970,53 @@ function SanNews:AdsSaveSettingsForCustomerFromClient(sendTable)
 			end
 
 			if notOnlyIsActiveHasChanged then 
-				self.m_SanNewsAds["Ads"][customerID]["paymentAcceptance"] = {
-					paymentAccepted = 0,
-					paymentAcceptedByPlayerID = -1,
-					paymentAcceptanceDate = "",
-					cancelationByPlayerID = -1,
-					cancelationDate = ""				
-				}
+
+				if not onlyMoneyPerAdHasChanged or nowMoreToPay then
+					self.m_SanNewsAds["Ads"][customerID]["paymentAcceptance"] = {
+						paymentAccepted = 0,
+						paymentAcceptedByPlayerID = -1,
+						paymentAcceptanceDate = "",
+						cancelationByPlayerID = -1,
+						cancelationDate = ""				
+					}
+				end
 
 				local paymentAcceptanceJSON = toJSON(self.m_SanNewsAds["Ads"][customerID]["paymentAcceptance"])
 			
 				sql:queryExec("UPDATE ??_sannewsads SET isActive = ?, moneyPerAd = ?, minPlayersOnlineToDeliverAds = ?, deliveringSpeed = ?, adStartTimeEveryDay = ?, adEndTimeEveryDay = ?, maxPerDay = ?, paymentAcceptance = ? WHERE customerID = ?", sql:getPrefix(), aa, self.m_SanNewsAds["Ads"][customerID]["moneyPerAd"], self.m_SanNewsAds["Ads"][customerID]["minPlayersOnlineToDeliverAds"], self.m_SanNewsAds["Ads"][customerID]["deliveringSpeed"], self.m_SanNewsAds["Ads"][customerID]["adStartTimeEveryDay"], self.m_SanNewsAds["Ads"][customerID]["adEndTimeEveryDay"], self.m_SanNewsAds["Ads"][customerID]["maxPerDay"], paymentAcceptanceJSON, customerID)
 			
-				if self.m_SanNewsAds["Ads"][customerID]["moneyPerAd"] ~= 0 then 
-					for k, player in pairs(getElementsByType("player")) do 
-						local fac = player:getFaction()
-						local com = player:getCompany()
-						local gro = player:getGroup()
-						
-						if self.m_SanNewsAds["Ads"][customerID]["customerType"] == "Faction" then 
-							if fac:getId() == self.m_SanNewsAds["Ads"][customerID]["customerUniqueID"] then 
-								if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "faction", "authAdPayment") then 
-									player:sendInfo(_("Werbezahlungen können jetzt in der SAN-News-App autorisiert werden.", player))
+				if not onlyMoneyPerAdHasChanged or nowMoreToPay then
+					if self.m_SanNewsAds["Ads"][customerID]["moneyPerAd"] > 0 then 
+						for k, player in pairs(getElementsByType("player")) do 
+							local fac = player:getFaction()
+							local com = player:getCompany()
+							local gro = player:getGroup()
+							
+							if self.m_SanNewsAds["Ads"][customerID]["customerType"] == "Faction" then 
+								if fac:getId() == self.m_SanNewsAds["Ads"][customerID]["customerUniqueID"] then 
+									if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "faction", "authAdPayment") then 
+										player:sendInfo(_("Werbezahlungen können jetzt in der SAN-News-App autorisiert werden.", player))
+									end
 								end
 							end
-						end
-						if self.m_SanNewsAds["Ads"][customerID]["customerType"] == "Company" then 
-							if com:getId() == self.m_SanNewsAds["Ads"][customerID]["customerUniqueID"] then 
-								if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "company", "authAdPayment") then 
-									player:sendInfo(_("Werbezahlungen können jetzt in der SAN-News-App autorisiert werden.", player))
+							if self.m_SanNewsAds["Ads"][customerID]["customerType"] == "Company" then 
+								if com:getId() == self.m_SanNewsAds["Ads"][customerID]["customerUniqueID"] then 
+									if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "company", "authAdPayment") then 
+										player:sendInfo(_("Werbezahlungen können jetzt in der SAN-News-App autorisiert werden.", player))
+									end
 								end
 							end
-						end
-						if self.m_SanNewsAds["Ads"][customerID]["customerType"] == "Group" then
-							if gro:getId() == self.m_SanNewsAds["Ads"][customerID]["customerUniqueID"] then 
-								if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "group", "authAdPayment") then 
-									player:sendInfo(_("Werbezahlungen können jetzt in der SAN-News-App autorisiert werden.", player))
+							if self.m_SanNewsAds["Ads"][customerID]["customerType"] == "Group" then
+								if gro:getId() == self.m_SanNewsAds["Ads"][customerID]["customerUniqueID"] then 
+									if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "group", "authAdPayment") then 
+										player:sendInfo(_("Werbezahlungen können jetzt in der SAN-News-App autorisiert werden.", player))
+									end
 								end
 							end
-						end
-						if self.m_SanNewsAds["Ads"][customerID]["customerType"] == "Player" then
-							if player:getId() == self.m_SanNewsAds["Ads"][customerID]["customerUniqueID"] and self.m_SanNewsAds["Ads"][customerID]["customerType"] == "Player" then 
-								player:sendInfo(_("Werbezahlungen können jetzt in der SAN-News-App autorisiert werden.", player))
+							if self.m_SanNewsAds["Ads"][customerID]["customerType"] == "Player" then
+								if player:getId() == self.m_SanNewsAds["Ads"][customerID]["customerUniqueID"] and self.m_SanNewsAds["Ads"][customerID]["customerType"] == "Player" then 
+									player:sendInfo(_("Werbezahlungen können jetzt in der SAN-News-App autorisiert werden.", player))
+								end
 							end
 						end
 					end
