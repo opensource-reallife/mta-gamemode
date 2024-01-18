@@ -144,6 +144,7 @@ function ShopManager:foodShopBuyMenu(shopId, menu)
 	if shop.m_Menues[menu] then
 		if client:getMoney() >= shop.m_Menues[menu]["Price"] then
 			client:setHealth(client:getHealth() + shop.m_Menues[menu]["Health"])
+			client:setHunger(client:getHunger() + shop.m_Menues[menu]["Hunger"])
 			StatisticsLogger:getSingleton():addHealLog(client, shop.m_Menues[menu]["Health"], "Shop "..shop.m_Menues[menu]["Name"])
 			client:checkLastDamaged() 
 			client:transferMoney(shop.m_BankAccount, shop.m_Menues[menu]["Price"], "Essen", "Gameplay", "Food")
