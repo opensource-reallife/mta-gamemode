@@ -36,7 +36,7 @@ function AchievementBox:constructor (text, xp)
 
 		dxDrawRectangle(0, 0, self.ms_endSize, tocolor(0, 0, 0, 150))
 		dxDrawRectangle(0, 0, self.ms_endSize.x, 5, Color.DarkLightBlue)
-		dxDrawImage(5, 5, 65, 65, "files/images/Logo.png")
+		dxDrawImage(5, 5, 65, 65, "files/images/Other/achievement.png")
 		dxDrawText("Achievement unlocked:", 80, 10, 360, 35, Color.White, 1.3, "default", "center", "center")
 		dxDrawText(_("%s", self.m_Text), 80, 35, 360, self.ms_endSize.y - 15, Color.White, 1, getVRPFont(self.m_Font), "center", "center", true)
 
