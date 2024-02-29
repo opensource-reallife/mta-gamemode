@@ -25,7 +25,6 @@ Config.register("WEB_ACCOUNT_PASSWORD", "string", "")
 Config.register("INGAME_WEB_SECRET", "string", "")
 
 Config.register("DISCORD_WEBHOOK_URL", "string", "")
-
 Config.register("DISCORD_WEBHOOK_URL_GW", "string", "")
 
 function Core:constructor()

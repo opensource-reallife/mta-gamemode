@@ -34,21 +34,11 @@ function Discord:outputBreakingNews( text )
 	end
 end
 
-function Discord:outputGangwarNews( text ) --TODO: do this lol
+function Discord:outputGangwarNews( text )
 	if not DEBUG then
-		local textScaffhold = 
-[[
-Das Gebiet '%s' der Fraktion %s wurde von der Fraktion %s angegriffen%s. Details:
-```diff
-+++ %s (%s Verteidiger, %s Damagepunkte)
-%s
---- %s (%s Verteidiger, %s Damagepunkte)
-%s
-```
-]]
 		local postData = 
 		{
-			queueName = "Discord Gangwar-News",
+			queueName = "Discord Gangwar-Notifications",
 			connectionAttempts = 3,
 			connectTimeout = 5000,
 			formFields = 
@@ -59,6 +49,6 @@ Das Gebiet '%s' der Fraktion %s wurde von der Fraktion %s angegriffen%s. Details
 		}
 		fetchRemote ( Config.get("DISCORD_WEBHOOK_URL_GW"), postData, function() end )
 	else 
-		outputDebugString("Discord Gangwar Notifications was not sent ( Debug-Mode )", 3)
+		outputDebugString("Discord Gangwar-Notification was not sent ( Debug-Mode )", 3)
 	end
 end
