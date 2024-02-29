@@ -354,19 +354,19 @@ function FactionState:loadLSPD(factionId)
 end
 
 function FactionState:loadFBI(factionId)
-	self:createDutyPickup(275.85, -40.26, 1032.20, 10) -- FBI Interior
+	self:createDutyPickup(367.16, 215.60, 1008.2, 3) -- FBI Interior
 	self:createDutyPickup(1790.24, -1540.56, 9.81) -- FBI backyard
 
 	local blip = Blip:new("Police.png", 1798.14, -1578.65, {factionType = "State"}, 400, {factionColors[factionId].r, factionColors[factionId].g, factionColors[factionId].b})
 		blip:setDisplayText(FactionManager:getSingleton():getFromId(factionId):getName(), BLIP_CATEGORY.Faction)
 
-	local safe = createObject(2332, 294.43, -22.6, 1031.7)
-	safe:setInterior(10)
+	local safe = createObject(2332, 353.83, 172.62, 1007.85, 0, 0, 90)
+	safe:setInterior(3)
 	FactionManager:getSingleton():getFromId(1):setSafe(safe)
 
 	local elevator = Elevator:new()
 	elevator:addStation("Heliport", Vector3(1768.55, -1552.85, 38.97), 270)
-	elevator:addStation("Erdgeschoss", Vector3(296.49, -36.23, 1032.20), 90, 10)
+	elevator:addStation("Erdgeschoss", Vector3(372.01, 167.71, 1008.38), 0, 3)
 	elevator:addStation("Hinterhof", Vector3(1771.74, -1547.70, 9.93), 90)
 
 	self:createTakeItemsPickup(Vector3(1774.88, -1539.01, 9.1))
@@ -379,14 +379,14 @@ function FactionState:loadFBI(factionId)
 	gateRight.onGateHit = bind(self.onBarrierGateHit, self)
 	--gateRight:addGate(988, Vector3(1272.9004, -1841.9004, 13.4), Vector3(0, 0, 0), Vector3(1277.9004, -1841.9004, 13.4))
 
-	for i,v in pairs(gateLeft:getGateObjects()) do
+	--[[for i,v in pairs(gateLeft:getGateObjects()) do
 		VehicleTexture:new(v, "files/images/Textures/Faction/State/FBI_Logo.png", "ws_airsecurity", true)
 	end
 	for i,v in pairs(gateRight:getGateObjects()) do
 		VehicleTexture:new(v, "files/images/Textures/Faction/State/FBI_Logo.png", "ws_airsecurity", true)
-	end
+	end]]
 
-	InteriorEnterExit:new(Vector3(1798.14, -1578.65, 14.07), Vector3(267.03, -23.87, 1032.20), 220, 0, 10) -- main entrance
+	InteriorEnterExit:new(Vector3(1798.14, -1578.65, 14.07), Vector3(389.84, 173.71, 1008.38), 90, 300, 3) -- main entrance
 	--InteriorEnterExit:new(Vector3(1219.20, -1812.25, 16.59), Vector3(259.91, -74.91, 1037.35), 0, 180, 10) -- back entrance / parking lot
 end
 
