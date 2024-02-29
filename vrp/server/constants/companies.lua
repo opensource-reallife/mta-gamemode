@@ -75,8 +75,9 @@ companyRankNames[3] = {
 }
 companyColors[3] = {["r"] = 255, ["g"] = 170, ["b"] = 0}
 companySkins[3] = {[59]=true,[141]=true,[186]=true,[187]=true,[188]=true,[189]=true}
-companyDutyMarker[3] = Vector3(735.65, -1348.45, 13.51)
-companySpawnpoint[3] = {Vector3(735.97, -1338.20, 13.53), 0, 0}
+companyDutyMarker[3] = Vector3(275.85, -40.26, 1032.20)
+companyDutyMarkerInterior[3] = 10
+companySpawnpoint[3] = {Vector3(278.31, -60.99, 1032.21), 10, 0}
 
 -- ID 4 = Public Transport:
 companyRankNames[4] = {
