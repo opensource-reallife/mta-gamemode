@@ -173,19 +173,22 @@ end
 addEvent("shortMessageBox", true)
 addEventHandler("shortMessageBox", root,
 	function(text, title, tcolor, timeout, callback, onTimeout, ...)
-		local additionalParameters = {...}
-		ShortMessage.Map[text] = ShortMessage:new(text, title, tcolor, timeout,
-		function()
-			if callback then
-				triggerServerEvent(callback, root, unpack(additionalParameters))
-			end
-		end,
-		function()
-			if onTimeout then
-				triggerServerEvent(onTimeout, root, unpack(additionalParameters))
-			end
-		end,
-		...)
+		if callback or onTimeout then
+			local additionalParameters = {...}
+			ShortMessage.Map[text] = ShortMessage:new(text, title, tcolor, timeout,
+			function()
+				if callback then
+					triggerServerEvent(callback, root, unpack(additionalParameters))
+				end
+			end,
+			function()
+				if onTimeout then
+					triggerServerEvent(onTimeout, root, unpack(additionalParameters))
+				end
+			end)
+		else
+			ShortMessage.Map[text] = ShortMessage:new(text, title, tcolor, timeout, false, false, ...)
+		end
 	end
 )
 
