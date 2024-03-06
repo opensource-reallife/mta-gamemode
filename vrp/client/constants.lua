@@ -173,10 +173,9 @@ SHADERS = {
 	["SkyBox"] = {["event"] = "switchSkyBox" },
 	["Detail"] = {["event"] = "switchDetail" },
 	["Contrast"] = {["event"] = "switchContrast" },
-	["Carpaint"] = {["event"] = "switchCarPaint" },
+	["CarPaint"] = {["event"] = "switchCarPaint" },
 	["Roadshine"] = {["event"] = "switchRoadshine" },
 	["Water"] = {["event"] = "switchWaterShader" },
-	["WetRoads"] = {["event"] = "switchWetRoads" },
 	["Bloom"] = {["event"] = "switchBloom" },
 	["DoF"] = {["event"] = "switchDoF"},
 }

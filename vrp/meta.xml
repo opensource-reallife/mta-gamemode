@@ -3624,9 +3624,8 @@
 	<include resource="RoadShine" />
 	<include resource="SkyBox" />
 	<include resource="DoF" />
-	<include resource="VehicleReflections" />
+	<include resource="CarPaint" />
 	<include resource="Water" />
-	<include resource="WetRoads" />
 	<include resource="SnowFlakes" />
 	<include resource="SnowGround" />
 
