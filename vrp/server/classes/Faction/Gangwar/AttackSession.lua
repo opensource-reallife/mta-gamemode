@@ -400,6 +400,7 @@ function AttackSession:notifyFactions()
 		for k, v in ipairs(self.m_Faction2:getOnlinePlayers()) do
 			v:sendInfo(_("Alle Gegner sind eliminiert!",v))
 		end
+		Discord:getSingleton():outputGangwarNews(("Die Fraktion %s hat das Gebiet %s gegen die Fraktion %s verteidigt!"):format(self.m_Faction2:getShortName(), self.m_AreaObj.m_Name, self.m_Faction1:getShortName()))
 	elseif self.endReason == 2 then
 		for k, v in ipairs(self.m_Faction1:getOnlinePlayers()) do
 			v:sendInfo(_("Alle Gegner sind eliminiert!",v))
@@ -408,13 +409,15 @@ function AttackSession:notifyFactions()
 			v:sendInfo(_("Alle Mitglieder sind gefallen!",v))
 		end
 		self.m_Faction1:sendMessage("[Gangwar] #FFFFFFAlle Gegner wurden eliminiert!",200,0,0,true)
+		Discord:getSingleton():outputGangwarNews(("Die Fraktion %s hat das Gebiet %s der Fraktion %s eingenommen!"):format(self.m_Faction1:getShortName(), self.m_AreaObj.m_Name, self.m_Faction2:getShortName()))
 	elseif self.endReason == 3 then
 		for k, v in ipairs(self.m_Faction1:getOnlinePlayers()) do
-			v:sendInfo(_("Die Flagge wurde nicht gehalten!",v))
+			v:sendInfo(_("Die Flagge wurde nicht gehalten!",v) )
 		end
 		for k, v in ipairs(self.m_Faction2:getOnlinePlayers()) do
 			v:sendInfo(_("Die Gegner haben die Flagge nicht gehalten!",v))
 		end
+		Discord:getSingleton():outputGangwarNews(("Die Fraktion %s konnte die Flagge im Gebiet %s der Fraktion %s nicht halten!"):format(self.m_Faction1:getShortName(), self.m_AreaObj.m_Name, self.m_Faction2:getShortName()))
 	end
 end
 
