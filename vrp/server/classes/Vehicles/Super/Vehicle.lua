@@ -171,7 +171,7 @@ function Vehicle:onPlayerEnter(player, seat)
 				local vehicleType = self:getVehicleType()
 				if (vehicleType == VehicleType.Plane or vehicleType == VehicleType.Helicopter) and not player:hasPilotsLicense() then
 					self:setEngineState(false)
-					Timer(function() self:setEngineState(false) end, 500, 1)
+					Timer(function() self:setEngineState(false) end, 1000, 1)
 				end
 			end
 		end
