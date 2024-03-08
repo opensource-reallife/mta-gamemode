@@ -117,7 +117,11 @@ function Area:attack( faction1, faction2, attackingPlayer)
 			self.m_IsAttacked = true
 			faction1:sendMessage("[Gangwar] #FFFFFFIhre Fraktion hat einen Attack gestartet! ( Gebiet: "..self.m_Name.." )", 0,204,204,true)
 			faction2:sendMessage("[Gangwar] #FFFFFFIhre Fraktion wurde attackiert von "..faction1.m_Name_Short.." ! ( Gebiet: "..self.m_Name.." )", 204,20,0,true)
-			Discord:getSingleton():outputGangwarNews("Das Gebiet "..self.m_Name.." der Fraktion "..faction2.m_Name_Short.." wird von der Fraktion "..faction1.m_Name_Short.." angegriffen!")
+			if faction1.m_DiscordRole == nil or faction2.m_DiscordRole == nil then
+				Discord:getSingleton():outputGangwarNews("Das Gebiet "..self.m_Name.." der Fraktion "..faction2.m_Name_Short.." wird von der Fraktion "..faction1.m_Name_Short.." angegriffen!")
+			else
+				Discord:getSingleton():outputGangwarNews("Das Gebiet "..self.m_Name.." der Fraktion <@&"..faction2.m_DiscordRole.."> wird von der Fraktion <@&"..faction1.m_DiscordRole.."> angegriffen!")
+			end
 			self.m_AttackSession = AttackSession:new( self, faction1 , faction2, attackingPlayer)
 			self.m_LastAttack = getRealTime().timestamp
 			self.m_RadarArea:delete()

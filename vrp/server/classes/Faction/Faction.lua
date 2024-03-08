@@ -10,11 +10,12 @@ Faction = inherit(Object)
 
 -- implement by children
 
-function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, players, rankLoans, rankSkins, rankWeapons, depotId, factionType, diplomacy, rankPermissions, rankActions, playerLimit, maxVehicles, vehicleLimits)
+function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, players, rankLoans, rankSkins, rankWeapons, depotId, factionType, diplomacy, rankPermissions, rankActions, playerLimit, maxVehicles, vehicleLimits, discordRole)
 	self.m_Id = Id
 	self.m_Name_Short = name_short
 	self.m_ShorterName = name_shorter
 	self.m_Name = name
+	self.m_DiscordRole = discordRole
 	self.m_Players = players[1]
 	self.m_PlayerLoans = players[2]
 	self.m_PlayerWeapons = players[3]
@@ -233,6 +234,10 @@ end
 
 function Faction:getShortName()
 	return self.m_Name_Short
+end
+
+function Faction:getDiscordRole()
+	return self.m_DiscordRole
 end
 
 function Faction:getRankName(rank)
