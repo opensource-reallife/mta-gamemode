@@ -1887,6 +1887,7 @@ function Player:getVehicleCountWithoutPrem()
 end
 
 function Player:setHunger(hunger)
+	local oldHunger = self.m_Hunger
 	local hunger = math.min(100, hunger)
 
 	if self.m_AlcoholLevel <= 0 and not self:isStateCuffed() then
@@ -1897,7 +1898,7 @@ function Player:setHunger(hunger)
 		end
 	end
 	
-	if hunger == 20 or hunger == 10 or hunger == 5 then
+	if (oldHunger > 20 and hunger <= 20) or (oldHunger > 10 and hunger <= 10) or (oldHunger > 5 and hunger <= 5) then
 		self:sendWarning(_("Du musst dringend etwas essen, sonst stirbst du!", self))
 	elseif hunger <= 0 then
 		self:sendShortMessage(_("Du wurdest wegen akuter Mangelernährung außer Gefecht gesetzt!", self))
