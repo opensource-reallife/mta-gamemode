@@ -3882,9 +3882,6 @@ msgstr "The vehicle was successfully repaired!"
 msgid "%s ist nicht geöffnet!"
 msgstr "%s is not open!"
 
-msgid "Du hast keinen Flugschein!"
-msgstr "You don't have a flight ticket!"
-
 msgid "Du hast keinen Führerschein! Lass dich nicht erwischen!"
 msgstr "You don't have a license! Don't get caught!"
 
@@ -4316,3 +4313,9 @@ msgstr "You have been incapacitated due to severe malnutrition!"
 
 msgid "Das Pferderennen startet in wenigen Sekunden! Klicke hier um die Liveübertragung mit zu verfolgen!"
 msgstr "The horse race starts in a few seconds! Click here to follow the live broadcast!"
+
+msgid "Du weißt nicht wie man einen Helikopter fliegt!"
+msgstr "You don't know how to fly a helicopter!"
+
+msgid "Du weißt nicht wie man ein Flugzeug fliegt!"
+msgstr "You don't know how to fly an airplane!"

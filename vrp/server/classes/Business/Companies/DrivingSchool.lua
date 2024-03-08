@@ -318,6 +318,7 @@ end
 
 function DrivingSchool:startAutomaticTest(player, type)
 	if DrivingSchool.m_LessonVehicles[player] then
+		player:setPublicSync("inDrivingLession", false)
 		player:triggerEvent("DrivingLesson:endLesson")
 		if DrivingSchool.m_LessonVehicles[player].m_NPC then
 			if isElement(DrivingSchool.m_LessonVehicles[player].m_NPC ) then
@@ -344,6 +345,7 @@ function DrivingSchool:startAutomaticTest(player, type)
 	player:setInterior(0)
 	player:warpIntoVehicle(veh)
 	player:setCameraTarget(player)
+	player:setPublicSync("inDrivingLession", true)
 
 	local randomName =	{"Nero Soliven", "Kempes Waldemar", "Avram Vachnadze", "Klaus Schweiger", "Luca Pasqualini", "Peter Schmidt", "Mohammed Vegas", "Isaha Rosenberg"}
 	local name = randomName[math.random(1, #randomName)]
@@ -410,6 +412,7 @@ function DrivingSchool:startAutomaticTest(player, type)
 				end
 				destroyElement(source)
 			end
+			player:setPublicSync("inDrivingLession", false)
 			player:triggerEvent("DrivingLesson:endLesson")
 			fadeCamera(player, false, 0.5)
 			setTimer(setElementPosition, 1000, 1, player, 1778.88, -1706.73, 13.37)
@@ -429,6 +432,7 @@ function DrivingSchool:startAutomaticTest(player, type)
 				end
 				destroyElement(source)
 			end
+			player:setPublicSync("inDrivingLession", false)
 			player:triggerEvent("DrivingLesson:endLesson")
 			fadeCamera(player, false, 0.5)
 			setTimer(setElementPosition, 1000, 1, player, 1778.88, -1706.73, 13.37)
@@ -455,6 +459,7 @@ function DrivingSchool:startAutomaticTest(player, type)
 						end
 					end
 				end
+				player:setPublicSync("inDrivingLession", false)
 				player:triggerEvent("DrivingLesson:endLesson")
 				fadeCamera(player, false, 0.5)
 				setTimer(setElementPosition, 1000, 1, player, 1778.88, -1706.73, 13.37)
@@ -492,6 +497,7 @@ function DrivingSchool:onHitRouteMarker()
 				end
 				destroyElement(veh)
 				DrivingSchool.m_LessonVehicles[client] = nil
+				client:setPublicSync("inDrivingLession", false)
 				client:triggerEvent("DrivingLesson:endLesson")
 			else
 				client:sendError(_("Da dein Fahrzeug zu beschädigt war, hast du nicht bestanden!", client))
@@ -500,6 +506,7 @@ function DrivingSchool:onHitRouteMarker()
 				end
 				destroyElement(veh)
 				DrivingSchool.m_LessonVehicles[client] = nil
+				client:setPublicSync("inDrivingLession", false)
 				client:triggerEvent("DrivingLesson:endLesson")
 			end
 		end

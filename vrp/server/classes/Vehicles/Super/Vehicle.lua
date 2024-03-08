@@ -394,6 +394,18 @@ function Vehicle:toggleEngine(player)
 					player:sendError(_("Das Fahrzeug ist kaputt und muss erst repariert werden!", player))
 					return false
 				end
+				if not player:getPublicSync("inDrivingLession") then
+					if not player:hasPilotsLicense() then
+						local vehicleType = self:getVehicleType()
+						if vehicleType == VehicleType.Helicopter then
+							player:sendError(_("Du weißt nicht wie man einen Helikopter fliegt!", player))
+							return false
+						elseif vehicleType == VehicleType.Plane then
+							player:sendError(_("Du weißt nicht wie man ein Flugzeug fliegt!", player))
+							return false
+						end
+					end
+				end
 			end
 
 			if player and not getVehicleEngineState(self) then
