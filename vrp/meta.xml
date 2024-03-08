@@ -1964,6 +1964,7 @@
 	<vrpfile src="files/images/Radar/Blips/ColorCars.png"/>
 	<vrpfile src="files/images/Radar/Blips/RcShop.png"/>
 	<vrpfile src="files/images/Radar/Blips/ServiceTechnician.png"/>
+	<vrpfile src="files/images/Radar/Blips/Jewel.png"/>
 
 	<vrpfile src="files/images/Jobs/HeaderLogistician.png"/>
 	<vrpfile src="files/images/Jobs/HeaderTrashman.png"/>

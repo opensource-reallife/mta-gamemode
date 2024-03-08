@@ -128,6 +128,10 @@ function JewelryStoreRobberyManager:constructor()
 
 	self:spawnShelves()
 	self:spawnShelveGlassesAndContent()
+
+	self.m_BlipJR = Blip:new("Jewel.png", 561.292, -1506.786, root, 400)
+	self.m_BlipJR:setOptionalColor({27, 125, 47})
+	self.m_BlipJR:setDisplayText("Juwelier")
 end
 
 function JewelryStoreRobberyManager:spawnShelves()
@@ -350,6 +354,7 @@ function JewelryStoreRobberyManager:startRobbery(attacker)
 
 	self.m_ShopPed:setTargetAble(false)
 	self.m_RobberyInstance = JewelryStoreRobbery:new(attacker, self.m_ShelveCount)
+	self.m_BlipJR:setOptionalColor({122, 22, 22})
 end
 
 function JewelryStoreRobberyManager:stopRobbery(state)
@@ -371,4 +376,5 @@ function JewelryStoreRobberyManager:stopRobbery(state)
 	else
 		PlayerManager:getSingleton():breakingNews("Der Raub wurde abgeschlossen! Die Täter sind mit der Beute entkommen!")
 	end
+	self.m_BlipJR:setOptionalColor({27, 125, 47})
 end
