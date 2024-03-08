@@ -30,6 +30,7 @@ UNIX_TIMESTAMP_24HRS = 86400 --//86400
 GANGWAR_PAY_PER_DAMAGE = 10
 GANGWAR_PAY_PER_KILL = 1500
 PAYDAY_ACTION_BONUS = 2500
+GANGWAR_COOLDOWN_PER_FACTION = 60 * 25 --// in seconds
 --//
 addRemoteEvents{ "onLoadCharacter", "onDeloadCharacter", "Gangwar:onClientRequestAttack", "GangwarQuestion:disqualify", "gangwarGetAreas" }
 
@@ -282,10 +283,11 @@ end
 function Gangwar:attackArea( player )
 	local faction = player.m_Faction
 	if faction then
-		if faction.m_Id == 2 or faction.m_Id == 3 or faction.m_Id == 4 then
+		local id = faction.m_Id
+		if id == 2 or id == 3 or id == 4 then
 			return player:sendError(_("Du bist nicht berechtigt am Gangwar teilzunehmen!",  player))
 		end
-		local id = player.m_Faction.m_Id
+
 		local mArea = player.m_InsideArea
 		if mArea then
 			local bWithin = isElementWithinColShape(player,  mArea.m_CenterSphere)
@@ -296,6 +298,13 @@ function Gangwar:attackArea( player )
 					local factionCount = #faction:getOnlinePlayers()
 					local factionCount2 = #faction2:getOnlinePlayers()
 					local gametime = tonumber(("%02d"):format( getRealTime().hour )..""..("%02d"):format( getRealTime().minute ))
+					local currentTimestamp = getRealTime().timestamp
+					if faction.m_GangwarAttackCheck[faction2.m_Id] ~= nil then
+						if faction.m_GangwarAttackCheck[faction2.m_Id] >= currentTimestamp - GANGWAR_COOLDOWN_PER_FACTION then
+							player:sendError(_("Du kannst die selbe Fraktion noch nicht erneut attacken!",  player))
+							return
+						end
+					end
 					if factionCount >= GANGWAR_MIN_PLAYERS or DEBUG or (gametime >= GANGWAR_ATTACK_HOUR_START and gametime <= GANGWAR_ATTACK_HOUR_END) then
 						if factionCount2 >= GANGWAR_MIN_PLAYERS or DEBUG or (gametime >= GANGWAR_ATTACK_HOUR_START and gametime <= GANGWAR_ATTACK_HOUR_END)  then
 							local activeGangwar = self:getCurrentGangwar()
@@ -304,12 +313,12 @@ function Gangwar:attackArea( player )
 							if not activeGangwar then
 								if not isGangwarLocked then
 									local lastAttack = mArea.m_LastAttack
-									local currentTimestamp = getRealTime().timestamp
 									local nextAttack = lastAttack + ( GANGWAR_ATTACK_PAUSE*UNIX_TIMESTAMP_24HRS)
 									if nextAttack <= currentTimestamp then
 										mArea:attack(faction, faction2, player)
 										self.m_LastFaction1 = faction 
 										self.m_LastFaction2 = faction2
+										faction.m_GangwarAttackCheck[faction2.m_Id] = currentTimestamp
 									else
 										player:sendError(_("Dieses Gebiet ist noch nicht attackierbar!",  player))
 									end

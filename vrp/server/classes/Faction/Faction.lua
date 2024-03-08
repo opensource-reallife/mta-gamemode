@@ -44,6 +44,8 @@ function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, 
 	self.m_Countdowns = {}
 
 	self.m_Vehicles = {}
+	
+	self.m_GangwarAttackCheck = {}
 
 	if rankLoans == "" then	rankLoans = {} for i=0,6 do rankLoans[i] = 0 end rankLoans = toJSON(rankLoans) outputDebug("Created RankLoans for faction "..Id) end
 	if rankSkins == "" then	rankSkins = {} for i=0,6 do rankSkins[i] = self:getRandomSkin() end rankSkins = toJSON(rankSkins) outputDebug("Created RankSkins for faction "..Id) end
