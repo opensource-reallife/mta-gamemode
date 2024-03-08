@@ -146,7 +146,7 @@ function VehicleManager:constructor()
 			end
 		end
 	end)
-	-- Check Licenses
+
 	addEventHandler("onVehicleStartEnter", root,
 		function (player, seat)
 			if player:getType() ~= "player" then return end
@@ -154,22 +154,13 @@ function VehicleManager:constructor()
 			if source:isAttached() and not source.m_CurrentlyAttachedToTransporter then -- If the vehicle is attached to a magnet helicopter
 				return cancelEvent()
 			end
+
 			if source:getData("Burned") then -- if the vehicle is left from a fire
 				return cancelEvent()
 			end
 
 			if seat == 0 then
 				self:checkVehicle(source)
-
-				if not source:isLocked() then
-					local vehicleType = source:getVehicleType()
-					if (vehicleType == VehicleType.Plane or vehicleType == VehicleType.Helicopter) and not player:hasPilotsLicense() and not player:getPublicSync("inDrivingLession") == true then
-						source:setEngineState(false)
-					elseif vehicleType == Vehicle.Automobile and not player:hasDrivingLicense() then
-						player:sendShortMessage(_("Du hast keinen Führerschein! Lass dich nicht erwischen!", player))
-					end
-				end
-				
 				if player:getPublicSync("cuffed") then
 					cancelEvent()
 				end

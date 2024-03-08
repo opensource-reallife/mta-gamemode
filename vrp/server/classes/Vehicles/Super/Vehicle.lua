@@ -164,8 +164,15 @@ function Vehicle:onPlayerEnter(player, seat)
 	end
 
 	if seat == 0 then
-		if not player:hasCorrectLicense(source) then
-			player:sendShortMessage(_("Achtung: Du hast keinen Führerschein für dieses Fahrzeug!", player))
+		if not player:getPublicSync("inDrivingLession") then
+			if not player:hasCorrectLicense(source) then
+				player:sendShortMessage(_("Achtung: Du hast keinen Führerschein für dieses Fahrzeug!", player))
+
+				local vehicleType = self:getVehicleType()
+				if (vehicleType == VehicleType.Plane or vehicleType == VehicleType.Helicopter) and not player:hasPilotsLicense() then
+					self:setEngineState(false)
+				end
+			end
 		end
 
 		if VEHICLE_SPECIAL_SMOKE[self:getModel()] then
