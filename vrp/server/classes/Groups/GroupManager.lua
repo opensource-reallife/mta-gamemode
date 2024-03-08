@@ -529,8 +529,8 @@ function GroupManager:Event_ChangeName(name)
 		return
 	end
 
-	if client:getMoney() < GROUP_RENAME_COSTS then
-		client:sendError(_("Du hast nicht genügend Geld!", client))
+	if group:getMoney() < GROUP_RENAME_COSTS then
+		client:sendError(_("Deine Firma/Gang hat nicht genügend Geld!", client))
 		return
 	end
 
@@ -554,13 +554,15 @@ function GroupManager:Event_ChangeName(name)
 		return
 	end
 
-	if (getRealTime().timestamp - group.m_LastNameChange) < GROUP_RENAME_TIMEOUT then
-		client:sendError(_("Du kannst deine %s nur alle %d Tage umbennen!", client, group:getType(), GROUP_RENAME_TIMEOUT/24/60/60))
-		return
+	if DEBUG == false then
+		if (getRealTime().timestamp - group.m_LastNameChange) < GROUP_RENAME_TIMEOUT then
+			client:sendError(_("Du kannst deine %s nur alle %d Tage umbennen!", client, group:getType(), GROUP_RENAME_TIMEOUT/24/60/60))
+			return
+		end
 	end
 
 	if group:setName(name) then
-		client:transferMoney(self.m_BankAccountServer, GROUP_RENAME_COSTS, "Firmen/Gang Änderung", "Group", "Rename")
+		group:transferMoney(self.m_BankAccountServer, GROUP_RENAME_COSTS, "Firmen/Gang Änderung", "Group", "Rename")
 		client:sendSuccess(_("Deine %s heißt nun\n%s!", client, group:getType(), group:getName()))
 		group:addLog(client, "Gang/Firma", "hat die "..group:getType().." in "..group:getName().." umbenannt!")
 
