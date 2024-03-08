@@ -4214,7 +4214,7 @@ msgid "Der Spieler \\"
 msgstr "The player \\"
 
 msgid "Herzlich Willkommen bei eXo Public Transport!\nIn dieser App sehen Sie alle aktiven Taxis und unseren aktuellen Busfahrplan. Möch-\nten Sie unseren Limousinen-\nservice in Anspruch nehmen oder uns für Events mieten? Zögern Sie nicht und rufen Sie uns an - Ihr Weg ist unser Ziel!"
-msgstr "Welcome to the eXo Public Transport!\nIn this app you can see all active taxi drivers and our current bus schedule. \nWould you like to use our limousine-\nservice or rent us for events? Do not hesitate and call us - your way is our goal!"
+msgstr "Welcome to the eXo Public Transport App! In this app you can see all active taxi drivers and our current bus schedule. Would you like to use our limousine service or rent us for events? Then do not hesitate and call us - your way is our goal!"
 
 msgid "Taxi"
 msgstr "Taxi"
@@ -5630,3 +5630,24 @@ msgstr "Function"
 
 msgid "Text"
 msgstr "Message"
+
+msgid "Skin bei Anruf anzeigen"
+msgstr "Show skin on call"
+
+msgid "Eigenen Klingelton benutzen"
+msgstr "Use custom ringtone"
+
+msgid "Eigenen Hintergrund benutzen"
+msgstr "Use custom background"
+
+msgid "Eigenes Modell benutzen"
+msgstr "Use custom model"
+
+msgid "Kontakte"
+msgstr "Contacts"
+
+msgid "Ausschalten"
+msgstr "Power off"
+
+msgid "EPT anrufen!"
+msgstr "Call EPT"

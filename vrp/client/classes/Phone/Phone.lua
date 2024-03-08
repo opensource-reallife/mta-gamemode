@@ -22,7 +22,7 @@ function Phone:constructor()
 	self:registerApp(AppCall)
 	self:registerApp(AppSettings)
 	self:registerApp(AppContacts)
-	self:registerApp(PhoneApp.makeWebApp("Nachrichten",  "IconMessage.png", (INGAME_WEB_PATH .. "/ingame/vRPphone/apps/messages/index.php?player=%s&sessionID=%s"):format(localPlayer:getName(), localPlayer:getSessionId()), false, self))
+	self:registerApp(PhoneApp.makeWebApp(_"Nachrichten",  "IconMessage.png", (INGAME_WEB_PATH .. "/ingame/vRPphone/apps/messages/index.php?player=%s&sessionID=%s"):format(localPlayer:getName(), localPlayer:getSessionId()), false, self))
 	self.m_AppDashboard = self:registerApp(AppDashboard)
 	self:registerApp(PhoneApp.makeWebApp("YouTube", "IconYouTube.png", "https://youtube.com/", false))
 	self:registerApp(AppOnOff)
@@ -37,8 +37,16 @@ function Phone:constructor()
 	--self:registerApp(AppNametag)
 
 	-- Add GUI elements
-	self.m_PhoneImage = GUIImage:new(0, 0, self.m_Width, self.m_Height, ("files/images/Phone/%s"):format(PHONE_MODELS[self.m_Phone].Image), self)
-	self.m_BackgroundImage = GUIImage:new(17, 71, 260, 460, ("files/images/Phone/Backgrounds/%s.png"):format(self.m_Background), self)
+	if fileExists(CUSTOM_PHONE_MODEL_PATH) then
+		self.m_PhoneImage = GUIImage:new(0, 0, self.m_Width, self.m_Height, CUSTOM_PHONE_MODEL_PATH, self)
+	else
+		self.m_PhoneImage = GUIImage:new(0, 0, self.m_Width, self.m_Height, ("files/images/Phone/%s"):format(PHONE_MODELS[self.m_Phone].Image), self)
+	end
+	if fileExists(CUSTOM_PHONE_BACKGROUND_PATH) then
+		self.m_BackgroundImage = GUIImage:new(17, 71, 260, 460, CUSTOM_PHONE_BACKGROUND_PATH, self)
+	else
+		self.m_BackgroundImage = GUIImage:new(17, 71, 260, 460, ("files/images/Phone/Backgrounds/%s.png"):format(self.m_Background), self)
+	end
 
 	-- Create app icons
 	self.m_IconSurface = GUIElement:new(0, 0, 260, 460, self.m_BackgroundImage)
@@ -106,18 +114,30 @@ end
 function Phone:refreshAppIcons()
 	local iconPath = self:getAppPath()
 	for k, app in ipairs(self.m_Apps) do
-		self.m_AppIcons[k]:setImage(iconPath..app:getIcon())
+		if fileExists(CUSTOM_PHONE_APP_PATH..app:getIcon()) then
+			self.m_AppIcons[k]:setImage(CUSTOM_PHONE_APP_PATH..app:getIcon())
+		else
+			self.m_AppIcons[k]:setImage(iconPath..app:getIcon())
+		end
 	end
 end
 
 function Phone:setPhone(modelId)
-	self.m_PhoneImage:setImage(("files/images/Phone/%s"):format(PHONE_MODELS[modelId].Image))
+	if fileExists(CUSTOM_PHONE_MODEL_PATH) then
+		self.m_PhoneImage:setImage(CUSTOM_PHONE_MODEL_PATH)
+	else
+		self.m_PhoneImage:setImage(("files/images/Phone/%s"):format(PHONE_MODELS[modelId].Image))
+	end
 	self.m_Phone = modelId
 	self:refreshAppIcons()
 end
 
 function Phone:setBackground(background)
-	self.m_BackgroundImage:setImage(("files/images/Phone/Backgrounds/%s.png"):format(background))
+	if fileExists(CUSTOM_PHONE_BACKGROUND_PATH) then
+		self.m_BackgroundImage:setImage(CUSTOM_PHONE_BACKGROUND_PATH)
+	else
+		self.m_BackgroundImage:setImage(("files/images/Phone/Backgrounds/%s.png"):format(background))
+	end
 end
 
 function Phone:registerApp(appClasst)

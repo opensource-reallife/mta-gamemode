@@ -223,6 +223,9 @@ CUSTOM_FACTION_RINGSOUND_PATH = "files/audio/Ringtones/customFaction.mp3"
 CUSTOM_COMPANY_RINGSOUND_PATH = "files/audio/Ringtones/customCompany.mp3"
 CUSTOM_GROUP_RINGSOUND_PATH = "files/audio/Ringtones/customGroup.mp3"
 CUSTOM_TUNINGSOUND_PATH = "files/audio/vehicles/VehicleTuning.mp3"
+CUSTOM_PHONE_APP_PATH = "files/images/Phone/Apps_Custom/"
+CUSTOM_PHONE_BACKGROUND_PATH = "files/images/Phone/Backgrounds/custom.png"
+CUSTOM_PHONE_MODEL_PATH = "files/images/Phone/custom.png"
 
 PHONE_MODELS = {
 	{Name = "Nexus 5", Image = "Nexus_5.png", IconPreset = "Android"},

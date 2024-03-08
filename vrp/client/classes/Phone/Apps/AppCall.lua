@@ -13,7 +13,7 @@ local CALL_RESULT_ANSWER = 2
 CALL_RESULT_CALLING = 3 -- used in AppContacts
 
 function AppCall:constructor()
-	PhoneApp.constructor(self, "Telefon", "IconCall.png")
+	PhoneApp.constructor(self, _"Telefon", "IconCall.png")
 
 	self.m_PewPew = true
 
@@ -328,9 +328,8 @@ function AppCall:playRingSound(state, singleRing, type)
 	if state and not self.m_RingSound then
 		local ringsound = core:getConfig():get("Phone", "Ringtone", "files/audio/Ringtones/Klingelton1.mp3")
 		if type == "player" then
-			if ringsound == CUSTOM_RINGSOUND_PATH and not fileExists(CUSTOM_RINGSOUND_PATH) then
-				ringsound = "files/audio/Ringtones/Klingelton1.mp3"
-				core:getConfig():set("Phone", "Ringtone", ringsound)
+			if fileExists(CUSTOM_RINGSOUND_PATH) then
+				ringsound = CUSTOM_RINGSOUND_PATH
 			end
 		elseif type == "faction" then
 			if fileExists(CUSTOM_FACTION_RINGSOUND_PATH) then

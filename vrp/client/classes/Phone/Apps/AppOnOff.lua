@@ -8,7 +8,7 @@
 AppOnOff = inherit(PhoneApp)
 
 function AppOnOff:constructor()
-	PhoneApp.constructor(self, "Ausschalten", "IconOff.png")
+	PhoneApp.constructor(self, _"Ausschalten", "IconOff.png")
 end
 
 function AppOnOff:onOpen(form)
