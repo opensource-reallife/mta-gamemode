@@ -178,6 +178,7 @@ SHADERS = {
 	["Water"] = {["event"] = "switchWaterShader" },
 	["Bloom"] = {["event"] = "switchBloom" },
 	["DoF"] = {["event"] = "switchDoF"},
+	["Sun"] = {["event"] = "switchSunShader"},
 }
 
 GUNBOX_CRATES = {
