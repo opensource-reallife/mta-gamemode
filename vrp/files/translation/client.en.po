@@ -2767,6 +2767,9 @@ msgstr "Destination"
 msgid "Log löschen"
 msgstr "Delete log"
 
+msgid "Aktivieren"
+msgstr "Enable"
+
 msgid "Deaktivieren"
 msgstr "Disable"
 
@@ -3388,8 +3391,8 @@ msgstr "Active"
 msgid "Shader"
 msgstr "Shader"
 
-msgid "Hier kannst du Shader aktivieren oder deaktivieren. Zu viele aktivierte Shader können sich möglicherweise auf die Performance auswirken. Probiere einfach ein wenig herum um die ideale Einstellung für dich zu finden."
-msgstr "Here you can enable or disable shaders. Too many activated shaders can possibly affect performance. Just try a little around to find the ideal setting for you."
+msgid "Hier kannst du Shader aktivieren oder deaktivieren. Zu viele aktivierte Shader können sich möglicherweise auf die Leistung auswirken, und nicht alle Shader sind miteinander kompatibel. Probiere einfach ein wenig herum, um die ideale Einstellung für dich zu finden."
+msgstr "Here you can enable or disable shaders. Having too many shaders activated may potentially affect performance, and not all shaders are compatible with each other. Feel free to experiment to find the ideal setting for you."
 
 msgid "Log von letzten Shortmessages (Doppelklick zum kopieren)"
 msgstr "Log of last short messages (double click to copy)"
