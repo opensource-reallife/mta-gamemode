@@ -170,7 +170,7 @@ SkinShops = {
 }
 
 SHADERS = {
-	["SkyBox"] = {["event"] = "switchSkyBox" },
+	["DynamicSky"] = {["event"] = "switchDynamicSky" },
 	["Detail"] = {["event"] = "switchDetail" },
 	["Contrast"] = {["event"] = "switchContrast" },
 	["CarPaint"] = {["event"] = "switchCarPaint" },

@@ -3623,7 +3623,7 @@
 	<include resource="Contrast" />
 	<include resource="Detail" />
 	<include resource="RoadShine" />
-	<include resource="SkyBox" />
+	<include resource="DynamicSky" />
 	<include resource="DoF" />
 	<include resource="CarPaint" />
 	<include resource="Water" />
