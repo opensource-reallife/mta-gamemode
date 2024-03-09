@@ -179,6 +179,7 @@ SHADERS = {
 	["Bloom"] = {["event"] = "switchBloom" },
 	["DoF"] = {["event"] = "switchDoF"},
 	["Sun"] = {["event"] = "switchSunShader"},
+	["Palette"] = {["event"] = "switchPalette"},
 }
 
 GUNBOX_CRATES = {

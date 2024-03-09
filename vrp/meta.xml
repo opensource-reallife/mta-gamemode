@@ -3630,6 +3630,7 @@
 	<include resource="SnowFlakes" />
 	<include resource="SnowGround" />
 	<include resource="Sun" />
+	<include resource="Palette" />
 
 	<include resource="Weapon_Attach" />
 	<include resource="superman" />
