@@ -3626,7 +3626,7 @@
 	<include resource="DynamicSky" />
 	<include resource="DoF" />
 	<include resource="CarPaint" />
-	<include resource="Water" />
+	<include resource="WaterShine" />
 	<include resource="SnowFlakes" />
 	<include resource="SnowGround" />
 	<include resource="Sun" />
