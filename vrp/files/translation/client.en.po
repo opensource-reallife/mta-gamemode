@@ -4423,11 +4423,6 @@ msgstr "This is where the drug truck takes off!"
 msgid "Illegaler Weed-Transport"
 msgstr "Illegal weed transport"
 
-msgid "Als Boxer musst du gegen andere Boxer antreten und diese im Kampf besiegen."
-"Gewinnst du den Kampf, gewinnst du ein Preisgeld."
-"Verlierst du jedoch, gehst du leer aus."
-msgstr "As a boxer you have to compete against other boxers and defeat them in a fight.\nIf you win the fight, you win a prize money.\nHowever, if you lose, you go away empty-handed."
-
 msgid "Rang 0"
 msgstr "Rank 0"
 
@@ -5654,3 +5649,9 @@ msgstr "Power off"
 
 msgid "EPT anrufen!"
 msgstr "Call EPT"
+
+msgid "Doppelklicke um die Position auf der Karte zu markieren!"
+msgstr "Double click to mark the position on your map!"
+
+msgid "Klicke, um die Navigation zum Job zu starten.\n(Beachte, dass du nicht in einem Interior sein darfst!)"
+msgstr "Click to start navigation to the job.\n(Please note that you can't be inside an interior!)"

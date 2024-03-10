@@ -22,7 +22,7 @@ function JobManager:constructor()
 		JobForkLift:new();
 		JobTreasureSeeker:new();
 		JobGravel:new();
-		--JobBoxer:new();
+		JobBoxer:new();
 	}
 	for k, v in ipairs(self.m_Jobs) do
 		v:setId(k)

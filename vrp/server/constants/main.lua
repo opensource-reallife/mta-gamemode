@@ -172,11 +172,11 @@ RESOURCES_TO_STOP = {
 }
 
 JobBoxerMoney = {
-    70,
-    170,
-    310,
-    435,
-    675
+    15,
+    30,
+	60,
+	90,
+	120
 }
 
 DRUG_NPC_SPAWNPOINTS = {

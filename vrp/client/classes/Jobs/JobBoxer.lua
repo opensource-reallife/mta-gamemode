@@ -46,7 +46,9 @@ function JobBoxer:startFight(type, dimension)
     self.m_Boxer = Ped(math.random(80, 81), Vector3(763.25, 11.18, 1001.16), 90)
     self.m_Boxer:setInterior(5)
     self.m_Boxer:setDimension(dimension)
+    self.m_Boxer:setStat(24, 1000)
     self.m_Boxer:setHealth(JobBoxerFights[type][2])
+    self.m_Boxer:setArmor(math.max(0, JobBoxerFights[type][2] - 200))
     self.m_Boxer.m_isClientSided = true
     self.m_BoxLevel = type
 
