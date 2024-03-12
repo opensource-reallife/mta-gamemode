@@ -9,7 +9,7 @@ function MoneyBeggar:giveBeggarMoney(player, money)
 		if self.m_Robber == player:getId() then return self:sendMessage(player, BeggarPhraseTypes.NoTrust) end
 		if player:getMoney() >= money then
 			-- give wage
-			player:giveCombinedReward("Bettler-Geschenk", {
+			player:giveCombinedReward(_("Bettler-Geschenk", player), {
 				money = {
 					mode = "take",
 					bank = false,

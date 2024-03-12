@@ -5655,3 +5655,30 @@ msgstr "Double click to mark the position on your map!"
 
 msgid "Klicke, um die Navigation zum Job zu starten.\n(Beachte, dass du nicht in einem Interior sein darfst!)"
 msgstr "Click to start navigation to the job.\n(Please note that you can't be inside an interior!)"
+
+msgid "%s (Obdachloser)"
+msgstr "%s (Beggar)"
+
+msgid "Geld geben"
+msgstr "Give money"
+
+msgid "Burger geben"
+msgstr "Give burger"
+
+msgid "5g Heroin kaufen"
+msgstr "Buy 5g Heroin"
+
+msgid "Weed verkaufen"
+msgstr "Sell weed"
+
+msgid "Wieviel Weed möchtest du verkaufen?"
+msgstr "How much weed do you want to sell?"
+
+msgid "Mehr als 200g Weed kann ich mir nicht leisten!"
+msgstr "I can't afford more than 200g weed!"
+
+msgid "Obdachlosen transportieren"
+msgstr "Transport beggar"
+
+msgid "Ausrauben"
+msgstr "Rob"

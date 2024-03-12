@@ -63,13 +63,13 @@ function Account.login(player, username, password, pwhash, enableAutologin)
 	if not FORUM_LOGIN then
 		local row = sql:queryFetchSingle("SELECT Id, ForumId, Name, Password, Salt, RegisterDate, TeamspeakId, AutologinToken FROM ??_account WHERE LCASE(Name) = ?", sql:getPrefix(), username)
 		if not row then
-			player:triggerEvent("loginfailed", "Dieser Account existiert nicht")
+			player:triggerEvent("loginfailed", _("Dieser Account existiert nicht", player))
 			return
 		end
 
 		local passwordHash = sha256(row.Salt..password)
 		if passwordHash ~= row.Password then
-			player:triggerEvent("loginfailed", "Falsches Passwort")
+			player:triggerEvent("loginfailed", _("Falsches Passwort", player))
 			return
 		end
 

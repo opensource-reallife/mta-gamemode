@@ -4496,3 +4496,30 @@ msgstr "Can you please drop me off at %s?"
 
 msgid "Und auf geht's nach %s!"
 msgstr "And off we go to %s!"
+
+msgid "öffnet die Tür und betritt das Haus!"
+msgstr "opens the door and enters the house!"
+
+msgid "öffnet die Tür und verlässt das Haus!"
+msgstr "opens the door and leaves the house!"
+
+msgid "erhält von %s eine Tüte!"
+msgstr "receives a bag from %s!"
+
+msgid "Bettler-Handel"
+msgstr "Beggar trade"
+
+msgid "Dieser Account existiert nicht"
+msgstr "This account doesn't exist"
+
+msgid "Falsches Passwort"
+msgstr "Wrong password"
+
+msgid "Bettler-Geschenk"
+msgstr "Beggar gift"
+
+msgid "übergibt %s einen Schein"
+msgstr "gives %s a dollar"
+
+msgid "übergibt %s ein paar Scheine"
+msgstr "gives %s a few dollars"

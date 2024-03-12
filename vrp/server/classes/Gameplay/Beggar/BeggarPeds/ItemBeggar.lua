@@ -9,7 +9,7 @@ function ItemBeggar:giveItem(player, item)
 		if self.m_Robber == player:getId() then return self:sendMessage(player, BeggarPhraseTypes.NoTrust) end
 		if player:getInventory():getItemAmount(item) >= 1 then
 			player:getInventory():removeItem(item, 1)
-			player:giveCombinedReward("Bettler-Handel", {
+			player:giveCombinedReward(_("Bettler-Handel", player), {
 				points = 5,
 			})
 			self:sendMessage(player, BeggarPhraseTypes.Thanks)
@@ -36,7 +36,7 @@ function ItemBeggar:buyItem(player, item)
 		if player:getInventory():getFreePlacesForItem(item) >= BeggarItemBuy[item]["amount"] then
 			local price = BeggarItemBuy[item]["amount"] * BeggarItemBuy[item]["pricePerAmount"]
 			if player:getMoney() >= price then
-				player:giveCombinedReward("Bettler-Handel", {
+				player:giveCombinedReward(_("Bettler-Handel", player), {
 					money = {
 						mode = "take",
 						bank = false,
