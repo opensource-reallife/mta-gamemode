@@ -848,6 +848,7 @@
     <script src="client/classes/GUIForms/ButtonMenu/ShopManageGUI.lua" type="client" />
     <script src="client/classes/GUIForms/ButtonMenu/SkyscraperGUI.lua" type="client" />
     <script src="client/classes/GUIForms/ButtonMenu/TattooSelectionGUI.lua" type="client" />
+	<script src="client/classes/GUIForms/ButtonMenu/TownhallGUI.lua" type="client" />
 
     <script src="client/classes/GUIForms/Cinema/CinemaCreateLobbyGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Cinema/CinemaLobbyGUI.lua" type="client" />

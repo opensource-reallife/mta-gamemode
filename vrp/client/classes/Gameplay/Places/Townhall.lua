@@ -169,6 +169,16 @@ function Townhall:constructor()
 	president:setData("NPC:Immortal", true)
 	president:setFrozen(true)
 	president:setInterior(5)
+
+	--[[ Townhall ped
+	local townhallPed = Ped.create(9, Vector3(2764.50, -2421.02, 816.10))
+	townhallPed:setRotation(Vector3(0, 0, 45))
+	townhallPed:setInterior(5)
+	townhallPed.Name = _"Stadthalle"
+	townhallPed.Description = _"Für mehr Infos klicke mich an!"
+	townhallPed.Type = 3
+	townhallPed.Func = function() TownhallGUI:new(townhallPed) end
+	self.m_Peds[#self.m_Peds + 1] = townhallPed ]]
 	
 	-- Initialize
 	self:initalizePeds()
