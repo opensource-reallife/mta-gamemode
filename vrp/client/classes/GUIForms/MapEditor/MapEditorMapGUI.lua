@@ -19,8 +19,9 @@ function MapEditorMapGUI:constructor()
 	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Map Editor: Map Verwaltung", true, true, self)
 	
 	self.m_FilterLabel = GUIGridLabel:new(1, 1, 3, 1, _"Filter:", self.m_Window)
-	self.m_FilterChanger = GUIGridChanger:new(4, 1, 7, 1, self.m_Window)
-	self.m_FilterChanger.onChange = bind(self.onFilterChangerChange, self)
+	self.m_FilterCombobox = GUIGridCombobox:new(4, 1, 7, 1, "Kategorie auswählen", self.m_Window)
+	self.m_FilterCombobox.onLeftClick = function() self.m_GridList:setVisible(not self.m_GridList:isVisible()) end
+    self.m_FilterCombobox.onSelectItem = bind(self.onFilterComboboxSelectItem, self)
 
 	self.m_GridList = GUIGridGridList:new(1, 2, 10, 10, self.m_Window)
 	self.m_GridList:addColumn("ID", 0.1)
@@ -192,12 +193,13 @@ function MapEditorMapGUI:receiveInfos(mapTable, categories)
 
 	end
 
-	self.m_FilterChanger:clear()
-	self.m_FilterChanger.m_Items[1] = "Alle"
-	self.m_FilterChanger.m_Items[2] = "Ohne Kategorie"
+	self.m_FilterCombobox:clear()
+	self.m_FilterCombobox:addItem("Alle")
+	self.m_FilterCombobox:addItem("Ohne Kategorie")
 	for i, v in pairs(MapEditor:getSingleton():getAllCategories()) do
-		self.m_FilterChanger:addItem(v)
+		self.m_FilterCombobox:addItem(v)
 	end
+	self.m_FilterCombobox:setSelectedItem(1)
 end
 
 function MapEditorMapGUI:receiveObjectInfos(objectTable, removalsTable)
@@ -256,7 +258,9 @@ function MapEditorMapGUI:startMapEditing(player)
 	triggerServerEvent("MapEditor:startMapEditing", localPlayer, player, id)
 end
 
-function MapEditorMapGUI:onFilterChangerChange(text, index)
+function MapEditorMapGUI:onFilterComboboxSelectItem(item)
+	local index = table.find(self.m_FilterCombobox.m_List:getItems(), item)
+	self.m_GridList:setVisible(true)
 	self.m_GridList:clear()
 	for key, infoTable in pairs(self.m_MapInfos) do
 		if index == 1 or (index == 2 and infoTable[6] == 0) or infoTable[6] == index - 2 then
