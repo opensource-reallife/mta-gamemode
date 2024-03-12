@@ -4319,3 +4319,180 @@ msgstr "You don't know how to fly a helicopter!"
 
 msgid "Du weißt nicht wie man ein Flugzeug fliegt!"
 msgstr "You don't know how to fly an airplane!"
+
+msgid "#03cafc** [FMS] #b3eaff%s %s meldet Status %s #03cafc**"
+msgstr "#03cafc** [Radio] #b3eaff%s %s reports status %s #03cafc**"
+
+msgid "%s %s meldet Status %s"
+msgstr "%s %s reports status %s"
+
+msgid "Du meldest Status %s"
+msgstr "You reported status %s"
+
+msgid "Ey du! Haste mal nen Euro?"
+msgstr "Hey you! Got a dollar?"
+
+msgid "Eine kleine Spende für den Abschaum der Gesellschaft?"
+msgstr "A small donation for the scum of society?"
+
+msgid "Ich brauche dringend Geld für ein Monatsticket beim EPT!"
+msgstr "I urgently need money for a monthly ticket for the EPT!"
+
+msgid "I.. Ic.. Ich hab so Hunger... Hast du einen Burger?"
+msgstr "I.. I.. I'm so hungry... Do you have a burger?"
+
+msgid "Ich sterbe fast vor Hunger - du hast nicht zufällig einen Burger für mich?"
+msgstr "I'm almost dying of hunger - do you happen to have a burger for me?"
+
+msgid "Du da! Ich hab kein Geld für ein Taxi! Kannst du mich fahren?"
+msgstr "Hey you! I don't have money for a taxi! Can you give me a ride?"
+
+msgid "Hilfe, ich hab mich verlaufen! Nimmst du mich mit?"
+msgstr "Help, I'm lost! Can you take me with you?"
+
+msgid "Hast du Weed? Ich zahle einen guten Preis!"
+msgstr "Do you have weed? I'll pay a good price!"
+
+msgid "Ich brauch GRAS! SOFORT!!!"
+msgstr "I need WEED! NOW!!!"
+
+msgid "Du siehst mir aus wie ein Drogenkurier, hast du auch was für mich?"
+msgstr "You look like a drug courier, do you have something for me too?"
+
+msgid "Hey! Bock auf nen Heroin Trip?"
+msgstr "Hey! Up for a heroin trip?"
+
+msgid "Pssst, du da! Habe das beste Heroin der Stadt!"
+msgstr "Pssst, you there! I've got the best heroin in town!"
+
+msgid "Vielen Dank. Jetzt kann ich mir wieder Bier kaufen!"
+msgstr "Thank you very much. Now I can buy beer again!"
+
+msgid "Danke dir! Und mach nicht die gleichen Fehler wie ich!"
+msgstr "Thank you! And don't make the same mistakes I did!"
+
+msgid "Da wird sich gleich eine ganz bestimmte Stripperin freuen - danke!"
+msgstr "A certain stripper will be very happy soon - thanks!"
+
+msgid "Danke Meister, meine Ratte wäre fast verhungert."
+msgstr "Thank you, my rat was almost starving."
+
+msgid "Danke... ich bin zwar Vegetarier, aber das Fleisch kann ich ja wegwerfen.."
+msgstr "Thank you... I'm a vegetarian, but I guess I can throw away the meat..."
+
+msgid "Danke dir, der Abfall vom Cluckin' Bell schmeckt einfach nicht"
+msgstr "Thank you, the waste from Cluckin' Bell just doesn't taste good."
+
+msgid "Grazie! Iste viele beeesser als der Miiist von Pizza Stack!"
+msgstr "Thank you! This is much better than the crap from Pizza Stack!"
+
+msgid "Vielen Dank, genau da musste ich hin!"
+msgstr "Thank you very much, that's exactly where I needed to go!"
+
+msgid "Danke Kollege, San Andreas braucht mehr von deiner Sorte!"
+msgstr "Thank you, colleague, San Andreas needs more people like you!"
+
+msgid "Hier ist doch ein viel besserer Platz zum Betteln."
+msgstr "This is a much better place for begging."
+
+msgid "Schön, mit dir Geschäfte zu machen."
+msgstr "Nice doing business with you."
+
+msgid "Danke, ich brauche das Zeug echt dringend!"
+msgstr "Thank you, I really need that stuff urgently!"
+
+msgid "Das wird ein tolles Geburtstagsgeschenk!"
+msgstr "This will be a great birthday present!"
+
+msgid "Nimm nicht zu viel davon!"
+msgstr "Don't take too much of it!"
+
+msgid "Ich bin nicht schuld, wenn du im Krankenhaus aufwachst!"
+msgstr "I'm not responsible if you wake up in the hospital!"
+
+msgid "You mofugga!"
+msgstr "You mofugga!"
+
+msgid "Dann halt nicht."
+msgstr "Then don't."
+
+msgid "Ja lauf ruhig weg!"
+msgstr "Yeah, go ahead, run away!"
+
+msgid "Einen schönen Tag noch."
+msgstr "Have a nice day."
+
+msgid "Man sieht sich immer zwei Mal im Leben!"
+msgstr "You always meet twice in life!"
+
+msgid "Heute nicht so sozial drauf?"
+msgstr "Not feeling social today?"
+
+msgid "Ach komm schon!"
+msgstr "Oh come on!"
+
+msgid "Mach doch nicht diesen!"
+msgstr "Don't do this!"
+
+msgid "Du kannst mich doch hier nicht zurücklassen!"
+msgstr "You can't leave me here!"
+
+msgid "Komm wieder zurück!"
+msgstr "Come back again!"
+
+msgid "Ich habe eh schon nichts. Und da willst du mir noch mehr nehmen?"
+msgstr "I already have nothing. And you want to take even more from me?"
+
+msgid "Das ist doch nun wirklich das allerletzte!"
+msgstr "That's really the last straw!"
+
+msgid "Womit hab ich das nur verdient?"
+msgstr "What did I do to deserve this?"
+
+msgid "Wenn du wüsstest wo die Scheine schon überall waren..."
+msgstr "If you knew where those bills have been already..."
+
+msgid "Und dann nennen die Leute MICH den 'Abschaum der Gesellschaft'! Pff..."
+msgstr "And then people call ME the 'scum of society'! Pff..."
+
+msgid "Ne, da will ich nicht mit!"
+msgstr "Nah, I'm not gonna ride in that!"
+
+msgid "Das kostet bestimmt Geld. Zieh ab!"
+msgstr "That's probably gonna cost money. Get lost!"
+
+msgid "In DAS Vehikel? Abgelehnt."
+msgstr "In THAT vehicle? Declined."
+
+msgid "Ich habs mir anders überlegt."
+msgstr "I've changed my mind."
+
+msgid "Sorry, I have a boyfriend!"
+msgstr "Sorry, I have a boyfriend!"
+
+msgid "Du wirst doch wohl noch Zeit zum Aussteigen haben!"
+msgstr "You surely still have time to get off!"
+
+msgid "Mit dir will ich nichts mehr zu tun haben!"
+msgstr "I want nothing more to do with you!"
+
+msgid "Zieh Leine!"
+msgstr "Hit the road!"
+
+msgid "Nö, dich mag ich nicht mehr."
+msgstr "No, I don't like you anymore."
+
+msgid "Erst klauen und dann Geschäfte machen? Nein danke!"
+msgstr "Stealing first and then doing business? No thanks!"
+
+msgid "Mit Terroristen verhandle ich nicht!"
+msgstr "I don't negotiate with terrorists!"
+
+msgid "Ich möchte nach %s."
+msgstr "I'd like to go to %s."
+
+msgid "Kannst du mich bitte bei %s rauslassen?"
+msgstr "Can you please drop me off at %s?"
+
+msgid "Und auf geht's nach %s!"
+msgstr "And off we go to %s!"

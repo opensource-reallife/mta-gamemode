@@ -111,7 +111,7 @@ function BeggarPed:rob(player)
 end
 
 function BeggarPed:sendMessage(player, type, arg)
-    player:sendMessage(_("#FE8A00%s: #FFFFFF%s", player, self.m_Name, BeggarPedManager:getSingleton():getPhrase(self.m_Type, type, arg)))
+    player:sendMessage(("#FE8A00%s: #FFFFFF%s"):format(self.m_Name, _(BeggarPedManager:getSingleton():getPhrase(self.m_Type, type, arg), player)))
 end
 
 function BeggarPed:Event_onPedWasted(totalAmmo, killer, killerWeapon, bodypart, stealth)
