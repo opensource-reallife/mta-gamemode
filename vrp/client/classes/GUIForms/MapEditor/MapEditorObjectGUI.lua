@@ -187,12 +187,12 @@ end
 
 function MapEditorObjectGUI:saveObject()
     if isElement(self.m_Object) then
-        local model = getElementModel(self.m_Object)
-        local interior = getElementInterior(self.m_Object)
-        local dimension = getElementDimension(self.m_Object)
-        local position = self.m_Object:getPosition()
-        local rotation = self.m_Object:getRotation()
-        local sx, sy, sz = self.m_Object:getScale()
+        local model = tonumber(self.m_ModelLabel:getText()) or 0
+        local interior = tonumber(self.m_InteriorEdit:getText()) or 0
+        local dimension = tonumber(self.m_DimensionEdit:getText()) or 0
+        local position = Vector3(tonumber(self.m_PosXEdit:getText()) or 0, tonumber(self.m_PosYEdit:getText()) or 0, tonumber(self.m_PosZEdit:getText()) or 0)
+        local rotation = Vector3(tonumber(self.m_RotXEdit:getText()) or 0, tonumber(self.m_RotYEdit:getText()) or 0, tonumber(self.m_RotZEdit:getText()) or 0)
+        local sx, sy, sz = Vector3(tonumber(self.m_ScaleXEdit:getText()) or 0, tonumber(self.m_ScaleYEdit:getText()) or 0, tonumber(self.m_ScaleZEdit:getText()) or 0)
         local breakable = self.m_BreakableCheckbox:isChecked()
         local collision = self.m_CollisionCheckbox:isChecked()
         local doublesided = self.m_DoubleSidedCheckbox:isChecked()
