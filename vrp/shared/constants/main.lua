@@ -690,9 +690,9 @@ AD_BREAK_TIME = 30 -- In Seconds
 AD_MIN_PLAYTIME = 10 -- In Hours
 
 AD_DURATIONS = {
-	["20 Sek."] = 20,
-	["30 Sek."] = 30,
-	["45 Sek."] = 45
+	["20s"] = 20,
+	["30s"] = 30,
+	["45s"] = 45
 }
 
 BODYPART_NAMES = {

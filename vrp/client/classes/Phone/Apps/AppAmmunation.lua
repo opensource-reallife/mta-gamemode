@@ -18,13 +18,13 @@ function AppAmmunation:onOpen(form)
 
 	self.m_TabPanel = GUIPhoneTabPanel:new(0, 0, form.m_Width, form.m_Height, form)
 	self.m_Tabs = {}
-	self.m_Tabs["Info"] = self.m_TabPanel:addTab(_"Information", FontAwesomeSymbols.Info)
+	self.m_Tabs["Info"] = self.m_TabPanel:addTab("Information", FontAwesomeSymbols.Info)
 	GUILabel:new(10, 10, 200, 50, "Ammu-Nation", self.m_Tabs["Info"])
 	GUILabel:new(10, 65, form.m_Width-20, 22, _"Hier kannst du den Ammu-Nation Lieferservice nutzen. Wähle dazu einfach die gewünschten Produkte aus und klicke auf bestellen. Für die Lieferung wird ein Aufschlag von 50%% berechnet.", self.m_Tabs["Info"]):setMultiline(true)
 	self.m_Tabs["Order"] = self.m_TabPanel:addTab(_"Bestellen", FontAwesomeSymbols.CartPlus)
 	GUILabel:new(10, 10, 200, 50, _"Bestellen:", self.m_Tabs["Order"])
 	self.m_WeaponChanger = GUIChanger:new(10, 65, 240, 30, self.m_Tabs["Order"])
-	self.m_WeaponChanger:addItem("<< Produkt auswählen >>")
+	self.m_WeaponChanger:addItem(_"<< Produkt auswählen >>")
 	for id, key in pairs(AmmuNationInfo) do
 		if id > 0 then
 			self.m_WeaponChanger:addItem(WEAPON_NAMES[id])
@@ -50,7 +50,7 @@ function AppAmmunation:onOpen(form)
 	GUILabel:new(10, 310, 240, 30, _"Im Warenkorb:", self.m_Tabs["Order"])
 	self.m_SumLabel = GUILabel:new(10, 340, 240, 20, _"Gesamtsumme:", self.m_Tabs["Order"])
 	GUILabel:new(190, 310, 50, 50, FontAwesomeSymbols.Cart, self.m_Tabs["Order"]):setFont(FontAwesome(50))
-	self.m_OrderBtn = GUIButton:new(10, 365, 240, 30, "Waren bestellen", self.m_Tabs["Order"])
+	self.m_OrderBtn = GUIButton:new(10, 365, 240, 30, _"Waren bestellen", self.m_Tabs["Order"])
 	self.m_OrderBtn:setBackgroundColor(Color.Green)
 	self.m_OrderBtn.onLeftClick = bind(self.order,self)
 

@@ -376,9 +376,6 @@ msgstr "other details"
 msgid "Fehler"
 msgstr "Error"
 
-msgid "Information"
-msgstr "Information"
-
 msgid "Erfolgreich"
 msgstr "Successful"
 
@@ -4109,7 +4106,7 @@ msgid "Event-Team"
 msgstr "Event-Team"
 
 msgid "Kontoauszug"
-msgstr "Account statement"
+msgstr "Statement"
 
 msgid "Bitte gehe nach draußen, um die Automaten anzuzeigen."
 msgstr "Please go outside to display the ATMs."
@@ -4208,7 +4205,7 @@ msgid "Einladungen"
 msgstr "Invitations"
 
 msgid "Anfragen"
-msgstr "Enquiry"
+msgstr "Requests"
 
 msgid "Du hast eine Benachrichtigung erhalten!\n(Du kannst diese in der Dashboard App ansehen)"
 msgstr "You have received a notification!\n(You can view it in the Dashboard app)"
@@ -5682,3 +5679,99 @@ msgstr "Transport beggar"
 
 msgid "Ausrauben"
 msgstr "Rob"
+
+msgid "Verschiedene Anfragen wie Fraktions-, Unternehmens- und Gruppeneinladungen aber auch Spiele-Anfragen anderer User werden dir hier angezeigt.\n\nDu kannst diese hier akzeptieren oder ablehnen!"
+msgstr "Various requests such as faction, company, and group invitations as well as game requests from other users will be displayed here.\n\nYou can accept or decline them here!"
+
+msgid "Hier kannst du den Ammu-Nation Lieferservice nutzen. Wähle dazu einfach die gewünschten Produkte aus und klicke auf bestellen. Für die Lieferung wird ein Aufschlag von 50%% berechnet."
+msgstr "Here you can use the Ammu-Nation delivery service. Simply select the desired products and click on order. A surcharge of 50%% will be applied for delivery."
+
+msgid "Waren bestellen"
+msgstr "Order products"
+
+msgid "<< Produkt auswählen >>"
+msgstr "<< Select product >>"
+
+msgid "Schrottplatz"
+msgstr "Scrapyard"
+
+msgid "Billigklamotten"
+msgstr "Cheap clothing store"
+
+msgid "Kartbahn"
+msgstr "Go-kart track"
+
+msgid "Billigautohändler"
+msgstr "Cheap car dealership"
+
+msgid "Fraktionen"
+msgstr "Factions"
+
+msgid "Staat - SASF"
+msgstr "State - SASF"
+
+msgid "Staat - PD"
+msgstr "State - PD"
+
+msgid "Triaden"
+msgstr "Triads"
+
+msgid "Pizza-Lieferant"
+msgstr "Pizza Delivery"
+
+msgid "Heli-Transport"
+msgstr "Helicopter Transport"
+
+msgid "Müllwagen-Job"
+msgstr "Garbage Truck Job"
+
+msgid "Logistiker Blueberry"
+msgstr "Logistics Blueberry"
+
+msgid "Logistiker LS Hafen"
+msgstr "Logistics LS Harbor"
+
+msgid "Farmer"
+msgstr "Farmer"
+
+msgid "Straßenreinigung"
+msgstr "Street Cleaning"
+
+msgid "Schatzsucher"
+msgstr "Treasure Seeker"
+
+msgid "Gabelstapler"
+msgstr "Forklift Operator"
+
+msgid "Kiesgruben-Job"
+msgstr "Gravel Quarry Job"
+
+msgid "Holzfäller"
+msgstr "Lumberjack"
+
+msgid "Boxer"
+msgstr "Boxer"
+
+msgid "Doppelklick zum Route berechnen"
+msgstr "Double-click to start navigation"
+
+msgid "Aktuelle Tankpreise"
+msgstr "Current gas prices"
+
+msgid "Farbe:"
+msgstr "Color:"
+
+msgid "Werbe-Text:"
+msgstr "Text:"
+
+msgid "Dauer:"
+msgstr "Duration:"
+
+msgid "Tankstelle %s"
+msgstr "Gas station %s"
+
+msgid "Werbung von %s"
+msgstr "Advert from %s"
+
+msgid "Skribble ist ein Mehrspieler mal und rate Spiel. Während ein Spieler ein Wort malt, müssen andere das Wort erraten um Punkte zu bekommen. Der Spieler mit den meisten Punkte am Ende des Spiels gewinnt!"
+msgstr "Skribble is a multiplayer drawing and guessing game. While one player draws a word, others must guess the word to earn points. The player with the most points at the end of the game wins!"

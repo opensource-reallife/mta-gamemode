@@ -26,12 +26,12 @@ function AppNavigator:onOpen(form)
 	local item
 
 	for category, data in pairs(AppNavigator.Positions) do
-		self.m_Tabs[category] = self.m_TabPanel:addTab(category, AppNavigator.Icons[category])
+		self.m_Tabs[category] = self.m_TabPanel:addTab(_(category), AppNavigator.Icons[category])
 		self.m_LocationsGrid[category] = GUIGridList:new(10, 10, form.m_Width-20, form.m_Height-110, self.m_Tabs[category])
-		self.m_LocationsGrid[category]:addColumn(category, 1)
+		self.m_LocationsGrid[category]:addColumn(_(category), 1)
 
 		for name, pos in pairs(data) do
-			item = self.m_LocationsGrid[category]:addItem(name)
+			item = self.m_LocationsGrid[category]:addItem(_(name))
 			item.Position = pos
 			item.onLeftDoubleClick = function() self:startNavigationClick(pos) end
 		end
@@ -74,15 +74,15 @@ AppNavigator.Positions = {
 		["Logistiker LS Hafen"] = Vector3(2409.07, -2471.10, 13.30),
 		["Farmer"] = Vector3(-53.69, 78.28, 2.79),
 		["Straßenreinigung"] = Vector3(219.49, -1429.61, 13.0),
-		-- ["Schatzsucher"] = Vector3(706.22, -1699.38, 3.12),
+		["Schatzsucher"] = Vector3(706.22, -1699.38, 3.12),
 		["Gabelstapler"] = Vector3(93.67, -205.68,  1.23),
 		["Kiesgruben-Job"] = Vector3(590.71, 868.91, -42.50),
 		["Holzfäller"] = Vector3(1026.51, -437.73, 54.24),
-		-- ["Boxer"] = Vector3(2219.51, -1715.47, 13.34),
+		["Boxer"] = Vector3(2219.51, -1715.47, 13.34),
 	},
 	["Unternehmen"] = {
 		["San News"] =     Vector3(762.05, -1343.33, 13.20),
-		["Mechaniker"] =  Vector3(913.83, -1234.65, 16.97),
+		["Mech & Tow"] =  Vector3(913.83, -1234.65, 16.97),
 		["Public Transport"] =	 Vector3(1791.10, -1901.46, 13.08),
 	},
 	["Fraktionen"] = {}, -- get loaded dynamically!

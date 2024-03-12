@@ -32,19 +32,19 @@ function AppSanNews:onOpen(form)
 
 	self.m_Tabs["Advertisment"] = self.m_TabPanel:addTab(_"Werbung", FontAwesomeSymbols.Advertisement)
 	tab = self.m_Tabs["Advertisment"]
-	GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.01, tab.m_Width*0.98, tab.m_Height*0.12, "Werbung", self.m_Tabs["Advertisment"]):setMultiline(true)
-	GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.15, tab.m_Width*0.98, tab.m_Height*0.07, "Werbe-Text:", self.m_Tabs["Advertisment"]):setMultiline(true)
+	GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.01, tab.m_Width*0.98, tab.m_Height*0.12, _"Werbung", self.m_Tabs["Advertisment"]):setMultiline(true)
+	GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.15, tab.m_Width*0.98, tab.m_Height*0.07, _"Werbe-Text:", self.m_Tabs["Advertisment"]):setMultiline(true)
 	self.m_EditBox = GUIEdit:new(tab.m_Width*0.02, tab.m_Height*0.22, tab.m_Width*0.96, tab.m_Height*0.07, self.m_Tabs["Advertisment"])
 	self.m_EditBox.onChange = function () self:calcCosts() end
 
-	GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.32, tab.m_Width*0.48, tab.m_Height*0.07, "Farbe:", self.m_Tabs["Advertisment"])
+	GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.32, tab.m_Width*0.48, tab.m_Height*0.07, _"Farbe:", self.m_Tabs["Advertisment"])
 	self.m_ColorChanger = GUIChanger:new(tab.m_Width*0.4, tab.m_Height*0.32, tab.m_Width*0.58, tab.m_Height*0.07, self.m_Tabs["Advertisment"])
 	for name, color in pairs(ColorTable) do
 		self.m_ColorChanger:addItem(name)
 	end
 	self.m_ColorChanger.onChange = function () self:calcCosts() end
 
-	GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.42, tab.m_Width*0.5, tab.m_Height*0.07, "Dauer:", self.m_Tabs["Advertisment"])
+	GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.42, tab.m_Width*0.5, tab.m_Height*0.07, _"Dauer:", self.m_Tabs["Advertisment"])
 	self.m_DurationChanger = GUIChanger:new(tab.m_Width*0.4, tab.m_Height*0.42, tab.m_Width*0.58, tab.m_Height*0.07, self.m_Tabs["Advertisment"])
 	for name, duration in pairs(AD_DURATIONS) do
 		self.m_DurationChanger:addItem(name)
@@ -87,9 +87,9 @@ function AppSanNews:onOpen(form)
 	self.m_Tabs["FuelPrices"] = self.m_TabPanel:addTab(_"Tankpreise", FontAwesomeSymbols.Newspaper)
 	tab = self.m_Tabs["FuelPrices"]
 
-	GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.01, tab.m_Width*0.98, tab.m_Height*0.06, "Doppelklick zum Route berechnen", self.m_Tabs["FuelPrices"]):setAlignX("center")
+	GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.01, tab.m_Width*0.98, tab.m_Height*0.06, _"Doppelklick zum Route berechnen", self.m_Tabs["FuelPrices"]):setAlignX("center")
 	self.m_FuelPriceGrid = GUIGridList:new(10, 40, form.m_Width-20, form.m_Height-90, tab)
-	self.m_FuelPriceGrid:addColumn("Aktuelle Tankpreise", 0.4)
+	self.m_FuelPriceGrid:addColumn(_"Aktuelle Tankpreise", 0.4)
 	self.m_FuelPriceGrid:addColumn("", 0.6)
 	
 	self.m_TabPanel.onTabChanged = function(tabId)
@@ -174,11 +174,11 @@ addEventHandler("showAd", root, function(sender, text, color, duration)
 				triggerServerEvent("callStartSpecial", root, sender.number)
 			end
 		else
-			WarningBox:new("Dein Handy ist ausgeschaltet!")
+			WarningBox:new(_"Dein Handy ist ausgeschaltet!")
 		end
 	end
 
-	currentAd = ShortMessage:new(("%s"):format(text), ("Werbung von %s"):format(sender.name), ColorTable[color], AD_DURATIONS[duration]*1000, callSender)
+	currentAd = ShortMessage:new(("%s"):format(text), _("Werbung von %s", sender.name), ColorTable[color], AD_DURATIONS[duration]*1000, callSender)
 end)
 
 function AppSanNews:Event_receiveFuelPrices(infoTbl)
@@ -191,7 +191,7 @@ function AppSanNews:Event_receiveFuelPrices(infoTbl)
 		self.m_FuelPriceGrid:addItemNoClick(name, "")
 		for type, price in pairs(info[1]) do
 			
-			local item = self.m_FuelPriceGrid:addItem(FUEL_NAME[type], _("%s$", math.round(price * priceMult, 1)))
+			local item = self.m_FuelPriceGrid:addItem(FUEL_NAME[type], ("%s$"):format(math.round(price * priceMult, 1)))
 			item.onLeftDoubleClick = function()
 				GPS:getSingleton():startNavigationTo(Vector3(info[2][1], info[2][2], info[2][3]))
 			end
