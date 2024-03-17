@@ -308,10 +308,11 @@ function Fishing:FishCaught()
 			local fishId = tbl.lastFish.Id
 			local fishName = tbl.lastFish.Name_DE
 			local currentValue = playerInventory:getItemValueByBag(FISHING_INVENTORY_BAG, place)
+			local quality = self:getFishQuality(fishId, size)
 			currentValue = fromJSON(currentValue) or {}
 
 			if #currentValue < bagProperties.max then
-				table.insert(currentValue, {Id = fishId, size = size, quality = self:getFishQuality(fishId, size), timestamp = getRealTime().timestamp})
+				table.insert(currentValue, {Id = fishId, size = size, quality = quality, timestamp = getRealTime().timestamp})
 				playerInventory:setItemValueByBag(FISHING_INVENTORY_BAG, place, toJSON(currentValue))
 
 				self:increaseFishCaughtCount(fishId)
@@ -319,6 +320,7 @@ function Fishing:FishCaught()
 				StatisticsLogger:getSingleton():addfishCaughtLogs(client, fishName, size, tbl.location, fishId)
 				client:sendInfo(("Du hast eine(n) %s gefangen.\nGröße: %scm"):format(fishName, size, newFishRecord and "(Rekord!)" or ""))
 				client:meChat(true, "hat eine(n) %s gefangen.", fishName, true)
+				client:givePoints(Randomizer:get(0, quality + 1))
 				return
 			end
 
@@ -434,7 +436,6 @@ function Fishing:clientSendFishTrading(list)
 
 	if totalPrice > 0 then
 		self.m_BankAccountServer:transferMoney(client, totalPrice, "Fischhandel", "Gameplay", "Fishing")
-		client:givePoints(math.round(totalPrice / 50))
 	end
 end
 
