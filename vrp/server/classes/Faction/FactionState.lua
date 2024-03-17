@@ -371,23 +371,13 @@ function FactionState:loadFBI(factionId)
 
 	self:createTakeItemsPickup(Vector3(1774.88, -1539.01, 9.1))
 
-	local gateLeft = Gate:new(2933, Vector3(1823.14, -1538.75, 14.26), Vector3(0, 0, 254), Vector3(1823.14, -1538.75, 10.56))
-	gateLeft.onGateHit = bind(self.onBarrierGateHit, self)
-	--gateLeft:addGate(988, Vector3(1216.5, -1841.9004, 13.4), Vector3(0, 0, 0), Vector3(1221.9004, -1841.9004, 13.4))
+	local gateA = Gate:new(17951, Vector3(1753.6, -1591.6, 14.3), Vector3(0, 0, 256), Vector3(1753.7, -1591.2, 16), Vector3(0, -90, 256))
+	gateA.onGateHit = bind(self.onBarrierGateHit, self)
 
-	local gateRight = Gate:new(2933, Vector3(1755.61, -1592, 14.24), Vector3(0, 0, 345.9), Vector3(1755.61, -1592, 10.4))
-	gateRight.onGateHit = bind(self.onBarrierGateHit, self)
-	--gateRight:addGate(988, Vector3(1272.9004, -1841.9004, 13.4), Vector3(0, 0, 0), Vector3(1277.9004, -1841.9004, 13.4))
-
-	--[[for i,v in pairs(gateLeft:getGateObjects()) do
-		VehicleTexture:new(v, "files/images/Textures/Faction/State/FBI_Logo.png", "ws_airsecurity", true)
-	end
-	for i,v in pairs(gateRight:getGateObjects()) do
-		VehicleTexture:new(v, "files/images/Textures/Faction/State/FBI_Logo.png", "ws_airsecurity", true)
-	end]]
+	local gateB = Gate:new(17951, Vector3(1823.5, -1537.84, 14.3), Vector3(0, 0, 344), Vector3(1823, -1537.68, 16.05), Vector3(0, -90, 344))
+	gateB.onGateHit = bind(self.onBarrierGateHit, self)
 
 	InteriorEnterExit:new(Vector3(1798.14, -1578.65, 14.07), Vector3(389.84, 173.71, 1008.38), 90, 300, 3) -- main entrance
-	--InteriorEnterExit:new(Vector3(1219.20, -1812.25, 16.59), Vector3(259.91, -74.91, 1037.35), 0, 180, 10) -- back entrance / parking lot
 end
 
 function FactionState:loadArmy(factionId)
