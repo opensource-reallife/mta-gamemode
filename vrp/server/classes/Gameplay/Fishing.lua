@@ -244,7 +244,7 @@ function Fishing:FishHit(location, castPower)
 				end
 			end
 		end
-		client:meChat(true, "zieht %s aus dem Wasser!", randomMessage)
+		client:meChat(true, "zieht %s aus dem Wasser!", randomMessage, true)
 		client:increaseStatistics("FishBadCatch")
 		return
 	end
@@ -434,6 +434,7 @@ function Fishing:clientSendFishTrading(list)
 
 	if totalPrice > 0 then
 		self.m_BankAccountServer:transferMoney(client, totalPrice, "Fischhandel", "Gameplay", "Fishing")
+		client:givePoints(math.round(totalPrice / 50))
 	end
 end
 

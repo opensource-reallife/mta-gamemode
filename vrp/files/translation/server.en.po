@@ -4517,3 +4517,12 @@ msgstr "gives %s a dollar"
 
 msgid "übergibt %s ein paar Scheine"
 msgstr "gives %s a few dollars"
+
+msgid "hat eine(n) %s gefangen."
+msgstr "caught a(n) %s.
+
+msgid "zieht %s aus dem Wasser!"
+msgstr "reels %s out of the water!"
+
+msgid "hat einen Fisch verloren!"
+msgstr "lost a fish!"

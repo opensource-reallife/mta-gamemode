@@ -1502,7 +1502,7 @@ msgid "Fisch:"
 msgstr "Fish:"
 
 msgid "Qualität:"
-msgstr "品质:"
+msgstr "Quality:"
 
 msgid "Normal Preis:"
 msgstr "Normal price:"
