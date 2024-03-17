@@ -139,7 +139,7 @@ end
 
 function GroupPropertyManager:checkPropertyBuy(id)
 	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "buyProperty") then
-		client:sendError(_("Du bist nicht berechtigt eine Immobilie für deine Firma/Gang zu kaufen!", client))
+		client:sendError(_("Du bist nicht berechtigt eine Immobilie für deine Gruppe zu kaufen!", client))
 		return
 	end
 
@@ -155,11 +155,11 @@ function GroupPropertyManager:BuyProperty( Id, player )
 	if not client then player = client end
 	if not player or not client then return end
 	if not client:getGroup() then
-		client:sendError(_("Du bist in keiner Firma oder Gang!", client))
+		client:sendError(_("Du bist in keiner Gruppe oder Gang!", client))
 		return
 	end
 	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "buyProperty") then
-		client:sendError(_("Du bist nicht berechtigt eine Immobilie für deine Firma/Gang zu kaufen!", client))
+		client:sendError(_("Du bist nicht berechtigt eine Immobilie für deine Gruppe zu kaufen!", client))
 		return
 	end
 
@@ -167,7 +167,7 @@ function GroupPropertyManager:BuyProperty( Id, player )
 	local property = GroupPropertyManager:getSingleton().Map[Id]
 	local propCount = self:getPropsForPlayer( client )
 	if #propCount > 0 then
-		return 	client:sendError(_("Deine Firma/Gang besitzt bereits eine Immobilie", client))
+		return 	client:sendError(_("Deine Gruppe besitzt bereits eine Immobilie", client))
 	end
 	if property then
 		local price = property.m_Price
@@ -200,7 +200,7 @@ function GroupPropertyManager:BuyProperty( Id, player )
 				end
 			end
 		else
-			client:sendError(_("In deiner Firmen/Gang-Kasse befindet sich nicht genug Geld!", client))
+			client:sendError(_("In deiner Gruppen-Kasse befindet sich nicht genug Geld!", client))
 		end
 	else
 		client:sendError(_("Immobilie nicht gefunden!", client))
@@ -211,7 +211,7 @@ end
 function GroupPropertyManager:SellProperty(  )
 	if client then
 		if not client:getGroup() then
-			client:sendError(_("Du bist in keiner Firma oder Gang!", client))
+			client:sendError(_("Du bist in keiner Gruppe oder Gang!", client))
 			return
 		end
 		if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "sellProperty") then
@@ -235,7 +235,7 @@ function GroupPropertyManager:SellProperty(  )
 				end
 				self.m_BankAccountServer:transferMoney(group, sellMoney, "Immobilie "..property.m_Name.." verkauft!", "Group", "PropertySell")
 				group:addLog(client, "Immobilien", _("hat die Immobilie '%s' verkauft!", client, property.m_Name))
-				client:sendInfo("Sie haben die Immobilie verkauft! Das Geld befindet sich in der Firmen/Gangkasse!")
+				client:sendInfo("Sie haben die Immobilie verkauft! Das Geld befindet sich in der Gruppenkasse!")
 				for key, player in ipairs( pOwner:getOnlinePlayers() ) do
 					player:triggerEvent("destroyGroupBlip",property.m_Id)
 					player:triggerEvent("forceGroupPropertyClose")
@@ -309,7 +309,7 @@ function GroupPropertyManager:buyPropertyFromGroup(Id, player)
 	if not player or not client then return end
 	if not client:getGroup() then return client:sendError(_("Du bist in keiner Gruppe", client)) end
 	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "buyProperty") then
-		client:sendError(_("Du bist nicht berechtigt eine Immobilie für deine Firma/Gang zu kaufen!", client))
+		client:sendError(_("Du bist nicht berechtigt eine Immobilie für deine Gruppe zu kaufen!", client))
 		return
 	end
 	if #self:getPropsForPlayer(client) > 0 then

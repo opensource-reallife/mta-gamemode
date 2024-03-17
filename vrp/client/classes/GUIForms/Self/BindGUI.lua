@@ -14,7 +14,7 @@ BindGUI.Modifiers = {
 BindGUI.Headers = {
 	["faction"] = "Fraktion",
 	["company"] = "Unternehmen",
-	["group"] = "Firma/Gang"
+	["group"] = "Gruppe"
 }
 
 BindGUI.Functions = {
@@ -24,7 +24,7 @@ BindGUI.Functions = {
 	["t"] = "Fraktion (/t)",
 	["me"] = "me (/me)",
 	["u"] = "Unternehmen (/u)",
-	["f"] = "Firma/Gang (/f)",
+	["f"] = "Gruppe (/f)",
 	["b"] = "Bündnis (/b)",
 	--["g"] = "Beamten (/g)",
 }

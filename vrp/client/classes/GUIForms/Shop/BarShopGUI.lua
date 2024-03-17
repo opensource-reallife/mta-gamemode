@@ -31,7 +31,7 @@ function BarShopGUI:constructor(shopId, shopName, stripperPrice, stripperCount, 
 
 		if isOwner then
 			price = stripperPrice / 2
-			InfoBox:new(_"Da du in der Firma bist, zu dem die Bar gehört, zahlst du nur den Anteil an die Stripper.")
+			InfoBox:new(_"Da du in der Gruppe bist, zu dem die Bar gehört, zahlst du nur den Anteil an die Stripper.")
 		else
 			price = stripperPrice
 		end

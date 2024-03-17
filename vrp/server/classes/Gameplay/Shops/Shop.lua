@@ -205,7 +205,7 @@ function Shop:buy(player)
 				if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "group", "buyBIZ") then
 					if group:getMoney() >= self.m_Price then
 						group:transferMoney(self.m_BankAccountServer, self.m_Price, "Shop-Kauf", "Shop", "Buy")
-						group:sendMessage(_("[FIRMA] %s hat den Shop '%s' für %d$ gekauft!", player, player:getName(), self.m_Name, self.m_Price), 0, 255, 0)
+						group:sendMessage(_("[GRUPPE] %s hat den Shop '%s' für %d$ gekauft!", player, player:getName(), self.m_Name, self.m_Price), 0, 255, 0)
 						group:addLog(player, "Immobilien", _("hat den Shop '%s' für %d$ gekauft!", player, self.m_Name, self.m_Price))
 						self.m_OwnerId = group:getId()
 						self:loadOwner()
@@ -217,10 +217,10 @@ function Shop:buy(player)
 					player:sendError(_("Du bist nicht berechtigt einen Shop zu kaufen!", player))
 				end
 			else
-				player:sendError(_("Du bist in keiner privaten Firma!", player))
+				player:sendError(_("Du bist in keiner Gruppe mit dem Typ Firma!", player))
 			end
 		else
-			player:sendError(_("Dieser Shop kann nur von privaten Firmen gekauft werden!", player))
+			player:sendError(_("Dieser Shop kann nur von Gruppen mit dem Typ Firma gekauft werden!", player))
 		end
 	else
 		player:sendError(_("Dieser Shop kann nicht gekauft werden!", player))
@@ -234,7 +234,7 @@ function Shop:sell(player)
 			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "group", "sellBIZ") then
 				local money = math.floor((self.m_Price*0.75))
 				self.m_BankAccountServer:transferMoney(group, money, "Shop-Verkauf", "Shop", "Sell")
-				group:sendMessage(_("[FIRMA] %s hat den Shop '%s' für %d$ verkauft!", player, player:getName(), self.m_Name, money), 255, 0, 0)
+				group:sendMessage(_("[GRUPPE] %s hat den Shop '%s' für %d$ verkauft!", player, player:getName(), self.m_Name, money), 255, 0, 0)
 				group:addLog(player, "Immobilien", _("hat den Shop '%s' für %d$ verkauft!", player, self.m_Name, money))
 				self.m_OwnerId = 0
 				self:loadOwner()
@@ -243,7 +243,7 @@ function Shop:sell(player)
 				player:sendError(_("Du bist nicht berechtigt einen Shop zu verkaufen!", player))
 			end
 		else
-			player:sendError(_("Dieser Shop gehört nicht deiner Firma!", player))
+			player:sendError(_("Dieser Shop gehört nicht deiner Gruppe!", player))
 		end
 	end
 end

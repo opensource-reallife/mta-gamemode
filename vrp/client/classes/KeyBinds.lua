@@ -80,7 +80,7 @@ function KeyBinds:constructor()
 		--Disabled cause of MTA Bug #9178
 	--  ["KeyChatFaction"]         = {["defaultKey"] = "1", ["name"] = "Chat: Fraktion", ["func"] = "chatbox", ["extra"] = "Fraktion"};
 	--  ["KeyChatCompany"]         = {["defaultKey"] = "2", ["name"] = "Chat: Unternehmen", ["func"] = "chatbox", ["extra"] = "Unternehmen"};
-	--  ["KeyChatGroup"]           = {["defaultKey"] = "3", ["name"] = "Chat: Firma/Gang", ["func"] = "chatbox", ["extra"] = "Firma/Gang"};
+	--  ["KeyChatGroup"]           = {["defaultKey"] = "3", ["name"] = "Chat: Gruppe", ["func"] = "chatbox", ["extra"] = "Gruppe"};
 	}
 
 	for i = 1, 7 do

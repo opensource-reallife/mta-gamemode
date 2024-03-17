@@ -11,7 +11,7 @@ inherit(Singleton, TownhallGUI)
 function TownhallGUI:constructor(rangeElement)
     GUIButtonMenu.constructor(self, _("Stadthalle"), false, false, false, false, rangeElement:getPosition())
     
-    self:addItem(_"Private Firmen und Gangs", Color.Accent, function()
+    self:addItem(_"Gruppen", Color.Accent, function()
         delete(self)
         GroupCreationGUI:new()
     end)
@@ -21,7 +21,7 @@ function TownhallGUI:constructor(rangeElement)
         if localPlayer:getGroupName() ~= "" then
             GroupPropertyBuy:new()
         else 
-            ErrorBox:new(_"Du hast keine Firma/Gang!")
+            ErrorBox:new(_"Du hast keine Gruppe!")
         end
     end)
 

@@ -173,7 +173,7 @@ function GroupManager:Event_Create(name, type)
 	end
 
 	if client:getGroup() then
-		client:sendError(_("Du bist bereits in einer Firma/Gang!", client))
+		client:sendError(_("Du bist bereits in einer Gruppe!", client))
 		return
 	end
 
@@ -199,7 +199,7 @@ function GroupManager:Event_Create(name, type)
 
 	-- Does the group already exist?
 	if self:getByName(name) then
-		client:sendError(_("Eine Gang oder Firma mit diesem Namen existiert bereits!", client))
+		client:sendError(_("Eine Gang oder Gruppe mit diesem Namen existiert bereits!", client))
 		return
 	end
 
@@ -216,9 +216,9 @@ function GroupManager:Event_Create(name, type)
 		client:giveAchievement(60)
 
 		group:addPlayer(client, GroupRank.Leader)
-		client:transferMoney(self.m_BankAccountServer, GROUP_CREATE_COSTS, "Firmen/Gang Gründung", "Group", "Creation")
+		client:transferMoney(self.m_BankAccountServer, GROUP_CREATE_COSTS, "Gruppen Gründung", "Group", "Creation")
 		client:sendSuccess(_("Herzlichen Glückwunsch! Du bist nun Leiter der %s %s", client, type, name))
-		group:addLog(client, "Gang/Firma", "hat die "..type.." "..name.." erstellt!")
+		group:addLog(client, "Gruppe", "hat die "..type.." "..name.." erstellt!")
 		self:sendInfosToClient(client)
 
 		self:addActiveGroup(group)
@@ -236,14 +236,14 @@ function GroupManager:Event_Quit()
 		return
 	end
 	group:sendMessage(_("%s hat soeben eure %s verlassen!", client, getPlayerName(client), group:getType()))
-	group:addLog(client, "Gang/Firma", "hat die "..group:getType().." verlassen!")
+	group:addLog(client, "Gruppe", "hat die "..group:getType().." verlassen!")
 	group:removePlayer(client)
 
 	if #group:getOnlinePlayers() == 0 then
 		self:removeActiveGroup(group)
 	end
 
-	client:sendSuccess(_("Du hast die Firma/Gang erfolgreich verlassen!", client))
+	client:sendSuccess(_("Du hast die Gruppe erfolgreich verlassen!", client))
 	self:sendInfosToClient(client)
 end
 
@@ -252,7 +252,7 @@ function GroupManager:Event_Delete()
 	if not group then return end
 
 	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "deleteGroup") then
-		client:sendError(_("Du bist nicht berechtigt die Firma/Gang zu löschen!", client))
+		client:sendError(_("Du bist nicht berechtigt die Gruppe zu löschen!", client))
 		-- Todo: Report possible cheat attempt
 		return
 	end
@@ -283,9 +283,9 @@ function GroupManager:Event_Delete()
 			amount = leaderAmount
 		end
 
-		group:transferMoney({"player", playerId, true}, amount, "Gang/Firmen Auflösung", "Group", "Delete")
+		group:transferMoney({"player", playerId, true}, amount, "Groupen Auflösung", "Group", "Delete")
 	end
-	group:addLog(client, "Gang/Firma", "hat die "..group:getType().." gelöscht!")
+	group:addLog(client, "Gruppe", "hat die "..group:getType().." gelöscht!")
 
 	client:sendShortMessage(_("Deine "..group:getType().." wurde soeben gelöscht", client))
 
@@ -304,7 +304,7 @@ function GroupManager:Event_Deposit(amount)
 		return
 	end
 
-	client:transferMoney(group, amount, "Firmen/Gang Einzahlung", "Group", "Deposit")
+	client:transferMoney(group, amount, "Gruppen Einzahlung", "Group", "Deposit")
 	group:addLog(client, "Kasse", "hat "..toMoneyString(amount).." in die Kasse gelegt!")
 	self:sendInfosToClient(client)
 	self:sendMoneyToClient(client)
@@ -322,11 +322,11 @@ function GroupManager:Event_Withdraw(amount)
 	end
 
 	if group:getMoney() < amount then
-		client:sendError(_("In der Firma/Gangkasse befindet sich nicht genügend Geld!", client))
+		client:sendError(_("In der Gruppekasse befindet sich nicht genügend Geld!", client))
 		return
 	end
 
-	group:transferMoney(client, amount, "Firmen/Gang Auszahlung", "Group", "Deposit")
+	group:transferMoney(client, amount, "Gruppen Auszahlung", "Group", "Deposit")
 	group:addLog(client, "Kasse", "hat "..toMoneyString(amount).." aus der Kasse genommen!")
 
 	self:sendInfosToClient(client)
@@ -339,27 +339,27 @@ function GroupManager:Event_AddPlayer(player)
 	if not group then return end
 
 	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "invite"	) then
-		client:sendError(_("Du bist nicht berechtigt Firmen/Gang Mitglieder hinzuzufügen!", client))
+		client:sendError(_("Du bist nicht berechtigt Gruppen Mitglieder hinzuzufügen!", client))
 		-- Todo: Report possible cheat attempt
 		return
 	end
 
 	if player:getGroup() then
-		client:sendError(_("Dieser Benutzer ist bereits in einer Firma oder Gang!", client))
+		client:sendError(_("Dieser Benutzer ist bereits in einer Gruppe!", client))
 		return
 	end
 
 	if not group:isPlayerMember(player) then
 		if not group:hasInvitation(player) then
 			group:invitePlayer(player)
-			group:addLog(client, "Gang/Firma", "hat den Spieler "..player:getName().." in die "..group:getType().." eingeladen!")
+			group:addLog(client, "Gruppe", "hat den Spieler "..player:getName().." in die "..group:getType().." eingeladen!")
 		else
 			client:sendError(_("Dieser Benutzer hat bereits eine Einladung!", client))
 		end
 		--group:addPlayer(player)
 		--client:triggerEvent("groupRetrieveInfo", group:getName(), group:getPlayerRank(client), group:getMoney(), group:getPlayers())
 	else
-		client:sendError(_("Dieser Spieler ist bereits in deiner Firma/Gang!", client))
+		client:sendError(_("Dieser Spieler ist bereits in deiner Gruppe!", client))
 	end
 end
 
@@ -380,12 +380,12 @@ function GroupManager:Event_DeleteMember(playerId)
 	end
 
 	if group:getPlayerRank(playerId) == GroupRank.Leader then
-		client:sendError(_("Du kannst den Firmen/Gang Leader nicht rauswerfen!", client))
+		client:sendError(_("Du kannst den Gruppen Leader nicht rauswerfen!", client))
 		return
 	end
 
 	group:removePlayer(playerId)
-	group:addLog(client, "Gang/Firma", "hat den Spieler "..Account.getNameFromId(playerId).." aus der "..group:getType().." geworfen!")
+	group:addLog(client, "Gruppe", "hat den Spieler "..Account.getNameFromId(playerId).." aus der "..group:getType().." geworfen!")
 
 	self:sendInfosToClient(client)
 end
@@ -399,10 +399,10 @@ function GroupManager:Event_InvitationAccept(groupId)
 			group:addPlayer(client)
 			group:removeInvitation(client)
 			group:sendMessage(_("%s ist soeben der %s beigetreten!", client, getPlayerName(client), group:getType()),200,200,200)
-			group:addLog(client, "Gang/Firma", "ist der "..group:getType().." beigetreten!")
+			group:addLog(client, "Gruppe", "ist der "..group:getType().." beigetreten!")
 			self:sendInfosToClient(client)
 		else
-			client:sendError(_("Du bist bereits in einer Firma/Gang!", client))
+			client:sendError(_("Du bist bereits in einer Gruppe!", client))
 		end
 	else
 		client:sendError(_("Du hast keine Einladung für diese %s", client, group:getType()))
@@ -416,7 +416,7 @@ function GroupManager:Event_InvitationDecline(groupId)
 	if group:hasInvitation(client) then
 		group:removeInvitation(client)
 		group:sendMessage(_("%s hat die Einladung in die %s abgelehnt", client, getPlayerName(client), group:getType()))
-		group:addLog(client, "Gang/Firma", "hat die Einladung abgelehnt!")
+		group:addLog(client, "Gruppe", "hat die Einladung abgelehnt!")
 
 	else
 		client:sendError(_("Du hast keine Einladung für diese %s", client, group:getType()))
@@ -451,7 +451,7 @@ function GroupManager:Event_RankUp(playerId)
 	if group:getPlayerRank(playerId) < GroupRank.Leader then
 		if group:getPlayerRank(playerId) < group:getPlayerRank(client:getId()) then
 			group:setPlayerRank(playerId, group:getPlayerRank(playerId) + 1)
-			group:addLog(client, "Gang/Firma", "hat den Spieler "..Account.getNameFromId(playerId).." auf Rang "..group:getPlayerRank(playerId).." befördert!")
+			group:addLog(client, "Gruppe", "hat den Spieler "..Account.getNameFromId(playerId).." auf Rang "..group:getPlayerRank(playerId).." befördert!")
 			local player = DatabasePlayer.getFromId(playerId)
 			if player and isElement(player) and player:isActive() then
 				player:sendShortMessage(_("Du wurdest von %s auf Rang %d befördert!", player, client:getName(), group:getPlayerRank(playerId)), group:getName())
@@ -495,7 +495,7 @@ function GroupManager:Event_RankDown(playerId)
 	if group:getPlayerRank(playerId)-1 >= GroupRank.Normal then
 		if group:getPlayerRank(client:getId()) == GroupRank.Leader or group:getPlayerRank(playerId) < group:getPlayerRank(client:getId()) then
 			group:setPlayerRank(playerId, group:getPlayerRank(playerId) - 1)
-			group:addLog(client, "Gang/Firma", "hat den Spieler "..Account.getNameFromId(playerId).." auf Rang "..group:getPlayerRank(playerId).." degradiert!")
+			group:addLog(client, "Gruppe", "hat den Spieler "..Account.getNameFromId(playerId).." auf Rang "..group:getPlayerRank(playerId).." degradiert!")
 			local player = DatabasePlayer.getFromId(playerId)
 			if player and isElement(player) and player:isActive() then
 				player:sendShortMessage(_("Du wurdest von %s auf Rang %d degradiert!", player, client:getName(), group:getPlayerRank(playerId)), group:getName())
@@ -525,12 +525,12 @@ function GroupManager:Event_ChangeName(name)
 	end
 
 	if self:getByName(name) then
-		client:sendError(_("Es existiert bereits eine Firma/Gang mit diesem Namen!", client))
+		client:sendError(_("Es existiert bereits eine Gruppe mit diesem Namen!", client))
 		return
 	end
 
 	if group:getMoney() < GROUP_RENAME_COSTS then
-		client:sendError(_("Deine Firma/Gang hat nicht genügend Geld!", client))
+		client:sendError(_("Deine Gruppe hat nicht genügend Geld!", client))
 		return
 	end
 
@@ -562,9 +562,9 @@ function GroupManager:Event_ChangeName(name)
 	end
 
 	if group:setName(name) then
-		group:transferMoney(self.m_BankAccountServer, GROUP_RENAME_COSTS, "Firmen/Gang Änderung", "Group", "Rename")
+		group:transferMoney(self.m_BankAccountServer, GROUP_RENAME_COSTS, "Gruppen Änderung", "Group", "Rename")
 		client:sendSuccess(_("Deine %s heißt nun\n%s!", client, group:getType(), group:getName()))
-		group:addLog(client, "Gang/Firma", "hat die "..group:getType().." in "..group:getName().." umbenannt!")
+		group:addLog(client, "Gruppe", "hat die "..group:getType().." in "..group:getName().." umbenannt!")
 
 		self:sendInfosToClient(client)
 	else
@@ -603,7 +603,7 @@ function GroupManager:Event_SaveRank(rank,name,loan)
 
 		group:saveRankSettings()
 		client:sendInfo(_("Die Einstellungen für Rang "..rank.." wurden gespeichert!", client))
-		group:addLog(client, "Gang/Firma", "hat die Einstellungen für Rang "..rank.." geändert!")
+		group:addLog(client, "Gruppe", "hat die Einstellungen für Rang "..rank.." geändert!")
 		group:updateRankNameSync()
 		self:sendInfosToClient(client)
 	end
@@ -618,7 +618,7 @@ function GroupManager:Event_ConvertVehicle(veh)
 					if not veh:getData("RcVehicleUser") or #veh:getData("RcVehicleUser") == 0 then
 						local status, newVeh = GroupVehicle.convertVehicle(veh, group)
 						if status then
-							client:sendInfo(_("Das Fahrzeug ist nun im Besitz der Firma/Gang!", client))
+							client:sendInfo(_("Das Fahrzeug ist nun im Besitz der Gruppe!", client))
 							group:addLog(client, "Fahrzeuge", "hat das Fahrzeug "..newVeh.getNameFromModel(newVeh:getModel()).." hinzugefügt!")
 							group.m_VehiclesSpawned = true
 							self:sendInfosToClient(client)
@@ -794,7 +794,7 @@ function GroupManager:Event_ChangeType()
 	end
 	if group:getType() == "Firma" then
 		if #group:getShops() > 0 then
-			client:sendError(_("Deine Firma besitzt noch Geschäfte! Bitte verkaufe diese erst!", client))
+			client:sendError(_("Deine Gruppe besitzt noch Geschäfte! Bitte verkaufe diese erst!", client))
 			return
 		end
 
@@ -821,7 +821,7 @@ function GroupManager:Event_ChangeType()
 	local newType = oldType == "Firma" and "Gang" or "Firma"
 	group:transferMoney(self.m_BankAccountServer, 20000, "Typ Änderung", "Group", "TypeChange")
 	group:setType(newType)
-	group:addLog(client, "Gang/Firma", "hat die "..oldType.." in eine "..newType.." umgewandelt!")
+	group:addLog(client, "Gruppe", "hat die "..oldType.." in eine "..newType.." umgewandelt!")
 	group:sendShortMessage(_("%s hat deine %s in eine %s umgewandelt!", client, client:getName(), oldType, newType))
 	self:sendInfosToClient(client)
 
@@ -853,7 +853,7 @@ function GroupManager:Event_ToggleLoan(playerId)
 	group:setPlayerLoanEnabled(playerId, current and 0 or 1)
 	self:sendInfosToClient(client)
 
-	group:addLog(client, "Gang/Firma", ("hat das Gehalt von Spieler %s %saktiviert!"):format(Account.getNameFromId(playerId), current and "de" or ""))
+	group:addLog(client, "Gruppe", ("hat das Gehalt von Spieler %s %saktiviert!"):format(Account.getNameFromId(playerId), current and "de" or ""))
 end
 
 function GroupManager:checkPayDay()

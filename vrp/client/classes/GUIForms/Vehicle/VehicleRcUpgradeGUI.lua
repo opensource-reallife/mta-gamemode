@@ -15,7 +15,7 @@ function VehicleRcUpgradeTypeSelectGUI:constructor(rangeElement)
 
 	self:addItem(_"Spieler", Color.Accent, bind(self.onItemClick, self, "player", rangeElement))
 	if localPlayer:getGroupType() then
-		self:addItem(_"Firma/Gang", Color.Accent, bind(self.onItemClick, self, "group", rangeElement))
+		self:addItem(_"Gruppe", Color.Accent, bind(self.onItemClick, self, "group", rangeElement))
 	end
 end
 

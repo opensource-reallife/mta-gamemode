@@ -107,9 +107,9 @@ function AppCall:openMain()
 	self.m_ButtonCallService = GUIButton:new(self.m_Width-110, 370, 100, 30, _"Anrufen", self.m_Tabs["Service"]):setBackgroundColor(Color.Green):setBarEnabled(false)
 	self.m_ButtonCallService.onLeftClick = function() self:startSpecialCall(self.m_ServiceListGrid) end
 
-	self.m_Tabs["Group"] = self.m_TabPanel:addTab(_"Firmen/Gangs", FontAwesomeSymbols.Group)
+	self.m_Tabs["Group"] = self.m_TabPanel:addTab(_"Gruppen", FontAwesomeSymbols.Group)
 	self.m_GroupListGrid = GUIGridList:new(10, 10, self.m_Width-20, self.m_Height-110, self.m_Tabs["Group"])
-	self.m_GroupListGrid:addColumn(_"Firma/Gang", 0.7)
+	self.m_GroupListGrid:addColumn(_"Gruppe", 0.7)
 	self.m_GroupListGrid:addColumn(_"Num.", 0.3)
 	self.m_ButtonCallGroup = GUIButton:new(self.m_Width-110, 370, 100, 30, _"Anrufen", self.m_Tabs["Group"]):setBackgroundColor(Color.Green):setBarEnabled(false)
 	self.m_ButtonCallGroup.onLeftClick = function() self:startSpecialCall(self.m_GroupListGrid) end

@@ -76,10 +76,10 @@ function RobableShop:Ped_Targetted(ped, attacker)
 				attacker:sendError(_("Du bist im Dienst, du darfst keinen Überfall machen!", attacker))
 			end
 		else
-			attacker:sendError(_("Du bist Mitglied einer privaten Firma! Nur Gangs können überfallen!", attacker))
+			attacker:sendError(_("Deine Gruppe hat dafür den falschen Typ!", attacker))
 		end
 	else
-		attacker:sendError(_("Du bist kein Mitglied einer privaten Gang!", attacker))
+		attacker:sendError(_("Du bist kein Mitglied einer Gruppe!", attacker))
 	end
 end
 

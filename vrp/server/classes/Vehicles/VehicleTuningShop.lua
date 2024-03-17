@@ -169,7 +169,7 @@ function VehicleTuningShop:EntryColShape_Hit(garageId, hitElement, matchingDimen
                 return
             end
             if not vehicle:canBeModified()  then
-                hitElement:sendError(_("Dein Leader muss das Tunen von Fahrzeugen aktivieren! Im Firmen/Gangmenü unter Leader!", hitElement))
+                hitElement:sendError(_("Dein Leader muss das Tunen von Fahrzeugen aktivieren! Im Gruppenmenü unter Leader!", hitElement))
                 return
             end
             if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(hitElement, "group", "editVehicleTuning") then

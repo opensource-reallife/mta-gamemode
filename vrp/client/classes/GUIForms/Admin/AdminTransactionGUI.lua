@@ -27,7 +27,7 @@ function AdminTransactionGUI:constructor()
 	self.m_FromCompany = GUIGridCheckbox:new(1, 5, 1, 1, "Unternehmen", self.m_Window)
 	self.m_FromCompany.onChange = function() self.m_FromPlayer:setChecked(false) self.m_FromFaction:setChecked(false) self.m_FromGroup:setChecked(false) self.m_FromAdmin:setChecked(false) end
 
-	self.m_FromGroup = GUIGridCheckbox:new(1, 6, 1, 1, "Firma/Gang", self.m_Window)
+	self.m_FromGroup = GUIGridCheckbox:new(1, 6, 1, 1, "Gruppe", self.m_Window)
 	self.m_FromGroup.onChange = function() self.m_FromPlayer:setChecked(false) self.m_FromFaction:setChecked(false) self.m_FromCompany:setChecked(false) self.m_FromAdmin:setChecked(false) end
 
 	self.m_FromAdmin = GUIGridCheckbox:new(1, 7, 1, 1, "Adminkasse", self.m_Window)
@@ -47,7 +47,7 @@ function AdminTransactionGUI:constructor()
 	self.m_ToCompany = GUIGridCheckbox:new(8, 5, 1, 1, "Unternehmen", self.m_Window)
 	self.m_ToCompany.onChange = function() self.m_ToPlayer:setChecked(false) self.m_ToFaction:setChecked(false) self.m_ToGroup:setChecked(false) self.m_ToAdmin:setChecked(false) end
 
-	self.m_ToGroup = GUIGridCheckbox:new(8, 6, 1, 1, "Firma/Gang", self.m_Window)
+	self.m_ToGroup = GUIGridCheckbox:new(8, 6, 1, 1, "Gruppe", self.m_Window)
 	self.m_ToGroup.onChange = function() self.m_ToPlayer:setChecked(false) self.m_ToFaction:setChecked(false) self.m_ToCompany:setChecked(false) self.m_ToAdmin:setChecked(false) end
 
 	self.m_ToAdmin = GUIGridCheckbox:new(8, 7, 1, 1, "Adminkasse", self.m_Window)

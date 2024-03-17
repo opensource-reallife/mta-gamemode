@@ -22,11 +22,11 @@ function GroupGUI:constructor()
 	-- Tab: Groups
 	local tabGroups = self.m_TabPanel:addTab(_"Allgemein")
 	self.m_TabGroups = tabGroups
-	self.m_TypeLabel = GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.25, self.m_Height*0.06, _"Firma / Gang:", tabGroups)
+	self.m_TypeLabel = GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.25, self.m_Height*0.06, _"Gruppe:", tabGroups)
 	self.m_GroupsNameLabel = GUILabel:new(self.m_Width*0.3, self.m_Height*0.02, self.m_Width*0.4, self.m_Height*0.06, "", tabGroups)
 	self.m_GroupsNameChangeLabel = GUILabel:new(self.m_Width*0.3, self.m_Height*0.02, self.m_Width*0.1, self.m_Height*0.06, _"(ändern)", tabGroups):setColor(Color.Accent)
 	self.m_GroupsNameChangeLabel.onLeftClick = function()
-		InputBox:new(_"Namen ändern", _("Bitte gib einen neuen Name für deine Firma / Gang ein! Dies kostet dich %d$!", GROUP_RENAME_COSTS), function (name) triggerServerEvent("groupChangeName", root, name) end)
+		InputBox:new(_"Namen ändern", _("Bitte gib einen neuen Name für deine Gruppe ein! Dies kostet dich %d$!", GROUP_RENAME_COSTS), function (name) triggerServerEvent("groupChangeName", root, name) end)
 		WarningBox:new(_"Achtung: Der Name ist nur alle 30 Tage änderbar!")
 	end
 	self.m_GroupsNameChangeLabel.onHover = function () self.m_GroupsNameChangeLabel:setColor(Color.White) end
@@ -116,7 +116,7 @@ function GroupGUI:constructor()
 	self.m_PrivateVehiclesGrid:addColumn(_"Steuer", 0.2)
 
 	GUILabel:new(self.m_Width*0.695, self.m_Height*0.6, self.m_Width*0.28, self.m_Height*0.06, _"Optionen:", tabVehicles):setColor(Color.Accent)
-	self.m_VehicleConvertToGroupButton = GUIButton:new(self.m_Width*0.695, self.m_Height*0.67, self.m_Width*0.28, self.m_Height*0.14, _"Fahrzeug zur Firma/Gang hinzufügen", tabVehicles):setBarEnabled(true)
+	self.m_VehicleConvertToGroupButton = GUIButton:new(self.m_Width*0.695, self.m_Height*0.67, self.m_Width*0.28, self.m_Height*0.14, _"Fahrzeug zur Gruppe hinzufügen", tabVehicles):setBarEnabled(true)
 	self.m_VehicleConvertToGroupButton:setFont(VRPFont(25)):setFontSize(1)
 	self.m_VehicleConvertToGroupButton.onLeftClick = bind(self.VehicleConvertToGroupButton_Click, self)
 
@@ -200,8 +200,8 @@ function GroupGUI:Event_groupRetrieveInfo(id, name, rank, money, playTime, playe
 	self.m_GroupsRankLabel:setText(rankNames[tostring(rank)])
 	self.m_GroupMoneyLabel:setText(toMoneyString(money))
 	self.m_GroupPayDayLabel:setText(_("in %s Minuten", nextPayDay))
-	self.m_TypeLabel:setText(type..":")
-	self.m_VehicleConvertToGroupButton:setText(_("Fahrzeug zur %s hinzufügen", type))
+	self.m_TypeLabel:setText(_("Gruppe (%s):", _(type)))
+	self.m_VehicleConvertToGroupButton:setText(_("Fahrzeug zur Gruppe hinzufügen", type))
 
 		self.m_ActionLabel:setVisible(localPlayer:getGroupType() == "Gang" and true or false)
 		self.m_HousRobLabel:setVisible(localPlayer:getGroupType() == "Gang" and true or false)
@@ -261,7 +261,7 @@ function GroupGUI:Event_groupRetrieveInfo(id, name, rank, money, playTime, playe
 		self:addLeaderTab()
 
 		-- Update options
-		self.m_TypeLabelLeader:setText(type)
+		self.m_TypeLabelLeader:setText(_(type))
 		local x, y = self.m_TypeLabelLeader:getPosition()
 		self.m_TypeChange:setPosition(x + dxGetTextWidth(type, self.m_TypeLabelLeader:getFontSize(), self.m_TypeLabelLeader:getFont()) + 10, y)
 	end
@@ -349,13 +349,13 @@ function GroupGUI:Event_vehicleRetrieveInfo(vehiclesInfo)
 end
 
 function GroupGUI:GroupQuitButton_Click()
-	QuestionBox:new(_"Möchtest du deine Firma/Gang wirklich verlassen?", function()
+	QuestionBox:new(_"Möchtest du deine Gruppe wirklich verlassen?", function()
 		triggerServerEvent("groupQuit", root)
 	end)
 end
 
 function GroupGUI:GroupDeleteButton_Click()
-	QuestionBox:new(_"Möchtest du deine Firma/Gang wirklich löschen\n Es werden keine Kosten erstattet!", function()
+	QuestionBox:new(_"Möchtest du deine Gruppe wirklich löschen\n Es werden keine Kosten erstattet!", function()
 		triggerServerEvent("groupDelete", root)
 	end)
 end
@@ -520,7 +520,7 @@ end
 function GroupGUI:VehicleRespawnButton_Click()
 	local respawnAll = self.m_VehicleRespawnAllToggle:isChecked()
 	if respawnAll then
-		QuestionBox:new(_("Möchtest du wirklich alle Fahrzeuge respawnen? Dies wird deine Firma/Gang %s kosten!", toMoneyString(self.m_VehiclesGrid:getItemCount()*100)), function()
+		QuestionBox:new(_("Möchtest du wirklich alle Fahrzeuge respawnen? Dies wird deine Gruppe %s kosten!", toMoneyString(self.m_VehiclesGrid:getItemCount()*100)), function()
 			triggerServerEvent("groupRespawnAllVehicles", localPlayer)
 		end)
 	else
@@ -548,7 +548,7 @@ function GroupGUI:VehicleConvertToGroupButton_Click()
 		return
 	end
 
-	QuestionBox:new(_"Möchtest du das Fahrzeug wirklich in die Firma setzen?", function()
+	QuestionBox:new(_"Möchtest du das Fahrzeug wirklich in die Gruppe setzen?", function()
 		triggerServerEvent("groupConvertVehicle", localPlayer, item.VehicleElement)
 	end)
 end
@@ -568,7 +568,7 @@ function GroupGUI:VehicleRemoveFromGroupButton_Click()
 		return
 	end
 
-	QuestionBox:new(_"Möchtest du das Fahrzeug wirklich aus der Firma entfernen?",
+	QuestionBox:new(_"Möchtest du das Fahrzeug wirklich aus der Gruppe entfernen?",
 		function()
 			triggerServerEvent("groupRemoveVehicle", localPlayer, item.VehicleElement)
 		end

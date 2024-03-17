@@ -68,11 +68,11 @@ function ShopManageGUI:itemCallback(type)
 		self.m_Stream
 		)
 	elseif type == 2 then
-		QuestionBox:new(_("Möchtest du wirklich %s für deine Firma um %d$ kaufen?", ShopManageGUI.Texts[self.m_Type], self.m_Price),
+		QuestionBox:new(_("Möchtest du wirklich %s für deine Gruppe um %d$ kaufen?", ShopManageGUI.Texts[self.m_Type], self.m_Price),
 		function() 	triggerServerEvent("shopBuy", localPlayer, self.m_ShopId) end
 		)
 	elseif type == 3 then
-		QuestionBox:new(_("Möchtest du wirklich %s deiner Firma um %d$ verkaufen?", ShopManageGUI.Texts[self.m_Type], math.floor(self.m_Price*0.75)),
+		QuestionBox:new(_("Möchtest du wirklich %s deiner Gruppe um %d$ verkaufen?", ShopManageGUI.Texts[self.m_Type], math.floor(self.m_Price*0.75)),
 		function() 	triggerServerEvent("shopSell", localPlayer, self.m_ShopId) end
 		)
 	elseif type == 4 then

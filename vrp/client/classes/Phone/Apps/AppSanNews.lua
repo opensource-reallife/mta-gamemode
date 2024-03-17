@@ -55,7 +55,7 @@ function AppSanNews:onOpen(form)
 	self.m_SenderNameChanger = GUIChanger:new(tab.m_Width*0.4, tab.m_Height*0.52, tab.m_Width*0.58, tab.m_Height*0.07, self.m_Tabs["Advertisment"])
 	self.m_SenderNameChanger:addItem(localPlayer:getName())
 	if localPlayer:getGroupName() and localPlayer:getGroupName() ~= "" then
-		self.m_SenderNameChanger:addItem(_"Firma / Gang")
+		self.m_SenderNameChanger:addItem(_"Gruppe")
 	end
 	if localPlayer:getFaction() then
 		self.m_SenderNameChanger:addItem(_"Fraktion")
@@ -76,7 +76,7 @@ function AppSanNews:onOpen(form)
 			local senderName = self.m_SenderNameChanger:getIndex()
 			--we have to do this because otherwise we can't get the correct ad type if some options are not added in the first place
 			local senderIndex = 1
-			if senderName == _"Firma / Gang" then senderIndex = 2
+			if senderName == _"Gruppe" then senderIndex = 2
 			elseif senderName == _"Fraktion" then senderIndex = 3
 			elseif senderName == _"Unternehmen" then senderIndex = 4 end
 

@@ -295,14 +295,14 @@ msgstr "Game help"
 msgid "Für mehr Infos klicke mich an!"
 msgstr "Click me for more info!"
 
-msgid "Private Firmen und Gangs"
-msgstr "Private companies and gangs"
+msgid "Gruppen"
+msgstr "Groups"
 
-msgid "Firmen-/Gangimmobilien"
-msgstr "Company-/ Gang real estate"
+msgid "Gruppenimmobilien"
+msgstr "Group real estates"
 
-msgid "Du hast keine Firma/Gang!"
-msgstr "You have no firm/gang!"
+msgid "Du hast keine Gruppe!"
+msgstr "You have no group!"
 
 msgid "Ausweis / Kaufvertrag"
 msgstr "ID / Sales contract"
@@ -532,8 +532,8 @@ msgstr "Faction: -"
 msgid "Unternehmen: -"
 msgstr "Company: -"
 
-msgid "Gang/Firma: -"
-msgstr "Gang/Firm: -"
+msgid "Gruppe: -"
+msgstr "Group: -"
 
 msgid "Strafen:"
 msgstr "Punishments:"
@@ -577,8 +577,8 @@ msgstr "-"
 msgid "Unternehmen: %s"
 msgstr "Company: %s"
 
-msgid "Gang/Firma: %s"
-msgstr "Gang/Firm: %s"
+msgid "Gruppe: %s"
+msgstr "Group: %s"
 
 msgid "Job: %s"
 msgstr "Job: %s"
@@ -940,10 +940,10 @@ msgstr "Dismiss strippers"
 msgid "Stripperinnen engagieren"
 msgstr "Hire strippers"
 
-msgid "Möchtest du wirklich %s für deine Firma um %d$ kaufen?"
+msgid "Möchtest du wirklich %s für deine Gruppe um %d$ kaufen?"
 msgstr "Do you really want to buy %s for your firm for %d$?"
 
-msgid "Möchtest du wirklich %s deiner Firma um %d$ verkaufen?"
+msgid "Möchtest du wirklich %s deiner Gruppe um %d$ verkaufen?"
 msgstr "Do you really want to sell %s of your firm for %d$?"
 
 msgid "Möchtest du wirklich Stripperinnen engagieren? (Kosten 15$ pro 15 Minuten!)"
@@ -1570,14 +1570,14 @@ msgstr "Please select an item first"
 msgid "Bitte gebe einen gültige Anzahl ein!"
 msgstr "Please enter a valid number!"
 
-msgid "Private Gang/Firma erstellen"
-msgstr "Create private gang/firm"
+msgid "Gruppe erstellen"
+msgstr "Create group"
 
-msgid "Hier kannst du eine private Firma oder Gang gründen.\nEine Gründung kostet %s!"
-msgstr "Here you can create a private firm or gang.\nA foundation costs %s!"
+msgid "Hier kannst du eine Gruppe gründen.\nEine Gründung kostet %s!"
+msgstr "Here you can create a group.\nFounding one costs %s!"
 
-msgid "Name der Gang/Firma:"
-msgstr "Name of the gang/firm:"
+msgid "Name der Gruppe:"
+msgstr "Name of the Group:"
 
 msgid "Typ auswählen:"
 msgstr "Select type:"
@@ -1594,14 +1594,14 @@ msgstr "Name too long! Maximum 24 characters!"
 msgid "Bitte gib zuerst einen Namen ein!"
 msgstr "Please enter a name first!"
 
-msgid "Firma / Gang:"
-msgstr "Firm / Gang:"
+msgid "Gruppe:"
+msgstr "Group:"
 
 msgid "Namen ändern"
 msgstr "Change name"
 
-msgid "Bitte gib einen neuen Name für deine Firma / Gang ein! Dies kostet dich %d$!"
-msgstr "Please enter a new name for your firm / gang! This will cost you %d$!"
+msgid "Bitte gib einen neuen Name für deine Gruppe ein! Dies kostet dich %d$!"
+msgstr "Please enter a new name for your group! This will cost you %d$!"
 
 msgid "Achtung: Der Name ist nur alle 30 Tage änderbar!"
 msgstr "Attention: The name can only be changed every 30 days!"
@@ -1642,8 +1642,8 @@ msgstr "Remove vehicle"
 msgid "Privat-Fahrzeuge:"
 msgstr "Private vehicles:"
 
-msgid "Fahrzeug zur \nFirma/Gang hinzufügen"
-msgstr "Add Vehicle to\nfirm/gang"
+msgid "Fahrzeug zur \nGruppe hinzufügen"
+msgstr "Add Vehicle to\ngroup"
 
 msgid "Geschäfte"
 msgstr "Shops"
@@ -1684,11 +1684,11 @@ msgstr "Add vehicle\nfor %s"
 msgid "Hafen"
 msgstr "Harbour"
 
-msgid "Möchtest du deine Firma/Gang wirklich verlassen?"
-msgstr "Do you really want to leave your firm/gang?"
+msgid "Möchtest du deine Gruppe wirklich verlassen?"
+msgstr "Do you really want to leave your group?"
 
-msgid "Möchtest du deine Firma/Gang wirklich löschen\n Es werden keine Kosten erstattet!"
-msgstr "Do you really want to delete your firm/gang?\n Costs will not be refunded!"
+msgid "Möchtest du deine Gruppe wirklich löschen\n Es werden keine Kosten erstattet!"
+msgstr "Do you really want to delete your group?\n Costs will not be refunded!"
 
 msgid "Rangname:"
 msgstr "Rank name:"
@@ -1708,11 +1708,11 @@ msgstr "The vehicle can not be in the garage!"
 msgid "Das Fahrzeug darf sich nicht im Autohof befinden!"
 msgstr "The vehicle can not be in the carport!"
 
-msgid "Möchtest du das Fahrzeug wirklich in die Firma setzen?"
-msgstr "Do you really want to put the vehicle in the firm?"
+msgid "Möchtest du das Fahrzeug wirklich in die Gruppe setzen?"
+msgstr "Do you really want to put the vehicle in the group?"
 
-msgid "Möchtest du das Fahrzeug wirklich aus der Firma entfernen?"
-msgstr "Do you really want to remove the vehicle from the firm?"
+msgid "Möchtest du das Fahrzeug wirklich aus der Gruppe entfernen?"
+msgstr "Do you really want to remove the vehicle from the group?"
 
 msgid "Dieses Fahrzeug befindet sich in %s!\n(Siehe Blip auf der Karte)\n(Klicke hier, um das Blip zu löschen!)"
 msgstr "This vehicle is located in %s!\n(See blip on the map)\n(Click here to delete the blip!)"
@@ -1732,8 +1732,8 @@ msgstr "The business is on %s!\n(See blip on the map)\n(Click here to delete the
 msgid "Erwerbliche Immobilien"
 msgstr "Available real estates"
 
-msgid "Hier kannst du eine Immobilie für deine Firma/Gang erwerben!"
-msgstr "Here you can purchase a property for your firm/gang!"
+msgid "Hier kannst du eine Immobilie für deine Gruppe erwerben!"
+msgstr "Here you can purchase a property for your group!"
 
 msgid "Anschauen"
 msgstr "View"
@@ -2719,9 +2719,6 @@ msgstr "Police computer"
 msgid "W"
 msgstr "W"
 
-msgid "Firma/Gang"
-msgstr "Firm/Gang"
-
 msgid "Spielerinformationen"
 msgstr "Player information"
 
@@ -2893,8 +2890,8 @@ msgstr "VIP"
 msgid "Unternehmen"
 msgstr "Company"
 
-msgid "Gang/Firma"
-msgstr "Gang/Firm"
+msgid "Gruppe"
+msgstr "Group"
 
 msgid "Spielzeit"
 msgstr "Playtime"
@@ -3013,8 +3010,8 @@ msgstr "You were invited to the company \\"
 msgid "Du wurdest in die Gruppe \\"
 msgstr "You've been invited to the group \\"
 
-msgid "- keine Firma/Gang -"
-msgstr "- no firm/gang -"
+msgid "- keine Gruppe -"
+msgstr "- no group -"
 
 msgid "(Kaufen: %s$)"
 msgstr "(Buy: %s$)"
@@ -3133,8 +3130,8 @@ msgstr "Activate faction chat"
 msgid "Unternehmenschat aktivieren"
 msgstr "Activate company chat"
 
-msgid "Firmen/Gangchat aktivieren"
-msgstr "Enable firm/gang chat"
+msgid "Gruppenchat aktivieren"
+msgstr "Enable group chat"
 
 msgid "Bündnischat aktivieren"
 msgstr "Activate alliance chat"
@@ -4138,8 +4135,8 @@ msgstr "Service"
 msgid "Frak/Untern."
 msgstr "Fac./Comp."
 
-msgid "Firmen/Gangs"
-msgstr "Companies/Gangs"
+msgid "Gruppen"
+msgstr "Groups"
 
 msgid "Ungültige Telefonnummer eingegeben!"
 msgstr "Entered invalid phone number!"
@@ -4792,11 +4789,8 @@ msgstr "House robbery status:"
 msgid "Fahrzeuge: %s/%s"
 msgstr "Vehicles: %s/%s"
 
-msgid "Fahrzeug zur Firma/Gang hinzufügen"
-msgstr "Add vehicle to company/gang"
-
-msgid "Fahrzeug zur %s hinzufügen"
-msgstr "Add vehicle to %s"
+msgid "Fahrzeug zur Gruppe hinzufügen"
+msgstr "Add vehicle to group"
 
 msgid "Bitte reconnecten damit die Änderung ihre Wirkung zeigt!"
 msgstr "Please reconnect so that the change shows its effect!"
@@ -5775,3 +5769,22 @@ msgstr "Advert from %s"
 
 msgid "Skribble ist ein Mehrspieler mal und rate Spiel. Während ein Spieler ein Wort malt, müssen andere das Wort erraten um Punkte zu bekommen. Der Spieler mit den meisten Punkte am Ende des Spiels gewinnt!"
 msgstr "Skribble is a multiplayer drawing and guessing game. While one player draws a word, others must guess the word to earn points. The player with the most points at the end of the game wins!"
+
+msgid "Gruppe (%s):"
+msgstr "Group (%s):"
+
+msgid "Firma"
+msgstr "Firm"
+
+msgid "Gruppen-Logs"
+msgstr "Group-Logs"
+
+msgid "Aktion:"
+msgstr "Action:"
+
+msgid "Shopraub Status:"
+msgstr "Shop rob status:"
+
+msgid "Shopfahrzeugraub Status:"
+msgstr "Shop vehicle rob status:"
+

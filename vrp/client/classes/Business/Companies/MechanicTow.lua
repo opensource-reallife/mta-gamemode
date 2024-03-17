@@ -13,7 +13,7 @@ function MechanicTow:constructor()
 					triggerServerEvent("mechanicOpenTakeGUI", localPlayer, "permanentVehicle")
 				end
 			)
-			self.ms_SelectionGUI:addItem(_"Firma/Gruppen Fahrzeug", Color.Accent,
+			self.ms_SelectionGUI:addItem(_"Gruppen Fahrzeug", Color.Accent,
 				function()
 					triggerServerEvent("mechanicOpenTakeGUI", localPlayer, "groupVehicle")
 				end

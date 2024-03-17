@@ -85,10 +85,10 @@ function ShopVehicleRobManager:Event_onVehicleSteal()
 				client:sendError(_("Du bist im Dienst, du darfst keinen Überfall machen!", client))
 			end
 		else
-			client:sendError(_("Du bist Mitglied einer privaten Firma! Nur Gangs können überfallen!", client))
+			client:sendError(_("Deine Gruppe hat dafür den falschen Typ!", client))
 		end
 	else
-		client:sendError(_("Du bist kein Mitglied einer privaten Gang!", client))
+		client:sendError(_("Du bist kein Mitglied einer Gruppe!", client))
 	end
 end
 
