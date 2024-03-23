@@ -101,6 +101,9 @@ function LocalPlayer:constructor()
 	local col7 = createColCuboid(1537.90, -1950.23, 10, 400, 400, 250) -- user meetup point
 	self.m_NoOcclusionZone = NonOcclusionZone:new(col7)
 
+	local col8 = createColRectangle(498.69, -1571.02, 80, 140) -- jewelry store
+	self.m_NoOcclusionZone = NonOcclusionZone:new(col8)
+
 	NetworkMonitor:new()
 end
 

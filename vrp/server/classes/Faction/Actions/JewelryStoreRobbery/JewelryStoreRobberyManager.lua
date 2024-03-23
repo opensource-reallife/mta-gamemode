@@ -9,41 +9,51 @@
 JewelryStoreRobberyManager = inherit(Singleton)
 
 JewelryStoreRobberyManager.Shelves = {
-	{Vector3(44, 106.9, 697.5), Vector3(0, 0, 0)},
-	{Vector3(43.99, 108.354, 697.5), Vector3(0, 0, 270)},
-	{Vector3(43.99, 109.97, 697.5), Vector3(0, 0, 270)},
-	{Vector3(44.64, 107.718, 697.5), Vector3(0, 0, 90)},
-	{Vector3(44.64, 109.335, 697.5), Vector3(0, 0, 90)},
-	{Vector3(44.64, 110.95, 697.5), Vector3(0, 0, 90)},
-	{Vector3(43.99, 111.586, 697.5), Vector3(0, 0, 270)},
-	{Vector3(45.4, 101.664, 697.5), Vector3(0, 0, 90)},
-	{Vector3(44.6, 102.298, 697.5), Vector3(0, 0, 180)},
-	{Vector3(44, 101.669, 697.5), Vector3(0, 0, 0)},
-	{Vector3(42.4, 101.669, 697.5), Vector3(0, 0, 0)},
-	{Vector3(43, 102.298, 697.5), Vector3(0, 0, 180)},
-	{Vector3(41.6, 102.3, 697.5), Vector3(0, 0, 270)},
-	{Vector3(39.167, 112.17, 697.5), Vector3(0, 0, 0)},
-	{Vector3(39.8, 112.989, 697.5), Vector3(0, 0, 90)},
-	{Vector3(39.8, 114.6, 697.5), Vector3(0, 0, 90)},
-	{Vector3(39.803, 116.035, 697.5), Vector3(0, 0, 180)},
-	{Vector3(37.429, 116.035, 697.5), Vector3(0, 0, 180)},
-	{Vector3(36.801, 115.215, 697.5), Vector3(0, 0, 270)},
-	{Vector3(36.801, 113.6, 697.5), Vector3(0, 0, 270)},
-	{Vector3(36.8, 112.17, 697.5), Vector3(0, 0, 0)},
-	{Vector3(40.1, 107.22, 697.5), Vector3(0, 0, 90)},
-	{Vector3(39.2822, 107.867, 697.5), Vector3(0, 0, 180)},
-	{Vector3(37.668, 107.867, 697.5), Vector3(0, 0, 180)},
-	{Vector3(36.212, 107.86, 697.5), Vector3(0, 0, 270)},
-	{Vector3(37.03, 107.21, 697.5), Vector3(0, 0, 0)},
-	{Vector3(38.6459, 107.21, 697.5), Vector3(0, 0, 0)}
+	{Vector3(565.179, -1494.9, 13.5), Vector3(0, 0, 180)},
+	{Vector3(566.789, -1494.9, 13.5), Vector3(0, 0, 180)},
+	{Vector3(568.4, -1494.9, 13.5), Vector3(0, 0, 180)},
+	{Vector3(564.539, -1495.5, 13.5), Vector3(0, 0, 0)},
+	{Vector3(566.15, -1495.5, 13.5), Vector3(0, 0, 0)},
+	{Vector3(567.763, -1495.5, 13.5), Vector3(0, 0, 0)},
+
+	{Vector3(572.2, -1494.9, 13.5), Vector3(0, 0, 180)},
+	{Vector3(573.799, -1494.9, 13.5), Vector3(0, 0, 180)},
+	{Vector3(575.4, -1494.9, 13.5), Vector3(0, 0, 180)},
+	{Vector3(571.559, -1495.5, 13.5), Vector3(0, 0, 0)},
+	{Vector3(573.169, -1495.5, 13.5), Vector3(0, 0, 0)},
+	{Vector3(574.77, -1495.5, 13.5), Vector3(0, 0, 0)},
+
+	{Vector3(568.2, -1499.4, 13.5), Vector3(0, 0, 270)},
+	{Vector3(569.599, -1499.4, 13.5), Vector3(0, 0, 180)},
+	{Vector3(571.2, -1499.4, 13.5), Vector3(0, 0, 180)},
+	{Vector3(572, -1500.032, 13.5), Vector3(0, 0, 90)},
+	{Vector3(569, -1500.03, 13.5), Vector3(0, 0, 0)},
+	{Vector3(570.599, -1500.03, 13.5), Vector3(0, 0, 0)},
+
+	{Vector3(565.179, -1494.9 - 23.3, 13.5), Vector3(0, 0, 180)},
+	{Vector3(566.789, -1494.9 - 23.3, 13.5), Vector3(0, 0, 180)},
+	{Vector3(568.4, -1494.9 - 23.3, 13.5), Vector3(0, 0, 180)},
+	{Vector3(564.539, -1495.5 - 23.3, 13.5), Vector3(0, 0, 0)},
+	{Vector3(566.15, -1495.5 - 23.3, 13.5), Vector3(0, 0, 0)},
+	{Vector3(567.763, -1495.5 - 23.3, 13.5), Vector3(0, 0, 0)},
+
+	{Vector3(572.2, -1494.9 - 23.3, 13.5), Vector3(0, 0, 180)},
+	{Vector3(573.799, -1494.9 - 23.3, 13.5), Vector3(0, 0, 180)},
+	{Vector3(575.4, -1494.9 - 23.3, 13.5), Vector3(0, 0, 180)},
+	{Vector3(571.559, -1495.5 - 23.3, 13.5), Vector3(0, 0, 0)},
+	{Vector3(573.169, -1495.5 - 23.3, 13.5), Vector3(0, 0, 0)},
+	{Vector3(574.77, -1495.5 - 23.3, 13.5), Vector3(0, 0, 0)},
+
+	{Vector3(568.2, -1499.4 - 14.3, 13.5), Vector3(0, 0, 270)},
+	{Vector3(569.599, -1499.4 - 14.3, 13.5), Vector3(0, 0, 180)},
+	{Vector3(571.2, -1499.4 - 14.3, 13.5), Vector3(0, 0, 180)},
+	{Vector3(572, -1500.032 - 14.3, 13.5), Vector3(0, 0, 90)},
+	{Vector3(569, -1500.03 - 14.3, 13.5), Vector3(0, 0, 0)},
+	{Vector3(570.599, -1500.03 - 14.3, 13.5), Vector3(0, 0, 0)},
 }
 
 JewelryStoreRobberyManager.ShelvesAngled = {
-	{Vector3(48.3009, 109.422, 697.45), Vector3(0, 0, 270)},
-	{Vector3(31.091, 111.552, 697.45), Vector3(0, 0, 90)},
-	{Vector3(41.1634, 118.991, 697.45), Vector3(0, 0, 0)},
-	{Vector3(31.091, 109.273, 697.45), Vector3(0, 0, 90)},
-	{Vector3(46.4909, 99.3103, 697.45), Vector3(0, 0, 180)}
+	--{Vector3(0, 0, 0), Vector3(0, 0, 0)},
 }
 
 JewelryStoreRobberyManager.ShelveContent = {
@@ -95,16 +105,15 @@ JewelryStoreRobberyManager.ShelveAngleContent = {
 
 function JewelryStoreRobberyManager:constructor()
 	self.m_Interior = 0
-	self.m_Dimension = 60001
+	self.m_Dimension = 0
 
-	self.m_ShopPed = TargetableNPC:new(57, Vector3(32.613, 101.731, 698.455), 0)
+	self.m_ShopPed = TargetableNPC:new(57, Vector3(569.9, -1506.8, 14.5))
+	self.m_ShopPed:setRotation(0, 0, 90)
     self.m_ShopPed:setInterior(self.m_Interior)
     self.m_ShopPed:setDimension(self.m_Dimension)
     self.m_ShopPed:setImmortal(true)
 	self.m_ShopPed:setFrozen(true)
     self.m_ShopPed.onTargetted = bind(self.Event_PedTargetted, self)
-
-	self.m_MinJewelryRobberyStateMembers = 2
 
 	self.m_Players = {}
 	setmetatable(self.m_Players, { __mode = "v" })
@@ -117,14 +126,14 @@ function JewelryStoreRobberyManager:constructor()
 	self.m_ShelvesAngled = {}
 	self.m_ShelveCount = 0
 
-	self.m_PedColShape = createColSphere(Vector3(32.613, 102.031, 698.455), 5)
+	self.m_PedColShape = createColSphere(Vector3(569.9, -1506.8, 14.5), 5)
 	addEventHandler("onColShapeHit", self.m_PedColShape, bind(self.Event_ShopPedColHit, self))
 
-	self.m_ShopColShape = createColCuboid(Vector3(28.887, 97.147, 691.111), Vector3(25.277, 32.362, 13.684))
+	self.m_ShopColShape = createColCuboid(Vector3(562.12, -1521.17, 13), Vector3(20, 30, 10))
 	addEventHandler("onColShapeHit", self.m_ShopColShape, bind(self.Event_ShopEnter, self))
 	addEventHandler("onColShapeLeave", self.m_ShopColShape, bind(self.Event_ShopLeave, self))
 
-	InteriorEnterExit:new(Vector3(561.292, -1506.786, 14.548), Vector3(48.057, 122.831, 698.455), 90, 90, self.m_Interior, self.m_Dimension, 0, 0)
+	--InteriorEnterExit:new(Vector3(561.292, -1506.786, 14.548), Vector3(48.057, 122.831, 698.455), 90, 90, self.m_Interior, self.m_Dimension, 0, 0)
 
 	self:spawnShelves()
 	self:spawnShelveGlassesAndContent()
@@ -291,7 +300,7 @@ function JewelryStoreRobberyManager:Event_ShopEnter(hitElement)
 		if not table.find(self.m_Players, hitElement) then
 			table.insert(self.m_Players, hitElement)
 		end
-		hitElement:setVirtualTime(12, 0)
+		--hitElement:setVirtualTime(12, 0)
 		if self.m_RobberyInstance then
 			self.m_RobberyInstance:onShopEnter(hitElement)
 		end
@@ -301,7 +310,7 @@ end
 function JewelryStoreRobberyManager:Event_ShopLeave(hitElement)
 	if hitElement:getType() == "player" then
 		if table.removevalue(self.m_Players, hitElement) then
-			hitElement:clearVirtualTime()
+			--hitElement:clearVirtualTime()
 			if self.m_RobberyInstance then
 				self.m_RobberyInstance:onShopLeave(hitElement)
 			end
@@ -336,7 +345,7 @@ function JewelryStoreRobberyManager:Event_PedTargetted(ped, attacker)
 
 			for key, player in pairs(self.m_Players) do
 				if player and isElement(player) then
-					outputChatBox(_("Geschäftsbesitzer sagt: Bitte tun sie mir nichts!", player), player, 255, 255, 255)
+					outputChatBox(_("Verkäufer sagt: Bitte tun Sie mir nichts!", player), player, 255, 255, 255)
 				end
 			end
 		else

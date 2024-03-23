@@ -4526,3 +4526,6 @@ msgstr "reels %s out of the water!"
 
 msgid "hat einen Fisch verloren!"
 msgstr "lost a fish!"
+
+msgid "Verkäufer sagt: Bitte tun Sie mir nichts!"
+msgstr "Clerk says: Please don't hurt me!"

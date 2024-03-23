@@ -10,7 +10,7 @@ JewelryStoreRobberyManager = inherit(Singleton)
 
 function JewelryStoreRobberyManager:constructor()
 	self.m_Interior = 0
-	self.m_Dimension = 60001
+	self.m_Dimension = 0
 
 	addRemoteEvents{"jewelryStoreRobberySound", "jewelryStoreRobberyPedAnimation", "jewelryStoreRobberyAlarmStart", "jewelryStoreRobberyAlarmEnd", "jewelryStoreRobberyBreakGlass"}
 
@@ -28,7 +28,7 @@ function JewelryStoreRobberyManager:destructor()
 end
 
 function JewelryStoreRobberyManager:Event_PlaySound(reverse)
-	local sound = playSound3D("files/audio/JewelryStoreRobbery/money.mp3", Vector3(32.613, 102.031, 698.455))
+	local sound = playSound3D("files/audio/JewelryStoreRobbery/money.mp3", Vector3(569.9, -1506.8, 14.5))
 	sound:setDimension(self.m_Dimension)
 	sound:setInterior(self.m_Interior)
 	sound:setMinDistance(30)
@@ -50,12 +50,12 @@ function JewelryStoreRobberyManager:Event_ShopPedAnimation(block, anim, time, lo
 end
 
 function JewelryStoreRobberyManager:Event_StartAlarm()
-	if not self.m_AlarmInside then
+	--[[if not self.m_AlarmInside then
 		self.m_AlarmInside = playSound3D("files/audio/Alarm.mp3", Vector3(30.79, 116.5, 700), true)
 		self.m_AlarmInside:setDimension(self.m_Dimension)
 		self.m_AlarmInside:setInterior(self.m_Interior)
 		self.m_AlarmInside:setMaxDistance(50)
-	end
+	end]]
 
 	if not self.m_AlarmOutside then
 		self.m_AlarmOutside = playSound3D("files/audio/Alarm.mp3", Vector3(557.41015625, -1498.75, 20.875), true)
