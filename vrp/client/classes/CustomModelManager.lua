@@ -46,6 +46,15 @@ function CustomModelManager:constructor()
 	--bank
 	self:loadImportTXD("files/models/buildings/casino_heist/bank_fence.txd", 8481)
 	self:loadImportCOL("files/models/buildings/casino_heist/bank_fence.col", 8481)
+	self:loadImportCOL("files/models/buildings/bank.col", 4600)
+	self:loadImportTXD("files/models/buildings/bank.txd", 4600)
+	self:loadImportDFF("files/models/buildings/bank.dff", 4600)
+	self:loadImportCOL("files/models/objects/bankDoor.col", 1930)
+	self:loadImportTXD("files/models/objects/bankDoor.txd", 1930)
+	self:loadImportDFF("files/models/objects/bankDoor.dff", 1930)
+	self:loadImportCOL("files/models/objects/bankServer.col", 1880)
+	self:loadImportTXD("files/models/objects/bankServer.txd", 1880)
+	self:loadImportDFF("files/models/objects/bankServer.dff", 1880)
 
 	--fishing shop
 	self:loadImportCOL("files/models/buildings/fishshop.col", 6289)

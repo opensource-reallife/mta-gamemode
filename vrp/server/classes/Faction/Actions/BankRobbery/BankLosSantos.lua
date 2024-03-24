@@ -17,6 +17,8 @@ function BankLosSantos:constructor()
 		Vector3(821.55, -1003.00, 26.2)
 	}
 
+	self.ms_StateFinishMarker = Vector3(1598.78064, -1611.63953, 12.5)
+
 	self.ms_BagSpawns = {
 		Vector3(1429.65, -1003.55, 12.6),
 		Vector3(1431.38, -1004.01, 12.6),
@@ -39,6 +41,11 @@ function BankLosSantos:constructor()
 	}
 
 	self.ms_MoneyPerBag = 9000
+
+	self.ms_VaultOpenTime = 3000 --3 secs
+	self.ms_BankRobGeneralTime = 60*1000*20 --20 mins
+
+	self.m_Difficulty = 1
 
 	self:build()
 end
@@ -64,6 +71,8 @@ function BankLosSantos:build()
 		object:setScale(1.2)
 	end
 
+	self.m_CurrentMoney = math.random(70000, 80000)
+
 	self.m_SecurityRoomShape = createColCuboid(1428, -1006, 12, 9.5, 11, 4)
 	self.m_Timer = false
 	self.m_ColShape = createColSphere(self.m_BankDoor:getPosition(), 60)
@@ -75,9 +84,10 @@ function BankLosSantos:build()
 	self:createSafes()
 
 	self.m_HelpColShape = createColSphere(1465.25, -993.04, 26.83, 5)
-	self.m_HelpColFunc = bind(self.onHelpColHit, self)
-	addEventHandler("onColShapeHit", self.m_HelpColShape, self.m_HelpColFunc)
-	addEventHandler("onColShapeLeave", self.m_HelpColShape, self.m_HelpColFunc)
+	self.m_HelpColHitFunc = bind(self.onHelpColHit, self)
+	self.m_HelpColLeaveFunc = bind(self.onHelpColLeave, self)
+	addEventHandler("onColShapeHit", self.m_HelpColShape, self.m_HelpColHitFunc)
+	addEventHandler("onColShapeLeave", self.m_HelpColShape, self.m_HelpColLeaveFunc)
 
 	addEventHandler("onColShapeHit", self.m_SecurityRoomShape, function(hitElement, dim)
 		if hitElement:getType() == "player" and dim then
@@ -114,6 +124,11 @@ function BankLosSantos:startRob(player)
 	addEventHandler("onVehicleStartEnter", self.m_Truck, bind(self.Event_OnTruckStartEnter, self))
 
 	self.m_HackMarker = createMarker( 1486.43, -979.75, 15, "arrow", 0.8, 255, 255, 0)
+
+	-- disable this bank rob for 1 hour
+	self.m_Difficulty = 0
+	if isTimer(self.m_DifficultyTimer) then self.m_DifficultyTimer:destroy() end
+	self.m_DifficultyTimer = Timer(function() self.m_Difficulty = 1 end, 60*1000*60, 1)
 end
 
 function BankLosSantos:openSafeDoor()
@@ -218,4 +233,8 @@ function BankLosSantos:createSafes()
 		safe:setData("clickable", true, true)
 		addEventHandler("onElementClicked", safe, self.m_OnSafeClickFunction)
 	end
+end
+
+function BankLosSantos:getDifficulty()
+    return self.m_Difficulty or 0
 end

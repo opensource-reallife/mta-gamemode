@@ -439,7 +439,7 @@
 	<script src="server/classes/Faction/Actions/SearchAndRescue/SAR.lua" type="server"/>
 	<script src="server/classes/Faction/Actions/SearchAndRescue/SARManager.lua" type="server"/>
 	<script src="server/classes/Faction/Actions/BankRobbery/BankRobbery.lua" type="server"/>
-	<!--<script src="server/classes/Faction/Actions/BankRobbery/BankLosSantos.lua" type="server"/>-->
+	<script src="server/classes/Faction/Actions/BankRobbery/BankLosSantos.lua" type="server"/>
 	<script src="server/classes/Faction/Actions/BankRobbery/BankPalomino.lua" type="server"/>
 	<script src="server/classes/Faction/Actions/BankRobbery/CasinoHeist.lua" type="server"/>
 	<script src="server/classes/Faction/Actions/BankRobbery/BankRobberyManager.lua" type="server"/>
@@ -3368,6 +3368,9 @@
 	<vrpfile src="files/models/buildings/kart.txd" />
 	<vrpfile src="files/models/buildings/kart.dff" />
 	<vrpfile src="files/models/buildings/kart.col" />
+	<vrpfile src="files/models/buildings/bank.col" />
+	<vrpfile src="files/models/buildings/bank.txd" />
+	<vrpfile src="files/models/buildings/bank.dff" />
 
 	<!--Events-->
 	<vrpfile src="files/models/events/halloween/shotgspa.txd"/>
@@ -3429,6 +3432,12 @@
 	<vrpfile src="files/models/objects/gasstation.dff"/>
 	<vrpfile src="files/models/objects/CinemaCurtain.txd"/>
 	<vrpfile src="files/models/objects/CinemaEntrance.txd"/>
+	<vrpfile src="files/models/objects/bankDoor.col" />
+	<vrpfile src="files/models/objects/bankDoor.txd" />
+	<vrpfile src="files/models/objects/bankDoor.dff" />
+	<vrpfile src="files/models/objects/bankServer.col" />
+	<vrpfile src="files/models/objects/bankServer.txd" />
+	<vrpfile src="files/models/objects/bankServer.dff" />
 
 	<!--Vehicles-->
 	<vrpfile src="files/models/vehicles/extensions/lightbar.dff"/>
