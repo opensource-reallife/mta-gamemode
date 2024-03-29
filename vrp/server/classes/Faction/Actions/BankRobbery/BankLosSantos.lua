@@ -236,5 +236,5 @@ function BankLosSantos:createSafes()
 end
 
 function BankLosSantos:getDifficulty()
-    return self.m_Difficulty or 0
+    return DEBUG and self.m_Difficulty or 0
 end
