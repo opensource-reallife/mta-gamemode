@@ -538,8 +538,8 @@
 	<!-- Christmas -->
 	<script src="server/classes/Events/Christmas/CookieClickerManager.lua" type="server"/>
 	<script src="server/classes/Events/Christmas/Christmas.lua" type="server"/>
-	<script src="server/classes/Events/Christmas/QuestManager.lua" type="server"/>
-	<script src="server/classes/Events/Christmas/Quest.lua" type="server"/>
+	<script src="server/classes/Events/Christmas/ChristmasQuestManager.lua" type="server"/>
+	<script src="server/classes/Events/Christmas/ChristmasQuest.lua" type="server"/>
 	<script src="server/classes/Events/Christmas/EasterEggs.lua" type="server"/>
 
 	<script src="server/classes/Events/Christmas/Quests/QuestPhotography.lua" type="server"/>
@@ -1219,8 +1219,8 @@
 	<!-- Christmas -->
 	<script src="client/classes/Events/Christmas/Christmas.lua" type="client"/>
 	<script src="client/classes/Events/Christmas/ChristmasBonusGUI.lua" type="client"/>
-	<script src="client/classes/Events/Christmas/QuestManager.lua" type="client"/>
-	<script src="client/classes/Events/Christmas/QuestGUI.lua" type="client"/>
+	<script src="client/classes/Events/Christmas/ChristmasQuestManager.lua" type="client"/>
+	<script src="client/classes/Events/Christmas/ChristmasQuestGUI.lua" type="client"/>
 	<script src="client/classes/Events/Christmas/AdventCalenderGUI.lua" type="client"/>
 	<script src="client/classes/Events/Christmas/Quests/QuestPhotography.lua" type="client"/>
 	<script src="client/classes/Events/Christmas/Quests/QuestSantaKill.lua" type="client"/>

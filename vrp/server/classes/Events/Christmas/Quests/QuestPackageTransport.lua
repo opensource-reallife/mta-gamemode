@@ -1,4 +1,4 @@
-QuestPackageTransport = inherit(Quest)
+QuestPackageTransport = inherit(ChristmasQuest)
 
 QuestPackageTransport.Targets = {
 	[4] = Vector3(-2558.92, 658.28, 13.95),
@@ -10,7 +10,7 @@ QuestPackageTransport.Targets = {
 }
 
 function QuestPackageTransport:constructor(id)
-	Quest.constructor(self, id)
+	ChristmasQuest.constructor(self, id)
 	self.m_Boxes = {}
 	self.m_Vehicles = {}
 	self.m_Trailers = {}
@@ -31,14 +31,14 @@ function QuestPackageTransport:constructor(id)
 end
 
 function QuestPackageTransport:destructor(id)
-	Quest.destructor(self)
+	ChristmasQuest.destructor(self)
 
 	removeEventHandler("onPlayerVehicleExit", getRootElement(), self.m_ExitBind)
 	removeEventHandler("onTrailerDetach", getRootElement(), self.m_DetachBind)
 end
 
 function QuestPackageTransport:addPlayer(player)
-	Quest.addPlayer(self, player)
+	ChristmasQuest.addPlayer(self, player)
 	self.m_Vehicles[player] = TemporaryVehicle.create(485, 1488.35, -1722, 13.20, 270)
 	self.m_Vehicles[player].owner = player
 	self.m_Vehicles[player].christmas = true
@@ -62,7 +62,7 @@ function QuestPackageTransport:addPlayer(player)
 end
 
 function QuestPackageTransport:removePlayer(player)
-	Quest.removePlayer(self, player)
+	ChristmasQuest.removePlayer(self, player)
 	if isElement(self.m_Vehicles[player]) then self.m_Vehicles[player]:destroy() end
 	if isElement(self.m_Trailers[player]) then self.m_Trailers[player]:destroy() end
 	for i, package in pairs(self.m_Boxes[player]) do

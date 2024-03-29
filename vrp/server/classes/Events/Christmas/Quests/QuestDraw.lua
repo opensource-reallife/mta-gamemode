@@ -1,4 +1,4 @@
-QuestDraw = inherit(Quest)
+QuestDraw = inherit(ChristmasQuest)
 
 QuestDraw.Targets = {
 	[4] = "SantaClaus",
@@ -7,7 +7,7 @@ QuestDraw.Targets = {
 }
 
 function QuestDraw:constructor(id)
-	Quest.constructor(self, id)
+	ChristmasQuest.constructor(self, id)
 
 	self.m_Target = QuestPhotography.Targets[id]
 
@@ -33,7 +33,7 @@ function QuestDraw:constructor(id)
 end
 
 function QuestDraw:destructor(id)
-	Quest.destructor(self)
+	ChristmasQuest.destructor(self)
 
 	removeEventHandler("questDrawRequestPlayers", root, self.m_RequestPlayersBind)
 	removeEventHandler("questDrawReceiveAcceptImage", root, self.m_AcceptImageBind)
@@ -48,7 +48,7 @@ function QuestDraw:requestPlayers()
 end
 
 function QuestDraw:addPlayer(player)
-	Quest.addPlayer(self, player)
+	ChristmasQuest.addPlayer(self, player)
 	local contestName = self.m_Name
 	local result = sql:queryFetchSingle("SELECT Accepted FROM ??_drawContest WHERE Contest = ? AND UserId = ?", sql:getPrefix(), contestName, player:getId())
 	if result then

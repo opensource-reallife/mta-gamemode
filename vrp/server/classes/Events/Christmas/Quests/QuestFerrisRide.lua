@@ -1,9 +1,9 @@
-QuestFerrisRide = inherit(Quest)
+QuestFerrisRide = inherit(ChristmasQuest)
 
 addEvent("onFerrisWheelRide")
 
 function QuestFerrisRide:constructor(id)
-	Quest.constructor(self, id)
+	ChristmasQuest.constructor(self, id)
 	self.m_FortuneBind = bind(self.onFerrisRide, self)
 	self.m_WheelPlayed = {}
 
@@ -11,16 +11,16 @@ function QuestFerrisRide:constructor(id)
 end
 
 function QuestFerrisRide:destructor(id)
-	Quest.destructor(self)
+	ChristmasQuest.destructor(self)
 	removeEventHandler("onFerrisWheelRide", root, self.m_FortuneBind)
 end
 
 function QuestFerrisRide:addPlayer(player)
-	Quest.addPlayer(self, player)
+	ChristmasQuest.addPlayer(self, player)
 end
 
 function QuestFerrisRide:removePlayer(player)
-	Quest.removePlayer(self, player)
+	ChristmasQuest.removePlayer(self, player)
 end
 
 function QuestFerrisRide:onFerrisRide()

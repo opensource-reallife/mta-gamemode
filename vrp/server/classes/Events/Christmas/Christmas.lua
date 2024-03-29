@@ -103,7 +103,7 @@ elseif month == 12 and day >= 25 and day <= 31 then
 end
 
 function Christmas:constructor()
-	self.m_QuestManager = QuestManager:new()
+	self.m_ChristmasQuestManager = ChristmasQuestManager:new()
 	self.m_AdventCalender = {}
 
 	self.m_BankServerAccount = BankServer.get("event.christmas")

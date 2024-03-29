@@ -1,4 +1,4 @@
-QuestNPCTransport = inherit(Quest)
+QuestNPCTransport = inherit(ChristmasQuest)
 
 QuestNPCTransport.Targets = {
 	[1] = Vector3(1274.49, 294.03, 19),
@@ -7,7 +7,7 @@ QuestNPCTransport.Targets = {
 }
 
 function QuestNPCTransport:constructor(id)
-	Quest.constructor(self, id)
+	ChristmasQuest.constructor(self, id)
 	self.m_Spawn = Vector3(1476.10, -1692.99, 14.05)
 	self.m_Target = QuestNPCTransport.Targets[id]
 	self.m_Marker = createMarker(self.m_Target, "cylinder", 3, 255, 0, 0)
@@ -23,7 +23,7 @@ function QuestNPCTransport:constructor(id)
 end
 
 function QuestNPCTransport:destructor(id)
-	Quest.destructor(self)
+	ChristmasQuest.destructor(self)
 	for index, bot in pairs(self.m_Bots) do
 		if bot then
 			if bot then
@@ -82,7 +82,7 @@ function QuestNPCTransport:checkDistance()
 end
 
 function QuestNPCTransport:addPlayer(player)
-	Quest.addPlayer(self, player)
+	ChristmasQuest.addPlayer(self, player)
 
 	self.m_Bots[player] = BotManager:getSingleton():addNPC(244, self.m_Spawn, nil, player)
 	self.m_Bots[player]:setData("NPC:Immortal", true, true)
@@ -92,7 +92,7 @@ function QuestNPCTransport:addPlayer(player)
 end
 
 function QuestNPCTransport:removePlayer(player)
-	Quest.removePlayer(self, player)
+	ChristmasQuest.removePlayer(self, player)
 	if self.m_Blips[player] then delete(self.m_Blips[player]) end
 	if self.m_Bots[player] then
 		BotManager:getSingleton():deleteNPC(self.m_Bots[player].m_Id)
