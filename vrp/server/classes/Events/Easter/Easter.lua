@@ -7,7 +7,7 @@
 -- ****************************************************************************
 
 Easter = inherit(Singleton)
-Easter.startDay = 102
+Easter.startDay = 90
 Easter.today = getRealTime().yearday
 Easter.RabbitObjects = { -- true = createObject ; false = removeWorldModel
     [4] = {
@@ -28,47 +28,13 @@ addRemoteEvents{"Easter:requestHidingRabbits", "Easter:onHidingRabbitFound"}
 local day = getRealTime().monthday
 local month = getRealTime().month+1
 
-if month == 4 and day <= 17 then
-	Easter.ms_PricePoolName = "Easter2022-1"
-	Easter.ms_PricePoolEnd = 1650211200
+if (month == 3) or (month == 4 and day <= 7) then
+	Easter.ms_PricePoolName = "Easter2024-1"
+	Easter.ms_PricePoolEnd = 1712505600
 	Easter.ms_PricePoolPrices = {
-		{"money", 150000},
-		{"money", 150000},
-        {"vehicle", 424},
-
-		{"money", 150000},
-		{"money", 150000},
-        {"vehicle", 476},
-
-		{"VIP", 1},
-	}
-elseif month == 4 and day <= 24 then
-	Easter.ms_PricePoolName = "Easter2022-2"
-	Easter.ms_PricePoolEnd = 1650816000
-	Easter.ms_PricePoolPrices = {
-		{"money", 150000},
-		{"money", 150000},
-        {"vehicle", 448},
-
-		{"money", 150000},
-		{"money", 150000},
-        {"vehicle", 495},
-
-		{"VIP", 1},
-	}
-elseif (month == 4 and day <= 30) or (month == 5 and day <= 1) then
-	Easter.ms_PricePoolName = "Easter2022-3"
-	Easter.ms_PricePoolEnd = 1651420800
-	Easter.ms_PricePoolPrices = {
-		{"money", 150000},
-		{"money", 150000},
-        {"vehicle", 474},
-
-		{"money", 150000},
-		{"money", 150000},
-        {"vehicle", 518},
-
-		{"VIP", 1},
+        {"money", 50000}, 
+        {"vehicle", 600}, 
+        {"VIP", 1}
 	}
 end
 

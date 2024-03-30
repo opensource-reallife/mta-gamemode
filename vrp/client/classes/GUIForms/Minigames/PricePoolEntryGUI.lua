@@ -22,11 +22,11 @@ function PricePoolEntryGUI:constructor(pricepoolId, entryTable, price, pricelist
 	
 	self.m_HeaderLabel = GUIGridLabel:new(1, 1, 9, 1, _"Der Preispool", self.m_Window):setHeader():setAlignX("center")
 	
-	self.m_TextLabel = GUIGridLabel:new(1, 2, 9, 5, _"Der Preispool funktioniert wie folgt: Jeder Spieler erhält die Möglichkeit Lose zu erwerben, um an der Verlosung teilzunehmen. Je mehr Lose ein Spieler erwirbt, desto größer wird seine Chance auf den Gewinn. Zum Zeitpunkt der Verlosung können sich alle Spieler hier einfinden und gemeinsam mitfiebern.", self.m_Window)
+	self.m_TextLabel = GUIGridLabel:new(1, 2, 9, 4, _"Der Preispool funktioniert wie folgt: Jeder Spieler erhält die Möglichkeit Lose zu erwerben, um an der Verlosung teilzunehmen. Je mehr Lose ein Spieler erwirbt, desto größer wird seine Chance auf den Gewinn. Zum Zeitpunkt der Verlosung können sich alle Spieler hier einfinden und gemeinsam mitfiebern.", self.m_Window)
 	
-	self.m_BuyHeaderLabel = GUIGridLabel:new(1, 7, 9, 1, "Mitspielen?", self.m_Window):setHeader():setAlignX("center")
-	self.m_PriceLabel = GUIGridLabel:new(1, 8, 9, 1, _("Aktueller Preis pro Los: 1 %s", price), self.m_Window):setHeader("sub"):setAlignX("center")
-	self.m_DateLabel = GUIGridLabel:new(1, 9, 9, 1, _("Verlosung: %s Uhr", raffledate), self.m_Window):setHeader("sub"):setAlignX("center")
+	self.m_BuyHeaderLabel = GUIGridLabel:new(1, 7, 9, 1, _"Mitspielen?", self.m_Window):setHeader():setAlignX("center")
+	self.m_PriceLabel = GUIGridLabel:new(1, 8, 9, 1, _("Aktueller Preis pro Los: 1 %s", _(price)), self.m_Window):setHeader("sub"):setAlignX("center")
+	self.m_DateLabel = GUIGridLabel:new(1, 9, 9, 1, _("Auslosung: %s Uhr", raffledate), self.m_Window):setHeader("sub"):setAlignX("center")
 	
 	self.m_AmountEditBox = GUIGridEdit:new(3, 10, 2, 1, self.m_Window):setCaption(_"Anzahl"):setNumeric(true, true)
 	self.m_BuyLabel = GUIGridLabel:new(5, 10, 4, 1, _"Los(e) erwerben", self.m_Window):setHeader("sub")

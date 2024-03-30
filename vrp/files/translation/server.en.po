@@ -1882,14 +1882,14 @@ msgstr "You were killed, you still have %d lifes left"
 msgid "Du hast %d$ gewonnen!"
 msgstr "You won $%d!"
 
-msgid "Unknown Win! %s"
-msgstr "Unknown Win! %s"
+msgid "Unbekannter Gewinn! %s"
+msgstr "Unknown win! %s"
 
 msgid "Du hast leider nichts gewonnen!"
 msgstr "You haven't won anything!"
 
-msgid "Du brauchst mind. 2 Ostereier, um spielen zu können"
-msgstr "You need at least two Easter eggs to play"
+msgid "Du brauchst mind. %s Ostereier, um spielen zu können"
+msgstr "You need at least %s easter eggs to play"
 
 msgid "Warte, bis die Gondel anhält!"
 msgstr "Wait for the gondola to stop!"
@@ -4529,3 +4529,15 @@ msgstr "lost a fish!"
 
 msgid "Verkäufer sagt: Bitte tun Sie mir nichts!"
 msgstr "Clerk says: Please don't hurt me!"
+
+msgid "Du hast einen Monat Premium gewonnen! Gratulation!"
+msgstr "You won premium for a month! Congratulations!"
+
+msgid "Du hast %d Ostereier gewonnen!"
+msgstr "You won %d easter eggs!"
+
+msgid "Du hast ein paar Hasenohren gewonnen!"
+msgstr "You won a pair of bunny ears!"
+
+msgid "Du hast einen %s gewonnen! Gückwunsch!"
+msgstr "You won the vehicle '%s'! Congratulations!"

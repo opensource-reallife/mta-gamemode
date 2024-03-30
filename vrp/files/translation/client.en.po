@@ -5788,3 +5788,29 @@ msgstr "Shop rob status:"
 msgid "Shopfahrzeugraub Status:"
 msgstr "Shop vehicle rob status:"
 
+msgid "Der Preispool"
+msgstr "The price pool"
+
+msgid "Der Preispool funktioniert wie folgt: Jeder Spieler erhält die Möglichkeit Lose zu erwerben, um an der Verlosung teilzunehmen. Je mehr Lose ein Spieler erwirbt, desto größer wird seine Chance auf den Gewinn. Zum Zeitpunkt der Verlosung können sich alle Spieler hier einfinden und gemeinsam mitfiebern."
+msgstr "The prize pool works as follows: Every player has the opportunity to purchase tickets to take part in the raffle. The more tickets a player purchases, the greater his chance of winning. At the time of the raffle, all players can gather here and join in the excitement together."
+
+msgid "Mitspielen?"
+msgstr "Participation"
+
+msgid "Mitspielen!"
+msgstr "Participate!"
+
+msgid "Aktueller Preis pro Los: 1 %s"
+msgstr "Current price per ticket: 1 %s"
+
+msgid "Los(e) erwerben"
+msgstr "ticket(s) to buy"
+
+msgid "Preisliste anzeigen"
+msgstr "Show price list"
+
+msgid "Lose (Insg.)"
+msgstr "Tickets (total)"
+
+msgid "Auslosung: %s Uhr"
+msgstr "Drawing: %s o'clock"

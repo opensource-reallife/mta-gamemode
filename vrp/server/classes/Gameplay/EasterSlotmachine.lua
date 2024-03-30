@@ -256,49 +256,53 @@ end
 
 function EasterSlotmachine:giveWin(player, name, x, y, z)
 	if name == "Trostpreis" then
-		local rnd = math.random(500, 5000)
+		local rnd = math.random(50, 100)
 		player:sendInfo(_("Du hast %d$ gewonnen!", player, rnd))
-		self.m_BankAccountServer:transferMoney(player, rnd, "EasterSlotmaschine", "Event", "Easter")
+		self.m_BankAccountServer:transferMoney(player, rnd, "EasterSlotmachine", "Event", "Easter")
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
-		StatisticsLogger:addCasino(player, name, rnd)
+		StatisticsLogger:addCasino(player, "Money", rnd)
 	elseif name == "Money" then
-		local rnd = math.random(15000, 25000)
+		local rnd = math.random(5000, 10000)
 		player:sendInfo(_("Du hast %d$ gewonnen!", player, rnd))
-		self.m_BankAccountServer:transferMoney(player, rnd, "EasterSlotmaschine", "Event", "Easter")
+		self.m_BankAccountServer:transferMoney(player, rnd, "EasterSlotmachine", "Event", "Easter")
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
 		StatisticsLogger:addCasino(player, name, rnd)
-	elseif name == "Ostereier5" then
-		player:sendInfo("Du hast 5 Ostereier gewonnen!")
-		player:getInventory():giveItem("Osterei", 5)
+	elseif name == "Easter_Egg" then
+		local amount = 6
+		player:sendInfo(_("Du hast %d Ostereier gewonnen!", player, amount))
+		player:getInventory():giveItem("Osterei", amount)
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
-	elseif name == "Ostereier20" then
-		player:sendInfo("Du hast 20 Ostereier gewonnen!")
-		player:getInventory():giveItem("Osterei", 20)
+		StatisticsLogger:addCasino(player, "Easter_Eggs", amount)
+	elseif name == "Easter_Eggs" then
+		local amount = 12
+		player:sendInfo(_("Du hast %d Ostereier gewonnen!", player, amount))
+		player:getInventory():giveItem("Osterei", amount)
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
-		StatisticsLogger:addCasino(player, name, 20)
+		StatisticsLogger:addCasino(player, name, amount)
 	elseif name == "Premium" then
-		player:sendInfo("Du hast einen Monat Premium gewonnen! Gratulation!")
+		player:sendInfo(_("Du hast einen Monat Premium gewonnen! Gratulation!", player))
 		player.m_Premium:giveEventMonth()
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_jackpot")
 		StatisticsLogger:addCasino(player, name, 1)
-	elseif name == "HasenOhren" then
+	elseif name == "Bunny_Ears" then
+		player:sendInfo(_("Du hast ein paar Hasenohren gewonnen!", player))
 		player:getInventory():giveItem("Hasenohren", 1)
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
 		StatisticsLogger:addCasino(player, name, 1)
 	elseif name == "Vehicle" then
 		local vehicles = {
-			{ id=587, name="Euros", 	spawnPosX=1452.8, spawnPosY=-1747.3, spawnPosZ=13.39, spawnPosXR=0, spawnPosYR=0, spawnPosZR=0 },
-			{ id=575, name="Broadway", 	spawnPosX=1452.8, spawnPosY=-1747.3, spawnPosZ=13.1, spawnPosXR=0, spawnPosYR=0, spawnPosZR=0 }
+			{ id=603, name="Phoenix", 	spawnPosX=1452.8, spawnPosY=-1747.3, spawnPosZ=13.39, spawnPosXR=0, spawnPosYR=0, spawnPosZR=0 },
+			{ id=412, name="Voodoo", 	spawnPosX=1452.8, spawnPosY=-1747.3, spawnPosZ=13.1, spawnPosXR=0, spawnPosYR=0, spawnPosZR=0 }
 		}
 		local vehicleData = vehicles[math.random(1, 2)]
 
-		player:sendInfo("Du hast einen " .. vehicleData.name .. " gewonnen! Gückwunsch!")
+		player:sendInfo(_("Du hast einen %s gewonnen! Gückwunsch!", player, vehicleData.name))
 		local vehicle = VehicleManager:getSingleton():createNewVehicle(player, VehicleTypes.Player, vehicleData.id, vehicleData.spawnPosX, vehicleData.spawnPosY, vehicleData.spawnPosZ, vehicleData.spawnPosXR, vehicleData.spawnPosYR, vehicleData.spawnPosZR, 0, -1, -1, 0)
 		if vehicle then
 			warpPedIntoVehicle(player, vehicle)
@@ -310,7 +314,7 @@ function EasterSlotmachine:giveWin(player, name, x, y, z)
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_jackpot")
 		StatisticsLogger:addCasino(player, name, 1)
 	else
-		player:sendError(_("Unknown Win! %s", player, name))
+		player:sendError(_("Unbekannter Gewinn! %s", player, name))
 	end
 end
 
@@ -329,15 +333,15 @@ function EasterSlotmachine:doResult(ergebnis, player)
 	if result["VIP"] == 3 then
 		self:giveWin(player, "Premium", x, y, z)
 	elseif result["Easter_Egg"] == 3 then
-		self:giveWin(player, "Ostereier5", x, y, z)
+		self:giveWin(player, "Easter_Egg", x, y, z)
 	elseif result["Vehicle"] == 3 then
 		self:giveWin(player, "Vehicle", x, y, z)
 	elseif result["Money"] == 3 then
 		self:giveWin(player, "Money", x, y, z)
 	elseif result["Easter_Eggs"] == 3 then
-		self:giveWin(player, "Ostereier20", x, y, z)
+		self:giveWin(player, "Easter_Eggs", x, y, z)
 	elseif result["Bunny_Ears"] == 3 then
-		self:giveWin(player, "HasenOhren", x, y, z)
+		self:giveWin(player, "Bunny_Ears", x, y, z)
 	elseif result["VIP"] == 2 or result["Easter_Egg"] == 2 or result["Vehicle"] == 2 or result["Money"] == 2 or result["Easter_Eggs"] == 2 or result["Bunny_Ears"] == 2 then
 		self:giveWin(player, "Trostpreis", x, y, z)
 	else
@@ -351,9 +355,10 @@ end
 function EasterSlotmachine:startPlayer(player)
 	if not self.canSpin then return end
 
-	if player:getInventory():removeItem("Osterei", 2) then
+	local amount = 2
+	if player:getInventory():removeItem("Osterei", amount) then
 		self:start(player)
 	else
-		player:sendWarning(_("Du brauchst mind. 2 Ostereier, um spielen zu können", player))
+		player:sendWarning(_("Du brauchst mind. %s Ostereier, um spielen zu können", player, amount))
 	end
 end
