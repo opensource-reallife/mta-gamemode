@@ -297,41 +297,41 @@ function BankRobbery:sealSafeDoor()
 end
 
 function BankRobbery:updateBreakingNews()
-	local msg = ""
+	local msg = {}
 	local rnd = math.random(1,4)
 	local type = self.m_Name == "Casino" and "am Casino" or "an der Bank"
 	if rnd == 1 then
-		msg =  ("Der %s ist immer noch im Gange!"):format(self.m_Name == "Casino" and "Casinoüberfall" or "Banküberfall")
+		msg = { "Der %s ist immer noch im Gange!", self.m_Name == "Casino" and "Casinoüberfall" or "Banküberfall" }
 	elseif rnd == 2 then
 		if not self.m_BrNe_EvilPeople then self.m_BrNe_EvilPeople = 0 end
 		local nowEvilPeople = self:countEvilPeople()
 		if self.m_BrNe_EvilPeople > nowEvilPeople then
-			msg = ("Den neuesten Informationen zufolge befinden sich nur noch %d Räuber am Gelände!"):format(nowEvilPeople)
+			msg = { "Den neuesten Informationen zufolge befinden sich nur noch %d Räuber am Gelände!", nowEvilPeople }
 			self.m_BrNe_EvilPeople = nowEvilPeople
 		elseif self.m_BrNe_EvilPeople < nowEvilPeople then
-			msg = ("Das SAPD geht nun von %d beteiligten Räubern aus!"):format(nowEvilPeople)
+			msg = { "Das SAPD geht nun von %d beteiligten Räubern aus!", nowEvilPeople }
 			self.m_BrNe_EvilPeople = nowEvilPeople
 		elseif self.m_BrNe_EvilPeople == nowEvilPeople then
-			msg = ("Die Lage %s ist unverändert. %d Räuber befinden sich am Gelände!"):format(type, nowEvilPeople)
+			msg = { "Die Lage %s ist unverändert. %d Räuber befinden sich am Gelände!", type, nowEvilPeople }
 			self.m_BrNe_EvilPeople = nowEvilPeople
 		end
 	elseif rnd == 3 then
 		if not self.m_BrNe_StatePeople then self.m_BrNe_StatePeople = 0 end
 		local nowStatePeople = self:countStatePeople()
 		if self.m_BrNe_StatePeople > nowStatePeople then
-			msg = ("Das SAPD ist nur noch mit %d Beamten am Gelände!"):format(nowStatePeople)
+			msg = { "Das SAPD ist nur noch mit %d Beamten am Gelände!", nowStatePeople }
 			self.m_BrNe_StatePeople = nowStatePeople
 		elseif self.m_BrNe_StatePeople < nowStatePeople then
-			msg = ("Das SAPD hat zusätzliche Einheiten hinzugezogen. Es befinden sich %d Beamten vor Ort!"):format(nowStatePeople)
+			msg = { "Das SAPD hat zusätzliche Einheiten hinzugezogen. Es befinden sich %d Beamten vor Ort!", nowStatePeople }
 			self.m_BrNe_StatePeople = nowStatePeople
 		elseif self.m_BrNe_StatePeople == nowStatePeople then
-			msg = ("Die Lage %s ist unverändert. %d Beamte befinden sich am Gelände!"):format(type, nowStatePeople)
+			msg = { "Die Lage %s ist unverändert. %d Beamte befinden sich am Gelände!", type, nowStatePeople }
 			self.m_BrNe_StatePeople = nowStatePeople
 		end
 	elseif rnd == 4 then
-		msg = ("Neuesten Informationen zur Folge handelt es sich bei den Tätern um Mitglieder der %s!"):format(self.m_RobFaction:getName())
+		msg = { "Neuesten Informationen zur Folge handelt es sich bei den Tätern um Mitglieder der %s!", self.m_RobFaction:getName() }
 	end
-	PlayerManager:getSingleton():breakingNews(msg)
+	PlayerManager:getSingleton():breakingNews(unpack(msg))
 end
 
 function BankRobbery:getEvilPeople()
@@ -569,9 +569,8 @@ function BankRobbery:handleBagDelivery(faction, player)
 
 	if self.m_SafeDoor.m_Open then
 		if self:getRemainingBagAmount() == 0 then
-			local text = ("Der Raub wurde erfolgreich abgeschlossen! %s"):format(faction:isStateFaction() and "Das Geld konnte sichergestellt werden!" or "Die Täter sind mit der Beute entkommen!")
-			PlayerManager:getSingleton():breakingNews(text)
-			Discord:getSingleton():outputBreakingNews(text)
+			PlayerManager:getSingleton():breakingNews("Der Raub wurde erfolgreich abgeschlossen! %s", faction:isStateFaction() and "Das Geld konnte sichergestellt werden!" or "Die Täter sind mit der Beute entkommen!")
+			Discord:getSingleton():outputBreakingNews(("Der Raub wurde erfolgreich abgeschlossen! %s"):format(faction:isStateFaction() and "Das Geld konnte sichergestellt werden!" or "Die Täter sind mit der Beute entkommen!"))
 			source:destroy()
 			self:destroyRob()
 		end

@@ -275,10 +275,19 @@ function PlayerManager:startPaydayDebug(player)
 end
 
 function PlayerManager:breakingNews(text, ...)
-	for k, v in pairs(PlayerManager:getSingleton():getReadyPlayers()) do
-		local textFinish = _(text, v, ...)
-		v:triggerEvent("breakingNews", textFinish, "Breaking News")
-	end
+    for k, v in pairs(PlayerManager:getSingleton():getReadyPlayers()) do
+		local translatedArgs = {}
+		for i, arg in ipairs({...}) do
+			if type(arg) == "string" then
+				translatedArgs[i] = _(arg, v)
+			else
+				translatedArgs[i] = arg
+			end
+		end
+
+		local textFinish = _(text, v, unpack(translatedArgs))
+        v:triggerEvent("breakingNews", textFinish, "Breaking News")
+    end
 end
 
 function PlayerManager:getPlayerFromId(userId)
