@@ -119,6 +119,7 @@ end
 
 addEventHandler("breakingNews", root,
 	function(text, title, color, titleColor)
+		local text = _(text)
 		if core:get("HUD", "breakingNewsBox", true) or title == "Admin Ankündigung" then
 			if BreakingNews:isInstantiated() then
 				BreakingNews:getSingleton():addNews(text, title, color, titleColor)

@@ -5814,3 +5814,195 @@ msgstr "Tickets (total)"
 
 msgid "Auslosung: %s Uhr"
 msgstr "Drawing: %s o'clock"
+
+msgid "Ein merkwürdiges Schiff ist an der Küste von %s aufgetaucht!"
+msgstr "A strange ship has appeared off the coast of %s!"
+
+msgid "Ein Geld-Transporter ist unterwegs! Bitte bleiben Sie vom Transport fern!"
+msgstr "A money transporter is on the way! Please stay away from the transport!"
+
+msgid "Der Geldtransport ist fehlgeschlagen! (Zeit abgelaufen)"
+msgstr "The money transport has failed! (Time expired)"
+
+msgid "%d von %d Geldsäcken wurden abgegeben!"
+msgstr "%d out of %d money bags have been delivered!"
+
+msgid "Der Geldtransporter wurde zerstört!"
+msgstr "The money transporter has been destroyed!"
+
+msgid "Neueste Quellen berichten, dass der Geldtransporter einen Unfall hatte und ins Wasser gefahren ist!"
+msgstr "Latest sources report that the money transporter had an accident and drove into the water!"
+
+msgid "Der Luftraum von San Andreas wird aufgrund eines Staatlichen Waffendrops nun verschärft beobachtet!"
+msgstr "The airspace of San Andreas is now under increased surveillance due to a government weapons drop!"
+
+msgid "Ein nicht identifiziertes Flugzeug ist in den Flugraum von San Andreas eingedrungen!"
+msgstr "An unidentified aircraft has entered the airspace of San Andreas!"
+
+msgid "Eine derzeit unbekannte Fraktion überfällt die Los Santos Bank!"
+msgstr "An unidentified faction is robbing the Los Santos Bank!"
+
+msgid "Eine derzeit unbekannte Fraktion überfällt die Palomino-Creek Bank!"
+msgstr "An unidentified faction is robbing the Palomino Creek Bank!"
+
+msgid "Der Banküberfall ist beendet! Die Täter haben sich zu viel Zeit gelassen!"
+msgstr "The bank robbery is over! The perpetrators took too much time!"
+
+msgid "Der Banküberfall ist beendet! Der Tresor wurde verriegelt!"
+msgstr "The bank robbery is over! The vault has been locked!"
+
+msgid "Neuesten Informationen zur Folge handelt es sich bei den Tätern um Mitglieder der %s!"
+msgstr "According to the latest information, the perpetrators are members of %s!"
+
+msgid "Die Lage %s ist unverändert. %d Beamte befinden sich am Gelände!"
+msgstr "The situation in %s remains unchanged. %d officers are on-site!"
+
+msgid "Das SAPD hat zusätzliche Einheiten hinzugezogen. Es befinden sich %d Beamten vor Ort!"
+msgstr "The SAPD has deployed additional units. There are %d officers on-site!"
+
+msgid "Das SAPD ist nur noch mit %d Beamten am Gelände!"
+msgstr "The SAPD is now only present with %d officers on-site!"
+
+msgid "Der Raub wurde erfolgreich abgeschlossen! %s"
+msgstr "The robbery was successfully completed! %s"
+
+msgid "Das Geld konnte sichergestellt werden!"
+msgstr "The money has been secured!"
+
+msgid "Die Täter sind mit der Beute entkommen!"
+msgstr "The perpetrators have escaped with the loot!"
+
+msgid "Eine derzeit unbekannte Fraktion überfällt Caligula's Casino!"
+msgstr "An unidentified faction is robbing Caligula's Casino!"
+
+msgid "Der Weihnachtstruck wurde zerstört!"
+msgstr "The Christmas truck has been destroyed!"
+
+msgid "Die Geschenke konnten nicht rechtzeitig unter den Baum gelegt werden! (Zeit abgelaufen)"
+msgstr "The gifts could not be placed under the tree in time! (Time expired)"
+
+msgid "Neueste Quellen berichten, dass die Geschenke durch ein Unfall mit dem Transportfahrzeug im Wasser gelandet sind!"
+msgstr "Latest sources report that the gifts landed in the water due to an accident with the transport vehicle!"
+
+msgid "Geschenk %d von %d wurde bei der/den %s unter den Weihnachtsbaum gelegt!"
+msgstr "Gift %d of %d was placed under the Christmas tree by %s!"
+
+msgid "Ein Truck mit Geschenken ist unterwegs"
+msgstr "A truck with gifts is on the way"
+
+msgid "Ein Juweliergeschäft meldet einen Überfall!"
+msgstr "A jewelry store reports a robbery!"
+
+msgid "Der Juwelier im Westen von Los Santos wird überfallen!"
+msgstr "The jeweler in the west of Los Santos is being robbed!"
+
+msgid "Unbekannte lösten die Alarmanlage eines Juweliers aus!"
+msgstr "Unknown individuals triggered a jeweler's alarm!"
+
+msgid "Ein Notruf eines Juweliers erreichte das Police Department!"
+msgstr "An emergency call from a jeweler reached the Police Department!"
+
+msgid "Die Räuber sind weiter auf der Flucht!"
+msgstr "The robbers are still on the run!"
+
+msgid "Die Polizei verfolgt nach wie vor die Räuber des Juweliers!"
+msgstr "The police are still pursuing the jewelers' robbers!"
+
+msgid "Die Räuber versuchen scheinbar aus der Stadt zu flüchten!"
+msgstr "The robbers seem to be trying to flee the city!"
+
+msgid "Die Räuber sind nach wie vor auf der Flucht!"
+msgstr "The robbers are still on the run!"
+
+msgid "Die Verfolgung der Juweliersräuber dauert weiter an!"
+msgstr "The pursuit of the jewelers' robbers continues!"
+
+msgid "Einige Räuber gehören scheinbar der Fraktion %s an!"
+msgstr "Some robbers apparently belong to the faction %s!"
+
+msgid "Laut Überwachungskameras sind %d Täter im Juwelier!"
+msgstr "According to surveillance cameras, there are %d perpetrators in the jeweler's shop!"
+
+msgid "Vermeiden Sie die Geschäfte im Westen der Stadt!"
+msgstr "Avoid the shops in the west of the city!"
+
+msgid "Es befinden sich derzeit %d Beamte im Juwelier!"
+msgstr "There are currently %d officers in the jeweler's shop!"
+
+msgid "Die Täter haben Beute entwendet und sind auf der Flucht!"
+msgstr "The perpetrators have stolen loot and are on the run!"
+
+msgid "Die Täter konnten die Beute nicht rechtzeitig abgeben!"
+msgstr "The perpetrators were unable to deliver the loot on time!"
+
+msgid "Der Raub wurde erfolgreich vereitelt! Die Beute konnte sichergestellt werden!"
+msgstr "The robbery was successfully thwarted! The loot has been secured!"
+
+msgid "Der Raub wurde abgeschlossen! Die Täter sind mit der Beute entkommen!"
+msgstr "The robbery has been completed! The perpetrators have escaped with the loot!"
+
+msgid "Das Gefängnis meldet höchste Sicherheitswarnung. Gefahrenlage unbekannt!"
+msgstr "The prison reports a maximum security alert. Danger level unknown!"
+
+msgid "Ein %s wird beladen"
+msgstr "A %s is being loaded"
+
+msgid "Der %s ist fehlgeschlagen! (Zeit abgelaufen)"
+msgstr "The %s has failed! (Time expired)"
+
+msgid "Der %s wurde zerstört!"
+msgstr "The %s has been destroyed!"
+
+msgid "Neueste Quellen berichten, dass der Waffentruck einen Unfall hatte und ins Wasser gefahren ist!"
+msgstr "Latest sources report that the weapon truck had an accident and drove into the water!"
+
+msgid "Waffenkiste %d von %d wurde bei der/den %s abgegeben!"
+msgstr "Weapon crate %d of %d was delivered to the %s!"
+
+msgid "Ein Weed-Transport wurde soeben gestartet!"
+msgstr "A weed transport has just been started!"
+
+msgid "Der Weed-Transport wurde beendet! Den Verbrechern ist die Zeit ausgegangen!"
+msgstr "The weed transport has ended! The criminals ran out of time!"
+
+msgid "Der Weed-LKW wurde soeben zerstört!"
+msgstr "The weed truck has just been destroyed!"
+
+msgid "Paket %d von %d wurde vom %s beschlagnahmt!"
+msgstr "Package %d of %d was confiscated by %s!"
+
+msgid "Paket %d von %d wurde von der/dem %s abgegeben!"
+msgstr "Package %d of %d was delivered by %s!"
+
+msgid "Paket %d von %d wurde an das/die %s übergeben!"
+msgstr "Package %d of %d was handed over to %s!"
+
+msgid "Neueste Quellen berichten, dass der Weed-Transporter einen Unfall hatte und ins Wasser gefahren ist!"
+msgstr "Latest sources report that the weed transporter had an accident and drove into the water!"
+
+msgid "Ein Flugzeugabsturz wurde in %s, %s gemeldet!"
+msgstr "A plane crash was reported in %s, %s!"
+
+msgid "%s meldet einen Überfall durch eine Straßengang!"
+msgstr "%s reports a robbery by a street gang!"
+
+msgid "%s Überfall: Die Täter sind mit der Beute entkommen!"
+msgstr "%s Robbery: The perpetrators have escaped with the loot!"
+
+msgid "Die Beute des %s Überfall wurde sichergestellt!"
+msgstr "The loot from the %s robbery has been secured!"
+
+msgid "%s meldet einen Überfall durch eine Straßengang!"
+msgstr "%s reports a robbery by a street gang!"
+
+msgid "%s Überfall: Die Täter haben sich zu viel Zeit gelassen!"
+msgstr "%s Robbery: The perpetrators took too much time!"
+
+msgid "%s Überfall: Das Fahrzeug wurde zerstört!"
+msgstr "%s Robbery: The vehicle has been destroyed!"
+
+msgid "%s Überfall: Das Fahrzeug wurde sichergestellt!"
+msgstr "%s Robbery: The vehicle has been secured!"
+
+msgid "%s Überfall: Die Täter sind mit dem Fahrzeug entkommen!"
+msgstr "%s Robbery: The perpetrators have escaped with the vehicle!"
