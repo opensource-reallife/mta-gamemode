@@ -27,8 +27,9 @@ function JewelryStoreRobbery:constructor(attacker, maxBags)
 	triggerClientEvent("jewelryStoreRobberyAlarmStart", root)
 	triggerClientEvent("jewelryStoreRobberyPedAnimation", JewelryStoreRobberyManager:getSingleton().m_ShopPed, "VRP.OTHER", "cowerHandsBehindHead", -1, true, false, false, true)
 
-	PlayerManager:getSingleton():breakingNews(math.randomchoice(JewelryStoreRobbery.StartMessages))
-
+	local startMessage = math.randomchoice(JewelryStoreRobbery.StartMessages)
+	PlayerManager:getSingleton():breakingNews(startMessage)
+	Discord:getSingleton():outputBreakingNews(startMessage)
 	FactionState:getSingleton():sendWarning("Ein Juwelier wird ausgeraubt!", "Neuer Einsatz", true, Vector3(561.292, -1506.786, 14.548))
 
 	self.m_Attacker = attacker

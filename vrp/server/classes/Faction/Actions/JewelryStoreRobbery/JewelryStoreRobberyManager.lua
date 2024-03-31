@@ -380,10 +380,13 @@ function JewelryStoreRobberyManager:stopRobbery(state)
 
 	if state == "timeup" then
 		PlayerManager:getSingleton():breakingNews("Die Täter konnten die Beute nicht rechtzeitig abgeben!")
+		Discord:getSingleton():outputBreakingNews("Die Täter konnten die Beute nicht rechtzeitig abgeben!")
 	elseif state == "state" then
 		PlayerManager:getSingleton():breakingNews("Der Raub wurde erfolgreich vereitelt! Die Beute konnte sichergestellt werden!")
+		Discord:getSingleton():outputBreakingNews("Der Raub wurde erfolgreich vereitelt! Die Beute konnte sichergestellt werden!")
 	else
 		PlayerManager:getSingleton():breakingNews("Der Raub wurde abgeschlossen! Die Täter sind mit der Beute entkommen!")
+		Discord:getSingleton():outputBreakingNews("Der Raub wurde abgeschlossen! Die Täter sind mit der Beute entkommen!")
 	end
 	self.m_BlipJR:setOptionalColor({27, 125, 47})
 end
