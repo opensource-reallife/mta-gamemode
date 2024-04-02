@@ -150,8 +150,9 @@ function LoginGUI:loadLoginElements()
 		core:set("HUD", "locale", index == 1 and "de" or "en")
 		localPlayer:setLocale(core:get("HUD", "locale"))
 		triggerServerEvent("playerLocale", localPlayer, localPlayer:getLocale())
-		triggerServerEvent("playerReconnect", localPlayer)
-		ShortMessage:new(_"Bitte reconnecten damit die Änderung ihre Wirkung zeigt!", "Sprache", Color.DarkLightBlue)
+		--triggerServerEvent("playerReconnect", localPlayer)
+		--ShortMessage:new(_"Bitte reconnecten damit die Änderung ihre Wirkung zeigt!", _"Sprache", Color.DarkLightBlue)
+		self:switchViews(true)
 	end
 	self.m_Elements.langChange:setIndex(localPlayer:getLocale() == "de" and 1 or 2, true)
 

@@ -2903,7 +2903,7 @@ msgid "Ping"
 msgstr "Ping"
 
 msgid "Derzeit sind %d Spieler online"
-msgstr "Currently are %d players online"
+msgstr "Currently %d players are online"
 
 msgid "neuen Bind hinzufügen"
 msgstr "add new bind"
