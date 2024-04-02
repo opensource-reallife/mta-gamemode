@@ -13,7 +13,7 @@ function ItemBeggar:giveItem(player, item)
 				points = 5,
 			})
 			self:sendMessage(player, BeggarPhraseTypes.Thanks)
-			player:meChat(true, "übergibt %s eine Tüte", self.m_Name, false)
+			player:meChat(true, "übergibt %s eine Tüte!", self.m_Name, false)
 			setTimer(
 				function ()
 					self:despawn()

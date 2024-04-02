@@ -95,9 +95,9 @@ function BeggarPed:rob(player)
 		})
 		self:sendMessage(player, BeggarPhraseTypes.Rob)
 		if money == 1 then
-			player:meChat(true, "packt %s und entreißt ihm einen Schein", self.m_Name, false)
+			player:meChat(true, "packt %s und entreißt ihm einen Schein!", self.m_Name, false)
 		else
-			player:meChat(true, "packt %s und entreißt ihm ein paar Scheine", self.m_Name, false)
+			player:meChat(true, "packt %s und entreißt ihm ein paar Scheine!", self.m_Name, false)
 		end
 		-- give Achievement
 		player:giveAchievement(50)

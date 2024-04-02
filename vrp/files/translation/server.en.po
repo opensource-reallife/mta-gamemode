@@ -2795,6 +2795,9 @@ msgstr "You have accepted the offer of %s and get %d %s for %d$!"
 msgid "übergibt %s eine Tüte!"
 msgstr "hands over a bag to %s!"
 
+msgid "übergibt %s eine große Tüte!"
+msgstr "hands over a big bag to %s!"
+
 msgid "übergibt %s ein Päckchen!"
 msgstr "hands over a package to %s!"
 
@@ -4324,13 +4327,13 @@ msgid "Du meldest Status %s"
 msgstr "You reported status %s"
 
 msgid "Ey du! Haste mal nen Euro?"
-msgstr "Hey you! Got a dollar?"
+msgstr "Hey you! Got any change?"
 
 msgid "Eine kleine Spende für den Abschaum der Gesellschaft?"
 msgstr "A small donation for the scum of society?"
 
 msgid "Ich brauche dringend Geld für ein Monatsticket beim EPT!"
-msgstr "I urgently need money for a monthly ticket for the EPT!"
+msgstr "I urgently need money for a monthly ticket at the EPT!"
 
 msgid "I.. Ic.. Ich hab so Hunger... Hast du einen Burger?"
 msgstr "I.. I.. I'm so hungry... Do you have a burger?"
@@ -4342,7 +4345,7 @@ msgid "Du da! Ich hab kein Geld für ein Taxi! Kannst du mich fahren?"
 msgstr "Hey you! I don't have money for a taxi! Can you give me a ride?"
 
 msgid "Hilfe, ich hab mich verlaufen! Nimmst du mich mit?"
-msgstr "Help, I'm lost! Can you take me with you?"
+msgstr "Help, I'm lost! Can you give me a ride?"
 
 msgid "Hast du Weed? Ich zahle einen guten Preis!"
 msgstr "Do you have weed? I'll pay a good price!"
@@ -4354,7 +4357,7 @@ msgid "Du siehst mir aus wie ein Drogenkurier, hast du auch was für mich?"
 msgstr "You look like a drug courier, do you have something for me too?"
 
 msgid "Hey! Bock auf nen Heroin Trip?"
-msgstr "Hey! Up for a heroin trip?"
+msgstr "Hey! Down for a heroin trip?"
 
 msgid "Pssst, du da! Habe das beste Heroin der Stadt!"
 msgstr "Pssst, you there! I've got the best heroin in town!"
@@ -4366,7 +4369,7 @@ msgid "Danke dir! Und mach nicht die gleichen Fehler wie ich!"
 msgstr "Thank you! And don't make the same mistakes I did!"
 
 msgid "Da wird sich gleich eine ganz bestimmte Stripperin freuen - danke!"
-msgstr "A certain stripper will be very happy soon - thanks!"
+msgstr "A certain stripper will be very happy about that - thanks!"
 
 msgid "Danke Meister, meine Ratte wäre fast verhungert."
 msgstr "Thank you, my rat was almost starving."
@@ -4381,10 +4384,10 @@ msgid "Grazie! Iste viele beeesser als der Miiist von Pizza Stack!"
 msgstr "Thank you! This is much better than the crap from Pizza Stack!"
 
 msgid "Vielen Dank, genau da musste ich hin!"
-msgstr "Thank you very much, that's exactly where I needed to go!"
+msgstr "Thank you, that's exactly where I needed to go!"
 
 msgid "Danke Kollege, San Andreas braucht mehr von deiner Sorte!"
-msgstr "Thank you, colleague, San Andreas needs more people like you!"
+msgstr "Thanks you, San Andreas needs more people like you!"
 
 msgid "Hier ist doch ein viel besserer Platz zum Betteln."
 msgstr "This is a much better place for begging."
@@ -4393,7 +4396,7 @@ msgid "Schön, mit dir Geschäfte zu machen."
 msgstr "Nice doing business with you."
 
 msgid "Danke, ich brauche das Zeug echt dringend!"
-msgstr "Thank you, I really need that stuff urgently!"
+msgstr "Thank you, I really need that stuff!"
 
 msgid "Das wird ein tolles Geburtstagsgeschenk!"
 msgstr "This will be a great birthday present!"
@@ -4408,7 +4411,7 @@ msgid "You mofugga!"
 msgstr "You mofugga!"
 
 msgid "Dann halt nicht."
-msgstr "Then don't."
+msgstr "Whatever."
 
 msgid "Ja lauf ruhig weg!"
 msgstr "Yeah, go ahead, run away!"
@@ -4426,13 +4429,13 @@ msgid "Ach komm schon!"
 msgstr "Oh come on!"
 
 msgid "Mach doch nicht diesen!"
-msgstr "Don't do this!"
+msgstr "Don't do this to me!"
 
 msgid "Du kannst mich doch hier nicht zurücklassen!"
-msgstr "You can't leave me here!"
+msgstr "You can't just leave me here!"
 
 msgid "Komm wieder zurück!"
-msgstr "Come back again!"
+msgstr "Come back!"
 
 msgid "Ich habe eh schon nichts. Und da willst du mir noch mehr nehmen?"
 msgstr "I already have nothing. And you want to take even more from me?"
@@ -4465,7 +4468,7 @@ msgid "Sorry, I have a boyfriend!"
 msgstr "Sorry, I have a boyfriend!"
 
 msgid "Du wirst doch wohl noch Zeit zum Aussteigen haben!"
-msgstr "You surely still have time to get off!"
+msgstr "Surely you still have time to get out of the car!"
 
 msgid "Mit dir will ich nichts mehr zu tun haben!"
 msgstr "I want nothing more to do with you!"
@@ -4512,11 +4515,11 @@ msgstr "Wrong password"
 msgid "Bettler-Geschenk"
 msgstr "Beggar gift"
 
-msgid "übergibt %s einen Schein"
-msgstr "gives %s a dollar"
+msgid "übergibt %s einen Schein!"
+msgstr "gives %s a dollar!"
 
-msgid "übergibt %s ein paar Scheine"
-msgstr "gives %s a few dollars"
+msgid "übergibt %s ein paar Scheine!"
+msgstr "gives %s a few dollars!"
 
 msgid "hat eine(n) %s gefangen."
 msgstr "caught a(n) %s."
@@ -4754,3 +4757,132 @@ msgstr "casino robbery"
 
 msgid "Banküberfall"
 msgstr "bank robbery"
+
+msgid "Den neuesten Informationen zufolge befinden sich nur noch %d Räuber am Gelände!"
+msgstr "According to the latest information, only %d robbers are left on-site!"
+
+msgid "kniet sich nieder und hebt eine Waffe auf!"
+msgstr "kneels down and picks up a weapon!"
+
+msgid "%s sagt: %s"
+msgstr "%s says: %s"
+
+msgid "(%s) %s sagt: %s"
+msgstr "(%s) %s says: %s"
+
+msgid "isst einen %s!"
+msgstr "eats a(n) %s!"
+
+msgid "isst ein Stück %s!"
+msgstr "eats a piece of %s!"
+
+msgid "raucht eine %s!"
+msgstr "smokes a %s!"
+
+msgid "isst %s!"
+msgstr "eats %s!"
+
+msgid "nascht leckere %s!"
+msgstr "eats tasty %s!"
+
+msgid "nascht eine %s!"
+msgstr "eats a(n) %s!"
+
+msgid "isst heiße %s!"
+msgstr "eats hot %s!"
+
+msgid "isst einen %s!"
+msgstr "eats a(n) %s!"
+
+msgid "raucht Weed!"
+msgstr "smokes Weed!"
+
+msgid "isst einen Magic Mushroom!"
+msgstr "eats a Magic Mushroom!"
+
+msgid "spritzt sich Heroin!"
+msgstr "injects themselves Heroin!"
+
+msgid "schnupft Kokain!"
+msgstr "snorts Cocaine!"
+
+msgid "trinkt ein %s!"
+msgstr "drinks a(n) %s!"
+
+msgid "trinkt einen %s!"
+msgstr "drinks a(n) %s!"
+
+msgid "wird im Fahrzeug umhergeschleudert!"
+msgstr "is being thrown around in the vehicle!"
+
+msgid "Schüsse ertönen durch die Gegend! ((%s))"
+msgstr "Gunshots are echoing through the area! ((%s))"
+
+msgid "holt zu einem Kick aus und tritt gegen die Tür!"
+msgstr "kicks against the door!"
+
+msgid "Der Klang von aufbrechenden Holz ertönt durch die Gegend!"
+msgstr "The sound of splintering wood echoes through the area!"
+
+msgid "Köder"
+msgstr "Bait"
+
+msgid "Apfel"
+msgstr "Apple"
+
+msgid "Zuckerstange"
+msgstr "Candy cane"
+
+msgid "Gluehwein"
+msgstr "Mulled wine"
+
+msgid "Lebkuchen"
+msgstr "Gingerbread"
+
+msgid "Shot"
+msgstr "Shot"
+
+msgid "Wuerstchen"
+msgstr "Sausages"
+
+msgid "Suessigkeiten"
+msgstr "Sweets"
+
+msgid "Pommes"
+msgstr "Fries"
+
+msgid "Bier"
+msgstr "Beer"
+
+msgid "Zigarette"
+msgstr "Cigarette"
+
+msgid "Burger"
+msgstr "Burger"
+
+msgid "Pilz"
+msgstr "Mushroom"
+
+msgid "Pizza"
+msgstr "Pizza"
+
+msgid "Donut"
+msgstr "Dougnut"
+
+msgid "Keks"
+msgstr "Cookie"
+
+msgid "Zombie-Burger"
+msgstr "Zombie-Burger"
+
+msgid "Kuheuter mit Pommes"
+msgstr "Cow udder with fries"
+
+msgid "isst einen Wurm!"
+msgstr "eats a Worm!"
+
+msgid "packt %s und entreißt ihm einen Schein!"
+msgstr "grabs %s and snatches a bill from them!"
+
+msgid "packt %s und entreißt ihm ein paar Scheine!"
+msgstr "grabs %s and snatches a few bills from them!"

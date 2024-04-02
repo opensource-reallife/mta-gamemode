@@ -179,7 +179,7 @@ function PlayerManager:Event_OnWeaponFire(weapon, ex, ey, ez, hE, sx, sy, sz)
 			local tick = getTickCount()
 			if lastoutput+50000 <=  tick then
 				self.m_AreaDistrictShoots[area] = tick
-				source:districtChat(_("Schüsse ertönen durch die Gegend! ((%s))", source, area))
+				source:districtChat("Schüsse ertönen durch die Gegend! ((%s))", area)
 			end
 		end
 	end
@@ -590,9 +590,9 @@ function PlayerManager:playerChat(message, messageType, translatableBind)
 				end
 
 				if not source:getPublicSync("supportMode") then
-					outputChatBox(("%s sagt: %s"):format(getPlayerName(source), tMessage), playersToSend[index], 220, 220, 220)
+					outputChatBox(_("%s sagt: %s", playersToSend[index], getPlayerName(source), tMessage), playersToSend[index], 220, 220, 220)
 				else
-					outputChatBox(("(%s) %s sagt: %s"):format(RANKSCOREBOARD[source:getRank() or 3] or "Admin", getPlayerName(source), tMessage), playersToSend[index], 58, 186, 242)
+					outputChatBox(_("(%s) %s sagt: %s", playersToSend[index], RANKSCOREBOARD[source:getRank() or 3] or "Admin", getPlayerName(source), tMessage), playersToSend[index], 58, 186, 242)
 				end
 				if playersToSend[index] ~= source then
 					receivedPlayers[#receivedPlayers+1] = playersToSend[index]

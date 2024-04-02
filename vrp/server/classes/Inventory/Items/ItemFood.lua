@@ -8,27 +8,27 @@
 ItemFood = inherit(Item)
 
 ItemFood.Settings = {
-	["Burger"] = {["Health"] = 40, ["Hunger"] = 40, ["Model"] = 2880, ["Text"] = "isst einen Burger", ["Animation"] = {"FOOD", "EAT_Burger", 4500}},
-	["Pizza"] = {["Health"] = 40, ["Hunger"] = 40, ["Model"] = 2881, ["Text"] = "isst ein Stück Pizza", ["Animation"] = {"FOOD", "EAT_Pizza", 4500}},
-	["Pilz"] = {["Health"] = 10, ["Hunger"] = 10, ["Model"] = 1882, ["ModelScale"] = 0.7, ["Text"] = "isst einen Pilz", ["Animation"] = {"FOOD", "EAT_Burger", 4500}, ["Attach"] = {12, 0, 0.05, 0.05, 0, -90, 0}},
-	["Zigarette"] = {["Health"] = 10, ["Hunger"] = 0, ["Model"] = 3027, ["Text"] = "raucht eine Zigarette", ["Animation"] = {"smoking", "M_smkstnd_loop", 13500},
+	["Burger"] = {["Health"] = 40, ["Hunger"] = 40, ["Model"] = 2880, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_Burger", 4500}},
+	["Pizza"] = {["Health"] = 40, ["Hunger"] = 40, ["Model"] = 2881, ["Text"] = "isst ein Stück %s!", ["Animation"] = {"FOOD", "EAT_Pizza", 4500}},
+	["Pilz"] = {["Health"] = 10, ["Hunger"] = 10, ["Model"] = 1882, ["ModelScale"] = 0.7, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_Burger", 4500}, ["Attach"] = {12, 0, 0.05, 0.05, 0, -90, 0}},
+	["Zigarette"] = {["Health"] = 10, ["Hunger"] = 0, ["Model"] = 3027, ["Text"] = "raucht eine %s!", ["Animation"] = {"smoking", "M_smkstnd_loop", 13500},
 		["ModelScale"] = 2,
 		["Attach"] = {11, 0, -0.02, 0.15, 0, -90, 90},
 		["CustomEvent"] = "smokeEffect"
 	},
-	["Donut"] = {["Health"] = 30, ["Hunger"] = 30, ["Model"] = 1915, ["ModelScale"] = 1.2, ["Text"] = "isst einen Donut", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, 0, 0.05, 0.15, 0, -90, 90}},
-	["Keks"] = {["Health"] = 100, ["Hunger"] = 100, ["Model"] = 1915, ["ModelScale"] = 0, ["Text"] = "isst einen Keks", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
-	["Apfel"] = {["Health"] = 20, ["Hunger"] = 20, ["Model"] = 1915, ["ModelScale"] = 0, ["Text"] = "isst einen Apfel", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
-	["Zombie-Burger"] = {["Health"] = 60, ["Hunger"] = 60, ["Model"] = 2880, ["Text"] = "isst einen Zombie-Burger", ["Animation"] = {"FOOD", "EAT_Burger", 4500,
+	["Donut"] = {["Health"] = 30, ["Hunger"] = 30, ["Model"] = 1915, ["ModelScale"] = 1.2, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, 0, 0.05, 0.15, 0, -90, 90}},
+	["Keks"] = {["Health"] = 100, ["Hunger"] = 100, ["Model"] = 1915, ["ModelScale"] = 0, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
+	["Apfel"] = {["Health"] = 20, ["Hunger"] = 20, ["Model"] = 1915, ["ModelScale"] = 0, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
+	["Zombie-Burger"] = {["Health"] = 60, ["Hunger"] = 60, ["Model"] = 2880, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_Burger", 4500,
 		["CustomEvent"] = "bloodFx"}},
-	["Kuheuter mit Pommes"] = {["Health"] = 60, ["Hunger"] = 60, ["Model"] = 2880, ["Text"] = "isst Kuheuter mit Pommes", ["Animation"] = {"FOOD", "EAT_Burger", 4500},
+	["Kuheuter mit Pommes"] = {["Health"] = 60, ["Hunger"] = 60, ["Model"] = 2880, ["Text"] = "isst %s!", ["Animation"] = {"FOOD", "EAT_Burger", 4500},
 		["CustomEvent"] = "bloodFx"},
-	["Suessigkeiten"] = {["Health"] = 5, ["Hunger"] = 5, ["Model"] = 2880, ["Text"] = "nascht leckere Süßigkeiten", ["Animation"] = {"FOOD", "EAT_Burger", 4500}},
-	["Zuckerstange"] = {["Health"] = 5, ["Hunger"] = 5, ["Model"] = 2880, ["Text"] = "nascht eine Zuckerstange", ["Animation"] = {"FOOD", "EAT_Burger", 4500}},
-	["Wuerstchen"] = {["Health"] = 60, ["Hunger"] = 60, ["Model"] = 2880, ["Text"] = "isst heiße Würstchen vom Grill", ["Animation"] = {"FOOD", "EAT_Burger", 4500}},
-	["Lebkuchen"] = {["Health"] = 40, ["Hunger"] = 40, ["Model"] = 2880, ["Text"] = "isst Lebkuchen", ["Animation"] = {"FOOD", "EAT_Burger", 4500}},
+	["Suessigkeiten"] = {["Health"] = 5, ["Hunger"] = 5, ["Model"] = 2880, ["Text"] = "nascht leckere %s!", ["Animation"] = {"FOOD", "EAT_Burger", 4500}},
+	["Zuckerstange"] = {["Health"] = 5, ["Hunger"] = 5, ["Model"] = 2880, ["Text"] = "nascht eine %s!", ["Animation"] = {"FOOD", "EAT_Burger", 4500}},
+	["Wuerstchen"] = {["Health"] = 60, ["Hunger"] = 60, ["Model"] = 2880, ["Text"] = "isst heiße %s!", ["Animation"] = {"FOOD", "EAT_Burger", 4500}},
+	["Lebkuchen"] = {["Health"] = 40, ["Hunger"] = 40, ["Model"] = 2880, ["Text"] = "isst %s!", ["Animation"] = {"FOOD", "EAT_Burger", 4500}},
 
-	["KöderDummy"] = {["Health"] = 2, ["Hunger"] = 2, ["Model"] = 2880, ["Text"] = "isst einen Wurm", ["Animation"] = {"FOOD", "EAT_Burger", 4500}},
+	["KöderDummy"] = {["Health"] = 2, ["Hunger"] = 2, ["Model"] = 2880, ["Text"] = "isst einen Wurm!", ["Animation"] = {"FOOD", "EAT_Burger", 4500}},
 }
 
 function ItemFood:constructor()
@@ -48,7 +48,7 @@ function ItemFood:use(player)
 
 	local ItemSettings = ItemFood.Settings[self:getName()]
 
-	player:meChat(true, ItemSettings["Text"].."!")
+	player:meChat(true, ItemSettings["Text"], self:getName(), true)
 	StatisticsLogger:getSingleton():addHealLog(client, ItemSettings["Health"], "Item "..self:getName())
 	
 	player:checkLastDamaged() 

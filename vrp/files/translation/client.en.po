@@ -5312,7 +5312,7 @@ msgid "Mats"
 msgstr "Mats"
 
 msgid "Kaffee"
-msgstr "Kaffee"
+msgstr "Coffee"
 
 msgid "Fische"
 msgstr "Fishes"

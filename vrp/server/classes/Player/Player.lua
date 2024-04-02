@@ -1666,11 +1666,10 @@ function Player:sendPedChatMessage(name, ...)
 	local argTable = { ... }
 	local text = table.concat ( argTable , " " )
 	local playersToSend = self:getPlayersInChatRange( 1 )
-	local systemText = name.." sagt:"
 	local receivedPlayers = {}
 	local message = text
 	for index = 1,#playersToSend do
-		outputChatBox(("%s %s"):format(systemText, message), playersToSend[index], 220,220,220)
+		outputChatBox(_("%s sagt: %s", playersToSend[index], name, message), playersToSend[index], 220, 220, 220)
 		if playersToSend[index] ~= self then
 			receivedPlayers[#receivedPlayers+1] = playersToSend[index]:getName()
 		end
@@ -1678,18 +1677,15 @@ function Player:sendPedChatMessage(name, ...)
 	end
 end
 
-function Player:districtChat(...)
+function Player:districtChat(text, ...)
 	if self:isDead() then
 		return
 	end
 	local argTable = { ... }
-	local text = table.concat ( argTable , " " )
 	local playersToSend = self:getPlayersInChatRange( 3 )
 	local receivedPlayers = {}
-	local message = ("%s"):format(text)
-	local systemText = "✪"
 	for index = 1,#playersToSend do
-		outputChatBox(("%s %s"):format(systemText, message), playersToSend[index],192, 196, 194)
+		outputChatBox(("✪ %s"):format(_(text, playersToSend[index], table.concat(argTable, " "))), playersToSend[index],192, 196, 194)
 		if playersToSend[index] ~= self then
 			receivedPlayers[#receivedPlayers+1] = playersToSend[index]:getName()
 		end
