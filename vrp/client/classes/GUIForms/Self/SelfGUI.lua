@@ -901,9 +901,9 @@ function SelfGUI:onSettingChange(setting)
 		self.m_ChartSkin:setChecked(core:get("HUD", "chartSkinVisible", false))
 		self.m_ChartSkin.onChange = function (state) core:set("HUD", "chartSkinVisible", state) end
 
-		self.m_ChartBlue = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.79, self.m_Width*0.35, self.m_Height*0.04, _"blaues Farbschema", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
-		self.m_ChartBlue:setChecked(core:get("HUD", "chartColorBlue", false))
-		self.m_ChartBlue.onChange = function (state) core:set("HUD", "chartColorBlue", state) end
+		self.m_ChartBlue = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.79, self.m_Width*0.35, self.m_Height*0.04, _"Akzentfarbschema", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
+		self.m_ChartBlue:setChecked(core:get("HUD", "chartColorAccent", false))
+		self.m_ChartBlue.onChange = function (state) core:set("HUD", "chartColorAccent", state) end
 
 		self.m_ChartDate = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.85, self.m_Width*0.35, self.m_Height*0.04, _"Datum", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
 		self.m_ChartDate:setChecked(core:get("HUD", "chartDateVisible", false))
@@ -1010,7 +1010,7 @@ function SelfGUI:onSettingChange(setting)
 		--Blips
 
 		GUILabel:new(self.m_Width*0.02, self.m_Height*0.58, self.m_Width*0.8, self.m_Height*0.07, _"Blips", self.m_SettingBG)
-		self.m_ColoredBlips = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.66, self.m_Width*0.35, self.m_Height*0.04, _"bunte Blips", self.m_SettingBG)
+		self.m_ColoredBlips = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.66, self.m_Width*0.35, self.m_Height*0.04, _"Bunte Blips", self.m_SettingBG)
 		self.m_ColoredBlips:setFont(VRPFont(25))
 		self.m_ColoredBlips:setFontSize(1)
 		self.m_ColoredBlips:setChecked(core:get("HUD", "coloredBlips", true))
@@ -1132,10 +1132,10 @@ function SelfGUI:onSettingChange(setting)
 
 		GUILabel:new(self.m_Width*0.02, self.m_Height*0.75, self.m_Width*0.7, self.m_Height*0.055, _"Nutze das Klicksystem bzw. das Hausmenü um den Spawnpunkt für ein Fahrzeug oder Haus festzulegen!", self.m_SettingBG)
 	elseif setting == "Nametag/Reddot" then
-		GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.07, _"Nametag", self.m_SettingBG)
+		GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.07, "Nametag", self.m_SettingBG)
 		self.m_NametagChange = GUIChanger:new(self.m_Width*0.02, self.m_Height*0.09, self.m_Width*0.35, self.m_Height*0.07, self.m_SettingBG)
-		self.m_NametagChange:addItem("An")
-		self.m_NametagChange:addItem("Aus")
+		self.m_NametagChange:addItem(_"An")
+		self.m_NametagChange:addItem(_"Aus")
 		self.m_NametagChange.onChange = function(text, index)
 			core:set("HUD", "NametagStyle", index)
 			if index == NametagStyle.Off then

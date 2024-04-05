@@ -149,7 +149,10 @@ end
 
 function FactionRescue:sendWarning(text, header, withOffDuty, pos, ...)
 	for k, player in pairs(self:getOnlinePlayers(false, not withOffDuty)) do
-		player:sendWarning(_(text, player, ...), 30000, header)
+		if player:getLocale() ~= "de" and header == "Brand-Meldung" then
+			text = "Ein Feuer ist ausgebrochen!\nPosition: %s"
+		end
+		player:sendWarning(_(text, player, ...), 30000, _(header, player))
 	end
 	if pos and pos.x then pos = {pos.x, pos.y, pos.z} end -- serialiseVector conversion
 	if pos and pos[1] and pos[2] then
@@ -918,8 +921,8 @@ function FactionRescue:addVehicleFire(veh)
 	if not instanceof(veh, PermanentVehicle) then return end
 
 	local pos = veh:getPosition()
-	local zone = getZoneName(pos).."/"..getZoneName(pos, true)
-	self:sendWarning("Ein Auto hat sich entzündet! Position: %s", "Brand-Meldung", true, pos, zone)
+	local zone = getZoneName(pos).." - "..getZoneName(pos, true)
+	self:sendWarning("Ein Auto hat sich entzündet!\nPosition: %s", "Fahrzeug-Brand", true, pos, zone)
 	self.m_VehicleFires[veh] = FireRoot:new(pos.x-4, pos.y-4, pos.z, 8, 8)
 	self.m_VehicleFires[veh]:setName("Fahrzeug-Brand "..zone)
 

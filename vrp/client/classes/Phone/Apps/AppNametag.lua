@@ -4,7 +4,7 @@ AppNametag.COLOURS = {
 }
 
 function AppNametag:constructor()
-	PhoneApp.constructor(self,"Nametag", "files/images/Phone/Apps/IconHelloWorld.png")
+	PhoneApp.constructor(self, "Nametag", "files/images/Phone/Apps/IconHelloWorld.png")
 	self.m_Nametag = Nametag:getSingleton()
 end
 

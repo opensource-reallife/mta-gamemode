@@ -29,14 +29,11 @@ function PremiumPlayer:refresh()
 		self.m_Player:setPublicSync("DeathTime", DEATH_TIME_PREMIUM)
 		if not freeVIP then
 			setTimer(function()
-				self.m_Player:sendShortMessage(_([[
-				Dein Premiumaccount ist gültig
-				bis %s
-				]], self.m_Player, getOpticalTimestamp(self.m_PremiumUntil)), _("Premium", self.m_Player), {50, 200, 255})
+				self.m_Player:sendShortMessage(_("Dein Premiumaccount ist gültig\nbis %s", self.m_Player, getOpticalTimestamp(self.m_PremiumUntil)), "Premium", {50, 200, 255})
 			end, 1500, 1)
 		else 
 			setTimer(function()
-				self.m_Player:sendShortMessage(_("Du erhälst kostenlos Premium aufgrund deiner Stellung im Team.", self.m_Player), _("Premium", self.m_Player), {50, 200, 255})
+				self.m_Player:sendShortMessage(_("Du erhälst kostenlos Premium aufgrund deiner Stellung im Team.", self.m_Player), "Premium", {50, 200, 255})
 			end, 1500, 1)
 		end
 	end

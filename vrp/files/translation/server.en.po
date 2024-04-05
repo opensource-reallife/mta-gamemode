@@ -3606,11 +3606,11 @@ msgstr "The player had no weapon in his hand!"
 msgid "Du hast keine Waffe in der Hand!"
 msgstr "You don't have a weapon in your hand!"
 
-msgid "Premium"
-msgstr "premium"
+msgid "Dein Premiumaccount ist gültig\nbis %s"
+msgstr "Your premium account is valid\nuntil %s"
 
 msgid "Du erhälst kostenlos Premium aufgrund deiner Stellung im Team."
-msgstr "You will receive Premium free of charge due to your position in the team."
+msgstr "You will receive premium free of charge due to your position in the team."
 
 msgid "Du wurdest aufgrund von 3 Warns gebannt!"
 msgstr "You were banned because of three warns!"
@@ -4108,7 +4108,7 @@ msgid "Der Spieler %s wurde von %s entbannt!"
 msgstr "The player %s was unbanned from %s!"
 
 msgid "FMS"
-msgstr "FMS"
+msgstr "Radio"
 
 msgid "Tastenzuordnung (Funk)"
 msgstr "Bindings (Radio)"
@@ -4886,3 +4886,15 @@ msgstr "grabs %s and snatches a bill from them!"
 
 msgid "packt %s und entreißt ihm ein paar Scheine!"
 msgstr "grabs %s and snatches a few bills from them!"
+
+msgid "Brand-Meldung"
+msgstr "Fire alert"
+
+msgid "Ein Feuer ist ausgebrochen!\nPosition: %s"
+msgstr "An unknown caller has reported a fire!\nPosition: %s"
+
+msgid "Fahrzeug-Brand"
+msgstr "Vehicle fire"
+
+msgid "Ein Auto hat sich entzündet!\nPosition: %s"
+msgstr "Someone reported a car that caught fire!\nPosition: %s"

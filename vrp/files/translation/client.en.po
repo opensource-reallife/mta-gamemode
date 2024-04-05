@@ -395,7 +395,7 @@ msgid "Auf %s gibt es viele Achievements mit verschiedenen Belohnungen, die gefu
 msgstr "On %s there are many Achievements with different rewards that can be found or done. Some of them are hidden and only appear in the list when you find them!"
 
 msgid "Sichtbare  Ach."
-msgstr "Visible ah."
+msgstr "Visible ach."
 
 msgid "Versteckte Ach."
 msgstr "Hidden ach."
@@ -3074,10 +3074,10 @@ msgid "Zone-Name"
 msgstr "Zone name"
 
 msgid "Passbild"
-msgstr "Passport photo"
+msgstr "Photo"
 
-msgid "blaues Farbschema"
-msgstr "blue color scheme"
+msgid "Akzentfarbschema"
+msgstr "Accent color scheme"
 
 msgid "Beschriftungen"
 msgstr "Labels"
@@ -3113,10 +3113,10 @@ msgid "Karten-Transparenz"
 msgstr "map transparency"
 
 msgid "Blips"
-msgstr "blips"
+msgstr "Blips"
 
-msgid "bunte Blips"
-msgstr "colorful blips"
+msgid "Bunte Blips"
+msgstr "Colored blips"
 
 msgid "Blip-Skalierung"
 msgstr "Blip Scaling"
@@ -3159,9 +3159,6 @@ msgstr "House"
 
 msgid "Wohnwagen/Boot"
 msgstr "Caravan/boat"
-
-msgid "Nametag"
-msgstr "Nametag"
 
 msgid "Rotpunkt aktivieren"
 msgstr "Activate red dot"
@@ -4355,7 +4352,7 @@ msgid "Du betrittst ein militärisches Sperrgebiet! Sei vorsichtig!"
 msgstr "You are entering a restricted military area! Be careful"
 
 msgid "FMS"
-msgstr "FMS"
+msgstr "Status"
 
 msgid "Tastenzuordnungen (Funk)"
 msgstr "Bindings (radio)"
@@ -5814,3 +5811,18 @@ msgstr "Tickets (total)"
 
 msgid "Auslosung: %s Uhr"
 msgstr "Drawing: %s o'clock"
+
+msgid "Spezialanimationen"
+msgstr "Special animations"
+
+msgid "Laufstile"
+msgstr "Walking styles"
+
+msgid "Animationen"
+msgstr "Animations"
+
+msgid "Mann"
+msgstr "Male"
+
+msgid "Frau"
+msgstr "Female"

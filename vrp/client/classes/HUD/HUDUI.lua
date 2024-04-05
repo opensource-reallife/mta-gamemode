@@ -466,7 +466,7 @@ function HUDUI:drawChart()
 		local isIcon = icon and icon:len() == 1
 
 		--change colors based on setting
-		if core:get("HUD", "chartColorBlue", false) then
+		if core:get("HUD", "chartColorAccent", false) then
 			color = color ~= Color.Clear and Color.Accent or color
 			iconBgColor = iconBgColor ~= Color.Clear and Color.DarkLightBlue or iconBgColor
 		end

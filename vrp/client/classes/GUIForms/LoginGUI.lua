@@ -417,6 +417,11 @@ addEventHandler("loginsuccess", root,
 		core:afterLogin()
 		lgi:setLoggingIn(false)
 		lgi:initClose()
+
+		-- Disclaimer for non-german players
+		if localPlayer:getLocale() ~= "de" then
+			ShortMessage:new("Please note that the English translation is still being worked on. If a translation is missing, you will be shown the German text instead.", "Disclaimer", Color.Red, 10000)
+		end
 	end
 )
 

@@ -17,7 +17,7 @@ function WalkingstyleGUI:constructor()
 	self.m_WalkingstyleList:addColumn(_"Name", 1)
 	GUILabel:new(6, self.m_Height-self.m_Height/16.5, self.m_Width-12, self.m_Height/15.5, _"Doppelklick zum Ausführen", self.m_Window):setFont(VRPFont(self.m_Height*0.04)):setAlignY("center"):setColor(Color.Red)
 
-    self.m_WalkingstyleList:addItem("Animationsfenster öffnen").onLeftDoubleClick = function () self.m_Window:close() AnimationGUI:new() end
+    self.m_WalkingstyleList:addItem(_"Zurück").onLeftDoubleClick = function () self.m_Window:close() AnimationGUI:new() end
 
 	local item
 	for groupIndex, group in pairs(WALKINGSTYLE_GROUPS) do
