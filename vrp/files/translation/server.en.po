@@ -4898,3 +4898,66 @@ msgstr "Vehicle fire"
 
 msgid "Ein Auto hat sich entzündet!\nPosition: %s"
 msgstr "Someone reported a car that caught fire!\nPosition: %s"
+
+msgid "Flugzeug-Unfall"
+msgstr "Plane accident"
+
+msgid "Ein Flugzeugabsturz wurde gemeldet!\nPosition: %s"
+msgstr "Someone has reported a plane crash!\nPosition: %s"
+
+msgid "Ein Flugzeugabsturz wurde in %s, %s gemeldet!"
+msgstr "A plane crash was reported at %s, %s!"
+
+msgid "Fahre nun die Überreste zurück zur Mech&Tow Base!"
+msgstr "Return the wreckage to the Mech&Tow base now!"
+
+msgid "Der Flatbed ist zu weit entfernt!"
+msgstr "The flatbed is too far away!"
+
+msgid "Du musst auf den Wrackteilen stehen!"
+msgstr "You need to stand on the wreckage parts!"
+
+msgid "Die Wrackteile werden bereits verladen!"
+msgstr "The wreckage parts are already being loaded!"
+
+msgid "Du bist kein Mechaniker im Dienst!"
+msgstr "You are not an on-duty mechanic!"
+
+msgid "Du bist kein Mechaniker!"
+msgstr "You are not a mechanic!"
+
+msgid "Fahre die Überreste des Flugzeugunfalls hierher! Klicke auf die Überreste des Flugzeugs um sie auf den Flatbed aufzuladen!"
+msgstr "Bring the wreckage of the plane crash here! Click on the plane wreckage to load it onto the flatbed!"
+
+msgid "Ein Mechaniker wird mit dem Flatbed aus der Basis am Unfallort benötigt!\nPosition: %s"
+msgstr "A mechanic is needed with the flatbed from the base at the crash site!\nPosition: %s"
+
+msgid "Flugzeug-Wrack"
+msgstr "Plane wreck"
+
+msgid "Flugzeug-Wrack Abgabe"
+msgstr "Plane wreck drop-off"
+
+msgid "Kampfheilung!"
+msgstr "Combat heal!"
+
+msgid "Payday:"
+msgstr "Payday:"
+
+msgid "Zinsen: %d$"
+msgstr "Interest: %d$"
+
+msgid "Spieler (offline): %d$"
+msgstr "Players (offline): %d$"
+
+msgid "Spieler (online): %d$"
+msgstr "Players (online): %d$"
+
+msgid "Fahrzeugsteuern: %d$"
+msgstr "Vehicle taxes: %d$"
+
+msgid "Abstellhof Gebühren: %d$"
+msgstr "Impound fees: %d$"
+
+msgid "Gesamt: %d$"
+msgstr "Total: %d$"

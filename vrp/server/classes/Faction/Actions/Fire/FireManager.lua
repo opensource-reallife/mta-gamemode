@@ -86,11 +86,15 @@ function FireManager:startFire(id)
 	self.m_CurrentFire.Blip:setDisplayText("Verkehrsbehinderung")
 
 	self.m_CurrentFire:setOnUpdateHook(bind(self.onUpdateHandler, self))
-
 	self.m_CurrentFire:setOnFinishHook(bind(self.stopCurrentFire, self))
 
 	local zone = getZoneName(fireTable.position).." - "..getZoneName(fireTable.position, true)
-	FactionRescue:getSingleton():sendWarning(fireTable["message"], "Brand-Meldung", true, fireTable.position + Vector3(fireTable.width/2, fireTable.height/2, 0), zone)
+	local header = false
+	if fireTable["creator"] == "Flugzeug-Unfall" then
+		header = "Flugzeug-Unfall"
+	end
+
+	FactionRescue:getSingleton():sendWarning(fireTable["message"], header or "Brand-Meldung", true, fireTable.position + Vector3(fireTable.width/2, fireTable.height/2, 0), zone)
 	--FactionState:getSingleton():sendWarning(fireTable["message"], "Absperrung erforderlich", false, fireTable.position + Vector3(fireTable.width/2, fireTable.height/2, 0))
 end
 

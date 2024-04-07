@@ -5826,3 +5826,9 @@ msgstr "Male"
 
 msgid "Frau"
 msgstr "Female"
+
+msgid "WARNUNG: Du wirst in 3 Minuten zum AFK-Cafe befördert!"
+msgstr "WARNING: You will be transported to the AFK Cafe in 3 minutes!"
+
+msgid "WARNUNG: Du wirst in einer Minute zum AFK-Cafe befördert!"
+msgstr "WARNING: You will be transported to the AFK Cafe in one minute!"

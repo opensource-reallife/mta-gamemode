@@ -59,7 +59,7 @@ function PlaneAccident:createAccidentFire()
     local city = getZoneName(planePos.x, planePos.y, planePos.z, true)
     FireManager:getSingleton().m_Fires[1000] = {
         ["name"] = ("Flugzeug Unfall: %s"):format(zone),
-        ["message"] = ("Ein Flugzeugabsturz wurde in %s, %s gemeldet!"):format(zone, city),
+        ["message"] = "Ein Flugzeugabsturz wurde gemeldet!\nPosition: %s",
         ["position"] = Vector3(planePos.x-PlaneSizeTable[planeID][1], planePos.y-PlaneSizeTable[planeID][2], planePos.z),
         ["positionTbl"] = {planePos.x-PlaneSizeTable[planeID][1], planePos.y-PlaneSizeTable[planeID][2], planePos.z},
         ["width"] = PlaneSizeTable[planeID][1] * 2,
@@ -187,8 +187,8 @@ function PlaneAccident:createTrashTruck()
     self.m_TrashDeliveryMarker = Marker(865.72, -1282.10, 13.21, "cylinder", 4.0, 255, 0, 0, 0)
 
     local planePos = self.m_Plane:getPosition()
-    local zone = getZoneName(planePos.x, planePos.y, planePos.z)
-    CompanyManager:getSingleton():getFromId(CompanyStaticId.MECHANIC):sendWarning("Ein Mechaniker wird mit dem Flatbed aus der Base am Unfallort benötigt! Position: %s", "Flugzeug-Wrack", true, planePos, zone)
+    local zone = getZoneName(planePos).." - "..getZoneName(planePos, true)
+    CompanyManager:getSingleton():getFromId(CompanyStaticId.MECHANIC):sendWarning("Ein Mechaniker wird mit dem Flatbed aus der Basis am Unfallort benötigt!\nPosition: %s", "Flugzeug-Wrack", true, planePos, zone)
     self.m_AccidentMechanicBlip = Blip:new("Marker.png", planePos.x, planePos.y, {company = 2}, 400, {255, 255, 255}, {175, 175, 175})
 
     addEventHandler("onMarkerHit", self.m_TrashDeliveryMarker, 

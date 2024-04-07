@@ -292,7 +292,7 @@ end
 
 function MechanicTow:sendWarning(text, header, withOffDuty, pos, ...)
 	for k, player in pairs(self:getOnlinePlayers(false, not withOffDuty)) do
-		player:sendWarning(_(text, player, ...), 30000, header)
+		player:sendWarning(_(text, player, ...), 30000, _(header, player))
 	end
 	if pos and pos.x then pos = {pos.x, pos.y, pos.z} end -- serialiseVector conversion
 	if pos and pos[1] and pos[2] then

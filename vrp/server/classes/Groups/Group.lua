@@ -820,6 +820,7 @@ function Group:payDay()
 	local outgoingPermanently = {}
 	local outgoingSeperated = {}
 	local output = {}
+	local outputArgs = {}
 
 	incomingPermanently["Zinsen"] = 0
 	incomingBonus["Spieler (offline)"] = 0
@@ -848,7 +849,10 @@ function Group:payDay()
 		if player then
 			incomingBonus["Spieler (online)"] = incomingBonus["Spieler (online)"] + 100
 		else
-			local money = self.m_PlayerActivity[id] * 10
+			local money = 0
+			if self.m_PlayerActivity[id] then
+				money = self.m_PlayerActivity[id] * 10
+			end
 
 			if money > 50 then
 				money = 50
@@ -859,23 +863,28 @@ function Group:payDay()
 	end
 
 	table.insert(output, "Payday:")
+	table.insert(outputArgs, false)
 
 	for name, amount in pairs(incomingPermanently) do
-		table.insert(output, ("%s: %d$"):format(name, amount))
+		table.insert(output, name..": %d$")
+		table.insert(outputArgs, amount)
 	end
 
 	for name, amount in pairs(incomingBonus) do
 		if amount ~= 0 then
-			table.insert(output, ("%s: %d$"):format(name, amount))
+			table.insert(output, name..": %d$")
+			table.insert(outputArgs, amount)
 		end
 	end
 
 	for name, amount in pairs(outgoingPermanently) do
-		table.insert(output, ("%s: %d$"):format(name, amount))
+		table.insert(output, name..": %d$")
+		table.insert(outputArgs, amount)
 	end
 
 	for name, amount in pairs(outgoingSeperated) do
-		table.insert(output, ("%s: %d$"):format(name, amount))
+		table.insert(output, name..": %d$")
+		table.insert(outputArgs, amount)
 	end
 
 	local sum, inc, out = 0, 0, 0
@@ -893,7 +902,8 @@ function Group:payDay()
 	end
 
 	sum = inc - out
-	table.insert(output, ("Gesamt: %d$"):format(sum))
+	table.insert(output, "Gesamt: %d$")
+	table.insert(outputArgs, sum)
 
 	if sum > 0 then
 		self.m_BankAccountServer:transferMoney({self, nil, true}, sum, "Payday", "Group", "Payday")
@@ -905,7 +915,17 @@ function Group:payDay()
 		self:transferMoney({"company", CompanyStaticId.MECHANIC, true, true}, outgoingSeperated["Abstellhof Gebühren"], "Stellkosten", "Group", "Payday", {allowNegative = true, silent = true})
 	end
 
-	self:sendShortMessage(table.concat(output, "\n"), 10000)
+	for k, player in ipairs(self:getOnlinePlayers()) do
+		for i, v in pairs(output) do
+			if outputArgs[i] then
+				output[i] = _(v, player, outputArgs[i])
+			else
+				output[i] = _(v, player)
+			end
+		end
+
+		player:sendShortMessage(table.concat(output, "\n"), self:getName(), self:getColor(), 10000)
+	end
 
 	self:save()
 
