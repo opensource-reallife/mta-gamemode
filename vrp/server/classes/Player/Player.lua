@@ -533,15 +533,15 @@ function Player:spawn()
 	setCameraTarget(self, self)
 	fadeCamera(self, true)
 
-	nextframe(
+	Timer(
 		function()
 			if self.m_IsDead == 1 then
 				if not self:getData("isInDeathMatch") then
 					self:setReviveWeapons()
 				end
-				killPed(self)
+				self:kill()
 			end
-		end
+		end, 200, 1
 	)
 
 	WearableManager:getSingleton():removeAllWearables(self)
