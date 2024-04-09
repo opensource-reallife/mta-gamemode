@@ -9,7 +9,7 @@ JobFarmer = inherit(Job)
 addRemoteEvents{"Job.updateFarmPlants", "Job.updatePlayerPlants", "onReciveFarmerData", "Job.updateIncome"}
 
 function JobFarmer:constructor()
-	Job.constructor(self, 158, -62.62, 76.34, 3.12, 250, "Farmer.png", {117, 93, 65}, "files/images/Jobs/HeaderFarmer.png", _(HelpTextTitles.Jobs.Farmer):gsub("Job: ", ""), _(HelpTexts.Jobs.Farmer), LexiconPages.JobFarmer, self.onInfo)
+	Job.constructor(self, 158, -62.62, 76.34, 3.12, 250, "Farmer.png", {117, 93, 65}, "files/images/Jobs/HeaderFarmer.png", (HelpTextTitles.Jobs.Farmer):gsub("Job: ", ""), _(HelpTexts.Jobs.Farmer), LexiconPages.JobFarmer, self.onInfo)
 
 	self.m_Ped2 = createPed(158, -19.04, 1175.55, 19.56, 0)
 	setElementData(self.m_Ped2, "clickable", true)
@@ -19,7 +19,7 @@ function JobFarmer:constructor()
 	SpeakBubble3D:new(self.m_Ped2, _("Job: %s", self.m_Name), _"Für einen Job klicke mich an!")
 
 	self.m_Blip2 = Blip:new("Farmer.png", -19.04, 1175.55, 500)
-	self.m_Blip2:setDisplayText(_(HelpTextTitles.Jobs.Farmer):gsub("Job: ", ""), BLIP_CATEGORY.Job)
+	self.m_Blip2:setDisplayText((HelpTextTitles.Jobs.Farmer):gsub("Job: ", ""), BLIP_CATEGORY.Job)
 	self.m_Blip2:setOptionalColor({117, 93, 65})
 
 	self:setJobLevel(JOB_LEVEL_FARMER)

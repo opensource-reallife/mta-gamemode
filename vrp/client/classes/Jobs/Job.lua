@@ -12,7 +12,7 @@ function Job:constructor(skin, posX, posY, posZ, rotZ, blipPath, blipColor, head
 	self.m_Blip = Blip:new(blipPath, posX, posY,500)
 	self.m_Blip:setDisplayText(name, BLIP_CATEGORY.Job)
 	self.m_Blip:setOptionalColor(blipColor)
-	self.m_Name = name
+	self.m_Name = _(name)
 	self.m_HeaderImage = headerImage
 	self.m_Description = description
 	self.m_Tutorial = tutorial

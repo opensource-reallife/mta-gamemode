@@ -8,7 +8,7 @@
 JobServiceTechnician = inherit(Job)
 
 function JobServiceTechnician:constructor()
-    Job.constructor(self, 156, 940.95, -1717.69, 13.96, 90, "ServiceTechnician.png", {173, 216, 230}, "files/images/Jobs/HeaderServiceTechnician.png", _(HelpTextTitles.Jobs.ServiceTechnician):gsub("Job: ", ""), _(HelpTexts.Jobs.ServiceTechnician), LexiconPages.JobServiceTechnician)
+    Job.constructor(self, 156, 940.95, -1717.69, 13.96, 90, "ServiceTechnician.png", {173, 216, 230}, "files/images/Jobs/HeaderServiceTechnician.png", (HelpTextTitles.Jobs.ServiceTechnician):gsub("Job: ", ""), _(HelpTexts.Jobs.ServiceTechnician), LexiconPages.JobServiceTechnician)
     self:setJobLevel(JOB_LEVEL_SERVICETECHNICIAN)
 end
 

@@ -4,7 +4,7 @@ function PayNSpray:constructor(x, y, z, garageId, blipHidden)
 	self.m_FixShape = createColSphere(x, y, z, 4)
 	if not blipHidden then
 		self.m_Blip = Blip:new("PayNSpray.png", x, y, root, 600)
-		self.m_Blip:setDisplayText("Pay'N'Spray Autoreparatur", BLIP_CATEGORY.VehicleMaintenance)
+		self.m_Blip:setDisplayText("Pay'n'Spray", BLIP_CATEGORY.VehicleMaintenance)
 		self.m_Blip:setOptionalColor({67, 121, 98})
 	end
 	self.m_BankAccountServer = BankServer.get("vehicle.paynspray")

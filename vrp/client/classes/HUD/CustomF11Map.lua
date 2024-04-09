@@ -29,7 +29,7 @@ function CustomF11Map:constructor()
 
 	self.m_BlipList = GUIGridList:new(screenWidth - self.m_Height * 0.3, 0, self.m_Height * 0.3, self.m_Height)
 	self.m_BlipList:addColumn("", 0.1)
-	self.m_BlipList:addColumn("Blip-Übersicht", 0.9)
+	self.m_BlipList:addColumn(_"Blip-Übersicht", 0.9)
 	self.m_BlipList:setVisible(false)
 
 	self.m_ClickOverlay.m_CacheArea:moveToBack()
@@ -102,10 +102,10 @@ function CustomF11Map:updateBlipList()
 		for i, cat in pairs(BLIP_CATEGORY_ORDER) do
 			local texts = Blip.DisplayTexts[cat]
 			if texts then
-				self.m_BlipList:addItemNoClick("", cat)
+				self.m_BlipList:addItemNoClick("", _(cat))
 				for text, blips in pairs(texts) do
 					local blip = blips[1]
-					local item = self.m_BlipList:addItem(blip:getImagePath(), text..(#blips > 1 and " ("..(#blips)..")" or ""))
+					local item = self.m_BlipList:addItem(blip:getImagePath(), _(text)..(#blips > 1 and " ("..(#blips)..")" or ""))
 					local color = blip:getColor()
 					local saveName = blip:getSaveName()
 					if color == Color.White and core:get("HUD", "coloredBlips", true) then color = blip:getOptionalColor() end
@@ -229,7 +229,7 @@ function CustomF11Map:draw()
 		end
 		if self.m_BlipToolTipShowing then --always draw tooltips on top of other blips
 			local blip, x, y = unpack(self.m_BlipToolTipShowing)
-			dxDrawToolTip(x, y, blip:getDisplayText())
+			dxDrawToolTip(x, y, _(blip:getDisplayText()))
 		end
 		self.m_BlipToolTipShowing = nil
 	end
