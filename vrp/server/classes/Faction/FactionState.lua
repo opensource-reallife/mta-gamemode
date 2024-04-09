@@ -1375,7 +1375,9 @@ function FactionState:Event_JailPlayer(player, bail, CUTSCENE, police, force, pF
 					self.m_BankAccountServer:transferMoney(policeman:getFaction(), splitmoney, "Arrest", "Faction", "Arrest")
 					self:payArrestBonus(policeman, splitmoney)
 					policeman:givePoints(wantedLevel)
-					PlayerManager:getSingleton():sendShortMessage(("%s wurde soeben von %s für %d Minuten eingesperrt! Strafe: %d$"):format(player:getName(), policeman:getName(), jailTime, factionBonus), "Staat")
+					for k, player in pairs(PlayerManager:getSingleton():getReadyPlayers()) do
+						player:sendShortMessage(_("%s wurde soeben von %s für %d Minuten eingesperrt! Strafe: %d$", player, player:getName(), policeman:getName(), jailTime, factionBonus), _("Staat", player))
+					end
 					StatisticsLogger:getSingleton():addArrestLog(player, wantedLevel, jailTime, policeman, bailcosts)
 					policeman:getFaction():addLog(policeman, "Knast", "hat "..player:getName().." für "..jailTime.."min. eingesperrt!")
 					-- Give Achievements
