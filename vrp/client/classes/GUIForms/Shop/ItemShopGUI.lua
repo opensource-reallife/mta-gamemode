@@ -22,8 +22,8 @@ function ItemShopGUI:constructor(callback, shopName, rangeElement)
 	self.m_Grid:addColumn(_"Name", 0.7)
 	self.m_Grid:addColumn(_"Preis", 0.3)
 
-	GUILabel:new(self.m_Width*0.08, self.m_Height*0.8, self.m_Width*0.2, self.m_Height*0.1, _"Anzahl:", self.m_Window)
-	self.m_EditAmount = GUIEdit:new(self.m_Width*0.26, self.m_Height*0.8, self.m_Width*0.1, self.m_Height*0.1, self.m_Window)
+	GUILabel:new(self.m_Width*0.08, self.m_Height*0.8, self.m_Width*0.18, self.m_Height*0.09, _"Anzahl:", self.m_Window)
+	self.m_EditAmount = GUIEdit:new(self.m_Width*0.27, self.m_Height*0.805, self.m_Width*0.09, self.m_Height*0.09, self.m_Window)
 	self.m_EditAmount:setNumeric(true, true)
 	self.m_EditAmount:setText("1")
 
