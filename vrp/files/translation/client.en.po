@@ -4001,10 +4001,10 @@ msgid "Dir konnte leider niemand mehr helfen!\nBut... have a good flight to heav
 msgstr "Unfortunately nobody can help you anymore!\nBut... have a good flight to heaven!"
 
 msgid "Du bist schwer verletzt und verblutest in %s Sekunden...\n(Drücke hier um dich umzubringen)"
-msgstr "You're badly hurt and bleed to death in %s seconds...\n(Press here to kill yourself)"
+msgstr "You're badly hurt and will be bleeding to death in %s seconds...\n(Press here to kill yourself)"
 
 msgid "Du bist schwer verletzt und verblutest in %s Sekunden..."
-msgstr "You're badly hurt and bleed to death in %s seconds..."
+msgstr "You're badly hurt and will be bleeding to death in %s seconds..."
 
 msgid "Du bist nicht mehr tot!"
 msgstr "You're not dead anymore!"
@@ -5832,3 +5832,6 @@ msgstr "WARNING: You will be transported to the AFK Cafe in 3 minutes!"
 
 msgid "WARNUNG: Du wirst in einer Minute zum AFK-Cafe befördert!"
 msgstr "WARNING: You will be transported to the AFK Cafe in one minute!"
+
+msgid "Da gerade kein Mitglied vom Rescue Team aktiv ist, kannst du jetzt durch einen Klick auf die Shortmessage früher respawnen!"
+msgstr "Since no member of the Rescue Team is active at the moment, you can now respawn earlier by clicking on the short message!"
