@@ -4961,3 +4961,6 @@ msgstr "Impound fees: %d$"
 
 msgid "Gesamt: %d$"
 msgstr "Total: %d$"
+
+msgid "setzte %s ein Ende!"
+msgstr "finished %s off!"

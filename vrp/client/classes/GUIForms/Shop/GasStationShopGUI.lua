@@ -22,9 +22,9 @@ function GasStationShopGUI:constructor(callback, name, ped)
 
 
 	--- Fuelstation
-	GUILabel:new(5, 5, 200, 30, "Tankstelle:", tabFuelStation)
-	GUILabel:new(5, 35, 200, 30, "Liter:", tabFuelStation)
-	GUILabel:new(5, 65, 200, 30, "Preis:", tabFuelStation)
+	GUILabel:new(5, 5, 200, 30, _"Tankstelle:", tabFuelStation)
+	GUILabel:new(5, 35, 200, 30, _"Liter:", tabFuelStation)
+	GUILabel:new(5, 65, 200, 30, _"Preis:", tabFuelStation)
 
 	GUILabel:new(150, 5, 200, 30, name, tabFuelStation)
 	self.m_Fuel = GUILabel:new(150, 35, 200, 30, "-", tabFuelStation)
@@ -40,8 +40,8 @@ function GasStationShopGUI:constructor(callback, name, ped)
 		self.m_Fuel:setText(GasStation.PendingTransaction.opticalFuel .. " L")
 		self.m_Price:setText(GasStation.PendingTransaction.price .. " $")
 
-		self.m_Confirm = GUIButton:new(5, 240, 230, 25, "Bezahlen", tabFuelStation):setBackgroundColor(Color.Green)
-		self.m_Cancel = GUIButton:new(240, 240, 230, 25, "Abbrechen", tabFuelStation):setBackgroundColor(Color.Red)
+		self.m_Confirm = GUIButton:new(5, 240, 230, 25, _"Bezahlen", tabFuelStation):setBackgroundColor(Color.Green)
+		self.m_Cancel = GUIButton:new(240, 240, 230, 25, _"Abbrechen", tabFuelStation):setBackgroundColor(Color.Red)
 
 		self.m_Confirm.onLeftClick =
 			function()
@@ -66,7 +66,7 @@ function GasStationShopGUI:constructor(callback, name, ped)
 	self.m_Preview = GUIImage:new(300, 5, 120, 120, false, tabItemShop)
 	self.m_LabelDescription = GUILabel:new(240, 130, 240, 25, "", tabItemShop):setMultiline(true)
 
-	GUILabel:new(240, 230, 100, 25, "Anzahl:", tabItemShop)
+	GUILabel:new(240, 230, 100, 25, _"Anzahl:", tabItemShop)
 	self.m_EditAmount = GUIEdit:new(300, 230, 50, 25, tabItemShop):setNumeric(true, true):setMaxLength(3):setText("1")
 
 	self.m_ButtonBuy = GUIButton:new(355, 230, 120, 25, _"Kaufen", tabItemShop):setBackgroundColor(Color.Green)
@@ -83,11 +83,11 @@ function GasStationShopGUI:refreshItemShopGUI(shopId, items)
 	if itemData then
 		self.m_Grid:clear()
 		for name, price in pairs(items) do
-			item = self.m_Grid:addItem(name, tostring(price.."$"))
+			item = self.m_Grid:addItem(_(name), tostring(price.."$"))
 			item.Id = name
 			item.onLeftClick = function()
 				self.m_Preview:setImage("files/images/Inventory/items/"..itemData[name]["Icon"])
-				self.m_LabelDescription:setText(itemData[name]["Info"])
+				self.m_LabelDescription:setText(_(itemData[name]["Info"]))
 			end
 		end
 	end

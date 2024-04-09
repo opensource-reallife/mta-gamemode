@@ -22,7 +22,7 @@ function ItemShopGUI:constructor(callback, shopName, rangeElement)
 	self.m_Grid:addColumn(_"Name", 0.7)
 	self.m_Grid:addColumn(_"Preis", 0.3)
 
-	GUILabel:new(self.m_Width*0.08, self.m_Height*0.8, self.m_Width*0.2, self.m_Height*0.1, "Anzahl:", self.m_Window)
+	GUILabel:new(self.m_Width*0.08, self.m_Height*0.8, self.m_Width*0.2, self.m_Height*0.1, _"Anzahl:", self.m_Window)
 	self.m_EditAmount = GUIEdit:new(self.m_Width*0.26, self.m_Height*0.8, self.m_Width*0.1, self.m_Height*0.1, self.m_Window)
 	self.m_EditAmount:setNumeric(true, true)
 	self.m_EditAmount:setText("1")
@@ -45,7 +45,7 @@ function ItemShopGUI:refreshItemShopGUI(shopId, items, sortedItems, weaponItems)
 			else
 				local name = sortedItems and value[1] or key
 				local price = items[name]
-				local item = self.m_Grid:addItem(name, ("%s$"):format(price))
+				local item = self.m_Grid:addItem(_(name), ("%s$"):format(price))
 				item.Id = name
 
 				item.onLeftClick =

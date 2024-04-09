@@ -1559,7 +1559,10 @@ msgid "Fraktion für das Gebiet"
 msgstr "Faction for the territory"
 
 msgid "Tankstelle"
-msgstr "Petrol station"
+msgstr "Gas station"
+
+msgid "Tankstelle:"
+msgstr "Gas station:"
 
 msgid "Kaufen"
 msgstr "Buy"
@@ -2261,13 +2264,13 @@ msgid "Du sitzt in keinem Fahrzeug!"
 msgstr "You're not sitting in any vehicle!"
 
 msgid "Tankstelle: %s"
-msgstr "Petrol station: %s"
+msgstr "Gas station: %s"
 
 msgid "Zapfpistole einhängen"
 msgstr "Re-attach pump nozzle"
 
-msgid "Zapfpistole nehmen (%s)"
-msgstr "Take pump nozzle (%s)"
+msgid "Zapfpistole nehmen (%s) (%s$ pro Liter)"
+msgstr "Take pump nozzle (%s) (%s$ per litre)"
 
 msgid "Service: Fahrzeug reparieren"
 msgstr "Service: repair vehicle"
@@ -5835,3 +5838,324 @@ msgstr "WARNING: You will be transported to the AFK Cafe in one minute!"
 
 msgid "Da gerade kein Mitglied vom Rescue Team aktiv ist, kannst du jetzt durch einen Klick auf die Shortmessage früher respawnen!"
 msgstr "Since no member of the Rescue Team is active at the moment, you can now respawn earlier by clicking on the short message!"
+
+msgid "Weed ist geil"
+msgstr "Weed is awesome"
+
+msgid "Füllt deinen Hunger auf"
+msgstr "Fills your hunger"
+
+msgid "Füllt den Tank eines Fahrzeuges auf!"
+msgstr "Fills the tank of a vehicle!"
+
+msgid "Casino-Chips"
+msgstr "Casino chips"
+
+msgid "Augen wie ein Adler"
+msgstr "Eyes like an eagle"
+
+msgid "Füllt deine Gesundheit auf"
+msgstr "Fills your health"
+
+msgid "Platzierbares Radio zum Musik abspielen!"
+msgstr "Placeable radio for playing music!"
+
+msgid "kleines Glücksspiel"
+msgstr "small gambling"
+
+msgid "Rauche eine zwischendurch"
+msgstr "Smoke one in between"
+
+msgid "Lässt den getroffenen Husten"
+msgstr "Makes the hit cough"
+
+msgid "Personalausweis und Führerscheine"
+msgstr "ID cards and driver's licenses"
+
+msgid "Samen der begehrten Weed-Pflanze"
+msgstr "Seeds of the coveted weed plant"
+
+msgid "illegale Pilze"
+msgstr "illegal mushrooms"
+
+msgid "Ein Snack fuer zwischen durch"
+msgstr "A snack for in between"
+
+msgid "Ein Schoko-Riegel für Zwischendurch"
+msgstr "A chocolate bar for in between"
+
+msgid "Ein Bierchen am Morgen vertreibt Kummer und Sorgen"
+msgstr "A beer in the morning dispels sorrow and worry"
+
+msgid "Tablet von eXo-Reallife"
+msgstr "Tablet from eXo-Reallife"
+
+msgid "Spiele Tetris und knacke den Highscore"
+msgstr "Play Tetris and break the highscore"
+
+msgid "Baue Waffen aus diesen illegalen Materialien"
+msgstr "Build weapons from these illegal materials"
+
+msgid "Fische, frisch ausm Meer"
+msgstr "Fish, fresh from the sea"
+
+msgid "Neuigkeiten der SAN-News"
+msgstr "News from SAN-News"
+
+msgid "Finger weg von den Drogen!"
+msgstr "Stay away from drugs!"
+
+msgid "Zum reparieren von Totalschäden"
+msgstr "For repairing total damages"
+
+msgid "Was zum Naschen für Zwischendurch"
+msgstr "Something to snack on in between"
+
+msgid "Sammle diese und Kauf dir wundervolle Prämien davon!"
+msgstr "Collect these and buy wonderful rewards!"
+
+msgid "Nettes Päckchen vom Weihnachtsmann"
+msgstr "Nice package from Santa Claus"
+
+msgid "Gibts was besseres zur kalten Adventzeit?"
+msgstr "Is there anything better for the cold Advent time?"
+
+msgid "Warmer Kaffee, nicht vor dem Schlafen gehen trinken!"
+msgstr "Warm coffee, don't drink before going to bed!"
+
+msgid "Nette Jause zwischendurch in den kalten Monaten"
+msgstr "Nice snack in between during the cold months"
+
+msgid "alkoholhaltiges Getränk, das in 2-cl- oder 4-cl-Glaesern serviert und zumeist in einem Zug getrunken wird"
+msgstr "alcoholic beverage served in 2 cl or 4 cl glasses and usually consumed in one gulp"
+
+msgid "Lecker Wuerstchen mit Senf!"
+msgstr "Tasty sausages with mustard!"
+
+msgid "Damit kommst du kostenlos durch Mautstellen. 1 Woche gültig!"
+msgstr "This gets you through toll booths for free. Valid for 1 week!"
+
+msgid "Verliehen von Entwicklern für besondere Verdienste"
+msgstr "Awarded by developers for special achievements"
+
+msgid "Safty First! Setze ihn auf wann immer du möchtest!"
+msgstr "Safety first! Put it on whenever you want!"
+
+msgid "Verleihe dir ein nie dagewesenes Aussehen mit einer tollen Maske!"
+msgstr "Give yourself a never-before-seen look with a great mask!"
+
+msgid "Widerliches Essen"
+msgstr "Disgusting food"
+
+msgid "Widerliches Burger aus Zombiefleisch"
+msgstr "Disgusting burger made from zombie meat"
+
+msgid "Weihnachtsmütze"
+msgstr "Christmas hat"
+
+msgid "Barrikade"
+msgstr "Barricade"
+
+msgid "Sprenge verschiedene Türen"
+msgstr "Blow up various doors"
+
+msgid "Füllt deinen Hunger auf"
+msgstr "Fills your hunger"
+
+msgid "Essbarer Pilz"
+msgstr "Edible mushroom"
+
+msgid "Zum Bewässern von Pflanzen"
+msgstr "For watering plants"
+
+msgid "Wird zum Fahrzeughandel benötigt"
+msgstr "Required for vehicle trading"
+
+msgid "Zum aufstellen und bestrafen von Geschwindigkeitsüberschreitungen"
+msgstr "For setting up and punishing speeding violations"
+
+msgid "Fahrzeuge bekommen beim darüber fahren platte Reifen"
+msgstr "Vehicles get flat tires when driving over it"
+
+msgid "Whiskey ist eine durch Destillation aus Getreidemaische gewonnene und im Holzfass gereifte Spirituose."
+msgstr "Whiskey is a spirit obtained by distillation from grain mash and aged in wooden barrels."
+
+msgid "fruchtiger, mäßig süßer Cocktail"
+msgstr "Fruity, moderately sweet cocktail"
+
+msgid "ein süßer, cremiger Cocktail aus Rum, Kokosnusscreme und Ananassaft."
+msgstr "A sweet, creamy cocktail made from rum, coconut cream, and pineapple juice."
+
+msgid "extrem starker Cocktail der einem die Schuhe auszieht"
+msgstr "Extremely strong cocktail that knocks your socks off"
+
+msgid "ein Longdrink mit Rum und Cola, der um 1900 in Kuba entstand."
+msgstr "A long drink with rum and cola, originating in Cuba around 1900."
+
+msgid "Ein Integralhelm der dich vor Wind und Blicken schützt!"
+msgstr "A full-face helmet that protects you from wind and prying eyes!"
+
+msgid "Ein Motocross-Helm welcher sehr gut den Dreck beim Fahren abwendet!"
+msgstr "A motocross helmet that effectively deflects dirt while riding!"
+
+msgid "Auf der Harley besonders stylish!"
+msgstr "Particularly stylish on the Harley!"
+
+msgid "Hält Gase fern!"
+msgstr "Keeps gases away!"
+
+msgid "Egal ob 9mm oder .45, alles wird gestoppt!"
+msgstr "Whether it's 9mm or .45, everything gets stopped!"
+
+msgid "Es passt einiges hier rein!"
+msgstr "Fits a lot in here!"
+
+msgid "Ein Einsatzschild für Spezialtruppen!"
+msgstr "A riot shield for special forces!"
+
+msgid "Ein Beutel voller Gegenstände! Sicher nicht Legal..."
+msgstr "A bag full of items! Definitely not legal..."
+
+msgid "Ein Set Kleidung."
+msgstr "A set of clothing."
+
+msgid "Wollen fangen Fische?"
+msgstr "Want to catch fish?"
+
+msgid "Kühlt gut, wieder und wieder!"
+msgstr "Cools well, again and again!"
+
+msgid "Falls es hart auf hart kommt."
+msgstr "In case things get tough."
+
+msgid "Lockt ein paar Fische an und vereinfacht das Angeln"
+msgstr "Attracts some fish and makes fishing easier."
+
+msgid "Event-Special: Osterei"
+msgstr "Event special: Easter egg"
+
+msgid "Event-Special Hasenohren"
+msgstr "Event special: Bunny ears"
+
+msgid "zum Markieren von Einsatzorten"
+msgstr "for marking deployment sites"
+
+msgid "gesundes Obst"
+msgstr "healthy fruit"
+
+msgid "Pflanze deinen eigenen Apfelbaum"
+msgstr "Plant your own apple tree"
+
+msgid "Deine eigene Mülltonne für dein Haus!"
+msgstr "Your own trash can for your house!"
+
+msgid "Haut den Gegner mit Stromstößen um"
+msgstr "Hits the enemy with electric shocks"
+
+msgid "Ziemlich süß und durchlöchert zuverlässig die Zähne."
+msgstr "Pretty sweet and reliably perforates teeth."
+
+msgid "Medikit zum schnellen selbst heilen"
+msgstr "Medikit for quick self-healing"
+
+msgid "Ein Eingabegerät."
+msgstr "An input device."
+
+msgid "Ein benutzbares Tor zum platzieren."
+msgstr "A usable gate for placement."
+
+msgid "Ein platzierbarer Eingang"
+msgstr "A placeable entrance"
+
+msgid "Feuerwerks Rakete"
+msgstr "Fireworks rocket"
+
+msgid "macht einen lauten Krach"
+msgstr "makes a loud noise"
+
+msgid "Eine Batterie aus mehreren Raketen"
+msgstr "A battery of several rockets"
+
+msgid "Römische Kerze"
+msgstr "Roman candle"
+
+msgid "Eine Batterie aus mehreren römischen Kerzen"
+msgstr "A battery of several Roman candles"
+
+msgid "macht ordentlich Krach"
+msgstr "makes a lot of noise"
+
+msgid "macht kleine explosionen"
+msgstr "makes small explosions"
+
+msgid "Ein Sprengsatz mit Fernzünder."
+msgstr "An explosive device with remote trigger."
+
+msgid "Eine Rauchgranate um Sicht zu verhindern."
+msgstr "A smoke grenade to obstruct vision."
+
+msgid "Ein Radiosender der über Ultrakurzwelle empfängt."
+msgstr "A radio transmitter that receives via ultrashort wave."
+
+msgid "Ein Stern erhalten durch den Braboy!"
+msgstr "A star received by Braboy!"
+
+msgid "Benutze die Keycard um Knasttüren zu öffnen"
+msgstr "Use the keycard to open prison doors"
+
+msgid "Pflanze diese Samen um einen wunderschönen Blumenstrauß zu ernten"
+msgstr "Plant these seeds to harvest a beautiful bouquet of flowers"
+
+msgid "Zum Entschärfen von SLAMs"
+msgstr "For defusing SLAMs"
+
+msgid "Sammelt Informationen über deine geangelten Fische!"
+msgstr "Collects information about your caught fish!"
+
+msgid "Für angehende Angler!"
+msgstr "For aspiring anglers!"
+
+msgid "Für Profi-Angler!"
+msgstr "For professional anglers!"
+
+msgid "Für legendäre Angler! Damit fängst du jeden Fisch!"
+msgstr "For legendary anglers! With this, you catch every fish!"
+
+msgid "Lockt allgemeine Fische an"
+msgstr "Attracts common fish"
+
+msgid "Spezieller Köder für Meeresangeln"
+msgstr "Special bait for sea fishing"
+
+msgid "Zubehör. Auf der Wasseroberfläche treibender Bissanzeiger"
+msgstr "Accessory. Bobber floating on the water surface"
+
+msgid "Zubehör. Eine rotierende Metallscheibe für ein einfaches und effektives fangen von kleinen als auch große Fische"
+msgstr "Accessory. A rotating metal disc for catching both small and large fish easily and effectively"
+
+msgid "Willkommen im Club der Riskanten."
+msgstr "Welcome to the risky club."
+
+msgid "Dreckig, Gravität tut den Rest."
+msgstr "Dirty, gravity does the rest."
+
+msgid "Eine Maske zum anziehen"
+msgstr "A mask to wear"
+
+msgid "Shop öffnen"
+msgstr "Open shop"
+
+msgid "Stripper engagieren"
+msgstr "Hire strippers"
+
+msgid "Die Stripper sind noch für %s Minuten bezahlt."
+msgstr "The strippers are paid for %s more minutes."
+
+msgid "Da du in der Gruppe bist, zu dem die Bar gehört, zahlst du nur den Anteil an die Stripper."
+msgstr "Since you're in the group that owns the bar, you only pay a share to the strippers."
+
+msgid "Für wie viel Minuten möchtest du die Stripper (%d Stripper) engagieren (%d$ pro Minute)"
+msgstr "For how many minutes do you want to hire the strippers (%d strippers) (%d$ per minute)"
+
+msgid "Gib eine Zahl an."
+msgstr "Enter a number."
