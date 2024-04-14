@@ -6270,3 +6270,54 @@ msgstr "VEHICLES"
 
 msgid "Sprachänderung"
 msgstr "Language change"
+
+msgid "Ohne"
+msgstr "Without"
+
+msgid "Alt links"
+msgstr "Left Alt"
+
+msgid "Alt rechts"
+msgstr "Right Alt"
+
+msgid "Strg links"
+msgstr "Left Ctrl"
+
+msgid "Strg rechts"
+msgstr "Right Ctrl"
+
+msgid "Shift links"
+msgstr "Left Shift"
+
+msgid "Shift rechts"
+msgstr "Right Shift"
+
+msgid "Fraktion"
+msgstr "Faction"
+
+msgid "Unternehmen"
+msgstr "Company"
+
+msgid "Gruppe"
+msgstr "Group"
+
+msgid "schreien (/s)"
+msgstr "shout (/s)"
+
+msgid "flüstern (/l)"
+msgstr "whisper (/l)"
+
+msgid "Fraktion (/t)"
+msgstr "faction (/t)"
+
+msgid "Unternehmen (/u)"
+msgstr "company (/u)"
+
+msgid "Gruppe (/f)"
+msgstr "group (/f)"
+
+msgid "Bündnis (/b)"
+msgstr "alliance (/b)"
+
+msgid "Staat (/g)"
+msgstr "state (/g)"

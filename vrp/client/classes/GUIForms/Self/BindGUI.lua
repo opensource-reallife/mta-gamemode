@@ -1,40 +1,40 @@
 BindGUI = inherit(GUIForm)
 inherit(Singleton, BindGUI)
 
-BindGUI.Modifiers = {
-	[0] = "Ohne";
-	["lalt"] = "Alt links",
-	["ralt"] = "Alt rechts",
-	["lctrl"] = "Strg links",
-	["rctrl"] = "Strg rechts",
-	["lshift"] = "Shift links",
-	["rshift"] = "Shift rechts"
-}
-
-BindGUI.Headers = {
-	["faction"] = "Fraktion",
-	["company"] = "Unternehmen",
-	["group"] = "Gruppe"
-}
-
-BindGUI.Functions = {
-	["say"] = "Chat (/say)",
-	["s"] = "schreien (/s)",
-	["l"] = "flüstern (/l)",
-	["t"] = "Fraktion (/t)",
-	["me"] = "me (/me)",
-	["u"] = "Unternehmen (/u)",
-	["f"] = "Gruppe (/f)",
-	["b"] = "Bündnis (/b)",
-	--["g"] = "Beamten (/g)",
-}
-
 MAX_PARAMETER_LENGTH = 37
 MAX_PARAMETER_LENGTH_MANAGE = 62
 
 addRemoteEvents{"bindReceive"}
 
 function BindGUI:constructor()
+	self.m_Modifiers = {
+		[0] = _"Ohne";
+		["lalt"] = _"Alt links",
+		["ralt"] = _"Alt rechts",
+		["lctrl"] = _"Strg links",
+		["rctrl"] = _"Strg rechts",
+		["lshift"] = _"Shift links",
+		["rshift"] = _"Shift rechts"
+	}
+	
+	self.m_Headers = {
+		["faction"] = _"Fraktion",
+		["company"] = _"Unternehmen",
+		["group"] = _"Gruppe"
+	}
+	
+	self.m_Functions = {
+		["say"] = "Chat (/say)",
+		["s"] = _"schreien (/s)",
+		["l"] = _"flüstern (/l)",
+		["t"] = _"Fraktion (/t)",
+		["me"] = "me (/me)",
+		["u"] = _"Unternehmen (/u)",
+		["f"] = _"Gruppe (/f)",
+		["b"] = _"Bündnis (/b)",
+		["g"] = _"Staat (/g)",
+	}
+
 	GUIWindow.updateGrid()	
 	self.m_Width = grid("x", 17)
 	self.m_Height = grid("y", 15)
@@ -74,7 +74,7 @@ function BindGUI:constructor()
 	self.m_Footer["local"]["Key1"] = GUIGridLabel:new(1, 12, 7, 1, "Taste 1:", self.m_Window)
 	self.m_Footer["local"]["Key2"] = GUIGridLabel:new(10, 12, 7, 1, "Taste 2:", self.m_Window)
 	self.m_Footer["local"]["HelpChanger"] = GUIGridChanger:new(1, 13, 7, 1, self.m_Window):setBackgroundColor(Color.Accent)
-	for index, name in pairs(BindGUI.Modifiers) do
+	for index, name in pairs(self.m_Modifiers) do
 		self.m_Footer["local"]["HelpChanger"]:addItem(name)
 	end
 	self.m_Footer["local"]["PlusLabel"] = GUIGridLabel:new(8, 13, 2, 1, " + ", self.m_Window):setAlign("center")
@@ -97,7 +97,7 @@ function BindGUI:constructor()
 	self.m_Footer["new"] = {}
 	self.m_Footer["new"]["FunctionLabel"] = GUIGridLabel:new(1, 14, 3, 1, _"Funktion:", self.m_Window)
 	self.m_Footer["new"]["FunctionChanger"] = GUIGridChanger:new(5, 14, 5, 1, self.m_Window):setBackgroundColor(Color.Accent)
-	for index, name in pairs(BindGUI.Functions) do
+	for index, name in pairs(self.m_Functions) do
 		self.m_Footer["new"]["FunctionChanger"]:addItem(name)
 	end
 	self.m_Footer["new"]["GermanMsgLabel"] = GUIGridLabel:new(1, 10, 16, 1, _"Nachricht (Deutsch):", self.m_Window)
@@ -152,9 +152,9 @@ function BindGUI:loadLocalBinds()
 		if not data.keys or #data.keys == 0 then
 			keys = "-"
 		elseif #data.keys == 1 then
-			keys = BindGUI.Modifiers[data.keys[1]] and BindGUI.Modifiers[data.keys[1]] or data.keys[1]:upper()
+			keys = self.m_Modifiers[data.keys[1]] and self.m_Modifiers[data.keys[1]] or data.keys[1]:upper()
 		else
-			keys = table.concat({BindGUI.Modifiers[data.keys[1]] and BindGUI.Modifiers[data.keys[1]] or data.keys[1]:upper(), BindGUI.Modifiers[data.keys[2]] and BindGUI.Modifiers[data.keys[2]] or data.keys[2]:upper()}, " + ")
+			keys = table.concat({self.m_Modifiers[data.keys[1]] and self.m_Modifiers[data.keys[1]] or data.keys[1]:upper(), self.m_Modifiers[data.keys[2]] and self.m_Modifiers[data.keys[2]] or data.keys[2]:upper()}, " + ")
 		end
 		item = self.m_Grid:addItem(data.action.name, string.short(tMessage or "", MAX_PARAMETER_LENGTH), keys)
 		item.index = index
@@ -189,7 +189,7 @@ end
 
 function BindGUI:Event_onReceive(type, id, binds)
 	local item
-	self.m_Grid:addItemNoClick(BindGUI.Headers[type], "", "")
+	self.m_Grid:addItemNoClick(self.m_Headers[type], "", "")
 	for id, data in pairs(binds) do
 		local tMessage = data["Message"]
 		if localPlayer:getLocale() == "en" and data["MessageEN"] and data["MessageEN"] ~= "" then
@@ -228,8 +228,8 @@ function BindGUI:onBindSelect(item, index)
 		if BindManager:getSingleton().m_Binds[index] and BindManager:getSingleton().m_Binds[index].keys then
 			if BindManager:getSingleton().m_Binds[index].keys[1] then
 				local key1 = BindManager:getSingleton().m_Binds[index].keys[1]
-				if BindGUI.Modifiers[key1] then
-					self.m_Footer["local"]["HelpChanger"]:setSelectedItem(BindGUI.Modifiers[key1])
+				if self.m_Modifiers[key1] then
+					self.m_Footer["local"]["HelpChanger"]:setSelectedItem(self.m_Modifiers[key1])
 				else
 					self.m_Footer["local"]["SelectedButton"]:setText(key1:upper())
 				end
@@ -262,7 +262,7 @@ function BindGUI:saveBind()
 	if self.m_Footer["local"]["SelectedButton"]:getText() == "" or self.m_Footer["local"]["SelectedButton"]:getText() == " " then return end
 	if self.m_SelectedBind and self.m_SelectedBind.index and self.m_SelectedBind.type == "local" then
 		local index = self.m_SelectedBind.index
-		local helper = table.find(BindGUI.Modifiers, self.m_Footer["local"]["HelpChanger"]:getSelectedItem())
+		local helper = table.find(self.m_Modifiers, self.m_Footer["local"]["HelpChanger"]:getSelectedItem())
 		local key = self.m_Footer["local"]["SelectedButton"]:getText():lower()
 		local result = false
 		if helper == 0 then
@@ -289,7 +289,7 @@ function BindGUI:editBind()
 	self.m_Footer["new"]["EditBindButton"]:setVisible(true)
 
 	local item = self.m_SelectedBind
-	self.m_Footer["new"]["FunctionChanger"]:setSelectedItem(BindGUI.Functions[item.action])
+	self.m_Footer["new"]["FunctionChanger"]:setSelectedItem(self.m_Functions[item.action])
 	self.m_Footer["new"]["NewTextDE"]:setText(item.parameterDE or "")
 	self.m_Footer["new"]["NewTextEN"]:setText(item.parameterEN or "")
 	self.m_Footer["new"]["AddNewBindButton"]:setText("Ändern")
@@ -314,7 +314,7 @@ end
 function BindGUI:editAddBind(item)
 	local parametersDE = self.m_Footer["new"]["NewTextDE"]:getText() or ""
 	local parametersEN = self.m_Footer["new"]["NewTextEN"]:getText() or ""
-	local name = table.find(BindGUI.Functions, self.m_Footer["new"]["FunctionChanger"]:getSelectedItem())
+	local name = table.find(self.m_Functions, self.m_Footer["new"]["FunctionChanger"]:getSelectedItem())
 
 	if parametersDE == "" and parametersEN == "" then
 		return ErrorBox:new(_"Gib mindestens einen Text!")
@@ -382,7 +382,7 @@ function BindManageGUI:constructor(ownerType)
 	self.m_Footer["new"] = {}
 	self.m_Footer["new"]["FunctionLabel"] = GUIGridLabel:new(1, 14, 3, 1, _"Funktion:", self.m_Window)
 	self.m_Footer["new"]["FunctionChanger"] = GUIGridChanger:new(5, 14, 4, 1, self.m_Window):setBackgroundColor(Color.Accent)
-	for index, name in pairs(BindGUI.Functions) do
+	for index, name in pairs(self.m_Functions) do
 		self.m_Footer["new"]["FunctionChanger"]:addItem(name)
 	end
 	self.m_Footer["new"]["GermanMsgLabel"] = GUIGridLabel:new(1, 10, 16, 1, _"Nachricht (Deutsch):", self.m_Window)
@@ -431,7 +431,7 @@ end
 function BindManageGUI:Event_onReceive(type, id, binds)
 	self.m_Binds = binds
 	self.m_Grid:clear()
-	self.m_Grid:addItemNoClick(BindGUI.Headers[type], "")
+	self.m_Grid:addItemNoClick(self.m_Headers[type], "")
 	for id, data in pairs(binds) do
 		local tMessage = data["Message"]
 		if localPlayer:getLocale() == "en" and data["MessageEN"] and data["MessageEN"] ~= "" then
@@ -450,7 +450,7 @@ end
 function BindManageGUI:editAddBind(item)
 	local parametersDE = self.m_Footer["new"]["NewTextDE"]:getText()
 	local parametersEN = self.m_Footer["new"]["NewTextEN"]:getText()
-	local name = table.find(BindGUI.Functions, self.m_Footer["new"]["FunctionChanger"]:getSelectedItem())
+	local name = table.find(self.m_Functions, self.m_Footer["new"]["FunctionChanger"]:getSelectedItem())
 	if parametersEN:len() >= 1 and name then
 		if item and item.id then
 			triggerServerEvent("bindEditServerBind", localPlayer, self.m_OwnerType, item.id, name, parametersDE, parametersEN)
@@ -473,7 +473,7 @@ end
 function BindManageGUI:onBindSelect(item)
     self.m_SelectedBind = item
 	self:changeFooter("new")
-	self.m_Footer["new"]["FunctionChanger"]:setSelectedItem(BindGUI.Functions[item.action])
+	self.m_Footer["new"]["FunctionChanger"]:setSelectedItem(self.m_Functions[item.action])
 	self.m_Footer["new"]["NewTextDE"]:setText(item.parameter or "")
 	self.m_Footer["new"]["NewTextEN"]:setText(item.parameterEN or "")
 	self.m_Footer["new"]["EditBindButton"]:setVisible(true)
