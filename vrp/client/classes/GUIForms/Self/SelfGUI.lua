@@ -1726,7 +1726,7 @@ function SelfGUI:onSettingChange(setting)
 			core:set("HUD", "locale", index == 1 and "de" or "en")
 			localPlayer:setLocale(core:get("HUD", "locale"))
 			triggerServerEvent("playerLocale", localPlayer, localPlayer:getLocale())
-			ShortMessage:new(_"Bitte reconnecten damit die Änderung ihre Wirkung zeigt!", "Sprache", Color.DarkLightBlue)
+			ShortMessage:new(_"Bitte verbinde dich erneut, damit die Änderung ihre volle Wirkung zeigt!", _"Sprachänderung", Color.DarkLightBlue)
 		end
 
 		self.m_LanguageChange:setIndex(localPlayer:getLocale() == "de" and 1 or 2, true)

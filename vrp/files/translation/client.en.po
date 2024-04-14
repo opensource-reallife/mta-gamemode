@@ -4777,8 +4777,8 @@ msgstr "Vehicles: %s/%s"
 msgid "Fahrzeug zur Gruppe hinzufügen"
 msgstr "Add vehicle to group"
 
-msgid "Bitte reconnecten damit die Änderung ihre Wirkung zeigt!"
-msgstr "Please reconnect so that the change shows its effect!"
+msgid "Bitte verbinde dich erneut, damit die Änderung ihre volle Wirkung zeigt!"
+msgstr "Please reconnect to ensure that the change takes its full effect!"
 
 msgid "Um 21:00 Uhr findet das tägliche Schildkrötenrennen statt! Du kannst am Strand auf eine Schildkröte Geld setzen und das rennen vor Ort anschauen. Viel Glück!"
 msgstr "At 21:00 the daily turtle race takes place! You can bet money on a turtle on the beach and watch the race on the spot. Good luck!"
@@ -5268,6 +5268,9 @@ msgstr "Dice"
 
 msgid "Zigarette"
 msgstr "Cigarette"
+
+msgid "Zigarettenpackung"
+msgstr "Cigarette pack"
 
 msgid "Pfeffermunition"
 msgstr "Pepper munition"
@@ -6261,3 +6264,9 @@ msgstr "CJ clothes"
 
 msgid "Kino"
 msgstr "Cinema"
+
+msgid "FAHRZEUGE"
+msgstr "VEHICLES"
+
+msgid "Sprachänderung"
+msgstr "Language change"
