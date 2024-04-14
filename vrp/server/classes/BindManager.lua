@@ -50,13 +50,7 @@ function BindManager:Event_OnBindTrigger(name, parameters, parametersEN)
 		PlayerManager:getSingleton():sendPlayerWhisper(client, parameters, translatableBind)
 	elseif name == "t" then
 		if client.m_Faction then
-			if client.m_Faction:getId() >= 1 and client.m_Faction:getId() <= 3 then
-				if client.m_Faction and client.m_Faction:isStateFaction() then
-					FactionState:getSingleton():sendStateChatMessage(client, parameters, translatableBind)
-				end
-			else
-				client.m_Faction:sendChatMessage(client, parameters, translatableBind)
-			end
+			client.m_Faction:sendChatMessage(client, parameters, translatableBind)
 		end
 	elseif name == "f" then
 		if client.m_Group then
@@ -76,8 +70,10 @@ function BindManager:Event_OnBindTrigger(name, parameters, parametersEN)
 				client:sendError(_("Eure Allianz hat kein Bündnis!", client))
 			end
 		end
-	--[[elseif name == "g" then
-		client:meChat(false, true, parameters)]]
+	elseif name == "g" then
+		if client.m_Faction and client.m_Faction:isStateFaction() then
+			FactionState:getSingleton():sendStateChatMessage(client, parameters, translatableBind)
+		end
 	else
         executeCommandHandler(name, client, parameters)
     end

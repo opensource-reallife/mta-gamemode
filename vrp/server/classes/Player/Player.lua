@@ -760,11 +760,7 @@ end
 
 function Player.staticFactionChatHandler(self, command, ...)
 	if self.m_Faction then
-		if self.m_Faction:getId() >= 1 and self.m_Faction:getId() <= 3 then
-			Player.staticStateFactionChatHandler(self, command, ...)
-		else
-			self.m_Faction:sendChatMessage(self,table.concat({...}, " "))
-		end
+		self.m_Faction:sendChatMessage(self,table.concat({...}, " "))
 	end
 end
 

@@ -4970,3 +4970,6 @@ msgstr "finished %s off!"
 
 msgid "#4F4F65%d/20 Zigaretten übrig!"
 msgstr "#4F4F65%d/20 cigarettes left!"
+
+msgid "[Staat]#ffffff %s"
+msgstr "[State]#ffffff %s"

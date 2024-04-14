@@ -1052,7 +1052,7 @@ function FactionState:sendStateChatMessage(sourcePlayer, message, translatableBi
 				end
 				local text = ("%s %s: %s"):format(rankName,getPlayerName(sourcePlayer), tMessage)
 
-				player:sendMessage(("[Staat]#ffffff %s"):format(text), self.m_StateColor.r, self.m_StateColor.g, self.m_StateColor.b, true)
+				player:sendMessage(_("[Staat]#ffffff %s", player, text), self.m_StateColor.r, self.m_StateColor.g, self.m_StateColor.b, true)
 			end
 			if player ~= sourcePlayer then
 				receivedPlayers[#receivedPlayers+1] = player
