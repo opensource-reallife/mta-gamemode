@@ -2733,7 +2733,7 @@ msgid "Du hast das Item (%s) weggeworfen!"
 msgstr "You threw away the item (%s)!"
 
 msgid "Du kannst maximal %d %s in dein Inventar legen!"
-msgstr "You can put a maximum %d %s in your inventory!"
+msgstr "You can put a maximum of %d %s in your inventory!"
 
 msgid "Nicht genug Platz für %d %s in deinem Inventar!"
 msgstr "Not enough room for %d %s in your inventory!"
@@ -4857,6 +4857,9 @@ msgstr "Beer"
 msgid "Zigarette"
 msgstr "Cigarette"
 
+msgid "Zigarettenpackung"
+msgstr "Cigarette pack"
+
 msgid "Burger"
 msgstr "Burger"
 
@@ -4964,3 +4967,6 @@ msgstr "Total: %d$"
 
 msgid "setzte %s ein Ende!"
 msgstr "finished %s off!"
+
+msgid "#4F4F65%d/20 Zigaretten übrig!"
+msgstr "#4F4F65%d/20 cigarettes left!"

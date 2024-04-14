@@ -204,7 +204,7 @@ SHOP_ITEMS = {
 	};
 	["24/7"] = {
 		["Radio"] = 2000,
-		["Zigarette"] = 10,
+		["Zigarettenpackung"] = 150,
 		["Wuerfel"] = 10,
 		["Kanne"] = 500,
 		["Mautpass"] = 250,
@@ -214,7 +214,7 @@ SHOP_ITEMS = {
 		["Tragetasche"] = 1000,
 	};
 	["Tankstelle"] = {
-		["Zigarette"] = 10,
+		["Zigarettenpackung"] = 150,
 		["Mautpass"] = 250,
 		["Benzinkanister"] = 250,
 		["Reparaturkit"] = 1000,

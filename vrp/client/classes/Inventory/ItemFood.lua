@@ -13,7 +13,7 @@ addEvent("smokeEffect", true)
 addEventHandler("smokeEffect", root, function(item)
 	if isElement(item) then
 		local effect = createEffect("cigarette_smoke", 0, 0, 0)
-		ItemFood.attachEffect(effect, item)
+		ItemFood.attachEffect(effect, item, Vector3(0, 0, 0.1))
 	end
 end)
 
@@ -30,8 +30,8 @@ addEventHandler("bloodFx", root, function(item)
 	end
 end)
 
-function ItemFood.attachEffect(effect, element)
-	ItemFood.attachedEffects[effect] = {effect = effect, element = element}
+function ItemFood.attachEffect(effect, element, pos)
+	ItemFood.attachedEffects[effect] = {effect = effect, element = element, pos = pos}
 	addEventHandler("onClientElementDestroy", effect, function()
 		ItemFood.attachedEffects[effect] = nil
 	end)
@@ -46,7 +46,7 @@ addEventHandler("onClientPreRender", root,
 	function()
 		for fx, info in pairs(ItemFood.attachedEffects) do
 			if isElement(info.element) then
-				local x, y, z = getElementPosition(info.element)
+				local x, y, z = getPositionFromElementOffset(info.element, info.pos.x, info.pos.y, info.pos.z)
 				setElementPosition(fx, x, y, z)
 			else
 				ItemFood.attachedEffects[info.effect]:destroy()

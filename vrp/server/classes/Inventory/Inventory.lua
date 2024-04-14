@@ -465,7 +465,7 @@ function Inventory:giveItem(item, amount, value)
 		local itemMax = self.m_ItemData[item]["Item_Max"]
 
 		if self:getItemAmount(item) + amount > itemMax  then
-			self.m_Owner:sendError(_("Du kannst maximal %d %s in dein Inventar legen!", self.m_Owner,itemMax, item))
+			self.m_Owner:sendError(_("Du kannst maximal %d %s in dein Inventar legen!", self.m_Owner, itemMax, _(item)))
 			return
 		end
 

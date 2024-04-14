@@ -38,6 +38,7 @@ function ItemManager:constructor()
 		["Pizza"] = ItemFood,
 		["Pilz"] = ItemFood,
 		["Zigarette"] = ItemFood,
+		["Zigarettenpackung"] = ItemCigarettePack,
 		["Donut"] = ItemFood,
 		["Keks"] = ItemFood,
 		["Apfel"] = ItemFood,

@@ -12,7 +12,7 @@ addRemoteEvents{"playerReady", "playerSendMoney", "unfreezePlayer", "requestWeap
 "startWeaponLevelTraining","switchSpawnWithFactionSkin","Event_setPlayerWasted", "Event_playerTryToBreakoutJail", "onClientRequestTime", "playerDecreaseAlcoholLevel",
 "premiumOpenVehiclesList", "premiumTakeVehicle","destroyPlayerWastedPed","onDeathPedWasted", "toggleSeatBelt", "onPlayerTryGateOpen", "onPlayerUpdateSpawnLocation",
 "attachPlayerToVehicle", "onPlayerFinishArcadeEasterEgg", "changeWalkingstyle", "PlayerManager:onRequestQuickTrade", "PlayerManager:onAcceptQuickTrade", "removeMeFromVehicle",
-"playerLocale", "requestPlayerWeapons", "playerReconnect", "playerDecreaseHunger"}
+"playerLocale", "requestPlayerWeapons", "playerDecreaseHunger"}
 
 function PlayerManager:constructor()
 	self.m_WastedHook = Hook:new()
@@ -1332,5 +1332,6 @@ function PlayerManager:Event_requestPlayerWeaponInfo()
 end
 
 function PlayerManager:Event_DecreaseHunger(loss)
+	if client.m_LessHunger then loss = loss / 2 end
 	client:setHunger(client:getHunger() - loss)
 end
