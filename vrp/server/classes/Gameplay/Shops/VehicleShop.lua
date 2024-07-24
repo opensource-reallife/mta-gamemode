@@ -165,7 +165,7 @@ function VehicleShop:addVehicle(Id, Model, Name, Category, Price, Level, Pos, Ro
 	end
 	self.m_VehicleList[Model][index].currentStock = CurrentStock
 	self.m_VehicleList[Model][index].maxStock = MaxStock
-	self.m_VehicleList[Model][index].vehicle = TemporaryVehicle.create(Model, Pos, Rot)
+	self.m_VehicleList[Model][index].vehicle = TemporaryVehicle.create(Model, Pos, Rot.z)
 	local color = VehicleShopColors[math.random(1, #VehicleShopColors)]
 	--self.m_VehicleList[Model][index].vehicle:setColor(color[1], color[2], color[3], color[1], color[2], color[3], color[1], color[2], color[3])
 	local veh = self.m_VehicleList[Model][index].vehicle

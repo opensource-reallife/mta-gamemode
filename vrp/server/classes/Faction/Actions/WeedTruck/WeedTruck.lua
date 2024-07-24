@@ -33,7 +33,7 @@ WeedTruck.WeedPerPackage = 300
 
 
 function WeedTruck:constructor(driver)
-	self.m_Truck = TemporaryVehicle.create(456, WeedTruck.spawnPos, WeedTruck.spawnRot)
+	self.m_Truck = TemporaryVehicle.create(456, WeedTruck.spawnPos, WeedTruck.spawnRot.z)
 	self.m_Truck:setDoorOpenRatio(1, 1)
 	self.m_Truck:setData("WeedTruck", true, true)
     self.m_Truck:setColor(0, 50, 0)
