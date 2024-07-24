@@ -60,7 +60,7 @@ function Jail:createGate(interior, openDir, gatePos, gateRot, keypad1Pos, keypad
 	self.m_Gates[Id].m_Id = Id
 	self.m_Gates[Id]:setInterior(interior)
 	self.m_Gates[Id].closed = true
-	self.m_Gates[Id].moving = false
+	self.m_Gates[Id].movingState = false
 	self.m_Gates[Id].m_OpenDirection = openDir
 
 	if keypad1Pos then
@@ -104,7 +104,7 @@ function Jail:moveGate(gate, forceClose)
 	--local offset = self.ms_OffsetFromRotation[math.floor(rot.z)]
 	local offset = self.m_OpenVectors[gate.m_OpenDirection]
 
-	if not gate.moving == true then
+	if not gate.movingState == true then
 		if gate.closed == true and not forceClose then
 			gate:move(1500, pos.x + offset.x, pos.y + offset.y, pos.z)
 			gate.closed = false
@@ -114,9 +114,9 @@ function Jail:moveGate(gate, forceClose)
 			gate.closed = true
 			--outputChatBox("Gate "..gate.m_Id.." geschlossen", nil, 255, 0, 0)
 		end
-		gate.moving = true
+		gate.movingState = true
 		setTimer(function(gate)
-			gate.moving = false
+			gate.movingState = false
 		end,1500, 1, gate)
 	end
 end
