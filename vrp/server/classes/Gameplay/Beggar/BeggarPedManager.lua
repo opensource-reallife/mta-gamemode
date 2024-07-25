@@ -81,7 +81,7 @@ function BeggarPedManager:spawnPeds()
 			local ped = BeggarPed:new(i, classId, v.Pos, v.Rot)
 			if ped then self:addRef(ped) end
 			triggerClientEvent(PlayerManager:getSingleton():getReadyPlayers(), "ColshapeStreamer:registerColshape", resourceRoot, {v.Pos.x, v.Pos.y, v.Pos.z}, ped, "beggarped", ped.m_Id, 10, "beggarped:onClientColShapeHit", "beggarped:onClientColShapeLeave")
-			if chance(25) then -- 25% chance they die
+			if chance(20) then -- 20% chance they die
 				local random = Randomizer:get(1, 27)*60*1000 -- within 27 minutes
 				Timer(function(ped)
 					if FactionRescue:getSingleton():countPlayers(true, true, "medic") >= 1 then -- only when a rescue member is online, not afk and medic duty

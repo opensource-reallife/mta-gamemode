@@ -134,11 +134,11 @@ function BeggarPed:Event_onPedWasted(totalAmmo, killer, killerWeapon, bodypart, 
 		end, 15000, 1)
 	end
 
-	--give loot
-	self:createLootPickup()
-
 	if killer and isElement(killer) and getElementType(killer) == "vehicle" then killer = killer.controller end
 	if killer and killer ~= source and killerWeapon ~= 3 and getElementType(killer) == "player" then
+		-- Spawn Loot
+		self:createLootPickup()
+
 		-- Give Wanteds
 		if chance(25) then
 			setTimer(function()
