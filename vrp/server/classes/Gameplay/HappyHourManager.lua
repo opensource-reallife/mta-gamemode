@@ -39,7 +39,6 @@ function HappyHourManager:startHappyHour()
 	SHOPROB_MIN_MEMBERS = math.ceil(self.m_MinMembers["MinMembersShoprob"] / 2)
 	HOUSEROB_MIN_MEMBERS = math.ceil(self.m_MinMembers["MinMembersHouserob"] / 2)
 	SHOP_VEHICLE_ROB_MIN_MEMBERS = math.ceil(self.m_MinMembers["MinMembersVehicleShop"] / 2)
-	MIN_PLAYERS_FOR_FIRE = math.ceil(self.m_MinMembers["MinMembersFire"] / 2)
 
 	--[[ //no changes
 	BANKROB_MIN_MEMBERS = 
@@ -49,6 +48,7 @@ function HappyHourManager:startHappyHour()
 	JEWELRY_MIN_MEMBERS = 
 	PRISONBREAK_MIN_MEMBERS = 
 	CHRISTMASTRUCK_MIN_MEMBERS = 
+	MIN_PLAYERS_FOR_FIRE = 
 	MIN_PLAYERS_FOR_VEHICLE_FIRE =
 	]]
 
@@ -70,8 +70,6 @@ function HappyHourManager:endHappyHour()
 	PRISONBREAK_MIN_MEMBERS = self.m_MinMembers["MinMembersPrisonBreak"]
 	SHOP_VEHICLE_ROB_MIN_MEMBERS = self.m_MinMembers["MinMembersVehicleShop"]
 	CHRISTMASTRUCK_MIN_MEMBERS = self.m_MinMembers["MinMembersChristmastruck"]
-	MIN_PLAYERS_FOR_FIRE = self.m_MinMembers["MinMembersFire"]
-	MIN_PLAYERS_FOR_VEHICLE_FIRE = self.m_MinMembers["MinMembersVehicleFire"]
 
 	for k, player in pairs(PlayerManager:getSingleton():getReadyPlayers()) do
 		triggerClientEvent(player, "breakingNews", resourceRoot, _("Die Happy Hour ist beendet! Die Aktionsstartbedingungen sind nun zurückgesetzt!", player), "HappyHour", {44, 148, 12}, {0, 0, 0})

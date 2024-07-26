@@ -57,7 +57,10 @@ function FireManager:loadFirePlaces()
 end
 
 function FireManager:checkFire()
-	if FactionRescue:getSingleton():countPlayers(true, false) >= MIN_PLAYERS_FOR_FIRE and not self.m_CurrentFire then
+	local onlineCount = FactionRescue:getSingleton():countPlayers(true, false)
+	local dutyCount = FactionRescue:getSingleton():countPlayers(true, true)
+
+	if ((onlineCount >= MIN_PLAYERS_FOR_FIRE) or (dutyCount >= math.min(1, MIN_PLAYERS_FOR_FIRE / 2))) and not self.m_CurrentFire then
 		local random = math.random(1, 4)
 		if random == 4 then
 			PlaneManager:getSingleton():createRoute(true)
