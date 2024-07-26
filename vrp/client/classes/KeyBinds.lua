@@ -323,17 +323,17 @@ function KeyBinds:tryEnterEntrance( __, keystate)
 				triggerEvent("onTryEnterance", localPlayer)
 			end
 			if localPlayer.m_Entrance and localPlayer.m_Entrance:check() then
-				if localPlayer.m_Entrance.m_Text == "AUFZUG" then
+				if localPlayer.m_Entrance.m_Text == _"AUFZUG" then
 					triggerServerEvent("onTryElevator", localPlayer)
-				elseif localPlayer.m_Entrance.m_Text == "HAUS" then
+				elseif localPlayer.m_Entrance.m_Text == _"HAUS" then
 					triggerServerEvent("houseRequestGUI", localPlayer)
-				elseif localPlayer.m_Entrance.m_Text == "FAHRZEUGE" then 
+				elseif localPlayer.m_Entrance.m_Text == _"FAHRZEUGE" then 
 					triggerServerEvent("onTryVehicleSpawner", localPlayer)
-				elseif localPlayer.m_Entrance.m_Text == "VERSCHROTTUNG" then 
+				elseif localPlayer.m_Entrance.m_Text == _"VERSCHROTTUNG" then 
 					triggerServerEvent("VehicleScrapper:onVehicleScrapRequest", localPlayer)
-				elseif localPlayer.m_Entrance.m_Text == "FAHRZEUGKAUF" then 
+				elseif localPlayer.m_Entrance.m_Text == _"FAHRZEUGKAUF" then 
 					triggerServerEvent("onVehicleShopOpen", localPlayer)
-				elseif localPlayer.m_Entrance.m_Text == "HOCHHAUS" then
+				elseif localPlayer.m_Entrance.m_Text == _"HOCHHAUS" then
 					triggerServerEvent("Skyscraper:requestGUI", localPlayer)
 				else
 					triggerServerEvent("GroupPropertyClientInput", localPlayer) 
