@@ -2,7 +2,6 @@ LoginGUI = inherit(GUIForm)
 inherit(Singleton, LoginGUI)
 
 function LoginGUI:constructor(savedName, savedPW)
-
 	LoginGUI.startCameraDrive()
 	showChat(false)
 	setPlayerHudComponentVisible("radar",false)
@@ -29,7 +28,6 @@ function LoginGUI:constructor(savedName, savedPW)
 		self:switchViews(savedName and true)
 	end
 
-
 	self:bind("enter",
 		function(self)
 			if not self.m_Loaded or self.m_AnimInProgress then return end
@@ -48,6 +46,7 @@ function LoginGUI:constructor(savedName, savedPW)
 end
 
 function LoginGUI:virtual_destructor()
+	if LoginMusicGUI:getSingleton() then LoginMusicGUI:getSingleton():delete() end
 	LoginGUI.stopCameraDrive()
 	Cursor:hide(true)
 end
@@ -151,6 +150,7 @@ function LoginGUI:loadLoginElements()
 		localPlayer:setLocale(core:get("HUD", "locale"))
 		triggerServerEvent("playerLocale", localPlayer, localPlayer:getLocale())
 		ShortMessage:new(_"Bitte verbinde dich erneut, damit die Änderung ihre volle Wirkung zeigt!", _"Sprachänderung", Color.DarkLightBlue)
+		if LoginMusicGUI:getSingleton() then LoginMusicGUI:getSingleton():delete() LoginMusicGUI:new() end
 		self:switchViews(true)
 	end
 	self.m_Elements.langChange:setIndex(localPlayer:getLocale() == "de" and 1 or 2, true)
@@ -471,25 +471,3 @@ function LoginGUI.stopCameraDrive()
 	setCameraTarget(localPlayer)
 	triggerServerEvent("onClientRequestTime", localPlayer)
 end
-
-
-
-
-LoginRuleGUI = inherit(GUIForm)
-inherit(Singleton, LoginRuleGUI)
-
-function LoginRuleGUI:constructor()
-	GUIWindow.updateGrid()			-- initialise the grid function to use a window
-	self.m_Width = grid("x", 16) 	-- width of the window
-	self.m_Height = grid("y", 12) 	-- height of the window
-
-	GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true)
-	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Regelwerk", true, true, self)
-
-	self.m_Browser = GUIGridWebView:new(1, 1, 15, 11, "https://forum.openreallife.net/cms/index.php?board/24-regeln/", true, self.m_Window)
-end
-
-function LoginRuleGUI:destructor()
-	GUIForm.destructor(self)
-end
-

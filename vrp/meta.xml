@@ -1046,6 +1046,8 @@
     <script src="client/classes/GUIForms/KartGUI.lua" type="client" />
     <script src="client/classes/GUIForms/LogGUI.lua" type="client" />
     <script src="client/classes/GUIForms/LoginGUI.lua" type="client" />
+	<script src="client/classes/GUIForms/LoginRuleGUI.lua" type="client" />
+	<script src="client/classes/GUIForms/LoginMusicGUI.lua" type="client" />
     <script src="client/classes/GUIForms/MapGUI.lua" type="client" />
     <script src="client/classes/GUIForms/MostWanted3D.lua" type="client" />
     <script src="client/classes/GUIForms/PaintjobPreviewGUI.lua" type="client" />
