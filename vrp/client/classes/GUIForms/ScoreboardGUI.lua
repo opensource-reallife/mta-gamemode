@@ -157,21 +157,24 @@ function ScoreboardGUI:refresh()
 end
 
 function ScoreboardGUI:addPlayerCount(name, value, valueAFK, color)
+	local id = self.m_CountRow + self.m_CountColumn * 3
+
 	if self.m_CountRow >= 3 then
 		self.m_CountRow = 0
-		self.m_CountColumn =  self.m_CountColumn+1
+		self.m_CountColumn =  self.m_CountColumn + 1
 	end
-	if not self.m_PlayerCountLabels[name] then
-		self.m_PlayerCountLabels[name] = GUILabel:new(self.m_Width*0.05 + (self.m_Width/6*self.m_CountColumn), self.m_Height*0.72 + (self.m_Height*0.05*self.m_CountRow), self.m_Width/4, self.m_Height*0.05, "", self.m_Rect)
+
+	if not self.m_PlayerCountLabels[id] then
+		self.m_PlayerCountLabels[id] = GUILabel:new(self.m_Width*0.05 + (self.m_Width/6*self.m_CountColumn), self.m_Height*0.72 + (self.m_Height*0.05*self.m_CountRow), self.m_Width/4, self.m_Height*0.05, "", self.m_Rect)
 		if color then
-			self.m_PlayerCountLabels[name]:setColor(color)
+			self.m_PlayerCountLabels[id]:setColor(color)
 		end
 	end
 
 	if valueAFK ~= 0 then
-		self.m_PlayerCountLabels[name]:setText(("%s: %d (%d AFK)"):format(name, value, valueAFK))
+		self.m_PlayerCountLabels[id]:setText(("%s: %d (%d AFK)"):format(name, value, valueAFK))
 	else
-		self.m_PlayerCountLabels[name]:setText(("%s: %d"):format(name, value))
+		self.m_PlayerCountLabels[id]:setText(("%s: %d"):format(name, value))
 	end
 
 	self.m_CountRow = self.m_CountRow + 1
