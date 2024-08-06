@@ -157,7 +157,7 @@ function ScoreboardGUI:refresh()
 end
 
 function ScoreboardGUI:addPlayerCount(name, value, valueAFK, color)
-	local id = self.m_CountRow + self.m_CountColumn * 3
+	local id = (self.m_CountRow + 1) + self.m_CountColumn * 3
 
 	if self.m_CountRow >= 3 then
 		self.m_CountRow = 0
