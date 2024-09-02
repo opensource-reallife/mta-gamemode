@@ -20,6 +20,14 @@ function CustomModelManager:constructor()
 	self:loadImportCOL("files/models/buildings/mech.col", 7520)
 	self:loadImportDFF("files/models/buildings/mech.dff", 7520)
 
+	--Race
+	self:loadImportTXD("files/models/pickups/vehiclechange.txd", 2838)
+	self:loadImportDFF("files/models/pickups/vehiclechange.dff", 2838)
+	self:loadImportTXD("files/models/pickups/repair.txd", 2837)
+	self:loadImportDFF("files/models/pickups/repair.dff", 2837)
+	self:loadImportTXD("files/models/pickups/nitro.txd", 2839)
+	self:loadImportDFF("files/models/pickups/nitro.dff", 2839)
+
 	--Kart-Track
 	self:loadImportCOL("files/models/buildings/kart.col", 13083)
 	self:loadImportTXD("files/models/buildings/kart.txd", 13083)

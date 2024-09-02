@@ -230,6 +230,11 @@ function HUDSpeedo:Bind_SpeedLimit(key, state)
 		return
 	end
 
+	-- Don't do anything if speed limit is disabled
+	if localPlayer:getOccupiedVehicle():getData("disableSpeedLimit") then
+		return
+	end
+
 	if state == "down" then
 		-- Tell the player that we enable cruise control
 		if not SpeedLimit:getSingleton():isEnabled() then

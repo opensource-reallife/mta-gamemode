@@ -239,6 +239,8 @@
 	<script src="server/classes/Gameplay/ThrowObject/ThrowObject.lua" type="server" />
 
 	<!-- Race -->
+	<script src="server/classes/Gameplay/Race/RaceManager.lua" type="server"/>
+	<script src="server/classes/Gameplay/Race/Race.lua" type="server"/>
 	<script src="server/classes/Gameplay/Race/Toptimes.lua" type="server"/>
 	<script src="server/classes/Gameplay/Race/Kart.lua" type="server"/>
 
@@ -958,6 +960,7 @@
 
     <script src="client/classes/GUIForms/Race/RaceCreateLobbyGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Race/RaceLobbyGUI.lua" type="client" />
+	<script src="client/classes/GUIForms/Race/RaceMatchGUI.lua" type="client" />
 
     <script src="client/classes/GUIForms/Self/AchievementGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Self/BindGUI.lua" type="client" />
@@ -3384,10 +3387,12 @@
 	<vrpfile src="files/models/pickups/arrow.dff" />
 	<vrpfile src="files/models/pickups/exo_logo.dff"/>
 	<vrpfile src="files/models/pickups/exo_logo.txd"/>
-	<!--<vrpfile src="files/models/pickups/repair.txd"/>
+	<vrpfile src="files/models/pickups/repair.txd"/>
 	<vrpfile src="files/models/pickups/repair.dff"/>
 	<vrpfile src="files/models/pickups/nitro.txd"/>
-	<vrpfile src="files/models/pickups/nitro.dff"/>-->
+	<vrpfile src="files/models/pickups/nitro.dff"/>
+	<vrpfile src="files/models/pickups/vehiclechange.txd"/>
+	<vrpfile src="files/models/pickups/vehiclechange.dff"/>
 
 	<!--Objects-->
 	<vrpfile src="files/models/objects/ferrisWheel/ferris.txd" />

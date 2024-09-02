@@ -63,8 +63,9 @@ end
 function VehicleGuns:onVehicleEnter(player, seat)
     if player == localPlayer then
         if seat == 0 then
-            if VehicleGuns.Cooldowns[source:getModel()] then
-                self.m_Controls = VehicleGuns.ControlToDeactivate[source:getModel()]
+            local model = source:getModel()
+            if VehicleGuns.Cooldowns[model] then
+                self.m_Controls = VehicleGuns.ControlToDeactivate[model]
 
                 for index, control in pairs(self.m_Controls) do
                     bindKey(control, "down", self.m_ShootBind)
