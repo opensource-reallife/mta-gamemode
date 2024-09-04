@@ -44,29 +44,37 @@ function JobServiceTechnicianTask:getRandomCoordinates()
 end
 
 function JobServiceTechnicianTask:getQuestionSet(player)
-	return Randomizer:getRandomOf(1, JobServiceTechnician:getSingleton().m_Questions)
+	return Randomizer:getRandomOf(Randomizer:get(1, 3), JobServiceTechnician:getSingleton().m_Questions)
 end
 
 function JobServiceTechnicianTask:onQuestionsAnswered(result)
+    if source ~= client then return end
+    if not result then return end
+
     local player = source
     local answerCount = #result
     local correctAnswers = 0
-    if result then -- todo: change this
-        for _, answerPlayer in pairs(result) do
-            for _, questionData in pairs(JobServiceTechnician:getSingleton().m_Questions) do
-                local questionLocaleData = questionData[player:getLocale()]
-                for _, answerData in pairs(questionLocaleData) do
-                    if type(answerData) == "table" then
-                        if answerData[2] and answerData[1] == answerPlayer then
-                            correctAnswers = correctAnswers + 1
-                        end
-                    end
-                end
+    local questions = JobServiceTechnician:getSingleton().m_Questions
+    local playerLocale = player:getLocale()
+    local answerMap = {}
+
+    for _, questionData in pairs(questions) do
+        local questionLocaleData = questionData[playerLocale]
+        for _, answerData in pairs(questionLocaleData) do
+            if type(answerData) == "table" and answerData[2] then
+                answerMap[answerData[1]] = true
             end
         end
     end
+
+    for _, answerPlayer in pairs(result) do
+        if answerMap[answerPlayer] then
+            correctAnswers = correctAnswers + 1
+        end
+    end
+
     if correctAnswers > 0 then
-        local pay = math.floor(50 * JOB_PAY_MULTIPLICATOR * JobServiceTechnician:getSingleton():getMultiplicator()) * (Randomizer:get(90, 110) / 100)
+        local pay = math.floor((50 * JOB_PAY_MULTIPLICATOR * JobServiceTechnician:getSingleton():getMultiplicator()) * (Randomizer:get(90, 110) / 100) / answerCount * correctAnswers)
 		local points = math.round(pay / 50 * JOB_EXTRA_POINT_FACTOR)
 		player:givePoints(points)
 		StatisticsLogger:getSingleton():addJobLog(player, "jobServiceTechnician", nil, pay, nil, nil, points)
