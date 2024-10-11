@@ -10,9 +10,12 @@ ZombieSurvival = inherit(Object)
 ZombieSurvival.PickupWeapons = {25, 24, 22, 33}
 
 function ZombieSurvival.initalize()
+	local b = Blip:new("Evil.png", -31.64, 1377.67)
+	b:setDisplayText("Zombie Survival", BLIP_CATEGORY.Leisure)
+
 	local zombiePed = createPed(162, -31.64, 1377.67, 9.17, 90)
 	zombiePed:setFrozen(true)
-	local zombieMarker = createMarker(-34.24, 1377.80, 8.8, "cylinder", 1, 255, 0, 0, 125)
+	local zombieMarker = createMarker(-34.6, 1377.80, 8.4, "cylinder", 1, 255, 0, 0, 125)
 	local zombieColShape = createColSphere(-31.64, 1377.67, 9.17, 25)
 	addEventHandler("onColShapeHit", zombieColShape, function(hitElement, dim)
 		if hitElement:getType() == "player" and dim then
@@ -38,8 +41,7 @@ function ZombieSurvival.initalize()
 end
 
 function ZombieSurvival:constructor()
-
-	self.m_Dimension = math.random(1, 999) -- Testing
+	self.m_Dimension = DimensionManager:getSingleton():getFreeDimension()
 	self.m_Zombies = {}
 	self.m_ZombieKills = {}
 	self.m_ZombieTimers = {}
@@ -50,7 +52,7 @@ function ZombieSurvival:constructor()
 
 	self:addZombie()
 	self:loadMap()
-	outputDebugString("ZombieSurvival: Lobby erstellt - Dimension"..self.m_Dimension)
+	outputDebug("Lobby erstellt - Dimension"..self.m_Dimension)
 	addEventHandler("onZombieWasted", root, bind(self.zombieWasted, self))
 end
 
@@ -73,7 +75,9 @@ function ZombieSurvival:destructor()
 	if isTimer(self.m_CreatePickupTimer) then killTimer(self.m_CreatePickupTimer) end
 	if isTimer(self.m_IncreaseTimer) then killTimer(self.m_IncreaseTimer) end
 	if isElement(self.m_Pickup) then self.m_Pickup:destroy() end
-	outputDebugString("ZombieSurvival: Lobby zerstört - Dimension"..self.m_Dimension)
+
+	outputDebug("Lobby zerstört - Dimension"..self.m_Dimension)
+	DimensionManager:getSingleton():freeDimension(self.m_Dimension)
 end
 
 function ZombieSurvival:zombieWasted(ped, player)
@@ -113,45 +117,35 @@ function ZombieSurvival:addPlayer(player)
 			source:setHealth(source:getHealth()-loss*15)
 		end
 	end)
-	outputDebugString("ZombieSurvival: Spieler "..player:getName().." hinzugefügt - Dimension"..self.m_Dimension)
+	outputDebug("Spieler "..player:getName().." hinzugefügt - Dimension"..self.m_Dimension)
 end
 
 function ZombieSurvival:removePlayer(player)
-	player:triggerEvent("deathmatchStartDeathScreen", "Zombie", false)
-	fadeCamera(player, false, 2)
-	player:triggerEvent("Countdown", 10, "Respawn in")
 	takeAllWeapons(player)
 	player:triggerEvent("hideScore")
 
-	setTimer(function(score)
-		if player and isElement(player) then
-			local skin = player:getModel()
-			spawnPlayer(player, -35.72, 1380.00, 9.42, 0, skin, 0, 0)
-			player:setHealth(100)
-			player:setArmor(0)
-			player:setHeadless(false)
-			player:setCameraTarget(player)
-			player:fadeCamera(true, 1)
-			player:setAlpha(255)
-			player:triggerEvent("CountdownStop", "Respawn in")
-			player:sendInfo(_("Du bist gestorben! Das Zombie Survival wurde beendet! Score: %d", player, score))
-			MinigameManager:getSingleton().m_ZombieSurvivalHighscore:addHighscore(player:getId(), score)
-		end
-	end, 10000, 1, self.m_ZombieKills[player])
-	
+	local score = self.m_ZombieKills[player]
+	local skin = player:getModel()
+	spawnPlayer(player, -35.72, 1380.00, 9.42, 0, skin, 0, 0)
+	player:setHealth(100)
+	player:setArmor(0)
+	player:setHeadless(false)
+	player:setCameraTarget(player)
+	player:fadeCamera(true, 1)
+	player:setAlpha(255)
+	player:sendInfo(_("Du bist gestorben! Das Zombie Survival wurde beendet! Score: %d", player, score))
+	MinigameManager:getSingleton().m_ZombieSurvivalHighscore:addHighscore(player:getId(), score)
 	self.m_ZombieKills[player] = nil
-	
-	--if #self:getPlayers() == 0 then
-	--	delete(self)
-	--end
 
 	-- Check for Freaks Achievement
 	if MinigameManager:getSingleton():checkForFreaks(player) then
 		player:giveAchievement(22)
 	end
 
-	outputDebugString("ZombieSurvival: Spieler "..player:getName().." entfernt - Dimension"..self.m_Dimension)
-	delete(player.Minigame) -- SP only
+	outputDebug("Spieler "..player:getName().." entfernt - Dimension"..self.m_Dimension)
+
+	player.Minigame = nil
+	self:delete()
 end
 
 function ZombieSurvival:getRandomPlayer()

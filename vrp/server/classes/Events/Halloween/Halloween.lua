@@ -75,20 +75,10 @@ Halloween.ms_Bonus = {
 	},
 }
 
-Halloween.ms_QuestRewards = {
-	{pumpkins=2, sweets=5},
-	{pumpkins=5, sweets=15},
-	{pumpkins=2, sweets=10},
-	{pumpkins=10, sweets=25},
-	{pumpkins=2, sweets=10},
-	{pumpkins=2, sweets=10},
-	{pumpkins=10, sweets=25},
-	{pumpkins=25, sweets=50},
-}
-
 local day = getRealTime().monthday
 local month = getRealTime().month+1
 
+--[[
 if (month == 10 and day == 31) or (month == 11 and day <= 6) then
 	Halloween.ms_PricePoolName = "Halloween2022-1"
 	Halloween.ms_PricePoolEnd = 1667754000
@@ -116,12 +106,18 @@ elseif month == 11 and day <= 13 then
 		{"VIP", 1},
 	}
 end
+]]
 
 Halloween.maxPumpkinsToDropPerPlayer = 3
 
 function Halloween:constructor()
+	self.m_MapParser = MapParser:new(":exo_maps/events/halloween.map")
+	self.m_MapParser:create()
+
+	HalloweenQuestManager:new()
 	DrawContest:new()
 	WareManager:new()
+	
 	self.m_TrickOrTreatPIDs = {}
 
 	self.m_EventSign = createObject(1903, 1507.73, -1753.96, 12.59, 0, 0, 270)
@@ -146,19 +142,11 @@ function Halloween:constructor()
 	romero:setAlwaysDamageable(true)
 	romero.m_DisableToggleHandbrake = true
 
-
-	addRemoteEvents{"eventRequestBonusData", "eventBuyBonus", "Halloween:giveGhostCleaner", "Halloween:takeGhostCleaner", "Halloween:requestQuestState", "Halloween:requestQuestUpdate"}
+	addRemoteEvents{"eventRequestBonusData", "eventBuyBonus"}
 	addEventHandler("eventRequestBonusData", root, bind(self.Event_requestBonusData, self))
 	addEventHandler("eventBuyBonus", root, bind(self.Event_buyBonus, self))
-	--[[
-	addEventHandler("onPlayerQuit", root, bind(self.onPlayerQuit, self))
-	addEventHandler("Halloween:giveGhostCleaner", root, bind(self.Event_giveGhostCleaner, self))
-	addEventHandler("Halloween:takeGhostCleaner", root, bind(self.Event_takeGhostCleaner, self))
-	addEventHandler("Halloween:requestQuestState", root, bind(self.requestQuestState, self))
-	addEventHandler("Halloween:requestQuestUpdate", root, bind(self.requestQuestUpdate, self))
-	]]
+
 	self:initHalloweenDM()
-	--self:createQuestMarkers()
 
 	HalloweenEasterEggs:new()
 
@@ -340,7 +328,6 @@ function Halloween:Event_buyBonus(bonusId)
 	client:getInventory():removeItem("Kürbis", bonus["Pumpkin"])
 	client:sendSuccess(_("Du hast erfolgreich den Bonus %s für %d Kürbisse und %d Süßigkeiten gekauft!", client, bonus["Text"], bonus["Pumpkin"], bonus["Sweets"]))
 	StatisticsLogger:getSingleton():addEventShopLog(client, bonus["Text"], bonus["Pumpkin"], bonus["Sweets"])
-
 end
 
 function Halloween:initHalloweenDM()
@@ -378,71 +365,6 @@ function Halloween:halloweenDmStart()
 		playeritem:sendShortMessage(_("Die Halloween-Deathmatch Lobby wurde geöffnet!", playeritem), _("Halloween-DM", playeritem), {255, 130, 0})
 	end
 end
-
-
---[[
-function Halloween:Event_giveGhostCleaner()
-	giveWeapon(client, 27, 9999, true)
-end
-
-function Halloween:Event_takeGhostCleaner()
-	takeWeapon(client, 27)
-end
-
-function Halloween:onPlayerQuit()
-	takeWeapon(source, 27)
-end
-
-function Halloween:createQuestMarkers()
-	self.m_QuestEnterExits = {
-		[1] = {
-			InteriorEnterExit:new(Vector3(2751.914, -1962.834, 13.548), Vector3(-42.56, 1405.99, 1084.43), 270, 0, 8, 13, 0, 0)
-		},
-		[2] = {
-			InteriorEnterExit:new(Vector3(1851.825, -2135.402, 15.388), Vector3(-68.89, 1351.71, 1080.21), 0, 180, 6, 13, 0, 0),
-			InteriorEnterExit:new(Vector3(986.370, -1624.505, 14.930), Vector3(2365.25, -1135.06, 1050.88), 0, 90, 8, 13, 0, 0),
-			InteriorEnterExit:new(Vector3(824.521, -1423.724, 14.496), Vector3(-261.17, 1456.69, 1084.37), 90, 0, 4, 13, 0, 0),
-			InteriorEnterExit:new(Vector3(2092.063, -1166.489, 26.586), Vector3(318.55, 1114.98, 1083.88), 0, 90, 5, 13, 0, 0)
-		},
-		[3] = {
-			InteriorEnterExit:new(Vector3(2058.01, -1697.27, 13.55), Vector3(2270.01, -1210.48, 1047.56), 90, 0, 10, 13, 0, 0)
-		},
-		[4] = {
-			InteriorEnterExit:new(Vector3(2539.86, -1303.96, 34.95), Vector3(2542.45, -1304.00, 1025.07), 90, 270, 2, 13, 0, 0)
-		},
-		[7] = {
-			InteriorEnterExit:new(Vector3(1412.666,-1304.790, 8.561), Vector3(1426.313, -1938.632, -38.160), 180, 90, 0, 3, 0, 0)
-		}
-	}
-end
-
-function Halloween:requestQuestState()
-	local state = self:getQuestState(client)
-	client:triggerEvent("Halloween:sendQuestState", state)
-end
-
-function Halloween:getQuestState(player)
-	local result = sql:queryFetchSingle("SELECT Quest FROM ??_halloween_quest WHERE UserId = ?", sql:getPrefix(), player:getId())
-	return result and result.Quest or 0 
-end
-
-function Halloween:requestQuestUpdate(quest)
-	self:setQuestState(client, quest)
-
-	client:getInventory():giveItem("Kürbis", Halloween.ms_QuestRewards[quest].pumpkins)
-    client:getInventory():giveItem("Suessigkeiten", Halloween.ms_QuestRewards[quest].sweets)
-
-    client:sendSuccess(_("Du hast %s Kürbisse und und %s Süßigkeiten erhalten!", client, Halloween.ms_QuestRewards[quest].pumpkins, Halloween.ms_QuestRewards[quest].sweets))
-end
-
-function Halloween:setQuestState(player, quest)
-	if quest == 1 then
-		sql:queryExec("INSERT INTO ??_halloween_quest (UserId, Quest) VALUES (?, ?)", sql:getPrefix(), player:getId(), 1)
-	else
-		sql:queryExec("UPDATE ??_halloween_quest SET Quest = ? WHERE UserId = ?", sql:getPrefix(), quest, player:getId())
-	end
-end
-]]
 
 function Halloween:onEntryBuy(playerId, amount)
 	local pumpkinsToDrop = 0

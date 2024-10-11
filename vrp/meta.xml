@@ -536,6 +536,7 @@
 	<!-- Halloween -->
 	<script src="server/classes/Events/Halloween/DrawContest.lua" type="server"/>
 	<script src="server/classes/Events/Halloween/Halloween.lua" type="server"/>
+	<script src="server/classes/Events/Halloween/HalloweenQuestManager.lua" type="server"/>
 	<script src="server/classes/Events/Halloween/EasterEggs.lua" type="server"/>
 
 	<!-- Christmas -->
@@ -1207,6 +1208,7 @@
 
 	<script src="client/classes/Events/Halloween/EasterEggs.lua" type="client"/>
 
+	<script src="client/classes/Events/Halloween/Quests/HalloweenQuestManager.lua" type="client"/>
 	<script src="client/classes/Events/Halloween/Quests/HalloweenQuest.lua" type="client"/>
 	<script src="client/classes/Events/Halloween/Quests/GhostFinderQuest.lua" type="client"/>
 	<script src="client/classes/Events/Halloween/Quests/GhostKillerQuest.lua" type="client"/>

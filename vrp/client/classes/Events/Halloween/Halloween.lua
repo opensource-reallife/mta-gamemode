@@ -1,10 +1,10 @@
 Halloween = inherit(Singleton)
-addRemoteEvents{"setHalloweenDarkness", "Halloween:sendQuestState"}
+addRemoteEvents{"setHalloweenDarkness"}
 
 function Halloween:constructor()
-
+	HalloweenQuestManager:new()
 	WareClient:new()
-
+	
 	Blip:new("Ghost.png", 945.57, -1103.55, 400):setDisplayText("Halloween-Friedhof")
 
 	--[[Drawing Contest
@@ -58,7 +58,6 @@ function Halloween:constructor()
 	setWaveHeight(0.05)
 
 	--water in grave yard
-
 	createWater(884, -1112, 23, 908, -1112, 23, 884, -1090, 23, 908, -1090, 23)
 	setWaveHeight(0.2)
 	local bloodPoolColShape = createColSphere(895.49, -1101.41, 24.70, 40)
@@ -83,45 +82,13 @@ function Halloween:constructor()
 	self.m_DarkRenderBind = bind(Halloween.renderDarkness, self)
 	if core:get("Event", "HalloweenDarkness", true) then
 		addEventHandler("onClientRender", root, self.m_DarkRenderBind)
-		--self.m_GhostTimer = setTimer(bind(self.createGhost, self), 200, 0)
+		self.m_GhostTimer = setTimer(bind(self.createGhost, self), 1000, 0)
 	end
 	if core:get("Event", "HalloweenSound", true) then
 		self:setAmbientSoundEnabled(true)
 	end
 	addEventHandler("onClientRestore", root, bind(self.Event_restore, self))
 	addEventHandler("setHalloweenDarkness", root, bind(self.setDarkness, self))
-	--addEventHandler("onClientPlayerWeaponSwitch", root, bind(self.onClientPlayerWeaponSwitch, self))
-	--addEventHandler("Halloween:sendQuestState", root, bind(self.receiveQuestState, self))
-	--addEventHandler("onClientPlayerWeaponFire", root, bind(self.onClientPlayerWeaponFire, self))
-
-	--[[
-	self.m_Quests = {
-		GhostFinderQuest,
-		GhostKillerQuest,
-		BigSmokeQuest,
-		KillBigSmokeQuest,
-		GhostMeetingQuest,
-		TotemQuest,
-		TotemCleanseQuest,
-		PriestQuest,
-	}
-	self.m_QuestPed = Ped.create(148, 930.69, -1123.8, 23.98)
-	self.m_QuestPed:setData("NPC:Immortal", true)
-	self.m_QuestPed:setFrozen(true)
-	self.m_QuestPed.SpeakBubble = SpeakBubble3D:new(self.m_QuestPed, "Halloween", "Geschichten vergangener Zeit")
-	self.m_QuestPed.SpeakBubble:setBorderColor(Color.Orange)
-	self.m_QuestPed.SpeakBubble:setTextColor(Color.Orange)
-	setElementData(self.m_QuestPed, "clickable", true)
-	self.m_QuestPed:setData("onClickEvent", 
-		function()
-			Halloween:getSingleton():requestQuestState()
-		end
-	)
-	self.m_WastedBind = bind(self.abortQuest, self)
-
-	CustomModelManager:getSingleton():loadImportTXD("files/models/events/halloween/shotgspa.txd", 351)
-	CustomModelManager:getSingleton():loadImportDFF("files/models/events/halloween/shotgspa.dff", 351)
-	WEAPON_NAMES[27] = "Geistvertreiber" ]]
 end
 
 function Halloween:Event_restore(clear)
@@ -155,13 +122,13 @@ function Halloween:setDarkness(force)
 		if EVENT_HALLOWEEN then -- ask again in case somebody has this option saved in preferences
 			removeEventHandler("onClientRender", root, self.m_DarkRenderBind)
 			addEventHandler("onClientRender", root, self.m_DarkRenderBind)
-			--self.m_GhostTimer = setTimer(bind(self.createGhost, self), 200, 0)
+			self.m_GhostTimer = setTimer(bind(self.createGhost, self), 1000, 0)
 		end
 	else
 		removeEventHandler("onClientRender", root, self.m_DarkRenderBind)
 		if self.m_GhostTimer and isTimer(self.m_GhostTimer) then
-			--killTimer(self.m_GhostTimer)
-			--HalloweenGhost.destroyAll()
+			killTimer(self.m_GhostTimer)
+			HalloweenGhost.destroyAll()
 		end
 		setFarClipDistance(math.floor(core:get("Other","RenderDistance",992)) )
 		setWeather(0)
@@ -227,70 +194,5 @@ function Halloween:createGhost()
 				end
 			end
 		, 500, 1)
-	end
-end
-
-function Halloween:requestQuestState()
-	if not self.m_Quest then
-		triggerServerEvent("Halloween:requestQuestState", localPlayer)
-	else
-		if self.m_Quest:isSucceeded() then
-			self.m_Quest:endQuest()
-			delete(self.m_Quest)
-			self.m_Quest = nil
-			triggerServerEvent("Halloween:requestQuestUpdate", localPlayer, self.m_QuestState+1)
-			removeEventHandler("onClientPlayerWasted", localPlayer, self.m_WastedBind)
-		end
-	end
-end
-
-function Halloween:receiveQuestState(quest)
-	self.m_QuestState = quest
-	self:startQuest(self.m_QuestState)
-end
-
-function Halloween:startQuest()
-	if not self.m_Quests[self.m_QuestState+1] then
-		DialogGUI:new(false,
-			"Merkwürdig, diese Ereignisse hier, nicht wahr?"
-		)
-		return
-	end
-	self.m_Quest = self.m_Quests[self.m_QuestState+1]:new()
-	self.m_Quest:startQuest()
-	addEventHandler("onClientPlayerWasted", localPlayer, self.m_WastedBind)
-end
-
-function Halloween:abortQuest()
-	if self.m_Quest then
-		delete(self.m_Quest)
-		self.m_Quest = nil
-		ErrorBox:new(_"Quest fehlgeschlagen!")
-		removeEventHandler("onClientPlayerWasted", localPlayer, self.m_WastedBind)
-	end
-end
-
---[[
-local worldSoundsToDisable = {21, 22, 23, 71, 72, 73, 74}
-function Halloween:onClientPlayerWeaponSwitch(prevSlot, newSlot)
-	if getPedWeapon(localPlayer, newSlot) == 27 then
-		for key, worldSound in ipairs(worldSoundsToDisable) do
-			setWorldSoundEnabled(5, worldSound, false)
-		end
-	else
-		for key, worldSound in ipairs(worldSoundsToDisable) do
-			setWorldSoundEnabled(5, worldSound, true)
-		end
-	end
-end
-]]
-
-function Halloween:onClientPlayerWeaponFire(weapon)
-	if weapon == 27 then
-		local x, y, z = getPedWeaponMuzzlePosition(source)
-		local sound = playSound3D("files/audio/halloween/laser.mp3", x, y, z)
-		sound:setMaxDistance(75)
-		sound:setVolume(2)
-		sound:setDimension(source:getDimension())
 	end
 end

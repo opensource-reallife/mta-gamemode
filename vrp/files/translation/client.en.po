@@ -5354,7 +5354,7 @@ msgid "Maske"
 msgstr "Mask"
 
 msgid "Kuheuter mit Pommes"
-msgstr "Cow's udder with fries"
+msgstr "Udder with fries"
 
 msgid "Zombie-Burger"
 msgstr "Zombie-Burger"

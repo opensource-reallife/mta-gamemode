@@ -90,7 +90,7 @@ CutscenePlayer:getSingleton():registerCutscene("ZombieSurvivalCutscene", {
 			action = "Graphic.setLetterBoxText";
 			starttick = 1750;
 			duration = 3000;
-			text = "Stranger: Hello my Friend. Komm mal her!";
+			text = "Fremder: Hallo mein Freund. Komm mal her!";
 		};
 		{
 			action = "Ped.setAnimation";
@@ -116,7 +116,7 @@ CutscenePlayer:getSingleton():registerCutscene("ZombieSurvivalCutscene", {
 		{
 			action = "Ped.setAnimation";
 			starttick = 6500;
-			id = "localPlayer";
+			id = "guy_1";
 			animBlock = "ped";
 			anim = "IDLE_chat";
 			looped = true;
@@ -125,66 +125,17 @@ CutscenePlayer:getSingleton():registerCutscene("ZombieSurvivalCutscene", {
 			action = "Graphic.setLetterBoxText";
 			starttick = 6500;
 			duration = 3000;
-			text = "You: Wer sind Sie? Was wollen Sie von mir?";
+			text = "Fremder: Ich will dir was anbieten, hast du Interesse an bisschen Spaß?";
 		};
 		{
-			action = "Ped.setAnimation";
+			action = "Graphic.setLetterBoxText";
 			starttick = 9500;
-			id = "localPlayer";
-			animBlock = nil;
-			anim = nil;
-		};
-		{
-			action = "Ped.setAnimation";
-			starttick = 10000;
-			id = "guy_1";
-			animBlock = "ped";
-			anim = "IDLE_chat";
-			looped = true;
-		};
-		{
-			action = "Graphic.setLetterBoxText";
-			starttick = 10000;
 			duration = 3000;
-			text = "Stranger: Ich will dir was anbieten, hast du interesse an bisschen Spaß?";
-		};
-		{
-			action = "Graphic.setLetterBoxText";
-			starttick = 13000;
-			duration = 3000;
-			text = "Stranger: Ich habe das was besonderes aus meinem Garten, nennt sich \"Orange Haze\"";
+			text = "Fremder: Das ist was besonderes aus meinem Garten, nennt sich \"Orange Haze\"";
 		};
 		{
 			action = "Ped.setAnimation";
-			starttick = 16000;
-			id = "guy_1";
-			animBlock = nil;
-			anim = nil;
-		};
-		{
-			action = "Ped.setAnimation";
-			starttick = 16000;
-			id = "localPlayer";
-			animBlock = "ped";
-			anim = "IDLE_chat";
-			looped = true;
-		};
-		{
-			action = "Graphic.setLetterBoxText";
-			starttick = 16000;
-			duration = 3000;
-			text = "You: Hab ich noch nie gehört und Ich bin eigentlich nicht interessiert an Drogen!";
-		};
-		{
-			action = "Ped.setAnimation";
-			starttick = 19000;
-			id = "localPlayer";
-			animBlock = nil;
-			anim = nil;
-		};
-		{
-			action = "Ped.setAnimation";
-			starttick = 19000;
+			starttick = 11500;
 			id = "guy_1";
 			animBlock = "DEALER";
 			anim = "DEALER_DEAL";
@@ -192,7 +143,7 @@ CutscenePlayer:getSingleton():registerCutscene("ZombieSurvivalCutscene", {
 		};
 		{
 			action = "Ped.setAnimation";
-			starttick = 22000;
+			starttick = 14500;
 			id = "guy_1";
 			animBlock = "ped";
 			anim = "IDLE_chat";
@@ -200,46 +151,40 @@ CutscenePlayer:getSingleton():registerCutscene("ZombieSurvivalCutscene", {
 		};
 		{
 			action = "Graphic.setLetterBoxText";
-			starttick = 22000;
+			starttick = 14500;
 			duration = 5000;
-			text = "Stranger: Eigentlich? Siehst du Ich hab dir was hingelegt, der erste Joint ist sogar kostenlos!";
+			text = "Fremder: Ich hab dir was hingelegt, der erste Joint ist sogar kostenlos!";
 		};
 		{
 			action = "Ped.setAnimation";
-			starttick = 27000;
+			starttick = 19500;
 			id = "guy_1";
 			animBlock = nil;
 			anim = nil;
 		};
 		{
 			action = "Ped.setAnimation";
-			starttick = 27000;
+			starttick = 19500;
 			id = "localPlayer";
-			animBlock = "SHOP";
-			anim = "Smoke_RYD";
+			animBlock = "smoking";
+			anim = "M_smkstnd_loop";
 			looped = false;
 		};
 		{
 			action = "Graphic.setLetterBoxText";
-			starttick = 27000;
+			starttick = 24500;
 			duration = 2000;
-			text = "You: Na gut! Probieren kann man es ja mal.";
-		};
-		{
-			action = "Graphic.setLetterBoxText";
-			starttick = 29000;
-			duration = 1000;
-			text = "Stranger: Viel Spaß! Und pass auf die Zomb...";
+			text = "Fremder: Viel Spaß! Und pass auf die Zomb...";
 		};
 		{
 			action = "General.fade";
 			fadein = false;
-			starttick = 29000;
-			time = 1500;
+			starttick = 24500;
+			time = 2500;
 		};
 		{
 			action = "General.finish";
-			starttick = 30500;
+			starttick = 27000;
 		}
 	};
 

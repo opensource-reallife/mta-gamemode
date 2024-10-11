@@ -22,8 +22,10 @@ function MinigameManager:constructor()
 	self.m_2Cars.ms_Highscore = Highscore:new("2Cars")
 
 	-- Zombie Survival
-	-- ZombieSurvival.initalize()
-	-- self.m_ZombieSurvivalHighscore = Highscore:new("ZombieSurvival")
+	if EVENT_HALLOWEEN then
+		ZombieSurvival.initalize()
+		self.m_ZombieSurvivalHighscore = Highscore:new("ZombieSurvival")
+	end
 
 	-- Sniper Game
 	SniperGame.initalize()

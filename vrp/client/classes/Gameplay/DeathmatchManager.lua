@@ -11,8 +11,10 @@ DeathmatchManager.CurrentGUI = false
 
 function DeathmatchManager:constructor()
 	-- Zombie Survival
-	--createObject (3863, -32.4, 1377.8, 9.3, 0, 0, 274)
-	--self:addSign(Vector3(-33.5, 1374.9, 8.2), 274, "ZombieSurvival.png")
+	if EVENT_HALLOWEEN then
+		createObject (3863, -32.4, 1377.8, 9.3, 0, 0, 274)
+		self:addSign(Vector3(-33.5, 1374.9, 8.2), 274, "ZombieSurvival.png")
+	end
 
 	-- Sniper Game
 	createObject (3863, -531.09998, 1972.7, 60.8, 0, 0, 156)

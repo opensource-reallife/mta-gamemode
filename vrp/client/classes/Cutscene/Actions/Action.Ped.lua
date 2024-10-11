@@ -4,6 +4,9 @@ Action.Ped = inherit(Object)
 Action.Ped.create = inherit(Object)
 Action.Ped.create.duration = false;
 Action.Ped.create.constructor = function(self, data, scene)
+	if data.id == "localPlayer" then
+		data.model = localPlayer.model
+	end
 	self.id = data.id
 	self.model = data.model
 	if data.pos then
