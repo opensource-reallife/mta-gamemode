@@ -156,7 +156,7 @@ function Race:onPlayerChat(player, text, type)
 	if type == 0 then
 		local receivedPlayers = {}
 		for i, playeritem in pairs(self.m_Players) do
-			playeritem:outputChat(("[%s] #808080%s: %s"):format("Race", player:getName(), text), 125, 255, 0, true)
+			playeritem:outputChat(("[%s] #808080%s: %s"):format("Destruction Derby", player:getName(), text), 125, 255, 0, true)
 			if playeritem ~= player then
 				receivedPlayers[#receivedPlayers+1] = playeritem
 			end
@@ -169,7 +169,7 @@ end
 function Race:sendShortMessage(text, ...)
 	local color = {139, 102, 229}
 	for k, player in pairs(self.m_Players) do
-		player:sendShortMessage(_(text, player), "Race", color, ...)
+		player:sendShortMessage(_(text, player), "Destruction Derby", color, ...)
 	end
 end
 

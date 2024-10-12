@@ -17,7 +17,7 @@ function RaceLobbyGUI:constructor(marker, lobbyTable, mapTable)
 	self.m_Height = grid("y", 12)
 	GUIForm.constructor(self, screenWidth/2-300, screenHeight/2-230, self.m_Width, self.m_Height, true, false, marker)
 
-	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Race Lobbys", true, true, self)
+	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Destruction Derby", true, true, self)
 	GUIGridLabel:new(1, 1, 16, 1, "Warnung: Alle deine Waffen werden beim betreten einer Lobby gelöscht!", self.m_Window):setColor(Color.Red)
 
 	self.m_LobbyGrid = GUIGridGridList:new(1, 2, 15, 8, self.m_Window)

@@ -87,7 +87,7 @@ function RaceManager:constructor()
 
     self.m_RaceMarker = createMarker(2728.17, -1827.92, 10.9, "cylinder", 1, 255, 255, 255)
     self.m_RaceBlip = Blip:new("Kart.png", 2728.17, -1827.92)
-    self.m_RaceBlip:setDisplayText("Race", BLIP_CATEGORY.Leisure)
+    self.m_RaceBlip:setDisplayText("Destruction Derby", BLIP_CATEGORY.Leisure)
 
     self.m_Maps = {}
     self.m_MapIndex = {}
@@ -142,7 +142,7 @@ function RaceManager:constructor()
 
 		local requiredMoney = 500
 		if client:getMoney() >= requiredMoney then 
-			client:transferMoney(self.m_BankServer, requiredMoney, "Race Lobby", "Gameplay", "Race")
+			client:transferMoney(self.m_BankServer, requiredMoney, "Destruction Derby Lobby", "Gameplay", "Race")
 		else
 			return client:sendError(_("Du hast nicht genug Geld dabei! (%d$)", client, requiredMoney)) 
 		end

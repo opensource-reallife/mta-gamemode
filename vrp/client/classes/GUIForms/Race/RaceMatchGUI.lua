@@ -13,7 +13,7 @@ inherit(Singleton, RaceMatchGUI)
 
 function RaceMatchGUI:constructor()
     GUIForm.constructor(self, screenWidth*0.8, screenHeight - screenHeight*0.62, screenWidth*0.4, screenHeight*0.5, false)
-    self.m_MatchWindow = GUIWindow:new(0, 0, 300, 300, "Race", true, false, self)
+    self.m_MatchWindow = GUIWindow:new(0, 0, 300, 300, "Destruction Derby", true, false, self)
     
     self.m_MatchGridList = GUIGridList:new(self.m_PosX*0.004, self.m_PosY*0.1, 290, 220, self.m_MatchWindow)
     self.m_MatchGridList:addColumn(_"Spieler:", 0.5)
