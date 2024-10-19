@@ -16,12 +16,12 @@ function SkyscraperGUI:constructor(id, apartments, apartmentsOwner, rangeElement
     local apartmentsOwner = table.reverse(apartmentsOwner)
     for i, houseId in pairs(table.reverse(apartments)) do
         local floorNumber = #apartments - i
-        local floorName = floorNumber == 0 and "EG" or floorNumber..". OG"
+        local floorName = floorNumber == 0 and _"EG" or _("%d. OG", floorNumber)
         local color = apartmentsOwner[i] and Color.Red or Color.Green
         local idPrefix = localPlayer:getRank() >= 4 and "["..houseId.."]" or ""
-        local rentStatus = apartmentsOwner[i] and "vermietet" or "frei"
+        local rentStatus = apartmentsOwner[i] and _"vermietet" or _"frei"
 
-        self:addItem(("%s Wohnung %s - %s"):format(idPrefix, floorName, rentStatus), color, bind(self.itemCallback, self, houseId))
+        self:addItem(_("%s Wohnung %s - %s", idPrefix, floorName, rentStatus), color, bind(self.itemCallback, self, houseId))
     end
 end
 

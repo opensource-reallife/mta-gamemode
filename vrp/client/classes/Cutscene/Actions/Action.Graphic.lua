@@ -37,5 +37,5 @@ Action.Graphic.setLetterBoxText.constructor = function(self, data, scene)
 end
 
 Action.Graphic.setLetterBoxText.render = function(self)
-	dxDrawText(self.text, screenWidth/2, screenHeight*0.92, screenWidth/2, screenHeight*0.91, tocolor(255, 255, 255), 2, "default", "center", "center")
+	dxDrawText(_(self.text), screenWidth/2, screenHeight*0.92, screenWidth/2, screenHeight*0.91, tocolor(255, 255, 255), 2, "default", "center", "center")
 end

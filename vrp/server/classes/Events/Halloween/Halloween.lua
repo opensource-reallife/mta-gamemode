@@ -212,7 +212,7 @@ function Halloween:checkForTTScream(player, text)
 
 	self:initTTPlayer(pId)
 	local d = self.m_TrickOrTreatPIDs[pId]
-	if text:lower():gsub("ß", "ss"):find("süsses oder saures") then
+	if text:lower():gsub("ß", "ss"):find("süsses oder saures") or text:lower():find("trick or treat") then
 		outputDebug("chatted tt", player)
 		d.lastMessage = getTickCount()
 	end
@@ -222,7 +222,7 @@ function Halloween:finishTrickOrTreat(pId, houseId)
 	if self.m_TrickOrTreatPIDs[pId] and self.m_TrickOrTreatPIDs[pId].playersNearby then
 		local pCount = table.size(self.m_TrickOrTreatPIDs[pId].playersNearby)
 		local ownerId = HouseManager:getSingleton().m_Houses[houseId]:getOwner()
-		local ownerAtHome = (ownerId and ownerId ~= 0) and chance(75) or false -- chance that somebody is there to give sweets
+		local ownerAtHome = (ownerId and ownerId ~= 0) and chance(75) or chance(50) -- chance that somebody is there to give sweets
 		local rndPhrase = Halloween.ms_Phrases[pCount > 1 and "multi" or "single"]
 			rndPhrase = rndPhrase[math.random(1, #rndPhrase)]
 
@@ -241,8 +241,8 @@ function Halloween:finishTrickOrTreat(pId, houseId)
 									rnd = rnd + (chance(15) and 1 or 0)
 								end
 								pl:getInventory():giveItem("Suessigkeiten", rnd)
-								pl:sendSuccess(_("Du hast %d %s bekommen!", pl, rnd, rnd > 1 and "Süßigkeiten" or "Süßigkeit"))
-								pl:sendMessage(("Bewohner sagt: %s"):format(rndPhrase), 200, 200, 200)
+								pl:sendSuccess(_("Du hast %d %s bekommen!", pl, rnd, rnd > 1 and _("Süßigkeiten", pl) or _("Süßigkeit", pl)))
+								pl:sendMessage(_("Bewohner sagt: %s", pl, _(rndPhrase, pl)), 200, 200, 200)
 							else
 								pl:sendShortMessage(_("Es scheint niemand zu Hause zu sein...", pl))
 							end

@@ -30,7 +30,7 @@ function HouseGUI:constructor(ownerName, price, rentprice, isValidRob, isClosed,
 	GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true, false, pickup)
 	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _("Hausmenü (Hausnr. %d)", houseId), true, true, self)
 
-	self.m_OwnerLbl = GUIGridLabel:new(1, 0.8, 6, 1, _("Besitzer: %s", ownerName or "Niemand"), self.m_Window)
+	self.m_OwnerLbl = GUIGridLabel:new(1, 0.8, 6, 1, _("Besitzer: %s", ownerName or _"Niemand"), self.m_Window)
 	self.m_PriceLbl = GUIGridLabel:new(1, 1.5, 5, 1, _("Grundpreis: %s", toMoneyString(price)), self.m_Window)
 	self.m_SalePriceLbl = GUIGridLabel:new(1, 2.3, 6, 1, _("Verkaufspreis: %s", toMoneyString(salePrice)), self.m_Window):setColor(Color.LightBlue):setVisible((salePrice and salePrice > 0) or false)
 	self.m_GarageLbl = GUIGridLabel:new(1, 3.1, 4, 1, _("Garage: %s", _(garage)), self.m_Window)

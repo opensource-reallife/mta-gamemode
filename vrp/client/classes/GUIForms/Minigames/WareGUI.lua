@@ -17,11 +17,11 @@ function WareGUI:constructor()
 	self.m_Height = grid("y", 8) 	-- height of the window
 
 	GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true)
-	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Ware", true, true, self)
+	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, "Ware", true, true, self)
 
 	self.m_LobbyGrid = GUIGridGridList:new(1, 1, 14, 7, self.m_Window)
 	self.m_LobbyGrid:addColumn("ID", .2)
-	self.m_LobbyGrid:addColumn("Spieler", .5)
+	self.m_LobbyGrid:addColumn(_"Spieler", .5)
 
 	local refreshButton = GUIGridIconButton:new(14, 1, FontAwesomeSymbols.Refresh, self.m_Window)
 	refreshButton.onLeftClick =

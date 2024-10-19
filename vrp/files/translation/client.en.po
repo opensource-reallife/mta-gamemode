@@ -1904,7 +1904,7 @@ msgid "setzen"
 msgstr "set"
 
 msgid "Hausmenü (Hausnr. %d)"
-msgstr "House menu (house no. %d)"
+msgstr "House (No. %d)"
 
 msgid "Preis: %s"
 msgstr "Price: %s"
@@ -6321,3 +6321,57 @@ msgstr "alliance (/b)"
 
 msgid "Staat (/g)"
 msgstr "state (/g)"
+
+msgid "Süßes oder Saures"
+msgstr "Trick or Treat"
+
+msgid "HOCHHAUS"
+msgstr "APT. BUILDING"
+
+msgid "Hochhaus #%s"
+msgstr "Apartment building #%s"
+
+msgid "%s Wohnung %s - %s"
+msgstr "%s %s Apartment - %s"
+
+msgid "EG"
+msgstr "GF"
+
+msgid "%d. OG"
+msgstr "%dF"
+
+msgid "frei"
+msgstr "for rent"
+
+msgid "vermietet"
+msgstr "rented"
+
+msgid "Niemand"
+msgstr "Nobody"
+
+msgid "Halloween-Friedhof"
+msgstr "Halloween-Graveyard"
+
+msgid "Fremder: Hallo mein Freund. Komm mal her!"
+msgstr "Stranger: Hello my friend. Come here!"
+
+msgid "Fremder: Ich will dir was anbieten, hast du Interesse an bisschen Spaß?"
+msgstr "Stranger: I want to offer you something, are you interested in a bit of fun?"
+
+msgid "Fremder: Das ist was besonderes aus meinem Garten, nennt sich 'Orange Haze'"
+msgstr "Stranger: This is something special from my garden, it’s called 'Orange Haze'"
+
+msgid "Fremder: Ich hab dir was hingelegt, der erste Joint ist sogar kostenlos!"
+msgstr "Stranger: I left something for you, the first joint is even free!"
+
+msgid "Fremder: Viel Spaß! Und pass auf die Zomb..."
+msgstr "Stranger: Have fun! And watch out for the zomb..."
+
+msgid "Geschichten vergangener Zeit"
+msgstr "Stories of the past"
+
+msgid "Merkwürdig diese Ereignisse hier, nicht wahr?"
+msgstr "Strange these events here, aren't they?"
+
+msgid "↓ Drücke Leertaste ↓"
+msgstr "↓ Press space ↓"

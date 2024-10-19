@@ -881,10 +881,10 @@ msgid "Du hast dich erfolgreich für dieses Event eingetragen. Bleibe in der Nä
 msgstr "You have successfully registered for this event. Stay close!"
 
 msgid "Du hast %s Kürbisse und und %s Süßigkeiten erhalten!"
-msgstr "You got %s pumpkins and %s candys!"
+msgstr "You got %s pumpkins and %s candies!"
 
 msgid "Schreie 'Süßes oder Saures!', um die Bewohner auf dich aufmerksam zu machen."
-msgstr "Shout 'Trick-or-treat!' to get the residents to notice you."
+msgstr "Shout 'Trick or treat!' to get the residents to notice you."
 
 msgid "Hier warst du schon! Komm später wieder."
 msgstr "You've been here! Come back later."
@@ -896,10 +896,10 @@ msgid "Es scheint niemand zu Hause zu sein..."
 msgstr "There doesn't seem to be anyone at home..."
 
 msgid "Du musst in der Nähe der Tür bleiben um Süßigkeiten zu bekommen!"
-msgstr "You have to stay near the door to get candys!"
+msgstr "You have to stay near the door to get candyies!"
 
 msgid "Du hast nicht genug Süßigkeiten! (%d)"
-msgstr "You don't have enough candys! (%d)"
+msgstr "You don't have enough candies! (%d)"
 
 msgid "Du hast nicht genug Kürbisse! (%d)"
 msgstr "You don't have enough pumpkins! (%d)"
@@ -2428,8 +2428,7 @@ msgstr "You can't be on duty!"
 msgid "Achtung! Eines eurer Gebiete in %s wird angegriffen!"
 msgstr "Look out! One of your areas in %s is under attack!"
 
-msgid "Dieses Gebiet kann derzeit nicht erobert werden. Versuche es in ein paar "
-"Stunden wieder!"
+msgid "Dieses Gebiet kann derzeit nicht erobert werden. Versuche es in ein paar Stunden wieder!"
 msgstr "This area cannot be conquered at present. Try again in a few hours!"
 
 msgid "Der Gangwar wurde gestartet! Halte nun bis zur Neutralisierung im Gebiet durch!"
@@ -4973,3 +4972,51 @@ msgstr "#4F4F65%d/20 cigarettes left!"
 
 msgid "[Staat]#ffffff %s"
 msgstr "[State]#ffffff %s"
+
+msgid "Süßigkeit"
+msgstr "Candy"
+
+msgid "Süßigkeiten"
+msgstr "Candies"
+
+msgid "Bewohner sagt: %s"
+msgstr "Resident says: %s"
+
+msgid "klingelt an der Haustür!"
+msgstr "rings the doorbell!"
+
+msgid "Hier bitteschön, lass es dir schmecken!"
+msgstr "Here you go, enjoy!"
+
+msgid "Das ist für dich!"
+msgstr "This is for you!"
+
+msgid "Hier, für dich!"
+msgstr "Here, for you!"
+
+msgid "Das hab ich noch im Schrank gefunden."
+msgstr "I found this in the cupboard."
+
+msgid "Na wer hat sich denn hier verkleidet?"
+msgstr "Well, who’s all dressed up here?"
+
+msgid "Lass es dir schmecken!"
+msgstr "Enjoy!"
+
+msgid "Ihr seid mir aber eine Gruselbande!"
+msgstr "You sure are a spooky bunch!"
+
+msgid "Na mal sehen ob das für euch reicht..."
+msgstr "Let’s see if this will be enough for you..."
+
+msgid "Oh! Hab ich mich erschreckt! Hier bitte!"
+msgstr "Oh! You scared me! Here you go!"
+
+msgid "Wenn das nicht die Nachbargeister sind - Bitteschön!"
+msgstr "If it isn’t the neighborhood ghosts - here you go!"
+
+msgid "Da brauche ich aber eine große Tüte."
+msgstr "I’ll need a big bag for this."
+
+msgid "Hier, die feinsten Naschereien!"
+msgstr "Here, the finest treats!"

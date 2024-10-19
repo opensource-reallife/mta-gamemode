@@ -131,7 +131,7 @@ CutscenePlayer:getSingleton():registerCutscene("ZombieSurvivalCutscene", {
 			action = "Graphic.setLetterBoxText";
 			starttick = 9500;
 			duration = 3000;
-			text = "Fremder: Das ist was besonderes aus meinem Garten, nennt sich \"Orange Haze\"";
+			text = "Fremder: Das ist was besonderes aus meinem Garten, nennt sich 'Orange Haze'";
 		};
 		{
 			action = "Ped.setAnimation";

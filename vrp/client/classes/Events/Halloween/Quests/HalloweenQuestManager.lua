@@ -17,7 +17,7 @@ function HalloweenQuestManager:constructor()
 	self.m_QuestPed = Ped.create(148, 930.69, -1123.8, 23.98)
 	self.m_QuestPed:setData("NPC:Immortal", true)
 	self.m_QuestPed:setFrozen(true)
-	self.m_QuestPed.SpeakBubble = SpeakBubble3D:new(self.m_QuestPed, "Halloween", "Geschichten vergangener Zeit")
+	self.m_QuestPed.SpeakBubble = SpeakBubble3D:new(self.m_QuestPed, "Halloween", _"Geschichten vergangener Zeit")
 	self.m_QuestPed.SpeakBubble:setBorderColor(Color.Orange)
 	self.m_QuestPed.SpeakBubble:setTextColor(Color.Orange)
 	setElementData(self.m_QuestPed, "clickable", true)
@@ -71,7 +71,7 @@ end
 function HalloweenQuestManager:startQuest()
 	if not self.m_Quests[self.m_QuestState+1] then
 		DialogGUI:new(false,
-			"Merkwürdig, diese Ereignisse hier, nicht wahr?"
+			"Merkwürdig diese Ereignisse hier, nicht wahr?"
 		)
 		return
 	end

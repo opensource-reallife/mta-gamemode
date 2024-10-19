@@ -25,6 +25,7 @@ function DialogGUI:destructor()
 end
 
 function DialogGUI:fillLabel(text)
+    local text = _(text)
     local length = #text
     local int = 0
     if not self.m_Bind then
@@ -36,7 +37,7 @@ function DialogGUI:fillLabel(text)
             int = int + 1
             self.m_Text:setText(string.sub(text, 1, int))
             if int == #text then
-                self.m_HelpText:setText("↓ Drücke Leertaste ↓")
+                self.m_HelpText:setText(_"↓ Drücke Leertaste ↓")
                 self.m_Down = Animation.Move:new(self.m_HelpText, 225, 0, 215)
                 self.m_Down.onFinish = function() Animation.Move:new(self.m_HelpText, 225, 0, 210) end
                 self.m_AdviceTimer = setTimer(
