@@ -896,7 +896,7 @@ msgid "Es scheint niemand zu Hause zu sein..."
 msgstr "There doesn't seem to be anyone at home..."
 
 msgid "Du musst in der Nähe der Tür bleiben um Süßigkeiten zu bekommen!"
-msgstr "You have to stay near the door to get candyies!"
+msgstr "You have to stay near the door to get candies!"
 
 msgid "Du hast nicht genug Süßigkeiten! (%d)"
 msgstr "You don't have enough candies! (%d)"

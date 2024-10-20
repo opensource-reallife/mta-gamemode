@@ -12,8 +12,6 @@ addRemoteEvents{"Halloween:sendQuestState"}
 function HalloweenQuestManager:constructor()
     addEventHandler("Halloween:sendQuestState", root, bind(self.receiveQuestState, self))
 
-    self.m_Quests = {}
-
 	self.m_QuestPed = Ped.create(148, 930.69, -1123.8, 23.98)
 	self.m_QuestPed:setData("NPC:Immortal", true)
 	self.m_QuestPed:setFrozen(true)
@@ -26,7 +24,13 @@ function HalloweenQuestManager:constructor()
 			HalloweenQuestManager:getSingleton():requestQuestState()
 		end
 	)
-	self.m_WastedBind = bind(self.abortQuest, self)
+
+	-- Zombie Survival Introduction
+    self.m_Quests = {
+		ZombieSurvivalQuest
+	}
+
+	self.m_WastedBind = function() end
 
     --[[ Ghost Cleaner Questline
 	addEventHandler("onClientPlayerWeaponSwitch", root, bind(self.onClientPlayerWeaponSwitch, self))
@@ -42,6 +46,8 @@ function HalloweenQuestManager:constructor()
 		TotemCleanseQuest,
 		PriestQuest,
 	}
+
+	self.m_WastedBind = bind(self.abortQuest, self)
 
     CustomModelManager:getSingleton():loadImportTXD("files/models/events/halloween/shotgspa.txd", 351)
 	CustomModelManager:getSingleton():loadImportDFF("files/models/events/halloween/shotgspa.dff", 351)

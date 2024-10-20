@@ -1219,6 +1219,8 @@
 	<script src="client/classes/Events/Halloween/Quests/TotemCleanseQuest.lua" type="client"/>
 	<script src="client/classes/Events/Halloween/Quests/PriestQuest.lua" type="client"/>
 
+	<script src="client/classes/Events/Halloween/Quests/ZombieSurvivalQuest.lua" type="client"/>
+
 	<script src="client/classes/Events/Halloween/DrawContestGUI.lua" type="client"/>
 	<script src="client/classes/Events/Halloween/DrawContestOverviewGUI.lua" type="client"/>
 	<script src="client/classes/Events/Halloween/HalloweenBonusGUI.lua" type="client"/>
