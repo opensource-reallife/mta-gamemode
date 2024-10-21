@@ -99,8 +99,11 @@ end
 
 function ZombieSurvival:addPlayer(player)
 	player:createStorage(true)
-	player:giveAchievement(54)
+	for _, stat in ipairs({69, 70, 71, 72, 74, 76, 77, 78}) do
+		setPedStat(player, stat, stat == 69 and 900 or 1000)
+	end
 
+	player:giveAchievement(54)
 	self.m_ZombieKills[player] = 0
 	setElementDimension(player,self.m_Dimension)
 	player:setPosition(self:getRandomPosition())
