@@ -50,7 +50,6 @@ function ZombieSurvival:constructor()
 	self.m_ZombieTimers = {}
 	self.m_ZombieTime = 10000
 	self.m_IncreaseTimer = setTimer(bind(self.increaseZombies, self), 20000, 0)
-
 	self.m_CreatePickupTimer = setTimer(bind(self.createPickup, self), 20000, 0)
 
 	self:addZombie()
@@ -90,6 +89,12 @@ function ZombieSurvival:zombieWasted(ped, player)
 		end
 		self.m_ZombieKills[player] = self.m_ZombieKills[player]+1
 		player:triggerEvent("setScore", self.m_ZombieKills[player])
+	end
+	
+	for i, zombie in pairs(self.m_Zombies) do
+		if zombie.m_Ped:isDead() then
+			self.m_Zombies[i] = nil
+		end
 	end
 end
 
@@ -193,15 +198,17 @@ function ZombieSurvival:increaseZombies()
 end
 
 function ZombieSurvival:createPickup()
+	if isElement(self.m_Pickup) then self.m_Pickup:destroy() end
 	self.m_Pickup = createPickup(self:getRandomPosition(), 2, ZombieSurvival.PickupWeapons[math.random(1, #ZombieSurvival.PickupWeapons)], 5000000, 30)
 	self.m_Pickup:setDimension(self.m_Dimension)
 end
 
 function ZombieSurvival:addZombie()
-	local pos = self:getRandomPosition()
-	self:createSmoke(pos)
-	self.m_ZombieTimers[#self.m_ZombieTimers+1] = setTimer(bind(self.spawnZombie, self), 2500, 1, pos)
-
+	if table.size(self.m_Zombies) < 20 then
+		local pos = self:getRandomPosition()
+		self:createSmoke(pos)
+		self.m_ZombieTimers[#self.m_ZombieTimers+1] = setTimer(bind(self.spawnZombie, self), 2500, 1, pos)
+	end
 	self.m_ZombieTimers[#self.m_ZombieTimers+1] = setTimer(bind(self.addZombie, self), self.m_ZombieTime, 1)
 end
 
