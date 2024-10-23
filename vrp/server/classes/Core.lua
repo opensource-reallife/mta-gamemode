@@ -32,8 +32,10 @@ function Core:constructor()
 	nextframe(function() --small hack to override the name meta-name
 		if DEBUG then
 			setGameType(("%s @ %s"):format(PROJECT_NAME, getOpticalTimestamp()))
-		else
+		elseif PROJECT_VERSION then
 			setGameType(("%s %s"):format(PROJECT_NAME, PROJECT_VERSION))
+		else
+			setGameType(PROJECT_NAME)
 		end
 	end)
 
