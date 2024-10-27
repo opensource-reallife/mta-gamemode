@@ -9,7 +9,7 @@
 ZombieSurvivalQuest = inherit(HalloweenQuest)
 
 function ZombieSurvivalQuest:constructor()
-	self.m_ColShape = createColSphere(-31.64, 1377.67, 9.17, 25)
+	self.m_ColShape = createColSphere(-34.6, 1377.80, 8.4, 2)
     self.m_ColShapeHitFunc = bind(self.Event_onClientColShapeHit, self)
 	addEventHandler("onClientColShapeHit", self.m_ColShape, self.m_ColShapeHitFunc)
 end
@@ -35,17 +35,19 @@ end
 
 function ZombieSurvivalQuest:Event_onClientColShapeHit(hitElement, dim)
     if hitElement == localPlayer and dim then
-        delete(self.m_QuestMessage)
+        if not localPlayer:getOccupiedVehicle() then
+            delete(self.m_QuestMessage)
 
-        removeEventHandler("onClientColShapeHit", self.m_ColShape, self.m_ColShapeHitFunc)
-        self.m_ColShape:destroy()
+            removeEventHandler("onClientColShapeHit", self.m_ColShape, self.m_ColShapeHitFunc)
+            self.m_ColShape:destroy()
 
-        CutscenePlayer:getSingleton():playCutscene("ZombieSurvivalCutscene", function()
-            triggerServerEvent("startZombieSurvival", localPlayer)
-            fadeCamera(true)
-            self.m_QuestMessage = ShortMessage:new(_"Kehre nun zum Friedhof zurück!", "Halloween: Quest", Color.Orange, -1, false, false, false, false, true)
-            self:setSucceeded()
-        end)
+            CutscenePlayer:getSingleton():playCutscene("ZombieSurvivalCutscene", function()
+                triggerServerEvent("startZombieSurvival", localPlayer)
+                fadeCamera(true)
+                self.m_QuestMessage = ShortMessage:new(_"Kehre nun zum Friedhof zurück!", "Halloween: Quest", Color.Orange, -1, false, false, false, false, true)
+                self:setSucceeded()
+            end, nil, true)
+        end
     end
 end
 

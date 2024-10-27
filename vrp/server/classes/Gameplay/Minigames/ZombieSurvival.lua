@@ -28,7 +28,11 @@ function ZombieSurvival.initalize()
 
 	addEventHandler("onMarkerHit", zombieMarker, function(hitElement, dim)
 		if hitElement:getType() == "player" and dim and not hitElement.vehicle then
-			hitElement:triggerEvent("showMinigameGUI", "ZombieSurvival")
+			if HalloweenQuestManager:getSingleton():getQuestState(hitElement) <= 0 then
+				hitElement:sendError(_("Beende zuerst die Halloween-Quest vom Friedhof!", hitElement))
+			else
+				hitElement:triggerEvent("showMinigameGUI", "ZombieSurvival")
+			end
 		end
 	end)
 

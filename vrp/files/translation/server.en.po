@@ -5020,3 +5020,6 @@ msgstr "I’ll need a big bag for this."
 
 msgid "Hier, die feinsten Naschereien!"
 msgstr "Here, the finest treats!"
+
+msgid "Beende zuerst die Halloween-Quest vom Friedhof!"
+msgstr "Finish the Halloween-Quest from the graveyard first!"
