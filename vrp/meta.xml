@@ -3655,7 +3655,7 @@
 	<include resource="Palette" />
 
 	<include resource="Weapon_Attach" />
-	<include resource="superman" />
+	<include resource="superman_exo" />
 
 	<!-- ACL Request -->
 	<aclrequest>
