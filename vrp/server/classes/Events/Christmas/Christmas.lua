@@ -68,6 +68,7 @@ Christmas.ms_Bonus = {
 local day = getRealTime().monthday
 local month = getRealTime().month+1
 
+--[[
 if month == 12 and day >= 4 and day <= 10 then
     Christmas.ms_PricePoolName = "Christmas2023-1"
     Christmas.ms_PricePoolEnd = 1670778000
@@ -101,8 +102,12 @@ elseif month == 12 and day >= 25 and day <= 31 then
         {"VIP", 1}
     }
 end
+]]
 
 function Christmas:constructor()
+	self.m_MapParser = MapParser:new(":exo_maps/noobspawn_christmas.map")
+	self.m_MapParser:create()
+
 	self.m_ChristmasQuestManager = ChristmasQuestManager:new()
 	self.m_AdventCalender = {}
 

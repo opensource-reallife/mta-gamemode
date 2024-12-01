@@ -84,6 +84,7 @@ function Christmas:constructor()
 		blip:setDisplayText(_"Adventskalender")
 	end
 
+	--[[ Cookie Clicker Ped
 	local ped
 	ped = Ped.create(23, 1497.05, -1668.42, 14.05, 181)
 	if ped then
@@ -100,6 +101,7 @@ function Christmas:constructor()
 			end
 		)
 	end
+	]]
 
 	-- Christmas Truck Ped (El Quebrados)
 	local ped
