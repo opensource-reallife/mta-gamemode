@@ -235,9 +235,9 @@ function CustomModelManager:constructor()
 		self:loadImportTXD("files/models/objects/XmasTree1.txd", 6972)
 		self:loadImportDFF("files/models/objects/XmasTree1.dff", 6972)
 
-		self:loadImportCOL("files/models/objects/XmasTree2.col", 2077)
+		--[[self:loadImportCOL("files/models/objects/XmasTree2.col", 2077)
 		self:loadImportTXD("files/models/objects/XmasTree2.txd", 2077)
-		self:loadImportDFF("files/models/objects/XmasTree2.dff", 2077)
+		self:loadImportDFF("files/models/objects/XmasTree2.dff", 2077)]]
 
 		self:loadImportCOL("files/models/objects/fortuneWheel.col", 1895)
 		self:loadImportTXD("files/models/objects/fortuneWheel.txd", 1895)

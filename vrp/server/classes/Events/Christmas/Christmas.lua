@@ -105,7 +105,7 @@ end
 ]]
 
 function Christmas:constructor()
-	self.m_MapParser = MapParser:new(":exo_maps/noobspawn_christmas.map")
+	self.m_MapParser = MapParser:new(":exo_maps/noobspawn_christmas_old.map")
 	self.m_MapParser:create()
 
 	self.m_ChristmasQuestManager = ChristmasQuestManager:new()
@@ -114,9 +114,8 @@ function Christmas:constructor()
 	self.m_BankServerAccount = BankServer.get("event.christmas")
 
 	if EVENT_CHRISTMAS_MARKET then
-		WheelOfFortune:new(Vector3(1479.24, -1671.78, 14.55), 0) -- in front of tree
-		WheelOfFortune:new(Vector3(1484.21, -1665.72, 14.55), 90) -- right side of tree
-		WheelOfFortune:new(Vector3(1474.46, -1665.92, 14.55), 270) -- left side of tree
+		WheelOfFortune:new(Vector3(1479, -1700.3, 14.2), 0) -- in front of tree
+		WheelOfFortune:new(Vector3(1479, -1692.3, 14.2), 180) -- in back of tree
 		--other wheels on side of market
 		WheelOfFortune:new(Vector3(1455.52, -1662.81, 14.16), 80)
 		WheelOfFortune:new(Vector3(1454.12, -1669.74, 14.17), 70)
@@ -125,12 +124,8 @@ function Christmas:constructor()
 		WheelOfFortune:new(Vector3(1506.11, -1651.70, 14.11), 245)
 		WheelOfFortune:new(Vector3(1509.73, -1645.62, 14.11), 230)
 
-		FerrisWheelManager:getSingleton():addWheel(Vector3(1496.9004, -1697.5, 26.6), 90)
+		FerrisWheelManager:getSingleton():addWheel(Vector3(1479.35, -1665.9, 26.5), 0)
 	end
-
-	local tree = createObject(2077, 1479.6392, -1666.17, 12.0589, 0, 0, 0)
-	local treeLOD = createObject(2077, 1479.6392, -1666.17, 12.0589, 0, 0, 0, true)
-	setLowLODElement(tree, treeLOD)
 
 	createObject(3861, 1456.84, -1748.18, 13.72, 0, 0, 170) --QuestShop (before market opens) BonusShop (after Event)
 	createObject(3861, 1453.17, -1744.94, 13.72, 0, 0, 115) --Firework Shop
@@ -143,7 +138,7 @@ function Christmas:constructor()
 	if Christmas.ms_PricePoolName then
 		self.m_PricePool = PricePoolManager:getSingleton():getPricePool(Christmas.ms_PricePoolName, "Päckchen", Christmas.ms_PricePoolPrices, Christmas.ms_PricePoolEnd)
 		if self.m_PricePool then
-			PricePoolManager:getSingleton():createPed(self.m_PricePool, 185, Vector3(1476.20, -1670.43, 14.55), 190.62)
+			PricePoolManager:getSingleton():createPed(self.m_PricePool, 185, Vector3(1481.55, -1697.34, 14.05), 165)
 		end
 	end
 
