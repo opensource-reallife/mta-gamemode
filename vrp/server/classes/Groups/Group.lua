@@ -916,15 +916,16 @@ function Group:payDay()
 	end
 
 	for k, player in ipairs(self:getOnlinePlayers()) do
+		local outputNew = {}
 		for i, v in pairs(output) do
 			if outputArgs[i] then
-				output[i] = _(v, player, outputArgs[i])
+				outputNew[i] = _(v, player, outputArgs[i])
 			else
-				output[i] = _(v, player)
+				outputNew[i] = _(v, player)
 			end
 		end
 
-		player:sendShortMessage(table.concat(output, "\n"), self:getName(), self:getColor(), 10000)
+		player:sendShortMessage(table.concat(outputNew, "\n"), self:getName(), self:getColor(), 10000)
 	end
 
 	self:save()

@@ -149,10 +149,11 @@ end
 
 function FactionRescue:sendWarning(text, header, withOffDuty, pos, ...)
 	for k, player in pairs(self:getOnlinePlayers(false, not withOffDuty)) do
+		local textNew = text
 		if player:getLocale() ~= "de" and header == "Brand-Meldung" then
-			text = "Ein Feuer ist ausgebrochen!\nPosition: %s"
+			textNew = "Ein Feuer ist ausgebrochen!\nPosition: %s"
 		end
-		player:sendWarning(_(text, player, ...), 30000, _(header, player))
+		player:sendWarning(_(textNew, player, ...), 30000, _(header, player))
 	end
 	if pos and pos.x then pos = {pos.x, pos.y, pos.z} end -- serialiseVector conversion
 	if pos and pos[1] and pos[2] then
