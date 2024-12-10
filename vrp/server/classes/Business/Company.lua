@@ -269,7 +269,7 @@ function Company:getRankName(rank)
 end
 
 
-function Company:sendChatMessage(sourcePlayer,message, translatableBind)
+function Company:sendChatMessage(sourcePlayer,message)
 	if not getElementData(sourcePlayer, "CompanyChatEnabled") then return sourcePlayer:sendError(_("Du hast den Unternehmenschat deaktiviert!", sourcePlayer)) end
 	local lastMsg, msgTimeSent = sourcePlayer:getLastChatMessage()
 	if getTickCount()-msgTimeSent < (message == lastMsg and CHAT_SAME_MSG_REPEAT_COOLDOWN or CHAT_MSG_REPEAT_COOLDOWN) then -- prevent chat spam
@@ -281,37 +281,18 @@ function Company:sendChatMessage(sourcePlayer,message, translatableBind)
 	local playerId = sourcePlayer:getId()
 	local rank = self.m_Players[playerId]
 	local rankName = self.m_RankNames[rank]
-	local receivedPlayers = {}
-    local receivedPlayersDE = {}
-    local receivedPlayersEN = {}
+    local receivedPlayers = {}
 	message = message:gsub("%%", "%%%%")
-
+	local text = ("%s %s: %s"):format(rankName, sourcePlayer:getName(), message)
 	for k, player in ipairs(self:getOnlinePlayers()) do
 		if getElementData(player, "CompanyChatEnabled") then
-			local tMessage = message
-			if translatableBind then
-				tMessage = BindManager:getSingleton():translateBind(message, player)
-			end
-			local text = ("%s %s: %s"):format(rankName, sourcePlayer:getName(), tMessage)	
-
 			player:sendMessage(text, 100, 150, 250)
         end
 		if player ~= sourcePlayer then
-			receivedPlayers[#receivedPlayers + 1] = player
-			if player:getLocale() == "de" then
-				receivedPlayersDE[#receivedPlayersDE+1] = player
-			else
-				receivedPlayersEN[#receivedPlayersEN+1] = player
-			end
+            receivedPlayers[#receivedPlayers+1] = player
         end
 	end
-	if translatableBind then
-		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "company:"..self.m_Id, message, receivedPlayersDE)
-		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "company:"..self.m_Id, BindManager:getSingleton():getTranslation(message), receivedPlayersEN)
-	else
-		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "company:"..self.m_Id, message, receivedPlayers)
-	end
-
+    StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "company:"..self.m_Id, message, receivedPlayers)
 end
 
 function Company:invitePlayer(player)

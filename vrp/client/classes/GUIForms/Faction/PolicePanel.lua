@@ -378,14 +378,10 @@ function PolicePanel:onSelectBug(id)
 
 		self.m_BugLogGrid:clear()
 		for index, msg in pairs(self.m_BugData[id]["log"]) do
-			local tMsg = msg
-			if localPlayer:getLocale() ~= "de" and self.m_BugData[id]["logEN"][index] and self.m_BugData[id]["logEN"][index] ~= "" then
-				tMsg = self.m_BugData[id]["logEN"][index]
-			end
-			local item = self.m_BugLogGrid:addItem(tMsg)
+			item = self.m_BugLogGrid:addItem(msg)
 			item:setFont(VRPFont(20))
 			item.onLeftClick = function()
-				ShortMessage:new(tMsg)
+				ShortMessage:new(msg)
 			end
 		end
 		if localPlayer:getFaction() and localPlayer:getFaction():getId() == 2 then

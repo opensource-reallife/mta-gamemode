@@ -847,8 +847,8 @@ msgstr "ATM"
 msgid "Binds"
 msgstr "Binds"
 
-msgid "Keine Bind ausgewählt!"
-msgstr "No Bind selected!"
+msgid "Kein Bind ausgewählt!"
+msgstr "No bind selected!"
 
 msgid "Keine Belegung in der Liste ausgewählt!"
 msgstr "No assignment selected in the list!"
@@ -2908,8 +2908,8 @@ msgstr "Ping"
 msgid "Derzeit sind %d Spieler online"
 msgstr "Currently %d players are online"
 
-msgid "neuen Bind hinzufügen"
-msgstr "add new bind"
+msgid "Neuen Bind hinzufügen"
+msgstr "Add new bind"
 
 msgid "Ping: %dms"
 msgstr "Ping: %dms"
@@ -6399,3 +6399,15 @@ msgstr "Investigate the zombie sightings!"
 
 msgid "Kehre nun zum Friedhof zurück!"
 msgstr "Now return to the graveyard!"
+
+msgid "Tasten"
+msgstr "Keys"
+
+msgid "Nachricht:"
+msgstr "Message:"
+
+msgid "Taste 1:"
+msgstr "Key 1:"
+
+msgid "Taste 2:"
+msgstr "Key 2:"

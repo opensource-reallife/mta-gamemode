@@ -70,25 +70,23 @@ function BindManager:removeBind(index)
 	return false
 end
 
-function BindManager:addBind(action, _parametersDE, _parametersEN)
+function BindManager:addBind(action, parameters)
 	table.insert(self.m_Binds, {
         keys = {
         },
         action = {
             name = action,
-            parameters = _parametersDE,
-            parametersEN = _parametersEN
+            parameters = parameters
         }
     })
 end
 
 
-function BindManager:editBind(index, action, _parametersDE, _parametersEN)
+function BindManager:editBind(index, action, parameters)
 	if index and self.m_Binds[index] then
 		self.m_Binds[index].action = {
 				name = action,
-				parameters = _parametersDE,
-				parametersEN = _parametersEN
+				parameters = parameters
 			}
 		return true
 	end
@@ -112,7 +110,7 @@ function BindManager:CheckForBind(key)
 			if allKeysPressed == table.size(v.keys) then
 				bindTrigerred = true
 
-				triggerServerEvent("bindTrigger", localPlayer, v.action.name, v.action.parameters, v.action.parametersEN)
+				triggerServerEvent("bindTrigger", localPlayer, v.action.name, v.action.parameters)
 			end
 		end
     end
