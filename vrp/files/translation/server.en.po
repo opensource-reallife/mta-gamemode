@@ -4770,7 +4770,7 @@ msgid "(%s) %s sagt: %s"
 msgstr "(%s) %s says: %s"
 
 msgid "isst einen %s!"
-msgstr "eats a(n) %s!"
+msgstr "eats %s!"
 
 msgid "isst ein Stück %s!"
 msgstr "eats a piece of %s!"
@@ -4785,13 +4785,13 @@ msgid "nascht leckere %s!"
 msgstr "eats tasty %s!"
 
 msgid "nascht eine %s!"
-msgstr "eats a(n) %s!"
+msgstr "eats %s!"
 
 msgid "isst heiße %s!"
 msgstr "eats hot %s!"
 
 msgid "isst einen %s!"
-msgstr "eats a(n) %s!"
+msgstr "eats %s!"
 
 msgid "raucht Weed!"
 msgstr "smokes Weed!"
@@ -4806,10 +4806,10 @@ msgid "schnupft Kokain!"
 msgstr "snorts Cocaine!"
 
 msgid "trinkt ein %s!"
-msgstr "drinks a(n) %s!"
+msgstr "drinks %s!"
 
 msgid "trinkt einen %s!"
-msgstr "drinks a(n) %s!"
+msgstr "drinks %s!"
 
 msgid "wird im Fahrzeug umhergeschleudert!"
 msgstr "is being thrown around in the vehicle!"
@@ -5023,3 +5023,12 @@ msgstr "Here, the finest treats!"
 
 msgid "Beende zuerst die Halloween-Quest vom Friedhof!"
 msgstr "Finish the Halloween-Quest from the graveyard first!"
+
+msgid "Einbruch in die SASF-Basis"
+msgstr "Breaking into the SASF base"
+
+msgid "Aktuell läuft keine Quest!"
+msgstr "Theres no active quest at the moment!"
+
+msgid "Weihnachtsmarkt"
+msgstr "Christmas market"

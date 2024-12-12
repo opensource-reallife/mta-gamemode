@@ -15,8 +15,8 @@ function ChristmasBonusGUI:constructor()
 	self.m_Height = grid("y", 12) 	-- height of the window
 
 	GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true)
-	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"X-Mas Bonus Shop", true, true, self)
-	GUIGridLabel:new(1, 1, 15, 1, "Herzlich Willkommen beim X-Mas-Premium Shop!\nHier kannst du deine Päckchen und Zuckerstangen in wertvolle Prämien umwandeln!", self.m_Window)
+	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Prämien-Shop", true, true, self)
+	GUIGridLabel:new(1, 1.5, 15, 1, _"Herzlich Willkommen beim Prämien-Shop!\nHier kannst du deine Päckchen und Zuckerstangen in wertvolle Prämien umwandeln!", self.m_Window)
 	self.m_ScrollArea =	GUIGridScrollableArea:new(1, 3, 15, 9, 10, 18, true, false, self.m_Window, 3)
 	self.m_ScrollArea:updateGrid()
 	self.m_BonusAmount = 0
@@ -49,7 +49,7 @@ function ChristmasBonusGUI:addBonus(index, data)
 	end
 
 	GUIGridRectangle:new(1, 1, 4, 1, Color.Background, self.m_BonusBG[id])
-	GUIGridLabel:new(1, 1, 4, 1, data["Text"], self.m_BonusBG[id]):setAlignX("center")
+	GUIGridLabel:new(1, 1, 4, 1, _(data["Text"]), self.m_BonusBG[id]):setAlignX("center")
 
 	GUIGridRectangle:new(1, 4.5, 4, 1, Color.Background, self.m_BonusBG[id])
 	GUIGridImage:new(1, 4.5, 1, 1, "files/images/Inventory/items/Items/Paeckchen.png", self.m_BonusBG[id]):fitBySize(128, 128)
@@ -57,7 +57,7 @@ function ChristmasBonusGUI:addBonus(index, data)
 	GUIGridImage:new(3, 4.5, 1, 1, "files/images/Inventory/items/Essen/Zuckerstange.png", self.m_BonusBG[id]):fitBySize(128, 128)
 	GUIGridLabel:new(4, 4.5, 1, 1, tostring(data["CandyCane"]), self.m_BonusBG[id]):setAlignX("center"):setFont(VRPFont(20))
 
-	self.m_BonusBtn[id] = GUIGridButton:new(1, 6, 4, 1, "Kaufen", self.m_BonusBG[id]):setBackgroundColor(Color.Red)
+	self.m_BonusBtn[id] = GUIGridButton:new(1, 6, 4, 1, _"Kaufen", self.m_BonusBG[id]):setBackgroundColor(Color.Red)
 	self.m_BonusBtn[id].onLeftClick = function() triggerServerEvent("eventBuyBonus", localPlayer, id) end
 
 	self.m_Column = self.m_Column + 5

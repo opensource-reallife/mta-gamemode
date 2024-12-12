@@ -33,7 +33,7 @@ function JobHelpGUI:showJob(pedPos)
 	if self.m_JobList:getSelectedItem() and pedPos then
 		local item = self.m_JobList:getSelectedItem()
 		local blipPos = Vector2(pedPos.x, pedPos.y)
-		ShortMessage:new(_"Klicke, um die Navigation zum Job zu starten.\n(Beachte, dass du nicht in einem Interior sein darfst!)", "Job", false, -1, function()
+		ShortMessage:new(_"Klicke, um die Navigation zum Job zu starten.", "Job", false, -1, function()
 			GPS:getSingleton():startNavigationTo(pedPos)
 		end, false, blipPos, {{path = "Marker.png", pos = blipPos}})
 	end

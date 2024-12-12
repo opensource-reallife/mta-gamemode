@@ -222,7 +222,7 @@ end
 
 function ChristmasQuestManager:onStartClick()
 	if not self.m_CurrentQuest then
-		client:sendError("Aktuell läuft keine Quest!")
+		client:sendError(_"Aktuell läuft keine Quest!")
 		return false
 	end
 	self:startQuestForPlayer(client)
@@ -230,7 +230,7 @@ end
 
 function ChristmasQuestManager:onPedClick()
 	if not self.m_CurrentQuest then
-		client:sendError("Aktuell läuft keine Quest!")
+		client:sendError(_"Aktuell läuft keine Quest!")
 		return false
 	end
 	self.m_CurrentQuest:onClick(client)

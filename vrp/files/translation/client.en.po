@@ -106,9 +106,6 @@ msgstr "Today's door: %d. December"
 msgid "Belohnung: 5 Päckchen"
 msgstr "Reward: 5 packets"
 
-msgid "X-Mas Bonus Shop"
-msgstr "X-Mas Bonus Shop"
-
 msgid "Weihnachts-Quests"
 msgstr "Christmas Quests"
 
@@ -5632,8 +5629,8 @@ msgstr "Call EPT"
 msgid "Doppelklicke um die Position auf der Karte zu markieren!"
 msgstr "Double click to mark the position on your map!"
 
-msgid "Klicke, um die Navigation zum Job zu starten.\n(Beachte, dass du nicht in einem Interior sein darfst!)"
-msgstr "Click to start navigation to the job.\n(Please note that you can't be inside an interior!)"
+msgid "Klicke, um die Navigation zum Job zu starten."
+msgstr "Click to start navigation to the job."
 
 msgid "%s (Obdachloser)"
 msgstr "%s (Beggar)"
@@ -6411,3 +6408,24 @@ msgstr "Key 1:"
 
 msgid "Taste 2:"
 msgstr "Key 2:"
+
+msgid "Prämien-Shop"
+msgstr "Rewards Shop"
+
+msgid "Herzlich Willkommen beim Prämien-Shop!\nHier kannst du deine Päckchen und Zuckerstangen in wertvolle Prämien umwandeln!"
+msgstr "Welcome to the rewards store!\nHere you can turn your packets and candy canes into valuable rewards!"
+
+msgid "Glücksrad"
+msgstr "Wheel of fortune"
+
+msgid "Weihnachten"
+msgstr "Christmas"
+
+msgid "250 Punkte"
+msgstr "250 Points"
+
+msgid "Weihnachts-Skin"
+msgstr "Christmas skin"
+
+msgid "30 Tage VIP"
+msgstr "30 days VIP"

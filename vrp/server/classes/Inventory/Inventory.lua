@@ -465,7 +465,7 @@ function Inventory:giveItem(item, amount, value)
 		local itemMax = self.m_ItemData[item]["Item_Max"]
 
 		if self:getItemAmount(item) + amount > itemMax  then
-			self.m_Owner:sendError(_("Du kannst maximal %d %s in dein Inventar legen!", self.m_Owner, itemMax, _(item)))
+			self.m_Owner:sendError(_("Du kannst maximal %d %s in dein Inventar legen!", self.m_Owner, itemMax, _(item, self.m_Owner)))
 			return
 		end
 
@@ -494,10 +494,10 @@ function Inventory:giveItem(item, amount, value)
 				end
 			end
 		elseif not self.m_Owner.m_Disconnecting then
-			self.m_Owner:sendError(_("Nicht genug Platz für %d %s in deinem Inventar!", self.m_Owner,amount,item))
+			self.m_Owner:sendError(_("Nicht genug Platz für %d %s in deinem Inventar!", self.m_Owner, amount, _(item, self.m_Owner)))
 		end
 	elseif not self.m_Owner.m_Disconnecting then
-		self.m_Owner:sendError(_("Ungültiges Item! (%s)", self.m_Owner,item))
+		self.m_Owner:sendError(_("Ungültiges Item! (%s)", self.m_Owner, item))
 	end
 end
 

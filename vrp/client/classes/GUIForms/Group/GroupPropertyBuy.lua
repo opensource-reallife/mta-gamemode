@@ -99,7 +99,7 @@ function GroupPropertyBuy:LocateButton_Click()
 		local item = self.m_ImmoGrid:getSelectedItem()
 		if item.position then
 			local blipPos = Vector2(item.position.x, item.position.y)
-			ShortMessage:new("Klicke um die Immobilie auf der Karte zu markieren.\n(Beachte, dass du nicht in einem Interior sein darfst)", "Immobilie", false, -1, function()
+			ShortMessage:new("Klicke, um die Immobilie auf der Karte zu markieren.", "Immobilie", false, -1, function()
 				GPS:getSingleton():startNavigationTo(item.position)
 			end, false, blipPos, {{path = "Marker.png", pos = blipPos}})
 		else
