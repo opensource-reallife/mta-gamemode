@@ -1,7 +1,7 @@
 NoDm = inherit(Singleton)
 addRemoteEvents{"checkNoDm"}
 NoDm.Zones = {
-	[1] = {Vector3(1399.112, -1862.453, 12), Vector3(160,120,15)},
+	[1] = {Vector3(1399.112, -1862.453, 0), Vector3(160, 120, 40)}, -- Townhall
 	[2] = {Vector3(1754.75, -1722.17, 10), Vector3(57, 40, 30)},
 	[3] = {Vector3(430, -100, 998), Vector3(50, 40, 10), 4},
 	[5] = {Vector3(1072.5, -1385, 12), Vector3{113, 94.1, 25}}, -- Rescue

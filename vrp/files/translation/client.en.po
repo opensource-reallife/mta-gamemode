@@ -299,7 +299,7 @@ msgid "Gruppen"
 msgstr "Groups"
 
 msgid "Gruppenimmobilien"
-msgstr "Group real estates"
+msgstr "Group estates"
 
 msgid "Du hast keine Gruppe!"
 msgstr "You have no group!"

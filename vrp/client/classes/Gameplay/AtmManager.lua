@@ -63,7 +63,7 @@ function AtmManager.onAtmClick(atm)
 end
 
 function AtmManager.startHacking(atm)
-    if atm:getInterior() == 0 and atm:getDimension() == 0 then
+    if atm:getInterior() == 0 and atm:getDimension() == 0 and not NoDm:getSingleton():isInNoDmZone() then
         triggerServerEvent("onAtmStartHacking", localPlayer, atm)
         delete(BankGUI:getSingleton())
     else

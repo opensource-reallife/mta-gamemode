@@ -4,18 +4,8 @@ function Townhall:constructor()
 	self.m_Blip = Blip:new("Stadthalle.png", 1481.22, -1749.11, root, 600)
 	self.m_Blip:setDisplayText("Stadthalle")
 	self.m_Blip:setOptionalColor({7, 161, 213})
-	--local elevator = Elevator:new()
-	--elevator:addStation("Ausgang", Vector3(1788.389, -1297.811, 13.375))
-	--elevator:addStation("Stadthalle", Vector3(1786.800, -1301.099, 120.300), 120)
 	self:createGarage()
-	self.m_EnterExit = InteriorEnterExit:new(Vector3(1481.09, -1770.12, 18.80), Vector3(2758.5, -2422.8994140625, 816), 0, 0, 5)
-
-	self.m_EnterExit:addEnterEvent(function( player ) player:triggerEvent("Townhall:applyTexture") end)
-	self.m_EnterExit:addExitEvent(function( player ) player:triggerEvent("Townhall:removeTexture") end)
-
-	local townhallAntiFall = createColCuboid(2730.97, -2422.92, 809.44, 100, 100, 5.5)
-	townhallAntiFall:setInterior(5)
-	InstantTeleportArea:new( townhallAntiFall, 5, 0, Vector3(2758.77, -2419.45, 816.3))
+	self.m_EnterExit = InteriorEnterExit:new(Vector3(1481.09, -1771.09, 18.80), Vector3(1481.36, -1773.08, 1.18), 180, 0, 0)
 end
 
 function Townhall:createGarage()

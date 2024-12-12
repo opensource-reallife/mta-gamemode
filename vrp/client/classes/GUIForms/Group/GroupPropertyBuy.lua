@@ -49,12 +49,12 @@ end
 function GroupPropertyBuy:virtual_destructor()
 	removeEventHandler("GetImmoForSale", localPlayer, self.m_GetImmoFunc)
 	removeEventHandler("ForceClose", localPlayer, self.m_ForceCloseFunc)
-	setElementInterior(localPlayer, 5)
-	setElementDimension( localPlayer, 0)
-	setElementPosition( localPlayer, self.m_StartPos[1],self.m_StartPos[2],self.m_StartPos[3])
-	setCameraInterior(5)
+	setElementInterior(localPlayer, 0)
+	setElementDimension(localPlayer, 0)
+	setElementPosition(localPlayer, self.m_StartPos[1], self.m_StartPos[2], self.m_StartPos[3])
+	setCameraInterior(0)
 	setCameraTarget(localPlayer)
-	setTimer(setElementFrozen, 3000,1,localPlayer,false)
+	setTimer(setElementFrozen, 3000, 1, localPlayer, false)
 end
 
 function GroupPropertyBuy:forceClose()
