@@ -219,8 +219,8 @@ end
 function Admin:Event_OnSuperManStartRequest()
 	if client:getRank() >= ADMIN_RANK_PERMISSION["supermanFly"] then
 		if client:getPublicSync("supportMode") then
-			if exports["superman"] then
-				exports["superman"]:startSuperMan(client)
+			if exports["superman_exo"] then
+				exports["superman_exo"]:startSuperMan(client)
 			end
 		end
 	end
@@ -229,8 +229,8 @@ end
 function Admin:Event_OnSuperManStopRequest()
 	if client:getRank() >= ADMIN_RANK_PERMISSION["supermanFly"] then
 		if client:getPublicSync("supportMode") then
-			if exports["superman"] then
-				exports["superman"]:stopSuperMan(client)
+			if exports["superman_exo"] then
+				exports["superman_exo"]:stopSuperMan(client)
 			end
 		end
 	end
