@@ -13,10 +13,9 @@ local radarRange = 20
 function FactionState:constructor()
 	self:createArrestZone(1564.92, -1693.55, 5.89, 0, 5) -- PD garage
 	self:createArrestZone(1578.50, -1682.24, 15.0)-- PD cells
-	self:createArrestZone(1564.38, -1702.57, 28.40) --PD roof
-	self:createArrestZone(163.05, 1904.10, 18.67) -- Area
+	self:createArrestZone(1564.38, -1702.57, 28.40) -- PD roof
 	self:createArrestZone(-1589.91, 715.65, -5.24) -- SF
-	self:createArrestZone(2281.71, 2431.59, 3.27) --lv
+	self:createArrestZone(2281.71, 2431.59, 3.27) -- LV
 	self:createArrestZone(1797.49, -1588.22, 13.51) -- FBI
 	self:createArrestZone(1808.47, -1548.04, 38.5) -- FBI roof
 	self.m_StateColor = {r = 3, g = 173, b = 252}
@@ -60,7 +59,6 @@ function FactionState:constructor()
 	self:createEquipmentEvidence(Vector3( 1766.91, -1547.54, 8.44), 0, 0, 224) --FBI EquipmentDepot
 	self:createEquipmentEvidence(Vector3( 136.93, 1857.62, 16.68), 0, 0, 275) --SASF EquipmentDepot
 
-
 	self.m_Items = {
 		["Barrikade"] = 0,
 		["Nagel-Band"] = 0,
@@ -80,7 +78,11 @@ function FactionState:constructor()
 		function ()
 			self:loadLSPD(1)
 			self:loadFBI(2)
-			self:loadArmy(3)
+			if FactionManager.Map[3] then
+				self:loadArmy(3)
+			else
+				self:loadArmy(false)
+			end
 		end
 	)
 
@@ -229,16 +231,16 @@ function FactionState:putEvidenceInDepot(player, box)
 			local type, product, amount, price, id = unpack(data)
 			if type == "Waffe" then
 				if id then
-					player:getFaction():sendShortMessage(("%s hat %s Waffe/n [ %s ] (%s $) konfesziert!"):format(player:getName(), amount, product, price))
+					player:getFaction():sendShortMessage(("%s hat %s Waffe/n [ %s ] (%s $) konfisziert!"):format(player:getName(), amount, product, price))
 					StateEvidence:getSingleton():addWeaponsToEvidence(player, id, amount, true)
 				end
 			elseif type == "Munition" then
 				if id then
-					player:getFaction():sendShortMessage(("%s hat %s Munition [ %s ] (%s $) konfesziert!"):format(player:getName(), amount, product, price))
+					player:getFaction():sendShortMessage(("%s hat %s Munition [ %s ] (%s $) konfisziert!"):format(player:getName(), amount, product, price))
 					StateEvidence:getSingleton():addMunitionToEvidence(player, id, amount, true)
 				end
 			else
-				player:getFaction():sendShortMessage(("%s hat %s Stück %s (%s $) konfesziert!"):format(player:getName(), amount, product, price))
+				player:getFaction():sendShortMessage(("%s hat %s Stück %s (%s $) konfisziert!"):format(player:getName(), amount, product, price))
 				self.m_BankAccountServer:transferMoney(player:getFaction(), price , "Schwarzmarktware", "Faction", "Schwarzmarktware")
 			end
 		end
@@ -381,32 +383,56 @@ function FactionState:loadFBI(factionId)
 end
 
 function FactionState:loadArmy(factionId)
-	self:createDutyPickup(2743.75, -2453.81, 13.86) -- Army-LS
-	self:createDutyPickup(247.05, 1859.38, 14.08) -- Army Area
+	if factionId then
+		self.m_ArmyMap = MapParser:new(":exo_maps/fraktionen/army.map")
+		self.m_ArmyMap:create()
 
-	self:createTakeItemsPickup(Vector3(134.356, 1850.466, 17.692))
+		self:createDutyPickup(2743.75, -2453.81, 13.86) -- Army-LS
+		self:createDutyPickup(247.05, 1859.38, 14.08) -- Army Area
 
-	local blip = Blip:new("Police.png", 134.53, 1929.06, {factionType = "State"}, 400, {factionColors[factionId].r, factionColors[factionId].g, factionColors[factionId].b})
+		self:createArrestZone(163.05, 1904.10, 18.67) -- Area
+
+		self:createTakeItemsPickup(Vector3(134.356, 1850.466, 17.692))
+
+		local blip = Blip:new("Police.png", 134.53, 1929.06, {factionType = "State"}, 400, {factionColors[factionId].r, factionColors[factionId].g, factionColors[factionId].b})
 		blip:setDisplayText(FactionManager:getSingleton():getFromId(factionId):getName(), BLIP_CATEGORY.Faction)
 
-	local safe = createObject(2332, 242.38, 1862.32, 14.08, 0, 0, 0 )
-	FactionManager:getSingleton():getFromId(1):setSafe(safe)
+		local safe = createObject(2332, 242.38, 1862.32, 14.08, 0, 0, 0 )
+		FactionManager:getSingleton():getFromId(1):setSafe(safe)
+	else
+		self:createDefendActors(
+			{
+				{Vector3(142, 1942, 19.3), Vector3(0, 0, 0), 287, 31, 25},
+				{Vector3(128.3, 1942, 19.3), Vector3(0, 0, 0), 287, 31, 25},
+				{Vector3(96, 1923.7, 18.13), Vector3(0, 0, 90), 287, 31, 25},
+				{Vector3(286.6, 1815.3, 17.64), Vector3(0, 0, 270), 287, 31, 25},
+				{Vector3(286.6, 1827.6, 17.65), Vector3(0, 0, 270), 287, 31, 25},
+				{Vector3(345.6, 1796.5, 18.31), Vector3(0, 0, 220), 287, 31, 25},
+				{Vector3(162, 1933, 33.9), Vector3(0, 0, 0), 287, 34, 80},
+				{Vector3(104, 1901, 33.9), Vector3(0, 0, 90), 287, 34, 80},
+				{Vector3(113.4, 1814.5, 33.90), Vector3(0, 0, 180), 287, 34, 80},
+				{Vector3(166, 1850, 33.90), Vector3(0, 0, 90), 287, 34, 80},
+				{Vector3(262, 1807.6, 33.90), Vector3(0, 0, 190), 287, 34, 80},
+				{Vector3(267, 1895, 33.90), Vector3(0, 0, 270), 287, 34, 80},
+				{Vector3(233.4, 1934.5, 33.90), Vector3(0, 0, 0), 287, 34, 80},
+			}
+		)
+	end
 
-	self.m_AreaGate = Gate:new(974, Vector3(135.10, 1941.30, 21.60), Vector3(0, 0, 0), Vector3(122.30, 1941.30, 21.60))
+	self.m_AreaGate = Gate:new(974, Vector3(135.1, 1941.5, 21.6), Vector3(0, 0, 0), Vector3(120.5, 1941.5, 21.6))
 	--areaGate:addGate(971, Vector3(139.2, 1934.8, 19.1), Vector3(0, 0, 180), Vector3(139.3, 1934.8, 13.7))
 	self.m_AreaGate.m_Gates[1]:setDoubleSided(true)
 	self.m_AreaGate.onGateHit = bind(self.onAreaBarrierGateHit, self)
 
-
-	self.m_AreaGateBack = Gate:new(974, Vector3(286.5, 1821.5, 19.90), Vector3(0, 0, 90), Vector3(286.5, 1834, 19.90))
+	self.m_AreaGateBack = Gate:new(974, Vector3(286, 1821.5, 19.9), Vector3(0, 0, 90), Vector3(286, 1834, 19.9))
 	self.m_AreaGateBack.m_Gates[1]:setDoubleSided(true)
 	self.m_AreaGateBack.onGateHit = bind(self.onAreaBarrierGateHit, self)
 
-	self.m_AreaGateSmall = Gate:new(983, Vector3(97.55, 1920.5, 19.200), Vector3(0, 0, 0), Vector3(97.55, 1924, 19.200))
-	local collision = createObject(3049, 96.699996948242, 1921.0999755859, 17, 0, 90, 90)
+	self.m_AreaGateSmall = Gate:new(983, Vector3(96.8, 1920.83, 19.05), Vector3(0, 180, 0), Vector3(96.8, 1923.93, 19.05))
+	local collision = createObject(3049, 96.7, 1921.1, 17, 0, 90, 90)
 	collision:setScale(0)
 	self.m_AreaGateSmall.m_Gates[1]:setDoubleSided(true)
-	self.m_AreaGateSmall.m_Gates[1]:setScale(1, 0.4749, 3)
+	self.m_AreaGateSmall.m_Gates[1]:setScale(0.3, 0.6, 3.3)
 	collision:attach(self.m_AreaGateSmall.m_Gates[1], 0, 0.5, -2, 0, 90, 90)
 	self.m_AreaGateSmall.m_Gates[1]:setCollisionsEnabled(false)
 	self.m_AreaGateSmall.onGateHit = bind(self.onAreaBarrierGateHit, self)
@@ -442,6 +468,7 @@ function FactionState:loadArmy(factionId)
 		98.153, 1941.039,
 		98.15, 1809.77
 	}
+
 	self.m_AreaColShape = createColPolygon(211.43, 1874.85, unpack(corners))
 	addEventHandler("onColShapeHit", self.m_AreaColShape, bind(self.onAreaColShapeHit, self))
 	addEventHandler("onColShapeLeave", self.m_AreaColShape, bind(self.onAreaColShapeLeave, self))
@@ -1740,13 +1767,13 @@ function FactionState:Event_storageWeapons(player, ignoreDutyCheck) -- ignoreDut
 	end
 end
 
--- Area 51
+-- Area 69
 function FactionState:createDefendActors(Actors)
 	for i, v in pairs(Actors or {}) do
 		local actor = DefendActor:new(v[1], v[3], v[4], v[5])
 		actor:setRotation(v[2])
 		actor:setFrozen(true)
-		actor.onAttackRangeHit = function (actor, ele)
+		actor.onAttackRangeHit = function(actor, ele)
 			if ele then
 				local ele = ele
 				if ele:getType() == "vehicle" or ele:getType() == "player" then
@@ -1765,9 +1792,11 @@ function FactionState:createDefendActors(Actors)
 					return true -- Only attack Vehicles and Players
 				end
 			end
-
 			return false
 		end
+		addEventHandler("onPedWasted", actor, function()
+			setTimer(function() actor:setHealth(100) end, 60*1000*5, 1) -- Revive after 5mins
+		end)
 	end
 end
 
@@ -2230,7 +2259,9 @@ function FactionState:onAreaColShapeHit(hitElement, match)
 					if not self.m_AreaAlert then
 						self.m_AlertTimer = setTimer(self.m_AlertBind, 10000, 1)
 						triggerClientEvent("playAreaAlertMessage", root, "blue")
-						FactionManager.Map[3]:sendWarning("Es wurden unbefugte Personen in der Sperrzone gesichtet!", "Code Red", false)
+						if FactionManager.Map[3] then
+							FactionManager.Map[3]:sendWarning("Es wurden unbefugte Personen in der Area gesichtet!", "Code Red", false)
+						end
 					end
 				end
 				if isTimer(self.m_LeaveTimer) then
@@ -2258,8 +2289,12 @@ end
 function FactionState:startAreaAlert()
 	local counter = 0
 	for key, player in ipairs(getElementsWithinColShape(self.m_AreaColShape, "player")) do
-		if (player:getFaction() and not player:getFaction():isStateFaction()) or not player:getFaction() then
+		if not player:getFaction() or (player:getFaction() and not player:getFaction():isStateFaction()) then
 			counter = counter + 1
+			if not FactionManager.Map[3] then
+				player:giveWanteds(6)
+				player:sendMessage(_("Verbrechen begangen: %s, %d Wanted/s", player, _("Einbruch in die SASF-Basis", player), 6), 255, 255, 0)
+			end
 		end
 	end
 	if counter > 0 then

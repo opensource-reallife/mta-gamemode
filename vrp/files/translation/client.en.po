@@ -4352,7 +4352,7 @@ msgid "Browser"
 msgstr "Browser"
 
 msgid "Du betrittst ein militärisches Sperrgebiet! Sei vorsichtig!"
-msgstr "You are entering a restricted military area! Be careful"
+msgstr "You are entering a restricted military area! Be careful!"
 
 msgid "FMS"
 msgstr "Status"

@@ -199,7 +199,7 @@ addEventHandler("onClientColShapeHit",AREA51_WARNING,function(hE)
 	if hE == localPlayer then
 		if ShortMessage then
 			if not(localPlayer:getFaction() and localPlayer:getFaction():isStateFaction()) then
-				ShortMessage:new(_"Du betrittst ein militärisches Sperrgebiet! Sei vorsichtig!")
+				WarningBox:new(_"Du betrittst ein militärisches Sperrgebiet! Sei vorsichtig!")
 			end
 		end
 	end
