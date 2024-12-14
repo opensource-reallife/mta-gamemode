@@ -884,3 +884,6 @@ ATM_NORMAL_MODEL = 2942
 ATM_BROKEN_MODEL = 2943
 
 GROUP_PROPERTY_SET_FOR_SALE_FEE = 5000
+
+CHAT_MSG_REPEAT_COOLDOWN = 500 -- cooldown for different chat messages
+CHAT_SAME_MSG_REPEAT_COOLDOWN = 3000 -- cooldown for same chat messages

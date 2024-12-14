@@ -1060,7 +1060,7 @@ function FactionState:sendShortMessageWithRank(text, minRank, title, color, ...)
 end
 
 
-function FactionState:sendStateChatMessage(sourcePlayer, message)
+function FactionState:sendStateChatMessage(sourcePlayer, message, lang)
 	if not getElementData(sourcePlayer, "StateChatEnabled") then return sourcePlayer:sendError(_("Du hast den Staatschat deaktiviert!", sourcePlayer)) end
 	local faction = sourcePlayer:getFaction()
 	if faction and faction:isStateFaction() == true then
@@ -1071,10 +1071,12 @@ function FactionState:sendStateChatMessage(sourcePlayer, message)
 		local text = ("%s %s: %s"):format(rankName,getPlayerName(sourcePlayer), message)
 		for k, player in pairs(self:getOnlinePlayers()) do
 			if getElementData(player, "StateChatEnabled") then
-				player:sendMessage(("[Staat]#ffffff %s"):format(text), self.m_StateColor.r, self.m_StateColor.g, self.m_StateColor.b, true)
-			end
-			if player ~= sourcePlayer then
-				receivedPlayers[#receivedPlayers+1] = player
+				if not lang or player:getLocale() == lang then
+					player:sendMessage(("[Staat]#ffffff %s"):format(text), self.m_StateColor.r, self.m_StateColor.g, self.m_StateColor.b, true)
+					if player ~= sourcePlayer then
+						receivedPlayers[#receivedPlayers+1] = player
+					end
+				end
 			end
 		end
 		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "state", message, receivedPlayers)

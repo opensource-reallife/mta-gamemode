@@ -543,7 +543,7 @@ function PlayerManager:playerWasted(killer, killerWeapon, bodypart)
 end
 
 
-function PlayerManager:playerChat(message, messageType)
+function PlayerManager:playerChat(message, messageType, lang)
 	if not source:isLoggedIn() then
 		cancelEvent()
 		return
@@ -578,7 +578,7 @@ function PlayerManager:playerChat(message, messageType)
 
 	if messageType == 0 then
 		local phonePartner = source:getPhonePartner()
-		local playersToSend = source:getPlayersInChatRange(1)
+		local playersToSend = source:getPlayersInChatRange(1, lang)
 		if not phonePartner then
 			local receivedPlayers = {}
 			for index = 1, #playersToSend do
@@ -594,10 +594,14 @@ function PlayerManager:playerChat(message, messageType)
 			StatisticsLogger:getSingleton():addChatLog(source, "chat", message, receivedPlayers)
 			FactionState:getSingleton():addBugLog(source, "sagt", message)
 		else
-			-- Send handy message
-			outputChatBox(_("%s (Handy) sagt: %s", phonePartner, getPlayerName(source), message), phonePartner, 0, 255, 0)
-			outputChatBox(_("%s (Handy) sagt: %s", source, getPlayerName(source), message), source, 0, 255, 0)
-			StatisticsLogger:getSingleton():addChatLog(source, "phone", message, {phonePartner})
+			-- Send phone message
+			if not lang or phonePartner:getLocale() == lang then
+				outputChatBox(_("%s (Handy) sagt: %s", phonePartner, getPlayerName(source), message), phonePartner, 0, 255, 0)
+				StatisticsLogger:getSingleton():addChatLog(source, "phone", message, {phonePartner})
+			end
+			if not lang or source:getLocale() == lang then
+				outputChatBox(_("%s (Handy) sagt: %s", source, getPlayerName(source), message), source, 0, 255, 0)
+			end
 			local receivedPlayers = {}
 			for index = 1, #playersToSend do
 				if playersToSend[index] ~= source then
@@ -632,20 +636,24 @@ function PlayerManager:playerChat(message, messageType)
 		Admin:getSingleton():outputSpectatingChat(source, "C", message, phonePartner, playersToSend)
 		cancelEvent()
 	elseif messageType == 1 then
-		source:meChat(false, message)
+		source:meChat(false, message, false, false, lang)
 
 		Admin:getSingleton():outputSpectatingChat(source, "M", message)
 		cancelEvent()
 	end
 end
 
-function PlayerManager:Command_playerScream(source , cmd, ...)
+function PlayerManager:Command_playerScream(source, cmd, ...)
+	local argTable = { ... }
+	local text = table.concat(argTable , " ")
+
+	self:playerScream(source, text)
+end
+
+function PlayerManager:playerScream(source, text, lang)
 	if source:isDead() then
 		return
 	end
-
-	local argTable = { ... }
-	local text = table.concat ( argTable , " " )
 
 	local lastMsg, msgTimeSent = source:getLastChatMessage()
 	if getTickCount()-msgTimeSent < (text == lastMsg and CHAT_SAME_MSG_REPEAT_COOLDOWN or CHAT_MSG_REPEAT_COOLDOWN) then -- prevent chat spam
@@ -658,15 +666,15 @@ function PlayerManager:Command_playerScream(source , cmd, ...)
 		return
 	end
 
-	local playersToSend = source:getPlayersInChatRange(2)
+	local playersToSend = source:getPlayersInChatRange(2, lang)
 	local receivedPlayers = {}
 	local faction = source:getFaction()
 	if source:getOccupiedVehicle() and source:getOccupiedVehicle().isStateVehicle and source:getOccupiedVehicle():isStateVehicle() then
-		local success = FactionState:getSingleton():outputMegaphone(source, ...)
+		local success = FactionState:getSingleton():outputMegaphone(source, text, lang)
 		if success then return true end -- cancel screaming if megaphone succeeds
 	end
 	if source:getOccupiedVehicle() and source:getOccupiedVehicle():getFaction() and source:getOccupiedVehicle():getFaction():isRescueFaction() then
-		local success = FactionRescue:getSingleton():outputMegaphone(source, ...)
+		local success = FactionRescue:getSingleton():outputMegaphone(source, text, lang)
 		if success then return true end -- cancel screaming if megaphone succeeds
 	end
 	for index = 1,#playersToSend do
@@ -680,13 +688,17 @@ function PlayerManager:Command_playerScream(source , cmd, ...)
 	Admin:getSingleton():outputSpectatingChat(source, "S", text, nil, playersToSend)
 end
 
-function PlayerManager:Command_playerWhisper(source , cmd, ...)
+function PlayerManager:Command_playerWhisper(source, cmd, ...)
+	local argTable = { ... }
+	local text = table.concat(argTable , " ")
+
+	self:playerWhisper(source, text)
+end
+
+function PlayerManager:playerWhisper(source, text, lang)
 	if source:isDead() then
 		return
 	end
-
-	local argTable = { ... }
-	local text = table.concat(argTable , " ")
 
 	local lastMsg, msgTimeSent = source:getLastChatMessage()
 	if getTickCount()-msgTimeSent < (text == lastMsg and CHAT_SAME_MSG_REPEAT_COOLDOWN or CHAT_MSG_REPEAT_COOLDOWN) then -- prevent chat spam
@@ -694,7 +706,7 @@ function PlayerManager:Command_playerWhisper(source , cmd, ...)
 	end
 	source:setLastChatMessage(text)
 
-	local playersToSend = source:getPlayersInChatRange(0)
+	local playersToSend = source:getPlayersInChatRange(0, lang)
 	local receivedPlayers = {}
 	for index = 1,#playersToSend do
 		outputChatBox(("%s flüstert: %s"):format(getPlayerName(source), text), playersToSend[index], 140, 140, 140)

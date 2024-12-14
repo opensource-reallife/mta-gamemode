@@ -674,7 +674,7 @@ function Faction:sendSuccess(text)
 	end
 end
 
-function Faction:sendChatMessage(sourcePlayer, message)
+function Faction:sendChatMessage(sourcePlayer, message, lang)
 	if not getElementData(sourcePlayer, "FactionChatEnabled") then return sourcePlayer:sendError(_("Du hast den Fraktionschat deaktiviert!", sourcePlayer)) end
 	--if self:isEvilFaction() or (self:isStateFaction() or self:isRescueFaction() and sourcePlayer:isFactionDuty()) then
 		local lastMsg, msgTimeSent = sourcePlayer:getLastChatMessage()
@@ -693,11 +693,13 @@ function Faction:sendChatMessage(sourcePlayer, message)
 		local text = ("%s %s: %s"):format(rankName,getPlayerName(sourcePlayer), message)
 		for k, player in ipairs(self:getOnlinePlayers()) do
 			if getElementData(player, "FactionChatEnabled") then
-				player:sendMessage(text, r, g, b)
+				if not lang or player:getLocale() == lang then
+					player:sendMessage(text, r, g, b)
+					if player ~= sourcePlayer then
+						receivedPlayers[#receivedPlayers+1] = player
+					end
+				end
 			end
-			if player ~= sourcePlayer then
-	            receivedPlayers[#receivedPlayers+1] = player
-	        end
 		end
 		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "faction:"..self.m_Id, message, receivedPlayers)
 	--else
@@ -705,7 +707,7 @@ function Faction:sendChatMessage(sourcePlayer, message)
 	--end
 end
 
-function Faction:sendBndChatMessage(sourcePlayer, message, alliance)
+function Faction:sendBndChatMessage(sourcePlayer, message, alliance, lang)
 	if not getElementData(sourcePlayer, "AllianceChatEnabled") then return sourcePlayer:sendError(_("Du hast den Bündnischat deaktiviert!", sourcePlayer)) end
 	local playerId = sourcePlayer:getId()
 	local receivedPlayers = {}
@@ -713,10 +715,12 @@ function Faction:sendBndChatMessage(sourcePlayer, message, alliance)
 	local text = ("[Bündnis] %s: %s"):format(getPlayerName(sourcePlayer), message)
 	for k, player in ipairs(self:getOnlinePlayers()) do
 		if getElementData(player, "AllianceChatEnabled") then
-			player:sendMessage(text, r, g, b)
-		end
-		if player ~= sourcePlayer then
-			receivedPlayers[#receivedPlayers+1] = player
+			if not lang or player:getLocale() == lang then
+				player:sendMessage(text, r, g, b)
+				if player ~= sourcePlayer then
+					receivedPlayers[#receivedPlayers+1] = player
+				end
+			end
 		end
 	end
 	StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "factionBnd:"..self.m_Id, message, receivedPlayers)

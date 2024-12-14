@@ -1370,7 +1370,7 @@ function Player:setLastChatMessage(msg)
 end
 
 
-function Player:getPlayersInChatRange( irange)
+function Player:getPlayersInChatRange(irange, lang)
 	local range
 	if irange == 0 then
 		range = CHAT_WHISPER_RANGE
@@ -1385,14 +1385,16 @@ function Player:getPlayersInChatRange( irange)
 	local playersInRange = {}
 	local elementTable = getElementsByType("player")
 	local player,dimension,interior,check
-	for index = 1,#elementTable do
-		if (pos - elementTable[index]:getPosition()).length <= range then
-			player = elementTable[index]
+	for index = 1, #elementTable do
+		player = elementTable[index]
+		if (pos - player:getPosition()).length <= range then
 			dimension = player.dimension
 			interior = player.interior
 			if interior == self.interior then
 				if dimension == self.dimension then
-					playersInRange[#playersInRange+1] = player
+					if not lang or player:getLocale() == lang then
+						playersInRange[#playersInRange + 1] = player
+					end					
 				end
 			end
 		end
@@ -1630,12 +1632,12 @@ function Player:endPrison()
 	end
 end
 
-function Player:meChat(system, text, format, translateFormat)
+function Player:meChat(system, text, format, translateFormat, lang)
 	if self:isDead() then
 		return
 	end
 
-	local playersToSend = self:getPlayersInChatRange( 1 )
+	local playersToSend = self:getPlayersInChatRange(1, lang)
 	local systemText = ""
 	local receivedPlayers = {}
 	local senderName = self:getName()

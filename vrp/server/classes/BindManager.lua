@@ -22,14 +22,54 @@ function BindManager:constructor()
 
 end
 
-function BindManager:Event_OnBindTrigger(name, parameters)
+function BindManager:Event_OnBindTrigger(name, parameters, lang)
+	if lang == "-" then lang = false end
+	if lang and lang ~= client:getLocale() then
+		client:sendMessage(("[%s] %s (%s): %s"):format(lang, client:getName(), name, parameters), 150, 150, 150)
+	end
+
     if name == "say" then
-        PlayerManager:getSingleton():playerChat(parameters, 0, client)
+        PlayerManager:getSingleton():playerChat(parameters, 0, lang)
+	elseif name == "s" then
+		PlayerManager:getSingleton():playerScream(client, parameters, lang)
+	elseif name == "l" then
+		PlayerManager:getSingleton():playerWhisper(client, parameters, lang)
 	elseif name == "me" then
-		client:meChat(false, parameters)
-	else
-        executeCommandHandler(name, client, parameters)
-    end
+		client:meChat(false, parameters, false, false, lang)
+	elseif name == "t" then
+		local faction = client:getFaction()
+		if faction then
+			faction:sendChatMessage(client, parameters, lang)
+		end
+	elseif name == "u" then
+		local company = client:getCompany()
+		if company then
+			company:sendChatMessage(client, parameters, lang)
+		end
+	elseif name == "f" then
+		local group = client:getGroup()
+		if group then
+			group:sendChatMessage(client, parameters, lang)
+		end
+	elseif name == "b" then
+		local faction = client:getFaction()
+		if faction then
+			local bndFaction = faction:getAllianceFaction()
+			if bndFaction then
+				faction:sendBndChatMessage(faction, parameters, bndFaction, lang)
+				bndFaction:sendBndChatMessage(faction, parameters, bndFaction, lang)
+			else
+				self:sendError(_("Eure Allianz hat kein Bündnis!", self))
+			end
+		end
+	elseif name == "g" then
+		local faction = client:getFaction()
+		if faction and faction:isStateFaction() then
+			FactionState:getSingleton():sendStateChatMessage(faction, parameters, lang)
+		end
+    else
+		client:sendError("Nicht implementiert!")
+	end
 end
 
 function BindManager:loadBinds(id)
@@ -38,7 +78,8 @@ function BindManager:loadBinds(id)
 	for k, row in ipairs(result) do
 		self.m_Binds[row.Id] = {
 			["Func"] = row.Func,
-			["Message"] = row.Message
+			["Message"] = row.Message,
+			["Lang"] = row.Lang
 		}
 		if not self.m_BindsPerOwner[row.OwnerType] then self.m_BindsPerOwner[row.OwnerType] = {} end
 		if not self.m_BindsPerOwner[row.OwnerType][row.Owner] then self.m_BindsPerOwner[row.OwnerType][row.Owner] = {} end
@@ -83,7 +124,7 @@ function BindManager:isManager(player, type)
 	end
 end
 
-function BindManager:Event_editBind(ownerType, id, func, message)
+function BindManager:Event_editBind(ownerType, id, func, message, lang)
 	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, ownerType, "editBinds") then
 		client:sendError(_("Du bist nicht berechtigt Binds zu editieren!", client))
 		return
@@ -98,10 +139,11 @@ function BindManager:Event_editBind(ownerType, id, func, message)
 	if self.m_BindsPerOwner[ownerType][ownerId][id] and self.m_Binds[id] then
 		self.m_Binds[id] = {
 			["Func"] = func,
-			["Message"] = message
+			["Message"] = message,
+			["Lang"] = lang
 		}
 		self.m_BindsPerOwner[ownerType][ownerId][id] = self.m_Binds[id]
-		sql:queryExec("UPDATE ??_binds SET Func = ?, Message = ?, Creator = ? WHERE Id = ?", sql:getPrefix(), func, message, client:getId(), id)
+		sql:queryExec("UPDATE ??_binds SET Func = ?, Message = ?, Lang = ?, Creator = ? WHERE Id = ?", sql:getPrefix(), func, message, lang, client:getId(), id)
 		client:sendSuccess(_("Bind erfolgreich geändert!", client))
 	else
 		client:sendError(_("Bind nicht gefunden!", client))
@@ -132,7 +174,7 @@ function BindManager:Event_deleteBind(ownerType, id)
 	client:triggerEvent("bindReceive", ownerType, ownerId, self.m_BindsPerOwner[ownerType][ownerId])
 end
 
-function BindManager:Event_addBind(ownerType, func, message)
+function BindManager:Event_addBind(ownerType, func, message, lang)
 	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, ownerType, "editBinds") then
 		client:sendError(_("Du bist nicht berechtigt Binds hinzuzufügen!", client))
 		return
@@ -149,7 +191,8 @@ function BindManager:Event_addBind(ownerType, func, message)
 	local id = sql:lastInsertId()
 	self.m_Binds[id] = {
 			["Func"] = func,
-			["Message"] = message
+			["Message"] = message,
+			["Lang"] = lang
 		}
 	self.m_BindsPerOwner[ownerType][ownerId][id] = self.m_Binds[id]
 	client:sendSuccess(_("Bind erfolgreich hinzugefügt!", client))

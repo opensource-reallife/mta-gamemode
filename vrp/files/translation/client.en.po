@@ -5569,7 +5569,7 @@ msgstr "%s HQ"
 msgid "%s - Ausrüstung"
 msgstr "%s - Equipment"
 
-msgid "Bind Löschen"
+msgid "Bind löschen"
 msgstr "Delete bind"
 
 msgid "Bind ändern"

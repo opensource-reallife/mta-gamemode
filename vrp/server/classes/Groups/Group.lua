@@ -500,7 +500,7 @@ function Group:getOnlinePlayers()
 	return players
 end
 
-function Group:sendChatMessage(sourcePlayer, message)
+function Group:sendChatMessage(sourcePlayer, message, lang)
 	if not getElementData(sourcePlayer, "GroupChatEnabled") then return sourcePlayer:sendError(_("Du hast den Gruppenchat deaktiviert!", sourcePlayer)) end
 	local lastMsg, msgTimeSent = sourcePlayer:getLastChatMessage()
 	if getTickCount()-msgTimeSent < (message == lastMsg and CHAT_SAME_MSG_REPEAT_COOLDOWN or CHAT_MSG_REPEAT_COOLDOWN) then -- prevent chat spam
@@ -517,10 +517,12 @@ function Group:sendChatMessage(sourcePlayer, message)
 	local text = ("[%s] %s %s: %s"):format(self:getName(), rankName, sourcePlayer:getName(), message)
 	for k, player in ipairs(self:getOnlinePlayers()) do
 		if getElementData(player, "GroupChatEnabled") then
-			player:sendMessage(text, 0, 255, 150)
-		end
-		if player ~= sourcePlayer then
-			receivedPlayers[#receivedPlayers+1] = player
+			if not lang or player:getLocale() == lang then
+				player:sendMessage(text, 0, 255, 150)
+				if player ~= sourcePlayer then
+					receivedPlayers[#receivedPlayers+1] = player
+				end
+			end
 		end
 	end
 	StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "group:"..self.m_Id, message, receivedPlayers)
