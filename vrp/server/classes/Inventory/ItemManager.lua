@@ -76,15 +76,16 @@ function ItemManager:constructor()
 		["Benzinkanister"] = ItemFuelcan,
 		["Reparaturkit"] = ItemRepairKit,
 		["Medikit"] = ItemHealpack,
+		
 		--Alcohol
-		["Bier"] = ItemAlcohol,
-		["Whiskey"] = ItemAlcohol,
-		["Sex on the Beach"] = ItemAlcohol,
-		["Pina Colada"] = ItemAlcohol,
-		["Monster"] = ItemAlcohol,
-		["Shot"] = ItemAlcohol,
-		["Cuba-Libre"] = ItemAlcohol,
-		["Gluehwein"] = ItemAlcohol,
+		["Bier"] = ItemFood,
+		["Whiskey"] = ItemFood,
+		["Sex on the Beach"] = ItemFood,
+		["Pina Colada"] = ItemFood,
+		["Monster"] = ItemFood,
+		["Shot"] = ItemFood,
+		["Cuba-Libre"] = ItemFood,
+		["Gluehwein"] = ItemFood,
 
 		--Firework
 		["Rakete"] = ItemFirework,

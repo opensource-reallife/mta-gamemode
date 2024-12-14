@@ -8,6 +8,7 @@
 ItemFood = inherit(Item)
 
 ItemFood.Settings = {
+	-- Food
 	["Burger"] = {["Health"] = 40, ["Hunger"] = 40, ["Model"] = 2880, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
 	["Pizza"] = {["Health"] = 40, ["Hunger"] = 40, ["Model"] = 2881, ["Text"] = "isst ein Stück %s!", ["Animation"] = {"FOOD", "EAT_PIZZA", 4500}},
 	["Pilz"] = {["Health"] = 10, ["Hunger"] = 10, ["Model"] = 1882, ["ModelScale"] = 0.7, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, 0, 0.05, 0.05, 0, -90, 0}},
@@ -22,6 +23,15 @@ ItemFood.Settings = {
 	["Wuerstchen"] = {["Health"] = 60, ["Hunger"] = 60, ["Text"] = "isst heiße %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
 	["Lebkuchen"] = {["Health"] = 40, ["Hunger"] = 40, ["Text"] = "isst %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
 	["KöderDummy"] = {["Health"] = 2, ["Hunger"] = 2, ["Text"] = "isst einen Wurm!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
+	-- Alcohol
+	["Bier"] = {["Health"] = 0, ["Model"] = 1486, ["Text"] = "trinkt ein %s!", ["Animation"] = {"BAR", "dnk_stndM_loop", 4500}, ["Alcohol"] = 0.25, ["Attach"] = {12, -0.05, 0.05, 0.09, 0, -90, 0}},
+	["Whiskey"] = {["Health"] = 0, ["Model"] = 1455, ["Text"] = "trinkt einen %s!", ["Animation"] = {"BAR", "dnk_stndM_loop", 4500}, ["Alcohol"] = 1.2, ["Attach"] = {12, 0, 0.05, 0.1, 0, -90, 0}},
+	["Sex on the Beach"] = {["Health"] = 0, ["Model"] = 1455, ["Text"] = "trinkt einen %s!", ["Animation"] = {"BAR", "dnk_stndM_loop", 4500}, ["Alcohol"] = 0.5, ["Attach"] = {12, 0, 0.05, 0.1, 0, -90, 0}},
+	["Pina Colada"] = {["Health"] = 0, ["Model"] = 1455, ["Text"] = "trinkt einen %s!", ["Animation"] = {"BAR", "dnk_stndM_loop", 4500}, ["Alcohol"] = 0.7, ["Attach"] = {12, 0, 0.05, 0.1, 0, -90, 0}},
+	["Monster"] = {["Health"] = 0, ["Model"] = 1455, ["Text"] = "trinkt einen %s!", ["Animation"] = {"BAR", "dnk_stndM_loop", 4500}, ["Alcohol"] = 2.1, ["Attach"] = {12, 0, 0.05, 0.1, 0, -90, 0}},
+	["Shot"] = {["Health"] = 0, ["Model"] = 1455, ["Text"] = "trinkt einen %s!", ["Animation"] = {"BAR", "dnk_stndM_loop", 4500}, ["Alcohol"] = 1.4, ["Attach"] = {12, 0, 0.05, 0.1, 0, -90, 0}},
+	["Cuba-Libre"] = {["Health"] = 0, ["Model"] = 1455, ["Text"] = "trinkt einen %s!", ["Animation"] = {"BAR", "dnk_stndM_loop", 4500}, ["Alcohol"] = 0.8, ["Attach"] = {12, 0, 0.05, 0.1, 0, -90, 0}},
+	["Gluehwein"] =	{["Health"] = 0, ["Model"] = 1455, ["Text"] = "trinkt einen %s!", ["Animation"] = {"BAR", "dnk_stndM_loop", 4500}, ["Alcohol"] = 0.4, ["Attach"] = {12, 0, 0.05, 0.1, 0, -90, 0}},
 }
 
 function ItemFood:constructor()
@@ -33,26 +43,35 @@ function ItemFood:destructor()
 end
 
 function ItemFood:use(player)
-	if player.isTasered then return false end
-	if player.m_IsEating then player:sendError(_("Du kannst das gerade nicht tun!", player)) return false end
-	if AdminEventManager:getSingleton().m_EventRunning and AdminEventManager:getSingleton().m_CurrentEvent:isPlayerInEvent(player) and getPedArmor(player) == 0 then player:sendError(_("Du hast keine Schutzweste mehr!", player)) return false end
-	if player:isInGangwar() and player:getArmor() == 0 then player:sendError(_("Du hast keine Schutzweste mehr!", player)) return false end
-	if JobBoxer:getSingleton():isPlayerBoxing(player) == true then player:sendError(_("Du darfst dich während des Boxkampfes nicht heilen!", player)) return false end
-	if math.round(math.abs(player.velocity.z*100)) ~= 0 and not player.vehicle then player:sendError(_("Du kannst in der Luft nichts essen!", player)) return false end
+	if player.isTasered or player.m_IsEating or JobBoxer:getSingleton():isPlayerBoxing(player) then
+		player:sendError(_("Du kannst das gerade nicht tun!", player))
+		return false
+	end
+
+	local velX, velY, velZ = getElementVelocity(player)
+	if math.round(math.abs((velX + velY + velZ) * 100)) ~= 0 and not player.vehicle then
+		player:sendError(_("Du darfst dich nicht bewegen!", player))
+		return false
+	end
+
+	if (player:isInGangwar() or AdminEventManager:getSingleton().m_EventRunning and AdminEventManager:getSingleton().m_CurrentEvent:isPlayerInEvent(player)) and player:getArmor() == 0 then
+		player:sendError(_("Du hast keine Schutzweste mehr!", player))
+		return false
+	end
 
 	local ItemSettings = ItemFood.Settings[self:getName()]
 
 	player:meChat(true, ItemSettings["Text"], self:getName(), true)
-	StatisticsLogger:getSingleton():addHealLog(client, ItemSettings["Health"], "Item "..self:getName())
-	
-	player:checkLastDamaged() 
-
-	DamageManager:getSingleton():clearPlayer(player)
+	if ItemSettings["Health"] and ItemSettings["Health"] > 0 then
+		StatisticsLogger:getSingleton():addHealLog(client, ItemSettings["Health"], "Item "..self:getName())
+		player:checkLastDamaged() 
+		DamageManager:getSingleton():clearPlayer(player)
+	end
 
 	local block, animation, time = unpack(ItemSettings["Animation"])
 	local item = false
 	if not player.vehicle then
-		player:setFrozen(true) --prevent the player from running forwards when eating while laying on ground after fall
+		player:setFrozen(true) --prevent the player from running forwards while laying on ground after fall
 
 		if ItemSettings["Model"] then
 			item = createObject(ItemSettings["Model"], 0, 0, 0)
@@ -78,17 +97,32 @@ function ItemFood:use(player)
 			player:setData("isEating", true, true)
 		end)
 	end
-	setTimer(
-		function()
-			if isElement(item) then item:destroy() end
-			if not isElement(player) or getElementType(player) ~= "player" then return false end
+
+	setTimer(function()
+		if isElement(item) then item:destroy() end
+		if not isElement(player) or getElementType(player) ~= "player" then return false end
+
+		if ItemSettings["Alcohol"] and ItemSettings["Alcohol"] > 0 then
+			player:incrementAlcoholLevel(ItemSettings["Alcohol"])
+			if self:getName() == "Bier" then
+				if player:getInventory():giveItem("Flasche", 1) then
+					player:sendInfo(_("Du hast eine leere Flasche erhalten!", player))
+				end
+			end
+		end
+
+		if ItemSettings["Health"] and ItemSettings["Health"] > 0 then
 			player:setHealth(player:getHealth()+ItemSettings["Health"])
+		end
+
+		if ItemSettings["Hunger"] and ItemSettings["Hunger"] > 0 then
 			player:setHunger(player:getHunger()+ItemSettings["Hunger"])
-			player:setAnimation()
-			player.m_IsEating = nil
-			player:setData("isEating", nil, true)
-		end, time, 1
-	)
+		end
+
+		player:setAnimation()
+		player.m_IsEating = nil
+		player:setData("isEating", nil, true)
+	end, time, 1)
 
 	return true
 end

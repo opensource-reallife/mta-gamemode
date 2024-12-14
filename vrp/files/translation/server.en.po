@@ -2881,11 +2881,8 @@ msgstr "You need at least fishing level %s to buy this item!"
 msgid "Du hast keine Schutzweste mehr!"
 msgstr "You're out of armor!"
 
-msgid "Du darfst dich während des Boxkampfes nicht heilen!"
-msgstr "You're not allowed to heal yourself during a boxing match!"
-
-msgid "Du kannst in der Luft nichts essen!"
-msgstr "You can't eat in the air!"
+msgid "Du darfst dich nicht bewegen!"
+msgstr "You're not allowed to move!"
 
 msgid "Dein Fahrzeug wurde betankt!"
 msgstr "Your vehicle has been refuelled!"
