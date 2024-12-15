@@ -78,7 +78,6 @@ end
 
 function Race:addPlayer(player)
     table.insert(self.m_Players, player)
-    takeAllWeapons(player)
     player:setDimension(self.m_LobbyDimension)
     player:createStorage(false)
     player:sendShortMessage(("Du hast die Lobby '%s' betreten."):format(self.m_LobbyName))
@@ -149,6 +148,7 @@ end
 function Race:setSpectator(player)
     player:setPosition(2690.84, -1700.05, 10.44)
     player:setCameraMatrix(2828, -1867, 51, 2797.49, -1831, 30)
+    takeAllWeapons(player)
     toggleAllControls(player, false, true, false)
 end
 
