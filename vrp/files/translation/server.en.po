@@ -4053,7 +4053,7 @@ msgid "Es befindet sich %s im Truck!"
 msgstr "It's %s in the truck!"
 
 msgid "Möchtest du dieses Fahrzeug für $%s verschrotten?"
-msgstr "You want to scrap this vehicle for $%s?"
+msgstr "Do you want to scrap this vehicle for $%s?"
 
 msgid "Du kannst dieses Fahrzeug nicht Verschrotten!"
 msgstr "You can't scrap this vehicle!"

@@ -6429,3 +6429,15 @@ msgstr "Christmas skin"
 
 msgid "30 Tage VIP"
 msgstr "30 days VIP"
+
+msgid "%s \n(Linksklick = Ja, Rechtsklick = Nein)"
+msgstr "%s \n(Left click = Yes, Right click = No)"
+
+msgid "VERSCHROTTUNG"
+msgstr "SCRAPPING"
+
+msgid "AUFZUG"
+msgstr "ELEVATOR"
+
+msgid "HAUS"
+msgstr "HOUSE"

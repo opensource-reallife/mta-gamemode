@@ -36,7 +36,7 @@ function VehicleScrapper:constructor()
 			if hE.vehicle:getVehicleType() == VehicleType.Plane or hE.vehicle:getVehicleType() == VehicleType.Helicopter then
 				hE:triggerEvent("onTryEnterExit", self.m_PlaneScrapCol, "Verschrottung", "files/images/Other/info.png", 10, true) 
 			else
-				hE:sendError(_("Du kannst hier nur Flugzeuge und Helikopter verschrotten.", hE))
+				hE:sendError(_("Du kannst hier nur Flugzeuge und Helikopter verschrotten!", hE))
 			end
 		end
 	end)
@@ -78,41 +78,41 @@ function VehicleScrapper:Event_onRequestScrap()
 	else return end
 end
 
-function VehicleScrapper:Event_onConfirmScrap(player) 
-	if player.vehicle then
-		if self:canPlayerScrapVehicle(player, player.vehicle) then 
-			local price = player.vehicle:getBuyPrice()
-			if price then
-				QuestionBox:new(player, _("Möchtest du dieses Fahrzeug wirklich für $%s verschrotten?", player, convertNumber(price*.3)), function(player) 
-					self:Event_onScrap(player)
-				end, function() end, false, false, player)
-			end 
+function VehicleScrapper:Event_onConfirmScrap(player)
+	if isElement(player) and player:getType() == "player" then
+		local vehicle = player.vehicle
+		if vehicle then
+			if self:canPlayerScrapVehicle(player, vehicle) then 
+				local price = vehicle:getBuyPrice()
+				if price then
+					QuestionBox:new(player, _("Möchtest du dieses Fahrzeug wirklich für $%s verschrotten?", player, convertNumber(price*.3)), function(player) 
+						self:Event_onScrap(player)
+					end, function() end, false, false, player)
+				end 
+			end
 		end
 	end
 end
 
 
-function VehicleScrapper:Event_onScrap(player) 
-	if player then 
-		if player.vehicle then
-			if self:canPlayerScrapVehicle(player, player.vehicle) then 
-				local price = player.vehicle:getBuyPrice()
+function VehicleScrapper:Event_onScrap(player)
+	if isElement(player) and player:getType() == "player" then
+		local vehicle = player.vehicle
+		if vehicle then
+			if self:canPlayerScrapVehicle(player, vehicle) then 
+				local price = vehicle:getBuyPrice()
 				if price then 
 					price = math.floor(price * .3)
-					if not player.vehicle.m_Premium then 
-						StatisticsLogger:getSingleton():addVehicleTradeLog(player.vehicle, player, 0, price, "server (Verschrottung)")
-
-						local receiver = player
-						if player.vehicle.getFaction then
-							receiver = player.vehicle:getFaction()
+					if not vehicle.m_Premium then 
+						local owner = vehicle:getFaction() or vehicle:getCompany() or player
+						if owner then
+							StatisticsLogger:getSingleton():addVehicleTradeLog(vehicle, player, 0, price, "server")
+							vehicle:purge()
+							self.m_BankAccountServer:transferMoney(owner, price, "Fahrzeug-Verkauf", "Vehicle", "SellToServer (Scrap)")
+							VehicleManager:getSingleton():Event_vehicleRequestInfo(player)
+						else
+							player:sendError(_("Es konnt kein Fahrzeugbesitzer ermittelt werden!", player))
 						end
-						if player.vehicle.getCompany then
-							receiver = player.vehicle:getCompany()
-						end
-
-						player.vehicle:purge()
-						self.m_BankAccountServer:transferMoney(receiver, price, "Fahrzeug-Verkauf", "Vehicle", "SellToServer (Scrap)")
-						VehicleManager:getSingleton():Event_vehicleRequestInfo(player)
 					else 
 						player:sendError(_("Dieses Fahrzeug kann nicht verschrottet werden!", player))
 					end
@@ -129,13 +129,13 @@ function VehicleScrapper:Event_onScrap(player)
 end
 
 function VehicleScrapper:canPlayerScrapVehicle(player, vehicle)
-	if vehicle:getOwner() == player:getId() then
-		return true
-	end
 	if vehicle:getFaction() == player:getFaction() and PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "faction", "scrapVehicle") then
 		return true
 	end
 	if vehicle:getCompany() == player:getCompany() and PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "company", "scrapVehicle") then
+		return true
+	end
+	if vehicle:getOwnerType() == VehicleTypes.Player and vehicle:getOwner() == player:getId() then
 		return true
 	end
 

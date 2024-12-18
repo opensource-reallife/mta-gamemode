@@ -268,8 +268,6 @@ function PermanentVehicle:isPremiumVehicle()
 	return self.m_Premium
 end
 
-
-
 function PermanentVehicle:isPermanent()
   return true
 end

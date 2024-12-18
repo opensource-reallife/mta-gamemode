@@ -105,6 +105,10 @@ function Vehicle:getOwner()
 	return self.m_Owner
 end
 
+function Vehicle:getOwnerType()
+	return self.m_OwnerType
+end
+
 function Vehicle:getOccupantsCount(countAttachedPlayers)
 	local i = 0
 	for seat, player in pairs(self:getOccupants(countAttachedPlayers)) do
@@ -395,7 +399,7 @@ function Vehicle:toggleEngine(player)
 		return true
 	end
 
-	if self:hasKey(player) or player:getRank() >= ADMIN_RANK_PERMISSION["toggleVehicleHandbrake"] or not self:isPermanent() or (self.getCompany and self:getCompany():getId() == 1 and player:getPublicSync("inDrivingLession") == true) then
+	if self:hasKey(player) or player:getRank() >= ADMIN_RANK_PERMISSION["toggleVehicleHandbrake"] or not self:isPermanent() or (self.getCompany and self:getCompany() and self:getCompany():getId() == 1 and player:getPublicSync("inDrivingLession") == true) then
 		if state == true then
 			if not VEHICLE_BIKES[self:getModel()] then
 				if self.m_Fuel <= 0 then
@@ -1000,6 +1004,8 @@ function Vehicle:getVehicleType()
 end
 
 function Vehicle:getFaction() end
+
+function Vehicle:getCompany() end
 
 function Vehicle:updateTemplate()
 	if self.m_Template then
