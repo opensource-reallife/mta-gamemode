@@ -19,8 +19,10 @@ function ItemShop:constructor(id, name, position, rotation, typeData, dimension,
 		self.m_Ped:setData("clickable",true,true)
 		addEventHandler("onElementClicked", self.m_Ped,
 			function(button, state, player)
-				if button =="left" and state == "down" then
-					self:onItemMarkerHit(player, true)
+				if getDistanceBetweenPoints3D(source.position, player.position) < 10 then
+					if button == "left" and state == "down" then
+						self:onItemMarkerHit(player, true)
+					end
 				end
 			end
 		)
