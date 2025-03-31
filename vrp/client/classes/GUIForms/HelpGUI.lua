@@ -6,7 +6,7 @@
 -- *
 -- ****************************************************************************
 HelpGUI = inherit(GUIForm)
-HelpGUI.LexiconBaseUrl = "https://forum.openreallife.net/cms"
+HelpGUI.LexiconBaseUrl = "https://forum.openreallife.net/wsc"
 inherit(Singleton, HelpGUI)
 
 function HelpGUI:constructor()
