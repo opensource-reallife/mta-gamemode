@@ -15,6 +15,7 @@ function JobServiceTechnicianTask:constructor(player)
     self.m_Blip = Blip:new("Marker.png", position.x, position.y, player, 9999)
     self.m_Blip:setColor(BLIP_COLOR_CONSTANTS.Red)
 	self.m_Blip:setDisplayText(_"Kunde")
+    self.m_Player = player
 
     addEventHandler("onMarkerHit", self.m_Marker, function(hitElement, matchingDimension)
         if player == hitElement and matchingDimension then
@@ -30,13 +31,13 @@ function JobServiceTechnicianTask:constructor(player)
     end)
 
     self.m_OnQuestionsAnsweredBind = bind(self.onQuestionsAnswered, self)
-    addEventHandler("serviceTechnicianQuestionsRetrieve", root, self.m_OnQuestionsAnsweredBind)
+    addEventHandler("serviceTechnicianQuestionsRetrieve", player, self.m_OnQuestionsAnsweredBind)
 end
 
 function JobServiceTechnicianTask:destructor()
     self.m_Marker:destroy()
     self.m_Blip:delete()
-    removeEventHandler("serviceTechnicianQuestionsRetrieve", root, self.m_OnQuestionsAnsweredBind)
+    removeEventHandler("serviceTechnicianQuestionsRetrieve", self.m_Player, self.m_OnQuestionsAnsweredBind)
 end
 
 function JobServiceTechnicianTask:getRandomCoordinates()
@@ -49,6 +50,7 @@ end
 
 function JobServiceTechnicianTask:onQuestionsAnswered(result)
     if source ~= client then return end
+    if client ~= self.m_Player then return end
     if not result then return end
 
     local player = source
