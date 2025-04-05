@@ -79,7 +79,7 @@ function Ware:startRound()
 			if isPedDead(player) or getElementHealth(player) == 0 or z < Ware.arenaZ then
 				self:spawnWarePlayer(player)
 			end
-			setPedOnFire(player, false)
+			setElementOnFire(player, false)
 			setElementHealth(player, 100)
 		end
 	else 
@@ -174,7 +174,7 @@ function Ware:afterRound()
 			if isPedDead(player) or getElementHealth(player) == 0 or z < Ware.arenaZ then
 				self:spawnWarePlayer(player)
 			end
-			setPedOnFire(player, false)
+			setElementOnFire(player, false)
 			setElementHealth(player, 100)
 			setPedHeadless(player, false)
 			player:triggerEvent("onClientWareChangeGameSpeed", self.m_Gamespeed)

@@ -138,7 +138,7 @@ end
 function FireManager:burnPlayer(uHitElement, bDim)
 	if not bDim then return end
 	if getElementType(uHitElement) == "player" then
-		setPedOnFire(uHitElement, true)
+		setElementOnFire(uHitElement, true)
 	end
 end
 

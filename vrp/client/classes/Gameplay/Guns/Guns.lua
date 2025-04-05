@@ -175,7 +175,7 @@ function Guns:Event_onClientPlayerDamage(attacker, weapon, bodypart, loss)
 		cancelEvent()
 	elseif weapon == 42 then --Fire Extinguisher
 		cancelEvent()
-		setPedOnFire(source, false)
+		setElementOnFire(source, false)
 	elseif weapon == 23 then -- Taser
 		local dist = getDistanceBetweenPoints3D(attacker:getPosition(),source:getPosition())
 		if not attacker.vehicle and dist < 10 and dist > 1.5 then
