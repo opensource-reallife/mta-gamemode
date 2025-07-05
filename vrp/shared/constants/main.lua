@@ -27,14 +27,60 @@ MAX_FISHING_LEVEL = 15
 MAX_WANTED_LEVEL = 12
 
 -- EVENTS:
-EVENT_EASTER = false
-EVENT_EASTER_SLOTMACHINES_ACTIVE = false
-EVENT_HALLOWEEN = false
-EVENT_CHRISTMAS = false -- quests, mostly REMEMBER TO ADD/REMOVE <vrpfile src="files/models/skins/kobold.txd" /> AND <vrpfile src="files/models/skins/kobold.dff" /> TO META.XML DUE TO BIG FILE SIZE
-EVENT_CHRISTMAS_MARKET = false -- (EVENT_CHRISTMAS and getRealTime().monthday >= 6 and getRealTime().monthday <= 26) -- determines whether the christmas market is enabled at pershing square (shops, ferris wheel, wheels of fortune)
+local function getEasterDate(year)
+    local a = year % 19
+    local b = math.floor(year / 100)
+    local c = year % 100
+    local d = math.floor(b / 4)
+    local e = b % 4
+    local f = math.floor((b + 8) / 25)
+    local g = math.floor((b - f + 1) / 3)
+    local h = (19 * a + b - d - g + 15) % 30
+    local i = math.floor(c / 4)
+    local k = c % 4
+    local l = (32 + 2 * e + 2 * i - h - k) % 7
+    local m = math.floor((a + 11 * h + 22 * l) / 451)
+    local month = math.floor((h + l - 7 * m + 114) / 31)
+    local day = ((h + l - 7 * m + 114) % 31) + 1
+
+    return {["day"] = day, ["month"] = month}
+end
+
+local function isEasterEventActive()
+    local rt = getRealTime()
+    local year = rt.year + 1900
+    local easterDate = getEasterDate(year)
+
+    local easterTimestamp = os.time({
+        year = year,
+        month = easterDate.month,
+        day = easterDate.day,
+        hour = 0
+    })
+
+    local eventStart = easterTimestamp - (7 * 24 * 60 * 60) -- Palmsonntag
+    local eventEnd = easterTimestamp + (1 * 24 * 60 * 60)   -- Ostermontag
+
+    local now = os.time({
+        year = year,
+        month = rt.month + 1,
+        day = rt.monthday,
+        hour = rt.hour,
+        min = rt.minute,
+        sec = rt.second
+    })
+
+    return now >= eventStart and now <= eventEnd
+end
+
+EVENT_EASTER = isEasterEventActive()
+EVENT_EASTER_SLOTMACHINES_ACTIVE = EVENT_EASTER
+EVENT_HALLOWEEN = getRealTime().month == 9 and (getRealTime().monthday >= 25 and getRealTime().monthday <= 31)
+EVENT_CHRISTMAS = getRealTime().month == 11 and (getRealTime().monthday >= 1 and getRealTime().monthday <= 31) -- quests, mostly REMEMBER TO ADD/REMOVE <vrpfile src="files/models/skins/kobold.txd" /> AND <vrpfile src="files/models/skins/kobold.dff" /> TO META.XML DUE TO BIG FILE SIZE
+EVENT_CHRISTMAS_MARKET = EVENT_CHRISTMAS and (getRealTime().monthday >= 6 and getRealTime().monthday <= 26) -- determines whether the christmas market is enabled at pershing square (shops, ferris wheel, wheels of fortune)
 SNOW_SHADERS_ENABLED = getRealTime().month == 11 or getRealTime().month == 0 -- disable them during summer time
 FIREWORK_ENABLED = true -- can users use firework?
-FIREWORK_SHOP_ACTIVE = false -- can users buy firework at the user meetup point?
+FIREWORK_SHOP_ACTIVE = getRealTime().month == 11 and (getRealTime().monthday >= 25 and getRealTime().monthday <= 31) -- can users buy firework at the user meetup point?
 
 -- PAYDAY:
 PAYDAY_NOOB_BONUS = 500 -- dollar

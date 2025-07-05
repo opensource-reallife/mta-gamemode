@@ -74,9 +74,13 @@ end
 
 function Easter:requestHidingRabbits()
     local rabbit = 0
-    local result = sql:queryFetchSingle("SELECT RabbitsFound FROM ??_easter_rabbit_data WHERE UserId = ?", sql:getPrefix(), client:getId())
+    local result = sql:queryFetchSingle("SELECT RabbitsFound, Year FROM ??_easter_rabbit_data WHERE UserId = ?", sql:getPrefix(), client:getId())
 	if result then
-        rabbit = result.RabbitsFound
+        if result.Year ~= getRealTime().year + 1900 then
+            sql:queryExec("DELETE FROM ??_easter_rabbit_data WHERE UserId = ?", sql:getPrefix(), client:getId())
+        else
+            rabbit = result.RabbitsFound
+        end
     end
     if Easter.today - Easter.startDay >= rabbit then
         client:triggerEvent("Easter:loadHidingRabbit", rabbit)
@@ -85,7 +89,7 @@ end
 
 function Easter:onHidingRabbitFound(rabbit)
     if rabbit == 1 then
-        sql:queryExec("INSERT INTO ??_easter_rabbit_data (UserId, RabbitsFound) VALUES (?, ?)", sql:getPrefix(), client:getId(), 1)
+        sql:queryExec("INSERT INTO ??_easter_rabbit_data (UserId, RabbitsFound, Year) VALUES (?, ?, ?)", sql:getPrefix(), client:getId(), 1, getRealTime().year + 1900)
     else
         sql:queryExec("UPDATE ??_easter_rabbit_data SET RabbitsFound = ? WHERE UserId = ?", sql:getPrefix(), rabbit, client:getId())
     end
