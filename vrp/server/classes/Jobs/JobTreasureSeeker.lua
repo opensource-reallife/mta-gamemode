@@ -118,7 +118,7 @@ function JobTreasureSeeker:onDeliveryHit(hitElement, dim)
 						hitElement.m_LastJobAction = getRealTime().timestamp
 						StatisticsLogger:getSingleton():addJobLog(hitElement, "jobTreasureSeeker", duration, loan, nil, nil, points)
 						self.m_BankAccount:transferMoney({hitElement, true}, loan, "Schatzsucher-Job", "Job", "TreasureSeeker")  --// default loan not loan*2
-						hitElement:sendShortMessage(_("Du hast %s für %d$ verkauft!", hitElement, _(self.m_TreasureTypes[model]["Name"], player), loan))
+						hitElement:sendShortMessage(_("Du hast %s für %d$ verkauft!", hitElement, _(self.m_TreasureTypes[model]["Name"], hitElement), loan))
 						hitElement:getOccupiedVehicle().Magnet.Object:destroy()
 						hitElement:givePoints(points)
 						self:loadTreasure(hitElement)
