@@ -11,16 +11,16 @@ ItemFood.Settings = {
 	-- Food
 	["Burger"] = {["Health"] = 40, ["Hunger"] = 40, ["Model"] = 2880, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
 	["Pizza"] = {["Health"] = 40, ["Hunger"] = 40, ["Model"] = 2881, ["Text"] = "isst ein Stück %s!", ["Animation"] = {"FOOD", "EAT_PIZZA", 4500}},
-	["Pilz"] = {["Health"] = 10, ["Hunger"] = 10, ["Model"] = 1882, ["ModelScale"] = 0.7, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, 0, 0.05, 0.05, 0, -90, 0}},
+	["Pilz"] = {["Health"] = 10, ["Hunger"] = 10, ["Model"] = 1882, ["ModelScale"] = {0.7}, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, 0, 0.05, 0.05, 0, -90, 0}},
 	["Zigarette"] = {["Health"] = 0, ["Hunger"] = 0, ["Model"] = 3027, ["Text"] = "raucht eine %s!", ["Animation"] = {"smoking", "M_SMKSTND_LOOP", 11500}, ["Attach"] = {11, 0, 0.07, 0.15, 0, -90, 90}, ["CustomEvent"] = "smokeEffect" },
-	["Donut"] = {["Health"] = 30, ["Hunger"] = 30, ["Model"] = 1915, ["ModelScale"] = 1.2, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, 0, 0.05, 0.15, 0, -90, 90}},
+	["Donut"] = {["Health"] = 30, ["Hunger"] = 30, ["Model"] = 1915, ["ModelScale"] = {1.2}, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, 0, 0.05, 0.15, 0, -90, 90}},
 	["Keks"] = {["Health"] = 100, ["Hunger"] = 100, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
-	["Apfel"] = {["Health"] = 20, ["Hunger"] = 20, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
+	["Apfel"] = {["Health"] = 20, ["Hunger"] = 20, ["Model"] = 3105, ["ModelScale"] = {1.4}, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, 0, 0.05, 0.08, 0, -90, 90}},
 	["Zombie-Burger"] = {["Health"] = 60, ["Hunger"] = 60, ["Model"] = 2880, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["CustomEvent"] = "bloodFx"},
-	["Kuheuter mit Pommes"] = {["Health"] = 60, ["Hunger"] = 60, ["Text"] = "isst %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["CustomEvent"] = "bloodFx"},
+	["Kuheuter mit Pommes"] = {["Health"] = 60, ["Hunger"] = 60, ["Model"] = 2806, ["ModelScale"] = {0.2, 0.1, 0.55}, ["Text"] = "isst %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, 0, 0.05, 0.1, 0, -90, 0}, ["CustomEvent"] = "bloodFx"},
 	["Suessigkeiten"] = {["Health"] = 5, ["Hunger"] = 5, ["Text"] = "nascht leckere %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
 	["Zuckerstange"] = {["Health"] = 5, ["Hunger"] = 5, ["Text"] = "nascht eine %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
-	["Wuerstchen"] = {["Health"] = 60, ["Hunger"] = 60, ["Text"] = "isst heiße %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
+	["Wuerstchen"] = {["Health"] = 60, ["Hunger"] = 60, ["Model"] = 3103, ["ModelScale"] = {2.5, 0.5, 0.5}, ["Text"] = "isst heiße %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, -0.015, 0.03, 0.1, 0, 0, 0}},
 	["Lebkuchen"] = {["Health"] = 40, ["Hunger"] = 40, ["Text"] = "isst %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
 	["KöderDummy"] = {["Health"] = 2, ["Hunger"] = 2, ["Text"] = "isst einen Wurm!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
 	-- Alcohol
@@ -78,7 +78,7 @@ function ItemFood:use(player)
 			item:setDimension(player:getDimension())
 			item:setInterior(player:getInterior())
 		
-			if ItemSettings["ModelScale"] then item:setScale(ItemSettings["ModelScale"]) end
+			if ItemSettings["ModelScale"] then item:setScale(unpack(ItemSettings["ModelScale"])) end
 			if ItemSettings["Attach"] then
 				exports.bone_attach:attachElementToBone(item, player, unpack(ItemSettings["Attach"]))
 			else

@@ -4875,7 +4875,7 @@ msgid "Zombie-Burger"
 msgstr "Zombie-Burger"
 
 msgid "Kuheuter mit Pommes"
-msgstr "Cow udder with fries"
+msgstr "Udder with fries"
 
 msgid "isst einen Wurm!"
 msgstr "eats a Worm!"
