@@ -11,7 +11,8 @@ function DefendActor:constructor(model, weapon, range)
     self:setModel(model)
     self:giveWeapon(weapon, 999999999, true)
 	self.m_AttackRange = ColShape.Sphere(self:getPosition(), range)
-	addEventHandler("onColShapeHit", self.m_AttackRange, bind(self.onColShapeHit, self))
+    self.m_ColShapeHitFunc = bind(self.onColShapeHit, self)
+	addEventHandler("onColShapeHit", self.m_AttackRange, self.m_ColShapeHitFunc)
 
     -- Start tasks
     self:startIdleTask()
@@ -32,4 +33,11 @@ function DefendActor:startShooting(target)
     if self:getPrimaryTaskClass() == TaskGuard then
         self:startPrimaryTask(TaskShootTarget, target)
     end
+end
+
+function DefendActor:destructor()
+    removeEventHandler("onColShapeHit", self.m_AttackRange, self.m_ColShapeHitFunc)
+    self:stopPrimaryTask()
+    delete(self.m_AttackRange)
+    self:destroy()
 end

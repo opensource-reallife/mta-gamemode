@@ -44,16 +44,20 @@ end
 function Actor:startPrimaryTask(taskClass, ...)
     -- Delete old primary task if available
     if self:isDead() then return false end
-    if self.m_PrimaryTask then
-        triggerClientEvent(PlayerManager:getSingleton():getReadyPlayers(), "actorStopPrimaryTask", self)
-        delete(self.m_PrimaryTask)
-    end
+    self:stopPrimaryTask()
 
     self.m_PrimaryTask = taskClass:new(self, ...)
 
     if self.m_PrimaryTask:hasClientScript() then
         local parameters = self.m_PrimaryTask.getClientParameter and self.m_PrimaryTask:getClientParameter() or {}
         triggerClientEvent(PlayerManager:getSingleton():getReadyPlayers(), "actorStartPrimaryTask", self, self.m_PrimaryTask:getId(), unpack(parameters))
+    end
+end
+
+function Actor:stopPrimaryTask()
+    if self.m_PrimaryTask then
+        triggerClientEvent(PlayerManager:getSingleton():getReadyPlayers(), "actorStopPrimaryTask", self)
+        delete(self.m_PrimaryTask)
     end
 end
 

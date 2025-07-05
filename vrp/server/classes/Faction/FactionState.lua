@@ -1797,7 +1797,10 @@ function FactionState:createDefendActors(Actors)
 			return false
 		end
 		addEventHandler("onPedWasted", actor, function()
-			setTimer(function() actor:setHealth(100) end, 60*1000*5, 1) -- Revive after 5mins
+			setTimer(function()
+				delete(actor)
+				self:createDefendActors({v})
+			end, 60*1000*15, 1) -- Recreate after 15mins
 		end)
 	end
 end
