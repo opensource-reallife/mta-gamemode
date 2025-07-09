@@ -263,7 +263,26 @@ function Trunk:addWeapon(player, weaponId, muni)
 end
 
 function Trunk:open(player)
+	local allowedVehicleIds = {
+		[411] = false, --Infernus
+		[451] = false, --Turismo
+		[494] = false, --Hotring Racer 1
+		[503] = false, --Hotring Racer 2
+		[502] = false, --Hotring Racer 3
+	}
+
 	if not self:checkDistance(player) then return end
+
+	if self.m_Vehicle and self.m_Vehicle:getModel() then
+		local vehId = self.m_Vehicle:getModel()
+
+		local vehicleType = self.m_Vehicle:getVehicleType()
+		if vehicleType ~= VehicleType.Automobile or allowedVehicleIds[vehId] == false then
+			player:sendError(_("Dieses Fahrzeug hat keinen Kofferraum!", player))
+			return
+		end
+	end
+
 	player:triggerEvent("openTrunk", self.m_Vehicle)
 	self:refreshClient(player)
 end

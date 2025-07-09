@@ -26,7 +26,7 @@ function VehicleInteraction:doInteractions(door)
 			local doorStateS = getElementData(lookAtVehicle, tostring(door), true)
 
 			if not (doorStateS) then
-				setElementData(lookAtVehicle, door, "closed", true)
+				setElementData(lookAtVehicle, tostring(door), "closed", true)
 			end
 
 			self:interactWith(client, lookAtVehicle, door)
@@ -130,10 +130,10 @@ function VehicleInteraction:doAction(door)
         local checkDoor = getVehicleDoorState(lookAtVehicle, door)
 		local doorStateS = getElementData(lookAtVehicle, tostring(door))
 		if not (doorStateS) then
-            setElementData(lookAtVehicle, door, "closed", true)
+            setElementData(lookAtVehicle, tostring(door), "closed", true)
         end
 
-		local doorState = getElementData(veh, door)
+		local doorState = getElementData(veh, tostring(door))
 
 		if doorRatio > 0 or checkDoor == 4 or doorState == "open" then
 			if door == 1 then

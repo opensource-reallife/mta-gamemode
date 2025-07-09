@@ -5029,3 +5029,6 @@ msgstr "Theres no active quest at the moment!"
 
 msgid "Weihnachtsmarkt"
 msgstr "Christmas market"
+
+msgid "Dieses Fahrzeug hat keinen Kofferraum!"
+msgstr "This vehicle has no trunk!"
