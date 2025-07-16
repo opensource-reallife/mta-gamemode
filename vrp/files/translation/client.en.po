@@ -184,8 +184,8 @@ msgstr "Double click to take"
 msgid "Der Tisch ist gesperrt!"
 msgstr "The table is locked!"
 
-msgid "Der maximal Einsatz beträgt %s!"
-msgstr "The maximum bet is %s!"
+msgid "Der maximale Einsatz beträgt $%s!"
+msgstr "The maximum bet is $%s!"
 
 msgid "Du hast nicht genug Geld dabei!"
 msgstr "You didn't bring enough money!"

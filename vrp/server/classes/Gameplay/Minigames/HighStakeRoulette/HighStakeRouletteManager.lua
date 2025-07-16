@@ -1,6 +1,6 @@
 HighStakeRouletteManager = inherit(Singleton)
 HighStakeRouletteManager.Map = {}
-HIGHSTAKE_MAX_BET = 35000
+HIGHSTAKE_MAX_BET = 25000
 setElementData(root, "HighStakeMaxBet", HIGHSTAKE_MAX_BET)
 
 function HighStakeRouletteManager:constructor()
