@@ -101,7 +101,7 @@ function WeaponTruck:constructor(driver, boxContent, totalAmount, type)
 		end
 	end
 
-	dest = self:addDestinationMarker(self.m_Type == "state" and self.m_StartFaction or FactionManager:getSingleton():getFromId(3), "state") -- State
+	dest = self:addDestinationMarker(self.m_Type == "state" and self.m_StartFaction or FactionManager:getSingleton():getFromId(3) or FactionManager:getSingleton():getFromId(1), "state") -- State
 	self.m_DestinationBlips["state"] = Blip:new("Marker.png", dest.x, dest.y, {factionType = {"State", "Evil", duty = true}}, 9999, BLIP_COLOR_CONSTANTS.Red)
 	self.m_DestinationBlips["state"]:setDisplayText("Waffentruck-Abgabe (Staat)")
 	self.m_DestinationBlips["state"]:setZ(dest.z)
