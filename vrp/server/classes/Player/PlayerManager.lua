@@ -1262,6 +1262,10 @@ function PlayerManager:Event_requestPlayerWeaponInfo()
 end
 
 function PlayerManager:Event_DecreaseHunger(loss)
+	if client:getPublicSync("supportMode") then
+		return
+	end
+
 	if client.m_LessHunger then loss = loss / 2 end
 	client:setHunger(client:getHunger() - loss)
 end
