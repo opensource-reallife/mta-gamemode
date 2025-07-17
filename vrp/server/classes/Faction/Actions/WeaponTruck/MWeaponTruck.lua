@@ -78,8 +78,8 @@ function MWeaponTruck:Event_onWeaponTruckLoad(boxContentTable)
 
 		if faction:isEvilFaction() then
 			if client:isFactionDuty() then
-				if FactionState:getSingleton():countPlayers(true, true) < WEAPONTRUCK_MIN_MEMBERS then
-					client:sendError(_("Es müssen mindestens %d Staatsfraktionisten im Dienst sein!", client, WEAPONTRUCK_MIN_MEMBERS))
+				if FactionState:getSingleton():countPlayers(true, false) < WEAPONTRUCK_MIN_MEMBERS then
+					client:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!", client, WEAPONTRUCK_MIN_MEMBERS))
 					return
 				end
 				self.m_CurrentType = "evil"

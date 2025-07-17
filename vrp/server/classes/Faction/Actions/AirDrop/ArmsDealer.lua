@@ -66,8 +66,8 @@ function ArmsDealer:checkoutCart(cart, maxPrice)
             client:sendError(_("Du bist nicht berechtigt einen %s zu starten!", client, faction:isStateFaction() and "Staats-Waffendrop" or "Airdrop"))
             return
         end
-        if FactionState:getSingleton():countPlayers(true, true) < ARMSDEALER_MIN_MEMBERS then
-            return client:sendError(_("Es müssen mindestens %d Staatsfraktionisten im Dienst sein!",client, ARMSDEALER_MIN_MEMBERS))
+        if FactionState:getSingleton():countPlayers(true, false) < ARMSDEALER_MIN_MEMBERS then
+            return client:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!",client, ARMSDEALER_MIN_MEMBERS))
         end
     else
         if not PermissionsManager:getSingleton():isPlayerAllowedToStart(client, "faction", "StateAirdrop") then

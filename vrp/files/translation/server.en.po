@@ -937,8 +937,8 @@ msgstr "Your ally %s has started a robbery! See how you can support them!"
 msgid "%s hat einen Raubüberfall gestartet! Ihr habt 5 Minuten Zeit, bevor das SAPD alarmiert wird!"
 msgstr "%s has started a robbery! You have 5 minutes before SAPD is alerted!"
 
-msgid "Es müssen mindestens %d Staatsfraktionisten im Dienst sein!"
-msgstr "There must be at least %d state factionists on duty!"
+msgid "Es müssen mindestens %d Staatsfraktionisten aktiv sein!"
+msgstr "There must be at least %d state factionists active!"
 
 msgid "Es ist noch nicht genug Geld in den Tresoren!"
 msgstr "There's not enough money in the vaults yet!"

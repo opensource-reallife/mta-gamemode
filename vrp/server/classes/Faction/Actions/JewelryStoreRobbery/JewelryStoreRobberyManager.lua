@@ -336,8 +336,8 @@ function JewelryStoreRobberyManager:Event_PedTargetted(ped, attacker)
 				return false
 			end
 
-			if FactionState:getSingleton():countPlayers(true, true) < JEWELRY_MIN_MEMBERS then
-				attacker:sendError(_("Es müssen mindestens %d Staatsfraktionisten im Dienst sein!", attacker, JEWELRY_MIN_MEMBERS))
+			if FactionState:getSingleton():countPlayers(true, false) < JEWELRY_MIN_MEMBERS then
+				attacker:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!", attacker, JEWELRY_MIN_MEMBERS))
 				return false
 			end
 

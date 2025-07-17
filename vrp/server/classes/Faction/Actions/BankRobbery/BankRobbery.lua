@@ -260,8 +260,8 @@ function BankRobbery:Ped_Targetted(ped, attacker)
 			if not ActionsCheck:getSingleton():isActionAllowed(attacker) then
 				return false
 			end
-			if FactionState:getSingleton():countPlayers(true, true) < BANKROB_MIN_MEMBERS then
-				attacker:sendError(_("Es müssen mindestens %d Staatsfraktionisten im Dienst sein!", attacker, BANKROB_MIN_MEMBERS))
+			if FactionState:getSingleton():countPlayers(true, false) < BANKROB_MIN_MEMBERS then
+				attacker:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!", attacker, BANKROB_MIN_MEMBERS))
 				return false
 			end
 			if not PermissionsManager:getSingleton():isPlayerAllowedToStart(attacker, "faction", "BankRobbery") then

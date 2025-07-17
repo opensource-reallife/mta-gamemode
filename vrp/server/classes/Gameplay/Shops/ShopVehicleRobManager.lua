@@ -75,8 +75,8 @@ function ShopVehicleRobManager:Event_onVehicleSteal()
 					client:sendError(_("Es läuft bereits ein Autohaus-Überfall!", client))
 					return false
 				end
-				if FactionState:getSingleton():countPlayers(true, true) < SHOP_VEHICLE_ROB_MIN_MEMBERS then
-					client:sendError(_("Es müssen mindestens %d Staatsfraktionisten im Dienst sein!", client, SHOP_VEHICLE_ROB_MIN_MEMBERS))
+				if FactionState:getSingleton():countPlayers(true, false) < SHOP_VEHICLE_ROB_MIN_MEMBERS then
+					client:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!", client, SHOP_VEHICLE_ROB_MIN_MEMBERS))
 					return false
 				end
 				self.m_CurrentRob = ShopVehicleRob:new(client, source)
