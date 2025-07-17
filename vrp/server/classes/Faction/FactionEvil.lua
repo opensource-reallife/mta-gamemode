@@ -19,8 +19,8 @@ function FactionEvil:constructor()
 	nextframe(function()
 		self:loadLCNGates(5)
 		--self:loadCartelGates(11)
-		--self:loadYakGates(6)
-		self:loadTriadGates(11)
+		self:loadYakGates(6)
+		--self:loadTriadGates(11)
 	end)
 
 	for Id, faction in pairs(FactionManager:getAllFactions()) do

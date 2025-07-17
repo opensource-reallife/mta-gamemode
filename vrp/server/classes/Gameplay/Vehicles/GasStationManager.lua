@@ -493,7 +493,7 @@ GAS_STATIONS = {
 		evilStation = true,
 		fuelTypes = {"petrol", "diesel", "jetfuel"},
 	},
-	--[[{
+	{
 		name = "Yakuza",
 		stations = {
 			{Vector3(1409.013, -1437.945, 9), 80, 1},
@@ -503,7 +503,7 @@ GAS_STATIONS = {
 		nonInterior = true,
 		evilStation = true,
 		fuelTypes = {"petrol", "diesel", "jetfuel"},
-	},]]
+	},
 	{
 		name = "Vatos Locos",
 		stations = {
@@ -524,7 +524,7 @@ GAS_STATIONS = {
 		evilStation = true,
 		fuelTypes = {"petrol", "diesel", "jetfuel"},
 	},]]
-	{
+	--[[{
 		name = "Triaden",
 		stations = {
 			{Vector3(1894.66, 966.42, 11.22), 180, 1},
@@ -534,7 +534,7 @@ GAS_STATIONS = {
 		nonInterior = true,
 		evilStation = true,
 		fuelTypes = {"petrol", "diesel", "jetfuel"},
-	},
+	},]]
 	{
 		name = "Grove Street",
 		stations = {
@@ -545,7 +545,7 @@ GAS_STATIONS = {
 		evilStation = true,
 		fuelTypes = {"petrol", "diesel", "jetfuel"},
 	},
-	--[[{
+	{
 		name = "Ballas",
 		stations = {
 			{Vector3(2241.83, -1443.94, 24.63), 90, 1},
@@ -554,7 +554,7 @@ GAS_STATIONS = {
 		nonInterior = true,
 		evilStation = true,
 		fuelTypes = {"petrol", "diesel", "jetfuel"},
-	},]]
+	},
 	--[[{
 		name = "Kartell",
 		stations = {
