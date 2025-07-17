@@ -74,7 +74,7 @@ function ItemFood:use(player)
 		player:setFrozen(true) --prevent the player from running forwards while laying on ground after fall
 
 		if ItemSettings["Model"] then
-			item = createObject(ItemSettings["Model"], 0, 0, 0)
+			item = createObject(3027, 0, 0, 0)
 			item:setDimension(player:getDimension())
 			item:setInterior(player:getInterior())
 		
@@ -95,6 +95,7 @@ function ItemFood:use(player)
 			player:setAnimation(block, animation, time, true, false, false)
 			player.m_IsEating = true
 			player:setData("isEating", true, true)
+			item:setModel(ItemSettings["Model"])
 		end)
 	end
 
