@@ -17,10 +17,16 @@ function FactionEvil:constructor()
 	self.m_Raids = {}
 
 	nextframe(function()
-		self:loadLCNGates(5)
-		--self:loadCartelGates(11)
-		self:loadYakGates(6)
-		--self:loadTriadGates(11)
+		if FactionManager.Map[5] then
+			self:loadLCNGates(5)
+		end
+		if FactionManager.Map[6] then
+			self:loadYakGates(6)
+		end
+		if FactionManager.Map[11] then
+			--self:loadCartelGates(11)
+			self:loadTriadGates(11)
+		end
 	end)
 
 	for Id, faction in pairs(FactionManager:getAllFactions()) do
