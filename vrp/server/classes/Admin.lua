@@ -12,6 +12,8 @@ function Admin:constructor()
     self.m_OnlineAdmins = {}
     self.m_MtaAccounts = {}
 	self.m_TpPoints = {}
+	self.m_TpPointShortcuts = {}
+	self.m_TpCategories = {}
 
     self.m_SupportArrow = {}
     self.m_RankNames = {
@@ -86,7 +88,7 @@ function Admin:constructor()
 	"adminRespawnFactionVehicles", "adminRespawnCompanyVehicles", "adminVehicleDespawn", "openAdminGUI","checkOverlappingVehicles","admin:acceptOverlappingCheck",
 	"onClientRunStringResult","adminObjectPlaced","adminGangwarSetAreaOwner","adminGangwarResetArea", "adminLoginFix", "adminTriggerTransaction", "adminRequestMultiAccounts",
 	"adminDelteMultiAccount", "adminCreateMultiAccount", "adminRequestSerialAccounts", "adminDeleteAccountFromSerial", "adminDealSmodeReflectionDamage", "adminStopVehicleForSale",
-	"adminStopVehicleForRent"}
+	"adminStopVehicleForRent", "adminTeleportPlayer", "adminCreateTeleportPoint", "adminEditTeleportPoint", "adminDeleteTeleportPoint", "adminCreateTeleportCategory", "adminEditTeleportCategory", "adminDeleteTeleportCategory"}
 
     addEventHandler("adminSetPlayerFaction", root, bind(self.Event_adminSetPlayerFaction, self))
     addEventHandler("adminSetPlayerCompany", root, bind(self.Event_adminSetPlayerCompany, self))
@@ -123,6 +125,13 @@ function Admin:constructor()
 	addEventHandler("adminDealSmodeReflectionDamage", root, bind(self.Event_adminDealSmodeReflectionDamage, self))
 	addEventHandler("adminStopVehicleForSale", root, bind(self.Event_adminStopVehicleForSale, self))
 	addEventHandler("adminStopVehicleForRent", root, bind(self.Event_adminStopVehicleForRent, self))
+	addEventHandler("adminTeleportPlayer", root, bind(self.teleportTo, self))
+	addEventHandler("adminCreateTeleportPoint", root, bind(self.Event_adminCreateTeleportPoint, self))
+	addEventHandler("adminEditTeleportPoint", root, bind(self.Event_adminEditTeleportPoint, self))
+	addEventHandler("adminDeleteTeleportPoint", root, bind(self.Event_adminDeleteTeleportPoint, self))
+	addEventHandler("adminCreateTeleportCategory", root, bind(self.Event_adminCreateTeleportCategory, self))
+	addEventHandler("adminEditTeleportCategory", root, bind(self.Event_adminEditTeleportCategory, self))
+	addEventHandler("adminDeleteTeleportCategory", root, bind(self.Event_adminDeleteTeleportCategory, self))
 
 	self:loadTpPoints()
 
@@ -1177,9 +1186,20 @@ function Admin:getHerePlayer(player, cmd, target)
 end
 
 function Admin:loadTpPoints()	
+	local tpCats = sql:queryFetch("SELECT * FROM ??_tp_categories", sql:getPrefix())
+	for i, v in pairs(tpCats) do
+		self.m_TpCategories[v["Id"]] = v["Name"] 
+	end
+	
 	local result = sql:queryFetch("SELECT * FROM ??_tp_locations", sql:getPrefix())
 	for i, v in pairs(result) do
-		self.m_TpPoints[v["Name"]] = {["pos"] = Vector3(v["PosX"], v["PosY"], v["PosZ"]), ["typ"] = v["Type"], ["dimension"] = v["Dimension"] ~= 0 and v["Dimension"] or nil, ["interior"] = v["Interior"] ~= 0 and v["Interior"] or nil}
+		local scTbl = fromJSON(v["Shortcuts"])
+		scTbl = type(scTbl) == "string" and {} or scTbl
+		self.m_TpPoints[v["Name"]] = {["id"] = v["Id"], ["pos"] = Vector3(v["PosX"], v["PosY"], v["PosZ"]), ["shortcuts"] = scTbl, ["category"] = v["Category"], ["dimension"] = v["Dimension"], ["interior"] = v["Interior"]}
+
+		for j, sc in pairs(scTbl) do
+			self.m_TpPointShortcuts[string.lower(sc)] = v["Name"]
+		end
 	end
 end
 --["noobspawn"] =		{["pos"] = Vector3(1481.01, -1764.31, 18.80),  	["typ"] = "Orte"},
@@ -1187,8 +1207,9 @@ function Admin:teleportTo(player,cmd,ort)
 	local x,y,z = 0,0,0
 	if player:getRank() >= ADMIN_RANK_PERMISSION["tp"] then
 		if ort then
-			for k,v in pairs(self.m_TpPoints) do
-				if ort == k then
+			local v = self.m_TpPoints[self.m_TpPointShortcuts[string.lower(ort)]]
+			-- for k,v in pairs(self.m_TpPoints) do
+				if v then
 					if player:isInVehicle() then
 						player:getOccupiedVehicle():setPosition(v["pos"])
 						player:getOccupiedVehicle():setInterior(v["interior"] or 0)
@@ -1203,37 +1224,283 @@ function Admin:teleportTo(player,cmd,ort)
 					self:sendShortMessage(_("%s hat sich zu %s geportet!", player, player:getName(), ort))
 					return
 				end
-			end
+			-- end
 			player:sendError(_("Ungültiger Ort! Tippe /tp um alle Orte zu sehen!", player))
 		else
-			outputChatBox("Hier sind alle Orte aufgelistet:", player, 255, 255, 0 )
-			local strings = false
-			local currentTyp = false
-			local already = {}
-			for _, _ in pairs(self.m_TpPoints) do
-				currentTyp = false
-				strings = false
-				for k,v in pairs(self.m_TpPoints) do
-					if not already[v["typ"]] then
-						if not currentTyp then currentTyp = v["typ"] end
-						if v["typ"] == currentTyp then
-							if not strings then strings = "#009900"..currentTyp..": #FFFFFF" end
-							strings = strings..k.." | "
-							if #strings > 90 then
-								outputChatBox(strings,player,255, 255, 255, true)
-								strings = ""
-							end
-						end
-					end
-				end
-				already[currentTyp] = true
-				if strings then
-					outputChatBox(strings,player,255,255,255,true)
-				end
+			local tpPoints = {}
+			for i, v in pairs(self.m_TpPoints) do
+				tpPoints[i] = v
+				tpPoints[i].pos = serialiseVector(v.pos)
+			end
+			player:triggerEvent("AdminTeleportGUI:Open", tpPoints, self.m_TpCategories)
+			for i, v in pairs(self.m_TpPoints) do
+				tpPoints[i].pos = normaliseVector(v.pos)
 			end
 		end
 	else
 		player:sendError(_("Du bist kein Admin!", player))
+	end
+end
+
+function Admin:Event_adminCreateTeleportPoint(name, shortcuts, cat, posx, posy, posz, int, dim)
+	if (not client or client:getRank() < RANK.Administrator) then
+		-- TODO Message
+		return		
+	end
+
+	if (self.m_TpPoints[name]) then
+		return
+	end
+
+	if (not name or string.len(name) == 0 or not posx or not posy or not posz) then
+		return
+	end
+
+	local shortcutsTbl = split(shortcuts, ",") or {}
+	for i, v in pairs(shortcutsTbl) do
+		local possibleOverlap, name = self:checkForExistingTeleportShortcuts(v)
+		
+		if (possibleOverlap) then
+			client:sendError(_("Der Shortcut %s wird bereits für den Teleportpunkt %s benutzt", client, v, name))
+			return
+		end
+	end
+
+	if (sql:queryExec("INSERT INTO ??_tp_locations (Name, Shortcuts, PosX, PosY, PosZ, Interior, Dimension, Category) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", sql:getPrefix(), name, toJSON(shortcutsTbl), posx, posy, posz, int or 0, dim or 0, cat or -1)) then
+		local id = sql:lastInsertId()
+	
+		self.m_TpPoints[name] = {["id"] = id, ["pos"] = Vector3(posx, posy, posz), ["shortcuts"] = shortcutsTbl, ["category"] = cat, ["dimension"] = dim, ["interior"] = int}
+
+		for i, v in pairs(shortcutsTbl) do
+			self.m_TpPointShortcuts[v] = name
+		end
+
+		client:sendSuccess(_("Teleportpunkt wurde erstellt!", client))
+
+		local tpPoints = {}
+		for i, v in pairs(self.m_TpPoints) do
+			tpPoints[i] = v
+			tpPoints[i].pos = serialiseVector(v.pos)
+		end
+		client:triggerEvent("AdminTeleportGUI:SendData", tpPoints, self.m_TpCategories)
+		for i, v in pairs(self.m_TpPoints) do
+			tpPoints[i].pos = normaliseVector(v.pos)
+		end
+	else
+		-- TODO Nils
+	end
+end
+
+function Admin:Event_adminEditTeleportPoint(id, name, shortcuts, cat, posx, posy, posz, int, dim)
+	if (not client or client:getRank() < RANK.Administrator) then
+		-- TODO Message
+		return		
+	end
+
+	local exists = false
+	local oldName = ""
+	for i, v in pairs(self.m_TpPoints) do
+		if (v.id == id) then
+			exists = true
+			oldName = i
+			break
+		end
+	end
+
+	if (not exists) then
+		return
+	end
+	if (not name or string.len(name) == 0 or not posx or not posy or not posz) then
+
+		return
+	end
+
+	local shortcutsTbl = split(shortcuts, ",") or {}
+	for i, v in pairs(shortcutsTbl) do
+		local possibleOverlap, name, id = self:checkForExistingTeleportShortcuts(v)
+		
+		if (possibleOverlap and id ~= id) then
+			client:sendError(_("Der Shortcut %s wird bereits für den Teleportpunkt %s benutzt", client, v, name))
+			return
+		end
+	end
+
+	if (sql:queryExec("UPDATE ??_tp_locations SET Name = ?, Shortcuts = ?, PosX = ?, PosY = ?, PosZ = ?, Interior = ?, Dimension = ?, Category = ? WHERE Id = ?", sql:getPrefix(), name, toJSON(shortcutsTbl), posx, posy, posz, int or 0, dim or 0, cat, id)) then
+		local data = table.copyobject(self.m_TpPoints[oldName])
+		if (name ~= oldName) then
+			self.m_TpPoints[oldName] = nil	
+		end
+		self.m_TpPoints[name] = {["id"] = id, ["pos"] = Vector3(posx, posy, posz), ["shortcuts"] = shortcutsTbl, ["category"] = cat, ["dimension"] = dim, ["interior"] = int}
+		for i, v in pairs(data.shortcuts) do
+			self.m_TpPointShortcuts[v] = nil
+		end
+		for i, v in pairs(shortcutsTbl) do
+			self.m_TpPointShortcuts[v] = name
+		end
+	end
+
+	local tpPoints = {}
+	for i, v in pairs(self.m_TpPoints) do
+		tpPoints[i] = v
+		tpPoints[i].pos = serialiseVector(v.pos)
+	end
+	client:triggerEvent("AdminTeleportGUI:SendData", tpPoints, self.m_TpCategories)
+	for i, v in pairs(self.m_TpPoints) do
+		tpPoints[i].pos = normaliseVector(v.pos)
+	end
+end
+
+function Admin:Event_adminDeleteTeleportPoint(id)
+	if (not client or client:getRank() < RANK.Administrator) then
+		-- TODO Message
+		return
+	end
+
+	if (sql:queryExec("DELETE FROM ??_tp_locations WHERE Id = ?", sql:getPrefix(), id)) then
+		for i, v in pairs(self.m_TpPoints) do
+			if (v.id == id) then
+				for _, sc in pairs(v.shortcuts) do
+					self.m_TpPointShortcuts[sc] = nil
+				end
+
+				self.m_TpPoints[i] = nil
+				-- TODO Nils
+				break
+			end
+		end
+		local tpPoints = {}
+		for i, v in pairs(self.m_TpPoints) do
+			tpPoints[i] = v
+			tpPoints[i].pos = serialiseVector(v.pos)
+		end
+		client:triggerEvent("AdminTeleportGUI:SendData", tpPoints, self.m_TpCategories)
+		for i, v in pairs(self.m_TpPoints) do
+			tpPoints[i].pos = normaliseVector(v.pos)
+		end
+	end
+end
+
+function Admin:checkForExistingTeleportShortcuts(shortcut)
+	for i, v in pairs(self.m_TpPointShortcuts) do
+		if (i == shortcut) then
+			return i, v, v.id
+		end
+	end
+	return false
+end
+
+
+function Admin:Event_adminCreateTeleportCategory(name)
+	if (not client or client:getRank() < RANK.Servermanager) then
+		-- TODO Message
+		return		
+	end
+
+	if (table.find(self.m_TpCategories, name)) then
+		return
+	end
+
+	if (not name) then
+		return
+	end
+
+	if (string.len(name) == 0) then
+		return
+	end
+
+
+	if (sql:queryExec("INSERT INTO ??_tp_categories (Name) VALUES (?)", sql:getPrefix(), name)) then
+		local id = sql:lastInsertId()
+	
+		self.m_TpCategories[id] = name
+
+		client:sendSuccess(_("Teleportkategorie wurde erstellt!", client))
+
+		local tpPoints = {}
+		for i, v in pairs(self.m_TpPoints) do
+			tpPoints[i] = v
+			tpPoints[i].pos = serialiseVector(v.pos)
+		end
+		client:triggerEvent("AdminTeleportGUI:SendData", tpPoints, self.m_TpCategories)
+		for i, v in pairs(self.m_TpPoints) do
+			tpPoints[i].pos = normaliseVector(v.pos)
+		end
+	else
+		-- TODO Nils
+	end
+end
+
+function Admin:Event_adminEditTeleportCategory(id, oldName, newName)
+	if (not client or client:getRank() < RANK.Servermanager) then
+		-- TODO Message
+		return		
+	end
+
+	if (not self.m_TpCategories[id]) then
+		return
+	end
+
+	if (not newName) then
+		return
+	end
+
+	if (string.len(newName) == 0) then
+		return
+	end
+
+
+	if (sql:queryExec("UPDATE ??_tp_categories SET Name = ? WHERE Id = ?", sql:getPrefix(), newName, id)) then
+		self.m_TpCategories[id] = newName
+
+		client:sendSuccess(_("Teleportkategorie wurde geändert!", client))
+
+		local tpPoints = {}
+		for i, v in pairs(self.m_TpPoints) do
+			tpPoints[i] = v
+			tpPoints[i].pos = serialiseVector(v.pos)
+		end
+		client:triggerEvent("AdminTeleportGUI:SendData", tpPoints, self.m_TpCategories)
+		for i, v in pairs(self.m_TpPoints) do
+			tpPoints[i].pos = normaliseVector(v.pos)
+		end
+	else
+		-- TODO Nils
+	end
+end
+
+function Admin:Event_adminDeleteTeleportCategory(id)
+	if (not client or client:getRank() < RANK.Servermanager) then
+		-- TODO Message
+		return		
+	end
+
+	if (not self.m_TpCategories[id]) then
+		return
+	end
+
+
+	if (sql:queryExec("DELETE FROM ??_tp_categories WHERE Id = ?", sql:getPrefix(), id)) then
+		self.m_TpCategories[id] = newName
+
+		client:sendSuccess(_("Teleportkategorie wurde gelöscht!", client))
+
+		for i, v in pairs(self.m_TpPoints) do
+			if (v.category == id) then
+				v.category = -1
+			end
+		end
+
+		local tpPoints = {}
+		for i, v in pairs(self.m_TpPoints) do
+			tpPoints[i] = v
+			tpPoints[i].pos = serialiseVector(v.pos)
+		end
+		client:triggerEvent("AdminTeleportGUI:SendData", tpPoints, self.m_TpCategories)
+		for i, v in pairs(self.m_TpPoints) do
+			tpPoints[i].pos = normaliseVector(v.pos)
+		end
+	else
+		-- TODO Nils
 	end
 end
 
