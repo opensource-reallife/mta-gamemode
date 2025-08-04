@@ -1,5 +1,5 @@
 LoginMusicGUI = inherit(GUIForm)
-inherit(Singleton, GUIForm)
+inherit(Singleton, LoginMusicGUI)
 
 function LoginMusicGUI:constructor()
 	GUIForm.constructor(self, 0, 0, screenWidth, screenHeight)

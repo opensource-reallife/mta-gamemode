@@ -13,7 +13,7 @@ function WeedBeggar:sellWeed(player, amount)
 				money = {
 					mode = "give",
 					bank = false,
-					amount = amount*12,
+					amount = amount*math.random(4, 10),
 					toOrFrom = self.m_BankAccountServer,
 					category = "Gameplay",
 					subcategory = "BeggarWeed"
