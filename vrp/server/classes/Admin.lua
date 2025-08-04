@@ -1320,9 +1320,9 @@ function Admin:Event_adminEditTeleportPoint(id, name, shortcuts, cat, posx, posy
 
 	local shortcutsTbl = split(shortcuts, ",") or {}
 	for i, v in pairs(shortcutsTbl) do
-		local possibleOverlap, name, id2 = self:checkForExistingTeleportShortcuts(v)
+		local possibleOverlap, name = self:checkForExistingTeleportShortcuts(v)
 		
-		if (possibleOverlap and id ~= id2) then
+		if (possibleOverlap and id ~= self.m_TpPoints[name].id) then
 			client:sendError(_("Der Shortcut %s wird bereits für den Teleportpunkt %s benutzt", client, v, name))
 			return
 		end
@@ -1386,7 +1386,7 @@ end
 function Admin:checkForExistingTeleportShortcuts(shortcut)
 	for i, v in pairs(self.m_TpPointShortcuts) do
 		if (i == shortcut) then
-			return i, v, v.id
+			return i, v
 		end
 	end
 	return false

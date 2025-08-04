@@ -46,14 +46,14 @@ function AdminTeleportGUI:constructor(tp, cats)
 	self.m_InteriorLabel = GUIGridLabel:new(13, 11.5, 3, 1, _"Interior:", self.m_Window)
 	self.m_DimensionLabel = GUIGridLabel:new(13, 12, 3, 1, _"Dimension:", self.m_Window)
 
-	self.m_NameValueLabel = GUIGridLabel:new(16, 8, 3, 1, _"", self.m_Window)
-	self.m_ShortcutsValueLabel = GUIGridLabel:new(16, 8.5, 3, 1, _"", self.m_Window)
-	self.m_CategoryValueLabel = GUIGridLabel:new(16, 9, 3, 1, _"", self.m_Window)
-	self.m_PosXValueLabel = GUIGridLabel:new(16, 10, 3, 1, _"", self.m_Window)
-	self.m_PosYValueLabel = GUIGridLabel:new(16, 10.5, 3, 1, _"", self.m_Window)
-	self.m_PosZValueLabel = GUIGridLabel:new(16, 11, 3, 1, _"", self.m_Window)
-	self.m_InteriorValueLabel = GUIGridLabel:new(16, 11.5, 3, 1, _"", self.m_Window)
-	self.m_DimensionValueLabel = GUIGridLabel:new(16, 12, 3, 1, _"", self.m_Window)
+	self.m_NameValueLabel = GUIGridLabel:new(16, 8, 7, 1, _"", self.m_Window)
+	self.m_ShortcutsValueLabel = GUIGridLabel:new(16, 8.5, 7, 1, _"", self.m_Window)
+	self.m_CategoryValueLabel = GUIGridLabel:new(16, 9, 7, 1, _"", self.m_Window)
+	self.m_PosXValueLabel = GUIGridLabel:new(16, 10, 7, 1, _"", self.m_Window)
+	self.m_PosYValueLabel = GUIGridLabel:new(16, 10.5, 7, 1, _"", self.m_Window)
+	self.m_PosZValueLabel = GUIGridLabel:new(16, 11, 7, 1, _"", self.m_Window)
+	self.m_InteriorValueLabel = GUIGridLabel:new(16, 11.5, 7, 1, _"", self.m_Window)
+	self.m_DimensionValueLabel = GUIGridLabel:new(16, 12, 7, 1, _"", self.m_Window)
 
     self.m_TeleportButton = GUIGridButton:new(17.5, 12.5, 4, 1, _"Teleportieren", self.m_Window)
 
@@ -118,7 +118,7 @@ end
 function AdminTeleportGUI:addIeleportPointToGridlist(name, data, catName)
 	local v = data
 	local shortCuts = table.concat(v.shortcuts, ", ");
-	local item = self.m_TeleportGridList:addItem(_(name), shortCuts, catName and _(catName) or "-")
+	local item = self.m_TeleportGridList:addItem(_(name), string.short(shortCuts, 16), catName and _(catName) or "-")
 	local pos = normaliseVector(v.pos)
 
 	item.tpName = name
@@ -127,7 +127,7 @@ function AdminTeleportGUI:addIeleportPointToGridlist(name, data, catName)
 		self.m_TeleportPointLocation:addBlip("Marker.png", pos.x, pos.y)
 
 		self.m_NameValueLabel:setText(_(name))
-		self.m_ShortcutsValueLabel:setText(shortCuts)
+		self.m_ShortcutsValueLabel:setText(string.short(shortCuts, 30)):setTooltip(shortCuts)
 		self.m_CategoryValueLabel:setText(catName and _(catName) or "-")
 		self.m_PosXValueLabel:setText(math.round(pos.x, 0))
 		self.m_PosYValueLabel:setText(math.round(pos.y, 0))
