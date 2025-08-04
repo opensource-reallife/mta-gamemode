@@ -1248,8 +1248,10 @@ function Admin:Event_adminCreateTeleportPoint(name, shortcuts, cat, posx, posy, 
 		return		
 	end
 
-	if (self.m_TpPoints[name]) then
-		return
+	for i, v in pairs(self.m_TpPoints) do
+		if (string.lower(i) == string.lower(name)) then
+			return
+		end
 	end
 
 	if (not name or string.len(name) == 0 or not posx or not posy or not posz) then
@@ -1303,7 +1305,8 @@ function Admin:Event_adminEditTeleportPoint(id, name, shortcuts, cat, posx, posy
 		if (v.id == id) then
 			exists = true
 			oldName = i
-			break
+		elseif (string.lower(i) == string.lower(name)) then
+			return
 		end
 	end
 
@@ -1317,9 +1320,9 @@ function Admin:Event_adminEditTeleportPoint(id, name, shortcuts, cat, posx, posy
 
 	local shortcutsTbl = split(shortcuts, ",") or {}
 	for i, v in pairs(shortcutsTbl) do
-		local possibleOverlap, name, id = self:checkForExistingTeleportShortcuts(v)
+		local possibleOverlap, name, id2 = self:checkForExistingTeleportShortcuts(v)
 		
-		if (possibleOverlap and id ~= id) then
+		if (possibleOverlap and id ~= id2) then
 			client:sendError(_("Der Shortcut %s wird bereits für den Teleportpunkt %s benutzt", client, v, name))
 			return
 		end
@@ -1396,7 +1399,7 @@ function Admin:Event_adminCreateTeleportCategory(name)
 		return		
 	end
 
-	if (table.find(self.m_TpCategories, name)) then
+	if (table.find(self.m_TpCategories, name, true)) then
 		return
 	end
 
@@ -1434,6 +1437,10 @@ function Admin:Event_adminEditTeleportCategory(id, oldName, newName)
 	if (not client or client:getRank() < RANK.Servermanager) then
 		-- TODO Message
 		return		
+	end
+
+	if (table.find(self.m_TpCategories, newName, true)) then
+		return
 	end
 
 	if (not self.m_TpCategories[id]) then

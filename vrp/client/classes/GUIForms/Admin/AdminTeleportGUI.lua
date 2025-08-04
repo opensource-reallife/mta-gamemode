@@ -59,7 +59,11 @@ function AdminTeleportGUI:constructor(tp, cats)
 
 	self.m_EditButton = GUIGridButton:new(1, 14, 4, 1, _"Bearbeiten", self.m_Window):setBackgroundColor(Color.Orange):setEnabled(false)
 	self.m_EditButton.onLeftClick = function()
-		local tpName = self.m_TeleportGridList:getSelectedItem().tpName
+		local item = self.m_TeleportGridList:getSelectedItem()
+		if (not item) then
+			return ErrorBox:new(_"Wähle einen Teleportpunkt aus.")
+		end
+		local tpName = item.tpName
 		AdminTeleportEditGUI:new(self.m_TeleportPoints, self.m_TeleportCategories, table.merge(self.m_TeleportPoints[tpName], {["name"] = tpName}))
 	end
 
@@ -235,7 +239,7 @@ function AdminTeleportEditGUI:constructor(tp, cats, currentTp)
 	self.m_Height = grid("y", 10)
 
 	GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true)
-	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Teleportpunkt erstellen", true, true, self)
+	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Teleportpunkt bearbeiten", true, true, self)
 
 	self.m_NameLabel = GUIGridLabel:new(1, 1, 3, 1, _"Name:", self.m_Window)
 	self.m_NameEdit = GUIGridEdit:new(5, 1, 10, 1, self.m_Window):setText(currentTp.name)
@@ -267,8 +271,8 @@ function AdminTeleportEditGUI:constructor(tp, cats, currentTp)
 	self.m_DimensionLabel = GUIGridLabel:new(1, 8, 3, 1, _"Dimension:", self.m_Window)
 	self.m_DimensionEdit = GUIGridEdit:new(5, 8, 10, 1, self.m_Window):setText(currentTp.dimension):setNumeric(true, true)
 
-	self.m_EditButton = GUIGridButton:new(1, 9, 6, 1, _"Bearbeiten", self.m_Window):setBackgroundColor(Color.Green)
-	self.m_EditButton.onLeftClick = function()
+	self.m_SaveButton = GUIGridButton:new(1, 9, 6, 1, _"Speichern", self.m_Window):setBackgroundColor(Color.Green)
+	self.m_SaveButton.onLeftClick = function()
 		if (tp[self.m_NameEdit:getText()] and self.m_NameEdit:getText() ~= currentTp.name) then
 			return ErrorBox:new(_"Name exisitiert bereits!")
 		end
@@ -331,7 +335,11 @@ function AdminTeleportCategoryGUI:constructor(cats)
 		if (not selectedItem) then
 			return ErrorBox:new(_"Wähle eine Kategorie aus.")
 		end
+
 		InputBox:new(_("%s umbennen", selectedItem.catName) ,_"Wie möchtest du die Kategorie nennen?", function(text)
+				if (table.find(self.m_Categories, selectedItem.catName, true)) then
+					return ErrorBox:new(_("Kategorie mit dem Namen existiert bereits."))
+				end
 				triggerServerEvent("adminEditTeleportCategory", localPlayer, selectedItem.catId, selectedItem.catName, text)
 			end
 		)

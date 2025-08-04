@@ -54,9 +54,9 @@ function table.size(tab)
 	return i
 end
 
-function table.find(tab, value)
+function table.find(tab, value, ignoreCaseSensitivity)
 	for k, v in pairs(tab) do
-		if v == value then
+		if (ignoreCaseSensitivity and string.lower(v) or v) == (ignoreCaseSensitivity and string.lower(value) or value) then
 			return k
 		end
 	end
