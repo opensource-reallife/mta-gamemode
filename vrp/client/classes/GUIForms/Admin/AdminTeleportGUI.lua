@@ -337,7 +337,7 @@ function AdminTeleportCategoryGUI:constructor(cats)
 		end
 
 		InputBox:new(_("%s umbennen", selectedItem.catName) ,_"Wie möchtest du die Kategorie nennen?", function(text)
-				if (table.find(self.m_Categories, selectedItem.catName, true)) then
+				if (table.find(self.m_Categories, text, true)) then
 					return ErrorBox:new(_("Kategorie mit dem Namen existiert bereits."))
 				end
 				triggerServerEvent("adminEditTeleportCategory", localPlayer, selectedItem.catId, selectedItem.catName, text)
