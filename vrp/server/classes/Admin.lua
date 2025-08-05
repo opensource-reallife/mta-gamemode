@@ -1244,7 +1244,7 @@ end
 
 function Admin:Event_adminCreateTeleportPoint(name, shortcuts, cat, posx, posy, posz, int, dim)
 	if (not client or client:getRank() < RANK.Administrator) then
-		-- TODO Message
+		client:sendError(_("Du bist kein Admin!", client))
 		return		
 	end
 
@@ -1263,7 +1263,7 @@ function Admin:Event_adminCreateTeleportPoint(name, shortcuts, cat, posx, posy, 
 		local possibleOverlap, name = self:checkForExistingTeleportShortcuts(v)
 		
 		if (possibleOverlap) then
-			client:sendError(_("Der Shortcut %s wird bereits für den Teleportpunkt %s benutzt", client, v, name))
+			client:sendError(_("Der Shortcut: %s wird bereits für den Teleportpunkt: %s benutzt", client, v, name))
 			return
 		end
 	end
@@ -1277,7 +1277,7 @@ function Admin:Event_adminCreateTeleportPoint(name, shortcuts, cat, posx, posy, 
 			self.m_TpPointShortcuts[v] = name
 		end
 
-		client:sendSuccess(_("Teleportpunkt wurde erstellt!", client))
+		client:sendSuccess(_("Teleportpunkt: %s wurde erstellt!", client, name))
 
 		local tpPoints = {}
 		for i, v in pairs(self.m_TpPoints) do
@@ -1290,12 +1290,13 @@ function Admin:Event_adminCreateTeleportPoint(name, shortcuts, cat, posx, posy, 
 		end
 	else
 		-- TODO Nils
+		client:sendError(_("Fehler beim Erstellen des Teleportpunktes!", client))
 	end
 end
 
 function Admin:Event_adminEditTeleportPoint(id, name, shortcuts, cat, posx, posy, posz, int, dim)
 	if (not client or client:getRank() < RANK.Administrator) then
-		-- TODO Message
+		client:sendError(_("Du bist kein Admin!", client))
 		return		
 	end
 
@@ -1323,7 +1324,7 @@ function Admin:Event_adminEditTeleportPoint(id, name, shortcuts, cat, posx, posy
 		local possibleOverlap, name = self:checkForExistingTeleportShortcuts(v)
 		
 		if (possibleOverlap and id ~= self.m_TpPoints[name].id) then
-			client:sendError(_("Der Shortcut %s wird bereits für den Teleportpunkt %s benutzt", client, v, name))
+			client:sendError(_("Der Shortcut %s wird bereits für den Teleportpunkt: %s benutzt", client, v, name))
 			return
 		end
 	end
@@ -1340,6 +1341,7 @@ function Admin:Event_adminEditTeleportPoint(id, name, shortcuts, cat, posx, posy
 		for i, v in pairs(shortcutsTbl) do
 			self.m_TpPointShortcuts[v] = name
 		end
+		client:sendSuccess(_("Teleportpunkt: %s wurde geändert!", client, name))
 	end
 
 	local tpPoints = {}
@@ -1355,7 +1357,7 @@ end
 
 function Admin:Event_adminDeleteTeleportPoint(id)
 	if (not client or client:getRank() < RANK.Administrator) then
-		-- TODO Message
+		client:sendError(_("Du bist kein Admin!", client))
 		return
 	end
 
@@ -1368,6 +1370,7 @@ function Admin:Event_adminDeleteTeleportPoint(id)
 
 				self.m_TpPoints[i] = nil
 				-- TODO Nils
+				sendSuccess(_("Teleportpunkt %s wurde gelöscht!", client, i))
 				break
 			end
 		end
@@ -1394,8 +1397,8 @@ end
 
 
 function Admin:Event_adminCreateTeleportCategory(name)
-	if (not client or client:getRank() < RANK.Servermanager) then
-		-- TODO Message
+	if (not client or client:getRank() < RANK.Administrator) then
+		client:sendError(_("Du bist kein Admin!", client))
 		return		
 	end
 
@@ -1417,7 +1420,7 @@ function Admin:Event_adminCreateTeleportCategory(name)
 	
 		self.m_TpCategories[id] = name
 
-		client:sendSuccess(_("Teleportkategorie wurde erstellt!", client))
+		client:sendSuccess(_("Kategorie: %s wurde erstellt!", client, name))
 
 		local tpPoints = {}
 		for i, v in pairs(self.m_TpPoints) do
@@ -1430,12 +1433,13 @@ function Admin:Event_adminCreateTeleportCategory(name)
 		end
 	else
 		-- TODO Nils
+		client:sendError(_("Fehler beim Erstellen der Teleport-Kategorie!", client))
 	end
 end
 
 function Admin:Event_adminEditTeleportCategory(id, oldName, newName)
-	if (not client or client:getRank() < RANK.Servermanager) then
-		-- TODO Message
+	if (not client or client:getRank() < RANK.Administrator) then
+		client:sendError(_("Du bist kein Admin!", client))
 		return		
 	end
 
@@ -1459,7 +1463,7 @@ function Admin:Event_adminEditTeleportCategory(id, oldName, newName)
 	if (sql:queryExec("UPDATE ??_tp_categories SET Name = ? WHERE Id = ?", sql:getPrefix(), newName, id)) then
 		self.m_TpCategories[id] = newName
 
-		client:sendSuccess(_("Teleportkategorie wurde geändert!", client))
+		client:sendSuccess(_("Kategorie: %s wurde geändert!", client, newName))
 
 		local tpPoints = {}
 		for i, v in pairs(self.m_TpPoints) do
@@ -1472,12 +1476,13 @@ function Admin:Event_adminEditTeleportCategory(id, oldName, newName)
 		end
 	else
 		-- TODO Nils
+		client:sendError(_("Fehler beim Ändern der Teleport-Kategorie!", client))
 	end
 end
 
 function Admin:Event_adminDeleteTeleportCategory(id)
-	if (not client or client:getRank() < RANK.Servermanager) then
-		-- TODO Message
+	if (not client or client:getRank() < RANK.Administrator) then
+		client:sendError(_("Du bist kein Admin!", client))
 		return		
 	end
 
@@ -1489,7 +1494,8 @@ function Admin:Event_adminDeleteTeleportCategory(id)
 	if (sql:queryExec("DELETE FROM ??_tp_categories WHERE Id = ?", sql:getPrefix(), id)) then
 		self.m_TpCategories[id] = newName
 
-		client:sendSuccess(_("Teleportkategorie wurde gelöscht!", client))
+		-- TODO: Show what Category was deleted
+		client:sendSuccess(_("Kategorie wurde gelöscht!", client))
 
 		for i, v in pairs(self.m_TpPoints) do
 			if (v.category == id) then
@@ -1508,6 +1514,7 @@ function Admin:Event_adminDeleteTeleportCategory(id)
 		end
 	else
 		-- TODO Nils
+		client:sendError(_("Fehler beim Löschen der Teleport-Kategorie!", client))
 	end
 end
 

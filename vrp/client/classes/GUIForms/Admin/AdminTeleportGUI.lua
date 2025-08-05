@@ -5,7 +5,7 @@ addRemoteEvents{"AdminTeleportGUI:Open", "AdminTeleportGUI:SendData"}
 
 function AdminTeleportGUI:constructor(tp, cats)
     GUIWindow.updateGrid()
-	self.m_Width = grid("x", 22)
+	self.m_Width = grid("x", 25)
 	self.m_Height = grid("y", 15)
 
 	GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true)
@@ -16,7 +16,8 @@ function AdminTeleportGUI:constructor(tp, cats)
 	self.m_TeleportPoints = {}
 	self.m_TeleportCategories = {}
 
-	self.m_CategoryChanger = GUIGridChanger:new(1, 1, 10, 1, self.m_Window)
+	self.m_CategoryLabel = GUIGridLabel:new(1, 1, 3, 1, _"Kategorie:", self.m_Window)
+	self.m_CategoryChanger = GUIGridChanger:new(4, 1, 10, 1, self.m_Window)
 	self.m_CategoryChanger.onChange = function(item, index)
 		self.m_TeleportGridList:clear()
 		for i, v in pairs(self.m_TeleportPoints) do
@@ -26,38 +27,39 @@ function AdminTeleportGUI:constructor(tp, cats)
 		end
 	end
 
-	self.m_TeleportGridList = GUIGridGridList:new(1, 2, 10, 12, self.m_Window)
+	self.m_TeleportGridList = GUIGridGridList:new(1, 2, 14, 12, self.m_Window)
 	self.m_TeleportGridList:addColumn(_"Name", 0.35)
 	self.m_TeleportGridList:addColumn(_"Shortcuts", 0.35)
 	self.m_TeleportGridList:addColumn(_"Kategorie", 0.3)
 	self.m_TeleportGridList:setSortable{_"Name", _"Shortcuts", _"Kategorie"}
 	self.m_TeleportGridList:setSortColumn(_"Name", "up")
 	
-	self.m_InformationRectangle = GUIGridEmptyRectangle:new(12, 1, 10, 13, 1, Color.White, self.m_Window)
-	self.m_TeleportPointLocation = GUIGridMiniMap:new(14, 2, 6, 6, self.m_Window)
+	self.m_InformationRectangle = GUIGridEmptyRectangle:new(15, 1, 10, 14, 1, Color.White, self.m_Window)
+	self.m_TeleportPointLocation = GUIGridMiniMap:new(16, 2, 8, 6, self.m_Window)
 	self.m_TeleportPointLocation:setMapPosition(100, 100)
 	
-	self.m_NameLabel = GUIGridLabel:new(13, 8, 3, 1, _"Name:", self.m_Window)
-	self.m_ShortcutsLabel = GUIGridLabel:new(13, 8.5, 3, 1, _"Shortcuts:", self.m_Window)
-	self.m_CategoryLabel = GUIGridLabel:new(13, 9, 3, 1, _"Kategorie:", self.m_Window)
-	self.m_PosXLabel = GUIGridLabel:new(13, 10, 3, 1, _"PosX:", self.m_Window)
-	self.m_PosYLabel = GUIGridLabel:new(13, 10.5, 3, 1, _"PosY:", self.m_Window)
-	self.m_PosZLabel = GUIGridLabel:new(13, 11, 3, 1, _"PosZ:", self.m_Window)
-	self.m_InteriorLabel = GUIGridLabel:new(13, 11.5, 3, 1, _"Interior:", self.m_Window)
-	self.m_DimensionLabel = GUIGridLabel:new(13, 12, 3, 1, _"Dimension:", self.m_Window)
+	self.m_NameLabel = GUIGridLabel:new(16, 8, 3, 1, _"Name:", self.m_Window)
+	self.m_ShortcutsLabel = GUIGridLabel:new(16, 8.5, 3, 1, _"Shortcuts:", self.m_Window)
+	self.m_CategoryLabel = GUIGridLabel:new(16, 9, 3, 1, _"Kategorie:", self.m_Window)
+	self.m_PosXLabel = GUIGridLabel:new(16, 10, 3, 1, _"PosX:", self.m_Window)
+	self.m_PosYLabel = GUIGridLabel:new(16, 10.5, 3, 1, _"PosY:", self.m_Window)
+	self.m_PosZLabel = GUIGridLabel:new(16, 11, 3, 1, _"PosZ:", self.m_Window)
+	self.m_InteriorLabel = GUIGridLabel:new(16, 11.5, 3, 1, _"Interior:", self.m_Window)
+	self.m_DimensionLabel = GUIGridLabel:new(16, 12, 3, 1, _"Dimension:", self.m_Window)
 
-	self.m_NameValueLabel = GUIGridLabel:new(16, 8, 7, 1, _"", self.m_Window)
-	self.m_ShortcutsValueLabel = GUIGridLabel:new(16, 8.5, 7, 1, _"", self.m_Window)
-	self.m_CategoryValueLabel = GUIGridLabel:new(16, 9, 7, 1, _"", self.m_Window)
-	self.m_PosXValueLabel = GUIGridLabel:new(16, 10, 7, 1, _"", self.m_Window)
-	self.m_PosYValueLabel = GUIGridLabel:new(16, 10.5, 7, 1, _"", self.m_Window)
-	self.m_PosZValueLabel = GUIGridLabel:new(16, 11, 7, 1, _"", self.m_Window)
-	self.m_InteriorValueLabel = GUIGridLabel:new(16, 11.5, 7, 1, _"", self.m_Window)
-	self.m_DimensionValueLabel = GUIGridLabel:new(16, 12, 7, 1, _"", self.m_Window)
+	self.m_NameValueLabel = GUIGridLabel:new(19, 8, 7, 1, _"", self.m_Window)
+	self.m_ShortcutsValueLabel = GUIGridLabel:new(19, 8.5, 7, 1, _"", self.m_Window)
+	self.m_CategoryValueLabel = GUIGridLabel:new(19, 9, 7, 1, _"", self.m_Window)
+	self.m_PosXValueLabel = GUIGridLabel:new(19, 10, 7, 1, _"", self.m_Window)
+	self.m_PosYValueLabel = GUIGridLabel:new(19, 10.5, 7, 1, _"", self.m_Window)
+	self.m_PosZValueLabel = GUIGridLabel:new(19, 11, 7, 1, _"", self.m_Window)
+	self.m_InteriorValueLabel = GUIGridLabel:new(19, 11.5, 7, 1, _"", self.m_Window)
+	self.m_DimensionValueLabel = GUIGridLabel:new(19, 12, 7, 1, _"", self.m_Window)
 
-    self.m_TeleportButton = GUIGridButton:new(17.5, 12.5, 4, 1, _"Teleportieren", self.m_Window)
+    self.m_TeleportButton = GUIGridButton:new(20.5, 13.5, 4, 1, _"Teleportieren", self.m_Window):setBackgroundColor(Color.Green)
 
-	self.m_EditButton = GUIGridButton:new(1, 14, 4, 1, _"Bearbeiten", self.m_Window):setBackgroundColor(Color.Orange):setEnabled(false)
+	--self.m_EditButton = GUIGridButton:new(12, 14, 4, 1, _"Bearbeiten", self.m_Window):setBackgroundColor(Color.Orange):setEnabled(false)
+	self.m_EditButton = GUIGridIconButton:new(2, 14, FontAwesomeSymbols.Edit, self.m_Window):setBackgroundColor(Color.Orange):setEnabled(false)
 	self.m_EditButton.onLeftClick = function()
 		local item = self.m_TeleportGridList:getSelectedItem()
 		if (not item) then
@@ -67,14 +69,14 @@ function AdminTeleportGUI:constructor(tp, cats)
 		AdminTeleportEditGUI:new(self.m_TeleportPoints, self.m_TeleportCategories, table.merge(self.m_TeleportPoints[tpName], {["name"] = tpName}))
 	end
 
-	-- self.m_CreateTeleportPointLabel = GUIGridLabel:new(6, 14, 5, 1, _"Neuen TP Punkt erstellen:", self.m_Window)
-	-- self.m_CreateTeleportPointEdit = GUIGridEdit:new(11, 14, 5, 1, self.m_Window)
-	self.m_CreateButton = GUIGridButton:new(7, 14, 4, 1, _"Erstellen", self.m_Window):setBackgroundColor(Color.Green):setEnabled(false)
+	-- self.m_CreateButton = GUIGridButton:new(7, 14, 2, 1, _"Erstellen", self.m_Window):setBackgroundColor(Color.Green):setEnabled(false)
+	self.m_CreateButton = GUIGridIconButton:new(1, 14, FontAwesomeSymbols.Plus, self.m_Window):setBackgroundColor(Color.Green):setEnabled(false)
 	self.m_CreateButton.onLeftClick = function()
 		AdminTeleportCreateGUI:new(self.m_TeleportPoints, self.m_TeleportCategories)
 	end
 
-	self.m_CategoryManageButton = GUIGridButton:new(18, 14, 4, 1, _"Kategorien verwalten", self.m_Window):setBackgroundColor(Color.Orange):setEnabled(false)
+	--self.m_CategoryManageButton = GUIGridButton:new(18, 14, 4, 1, _"Kategorien verwalten", self.m_Window):setBackgroundColor(Color.Orange):setEnabled(false)
+	self.m_CategoryManageButton = GUIGridIconButton:new(14, 1, FontAwesomeSymbols.List, self.m_Window):setBackgroundColor(Color.Orange):setEnabled(false)
 	self.m_CategoryManageButton.onLeftClick = function()
 		AdminTeleportCategoryGUI:new(self.m_TeleportCategories)
 	end
@@ -304,7 +306,7 @@ end
 
 
 
------------------ Edit Teleport Point -------------------
+----------------- Edit Category -------------------
 AdminTeleportCategoryGUI = inherit(GUIForm)
 inherit(Singleton, AdminTeleportCategoryGUI)
 
@@ -315,15 +317,17 @@ function AdminTeleportCategoryGUI:constructor(cats)
 	self.m_Height = grid("y", 15)
 
 	GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true)
-	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Teleportieren", true, true, self)
+	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Kategorien bearbeiten", true, true, self)
 
 	self.m_Categories = cats
 
 	self.m_CategorieGrid = GUIGridGridList:new(1, 1, 9, 10, self.m_Window)
-	self.m_CategorieGrid:addColumn(_"Id", 0.2)
-	self.m_CategorieGrid:addColumn(_"Name", 0.8)
+	--self.m_CategorieGrid:addColumn(_"Id", 0.2)
+	self.m_CategorieGrid:addColumn(_"Name", 0.2)
+	self.m_CategorieGrid:setSortable{_"Name"}
+	self.m_CategorieGrid:setSortColumn(_"Name", "up")
 	for i, v in pairs(self.m_Categories) do
-		local item = self.m_CategorieGrid:addItem(i, _(v))
+		local item = self.m_CategorieGrid:addItem(_(v))
 		item.catName = v
 		item.catId = i
 	end
@@ -338,7 +342,7 @@ function AdminTeleportCategoryGUI:constructor(cats)
 
 		InputBox:new(_("%s umbennen", selectedItem.catName) ,_"Wie möchtest du die Kategorie nennen?", function(text)
 				if (table.find(self.m_Categories, text, true)) then
-					return ErrorBox:new(_("Kategorie mit dem Namen existiert bereits."))
+					return ErrorBox:new(_("Eine Kategorie mit dem Namen existiert bereits."))
 				end
 				triggerServerEvent("adminEditTeleportCategory", localPlayer, selectedItem.catId, selectedItem.catName, text)
 			end
@@ -372,7 +376,7 @@ function AdminTeleportCategoryGUI:loadData(cats)
 	self.m_CategorieGrid:clear()
 
 	for i, v in pairs(self.m_Categories) do
-		local item = self.m_CategorieGrid:addItem(i, _(v))
+		local item = self.m_CategorieGrid:addItem(_(v))
 		item.catName = v
 		item.catId = i
 	end
