@@ -185,6 +185,7 @@ FontAwesomeSymbols = {
 	Lock_Open = "",
 	People_Robbery = "",
 	Plane_Slash = "",
+	Map_Location_Dot = "",
 
 }
 
