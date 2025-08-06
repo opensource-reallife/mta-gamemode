@@ -1370,7 +1370,7 @@ function Admin:Event_adminDeleteTeleportPoint(id)
 
 				self.m_TpPoints[i] = nil
 				-- TODO Nils
-				sendSuccess(_("Teleportpunkt %s wurde gelöscht!", client, i))
+				client:sendSuccess(_("Teleportpunkt %s wurde gelöscht!", client, i))
 				break
 			end
 		end
@@ -1492,10 +1492,8 @@ function Admin:Event_adminDeleteTeleportCategory(id)
 
 
 	if (sql:queryExec("DELETE FROM ??_tp_categories WHERE Id = ?", sql:getPrefix(), id)) then
-		self.m_TpCategories[id] = newName
-
-		-- TODO: Show what Category was deleted
-		client:sendSuccess(_("Kategorie wurde gelöscht!", client))
+		client:sendSuccess(_("Kategorie %s wurde gelöscht!", client, self.m_TpCategories[id]))
+		self.m_TpCategories[id] = nil
 
 		for i, v in pairs(self.m_TpPoints) do
 			if (v.category == id) then
