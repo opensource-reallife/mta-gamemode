@@ -120,12 +120,6 @@ function StyleguideDemonstrationGUI:destructor()
 	GUIForm.destructor(self)
 end
 
-
-
 addCommandHandler("styleguide", function(cmd)
 	StyleguideDemonstrationGUI:getSingleton()
-end)
-
-addCommandHandler("loginpreview", function(cmd)
-	LoginDemonstrationGUI:getSingleton():open()
 end)
