@@ -184,6 +184,7 @@ function AdminTeleportCreateGUI:constructor(tp, cats)
 		local item = self.m_CategoryCombobox:addItem(_(v))
 		item.catName = v
 	end
+	self.m_CategoryCombobox:setSelectedItem(1)
 
 	self.m_PosXLabel = GUIGridLabel:new(1, 4, 3, 1, _"PosX:", self.m_Window)
 	self.m_PosXEdit = GUIGridEdit:new(5, 4, 10, 1, self.m_Window):setText(localPlayer.position.x):setNumeric(true, false)
@@ -203,7 +204,7 @@ function AdminTeleportCreateGUI:constructor(tp, cats)
 	self.m_CreateButton = GUIGridButton:new(1, 9, 6, 1, _"Erstellen", self.m_Window):setBackgroundColor(Color.Green)
 	self.m_CreateButton.onLeftClick = function()
 		if (self.m_NameEdit:getText().length == 0) then
-			return;
+			return
 		end
 
 		if (not tp[self.m_NameEdit:getText()]) then
@@ -297,6 +298,15 @@ function AdminTeleportEditGUI:constructor(tp, cats, currentTp)
 			self.m_DimensionEdit:getText()
 		)
 		self:delete();
+	end
+
+	self.m_NewPlayerPosButton = GUIGridIconButton:new(7, 9, FontAwesomeSymbols.Location_Dot, self.m_Window):setBackgroundColor(Color.Orange):setTooltip(_("Aktuelle Position übernehmen"))
+	self.m_NewPlayerPosButton.onLeftClick = function()
+		self.m_PosXEdit:setText(localPlayer.position.x)
+		self.m_PosYEdit:setText(localPlayer.position.y)
+		self.m_PosZEdit:setText(localPlayer.position.z)
+		self.m_InteriorEdit:setText(localPlayer.interior)
+		self.m_DimensionEdit:setText(localPlayer.dimension)
 	end
 
 	self.m_DeleteButton = GUIGridButton:new(9, 9, 6, 1, _"Löschen", self.m_Window):setBackgroundColor(Color.Red)
