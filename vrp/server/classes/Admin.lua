@@ -1255,6 +1255,12 @@ function Admin:Event_adminCreateTeleportPoint(name, shortcuts, cat, posx, posy, 
 	end
 
 	if (not name or string.len(name) == 0 or not posx or not posy or not posz) then
+		client:sendError(_("Ungültiger Name oder Position!", client))
+		return
+	end
+
+	if (not shortcuts or string.len(shortcuts) == 0) then
+		client:sendError(_("Du musst mindestens einen Shortcut angeben!", client))
 		return
 	end
 
@@ -1315,7 +1321,6 @@ function Admin:Event_adminEditTeleportPoint(id, name, shortcuts, cat, posx, posy
 		return
 	end
 	if (not name or string.len(name) == 0 or not posx or not posy or not posz) then
-
 		return
 	end
 
@@ -1370,7 +1375,7 @@ function Admin:Event_adminDeleteTeleportPoint(id)
 
 				self.m_TpPoints[i] = nil
 				-- TODO Nils
-				client:sendSuccess(_("Teleportpunkt %s wurde gelöscht!", client, i))
+				client:sendSuccess(_("Teleportpunkt: %s wurde gelöscht!", client, i))
 				break
 			end
 		end
@@ -1492,7 +1497,7 @@ function Admin:Event_adminDeleteTeleportCategory(id)
 
 
 	if (sql:queryExec("DELETE FROM ??_tp_categories WHERE Id = ?", sql:getPrefix(), id)) then
-		client:sendSuccess(_("Kategorie %s wurde gelöscht!", client, self.m_TpCategories[id]))
+		client:sendSuccess(_("Kategorie: %s wurde gelöscht!", client, self.m_TpCategories[id]))
 		self.m_TpCategories[id] = nil
 
 		for i, v in pairs(self.m_TpPoints) do
