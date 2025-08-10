@@ -1,7 +1,7 @@
 -- ****************************************************************************
 -- *
 -- *  PROJECT:     vRoleplay
--- *  FILE:        client/classes/GUI/VehicleMechanicTakeGUI.lua
+-- *  FILE:        client/classes/GUIForms/Vehicle/PremiumVehicleGUI.lua
 -- *  PURPOSE:     GUI form class
 -- *
 -- ****************************************************************************
