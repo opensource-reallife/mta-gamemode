@@ -59,10 +59,10 @@ function AdminTeleportGUI:constructor(tp, cats)
 	self.m_DimensionValueLabel = GUIGridLabel:new(19, 12, 7, 1, _"", self.m_Window)
 
     -- self.m_TeleportButton = GUIGridButton:new(20.5, 13.5, 4, 1, _"Teleportieren", self.m_Window):setBackgroundColor(Color.Green)
-    self.m_TeleportButton = GUIGridIconButton:new(23, 13.5, FontAwesomeSymbols.Map_Location_Dot, self.m_Window):setBackgroundColor(Color.Green)
+    self.m_TeleportButton = GUIGridIconButton:new(23, 13.5, FontAwesomeSymbols.Map_Location_Dot, self.m_Window):setBackgroundColor(Color.Green):setTooltip(_("Zum Teleportpunkt teleportieren"))
 
 	--self.m_EditButton = GUIGridButton:new(12, 14, 4, 1, _"Bearbeiten", self.m_Window):setBackgroundColor(Color.Orange):setEnabled(false)
-	self.m_EditButton = GUIGridIconButton:new(2, 14, FontAwesomeSymbols.Edit, self.m_Window):setBackgroundColor(Color.Orange):setEnabled(false)
+	self.m_EditButton = GUIGridIconButton:new(2, 14, FontAwesomeSymbols.Edit, self.m_Window):setBackgroundColor(Color.Orange):setEnabled(false):setTooltip(_("Teleportpunkt bearbeiten"))
 	self.m_EditButton.onLeftClick = function()
 		local item = self.m_TeleportGridList:getSelectedItem()
 		if (not item) then
@@ -73,13 +73,13 @@ function AdminTeleportGUI:constructor(tp, cats)
 	end
 
 	-- self.m_CreateButton = GUIGridButton:new(7, 14, 2, 1, _"Erstellen", self.m_Window):setBackgroundColor(Color.Green):setEnabled(false)
-	self.m_CreateButton = GUIGridIconButton:new(1, 14, FontAwesomeSymbols.Plus, self.m_Window):setBackgroundColor(Color.Green):setEnabled(false)
+	self.m_CreateButton = GUIGridIconButton:new(1, 14, FontAwesomeSymbols.Plus, self.m_Window):setBackgroundColor(Color.Green):setEnabled(false):setTooltip(_("Neuen Teleportpunkt erstellen"))
 	self.m_CreateButton.onLeftClick = function()
 		AdminTeleportCreateGUI:new(self.m_TeleportPoints, self.m_TeleportCategories)
 	end
 
 	--self.m_CategoryManageButton = GUIGridButton:new(18, 14, 4, 1, _"Kategorien verwalten", self.m_Window):setBackgroundColor(Color.Orange):setEnabled(false)
-	self.m_CategoryManageButton = GUIGridIconButton:new(14, 1, FontAwesomeSymbols.List, self.m_Window):setBackgroundColor(Color.Orange):setEnabled(false)
+	self.m_CategoryManageButton = GUIGridIconButton:new(14, 1, FontAwesomeSymbols.List, self.m_Window):setBackgroundColor(Color.Orange):setEnabled(false):setTooltip(_("Zeige alle Kartegorien"))
 	self.m_CategoryManageButton.onLeftClick = function()
 		AdminTeleportCategoryGUI:new(self.m_TeleportCategories)
 	end
