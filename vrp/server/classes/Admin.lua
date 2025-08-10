@@ -83,6 +83,9 @@ function Admin:constructor()
 	addCommandHandler("drun", bind(self.runString, self))
 	addCommandHandler("dpcrun", bind(self.runPlayerString, self))
 
+	-- Temporär
+	addCommandHandler("loadVIPData", bind(self.loadVIPData, self))
+
     addRemoteEvents{"adminSetPlayerFaction", "adminSetPlayerCompany", "adminTriggerFunction", "adminOfflinePlayerFunction", "adminPlayerFunction", "adminGetOfflineWarns",
     "adminGetPlayerVehicles", "adminPortVehicle", "adminPortToVehicle", "adminEditVehicle", "adminSeachPlayer", "adminSeachPlayerInfo",
 	"adminRespawnFactionVehicles", "adminRespawnCompanyVehicles", "adminVehicleDespawn", "openAdminGUI","checkOverlappingVehicles","admin:acceptOverlappingCheck",
@@ -1295,7 +1298,6 @@ function Admin:Event_adminCreateTeleportPoint(name, shortcuts, cat, posx, posy, 
 			tpPoints[i].pos = normaliseVector(v.pos)
 		end
 	else
-		-- TODO Nils
 		client:sendError(_("Fehler beim Erstellen des Teleportpunktes!", client))
 	end
 end
@@ -1374,7 +1376,6 @@ function Admin:Event_adminDeleteTeleportPoint(id)
 				end
 
 				self.m_TpPoints[i] = nil
-				-- TODO Nils
 				client:sendSuccess(_("Teleportpunkt: %s wurde gelöscht!", client, i))
 				break
 			end
@@ -1437,7 +1438,6 @@ function Admin:Event_adminCreateTeleportCategory(name)
 			tpPoints[i].pos = normaliseVector(v.pos)
 		end
 	else
-		-- TODO Nils
 		client:sendError(_("Fehler beim Erstellen der Teleport-Kategorie!", client))
 	end
 end
@@ -1480,7 +1480,6 @@ function Admin:Event_adminEditTeleportCategory(id, oldName, newName)
 			tpPoints[i].pos = normaliseVector(v.pos)
 		end
 	else
-		-- TODO Nils
 		client:sendError(_("Fehler beim Ändern der Teleport-Kategorie!", client))
 	end
 end
@@ -1516,7 +1515,6 @@ function Admin:Event_adminDeleteTeleportCategory(id)
 			tpPoints[i].pos = normaliseVector(v.pos)
 		end
 	else
-		-- TODO Nils
 		client:sendError(_("Fehler beim Löschen der Teleport-Kategorie!", client))
 	end
 end
@@ -2215,4 +2213,52 @@ function Admin:reloadFCVehicleShop(player, cmd, shopId)
 
 	ShopManager.FCVehicleShopsMap[shopId]:reload()
 	player:sendSuccess(_("Shop #%d neugeladen!", player, shopId))
+end
+
+function Admin:loadVIPData()	
+	local coupons = sqlPremiumNew:queryFetch("SELECT * FROM ??_coupons", sqlPremiumNew:getPrefix())
+	local couponsHistory = sqlPremiumNew:queryFetch("SELECT * FROM ??_coupons_history", sqlPremiumNew:getPrefix())
+	local vipUsers = sqlPremiumNew:queryFetch("SELECT * FROM ??_users", sqlPremiumNew:getPrefix())
+	local vipVehicles = sqlPremiumNew:queryFetch("SELECT * FROM ??_vehicles", sqlPremiumNew:getPrefix())
+	
+	self.m_Coupons = {}
+	self.m_CouponsHistory = {}
+	self.m_VipUsers = {}
+	self.m_VipVehicles = {}
+
+	outputDebugString(_("Test1"))
+
+	for i, v in pairs(coupons) do
+		self.m_Coupons[v["Id"]] = {
+			["Coupon"] = v["Coupon"],
+			["Description"] = v["Description"],
+			["AdminId"] = v["AdminId"],
+			["CreatedAt"] = v["CreatedAt"],
+			["ExpiresAt"] = v["ExpiresAt"],
+			["Item"] = v["Item"],
+			["Vehicle"] = v["Vehicle"],
+			["Money"] = v["Money"],
+			["Skin"] = v["Skin"],
+			["Points"] = v["Points"],
+			["ORDollar"] = v["OR_Dollar"],
+			["Used"] = v["Used"],
+			["MaxUses"] = v["MaxUses"]
+		}
+		outputDebugString(("Coupon %s (%s) loaded!"):format(v["Coupon"], v["Id"]))
+
+	end
+	-- for i, v in pairs(coupons) do
+	-- 	self.m_TpCategories[v["Id"]] = v["Name"] 
+	-- end
+	
+	-- local result = sql:queryFetch("SELECT * FROM ??_tp_locations", sql:getPrefix())
+	-- for i, v in pairs(result) do
+	-- 	local scTbl = fromJSON(v["Shortcuts"])
+	-- 	scTbl = type(scTbl) == "string" and {} or scTbl
+	-- 	self.m_TpPoints[v["Name"]] = {["id"] = v["Id"], ["pos"] = Vector3(v["PosX"], v["PosY"], v["PosZ"]), ["shortcuts"] = scTbl, ["category"] = v["Category"], ["dimension"] = v["Dimension"], ["interior"] = v["Interior"]}
+
+	-- 	for j, sc in pairs(scTbl) do
+	-- 		self.m_TpPointShortcuts[string.lower(sc)] = v["Name"]
+	-- 	end
+	-- end
 end
