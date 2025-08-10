@@ -31,7 +31,7 @@ function AdminTeleportGUI:constructor(tp, cats)
 		self.m_TeleportGridList:clear()
 		for i, v in pairs(self.m_TeleportPoints) do
 			if (v.category == item.catId or item.catId == -1) then
-				self:addIeleportPointToGridlist(i, v, self.m_TeleportCategories[v.category]);
+				self:addTeleportPointToGridlist(i, v, self.m_TeleportCategories[v.category])
 			end
 		end
 	end
@@ -96,21 +96,21 @@ function AdminTeleportGUI:constructor(tp, cats)
 end
 
 function AdminTeleportGUI:loadData(tp, cats)
-	self.m_TeleportPoints = tp;
-	self.m_TeleportCategories = cats;
+	self.m_TeleportPoints = tp
+	self.m_TeleportCategories = cats
 
 	self.m_CategoryCombobox:clear()
 	local item = self.m_CategoryCombobox:addItem("Keine")
 	item.catId = -1
 
 	for id, name in pairs(self.m_TeleportCategories) do 
-		local item = self.m_CategoryCombobox:addItem(name);
+		local item = self.m_CategoryCombobox:addItem(name)
 		item.catId = id
 	end
 
 	self.m_TeleportGridList:clear()
 	for i, v  in pairs(self.m_TeleportPoints) do
-		self:addIeleportPointToGridlist(i, v, self.m_TeleportCategories[v.category])
+		self:addTeleportPointToGridlist(i, v, self.m_TeleportCategories[v.category])
 	end
 
 	if (AdminTeleportCategoryGUI:isInstantiated()) then
@@ -118,9 +118,9 @@ function AdminTeleportGUI:loadData(tp, cats)
 	end
 end
 
-function AdminTeleportGUI:addIeleportPointToGridlist(name, data, catName)
+function AdminTeleportGUI:addTeleportPointToGridlist(name, data, catName)
 	local v = data
-	local shortCuts = table.concat(v.shortcuts, ", ");
+	local shortCuts = table.concat(v.shortcuts, ", ")
 	local item = self.m_TeleportGridList:addItem(_(name), string.short(shortCuts, 16), catName and _(catName) or "-")
 	local pos = normaliseVector(v.pos)
 
@@ -217,7 +217,7 @@ function AdminTeleportCreateGUI:constructor(tp, cats)
 				self.m_InteriorEdit:getText(),
 				self.m_DimensionEdit:getText()
 			)
-			self:delete();
+			self:delete()
 		else
 			ErrorBox:new(_"Name exisitiert bereits!")
 		end
@@ -225,7 +225,7 @@ function AdminTeleportCreateGUI:constructor(tp, cats)
 
 	self.m_CancelButton = GUIGridButton:new(9, 9, 6, 1, _"Abbrechen", self.m_Window):setBackgroundColor(Color.Red)
 	self.m_CancelButton.onLeftClick = function()
-		self:delete();
+		self:delete()
 	end
 end
 
@@ -297,7 +297,7 @@ function AdminTeleportEditGUI:constructor(tp, cats, currentTp)
 			self.m_InteriorEdit:getText(),
 			self.m_DimensionEdit:getText()
 		)
-		self:delete();
+		self:delete()
 	end
 
 	self.m_NewPlayerPosButton = GUIGridIconButton:new(7, 9, FontAwesomeSymbols.Location_Dot, self.m_Window):setBackgroundColor(Color.Orange):setTooltip(_("Aktuelle Position übernehmen"))
@@ -313,7 +313,7 @@ function AdminTeleportEditGUI:constructor(tp, cats, currentTp)
 	self.m_DeleteButton.onLeftClick = function()
 		QuestionBox:new(_("Möchtest du den Teleportpunkt %s wirklich löschen?", currentTp.name), function()
 			triggerServerEvent("adminDeleteTeleportPoint", localPlayer, currentTp.id)
-			self:delete();
+			self:delete()
 		end)
 	end
 end
