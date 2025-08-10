@@ -19,6 +19,12 @@ Config.register("MYSQL_PREMIUM_USERNAME", "string", "root")
 Config.register("MYSQL_PREMIUM_PASSWORD", "string", "")
 Config.register("MYSQL_PREMIUM_DATABASE", "string", "vrp")
 
+Config.register("MYSQL_PREMIUM_NEW_HOST", "string", "127.0.0.1")
+Config.register("MYSQL_PREMIUM_NEW_PORT", "number", "3306")
+Config.register("MYSQL_PREMIUM_NEW_USERNAME", "string", "root")
+Config.register("MYSQL_PREMIUM_NEW_PASSWORD", "string", "")
+Config.register("MYSQL_PREMIUM_NEW_DATABASE", "string", "vrp")
+
 Config.register("WEB_ACCOUNT_USERNAME", "string", "")
 Config.register("WEB_ACCOUNT_PASSWORD", "string", "")
 
@@ -69,6 +75,8 @@ function Core:constructor()
 	sqlPremium = MySQL:new(Config.get("MYSQL_PREMIUM_HOST"), Config.get("MYSQL_PREMIUM_PORT"), Config.get("MYSQL_PREMIUM_USERNAME"), Config.get("MYSQL_PREMIUM_PASSWORD"), Config.get("MYSQL_PREMIUM_DATABASE"), nil)
 	sqlLogs = MySQL:new(Config.get("MYSQL_LOGS_HOST"), Config.get("MYSQL_LOGS_PORT"), Config.get("MYSQL_LOGS_USERNAME"), Config.get("MYSQL_LOGS_PASSWORD"), Config.get("MYSQL_LOGS_DATABASE"), nil)
 	sqlLogs:setPrefix("vrpLogs")
+	sqlPremiumNew = MySQL:new(Config.get("MYSQL_PREMIUM_NEW_HOST"), Config.get("MYSQL_PREMIUM_NEW_PORT"), Config.get("MYSQL_PREMIUM_NEW_USERNAME"), Config.get("MYSQL_PREMIUM_NEW_PASSWORD"), Config.get("MYSQL_PREMIUM_NEW_DATABASE"), nil)
+	sqlPremiumNew:setPrefix("vrpPrem")
 
 	if not DISABLE_MIGRATION then
 		MigrationManager:new()
