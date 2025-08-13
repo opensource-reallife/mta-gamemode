@@ -17,6 +17,7 @@ function AdminPremiumGUI:constructor()
 	self.m_Height = grid("y", 15)
 
     GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true)
+
     self.m_OpenWindows = {}
     self.m_HistoryUsers = {}
     self.m_HistoryTypes = {}
@@ -55,13 +56,13 @@ function AdminPremiumGUI:constructor()
 
 
     -- Tab: Users
-    self.m_PlayerSearch = GUIEdit:new(10, 30, 200, 30, tabUser)
+    self.m_PlayerSearch = GUIGridEdit:new(1, 0.8, 5.2, 1, tabUser)
 	self.m_PlayerSearch.onChange = function () self:searchPlayer() end
 
     GUILabel:new(10, 10, 200, 20, _"Suche:", tabUser)
 	self.m_PlayersGrid = GUIGridList:new(10, 70, 200, 440, tabUser)
 	self.m_PlayersGrid:addColumn(_"Spieler", 1)
-	self.m_RefreshButton = GUIButton:new(10, 515, 30, 30, FontAwesomeSymbols.Refresh, tabUser):setBarEnabled(false):setFont(FontAwesome(15))
+	self.m_RefreshButton = GUIGridButton:new(1, 13, 1, 1, FontAwesomeSymbols.Refresh, tabUser):setBarEnabled(false):setFont(FontAwesome(15))
 	self.m_RefreshButton.onLeftClick = function ()
 		self:refreshOnlinePlayers()
 	end
@@ -85,7 +86,8 @@ function AdminPremiumGUI:constructor()
     self.m_GiveVIPButton = GUIGridButton:new(6.5, 4.5, 4.5, 1, _"VIP geben", tabUser):setBackgroundColor(Color.Green):setEnabled(false)
     self.m_GiveVIPButton.onLeftClick = function()
         if self.m_SelectedPlayer then
-            InputBox:new(_("%s: VIP geben"), _("Gebe die Dauer des VIPs in Tagen an:"), function(text)
+            InputBox:new(
+                _("%s : VIP geben", self.m_SelectedPlayer:getName()), _("Gebe die Dauer des VIPs in Tagen an:"), function(text)
                 --triggerServerEvent
             end)
         else
@@ -97,7 +99,7 @@ function AdminPremiumGUI:constructor()
     self.m_RemoveVIPButton = GUIGridButton:new(6.5, 5.5, 4.5, 1, _"VIP entziehen", tabUser):setBackgroundColor(Color.Red):setEnabled(false)
     self.m_RemoveVIPButton.onLeftClick = function()
         if self.m_SelectedPlayer then
-            QuestionBox:new(_("Möchtest du dem Spieler: %s sein VIP entziehen?"), player, function()
+            QuestionBox:new(_("Möchtest du dem Spieler: %s sein VIP entziehen?", self.m_SelectedPlayer:getName()), function()
                 --triggerServerEvent
             end)
         else
@@ -109,7 +111,7 @@ function AdminPremiumGUI:constructor()
     self.m_GiveORDollarButton = GUIGridButton:new(11, 4.5, 4.5, 1, _"OR-Dollar geben", tabUser):setBackgroundColor(Color.Green):setEnabled(false)
     self.m_GiveORDollarButton.onLeftClick = function()
         if self.m_SelectedPlayer then
-            InputBox:new(_("%s: OR-Dollar geben"), _("Gebe die Anzahl der OR-Dollar an, die du geben möchtest:"), function(text)
+            InputBox:new(_("%s: OR-Dollar geben", self.m_SelectedPlayer:getName()), _("Gebe die Anzahl der OR-Dollar an, die du geben möchtest:"), function(text)
                 --triggerServerEvent
             end)
         else
@@ -121,7 +123,7 @@ function AdminPremiumGUI:constructor()
     self.m_RemoveORDollarButton = GUIGridButton:new(11, 5.5, 4.5, 1, _"OR-Dollar entziehen", tabUser):setBackgroundColor(Color.Red):setEnabled(false)
     self.m_RemoveORDollarButton.onLeftClick = function()
         if self.m_SelectedPlayer then
-            InputBox:new(_("%s: OR-Dollar entziehen"), _("Gebe die Anzahl der OR-Dollar an, die du entziehen möchtest:"), function()
+            InputBox:new(_("%s: OR-Dollar entziehen", self.m_SelectedPlayer:getName()), _("Gebe die Anzahl der OR-Dollar an, die du entziehen möchtest:"), function()
                 --triggerServerEvent
             end)
         else
@@ -149,19 +151,45 @@ function AdminPremiumGUI:constructor()
     Zeige alle Premium Fahrzeuge an, die ein Spieler besitzt
     Zeige alle Premium Fahrzeuge an, die ein Spieler abholen kann
     Erstelle ein neues Premium Fahrzeug für den Spieler, was abholbar ist
-    Lösche ein Premium Fahrzeug für den Spieler, was abholbar ist
+    Lösche ein Premium Fahrzeug von dem Spieler
     ]]
 
     -- Tab: Vehicles
     --[[
-    Zeige alle Premium Fahrzeuge an, die ein Spieler abholen kann
     Zeige alle Premium Fahrzeuge an, die ein Spieler besitzt
+    Zeige alle Premium Fahrzeuge an, die ein Spieler abholen kann
     ]]
 
     -- Tab: Coupons
+    self.m_CouponsGridList = GUIGridList:new(10, 10, 625, 500, tabCoupons)
+    self.m_CouponsGridList:addColumn(_("Gutschein"), 0.15)
+    self.m_CouponsGridList:addColumn(_("Beschreibung"), 0.35)
+    self.m_CouponsGridList:addColumn(_("Läuft ab"), 0.25)
+    self.m_CouponsGridList:addColumn(_("Eingelöst"), 0.1)
+
+    self.m_CouponsGridList:setSortable{_"Gutschein", _"Beschreibung", _"Datum", _"Eingelöst"}
+    self.m_CouponsGridList:setSortColumn(_"Gutschein", "up")
+
+    self.m_CouponsCreateButton = GUIGridIconButton:new(1, 13, FontAwesomeSymbols.Plus, tabCoupons):setBackgroundColor(Color.Green):setTooltip(_("Neuen Coupon erstellen"))
+    self.m_CouponsCreateButton.onLeftClick = function()
+    end
+
+    self.m_CouponsDeleteButton = GUIGridIconButton:new(2, 13, FontAwesomeSymbols.Trash, tabCoupons):setBackgroundColor(Color.Red):setTooltip(_("Coupon löschen"))
+    self.m_CouponsDeleteButton.onLeftClick = function()
+    end
+
+    self.m_CouponsRefreshButton = GUIGridIconButton:new(3, 13, FontAwesomeSymbols.Refresh, tabCoupons):setBackgroundColor(Color.Accent):setTooltip(_("Coupons neu laden"))
+    self.m_CouponsRefreshButton.onLeftClick = function()
+    end
+
+    -- Test Items
+    self.m_CouponsGridList:addItem(_("newbie"), _("Das ist ein Test Gutschein"), "∞", _("2 / ∞"))
+    self.m_CouponsGridList:addItem(_("snake"), _("Juter Rücken"), "06.11.2025", _("2 / 10"))
+    self.m_CouponsGridList:addItem(_("morris"), _("morris"), "Abgelaufen", _("10 / 10")):setBackgroundColor(Color.Red)
+
     --[[
-    Button um Gutschein zu erstellen
-    Button um Gutschein zu löschen
+    Wenn der Coupon abgelaufen ist oder die maximale Anzahl genutzt wurde, dann:
+    Zeige den Coupon in rot an
 
     Zeige alle Coupons, ob abgelaufen oder nicht
     Zeige eingelöste Coupons in der Historie
@@ -174,16 +202,27 @@ function AdminPremiumGUI:constructor()
 
     Beschreibung: (Typ: Gutschein, Fahrzeug, VIP, OR-Dollar), AdminName + ID, Erstellt am
     ]]
-    self.m_HistoryGridList = GUIGridList:new(2, 2, 900, 200, self.m_TabHistory)
-    self.m_HistoryGridList:addColumn(_("Spieler"), 0.2)
+    self.m_HistoryGridList = GUIGridList:new(10, 55, 950, 300, tabHistory)
+    self.m_HistoryGridList:addColumn(_("Datum"), 0.2)
+    self.m_HistoryGridList:addColumn(_("Beschreibung"), 0.7)
     self.m_HistoryGridList:addColumn(_("Typ"), 0.2)   
-    self.m_HistoryGridList:addColumn(_("Beschreibung"), 0.3)
-    self.m_HistoryGridList:addColumn(_("Datum"), 0.3)
 
-	self.m_HistoryGridList:setSortable{_"Spieler", _"Typ", _"Datum"}
-	self.m_HistoryGridList:setSortColumn(_"Spieler", "up")
+	self.m_HistoryGridList:setSortable{_"Datum", _"Typ"}
+	self.m_HistoryGridList:setSortColumn(_"Datum", "down")
 
-    self.m_HistoryGridList:addItem(_("Test"), _("TestTyp"), _("Das ist ein Test"), "01.01.2023 12:00:00")
+    self.m_FilterLabel = GUIGridLabel:new(1, 0.25, 2, 1, _"Filter:", tabHistory)
+    self.m_FilterCombobox = GUIGridCombobox:new(2.25, 0.25, 5, 1, _"Test", tabHistory) 
+
+    self.m_HistroySearchLabel = GUIGridLabel:new(1, 0.25, 2, 1, _"Filter:", tabHistory)
+    self.m_HistroySearchEdit = GUIGridEdit:new(10, 30, 200, 30, tabHistory)
+
+    -- Test Items
+    self.m_HistoryGridList:addItem("01.02.2020 12:00", _("Hat den Coupon: newbie erstellt!"), _("Coupon"))
+    self.m_HistoryGridList:addItem("01.02.2021 12:00", _("Hat dem Spieler: Nilszh VIP gegeben!"), _("VIP"))
+    self.m_HistoryGridList:addItem("01.02.2022 12:00", _("Das ist ein Test"), _("Vehicle"))
+    self.m_HistoryGridList:addItem("01.02.2023 12:00", _("Das ist ein Test"), _("Coupon"))
+    self.m_HistoryGridList:addItem("01.02.2024 12:00", _("Das ist ein Test"), _("Vehicle"))
+    self.m_HistoryGridList:addItem("01.02.2025 12:00", _("Das ist ein Test"), _("VIP"))
 end
 
 -- function AdminPremiumGUI:loadData(vip, vipuntil, coupons, premvehicles, ordollar)
