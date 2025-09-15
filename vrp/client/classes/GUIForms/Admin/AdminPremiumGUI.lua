@@ -155,6 +155,54 @@ function AdminPremiumGUI:constructor()
     ]]
 
     -- Tab: Vehicles
+    self.m_VehiclesGridList = GUIGridList:new(10, 10, 625, 500, tabVehicles)
+    --self.m_VehiclesGridList.onChange() = function () self:refreshVehicles() end
+    self.m_VehiclesGridList:addColumn(_("Spieler"), 0.2)
+    self.m_VehiclesGridList:addColumn(_("Fahrzeug"), 0.3)
+    self.m_VehiclesGridList:addColumn(_("Abgeholt am"), 0.3)
+    self.m_VehiclesGridList:addColumn(_("Admin"), 0.2)
+
+    self.m_VehiclesGridList:setSortable{_"Spieler", _"Fahrzeug", _"Abgeholt am", _"Admin"}
+    self.m_VehiclesGridList:setSortColumn(_"Abgeholt am", "up")
+
+    self.m_VehiclesCreateButton = GUIGridIconButton:new(1, 13, FontAwesomeSymbols.Plus, tabVehicles):setBackgroundColor(Color.Green):setTooltip(_("Neues Fahrzeug erstellen"))
+    self.m_VehiclesCreateButton.onLeftClick = function()
+    end
+
+    self.m_VehiclesDeleteButton = GUIGridIconButton:new(2, 13, FontAwesomeSymbols.Trash, tabVehicles):setBackgroundColor(Color.Red):setTooltip(_("Fahrzeug löschen"))
+    self.m_VehiclesDeleteButton.onLeftClick = function()
+    end
+
+    self.m_VehiclesRefreshButton = GUIGridIconButton:new(3, 13, FontAwesomeSymbols.Refresh, tabVehicles):setBackgroundColor(Color.Accent):setTooltip(_("Fahrzeuge neu laden"))
+    self.m_VehiclesRefreshButton.onLeftClick = function()
+    end
+
+    -- Test Items
+    self.m_VehiclesGridList:addItem(_("Nilszh"), _("Sandking (329)"), _("01.01.2020 13:01 Uhr"), _("Nilszh"))
+    self.m_VehiclesGridList:addItem(_("Morris"), _("BMX (310)"), _("-"), _("Nilszh"))
+
+    self.m_VehiclesInfoRectangle = GUIGridEmptyRectangle:new(17, 0.25, 7.5, 12.75, 1, Color.White, tabVehicles)
+    self.m_VehiclesInfoRectangle = GUIGridEmptyRectangle:new(18, 1, 5.5, 5.5, 1, Color.White, tabVehicles)
+    self.m_VehiclesInfoImage = GUIGridImage:new(18, 1, 5.5, 5.5, "files/images/Inventory/items/Items/Clubcard.png", tabVehicles)
+
+    self.m_VehiclesNameLabel = GUIGridLabel:new(18, 6.5, 5.5, 1, _("Fahrzeug:"), tabVehicles):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_VehiclesOwnerLabel = GUIGridLabel:new(18, 7, 5.5, 1, _("Besitzer:"), tabVehicles):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_VehiclesCreatedAtLabel = GUIGridLabel:new(18, 8.5, 5.5, 1, _("Erhalten am:"), tabVehicles):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_VehiclesPickedUpLabel = GUIGridLabel:new(18, 9, 5.5, 1, _("Abgeholt am:"), tabVehicles):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_VehiclesAdminNameLabel = GUIGridLabel:new(18, 9.5, 5.5, 1, _("Erhalten von:"), tabVehicles):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    
+    self.m_VehiclesNameLabel = GUIGridLabel:new(21, 6.5, 5.5, 1, _(""), tabVehicles):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_VehiclesOwnerLabel = GUIGridLabel:new(21, 7, 5.5, 1, _(""), tabVehicles):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_VehiclesCreatedAtLabel = GUIGridLabel:new(21, 8.5, 5.5, 1, _(""), tabVehicles):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_VehiclesPickedUpLabel = GUIGridLabel:new(21, 9, 5.5, 1, _(""), tabVehicles):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_VehiclesAdminNameLabel = GUIGridLabel:new(21, 9.5, 5.5, 1, _(""), tabVehicles):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+
+    self.m_VehiclesNameLabel:setText(_("-"))
+    self.m_VehiclesOwnerLabel:setText(_("-"))
+    self.m_VehiclesCreatedAtLabel:setText(_("-"))
+    self.m_VehiclesPickedUpLabel:setText(_("-"))
+    self.m_VehiclesAdminNameLabel:setText(_("-"))
+
     --[[
     Zeige alle Premium Fahrzeuge an, die ein Spieler besitzt
     Zeige alle Premium Fahrzeuge an, die ein Spieler abholen kann
@@ -185,8 +233,9 @@ function AdminPremiumGUI:constructor()
     -- Test Items
     self.m_CouponsGridList:addItem(_("newbie"), _("Das ist ein Test Gutschein"), "∞", _("2 / ∞"))
     self.m_CouponsGridList:addItem(_("snake"), _("Juter Rücken"), "06.11.2025", _("2 / 10"))
-    self.m_CouponsGridList:addItem(_("morris"), _("morris"), "Abgelaufen", _("10 / 10")):setBackgroundColor(Color.Red)
+    self.m_CouponsGridList:addItem(_("morris"), _("morris"), "Abgelaufen", _("10 / 10"))
 
+    self.m_CouponsInfoRectangle = GUIGridEmptyRectangle:new(17, 0.25, 7.5, 12.75, 1, Color.White, tabCoupons)
     --[[
     Wenn der Coupon abgelaufen ist oder die maximale Anzahl genutzt wurde, dann:
     Zeige den Coupon in rot an
@@ -202,7 +251,7 @@ function AdminPremiumGUI:constructor()
 
     Beschreibung: (Typ: Gutschein, Fahrzeug, VIP, OR-Dollar), AdminName + ID, Erstellt am
     ]]
-    self.m_HistoryGridList = GUIGridList:new(10, 55, 950, 300, tabHistory)
+    self.m_HistoryGridList = GUIGridList:new(10, 55, 950, 500, tabHistory)
     self.m_HistoryGridList:addColumn(_("Datum"), 0.2)
     self.m_HistoryGridList:addColumn(_("Beschreibung"), 0.7)
     self.m_HistoryGridList:addColumn(_("Typ"), 0.2)   
