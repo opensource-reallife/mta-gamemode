@@ -2217,12 +2217,12 @@ end
 
 function Admin:loadVIPData()	
 	local coupons = sqlPremiumNew:queryFetch("SELECT * FROM ??_coupons", sqlPremiumNew:getPrefix())
-	local couponsHistory = sqlPremiumNew:queryFetch("SELECT * FROM ??_coupons_history", sqlPremiumNew:getPrefix())
+	local vipHistory = sqlPremiumNew:queryFetch("SELECT * FROM ??_history", sqlPremiumNew:getPrefix())
 	local vipUsers = sqlPremiumNew:queryFetch("SELECT * FROM ??_users", sqlPremiumNew:getPrefix())
 	local vipVehicles = sqlPremiumNew:queryFetch("SELECT * FROM ??_vehicles", sqlPremiumNew:getPrefix())
 	
 	self.m_Coupons = {}
-	self.m_CouponsHistory = {}
+	self.m_VipHistory = {}
 	self.m_VipUsers = {}
 	self.m_VipVehicles = {}
 
@@ -2240,11 +2240,53 @@ function Admin:loadVIPData()
 			["Money"] = v["Money"],
 			["Skin"] = v["Skin"],
 			["Points"] = v["Points"],
-			["ORDollar"] = v["OR_Dollar"],
+			["Dollar"] = v["Dollar"],
 			["Used"] = v["Used"],
 			["MaxUses"] = v["MaxUses"]
 		}
 		outputDebugString(("Coupon %s (%s) loaded!"):format(v["Coupon"], v["Id"]))
+
+	end
+
+	for i, v in pairs(vipUsers) do
+		self.m_Coupons[v["Id"]] = {
+			["Name"] = v["Name"],
+			["VIP"] = v["VIP"],
+			["VIPExpiresAt"] = v["VIPExpiresAt"],
+			["Dollar"] = v["Dollar"],
+		}
+		outputDebugString(("VIP User %s (%s) loaded!"):format(v["Name"], v["Id"]))
+
+	end
+
+	for i, v in pairs(vipVehicles) do
+		self.m_Coupons[v["Id"]] = {
+			["UserId"] = v["UserId"],
+			["Name"] = v["Name"],
+			["AdminId"] = v["AdminId"],
+			["AdminName"] = v["AdminName"],
+			["Vehicle"] = v["Vehicle"],
+			["Soundvan"] = v["Soundvan"],
+			["Costs"] = v["Costs"],
+			["CreatedAt"] = v["CreatedAt"],
+			["UpdatedAt"] = v["UpdatedAt"],
+			["PickedUp"] = v["PickedUp"],
+		}
+		outputDebugString(("VIP Vehicles %s (%s) loaded!"):format(v["Vehicle"], v["Id"]))
+
+	end
+
+	for i, v in pairs(vipHistory) do
+		self.m_Coupons[v["Id"]] = {
+			["UserId"] = v["UserId"],
+			["Name"] = v["Name"],
+			["AdminId"] = v["AdminId"],
+			["AdminName"] = v["AdminName"],
+			["Type"] = v["Type"],
+			["Description"] = v["Description"],
+			["Date"] = v["Date"],
+		}
+		outputDebugString(("VIP History (%s) loaded!"):format(v["Id"]))
 
 	end
 	-- for i, v in pairs(coupons) do
