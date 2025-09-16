@@ -981,8 +981,7 @@ function LocalPlayer:vehiclePickUp()
 		return
 	end
 
-	if not self.contactElement or self.contactElement:getType() ~= "vehicle" then return end
-	if self.contactElement:getVehicleType() == VehicleType.Boat or VEHICLE_PICKUP[self.contactElement:getModel()] then
+	if self.contactElement and self.contactElement:getType() == "vehicle" then
 		triggerServerEvent("attachPlayerToVehicle", self)
 	end
 end

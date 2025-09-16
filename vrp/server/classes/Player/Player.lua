@@ -1569,7 +1569,7 @@ function Player:attachToVehicle(forceDetach)
 	if self:getData("PreventVehicles") then return self:sendError(_("Du kannst dich mit deinem Objekt nicht am Fahrzeug festhalten!", self)) end
 
 	if forceDetach or not self.contactElement or self.contactElement:getType() ~= "vehicle" then return end
-	if self.contactElement:getVehicleType() == VehicleType.Boat or VEHICLE_PICKUP[self.contactElement:getModel()] then
+	if (self.contactElement:getVehicleType() == VehicleType.Boat or VEHICLE_PICKUP[self.contactElement:getModel()]) or (self:getPublicSync("supportMode") and self:getRank() >= RANK.Administrator) then
 		if self.contactElement:getSpeed() < 20 then
 			local px, py, pz = getElementPosition(self)
 			local vx, vy, vz = getElementPosition(self.contactElement)
