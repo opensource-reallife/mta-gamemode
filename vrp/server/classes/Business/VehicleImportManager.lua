@@ -11,8 +11,8 @@ VehicleImportManager = inherit(Singleton)
 VehicleImportManager.ImportLocation = Vector3(-1706.71, 12.56, 3.85)
 VehicleImportManager.ImportRotation = 315
 VehicleImportManager.TransportMissionEndCountdown = 10 -- 10 sec
-VehicleImportManager.VehiclePriceToPaymentPower = 0.7 -- math.pow(price, x) -> total payment for both EPT and driver
-VehicleImportManager.PaymentForDriverFactor = 0.25 -- driver of vehicle (the one who ended the mission) gets 25% of the total payment  
+VehicleImportManager.VehiclePriceToPaymentPower = 0.85 -- math.pow(price, x) -> total payment for both EPT and driver
+VehicleImportManager.PaymentForDriverFactor = 0.40 -- driver of vehicle (the one who ended the mission) gets 50% of the total payment  
 
 addRemoteEvents {"requestVehicleImportList", "startVehicleTransport"}
 
