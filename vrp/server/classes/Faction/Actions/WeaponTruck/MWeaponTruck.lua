@@ -18,13 +18,13 @@ function MWeaponTruck:constructor()
 	addRemoteEvents{"onWeaponTruckLoad"}
 	addEventHandler("onWeaponTruckLoad", root, bind(self.Event_onWeaponTruckLoad, self))
 
-	self.m_Evilwt = Blip:new("Logistician.png", -2103.16, -2276.99, {factionType = "Evil" and "Rescue"}, 400)
-	self.m_Evilwt:setDisplayText("Waffentruck")
-	self.m_Evilwt:setOptionalColor({27, 125, 47})
+	self.m_BlipEvilWT = Blip:new("Logistician.png", -2103.16, -2276.99, {factionType = {"Evil", "Rescue"}}, 400)
+	self.m_BlipEvilWT:setDisplayText("Waffentruck")
+	self.m_BlipEvilWT:setOptionalColor({27, 125, 47})
 
-	self.m_Statewt = Blip:new("Logistician.png", 2736.51, -2457.10, {factionType = "State" and "Rescue"}, 400)
-	self.m_Statewt:setDisplayText("Staatswaffentruck")
-	self.m_Statewt:setOptionalColor({27, 125, 47})
+	self.m_BlipStateWT = Blip:new("Logistician.png", 2736.51, -2457.10, {factionType = {"State", "Rescue"}}, 400)
+	self.m_BlipStateWT:setDisplayText("Staatswaffentruck")
+	self.m_BlipStateWT:setOptionalColor({27, 125, 47})
 end
 
 function MWeaponTruck:destructor()

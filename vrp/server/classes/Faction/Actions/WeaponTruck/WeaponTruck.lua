@@ -99,8 +99,8 @@ function WeaponTruck:constructor(driver, boxContent, totalAmount, type)
 		end
 	end
 
-	MWeaponTruck:getSingleton().m_Statewt:setOptionalColor({122, 22, 22})
-	MWeaponTruck:getSingleton().m_Evilwt:setOptionalColor({122, 22, 22})
+	MWeaponTruck:getSingleton().m_BlipStateWT:setOptionalColor({122, 22, 22})
+	MWeaponTruck:getSingleton().m_BlipEvilWT:setOptionalColor({122, 22, 22})
 
 	dest = self:addDestinationMarker(self.m_Type == "state" and self.m_StartFaction or FactionManager:getSingleton():getFromId(3) or FactionManager:getSingleton():getFromId(1), "state") -- State
 	self.m_DestinationBlips["state"] = Blip:new("Marker.png", dest.x, dest.y, {factionType = {"State", "Evil", duty = true}}, 9999, BLIP_COLOR_CONSTANTS.Red)
@@ -153,8 +153,8 @@ function WeaponTruck:destructor()
 	StatisticsLogger:getSingleton():addActionLog(WEAPONTRUCK_NAME[self.m_Type], "stop", self.m_StartPlayer, self.m_StartFaction, "faction")
 	self.m_Truck:destroy()
 	TollStation.closeAll()
-	MWeaponTruck:getSingleton().m_Statewt:setOptionalColor({27, 125, 47})
-	MWeaponTruck:getSingleton().m_Evilwt:setOptionalColor({27, 125, 47})
+	MWeaponTruck:getSingleton().m_BlipStateWT:setOptionalColor({27, 125, 47})
+	MWeaponTruck:getSingleton().m_BlipEvilWT:setOptionalColor({27, 125, 47})
 
 	if isElement(self.m_LoadMarker) then self.m_LoadMarker:destroy() end
 	if isTimer(self.m_Timer) then self.m_Timer:destroy() end
