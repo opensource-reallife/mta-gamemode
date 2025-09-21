@@ -108,6 +108,18 @@ function ServerSettings:constructor()
 			SAR_TIME_MAX = tonumber(row.Value)
 		end
 
+		if row.Index == "MinFireTime" then
+			FIRE_TIME_MIN = tonumber(row.Value)
+		end
+
+		if row.Index == "MaxFireTime" then
+			FIRE_TIME_MAX = tonumber(row.Value)
+		end
+
+		if row.Index == "FireRandomChance" then
+			FIRE_RANDOM_CHANCE = tonumber(row.Value)  -- 1 in X chance that a plane crash happens instead of a fire
+		end
+
 		self.m_Settings[row.Index] = row.Value
 	end
 end
