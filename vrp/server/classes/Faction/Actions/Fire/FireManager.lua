@@ -7,8 +7,9 @@
 -- ****************************************************************************
 FireManager = inherit(Singleton)
 
-local FIRE_TIME_MIN = 15 -- in minutes
-local FIRE_TIME_MAX = 30 -- in minutes
+-- local FIRE_TIME_MIN = 15 -- in minutes
+-- local FIRE_TIME_MAX = 30 -- in minutes
+-- local FIRE_RANDOM_CHANCE = 4 -- 1 in X chance that a plane crash happens instead of a fire
 
 function FireManager:constructor()
 	self.m_CurrentFire = nil
@@ -61,8 +62,9 @@ function FireManager:checkFire()
 	local dutyCount = FactionRescue:getSingleton():countPlayers(true, true)
 
 	if ((onlineCount >= MIN_PLAYERS_FOR_FIRE) or (dutyCount >= math.min(1, MIN_PLAYERS_FOR_FIRE / 2))) and not self.m_CurrentFire then
-		local random = math.random(1, 2)
-		if random == 2 then
+		local random = math.random(1, FIRE_RANDOM_CHANCE)
+		outputDebugString("FireManager:checkFire - Starting new event, random: "..random)
+		if random == 1 then
 			PlaneManager:getSingleton():createRoute(true)
 		else
 			self:startRandomFire()
