@@ -63,7 +63,6 @@ function FireManager:checkFire()
 
 	if ((onlineCount >= MIN_PLAYERS_FOR_FIRE) or (dutyCount >= math.min(1, MIN_PLAYERS_FOR_FIRE / 2))) and not self.m_CurrentFire then
 		local random = math.random(1, FIRE_RANDOM_CHANCE)
-		outputDebugString("FireManager:checkFire - Starting new event, random: "..random)
 		if random == 1 then
 			PlaneManager:getSingleton():createRoute(true)
 		else
