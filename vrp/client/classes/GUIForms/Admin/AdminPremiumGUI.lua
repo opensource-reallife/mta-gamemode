@@ -230,6 +230,47 @@ function AdminPremiumGUI:constructor()
     self.m_CouponsRefreshButton.onLeftClick = function()
     end
 
+    self.m_CouponsInfoRectangle = GUIGridEmptyRectangle:new(17, 0.25, 7.5, 12.75, 1, Color.White, tabCoupons)
+    --self.m_CouponsInfoRectangle = GUIGridEmptyRectangle:new(18, 1, 5.5, 5.5, 1, Color.White, tabCoupons)
+
+    self.m_CouponsInfoLabel = GUIGridLabel:new(17.5, 0.4, 5.5, 1, _("Übersicht:"), tabCoupons):setFont(VRPFont(30, Fonts.EkMukta_Bold))
+    self.m_CouponsNameLabel = GUIGridLabel:new(18, 1, 5.5, 1, _("Gutschein:"), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_CouponsExpireAtLabel = GUIGridLabel:new(18, 1.5, 5.5, 1, _("Läuft ab:"), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_CouponsRedeemedLabel = GUIGridLabel:new(18, 2, 5.5, 1, _("Eingelöst:"), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_CouponsDescriptionLabel = GUIGridLabel:new(18, 2.5, 5.5, 1, _("Beschreibung:"), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold)) -- wenn zu lang, dann mit "..." enden
+
+    self.m_CouponsContentLabel = GUIGridLabel:new(17.5, 8.4, 5.5, 1, _("Inhalt:"), tabCoupons):setFont(VRPFont(30, Fonts.EkMukta_Bold))
+    self.m_CouponsContentItemLabel = GUIGridLabel:new(18, 9, 5.5, 1, _("Item:"), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_CouponsContentVehicleLabel = GUIGridLabel:new(18, 9.5, 5.5, 1, _("Fahrzeug:"), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_CouponsContentMoneyLabel = GUIGridLabel:new(18, 10, 5.5, 1, _("Geld:"), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_CouponsContentSkinLabel = GUIGridLabel:new(18, 10.5, 5.5, 1, _("Skin:"), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_CouponsContentPointsLabel = GUIGridLabel:new(18, 11, 5.5, 1, _("Bonuspunkte:"), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_CouponsContentDollarLabel = GUIGridLabel:new(18, 11.5, 5.5, 1, _("OR-Dollar:"), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    
+    self.m_CouponsNameLabel = GUIGridLabel:new(21, 1, 5.5, 1, _(""), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_CouponsExpireAtLabel = GUIGridLabel:new(21, 1.5, 5.5, 1, _(""), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_CouponsRedeemedLabel = GUIGridLabel:new(21, 2, 5.5, 1, _(""), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_CouponsDescriptionLabel = GUIGridLabel:new(21, 2.5, 5.5, 1, _(""), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    
+    self.m_CouponsContentItemLabel = GUIGridLabel:new(21, 9, 5.5, 1, _(""), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_CouponsContentVehicleLabel = GUIGridLabel:new(21, 9.5, 5.5, 1, _(""), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_CouponsContentMoneyLabel = GUIGridLabel:new(21, 10, 5.5, 1, _(""), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_CouponsContentSkinLabel = GUIGridLabel:new(21, 10.5, 5.5, 1, _(""), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_CouponsContentPointsLabel = GUIGridLabel:new(21, 11, 5.5, 1, _(""), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+    self.m_CouponsContentDollarLabel = GUIGridLabel:new(21, 11.5, 5.5, 1, _(""), tabCoupons):setFont(VRPFont(26, Fonts.EkMukta_Bold))
+
+    self.m_CouponsNameLabel:setText(_("morris"))
+    self.m_CouponsExpireAtLabel:setText(_("Abgelaufen"))
+    self.m_CouponsRedeemedLabel:setText(_("10 / 10"))
+    self.m_CouponsDescriptionLabel:setText(_("morris ist ein netter Mensch")) -- Ist zu lang. Wenn zu lang, dann Zeile umbrechen
+        
+    self.m_CouponsContentItemLabel:setText(_("-"))
+    self.m_CouponsContentVehicleLabel:setText(_("Sandking (329)"))
+    self.m_CouponsContentMoneyLabel:setText(_("-"))
+    self.m_CouponsContentSkinLabel:setText(_("-"))
+    self.m_CouponsContentPointsLabel:setText(_("-"))
+    self.m_CouponsContentDollarLabel:setText(_("-"))
+
     -- Test Items
     self.m_CouponsGridList:addItem(_("newbie"), _("Das ist ein Test Gutschein"), "∞", _("2 / ∞"))
     self.m_CouponsGridList:addItem(_("snake"), _("Juter Rücken"), "06.11.2025", _("2 / 10"))
@@ -266,12 +307,15 @@ function AdminPremiumGUI:constructor()
     self.m_HistroySearchEdit = GUIGridEdit:new(10, 30, 200, 30, tabHistory)
 
     -- Test Items
-    self.m_HistoryGridList:addItem("01.02.2020 12:00", _("Hat den Coupon: newbie erstellt!"), _("Coupon"))
-    self.m_HistoryGridList:addItem("01.02.2021 12:00", _("Hat dem Spieler: Nilszh VIP gegeben!"), _("VIP"))
-    self.m_HistoryGridList:addItem("01.02.2022 12:00", _("Das ist ein Test"), _("Vehicle"))
-    self.m_HistoryGridList:addItem("01.02.2023 12:00", _("Das ist ein Test"), _("Coupon"))
-    self.m_HistoryGridList:addItem("01.02.2024 12:00", _("Das ist ein Test"), _("Vehicle"))
-    self.m_HistoryGridList:addItem("01.02.2025 12:00", _("Das ist ein Test"), _("VIP"))
+    self.m_HistoryGridList:addItem("01.02.2025 12:00", _("Admin: Nilszh hat Xonder VIP (30 Tage) gegeben!"), _("VIP"))
+    self.m_HistoryGridList:addItem("01.02.2021 12:00", _("Admin: Xonder hat Nilszh VIP (Permanent) gegeben!"), _("VIP"))
+    self.m_HistoryGridList:addItem("01.02.2021 12:00", _("Admin: Xonder hat Nilszh VIP entfernt!"), _("VIP"))
+    self.m_HistoryGridList:addItem("01.02.2022 12:00", _("Admin: Nilszh hat Xonder das Fahrzeug Sandking (329) gegeben"), _("Vehicle"))
+    self.m_HistoryGridList:addItem("01.02.2022 12:00", _("Admin: Nilszh hat Xonder das Fahrzeug Sandking (329) entfernt"), _("Vehicle"))
+    self.m_HistoryGridList:addItem("01.02.2020 12:00", _("Admin: Nilszh hat den Coupon: newbie erstellt!"), _("Coupon"))
+    self.m_HistoryGridList:addItem("01.02.2023 12:00", _("Nilszh hat den Coupon: newbie eingelöst"), _("Coupon"))
+    self.m_HistoryGridList:addItem("01.02.2024 12:00", _("Nilszh hat das Fahrzeug: Sandking (329) abgeholt"), _("Vehicle"))
+    self.m_HistoryGridList:addItem("01.02.2024 12:00", _("Admin: Nilszh hat Xonder 30 OR-Dollar gegeben"), _("OR-Dollar"))
 end
 
 -- function AdminPremiumGUI:loadData(vip, vipuntil, coupons, premvehicles, ordollar)
