@@ -1083,15 +1083,15 @@ function FactionState:sendStateChatMessage(sourcePlayer, message, lang)
 	end
 end
 
-function FactionState:outputMegaphone(player, ...)
+function FactionState:outputMegaphone(player, text, lang)
 	local faction = player:getFaction()
 	if faction and faction:isStateFaction() == true then
 		if player:isFactionDuty() then
 			if player:getOccupiedVehicle() and player:getOccupiedVehicle():getFaction() and player:getOccupiedVehicle():isStateVehicle() then
 				local playerId = player:getId()
-				local playersToSend = player:getPlayersInChatRange(3)
+				local playersToSend = player:getPlayersInChatRange(3, lang)
 				local receivedPlayers = {}
-				local text = ("[[ %s %s: %s ]]"):format(faction:getShortName(), player:getName(), table.concat({...}, " "))
+				local text = ("[[ %s %s: %s ]]"):format(faction:getShortName(), player:getName(), text)
 				for index = 1,#playersToSend do
 					playersToSend[index]:sendMessage(text, 255, 255, 0)
 					if playersToSend[index] ~= player then
