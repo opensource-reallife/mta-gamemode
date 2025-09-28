@@ -1273,7 +1273,7 @@ end
 
 function PlayerManager:Event_toggleObjectPickup(veh) 
 	local pos = client.position
-	if (client:getPlayerAttachedObject()) then
+	if (client.m_PlayerAttachedObject) then
 		if (veh) then
 			local packageType = convertModelToName(client:getPlayerAttachedObject():getModel(), veh)
 			VehicleManager:getSingleton():loadObject(client, veh, packageType)
