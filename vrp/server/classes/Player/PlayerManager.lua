@@ -12,7 +12,7 @@ addRemoteEvents{"playerReady", "playerSendMoney", "unfreezePlayer", "requestWeap
 "startWeaponLevelTraining","switchSpawnWithFactionSkin","Event_setPlayerWasted", "Event_playerTryToBreakoutJail", "onClientRequestTime", "playerDecreaseAlcoholLevel",
 "premiumOpenVehiclesList", "premiumTakeVehicle","destroyPlayerWastedPed","onDeathPedWasted", "toggleSeatBelt", "onPlayerTryGateOpen", "onPlayerUpdateSpawnLocation",
 "attachPlayerToVehicle", "onPlayerFinishArcadeEasterEgg", "changeWalkingstyle", "PlayerManager:onRequestQuickTrade", "PlayerManager:onAcceptQuickTrade", "removeMeFromVehicle",
-"playerLocale", "requestPlayerWeapons", "playerDecreaseHunger"}
+"playerLocale", "requestPlayerWeapons", "playerDecreaseHunger", "toggleObjectPickup"}
 
 function PlayerManager:constructor()
 	self.m_WastedHook = Hook:new()
@@ -68,6 +68,7 @@ function PlayerManager:constructor()
 	addEventHandler("requestPlayerWeapons", root, bind(self.Event_requestPlayerWeaponInfo, self))
 	addEventHandler("playerReconnect", root, bind(self.Event_forcePlayerReconnect, self))
 	addEventHandler("playerDecreaseHunger", root, bind(self.Event_DecreaseHunger, self))
+	addEventHandler("toggleObjectPickup", root, bind(self.Event_toggleObjectPickup, self))
 
 	addEventHandler("PlayerManager:onAcceptQuickTrade", root, bind(self.Event_OnStartQuickTrade, self))
 	addEventHandler("PlayerManager:onRequestQuickTrade", root, bind(self.Event_RequestQuickTrade, self))
@@ -1268,4 +1269,32 @@ function PlayerManager:Event_DecreaseHunger(loss)
 
 	if client.m_LessHunger then loss = loss / 2 end
 	client:setHunger(client:getHunger() - loss)
+end
+
+function PlayerManager:Event_toggleObjectPickup(veh) 
+	local pos = client.position
+	if (client:getPlayerAttachedObject()) then
+		if (veh) then
+			local packageType = convertModelToName(client:getPlayerAttachedObject():getModel(), veh)
+			VehicleManager:getSingleton():loadObject(client, veh, packageType)
+		else
+			client:detachPlayerObject(client:getPlayerAttachedObject())
+		end
+	else
+		-- if (veh) then
+		-- 	-- local packageType = convertModelToName(client:getPlayerAttachedObject(), veh)
+		-- 	-- VehicleManager:getSingleton():loadObject(client, veh, packageType)
+		-- end
+		for i, v in pairs(getElementsWithinRange(pos.x, pos.y, pos.z, 3, "object", client:getInterior(), client:getDimension())) do
+			local attachedTo = v:getAttachedTo()
+			if (attachedTo and attachedTo:getType() == "vehicle") then
+				local packageType = convertModelToName(v:getModel(), veh)
+				VehicleManager:getSingleton():deloadObject(client, veh, packageType)
+			end
+			if (not attachedTo and PlayerAttachObjects[v:getModel()]) then
+				client:attachPlayerObject(v)
+				break
+			end
+		end
+	end
 end

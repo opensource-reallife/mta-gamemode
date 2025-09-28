@@ -1042,3 +1042,17 @@ function lastIndexOf(haystack, needle)
 
     return i
 end
+
+function convertModelToName(modelId, veh)
+	if modelId == 1550 then
+		return "moneyBag"
+	elseif modelId == 2912 and veh:getData("ChristmanTruck:Truck") then
+		return "christmasPresent"
+	elseif modelId == 1575 then
+		return "drugPackage"
+	elseif modelId == 2912 and veh:getData("WeaponTruck") then
+		return "weaponBox"
+	elseif modelId == 2358 then
+		return "weaponPackage"
+	end
+end

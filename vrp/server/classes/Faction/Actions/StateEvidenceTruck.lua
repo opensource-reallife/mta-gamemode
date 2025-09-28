@@ -18,7 +18,7 @@ StateEvidenceTruck.MoneyBagSpawns = { -- 10
 
 function StateEvidenceTruck:constructor(driver, money)
 	self.m_Truck = TemporaryVehicle.create(428, StateEvidenceTruck.spawnPos, StateEvidenceTruck.spawnRot.z)
-	self.m_Truck:setData("State Evidence Truck", true, true)
+	self.m_Truck:setData("State Evidence Truck", true, true) -- shitty naming
     self.m_Truck:setColor(0, 50, 0, 0, 50, 0)
 	self.m_Truck:setVariant(255, 255)
 	self.m_Truck:setMaxHealth(1500, true)
