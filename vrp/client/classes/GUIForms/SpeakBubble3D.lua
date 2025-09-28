@@ -21,7 +21,7 @@ function SpeakBubble3D:constructor(element, text, description, rotPlus, zOffset)
 	self.m_DescriptionColor = Color.White
 
 	rotPlus = rotPlus or 0
-	GUIForm3D.constructor(self, pos, element:getRotation()+Vector3(0,0,rotPlus), Vector2(1, 0.34), Vector2(200,70), 30)
+	GUIForm3D.constructor(self, pos, element.dimension, element:getRotation()+Vector3(0,0,rotPlus), Vector2(1, 0.34), Vector2(200,70), 30)
 	SpeakBubble3D.Map[element] = self
 end
 
