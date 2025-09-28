@@ -95,7 +95,7 @@ function ItemFood:use(player)
 			player:setAnimation(block, animation, time, true, false, false)
 			player.m_IsEating = true
 			player:setData("isEating", true, true)
-			item:setModel(ItemSettings["Model"])
+			if item then item:setModel(ItemSettings["Model"]) end
 		end)
 	end
 
