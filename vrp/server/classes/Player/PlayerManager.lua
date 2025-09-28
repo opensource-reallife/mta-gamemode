@@ -1286,12 +1286,12 @@ function PlayerManager:Event_toggleObjectPickup(veh)
 		-- 	-- VehicleManager:getSingleton():loadObject(client, veh, packageType)
 		-- end
 		for i, v in pairs(getElementsWithinRange(pos.x, pos.y, pos.z, 3, "object", client:getInterior(), client:getDimension())) do
-			if (PlayerAttachObjects[v:getModel()] and table.size(getEventHandlers("onElementClicked", v)) > 0) then
+			if (PlayerAttachObjects[v:getModel()]) then
 				local attachedTo = v:getAttachedTo()
 				if (attachedTo and attachedTo:getType() == "vehicle") then
 					local packageType = convertModelToName(v:getModel(), veh)
 					VehicleManager:getSingleton():deloadObject(client, veh, packageType)
-				elseif (not attachedTo) then
+				elseif (not attachedTo and table.size(getEventHandlers("onElementClicked", v)) > 0) then
 					client:attachPlayerObject(v)
 					break
 				end
