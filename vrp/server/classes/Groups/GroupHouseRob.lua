@@ -93,12 +93,13 @@ function GroupHouseRob:Event_OnSellAccept()
 				client:meChat(true, "streckt seine Hand aus und nimmt einen Umschlag mit Scheinen entgegen!")
 				client:sendPedChatMessage(client.m_ClickPed:getData("Ped:Name"), "Gutes Geschäft. Komm wieder wenn du mehr hast!")
 				-- Give Wanteds
+				local wanteds = WANTED_AMOUNT_HOUSEROB
 				if chance(5) then
 					setTimer(function(client)
 						if client and isElement(client) then
 							client:sendWarning(_("Deine illegalen Aktivitäten wurden von einem Augenzeugen an das SAPD gemeldet!", client))
-							client:giveWanteds(2)
-							client:sendMessage(_("Verbrechen begangen: %s, %d Wanted/s", client, _("Handel mit illegalen Gegenständen", client), 2), 255, 255, 0)
+							client:giveWanteds(wanteds)
+							client:sendMessage(_("Verbrechen begangen: %s, %d Wanted/s", client, _("Handel mit illegalen Gegenständen", client), wanteds), 255, 255, 0)
 						end
 					end, math.random(2000, 10000), 1, client)
 				end
