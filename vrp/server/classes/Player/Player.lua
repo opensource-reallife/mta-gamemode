@@ -1468,6 +1468,7 @@ function Player:attachPlayerObject(object, fromBind)
 				end
 	
 				self.m_IsInteractionWithObject = false
+				self:setFrozen(false)
 
 				self.m_RefreshAttachedObject = bind(self.refreshAttachedObject, self)
 				self.m_DetachOnPlayerQuit = bind(self.Event_detachObjectOnQuit, self)
@@ -1479,6 +1480,7 @@ function Player:attachPlayerObject(object, fromBind)
 			end
 
 			if settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt] and #settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt] > 0 then
+				self:setFrozen(true)
 				self:setAnimation(unpack(settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt]))
 				setTimer(attach, settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt][3], 1)
 			else
@@ -1546,6 +1548,9 @@ function Player:detachPlayerObject(object, collisionNextFrame, fromBind)
 				end
 				self:setAnimation("carry", "crry_prtial", 1, false, true, true, false) -- Stop Animation Work Arround
 
+				self.m_IsInteractionWithObject = false
+				self:setFrozen(false)
+
 				if self.m_PlayerAttachedObject then
 					removeEventHandler("onElementDimensionChange", self, self.m_RefreshAttachedObject)
 					removeEventHandler("onElementInteriorChange", self, self.m_RefreshAttachedObject)
@@ -1554,9 +1559,10 @@ function Player:detachPlayerObject(object, collisionNextFrame, fromBind)
 					self.m_PlayerAttachedObject = nil
 					self:setPrivateSync("attachedObject", false)
 				end
-				self.m_IsInteractionWithObject = false
+
 			end
 			if settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt] and #settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt] > 0 then
+				self:setFrozen(true)
 				self:setAnimation(unpack(settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt]))
 				setTimer(detach, settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt][3], 1)
 			else

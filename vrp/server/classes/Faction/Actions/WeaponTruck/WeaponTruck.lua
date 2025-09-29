@@ -269,14 +269,16 @@ end
 
 function WeaponTruck:loadBoxOnWeaponTruck(player,box)
 	if player.m_IsInteractionWithObject or not box then return end
+	local watchaDoing = player.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt
 	player:detachPlayerObject(box)
 	local boxesOnTruck = self:getAttachedBoxes(self.m_Truck) + 1
+
 	setTimer(function()
 		box:setScale(1.6)
 		box:attach(self.m_Truck, WeaponTruck.attachCords[boxesOnTruck])
 		box:setCollisionsEnabled(false)
 		removeEventHandler("onElementClicked", box, self.m_Event_onBoxClickFunc)
-	end, PlayerAttachObjects[box:getModel()][player.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt][3] or 0, 1)
+	end, PlayerAttachObjects[box:getModel()][watchaDoing] and PlayerAttachObjects[box:getModel()][watchaDoing][3] or 0, 1)
 
 	if boxesOnTruck >= self.m_BoxesCount then
 		player:sendInfo(_("Alle Kisten aufgeladen! Der Truck ist bereit!",player))
@@ -395,14 +397,15 @@ function WeaponTruck:Event_DeloadBox(veh)
 				if not client:getPlayerAttachedObject() then
 					if not client.vehicle and not client:isDead() then
 						for key, box in pairs (getAttachedElements(veh)) do
-							if box.model == 2912 then
+							if box and box.model == 2912 then
+								local watchaDoing = client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt
 								client:attachPlayerObject(box)
 								setTimer(function(player) 
 									box:setScale(1)
 									box:detach(self.m_Truck)
 									player:setAnimation("carry", "crry_prtial", 1, true, true, false, true)
 									addEventHandler("onElementClicked", box, self.m_Event_onBoxClickFunc)
-								end, PlayerAttachObjects[box:getModel()][client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt][3] or 0, 1, client)
+								end, PlayerAttachObjects[box:getModel()][watchaDoing] and PlayerAttachObjects[box:getModel()][watchaDoing][3] or 0, 1, client)
 								return
 							end
 						end
@@ -465,6 +468,7 @@ function WeaponTruck:getAttachedBoxes(element)
 end
 
 function WeaponTruck:Event_LoadBox(veh)
+	if (client.m_IsInteractionWithObject) then return end
 	if client:getFaction() then
 		if veh == self.m_Truck or VEHICLE_BOX_LOAD[veh.model] then
 			if getDistanceBetweenPoints3D(veh.position,client.position) < 7 then
@@ -479,6 +483,7 @@ function WeaponTruck:Event_LoadBox(veh)
 							local count = self:getAttachedBoxes(veh)
 							client:detachPlayerObject(box)
 							box:attach(veh, VEHICLE_BOX_LOAD[veh.model][count+1])
+							box:setPosition(box.position)
 							removeEventHandler("onElementClicked", box, self.m_Event_onBoxClickFunc)
 						else
 							client:sendError(_("Du hast keine Kiste dabei!",client))

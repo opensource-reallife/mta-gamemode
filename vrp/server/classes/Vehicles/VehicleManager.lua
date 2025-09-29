@@ -1637,6 +1637,7 @@ end
 function VehicleManager:loadObject(player, veh, type)
 	local vehicleObjects, model, name
 		vehicleObjects = VEHICLE_BAG_LOAD
+		client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = "loadOnVehicleAnimation"
 		if type == "moneyBag" then
 			model = 1550
 			name = "keinen Geldsack"
@@ -1711,6 +1712,7 @@ end
 function VehicleManager:deloadObject(player, veh, type)
 	local vehicleObjects, model, name
 	vehicleObjects = VEHICLE_BAG_LOAD
+	client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = "unloadOnVehicleAnimation"
 	if type == "moneyBag" then
 		model = 1550
 		name = "kein Geldsack"
