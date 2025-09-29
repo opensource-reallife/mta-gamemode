@@ -36,7 +36,7 @@ function phpSDKSendMessage(targetType, targetId, message, options)
 
 	if targetType == "admin" then
 		if messageType == "shortMessage" then
-			Admin:getSingleton():sendShortMessageWithRank(message, minRank or 1, title, color, timeout)
+			Admin:getSingleton():sendShortMessageWithRank(message, minRank or 1, nil, title, color, timeout)
 		else
 			Admin:getSingleton():sendMessage(message, color.r, color.g, color.b, minRank or 1)
 		end
@@ -215,7 +215,8 @@ function phpSDKKickPlayer(adminId, targetId, reason)
 	local adminName = Account.getNameFromId(adminId)
 	local targetName = Account.getNameFromId(targetId)
 
-	Admin:getSingleton():sendShortMessage(_("%s hat %s gekickt! Grund: %s", nil, adminName, targetName, reason))
+	local format = {adminName, targetName, reason}
+	Admin:getSingleton():sendShortMessage("%s hat %s gekickt! Grund: %s", format)
 	outputChatBox("Der Spieler "..targetName.." wurde von "..adminName.." gekickt!",root, 200, 0, 0)
 	outputChatBox("Grund: "..reason,root, 200, 0, 0)
 
@@ -275,7 +276,8 @@ function phpSDKPrisonPlayer(adminId, targetId, duration, reason)
 		target:load(true)
 	end
 
-	Admin:getSingleton():sendShortMessage(_("%s hat %s für %d Minuten ins Prison gesteckt! Grund: %s", nil, adminName, targetName, duration, reason))
+	local format = {adminName, targetName, duration, reason}
+	Admin:getSingleton():sendShortMessage("%s hat %s für %d Minuten ins Prison gesteckt! Grund: %s", format)
 	Admin:getSingleton():addPunishLog(adminId, targetId, "prisonCP", reason, duration * 60)
 	outputChatBox(_("%s hat %s für %s Minuten ins Prison gesteckt!!", nil, adminName, targetName, duration), root, 200, 0, 0)
 	outputChatBox(_("Grund: %s", nil, reason), root, 200, 0, 0)
@@ -325,7 +327,8 @@ function phpSDKUnprisonPlayer(adminId, targetId, reason)
 		return data:sub(2, #data-1)
 	end
 
-	Admin:getSingleton():sendShortMessage(_("%s hat %s aus dem Prison gelassen! Grund: %s", nil, adminName, targetName, reason))
+	local format = {adminName, targetName, reason}
+	Admin:getSingleton():sendShortMessage("%s hat %s aus dem Prison gelassen! Grund: %s", format)
 	Admin:getSingleton():addPunishLog(adminId, targetId, "unPrisonCP", reason, 0)
 
 	if tCreated then
@@ -382,13 +385,15 @@ function phpSDKBanPlayer(adminId, targetId, duration, reason)
 	local targetName = Account.getNameFromId(targetId)
 
 	if duration == 0 then -- perma
-		Admin:getSingleton():sendShortMessage(_("%s hat %s permanent gebannt! Grund: %s", nil, adminName,targetName, reason))
+		local format = {adminName, targetName, reason}
+		Admin:getSingleton():sendShortMessage("%s hat %s permanent gebannt! Grund: %s", format)
 		Admin:getSingleton():addPunishLog(adminId, targetId, "permabanCP", reason, 0)
 		outputChatBox(_("Der Spieler %s  wurde von %s gebannt!", nil, targetName, adminName), root, 200, 0, 0)
 		outputChatBox(_("Grund: %s", nil, reason), root, 200, 0, 0)
 		Ban.addBan(targetId, adminId, reason, 0, adminName)
 	else -- time
-		Admin:getSingleton():sendShortMessage(_("%s hat %s für %d Stunden gebannt! Grund: %s", nil, adminName, targetName, duration, reason))
+		local format = {adminName, targetName, duration, reason}
+		Admin:getSingleton():sendShortMessage("%s hat %s für %d Stunden gebannt! Grund: %s", format)
 		Admin:getSingleton():addPunishLog(adminId, targetId, "timebanCP", reason, duration * 60 * 60)
 		outputChatBox(_("Der Spieler %s  wurde von %s für %d Stunden gebannt!", nil, targetName, adminName, duration), root, 200, 0, 0)
 		outputChatBox(_("Grund: %s", nil, reason), root, 200, 0, 0)
@@ -426,7 +431,8 @@ function phpSDKUnbanPlayer(adminId, targetId, reason)
 	local adminName = Account.getNameFromId(adminId)
 	local targetName = Account.getNameFromId(targetId)
 
-	Admin:getSingleton():sendShortMessage(_("%s hat %s offline entbannt!", nil, adminName, targetName))
+	local format = {adminName, targetName}
+	Admin:getSingleton():sendShortMessage("%s hat %s offline entbannt!", format)
 	Admin:getSingleton():addPunishLog(adminId, targetId, "unbanCP", reason, 0)
 	sql:queryExec("DELETE FROM ??_bans WHERE serial = ? OR player_id = ?;", sql:getPrefix(), Account.getLastSerialFromId(targetId), targetId)
 	outputChatBox(_("Der Spieler %s wurde von %s entbannt!", nil, targetName, adminName), root, 200, 0, 0)
@@ -480,7 +486,8 @@ function phpSDKAddWarn(adminId, targetId, duration, reason)
 
 	Warn.addWarn(targetId, adminId, reason, duration*60*60*24)
 	Admin:getSingleton():addPunishLog(adminId, targetId, "warnCP", reason, duration*60*60*24)
-	Admin:getSingleton():sendShortMessage(_("%s hat %s verwarnt! Ablauf in %d Tagen, Grund: %s", nil, adminName, targetName, duration, reason))
+	local format = {adminName, targetName, duration, reason}
+	Admin:getSingleton():sendShortMessage("%s hat %s verwarnt! Ablauf in %d Tagen, Grund: %s", format)
 
 	if target and isElement(target) then
 		target:sendMessage(_("Du wurdest von %s verwarnt! Ablauf in %s Tagen, Grund: %s", target, adminName, duration, reason), 255, 0, 0)
@@ -512,7 +519,8 @@ function phpSDKRemoveWarn(adminId, targetId, warnId)
 
 	Warn.removeWarn(targetId, warnId)
 	Admin:getSingleton():addPunishLog(adminId, targetId, "removeWarnCP", nil, 0)
-	Admin:getSingleton():sendShortMessage(_("%s hat einen Warn von %s entfernt!", nil, adminName, targetName))
+	local format = {adminName, targetName}
+	Admin:getSingleton():sendShortMessage("%s hat einen Warn von %s entfernt!", format)
 
 	if tCreated then delete(target) end
 	if aCreated then delete(admin) end

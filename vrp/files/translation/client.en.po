@@ -40,8 +40,8 @@ msgstr "Start the vehicle transport"
 msgid "Nur Mitglieder des EPT können Fahrzeuge importieren."
 msgstr "Only members of the EPT can import vehicles."
 
-msgid "Du bist nicht im Unternehmensdienst."
-msgstr "You're not in company duty."
+msgid "Du bist nicht im Unternehmensdienst!"
+msgstr "You're not on company duty!"
 
 msgid "Klicke auf die Bushaltestelle, um den Busfahrplan einzusehen."
 msgstr "Click on the bus stop to view the bus timetable."
@@ -1054,8 +1054,8 @@ msgstr "Double click to buy"
 msgid "ColorPicker"
 msgstr "ColorPicker"
 
-msgid "zu liefernde Fahrzeuge"
-msgstr "vehicles to be delivered"
+msgid "Zu liefernde Fahrzeuge"
+msgstr "Vehicles to be delivered"
 
 msgid "Bedarf"
 msgstr "Demand"

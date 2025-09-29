@@ -110,12 +110,14 @@ function AdminEventManager:toggle()
 	if self.m_EventRunning and self.m_CurrentEvent then
 		delete(self.m_CurrentEvent)
 		self.m_EventRunning = false
-		Admin:getSingleton():sendShortMessage(_("%s hat ein Adminevent beendet!", client, client:getName()))
+		local format = {client:getName()}
+		Admin:getSingleton():sendShortMessage("%s hat ein Adminevent beendet!", format)
 		PlayerManager:getSingleton():getQuitHook():unregister(self.m_PlayerLeaveEventFunc)
 	else
 		self.m_CurrentEvent = AdminEvent:new()
 		self.m_EventRunning = true
-		Admin:getSingleton():sendShortMessage(_("%s hat ein Adminevent gestartet!", client, client:getName()))
+		local format = {client:getName()}
+		Admin:getSingleton():sendShortMessage("%s hat ein Adminevent gestartet!", format)
 		PlayerManager:getSingleton():getQuitHook():register(self.m_PlayerLeaveEventFunc)
 	end
 	self:sendData(client)

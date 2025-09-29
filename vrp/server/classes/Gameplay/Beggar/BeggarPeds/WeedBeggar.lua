@@ -33,12 +33,13 @@ function WeedBeggar:sellWeed(player, amount)
 				end, 50, 1
 			)
 			-- Give Wanteds
+			local wanteds = WANTED_AMOUNT_WEEDBEGGAR
 			if chance(5) then
 				setTimer(function()
 					if player and isElement(player) then
 						player:sendWarning(_("Deine illegalen Aktivitäten wurden von einem Augenzeugen an das SAPD gemeldet!", player))
-						player:giveWanteds(2)
-						player:sendMessage(_("Verbrechen begangen: %s, %d Wanted/s", player, _("Handel mit illegalen Gegenständen", player), 2), 255, 255, 0)
+						player:giveWanteds(wanteds)
+						player:sendMessage(_("Verbrechen begangen: %s, %d Wanted/s", player, _("Handel mit illegalen Gegenständen", player), wanteds), 255, 255, 0)
 					end
 				end, math.random(2000, 10000), 1)
 			end

@@ -8,11 +8,11 @@
 
 
 VehicleImportManager = inherit(Singleton)
-VehicleImportManager.ImportLocation = Vector3(-1706.71, 12.56, 3.85)
-VehicleImportManager.ImportRotation = 315
+VehicleImportManager.ImportLocation = Vector3(317.76, -34.81, 1.70)
+VehicleImportManager.ImportRotation = 270
 VehicleImportManager.TransportMissionEndCountdown = 10 -- 10 sec
-VehicleImportManager.VehiclePriceToPaymentPower = 0.7 -- math.pow(price, x) -> total payment for both EPT and driver
-VehicleImportManager.PaymentForDriverFactor = 0.25 -- driver of vehicle (the one who ended the mission) gets 25% of the total payment  
+VehicleImportManager.VehiclePriceToPaymentFactor = 0.50 -- total payment for both EPT and driver is 50% of vehicle price
+VehicleImportManager.PaymentForDriverFactor = 0.25 -- driver of vehicle (the one who ended the mission) gets 25% of the total payment
 
 addRemoteEvents {"requestVehicleImportList", "startVehicleTransport"}
 
@@ -39,7 +39,7 @@ function VehicleImportManager:constructor()
 	self.m_VehicleLoadingColLeaveFunc = bind(self.internalOnVehicleColLeave, self)
 
 	self.m_LoadingCols = {}
-	self.m_ImportWarehouseCol = createColSphere(VehicleImportManager.ImportLocation, 20)
+	self.m_ImportWarehouseCol = createColSphere(VehicleImportManager.ImportLocation, 10)
 	self.m_ImportWarehouseCol:setData("NonCollisionArea", {players = true}, true)
 	self:addLoadingCol(self.m_ImportWarehouseCol) -- add warehouse col permanently
 
@@ -101,7 +101,7 @@ function VehicleImportManager:startTransport(shopId, model, variant, reloadListF
 			:sendShortMessage(("%s hat den Transport für das Fahrzeug '%s' gestartet."):format(getPlayerName(client), VehicleCategory:getSingleton():getModelName(model)))
 	CompanyManager:getSingleton():getFromId(CompanyStaticId.EPT):addLog(client, "Import", ("hat den Fahrzeugtransport für das Fahrzeug '%s' gestartet!"):format(VehicleCategory:getSingleton():getModelName(model)))
 	
-	local payment = math.round(math.pow(ShopManager.VehicleShopsMap[shopId].m_VehicleList[model][variant].price, VehicleImportManager.VehiclePriceToPaymentPower))
+	local payment = math.round(ShopManager.VehicleShopsMap[shopId].m_VehicleList[model][variant].price * VehicleImportManager.VehiclePriceToPaymentFactor)
 
 	self:internalCreateVehicle(shopId, model, variant, payment)
 	
@@ -124,7 +124,7 @@ function VehicleImportManager:getVehicleShopMissingStock()
 						currentStock 			= vehicleData.currentStock,
 						currentlyTransported 	= self:getCurrentlyTransportedVehiclesByShop(id, vehicleModel, index),
                         maxStock 				= vehicleData.maxStock,
-                        price           		= math.round(math.pow(vehicleData.price, VehicleImportManager.VehiclePriceToPaymentPower)),
+                        price           		= math.round(vehicleData.price * VehicleImportManager.VehiclePriceToPaymentFactor),
 					})
 				end
 			end

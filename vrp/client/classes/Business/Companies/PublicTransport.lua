@@ -13,13 +13,25 @@ function PublicTransport:constructor()
 	self.m_Event_BusStopStreamOut = bind(PublicTransport.busStopStreamOut, self)
 	self:registerBusStopObjects()
 
-	--ped at sf bay area 
-	self.m_Ped = createPed(17, VEHICLE_IMPORT_POSITION, 316.24)
+	--ped at blueberry
+	self.m_Ped = createPed(17, VEHICLE_IMPORT_POSITION, 180)
 	setElementData(self.m_Ped, "clickable", true)
 	self.m_Ped:setData("NPC:Immortal", true)
 	self.m_Ped:setFrozen(true)
 	SpeakBubble3D:new(self.m_Ped, _"Fahrzeugimporteur", _"Starte den Fahrzeugtransport")
 	self.m_Ped:setData("onClickEvent", bind(self.onImportListRequest, self))
+
+	--ped at import blackboard
+	local blackBoardPed = createPed(17, 1233.2, -42, 1011.33, 180)
+	blackBoardPed:setInterior(12)
+	blackBoardPed:setDimension(4)
+	blackBoardPed:setData("NPC:Immortal", true)
+	blackBoardPed:setFrozen(true)
+	SpeakBubble3D:new(blackBoardPed, _"Fahrzeugimporteur", _"Zu liefernde Fahrzeuge")
+	setElementData(blackBoardPed, "clickable", true)
+	blackBoardPed:setData("onClickEvent", function()
+		PublicTransport:getSingleton():onImportListRequest()
+	end)
 end
 
 function PublicTransport:onImportListRequest()
@@ -28,7 +40,7 @@ function PublicTransport:onImportListRequest()
 		return
 	end
 	if not localPlayer:getPublicSync("Company:Duty") then
-		ErrorBox:new(_"Du bist nicht im Unternehmensdienst.")
+		ErrorBox:new(_"Du bist nicht im Unternehmensdienst!")
 		return
 	end
 	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo("company", "startVehicleImport") then

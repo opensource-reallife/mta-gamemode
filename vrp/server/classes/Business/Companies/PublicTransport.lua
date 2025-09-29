@@ -50,7 +50,7 @@ function PublicTransport:constructor()
 	local blip = Blip:new("House.png", 1752, -1875.72, {company = self.m_Id}, nil, {companyColors[self.m_Id].r, companyColors[self.m_Id].g, companyColors[self.m_Id].b})
 	blip:setDisplayText(self:getName(), BLIP_CATEGORY.Company)
 
-	self.m_VehicleImportBlip = Blip:new("CarShop.png", -1687.93, 14.47, {company = self.m_Id, duty = true}, nil, {companyColors[self.m_Id].r, companyColors[self.m_Id].g, companyColors[self.m_Id].b})
+	self.m_VehicleImportBlip = Blip:new("CarShop.png", 319.33, -44.96, {company = self.m_Id, duty = true}, nil, {companyColors[self.m_Id].r, companyColors[self.m_Id].g, companyColors[self.m_Id].b})
 	self.m_VehicleImportBlip:setDisplayText("Fahrzeug-Import")
 end
 

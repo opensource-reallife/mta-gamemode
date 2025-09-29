@@ -17,7 +17,7 @@ function FuelTankGUI:constructor(element, fuel, fuelTankSize)
 	local pos = element:getPosition()
 	pos.z = pos.z + 1.5
 
-	GUIForm3D.constructor(self, pos, element:getRotation(), Vector2(1, 0.34), Vector2(200, 70), 30, true)
+	GUIForm3D.constructor(self, pos, element.dimension, element:getRotation(), Vector2(1, 0.34), Vector2(200, 70), 30, true)
 end
 
 function FuelTankGUI:onStreamIn(surface)

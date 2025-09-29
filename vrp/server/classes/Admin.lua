@@ -186,7 +186,8 @@ function Admin:Event_OnAdminGangwarReset( id, ts )
 			area:update()
 			area.m_RadarArea:delete()
 			area:createRadar()
-			self:sendShortMessage(_("%s hat die Attackier-Zeit des Gebietes %s geändert!", client, client:getName(), Gangwar:getSingleton().m_Areas[id].m_Name))
+			local format = {client:getName(), Gangwar:getSingleton().m_Areas[id].m_Name}
+			self:sendShortMessage("%s hat die Attackier-Zeit des Gebietes %s geändert!", format)
 			client:sendInfo(_("Das Gebiet wird freigegeben am: "..day.."/"..month.."/"..year.." "..hour..":"..minute.."h !", client))
 			client:triggerEvent("gangwarRefresh")
 			StatisticsLogger:getSingleton():addAdminAction( client, "GW-AttackTime", "Gebiet: "..Gangwar:getSingleton().m_Areas[id].m_Name.."; AttackTime: "..day.."/"..month.."/"..year.." "..hour..":"..minute.."h !")
@@ -220,7 +221,8 @@ function Admin:Event_OnAdminGangwarChangeOwner( id, faction)
 				area.m_RadarArea:delete()
 				area:createRadar()
 				client:sendInfo(_("Das Gebiet wurde umgesetzt!", client))
-				self:sendShortMessage(_("%s hat das Gebiet %s der Fraktion %s gesetzt!", client, client:getName(), Gangwar:getSingleton().m_Areas[id].m_Name, faction:getShortName()))
+				local format = {client:getName(), Gangwar:getSingleton().m_Areas[id].m_Name, faction:getShortName()}
+				self:sendShortMessage("%s hat das Gebiet %s der Fraktion %s gesetzt!", format)
 				StatisticsLogger:getSingleton():addAdminAction( client, "Gangwar-Gebiet", "Gebiet: " ..Gangwar:getSingleton().m_Areas[id].m_Name.." Fraktion: "..faction:getShortName().." !")
 				client:triggerEvent("gangwarRefresh")
 			end
@@ -413,12 +415,14 @@ function Admin:command(admin, cmd, targetName, ...)
 		end
 	elseif cmd == "disablereg" then
 		if admin:getRank() >= ADMIN_RANK_PERMISSION["disablereg"] then
-			self:sendShortMessage(_("%s hat die Registration deaktiviert!", admin, admin:getName()))
+			local format = {admin:getName()}
+			self:sendShortMessage("%s hat die Registration deaktiviert!", format)
 			StatisticsLogger:getSingleton():addAdminAction(admin, "register", "Register disabled")
 		end
 	elseif cmd == "enablereg" then
 		if admin:getRank() >= ADMIN_RANK_PERMISSION["disablereg"] then
-			self:sendShortMessage(_("%s hat die Registration aktiviert!", admin, admin:getName()))
+			local format = {admin:getName()}
+			self:sendShortMessage("%s hat die Registration aktiviert!", format)
 			StatisticsLogger:getSingleton():addAdminAction(admin, "register", "Register enabled")
 		end
 	elseif cmd == "reloadplayerlimit" then
@@ -492,7 +496,8 @@ function Admin:Event_adminTriggerFunction(func, target, reason, duration, admin)
 			self:toggleSupportMode(admin)
 		end
 	elseif func == "clearchat" then
-		self:sendShortMessage(_("%s den aktuellen Chat gelöscht!", admin, admin:getName()))
+		local format = {admin:getName()}
+		self:sendShortMessage("%s den aktuellen Chat gelöscht!", format)
 		for index, player in pairs(Element.getAllByType("player")) do
 			for i=0, 2100 do
 				player:sendMessage(" ")
@@ -501,13 +506,15 @@ function Admin:Event_adminTriggerFunction(func, target, reason, duration, admin)
 		StatisticsLogger:getSingleton():addAdminAction( admin, "clearChat", false)
 		outputChatBox("Der Chat wurde von "..getPlayerName(admin).." geleert!",root, 200, 0, 0)
 	elseif func == "clearAd" then
-		self:sendShortMessage(_("%s die aktuelle Werbung gelöscht!", admin, admin:getName()))
+		local format = {admin:getName()}
+		self:sendShortMessage("%s die aktuelle Werbung gelöscht!", format)
 		for index, player in pairs(Element.getAllByType("player")) do
 			player:triggerEvent("closeAd")
 		end
 		StatisticsLogger:getSingleton():addAdminAction( admin, "clearAd", false)
 	elseif func == "resetAction" then
-		self:sendShortMessage(_("%s hat die Aktionssperre resettet! Aktionen können wieder gestartet werden!", admin, admin:getName()))
+		local format = {admin:getName()}
+		self:sendShortMessage("%s hat die Aktionssperre resettet! Aktionen können wieder gestartet werden!", format)
 		ActionsCheck:getSingleton():reset()
 		StatisticsLogger:getSingleton():addAdminAction( admin, "resetAction", false)
 	elseif func == "respawnRadius" then
@@ -527,7 +534,8 @@ function Admin:Event_adminTriggerFunction(func, target, reason, duration, admin)
 				count = count + 1
 			end
 		end
-		self:sendShortMessage(_("%s hat %d Fahrzeuge in einem Radius von %d respawnt!", admin, admin:getName(), count, radius))
+		local format = {admin:getName(), count, radius}
+		self:sendShortMessage("%s hat %d Fahrzeuge in einem Radius von %d respawnt!", format)
 	elseif func == "adminAnnounce" then
 		local text = target
 		triggerClientEvent("breakingNews", root, ("%s: %s"):format(client:getName(), text), "Admin Ankündigung", {255, 150, 0}, {0, 0, 0})
@@ -541,7 +549,8 @@ function Admin:Event_adminTriggerFunction(func, target, reason, duration, admin)
 				if admin:transferMoney(self.m_BankAccount, amount, "Admin-Event-Kasse", "Admin", "Deposit") then
 					self.m_BankAccount:save()
 					StatisticsLogger:getSingleton():addAdminAction(admin, "eventKasse", tostring("+"..amount))
-					self:sendShortMessage(_("%s hat %d$ in die Eventkasse gelegt!", admin, admin:getName(), amount))
+					local format = {admin:getName(), amount}
+					self:sendShortMessage("%s hat %d$ in die Eventkasse gelegt!", format)
 					self:openAdminMenu(admin)
 				else
 					admin:sendError(_("Du hast nicht genug Geld dabei!", admin))
@@ -550,7 +559,8 @@ function Admin:Event_adminTriggerFunction(func, target, reason, duration, admin)
 				if self.m_BankAccount:transferMoney({admin, false}, amount, "Admin-Event-Kasse", "Admin", "Withraw") then
 					self.m_BankAccount:save()
 					StatisticsLogger:getSingleton():addAdminAction(admin, "eventKasse", tostring("-"..amount))
-					self:sendShortMessage(_("%s hat %d$ aus der Eventkasse genommen!", admin, admin:getName(), amount))
+					local format = {admin:getName(), amount}
+					self:sendShortMessage("%s hat %d$ aus der Eventkasse genommen!", format)
 					self:openAdminMenu(admin)
 				else
 					admin:sendError(_("In der Kasse ist nicht soviel Geld!", admin))
@@ -571,7 +581,8 @@ function Admin:Event_adminTriggerFunction(func, target, reason, duration, admin)
 		else
 			admin:setPosition(x, y, z)
 		end
-		self:sendShortMessage(_("%s hat sich nach %s geportet!", admin, admin:getName(), getZoneName(x, y, z)))
+		local format = {admin:getName(), getZoneName(x, y, z)}
+		self:sendShortMessage("%s hat sich nach %s geportet!", format)
 		StatisticsLogger:getSingleton():addAdminAction(admin, "goto", "Coords ("..x..","..y..","..z..")")
 	end
 end
@@ -600,7 +611,8 @@ function Admin:Event_playerFunction(func, target, reason, duration, admin)
 			target:setFrozen(false)
 			target:setData("Admin:IsFrozen", false, true)
 			toggleAllControls(target, true, true, false)
-			self:sendShortMessage(_("%s hat %s entfreezt!", admin, admin:getName(), target:getName()))
+			local format = {admin:getName(), target:getName()}
+			self:sendShortMessage("%s hat %s entfreezt!", format)
 			target:sendShortMessage(_("Du wurdest von %s entfreezt", target, admin:getName()))
 			target.m_IsAdminFrozen = false
 		else
@@ -608,19 +620,22 @@ function Admin:Event_playerFunction(func, target, reason, duration, admin)
 			target:setFrozen(true)
 			target:setData("Admin:IsFrozen", true, true)
 			toggleAllControls(target, false, true, false)
-			self:sendShortMessage(_("%s hat %s gefreezt!", admin, admin:getName(), target:getName()))
+			local format = {admin:getName(), target:getName()}
+			self:sendShortMessage("%s hat %s gefreezt!", format)
 			target:sendShortMessage(_("Du wurdest von %s gefreezt", target, admin:getName()))
 			target.m_IsAdminFrozen = true
 		end
 	elseif func == "rkick" then
-		self:sendShortMessage(_("%s hat %s gekickt! Grund: %s", admin, admin:getName(), target:getName(), reason))
+		local format = {admin:getName(), target:getName(), reason}
+		self:sendShortMessage("%s hat %s gekickt! Grund: %s", format)
 		outputChatBox("Der Spieler "..target:getName().." wurde von "..admin:getName().." gekickt!",root, 200, 0, 0)
 		outputChatBox("Grund: "..reason,root, 200, 0, 0)
 		kickPlayer(target, admin, reason)
 	elseif func == "prison" then
 		duration = tonumber(duration)
 		if duration then
-			self:sendShortMessage(_("%s hat %s für %d Minuten ins Prison gesteckt! Grund: %s", admin, admin:getName(), target:getName(), duration, reason))
+			local format = {admin:getName(), target:getName(), duration, reason}
+			self:sendShortMessage("%s hat %s für %d Minuten ins Prison gesteckt! Grund: %s", format)
 			target:setPrison(duration*60)
 			self:addPunishLog(admin, target, func, reason, duration*60)
 			outputChatBox(getPlayerName(admin).." hat "..getPlayerName(target).." für "..duration.." Min. ins Prison gesteckt!",root, 200, 0, 0)
@@ -631,7 +646,8 @@ function Admin:Event_playerFunction(func, target, reason, duration, admin)
 	elseif func == "unprison" then
 		if target then
 			if target.m_PrisonTime > 0 then
-				self:sendShortMessage(_("%s hat %s aus dem Prison gelassen!", admin, admin:getName(), target:getName()))
+				local format = {admin:getName(), target:getName()}
+				self:sendShortMessage("%s hat %s aus dem Prison gelassen!", format)
 				target:endPrison()
 				self:addPunishLog(admin, target, func)
 			else admin:sendError("Spieler ist nicht im Prison!")
@@ -644,7 +660,8 @@ function Admin:Event_playerFunction(func, target, reason, duration, admin)
 		if not duration then return end
 		if not reason then return end
 		duration = tonumber(duration)
-		self:sendShortMessage(_("%s hat %s für %d Stunden gebannt! Grund: %s", admin, admin:getName(), target:getName(), duration, reason))
+		local format = {admin:getName(), target:getName(), duration, reason}
+		self:sendShortMessage("%s hat %s für %d Stunden gebannt! Grund: %s", format)
 		self:addPunishLog(admin, target, func, reason, duration*60*60)
 		outputChatBox("Der Spieler "..getPlayerName(target).." wurde von "..getPlayerName(admin).." für "..duration.." Stunden gebannt!",root, 200, 0, 0)
 		outputChatBox("Grund: "..reason,root, 200, 0, 0)
@@ -652,7 +669,8 @@ function Admin:Event_playerFunction(func, target, reason, duration, admin)
 	elseif func == "permaban" then
 		if not target then return end
 		if not reason or #reason == 0 then return end
-		self:sendShortMessage(_("%s hat %s permanent gebannt! Grund: %s", admin, admin:getName(), target:getName(), reason))
+		local format = {admin:getName(), target:getName(), reason}
+		self:sendShortMessage("%s hat %s permanent gebannt! Grund: %s", format)
 		self:addPunishLog(admin, target, func, reason, 0)
 		outputChatBox("Der Spieler "..getPlayerName(target).." wurde von "..getPlayerName(admin).." gebannt!",root, 200, 0, 0)
 		outputChatBox("Grund: "..reason,root, 200, 0, 0)
@@ -662,7 +680,8 @@ function Admin:Event_playerFunction(func, target, reason, duration, admin)
 		if not duration then return end
 		if not reason then return end
 		duration = tonumber(duration)
-		self:sendShortMessage(_("%s hat %s verwarnt! Ablauf in %d Tagen, Grund: %s", admin, admin:getName(), target:getName(), duration, reason))
+		local format = {admin:getName(), target:getName(), duration, reason}
+		self:sendShortMessage("%s hat %s verwarnt! Ablauf in %d Tagen, Grund: %s", format)
 
 		local targetId = target:getId()
 		Warn.addWarn(target, admin, reason, duration*60*60*24)
@@ -673,7 +692,8 @@ function Admin:Event_playerFunction(func, target, reason, duration, admin)
 		self:addPunishLog(admin, targetId, func, reason, duration*60*60*24)
 	elseif func == "removeWarn" then
 		if not target then return end
-		self:sendShortMessage(_("%s hat einen Warn von %s entfernt!", admin, admin:getName(), target:getName()))
+		local format = {admin:getName(), target:getName()}
+		self:sendShortMessage("%s hat einen Warn von %s entfernt!", format)
 		local id = reason
 		Warn.removeWarn(target, id)
 		self:addPunishLog(admin, target, func, "", 0)
@@ -708,7 +728,8 @@ function Admin:Event_playerFunction(func, target, reason, duration, admin)
 					admin:triggerEvent("stopCenteredFreecam")
 					admin:triggerEvent("stopWeaponRecorder")
 					StatisticsLogger:getSingleton():addAdminAction(admin, "spectEnd", target)
-					self:sendShortMessage(_("%s hat das specten von %s beendet!", admin, admin:getName(), target:getName()))
+					local format = {admin:getName(), target:getName()}
+					self:sendShortMessage("%s hat das specten von %s beendet!", format)
 					unbindKey(admin, "space", "down")
 					admin:setFrozen(false)
 					if admin:isInVehicle() then admin:getOccupiedVehicle():setFrozen(false) end
@@ -730,7 +751,8 @@ function Admin:Event_playerFunction(func, target, reason, duration, admin)
 		table.insert(target.spectBy, admin)
 
 		StatisticsLogger:getSingleton():addAdminAction( admin, "spect", target)
-		self:sendShortMessage(_("%s spected %s!", admin, admin:getName(), target:getName()))
+		local format = {admin:getName(), target:getName()}
+		self:sendShortMessage("%s spected %s!", format)
 		admin:sendInfo(_("Drücke Leertaste zum beenden!", admin))
 
 		admin:setInterior(target.interior)
@@ -768,7 +790,8 @@ function Admin:Event_playerFunction(func, target, reason, duration, admin)
 		local reason = reason:gsub("_", " ")
 		if target:getInventory():giveItem("Keks", 1) then
 			target:sendSuccess(_("%s hat dir einen Keks gegeben! Grund: %s", target, admin:getName(), reason))
-			self:sendShortMessage(_("%s hat %s einen Keks gegeben! Grund: %s", admin, admin:getName(), target:getName(), reason))
+			local format = {admin:getName(), target:getName(), reason}
+			self:sendShortMessage("%s hat %s einen Keks gegeben! Grund: %s", format)
 		else
 			admin:sendError(_("Es ist kein Platz für einen Keks in %s's Inventar.", admin, target:getName()))
 		end
@@ -786,16 +809,19 @@ function Admin:Event_playerFunction(func, target, reason, duration, admin)
 		if not reason then return end
 		duration = tonumber(duration)
 		if duration == 0 then
-			self:sendShortMessage(_("%s hat %s eine permanente Sperre für Modifikationen gegeben! Grund: %s", admin, admin:getName(), target:getName(), reason))
+			local format = {admin:getName(), target:getName(), reason}
+			self:sendShortMessage("%s hat %s eine permanente Sperre für Modifikationen gegeben! Grund: %s", format)
 		else
-			self:sendShortMessage(_("%s hat %s eine %s-tägige Sperre für Modifikationen gegeben! Grund: %s", admin, admin:getName(), target:getName(), duration, reason))
+			local format = {admin:getName(), target:getName(), duration, reason}
+			self:sendShortMessage("%s hat %s eine %s-tägige Sperre für Modifikationen gegeben! Grund: %s", format)
 		end
 		self:addPunishLog(admin, target, func, reason, duration*60*60*24)
 		ModdingCheck:getSingleton():addBan(target:getId(), admin:getId(), duration, reason)
 	elseif func == "removeModsBan" then
 		if not target then return end
 		if not reason then return end
-		self:sendShortMessage(_("%s hat Modifikationen für %s wieder freigegeben! Grund: %s", admin, admin:getName(), target:getName(), reason))
+		local format = {admin:getName(), target:getName(), reason}
+		self:sendShortMessage("%s hat Modifikationen für %s wieder freigegeben! Grund: %s", format)
 		self:addPunishLog(admin, target, "removeModsBan", reason, 0)
 		ModdingCheck:getSingleton():removeBan(target:getId())
 	end
@@ -825,13 +851,15 @@ function Admin:Event_offlineFunction(func, target, reason, duration, admin)
 
 	if func == "offlinePermaban" then
 		if not reason or #reason == 0 then return end
-		self:sendShortMessage(_("%s hat %s offline permanent gebannt! Grund: %s", admin, admin:getName(), target, reason))
+		local format = {admin:getName(), target, reason}
+		self:sendShortMessage("%s hat %s offline permanent gebannt! Grund: %s", format)
 		Ban.addBan(targetId, admin, reason)
 		self:addPunishLog(admin, targetId, func, reason, 0)
 		outputChatBox("Der Spieler "..target.." wurde von "..getPlayerName(admin).." gebannt!",root, 200, 0, 0)
 		outputChatBox("Grund: "..reason,root, 200, 0, 0)
     elseif func == "offlineTimeban" then
-		self:sendShortMessage(_("%s hat %s offline für %d Stunden gebannt! Grund: %s", admin, admin:getName(), target, duration, reason))
+		local format = {admin:getName(), target, duration, reason}
+		self:sendShortMessage("%s hat %s offline für %d Stunden gebannt! Grund: %s", format)
 		if tonumber(duration) then
 			if type(reason) == "string" then
 				Ban.addBan(targetId, admin, reason, duration*60*60)
@@ -845,7 +873,8 @@ function Admin:Event_offlineFunction(func, target, reason, duration, admin)
 			admin:sendError("Keine Dauer angegeben!")
 		end
     elseif func == "offlineUnban" then
-		self:sendShortMessage(_("%s hat %s offline entbannt!", admin, admin:getName(), target))
+		local format = {admin:getName(), target}
+		self:sendShortMessage("%s hat %s offline entbannt!", format)
 		self:addPunishLog(admin, targetId, func, reason, 0)
 		sql:queryExec("DELETE FROM ??_bans WHERE serial = ? OR player_id = ?;", sql:getPrefix(), Account.getLastSerialFromId(targetId), targetId)
 		outputChatBox("Der Spieler "..target.." wurde von "..getPlayerName(admin).." entbannt!",root, 200, 0, 0)
@@ -857,7 +886,8 @@ function Admin:Event_offlineFunction(func, target, reason, duration, admin)
 					if isOffline then
 						changeTarget:load()
 						if changeTarget:setNewNick(admin, reason) then
-							self:sendShortMessage(_("%s hat %s in %s umbenannt!", admin, admin:getName(), target, reason))
+							local format = {admin:getName(), target, reason}
+							self:sendShortMessage("%s hat %s in %s umbenannt!", format)
 							changeTarget:addOfflineMessage("Du wurdest vom Admin "..admin:getName().." von "..target.." zu "..reason.." umgenannt!",1)
 							delete(changeTarget)
 							return
@@ -875,11 +905,13 @@ function Admin:Event_offlineFunction(func, target, reason, duration, admin)
 		if not duration then return end
 		if not reason then return end
 		duration = tonumber(duration)
-		self:sendShortMessage(_("%s hat %s offline verwarnt! Ablauf in %d Tagen, Grund: %s", admin, admin:getName(), target, duration, reason))
+		local format = {admin:getName(), target, duration, reason}
+		self:sendShortMessage("%s hat %s offline verwarnt! Ablauf in %d Tagen, Grund: %s", format)
 		Warn.addWarn(targetId, admin, reason, duration*60*60*24)
 		self:addPunishLog(admin, targetId, func, reason, duration*60*60*24)
 	elseif func == "removeOfflineWarn" then
-		self:sendShortMessage(_("%s hat einen Warn von %s entfernt! (Offline)", admin, admin:getName(), target))
+		local format = {admin:getName(), target}
+		self:sendShortMessage("%s hat einen Warn von %s entfernt! (Offline)", format)
 		local id = reason
 		Warn.removeWarn(targetId, id)
 		self:addPunishLog(admin, targetId, func, "", 0)
@@ -892,7 +924,8 @@ function Admin:Event_offlineFunction(func, target, reason, duration, admin)
 				if targetPlayer then
 					if isOffline then
 						targetPlayer:load()
-						self:sendShortMessage(_("%s hat %s für %d Minuten offline ins Prison gesteckt! Grund: %s", admin, admin:getName(), target, duration, reason))
+						local format = {admin:getName(), target, duration, reason}
+						self:sendShortMessage("%s hat %s für %d Minuten offline ins Prison gesteckt! Grund: %s", format)
 						self:addPunishLog(admin, targetId, func, reason, duration*60)
 						targetPlayer:setPrison(duration*60)
 						delete(targetPlayer)
@@ -907,7 +940,8 @@ function Admin:Event_offlineFunction(func, target, reason, duration, admin)
 			if targetPlayer then
 				if isOffline then
 					targetPlayer:load()
-					self:sendShortMessage(_("%s hat %s aus dem Prison gelassen!", admin, admin:getName(), target))
+					local format = {admin:getName(), target}
+					self:sendShortMessage("%s hat %s aus dem Prison gelassen!", format)
 					targetPlayer:endPrison()
 					self:addPunishLog(admin, targetId, func)
 					delete(targetPlayer)
@@ -918,9 +952,11 @@ function Admin:Event_offlineFunction(func, target, reason, duration, admin)
 		if tonumber(duration) then
 			if type(reason) == "string" then
 				if duration == 0 then
-					self:sendShortMessage(_("%s hat %s eine permanente Sperre für Modifikationen gegeben! Grund: %s", admin, admin:getName(), target, reason))
+					local format = {admin:getName(), target, reason}
+					self:sendShortMessage("%s hat %s eine permanente Sperre für Modifikationen gegeben! Grund: %s", format)
 				else
-					self:sendShortMessage(_("%s hat %s eine %s-tägige Sperre für Modifikationen gegeben! Grund: %s", admin, admin:getName(), target, duration, reason))
+					local format = {admin:getName(), target, duration, reason}
+					self:sendShortMessage("%s hat %s eine %s-tägige Sperre für Modifikationen gegeben! Grund: %s", format)
 				end
 				self:addPunishLog(admin, Account.getIdFromName(target), "modsBan", reason, duration*60*60*24)
 				ModdingCheck:getSingleton():addBan(Account.getIdFromName(target), admin:getId(), duration, reason)
@@ -932,7 +968,8 @@ function Admin:Event_offlineFunction(func, target, reason, duration, admin)
 		end
 	elseif func == "offlineRemoveModsBan" then
 		if type(reason) == "string" then
-			self:sendShortMessage(_("%s hat Modifikationen für %s wieder freigegeben! Grund: %s", admin, admin:getName(), target, reason))
+			local format = {admin:getName(), target, reason}
+			self:sendShortMessage("%s hat Modifikationen für %s wieder freigegeben! Grund: %s", format)
 			self:addPunishLog(admin, Account.getIdFromName(target), "removeModsBan", reason, 0)
 			ModdingCheck:getSingleton():removeBan(Account.getIdFromName(target))
 		else
@@ -994,7 +1031,8 @@ function Admin:toggleSupportMode(player)
     if not player:getPublicSync("supportMode") then
         player:setPublicSync("supportMode", true)
         player:sendInfo(_("Support Modus aktiviert!", player))
-        self:sendShortMessage(_("%s hat den Support Modus aktiviert!", player, player:getName()))
+		local format = {player:getName()}
+        self:sendShortMessage("%s hat den Support Modus aktiviert!", format)
         player:setPublicSync("Admin:OldSkin", player:getModel())
 		player:setModel(260)
 		--player:setWalkingStyle(138)
@@ -1009,7 +1047,8 @@ function Admin:toggleSupportMode(player)
     else
         player:setPublicSync("supportMode", false)
         player:sendInfo(_("Support Modus deaktiviert!", player))
-        self:sendShortMessage(_("%s hat den Support Modus deaktiviert!", player, player:getName()))
+		local format = {player:getName()}
+        self:sendShortMessage("%s hat den Support Modus deaktiviert!", format)
 		player:setModel(player:getPublicSync("Admin:OldSkin"))
 		--player:setWalkingStyle(0)
         self:toggleSupportArrow(player, false)
@@ -1043,7 +1082,8 @@ function Admin:toggleTicketSupportMode(player)
 	if not player:getPublicSync("ticketsupportMode") then
         player:setPublicSync("ticketsupportMode", true)
         player:sendInfo(_("Ticketsupport Modus aktiviert!", player))
-        self:sendShortMessage(_("%s hat den Ticketsupport Modus aktiviert!", player, player:getName()))
+		local format = {player:getName()}
+        self:sendShortMessage("%s hat den Ticketsupport Modus aktiviert!", format)
         self:toggleTicketsupportArrow(player, true)
 		player.m_TicketsupMode = true
 		StatisticsLogger:getSingleton():addAdminAction(player, "TicketsupportMode", "aktiviert")
@@ -1055,7 +1095,8 @@ function Admin:toggleTicketSupportMode(player)
     else
         player:setPublicSync("ticketsupportMode", false)
         player:sendInfo(_("Ticketsupport Modus deaktiviert!", player))
-        self:sendShortMessage(_("%s hat den Ticketsupport Modus deaktiviert!", player, player:getName()))
+		local format = {player:getName()}
+        self:sendShortMessage("%s hat den Ticketsupport Modus deaktiviert!", format)
         self:toggleTicketsupportArrow(player, false)
 		player.m_TicketsupMode = false
 		StatisticsLogger:getSingleton():addAdminAction(player, "TicketsupportMode", "deaktiviert")
@@ -1090,16 +1131,22 @@ function Admin:sendMessage(msg, r, g, b, minRank)
 	end
 end
 
-function Admin:sendShortMessage(text, ...)
+function Admin:sendShortMessage(text, format, title, ...)
+	local format = format or {}
 	for player, rank in pairs(self.m_OnlineAdmins) do
-		player:sendShortMessage(("Admin: %s"):format(text), ...)
+		local text = _(text, player, unpack(format))
+		local title = title and _(title, player)
+		player:sendShortMessage(("Admin: %s"):format(text), title, ...)
 	end
 end
 
-function Admin:sendShortMessageWithRank(text, minRank, ...)
+function Admin:sendShortMessageWithRank(text, minRank, format, title, ...)
+	local format = format or {}
 	for player, rank in pairs(self.m_OnlineAdmins) do
 		if player:getRank() >= (minRank or 1) then
-			player:sendShortMessage(("Admin: %s"):format(text), ...)
+			local text = _(text, player, unpack(format))
+			local title = title and _(title, player)
+			player:sendShortMessage(("Admin: %s"):format(text), title, ...)
 		end
 	end
 end
@@ -1145,7 +1192,8 @@ function Admin:goToPlayer(player,cmd,target)
 		if target then
 			local target = PlayerManager:getSingleton():getPlayerFromPartOfName(target,player)
 			if isElement(target) then
-                self:sendShortMessage(_("%s hat sich zu %s geportet!", player, player:getName(), target:getName()))
+				local format = {player:getName(), target:getName()}
+                self:sendShortMessage("%s hat sich zu %s geportet!", format)
                 local dim,int = target:getDimension(), target:getInterior()
 				local pos = target:getPosition()
 				pos.x = pos.x + 0.01
@@ -1169,7 +1217,8 @@ function Admin:getHerePlayer(player, cmd, target)
 		if target then
 			local target = PlayerManager:getSingleton():getPlayerFromPartOfName(target,player)
 			if isElement(target) then
-                self:sendShortMessage(_("%s hat %s zu sich geportet!", player, player:getName(), target:getName()))
+				local format = {player:getName(), target:getName()}
+                self:sendShortMessage("%s hat %s zu sich geportet!", format)
                 local dim,int = player:getDimension(), player:getInterior()
 				local pos = player:getPosition()
 				pos.x = pos.x + 0.1
@@ -1224,7 +1273,8 @@ function Admin:teleportTo(player,cmd,ort)
 						player:setDimension(v["dimension"] or 0)
 					end
 					StatisticsLogger:getSingleton():addAdminAction(player, "goto", "TP "..ort)
-					self:sendShortMessage(_("%s hat sich zu %s geportet!", player, player:getName(), ort))
+					local format = {player:getName(), ort}
+					self:sendShortMessage("%s hat sich zu %s geportet!", format)
 					return
 				end
 			-- end
@@ -1742,7 +1792,8 @@ function Admin:Event_vehicleDespawn(reason)
 
 	if source:isPermanent() then
 		StatisticsLogger:getSingleton():addAdminVehicleAction(client, "despawn", source, reason)
-		self:sendShortMessage(_("%s hat das Fahrzeug %s von %s despawnt (Grund: %s).", client, client:getName(), source:getName(), getElementData(source, "OwnerName") or "", reason))
+		local format = {client:getName(), source:getName(), getElementData(source, "OwnerName") or "", reason}
+		self:sendShortMessage("%s hat das Fahrzeug %s von %s despawnt (Grund: %s).", format)
 
 		if getElementData(source, "OwnerName") then
 			local targetId = Account.getIdFromName(getElementData(source, "OwnerName"))
@@ -1801,7 +1852,8 @@ function Admin:runString(player, cmd, ...)
 		local codeString = table.concat({...}, " ")
 		StatisticsLogger:getSingleton():addDrunLog(player, codeString)
 		runString(codeString, player)
-		--self:sendShortMessage(_("%s hat /drun benutzt!\n %s", player, player:getName(), codeString))
+		--local format = {player:getName(), codeString}
+		--self:sendShortMessage("%s hat /drun benutzt!\n %s", format)
 	end
 end
 
@@ -1821,7 +1873,8 @@ function Admin:runPlayerString(player, cmd, target, ...)
 			StatisticsLogger:getSingleton():addDrunLog(player, codeString, tPlayer)
 			triggerClientEvent(tPlayer, "onServerRunString", player, codeString, sendResponse)
 
-			--self:sendShortMessage(_("%s hat /dpcrun benutzt!\n %s", player, player:getName(), codeString))
+			--local format = {player:getName(), codeString}
+			--self:sendShortMessage(%s hat /dpcrun benutzt!\n %s", format)
 	  	else
 			player:sendError(_("Kein Ziel gefunden!", player))
 		end
@@ -1874,7 +1927,8 @@ function Admin:Event_OnAcceptOverlapCheck()
 end
 
 function Admin:sendNewPlayerMessage(name)
-	self:sendShortMessage(("%s hat sich soeben registriert! Hilf ihm am besten etwas auf die Sprünge!"):format(name), "Neuer Spieler!", nil, 15000)
+	local format = {name}
+	self:sendShortMessage("%s hat sich soeben registriert! Hilf ihm am besten etwas auf die Sprünge!", format, "Neuer Spieler!", nil, 15000)
 end
 
 function Admin:placeObject(player, cmd, model)
@@ -2130,7 +2184,8 @@ function Admin:Event_adminStopVehicleForSale(reason)
 			source:setForSale(false, 0)
 			source:getGroup():sendShortMessage(_("Der Verkauf vom Fahrzeug %s (%s) wurde von %s beendet! Grund: %s", client, source:getName(), source:getId(), client:getName(), reason), -1)
 			StatisticsLogger:getSingleton():addAdminVehicleAction(client, "endSale", source, reason)
-			self:sendShortMessage(_("%s hat das Fahrzeug %s (%s) von %s aus dem Verkauf genommen (Grund: %s).", client, client:getName(), source:getName(), source:getId(), source:getGroup():getName(), reason))
+			local format = {client:getName(), source:getName(), source:getId(), source:getGroup():getName(), reason}
+			self:sendShortMessage("%s hat das Fahrzeug %s (%s) von %s aus dem Verkauf genommen (Grund: %s).", format)
 		end
 	else
 		client:sendError("Du bist nicht berechtigt!")
@@ -2147,7 +2202,8 @@ function Admin:Event_adminStopVehicleForRent(reason)
 			source:setForRent(false, 0)
 			source:getGroup():sendShortMessage(_("Die Vermietung vom Fahrzeug %s (%s) wurde von %s beendet! Grund: %s", client, source:getName(), source:getId(), client:getName(), reason), -1)
 			StatisticsLogger:getSingleton():addAdminVehicleAction(client, "endRent", source, reason)
-			self:sendShortMessage(_("%s hat die Vermietung des Fahrzeug %s (%s) von %s beendet! (Grund: %s).", client, client:getName(), source:getName(), source:getId(), source:getGroup():getName(), reason))
+			local format = {client:getName(), source:getName(), source:getId(), source:getGroup():getName(), reason}
+			self:sendShortMessage("%s hat die Vermietung des Fahrzeug %s (%s) von %s beendet! (Grund: %s).", format)
 		end
 	else
 		client:sendError("Du bist nicht berechtigt!")

@@ -24,7 +24,16 @@ MAX_WEAPON_LEVEL = 10
 MAX_VEHICLE_LEVEL = 10
 MAX_SKIN_LEVEL = 10
 MAX_FISHING_LEVEL = 15
-MAX_WANTED_LEVEL = 12
+MAX_WANTED_LEVEL = 6
+
+-- WANTED AMOUNTS
+WANTED_AMOUNT_VENDINGMACHINE = 1
+WANTED_AMOUNT_HOUSEROB = 2
+WANTED_AMOUNT_WEEDBEGGAR = 2
+WANTED_AMOUNT_MURDER = 3
+WANTED_AMOUNT_MURDER_BEGGAR = 3
+WANTED_AMOUNT_MURDER_TOLLSTATION = 3
+WANTED_AMOUNT_AREA69 = 6
 
 -- EVENTS:
 local function getEasterDate(year)
@@ -711,12 +720,12 @@ STATE_EVIDENCE_OBJECT_PRICE = {
 
 
 PlayerAttachObjects = {
-	[1550] = {model = 1550, name = "Geldsack", pos = Vector3(0, -0.2, 0), rot = Vector3(0, 0, 180), bone = 3, placeDown = true, blockFlyingVehicles = true},
-	[2912] = {model = 2912, name = "Waffenkiste", pos = Vector3(0, 0.5, 0.35), rot = Vector3(10, 0, 0), blockJump = true, blockSprint = true, blockWeapons = true, blockVehicle = true, animationData = {"carry", "crry_prtial", 1, true, true, false, true}, placeDown = true},
-	[2919] = {model = 2919, name = "Waffen", pos = Vector3(0, -0.2, 0), rot = Vector3(0, 90, 90), 	blockJump = true, bone = 3, blockSprint = true,  blockVehicle = false, placeDown = true},
-	[1826] = {model = 1826, name = "Angelruten", pos = Vector3(-0.03, 0.02, 0.05), rot = Vector3(180, 120, 0), blockJump = false, bone = 12, blockSprint = true, blockVehicle = true},
-	[1575] = {model = 1575, name = "Drogen", pos = Vector3(0, -0.25, 0.12), rot = Vector3(180, 90, 90), bone = 3, blockJump = false, blockSprint = true, blockFlyingVehicles = true, placeDown = true, scale = {x = 1, y = 1.5, z = 1.4}},
-	[2358] = {model = 2358, name = "Waffen", pos = Vector3(0, 0.45, 0.62), rot = Vector3(10, 0, 0), blockSprint = true, blockFlyingVehicles = true, blockVehicle = true, placeDown = true, blockWeapons = true, animationData = {"carry", "crry_prtial", 1, true, true, false, true}}
+	[1550] = {model = 1550, name = "Geldsack", pos = Vector3(0, -0.2, 0), rot = Vector3(0, 0, 180), bone = 3, placeDown = true, blockFlyingVehicles = true, pickupAnimantion = {"bomber", "bom_plant", 1000, false, false, true, false}, dropAnimation = {}, loadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false }, unloadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false}},
+	[2912] = {model = 2912, name = "Waffenkiste", pos = Vector3(0, 0.5, 0.35), rot = Vector3(10, 0, 0), blockJump = true, blockSprint = true, blockWeapons = true, blockVehicle = true, animationData = {"carry", "crry_prtial", 1, true, true, false, true}, placeDown = true, pickupAnimantion = {"bomber", "bom_plant", 1000, false, false, true, false}, dropAnimation = {}, loadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false }, unloadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false}},
+	[2919] = {model = 2919, name = "Waffen", pos = Vector3(0, -0.2, 0), rot = Vector3(0, 90, 90), 	blockJump = true, bone = 3, blockSprint = true,  blockVehicle = false, placeDown = true, pickupAnimantion = {"bomber", "bom_plant", 1000, false, false, true, false}, dropAnimation = {}, loadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false }, unloadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false}},
+	[1826] = {model = 1826, name = "Angelruten", pos = Vector3(-0.03, 0.02, 0.05), rot = Vector3(180, 120, 0), blockJump = false, bone = 12, blockSprint = true, blockVehicle = true, pickupAnimantion = {"bomber", "bom_plant", 1000, false, false, true, false}, dropAnimation = {}, loadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false }, unloadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false}},
+	[1575] = {model = 1575, name = "Drogen", pos = Vector3(0, -0.25, 0.12), rot = Vector3(180, 90, 90), bone = 3, blockJump = false, blockSprint = true, blockFlyingVehicles = true, placeDown = true, scale = {x = 1, y = 1.5, z = 1.4}, pickupAnimantion = {"bomber", "bom_plant", 1000, false, false, true, false}, dropAnimation = {}, loadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false }, unloadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false}},
+	[2358] = {model = 2358, name = "Waffen", pos = Vector3(0, 0.45, 0.62), rot = Vector3(10, 0, 0), blockSprint = true, blockFlyingVehicles = true, blockVehicle = true, placeDown = true, blockWeapons = true, animationData = {"carry", "crry_prtial", 1, true, false, false, true}}
 }
 
 
@@ -881,7 +890,7 @@ SEASONS = {
 	WINTER = 4,
 }
 
-VEHICLE_IMPORT_POSITION = Vector3(-1687.93, 14.47, 3.55) -- where the ped will be located and the UI shows the mission start button
+VEHICLE_IMPORT_POSITION = Vector3(319.99, -44.79, 1.57) -- where the ped will be located and the UI shows the mission start button
 
 COLLECTABLES_COUNT_PER_PLAYER = 40 -- how many collectables each player can collect
 

@@ -30,6 +30,7 @@ function NPC:toggleWanteds(state)
 end
 
 function NPC:onWasted(ammo, killer, weapon, bodypart, stealth)
-	killer:giveWanteds(4)
-	killer:sendMessage(_("Verbrechen begangen: Mord, 4 Wanteds", killer), 255, 255, 0)
+	local wanteds = WANTED_AMOUNT_MURDER_BEGGAR
+	killer:giveWanteds(wanteds)
+	killer:sendMessage(_("Verbrechen begangen: %s, %d Wanted/s", killer, _("Mord", killer), wanteds), 255, 255, 0)
 end

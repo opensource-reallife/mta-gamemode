@@ -26,6 +26,7 @@ function KeyBinds:constructor()
 	self.m_InfraredVehicle = bind(self.toggleInfrared, self)
 	self.m_ToggleDisplays = bind(self.toggleDisplay, self)
 	self.m_ToggleHeliDriveBy = bind(self.toggleHelicopterDriveBy, self)
+	self.m_ToggleObjectPickup = bind(self.toggleObjectPickup, self)
 	
 	self.m_ThermalLightKey = bind(self.thermalLightKey, self)
 	self.m_ThermaControlModeKey = bind(self.thermalControlKey, self)
@@ -73,6 +74,7 @@ function KeyBinds:constructor()
 			["KeyNeedhelp"] 			= {["defaultKey"] = "N/A", ["name"] = "Hilferuf senden (Fraktion)", ["func"] = function() triggerServerEvent("factionPlayerNeedhelp",localPlayer) end, ["trigger"] = "down"};
 			["KeyCinemaVideoGUI"] 		= {["defaultKey"] = "x", ["name"] = "Kino Videoverwaltung öffnen", ["func"] = function() if CinemaLobby:isInstantiated() then CinemaLobby:getSingleton():openVideoGUI() end end, ["trigger"] = "down"};
 			["KeyToggleHouseGarage"] 	= {["defaultKey"] = "h", ["name"] = "Haus Garage benutzen", ["func"] = function() triggerServerEvent("toggleGarageState",localPlayer) end, ["trigger"] = "down"};
+			["KeyObjectPickup"]		 	= {["defaultKey"] = "n", ["name"] = "Objekt aufheben / ablegen", ["func"] = self.m_ToggleObjectPickup, ["trigger"] = "down"};
 		},
 		["FMS"] = {},
 
@@ -140,6 +142,10 @@ end
 
 function KeyBinds:getBindsList(type)
 	return self.m_Keys[type]
+end
+
+function KeyBinds:getKeyForBind(name)
+	return core:get("KeyBindings", name, self.m_Keys[name].defaultKey)
 end
 
 function KeyBinds:inventory()
@@ -359,6 +365,12 @@ function KeyBinds:usePoliceMegaphone()
 			end 
 		end
 	end
+end
+
+function KeyBinds:toggleObjectPickup()
+	local veh = VehicleInteraction:getSingleton().m_lookAtVehicle;
+	triggerServerEvent("toggleObjectPickup", localPlayer, veh)
+
 end
 
 --[[
