@@ -1273,20 +1273,29 @@ end
 
 function PlayerManager:Event_toggleObjectPickup(veh) 
 	local pos = client.position
+	local range = 3
 	if (client.m_PlayerAttachedObject) then
-		if (veh) then
-			local packageType = convertModelToName(client:getPlayerAttachedObject():getModel(), veh)
-			VehicleManager:getSingleton():loadObject(client, veh, packageType)
-		else
-			client:detachPlayerObject(client:getPlayerAttachedObject())
+		local objectData = PlayerAttachObjects[client.m_PlayerAttachedObject:getModel()]
+		if (objectData.placeDown) then
+			if (veh) then
+				local packageType = convertModelToName(client:getPlayerAttachedObject():getModel(), veh)
+				VehicleManager:getSingleton():loadObject(client, veh, packageType)
+			else		
+				client:detachPlayerObject(client:getPlayerAttachedObject())
+			end
 		end
 	else
 		-- if (veh) then
 		-- 	-- local packageType = convertModelToName(client:getPlayerAttachedObject(), veh)
 		-- 	-- VehicleManager:getSingleton():loadObject(client, veh, packageType)
 		-- end
-		for i, v in pairs(getElementsWithinRange(pos.x, pos.y, pos.z, 3, "object", client:getInterior(), client:getDimension())) do
-			if (PlayerAttachObjects[v:getModel()]) then
+
+		if (veh and getDistanceBetweenPoints3D(veh.position, pos) < 6) then
+			pos = veh.position
+			range = 6
+		end
+		for i, v in pairs(getElementsWithinRange(pos.x, pos.y, pos.z, range, "object", client:getInterior(), client:getDimension())) do
+			if (PlayerAttachObjects[v:getModel()] and PlayerAttachObjects[v:getModel()].placeDown) then
 				local attachedTo = v:getAttachedTo()
 				if (attachedTo and attachedTo:getType() == "vehicle") then
 					local packageType = convertModelToName(v:getModel(), veh)

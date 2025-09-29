@@ -1458,8 +1458,8 @@ function Player:attachPlayerObject(object)
 			self:toggleControlsWhileObjectAttached(false, unpack(self.m_PlayerAttachedObjectSettings))
 
 			if settings.placeDown then
-				self:sendShortMessage(_("Drücke 'n' um den/die %s abzulegen!", self, settings["name"]))
-				bindKey(self, "n", "down", self.m_detachPlayerObjectBindFunc, object)
+				-- self:sendShortMessage(_("Drücke 'n' um den/die %s abzulegen!", self, settings["name"]))
+				-- TODO Xonder :)
 			end
 
 			self.m_RefreshAttachedObject = bind(self.refreshAttachedObject, self)
@@ -1530,7 +1530,7 @@ function Player:detachPlayerObject(object, collisionNextFrame)
 		self:toggleControlsWhileObjectAttached(true, true, true, true, true) --fallback to re-enable all controls
 	end
 
-	unbindKey(self, "n", "down", self.m_detachPlayerObjectBindFunc)
+	-- unbindKey(self, "n", "down", self.m_detachPlayerObjectBindFunc)
 	self:setAnimation("carry", "crry_prtial", 1, false, true, true, false) -- Stop Animation Work Arround
 	if self.m_PlayerAttachedObject then
 		removeEventHandler("onElementDimensionChange", self, self.m_RefreshAttachedObject)

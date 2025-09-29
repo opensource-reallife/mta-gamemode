@@ -144,6 +144,10 @@ function KeyBinds:getBindsList(type)
 	return self.m_Keys[type]
 end
 
+function KeyBinds:getKeyForBind(name)
+	return core:get("KeyBindings", name, self.m_Keys[name].defaultKey)
+end
+
 function KeyBinds:inventory()
 	Inventory:getSingleton():toggle()
 end
