@@ -1292,7 +1292,6 @@ function PlayerManager:Event_toggleObjectPickup(veh)
 			eles = veh:getAttachedElements()
 		end
 		for i, v in pairs(eles) do
-			outputChatBox(tostring(v.position))
 			if (PlayerAttachObjects[v:getModel()] and PlayerAttachObjects[v:getModel()].placeDown) then
 				local attachedTo = v:getAttachedTo()
 				if (attachedTo and attachedTo:getType() == "vehicle") then

@@ -1526,7 +1526,7 @@ function Player:detachPlayerObject(object, collisionNextFrame, fromBind)
 		self.m_IsInteractionWithObject = true
 		if PlayerAttachObjects[model] then
 			local settings = PlayerAttachObjects[model]
-			local function detach()
+			local function detach(noWorkArround)
 				self:toggleControlsWhileObjectAttached(true, unpack(self.m_PlayerAttachedObjectSettings))
 				object:detach(self)
 				removeEventHandler("onElementDestroy", object, self.m_detachPlayerObjectFunc)
@@ -1546,10 +1546,10 @@ function Player:detachPlayerObject(object, collisionNextFrame, fromBind)
 				else
 					object:setCollisionsEnabled(true)
 				end
-				self:setAnimation("carry", "crry_prtial", 1, false, true, true, false) -- Stop Animation Work Arround
 
-				self.m_IsInteractionWithObject = false
-				self:setFrozen(false)
+				if (not noWorkArround) then
+					self:setAnimation("carry", "crry_prtial", 1, false, true, true, false) -- Stop Animation Work Arround
+				end
 
 				if self.m_PlayerAttachedObject then
 					removeEventHandler("onElementDimensionChange", self, self.m_RefreshAttachedObject)
@@ -1561,12 +1561,21 @@ function Player:detachPlayerObject(object, collisionNextFrame, fromBind)
 				end
 
 			end
+
+			local function reset()
+				self.m_IsInteractionWithObject = false
+				self:setFrozen(false)
+			end
+
 			if settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt] and #settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt] > 0 then
 				self:setFrozen(true)
 				self:setAnimation(unpack(settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt]))
-				setTimer(detach, settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt][3], 1)
-			else
-				detach()
+				if (self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt == "dropAnimation") then
+					detach(true)
+				else
+					setTimer(detach, settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt] and settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt][3] or 0, 1)
+				end
+				setTimer(reset, settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt] and settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt][3] or 0, 1)
 			end 
 		end
 	else
