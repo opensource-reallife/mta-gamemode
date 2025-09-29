@@ -11,6 +11,9 @@ local MONEY_PER_SAFE_MIN = 1000
 local MONEY_PER_SAFE_MAX = 2000
 
 function BankRobbery:constructor()
+	self.m_TotalStateMoney = 0
+	self.m_TotalEvilMoney = 0
+
 	self.m_IsBankrobRunning = false
 	self.m_RobPlayer = nil
 	self.m_RobFaction = nil
@@ -197,6 +200,8 @@ function BankRobbery:startRobGeneral(player) --ped got targeted
 	self.m_MoneyInSafes = 0
 	self.m_CircuitBreakerPlayers = {}
 	self.m_MoneyBags = {}
+	self.m_TotalStateMoney = 0
+	self.m_TotalEvilMoney = 0
 	self:setAllTrucksActive(true)
 	self.m_StatisticsTimer = Timer(bind(self.triggerStatistics, self), 1000, 0)
 
@@ -556,8 +561,12 @@ function BankRobbery:handleBagDelivery(faction, player)
 		self.m_BankAccountServer:transferMoney({"faction", faction:getId(), true}, money, "Bankrob-Geldsack", "Action", "BankRobbery", {silent = true})
 		if faction:isStateFaction() then
 			FactionState:getSingleton():sendShortMessage(_("%s hat %s Beute sichergestellt!", player, player:getName(), toMoneyString(money)))
+			player:getFaction():addLog(player, "Kasse", ("%s hat %s$ sichergestellt!"):format(player:getName(), money))
+			self.m_TotalStateMoney = self.m_TotalStateMoney + money
 		else
 			local text = _("%s hat %s in Sicherheit gebracht!", player, player:getName(), toMoneyString(money))
+			player:getFaction():addLog(player, "Kasse", ("%s hat %s$ in Sicherheit gebracht!"):format(player:getName(), money))
+			self.m_TotalEvilMoney = self.m_TotalEvilMoney + money
 			faction:sendShortMessage(text)
 			if faction:getAllianceFaction() then
 				faction:getAllianceFaction():sendShortMessage(text)
@@ -571,6 +580,8 @@ function BankRobbery:handleBagDelivery(faction, player)
 		if self:getRemainingBagAmount() == 0 then
 			PlayerManager:getSingleton():breakingNews("Der Raub wurde erfolgreich abgeschlossen! %s", faction:isStateFaction() and "Das Geld konnte sichergestellt werden!" or "Die Täter sind mit der Beute entkommen!")
 			Discord:getSingleton():outputBreakingNews(("Der Raub wurde erfolgreich abgeschlossen! %s"):format(faction:isStateFaction() and "Das Geld konnte sichergestellt werden!" or "Die Täter sind mit der Beute entkommen!"))
+			player:getFaction():addLog(player, "Aktion", ("%s hat %s$ sichergestellt!"):format(player:getName(), self.m_TotalStateMoney))
+			player:getFaction():addLog(player, "Aktion", ("%s hat %s$ sichergestellt!"):format(player:getName(), self.m_TotalEvilMoney))
 			source:destroy()
 			self:destroyRob()
 		end
