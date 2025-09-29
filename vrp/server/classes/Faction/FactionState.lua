@@ -826,11 +826,8 @@ function FactionState:getFullReasonFromShortcut(reason)
         reason = "Drogenbesitz (>= 10)"
         amount = 1
     elseif string.lower(reason) == "db2" then
-        reason = "Drogenbesitz (>= 50)"
-        amount = 2
-    elseif string.lower(reason) == "db3" then
         reason = "Drogenbesitz (>= 150)"
-        amount = 3
+        amount = 2
 	
 	elseif string.lower(reason) == "da" then
         reason = "Drogenanbau/-abbau"
@@ -935,6 +932,9 @@ function FactionState:getFullReasonFromShortcut(reason)
         amount = 1
     elseif string.lower(reason) == "kpv" then
         reason = "Körperverletzung"
+        amount = 1
+	elseif string.lower(reason) == "mordnnu" or string.lower(reason) == "mbs" or string.lower(reason) == "mwn" or string.lower(reason) == "mnnu" then
+        reason = "Mord nach Beschuss/Waffennutzung"
         amount = 1
 	elseif string.lower(reason) == "bs" or string.lower(reason) == "wn" or string.lower(reason) == "nnu" then
         reason = "Beschuss/Waffennutzung"
@@ -2321,12 +2321,13 @@ end
 
 function FactionState:startAreaAlert()
 	local counter = 0
+	local wanteds = WANTED_AMOUNT_AREA69
 	for key, player in ipairs(getElementsWithinColShape(self.m_AreaColShape, "player")) do
 		if not player:getFaction() or (player:getFaction() and not player:getFaction():isStateFaction()) then
 			counter = counter + 1
 			if not FactionManager.Map[3] then
-				player:giveWanteds(6)
-				player:sendMessage(_("Verbrechen begangen: %s, %d Wanted/s", player, _("Einbruch in die SASF-Basis", player), 6), 255, 255, 0)
+				player:giveWanteds(wanteds)
+				player:sendMessage(_("Verbrechen begangen: %s, %d Wanted/s", player, _("Einbruch in die SASF-Basis", player), wanteds), 255, 255, 0)
 			end
 		end
 	end
