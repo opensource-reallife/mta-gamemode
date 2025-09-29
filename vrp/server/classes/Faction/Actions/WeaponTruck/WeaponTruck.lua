@@ -268,12 +268,15 @@ function WeaponTruck:Event_onBoxClick(button, state, player)
 end
 
 function WeaponTruck:loadBoxOnWeaponTruck(player,box)
-	local boxesOnTruck = self:getAttachedBoxes(self.m_Truck) + 1
+	if player.m_IsInteractionWithObject or not box then return end
 	player:detachPlayerObject(box)
-	box:setScale(1.6)
-	box:attach(self.m_Truck, WeaponTruck.attachCords[boxesOnTruck])
-	box:setCollisionsEnabled(false)
-	removeEventHandler("onElementClicked", box, self.m_Event_onBoxClickFunc)
+	local boxesOnTruck = self:getAttachedBoxes(self.m_Truck) + 1
+	setTimer(function()
+		box:setScale(1.6)
+		box:attach(self.m_Truck, WeaponTruck.attachCords[boxesOnTruck])
+		box:setCollisionsEnabled(false)
+		removeEventHandler("onElementClicked", box, self.m_Event_onBoxClickFunc)
+	end, PlayerAttachObjects[box:getModel()][player.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt][3] or 0, 1)
 
 	if boxesOnTruck >= self.m_BoxesCount then
 		player:sendInfo(_("Alle Kisten aufgeladen! Der Truck ist bereit!",player))
@@ -385,6 +388,7 @@ end
 
 function WeaponTruck:Event_DeloadBox(veh)
 	if not veh then return end
+	if client.m_IsInteractionWithObject then return end
 	if client:getFaction() then
 		if veh == self.m_Truck or VEHICLE_BOX_LOAD[veh.model] then
 			if getDistanceBetweenPoints3D(veh.position, client.position) < 7 then
@@ -392,11 +396,13 @@ function WeaponTruck:Event_DeloadBox(veh)
 					if not client.vehicle and not client:isDead() then
 						for key, box in pairs (getAttachedElements(veh)) do
 							if box.model == 2912 then
-								box:setScale(1)
-								box:detach(self.m_Truck)
-								client:setAnimation("carry", "crry_prtial", 1, true, true, false, true)
 								client:attachPlayerObject(box)
-								addEventHandler("onElementClicked", box, self.m_Event_onBoxClickFunc)
+								setTimer(function(player) 
+									box:setScale(1)
+									box:detach(self.m_Truck)
+									player:setAnimation("carry", "crry_prtial", 1, true, true, false, true)
+									addEventHandler("onElementClicked", box, self.m_Event_onBoxClickFunc)
+								end, PlayerAttachObjects[box:getModel()][client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt][3] or 0, 1, client)
 								return
 							end
 						end

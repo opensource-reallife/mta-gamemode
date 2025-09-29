@@ -74,7 +74,7 @@ function KeyBinds:constructor()
 			["KeyNeedhelp"] 			= {["defaultKey"] = "N/A", ["name"] = "Hilferuf senden (Fraktion)", ["func"] = function() triggerServerEvent("factionPlayerNeedhelp",localPlayer) end, ["trigger"] = "down"};
 			["KeyCinemaVideoGUI"] 		= {["defaultKey"] = "x", ["name"] = "Kino Videoverwaltung öffnen", ["func"] = function() if CinemaLobby:isInstantiated() then CinemaLobby:getSingleton():openVideoGUI() end end, ["trigger"] = "down"};
 			["KeyToggleHouseGarage"] 	= {["defaultKey"] = "h", ["name"] = "Haus Garage benutzen", ["func"] = function() triggerServerEvent("toggleGarageState",localPlayer) end, ["trigger"] = "down"};
-			["KeyObjectPickup"]		 	= {["defaultKey"] = "j", ["name"] = "Objekt aufheben / ablegen", ["func"] = self.m_ToggleObjectPickup, ["trigger"] = "down"};
+			["KeyObjectPickup"]		 	= {["defaultKey"] = "n", ["name"] = "Objekt aufheben / ablegen", ["func"] = self.m_ToggleObjectPickup, ["trigger"] = "down"};
 		},
 		["FMS"] = {},
 

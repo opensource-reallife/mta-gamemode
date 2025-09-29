@@ -1279,32 +1279,37 @@ function PlayerManager:Event_toggleObjectPickup(veh)
 		if (objectData.placeDown) then
 			if (veh) then
 				local packageType = convertModelToName(client:getPlayerAttachedObject():getModel(), veh)
+				client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = "loadOnVehicleAnimation"
 				VehicleManager:getSingleton():loadObject(client, veh, packageType)
 			else		
-				client:detachPlayerObject(client:getPlayerAttachedObject())
+				client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = "dropAnimation"
+				client:detachPlayerObject(client:getPlayerAttachedObject(), false, true)
 			end
 		end
 	else
 		-- if (veh) then
-		-- 	-- local packageType = convertModelToName(client:getPlayerAttachedObject(), veh)
-		-- 	-- VehicleManager:getSingleton():loadObject(client, veh, packageType)
-		-- end
-
-		if (veh and getDistanceBetweenPoints3D(veh.position, pos) < 6) then
-			pos = veh.position
-			range = 6
-		end
-		for i, v in pairs(getElementsWithinRange(pos.x, pos.y, pos.z, range, "object", client:getInterior(), client:getDimension())) do
-			if (PlayerAttachObjects[v:getModel()] and PlayerAttachObjects[v:getModel()].placeDown) then
-				local attachedTo = v:getAttachedTo()
-				if (attachedTo and attachedTo:getType() == "vehicle") then
-					local packageType = convertModelToName(v:getModel(), veh)
-					VehicleManager:getSingleton():deloadObject(client, veh, packageType)
-				elseif (not attachedTo and table.size(getEventHandlers("onElementClicked", v)) > 0) then
-					client:attachPlayerObject(v)
+			-- 	-- local packageType = convertModelToName(client:getPlayerAttachedObject(), veh)
+			-- 	-- VehicleManager:getSingleton():loadObject(client, veh, packageType)
+			-- end
+			
+			if (veh and getDistanceBetweenPoints3D(veh.position, pos) < 6) then
+				pos = veh.position
+				range = 6
+			end
+			for i, v in pairs(getElementsWithinRange(pos.x, pos.y, pos.z, range, "object", client:getInterior(), client:getDimension())) do
+				if (PlayerAttachObjects[v:getModel()] and PlayerAttachObjects[v:getModel()].placeDown) then
+					local attachedTo = v:getAttachedTo()
+					if (attachedTo and attachedTo:getType() == "vehicle") then
+						local packageType = convertModelToName(v:getModel(), veh)
+						client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = "unloadOnVehicleAnimation"
+						VehicleManager:getSingleton():deloadObject(client, veh, packageType)
+					elseif (not attachedTo and table.size(getEventHandlers("onElementClicked", v)) > 0) then
+						client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = "pickupAnimantion"
+						client:attachPlayerObject(v, true)
 					break
 				end
 			end
 		end
+		client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = nil;
 	end
 end
