@@ -26,7 +26,7 @@ msgid "Du bist kein Admin!"
 msgstr "You're not an admin!"
 
 msgid "%s Fahrzeuge respawnt"
-msgstr "%s Vehicles respawnt"
+msgstr "%s vehicles respawned"
 
 msgid "%s hat die Registration deaktiviert!"
 msgstr "%s has deactivated the registration!"
@@ -56,7 +56,7 @@ msgid "%s hat die Aktionssperre resettet! Aktionen können wieder gestartet werd
 msgstr "%s has reset the action cooldown! Actions can be started again!"
 
 msgid "%s hat %d Fahrzeuge in einem Radius von %d respawnt!"
-msgstr "%s has %d vehicles in a radius of %d respawnt!"
+msgstr "%s has %d vehicles in a radius of %d respawned!"
 
 msgid "%s hat %d$ in die Eventkasse gelegt!"
 msgstr "%s has put %d$ in the event cash box!"
@@ -677,7 +677,7 @@ msgid "Du kannst ranghöhere Mitglieder nicht degradieren!"
 msgstr "You cannot demote higher ranking members!"
 
 msgid "Die Fahrzeuge können erst ab Rang %d respawnt werden!"
-msgstr "The vehicles can only be respawnt from rank %d!"
+msgstr "The vehicles can only be respawned from rank %d!"
 
 msgid "Der maximale Lohn für diesen Rang beträgt %d$"
 msgstr "The maximum wage for this rank is %d$"
@@ -3960,22 +3960,22 @@ msgid "Das ist kein permanentes Server Fahrzeug!"
 msgstr "This is not a permanent server vehicle!"
 
 msgid "Das Fahrzeug wurde abgeschleppt oder zerstört! Hole es an der Mech&Tow Base ab!"
-msgstr "The vehicle was towed away or destroyed! Pick it up at the Mech&Tow Base!"
+msgstr "The vehicle was towed or destroyed! Pick it up at the Mech&Tow Base!"
 
 msgid "Dieses Fahrzeug ist kaputt und kann nicht respawnt werden!"
-msgstr "This vehicle is broken and cannot be respawnt!"
+msgstr "This vehicle is broken and cannot be respawned!"
 
 msgid "%s hat das Fahrzeug %s von %s respawnt."
-msgstr "%s has respawnt the vehicle %s from %s."
+msgstr "%s respawned the vehicle %s from %s."
 
 msgid "Dieses Fahrzeug ist nicht von deiner Fraktion!"
 msgstr "This vehicle is not from your faction!"
 
 msgid "%s hat ein Fahrzeug deiner %s respawnt! (%s)"
-msgstr "%s has respawnt a vehicle of your %s! (%s)"
+msgstr "%s respawned a vehicle of your %s! (%s)"
 
 msgid "In eurer %s-Kasse befindet sich nicht genug Geld! (100$)"
-msgstr "There is not enough money in your %s cash box! (100$)"
+msgstr "There is not enough money in the safe of your group! (100$)"
 
 msgid "Du hast nicht genügend Geld auf deinem Bankkonto (100$)!"
 msgstr "You don't have enough money in your bank account ($100)!"
@@ -3984,7 +3984,7 @@ msgid "Fahrzeug repariert!"
 msgstr "Vehicle repaired!"
 
 msgid "Dein Fahrzeug ist kaputt und kann nicht respawnt werden!"
-msgstr "Your vehicle is broken and cannot be respawnt!"
+msgstr "Your vehicle is broken and cannot be respawned!"
 
 msgid "Das Fahrzeug hat keine Park-Position!"
 msgstr "The vehicle has no parking position!"
@@ -5032,3 +5032,12 @@ msgstr "Christmas market"
 
 msgid "Dieses Fahrzeug hat keinen Kofferraum!"
 msgstr "This vehicle has no trunk!"
+
+msgid "Admin-Eventkasse"
+msgstr "Admin Event Fund"
+
+msgid "+%s$ (%s$) - %s"
+msgstr "+%s$ (%s$) - %s"
+
+msgid "-%s$ (%s$) - %s"
+msgstr "-%s$ (%s$) - %s"

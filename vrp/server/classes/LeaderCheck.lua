@@ -63,7 +63,8 @@ function LeaderCheck:Event_editLeaderBans(type, player, pReason, pValidUntil, pA
                     local result = sql:queryExec("INSERT INTO ??_leader_bans (PlayerId, AdminId, Admins, CreatedAt, ValidUntil, Reason) VALUES (?, ?, ?, ?, ?, ?)", sql:getPrefix(), playerId, client:getId(), toJSON(nameTable), getRealTime().timestamp, pValidUntil, pReason)
                     if result then  
                         self.m_LeaderBans[tonumber(playerId)] = {validUntil = pValidUntil, reason = pReason, admins = nameTable, createdAt = getRealTime().timestamp}
-                        Admin:getSingleton():sendShortMessage(_("%s hat %s eine Leadersperre gegeben!", client, client:getName(), Account.getNameFromId(playerId)))
+                        local format = {client:getName(), Account.getNameFromId(playerId)}
+                        Admin:getSingleton():sendShortMessage("%s hat %s eine Leadersperre gegeben!", format)
                         StatisticsLogger:getSingleton():addPunishLog(client, playerId, "addLeaderBan", pReason, pValidUntil == 0 and 0 or pValidUntil - getRealTime().timestamp)
                     end
                 else
@@ -77,7 +78,8 @@ function LeaderCheck:Event_editLeaderBans(type, player, pReason, pValidUntil, pA
             local result = sql:queryExec("DELETE FROM ??_leader_bans WHERE PlayerId = ?", sql:getPrefix(), playerId)
             if result then
                 self.m_LeaderBans[tonumber(playerId)] = nil
-                Admin:getSingleton():sendShortMessage(_("%s hat die Leadersperre von %s entfernt!", client, client:getName(), Account.getNameFromId(playerId)))
+                local format = {client:getName(), Account.getNameFromId(playerId)}
+                Admin:getSingleton():sendShortMessage("%s hat die Leadersperre von %s entfernt!", format)
                 StatisticsLogger:getSingleton():addPunishLog(client, playerId, "removeLeaderBan", pReason)
             end
         end

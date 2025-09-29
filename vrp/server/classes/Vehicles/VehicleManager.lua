@@ -1165,7 +1165,8 @@ function VehicleManager:Event_vehicleRepair()
 
 	source:fix()
 
-	Admin:getSingleton():sendShortMessage(_("%s hat das Fahrzeug %s von %s repariert.", client, client:getName(), source:getName(), getElementData(source, "OwnerName") or "Unknown"))
+	local format = {client:getName(), source:getName(), getElementData(source, "OwnerName") or "Unknown"}
+	Admin:getSingleton():sendShortMessage("%s hat das Fahrzeug %s von %s repariert.", format)
 	StatisticsLogger:getSingleton():addAdminVehicleAction(client, "repair", source)
 end
 
@@ -1207,7 +1208,8 @@ function VehicleManager:Event_vehicleRespawn(garageOnly)
 		if client:getRank() >= ADMIN_RANK_PERMISSION["respawnVehicle"] then
 			source:respawn(true, true)
 			StatisticsLogger:getSingleton():addAdminVehicleAction(client, "respawn", source)
-			Admin:getSingleton():sendShortMessage(_("%s hat das Fahrzeug %s von %s respawnt.", client, client:getName(), source:getName(), getElementData(source, "OwnerName") or "Unknown"))
+			local format = {client:getName(), source:getName(), getElementData(source, "OwnerName") or "Unknown"}
+			Admin:getSingleton():sendShortMessage("%s hat das Fahrzeug %s von %s respawnt.", format)
 			return
 		else
 			if (not client:getFaction()) or source:getFaction():getId() ~= client:getFaction():getId() then
@@ -1227,7 +1229,8 @@ function VehicleManager:Event_vehicleRespawn(garageOnly)
 		if client:getRank() >= ADMIN_RANK_PERMISSION["respawnVehicle"] then
 			source:respawn(true, true)
 			StatisticsLogger:getSingleton():addAdminVehicleAction(client, "respawn", source)
-			Admin:getSingleton():sendShortMessage(_("%s hat das Fahrzeug %s von %s respawnt.", client, client:getName(), source:getName(), getElementData(source, "OwnerName") or "Unknown"))
+			local format = {client:getName(), source:getName(), getElementData(source, "OwnerName") or "Unknown"}
+			Admin:getSingleton():sendShortMessage("%s hat das Fahrzeug %s von %s respawnt.", format)
 			return
 		else
 			if (not client:getCompany()) or source:getCompany():getId() ~= client:getCompany():getId() then
@@ -1247,7 +1250,8 @@ function VehicleManager:Event_vehicleRespawn(garageOnly)
 		if (client:getRank() >= ADMIN_RANK_PERMISSION["respawnVehicle"]) then
 			source:respawn(true)
 			StatisticsLogger:getSingleton():addAdminVehicleAction(client, "respawn", source)
-			Admin:getSingleton():sendShortMessage(_("%s hat das Fahrzeug %s von %s respawnt.", client, client:getName(), source:getName(), getElementData(source, "OwnerName") or "Unknown"))
+			local format = {client:getName(), source:getName(), getElementData(source, "OwnerName") or "Unknown"}
+			Admin:getSingleton():sendShortMessage("%s hat das Fahrzeug %s von %s respawnt.", format)
 			return
 		else
 			if (not client:getGroup()) or source:getGroup():getId() ~= client:getGroup():getId() then
@@ -1364,7 +1368,8 @@ function VehicleManager:Event_vehicleRespawnWorld()
 			client:transferBankMoney(self.m_BankAccountServer, 100, "Fahrzeug-Respawn", "Vehicle", "Respawn")
 		elseif client:getRank() >= ADMIN_RANK_PERMISSION["respawnVehicle"] then
 			StatisticsLogger:getSingleton():addAdminVehicleAction(client, "respawn", source)
-			Admin:getSingleton():sendShortMessage(_("%s hat das Fahrzeug %s von %s respawnt.", client, client:getName(), source:getName(), getElementData(source, "OwnerName") or "Unknown"))
+			local format = {client:getName(), source:getName(), getElementData(source, "OwnerName") or "Unknown"}
+			Admin:getSingleton():sendShortMessage("%s hat das Fahrzeug %s von %s respawnt.", format)
 		end
 		source:respawnOnSpawnPosition()
  	else
@@ -1407,7 +1412,8 @@ function VehicleManager:Event_vehicleDelete(reason)
 
 		-- Todo Add Log
 		StatisticsLogger:getSingleton():addVehicleDeleteLog(source:getOwner(), client, source:getModel(), reason)
-		Admin:getSingleton():sendShortMessage(_("%s hat das Fahrzeug %s von %s gelöscht (Grund: %s).", client, client:getName(), source:getName(), getElementData(source, "OwnerName") or "Unknown", reason))
+		local format = {client:getName(), source:getName(), getElementData(source, "OwnerName") or "Unknown", reason}
+		Admin:getSingleton():sendShortMessage("%s hat das Fahrzeug %s von %s gelöscht (Grund: %s).", format)
 		source:purge()
 	else
 		destroyElement(source)

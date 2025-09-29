@@ -57,7 +57,8 @@ function MapEditor:startEditing(player)
         return
     end
     self:setPlayerInEditorMode(player, 1)
-    Admin:getSingleton():sendShortMessage(_("%s hat den Map Editor geöffnet!", player, player:getName()))
+    local format = {player:getName()}
+    Admin:getSingleton():sendShortMessage("%s hat den Map Editor geöffnet!", format)
 end
 
 function MapEditor:setPlayerInEditorMode(player, mapId, close)
@@ -272,7 +273,8 @@ function MapEditor:startMapEditing(player, id)
     if client then
         if client:getRank() >= (client ~= player and ADMIN_RANK_PERMISSION["remoteOpenMapEditor"] or ADMIN_RANK_PERMISSION["openMapEditor"]) then
             self:setPlayerInEditorMode(player, id)
-            Admin:getSingleton():sendShortMessage(_("%s editiert nun die Map #%s", player, player:getName(), id))
+            local format = {player:getName(), id}
+            Admin:getSingleton():sendShortMessage("%s editiert nun die Map #%s", format)
             if client ~= player then
                 player:sendShortMessage(_("%s hat dich zum Mappen eingeladen!", player, client:getName()), "Map Editor: Einladung")
             end
@@ -291,14 +293,16 @@ function MapEditor:setMapStatus(id, player)
 
     if MapLoader:getSingleton():getMapStatus(id) then
         if MapLoader:getSingleton():deactivateMap(id) then
-            Admin:getSingleton():sendShortMessage(_("%s hat die Map #%s deaktiviert!", client, client:getName(), id))
+            local format = {client:getName(), id}
+            Admin:getSingleton():sendShortMessage("%s hat die Map #%s deaktiviert!", format)
         else
             client:sendError(_("Du kannst diese Map nicht deaktivieren!", client))
         end
     else
         if MapLoader:getSingleton():loadFromDatabase(id) then
             local result = sql:queryExec("UPDATE ??_map_editor_maps SET Activated = 1 WHERE Id = ?", sql:getPrefix(), id)
-            Admin:getSingleton():sendShortMessage(_("%s hat die Map #%s aktiviert!", client, client:getName(), id))
+            local format = {client:getName(), id}
+            Admin:getSingleton():sendShortMessage("%s hat die Map #%s aktiviert!", format)
         end
     end
     self:sendMapInfosToClient(client)
@@ -318,14 +322,16 @@ end
 function MapEditor:forceCloseEditor(name)
     if not name then
         self:setPlayerInEditorMode(client, false, true)
-        Admin:getSingleton():sendShortMessage(_("%s hat den Map Editor geschlossen!", client, client:getName()))
+        local format = {client:getName()}
+        Admin:getSingleton():sendShortMessage("%s hat den Map Editor geschlossen!", format)
         return
     end
 
     local player = getPlayerFromName(name)
     if player then
         self:setPlayerInEditorMode(player, false, true)
-        Admin:getSingleton():sendShortMessage(_("%s hat den Map Editor von %s geschlossen!", client, client:getName(), name))
+        local format = {client:getName(), name}
+        Admin:getSingleton():sendShortMessage("%s hat den Map Editor von %s geschlossen!", format)
     end
 end
 

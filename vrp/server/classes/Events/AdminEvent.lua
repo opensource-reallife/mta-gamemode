@@ -153,7 +153,8 @@ function AdminEvent:startAuction(player, name)
         }
         triggerClientEvent(self.m_Players, "adminEventSendAuctionData", resourceRoot, self.m_CurrentAuction)
         triggerClientEvent(self.m_Players, "infoBox", resourceRoot, "Eine neue Auktions-Runde wurde gestartet.")
-        Admin:getSingleton():sendShortMessage(_("%s hat eine Auktions-Runde für %s gestartet!", player, player:getName(), name))
+        local format = {player:getName(), name}
+        Admin:getSingleton():sendShortMessage("%s hat eine Auktions-Runde für %s gestartet!", format)
     else
         player:sendError(_("Es läuft bereits eine Auktion!", player))
     end
@@ -203,7 +204,8 @@ function AdminEvent:removeHighestBid(admin)
         if self.m_CurrentAuction.bids[1] then
             table.remove(self.m_CurrentAuction.bids, 1)
             triggerClientEvent(self.m_Players, "adminEventSendAuctionData", resourceRoot, self.m_CurrentAuction)
-            Admin:getSingleton():sendShortMessage(_("%s hat das höchste Gebot entfernt!", admin, admin:getName()))
+            local format = {admin:getName()}
+            Admin:getSingleton():sendShortMessage("%s hat das höchste Gebot entfernt!", format)
         else
             admin:sendError(_("Es gibt noch keine Gebote!", admin))
         end
@@ -225,7 +227,8 @@ function AdminEvent:stopAuction(admin)
         for index, player in pairs(self.m_Players) do
 			player:sendInfo(msg)
 		end
-        Admin:getSingleton():sendShortMessage(_("%s hat den Aufruf für %s beendet!", admin, admin:getName(), self.m_CurrentAuction.name))
+        local format = {admin:getName(), self.m_CurrentAuction.name}
+        Admin:getSingleton():sendShortMessage("%s hat den Aufruf für %s beendet!", format)
         table.insert(self.m_AuctionsPerEvent, {self.m_CurrentAuction.name, name, bid})
         self.m_CurrentAuction = nil
         triggerClientEvent(self.m_Players, "adminEventSendAuctionData", resourceRoot, self.m_CurrentAuction)
