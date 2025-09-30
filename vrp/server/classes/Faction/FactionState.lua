@@ -1340,6 +1340,10 @@ function FactionState:Event_JailPlayer(player, bail, CUTSCENE, police, force, pF
 		if policeman:getFaction() and policeman:getFaction():isStateFaction() then
 			if policeman:isFactionDuty() then
 				if player:getWanteds() > 0 then
+					if (player:getWanteds() < 6 and not offline) then
+						bail = true
+					end
+
 					local bailcosts = 0
 					local wantedLevel = player:getWanteds()
 					local jailTime = wantedLevel * JAIL_TIME_PER_WANTED_ARREST
@@ -1417,15 +1421,19 @@ function FactionState:Event_JailPlayer(player, bail, CUTSCENE, police, force, pF
 			end
 		end
 	else
+		if (player:getWanteds() < 6 and not offline) then
+			bail = true
+		end
+
 		local bailcosts = 0
 		local wantedLevel = player:getWanteds()
 		local jailTime = wantedLevel * JAIL_TIME_PER_WANTED_KILL
 		local factionBonus = JAIL_COSTS[wantedLevel]
 
 		if bail then
-			bailcosts = BAIL_PRICES[wantedLevel]
+			bailcosts = BAIL_PRICES[wantedLevel] * 1.5
 			player:setJailBail(bailcosts)
-			jailTime = wantedLevel * JAIL_TIME_PER_WANTED_BAIL
+			-- jailTime = wantedLevel * JAIL_TIME_PER_WANTED_BAIL
 		end
 		if policeman then
 			if policeman.vehicle and player.vehicle then
