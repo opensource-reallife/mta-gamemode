@@ -1333,14 +1333,14 @@ function FactionState:onTiedExit(exitingPlayer, seat, jacked, door)
 	end
 end
 
-function FactionState:Event_JailPlayer(player, bail, CUTSCENE, police, force, pFactionBonus, offline, isoCell)
+function FactionState:Event_JailPlayer(player, bail, CUTSCENE, police, force, pFactionBonus, offline, isoCell, killed)
 	if player:getWanteds() == 0 then return end
 	local policeman = police or client
 	if not force then
 		if policeman:getFaction() and policeman:getFaction():isStateFaction() then
 			if policeman:isFactionDuty() then
 				if player:getWanteds() > 0 then
-					if (player:getWanteds() < 6 and not offline) then
+					if (player:getWanteds() < 6 and (offline or killed)) then
 						bail = true
 					end
 
@@ -1421,7 +1421,7 @@ function FactionState:Event_JailPlayer(player, bail, CUTSCENE, police, force, pF
 			end
 		end
 	else
-		if (player:getWanteds() < 6 and not offline) then
+		if (player:getWanteds() < 6 and (offline or killed)) then
 			bail = true
 		end
 
@@ -1849,7 +1849,7 @@ function FactionState:checkLogout(player)
 	for index, cop in pairs(colPlayers) do
 		if cop:getFaction() and cop:getFaction():isStateFaction() and cop:isFactionDuty() and not cop:isDead() and player ~= cop then
 			if player:getInterior() == cop:getInterior() and player:getDimension() == cop:getDimension() then
-				self:Event_JailPlayer(player, false, false, cop, false, false, true)
+				self:Event_JailPlayer(player, false, false, cop, false, false, true, false, true)
 				player:addOfflineMessage( "Du wurdest offline eingesperrt! Die Knastzeit ist dadurch länger!", 1)
 				return
 			end

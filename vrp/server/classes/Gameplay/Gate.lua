@@ -38,7 +38,7 @@ function Gate:triggerMovement(hitEle, force)
         if self.m_Timer and isTimer(self.m_Timer) then
             killTimer(self.m_Timer)
         end
-        if (hitEle:getPublicSync("supportMode") and hitEle:getRank() >= ADMIN_RANK_PERMISSION.openGates) then
+        if (hitEle:getType() == "player" and hitEle:getPublicSync("supportMode") and hitEle:getRank() >= ADMIN_RANK_PERMISSION.openGates) then
         elseif not force and self.onGateHit and self.onGateHit(player, self) == false then
             return
         end

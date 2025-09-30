@@ -547,7 +547,7 @@ function Player:spawn()
 	WearableManager:getSingleton():removeAllWearables(self)
 
 	if self.m_DeathInJail then
-		FactionState:getSingleton():Event_JailPlayer(self, false, true, false, true)
+		FactionState:getSingleton():Event_JailPlayer(self, false, true, false, true, nil, false, false, true)
 	end
 
 	self:triggerEvent("checkNoDm")
@@ -602,9 +602,9 @@ function Player:respawn(position, rotation, bJailSpawn)
 
 	WearableManager:getSingleton():removeAllWearables(self)
 	if self.m_SuicideEscape then
-		FactionState:getSingleton():Event_JailPlayer(self, false, true, self.m_LastCopAttack)
+		FactionState:getSingleton():Event_JailPlayer(self, false, true, self.m_LastCopAttack, false, nil, false, false, true)
 	elseif self.m_DeathInJail then
-		FactionState:getSingleton():Event_JailPlayer(self, false, true, false, true)
+		FactionState:getSingleton():Event_JailPlayer(self, false, true, false, true, nil, false, false, true)
 	end
 		
 	self.m_LastCopAttackTime = 0

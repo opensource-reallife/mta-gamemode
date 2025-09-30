@@ -417,7 +417,7 @@ function PlayerManager:playerQuit(quitType, reason, responsibleElement)
 	end
 	VehicleManager:getSingleton():destroyUnusedVehicles( source )
 	if source.m_DeathInJail then
-		FactionState:getSingleton():Event_JailPlayer(source, false, true, false, true)
+		FactionState:getSingleton():Event_JailPlayer(source, false, true, false, true, nil, true)
 	end
 	if DrivingSchool.m_LessonVehicles[source] then
 		if DrivingSchool.m_LessonVehicles[source].m_NPC then
