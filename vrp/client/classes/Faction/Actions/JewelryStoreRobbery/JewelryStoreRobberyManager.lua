@@ -58,9 +58,11 @@ function JewelryStoreRobberyManager:Event_StartAlarm()
 	end]]
 
 	if not self.m_AlarmOutside then
-		self.m_AlarmOutside = playSound3D("files/audio/Alarm.mp3", Vector3(557.41015625, -1498.75, 20.875), true)
-		self.m_AlarmOutside:setMinDistance(100)
-		self.m_AlarmOutside:setMaxDistance(300)
+		if core:get("Action", "PlayAlarm", true) then
+			self.m_AlarmOutside = playSound3D("files/audio/Alarm.mp3", Vector3(557.41015625, -1498.75, 20.875), true)
+			self.m_AlarmOutside:setMinDistance(100)
+			self.m_AlarmOutside:setMaxDistance(300)
+		end
 	end
 end
 

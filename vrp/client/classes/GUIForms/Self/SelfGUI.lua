@@ -1486,6 +1486,14 @@ function SelfGUI:onSettingChange(setting)
 			core:set("Sounds", "RadioSound", state)
 		end
 
+		self.m_AllowRadioSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.45, self.m_Width*0.9, self.m_Height*0.04, _"Alarm von Bank/Juwelierraub und Shoprob", self.m_SettingBG)
+		self.m_AllowRadioSound:setFont(VRPFont(25))
+		self.m_AllowRadioSound:setFontSize(1)
+		self.m_AllowRadioSound:setChecked(core:get("Action", "PlayAlarm", true))
+		self.m_AllowRadioSound.onChange = function (state)
+			core:set("Action", "PlayAlarm", state)
+		end
+
 		self.m_PoliceSoundsButton = GUIButton:new(self.m_Width*0.02, self.m_Height*0.70, self.m_Width*0.35, self.m_Height*0.07, _"Polizei-Sounds", self.m_SettingBG):setBarEnabled(true)
 		self.m_PoliceSoundsButton.onLeftClick = bind(self.PoliceSoundsButton_Click, self)
 

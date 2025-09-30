@@ -10,8 +10,10 @@ addEvent("bankAlarm", true)
 addEventHandler("bankAlarm", root,
     function(x, y, z)
         -- Play an alarm for 5min
-        banksound = Sound3D.create("files/audio/Alarm.mp3", x, y, z, true)
-		Sound3D.setMaxDistance(banksound, 300)
+        if core:get("Action", "PlayAlarm", true) then
+            banksound = Sound3D.create("files/audio/Alarm.mp3", x, y, z, true)
+            Sound3D.setMaxDistance(banksound, 300)
+        end
     end
 )
 
