@@ -56,13 +56,14 @@ function StateEvidenceTruck:constructor(driver, money)
 
 	local dest = StateEvidenceTruck.Destination
 
-	self.m_DestinationBlips["State"] = Blip:new("Marker.png", dest.x, dest.y, {factionType = "State", duty = true}, 9999, BLIP_COLOR_CONSTANTS.Red)
+	self.m_DestinationBlips["State"] = Blip:new("Marker.png", dest.x, dest.y, {factionType = {"State", "Evil"}, duty = true}, 9999, BLIP_COLOR_CONSTANTS.Red)
 	self.m_DestinationBlips["State"]:setDisplayText("Geldtruck-Abgabepunkt")
-
+	
+	self.m_DestinationBlips["Evil"] = {}
 	for i, faction in pairs(FactionEvil:getSingleton():getFactions()) do
-		self:addDestinationMarker(faction:getId(), "evil", false)
+		self:addDestinationMarker(faction:getId(), "evil", false, true)
 	end
-	self:addDestinationMarker(1, "state") -- State
+	self:addDestinationMarkerAndBlip(1, "state") -- State
 	self:spawnMoneyBags()
 	TollStation.openAll()
 	FactionState:getSingleton():forceOpenAreaGates()
@@ -124,10 +125,16 @@ function StateEvidenceTruck:spawnMoneyBags()
 	self.m_BagAmount = bagid - 1
 end
 
-function StateEvidenceTruck:addDestinationMarker(factionId, type, isEvil)
+function StateEvidenceTruck:addDestinationMarker(factionId, type, isEvil, addBlip)
 	local markerId = #self.m_DestinationMarkers+1
 	local color = factionColors[factionId]
 	local destination = factionId == 1 and StateEvidenceTruck.Destination or factionWTDestination[factionId]
+
+	if (addBlip) then
+		self.m_DestinationBlips["Evil"][factionId] = Blip:new("Marker.png", destination.x, destination.y, {factionType = {"State", "Evil"}, duty = true}, 9999, BLIP_COLOR_CONSTANTS.Red)
+		self.m_DestinationBlips["Evil"][factionId]:setDisplayText("Geldtruck-Abgabepunkt")
+	end
+
 	self.m_DestinationMarkers[markerId] = createMarker(destination,"cylinder",8, color.r, color.g, color.b, 100)
 	self.m_DestinationMarkers[markerId].type = type
 	self.m_DestinationMarkers[markerId].factionId = factionId
