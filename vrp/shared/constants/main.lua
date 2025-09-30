@@ -307,6 +307,8 @@ ADMIN_RANK_PERMISSION = {
 	["addHouseToSkyscraper"] = RANK.Developer, -- also includes removing 
 
 	["addVehicleToFCShop"] = RANK.Developer,
+
+	["openGates"] = RANK.Administrator,
 	
 	["pedMenu"] = RANK.Administrator,
 	["fireMenu"] = RANK.Supporter,
