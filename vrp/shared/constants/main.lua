@@ -55,10 +55,11 @@ local function getEasterDate(year)
     return {["day"] = day, ["month"] = month}
 end
 
+EVENT_EASTER_START_DAY = 0
 local function isEasterEventActive()
     local rt = getRealTime()
     local year = rt.year + 1900
-    local easterDate = getEasterDate(year)
+    local easterDate = getEasterDate(year) -- Ostersonntag
 
     local easterTimestamp = os.time({
         year = year,
@@ -67,8 +68,9 @@ local function isEasterEventActive()
         hour = 0
     })
 
-    local eventStart = easterTimestamp - (7 * 24 * 60 * 60) -- Palmsonntag
-    local eventEnd = easterTimestamp + (1 * 24 * 60 * 60)   -- Ostermontag
+    local eventStart = easterTimestamp - (7 * 24 * 60 * 60)
+    local eventEnd = easterTimestamp + (7 * 24 * 60 * 60)
+	EVENT_EASTER_START_DAY = (os.date("*t", eventStart)).yday
 
     local now = os.time({
         year = year,
@@ -84,8 +86,8 @@ end
 
 EVENT_EASTER = isEasterEventActive()
 EVENT_EASTER_SLOTMACHINES_ACTIVE = EVENT_EASTER
-EVENT_HALLOWEEN = getRealTime().month == 9 and (getRealTime().monthday >= 25 and getRealTime().monthday <= 31)
-EVENT_CHRISTMAS = getRealTime().month == 11 and (getRealTime().monthday >= 1 and getRealTime().monthday <= 31) -- quests, mostly REMEMBER TO ADD/REMOVE <vrpfile src="files/models/skins/kobold.txd" /> AND <vrpfile src="files/models/skins/kobold.dff" /> TO META.XML DUE TO BIG FILE SIZE
+EVENT_HALLOWEEN = (getRealTime().month == 9 and (getRealTime().monthday >= 24 and getRealTime().monthday <= 31)) or (getRealTime().month == 10 and (getRealTime().monthday >= 1 and getRealTime().monthday <= 7))
+EVENT_CHRISTMAS = getRealTime().month == 11 -- quests, mostly REMEMBER TO ADD/REMOVE <vrpfile src="files/models/skins/kobold.txd" /> AND <vrpfile src="files/models/skins/kobold.dff" /> TO META.XML DUE TO BIG FILE SIZE
 EVENT_CHRISTMAS_MARKET = EVENT_CHRISTMAS and (getRealTime().monthday >= 6 and getRealTime().monthday <= 26) -- determines whether the christmas market is enabled at pershing square (shops, ferris wheel, wheels of fortune)
 SNOW_SHADERS_ENABLED = getRealTime().month == 11 or getRealTime().month == 0 -- disable them during summer time
 FIREWORK_ENABLED = true -- can users use firework?
