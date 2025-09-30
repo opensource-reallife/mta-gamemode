@@ -83,18 +83,17 @@ function GroupHouseRob:Event_OnSellAccept()
 			end
 			local inv = client:getInventory()
 			if inv then
-				local pay = 0
-				for i = 1, inv:getItemAmount("Diebesgut") do
-					pay = pay + Randomizer:get(20, 80)
-				end
-				pay = pay * Randomizer:get(1, 3)
-				inv:removeAllItem("Diebesgut")
+				local itemName = "Diebesgut"
+				local bag = (InventoryManager:getSingleton():getItemDataForItem(itemName))["Tasche"]
+				local place = inv:getPlaceForItem(itemName, 0)
+				local pay = tonumber(inv:getItemValueByBag(bag, place)) or 0
+				inv:removeAllItem(itemName)
 				self.m_BankServerAccount:transferMoney(client, pay, "Verkauf von Diebesware", "Group", "HouseRob")
 				client:meChat(true, "streckt seine Hand aus und nimmt einen Umschlag mit Scheinen entgegen!")
 				client:sendPedChatMessage(client.m_ClickPed:getData("Ped:Name"), "Gutes Geschäft. Komm wieder wenn du mehr hast!")
 				-- Give Wanteds
-				local wanteds = WANTED_AMOUNT_HOUSEROB
 				if chance(5) then
+					local wanteds = WANTED_AMOUNT_HOUSEROB
 					setTimer(function(client)
 						if client and isElement(client) then
 							client:sendWarning(_("Deine illegalen Aktivitäten wurden von einem Augenzeugen an das SAPD gemeldet!", client))
@@ -149,7 +148,12 @@ function GroupHouseRob:startNewRob( house, player )
 		if group then
 			if group:getType() == "Gang" then
 				if not player:isFactionDuty() or not player:isCompanyDuty() then
-					if FactionState:getSingleton():countPlayers(true, false) < HOUSEROB_MIN_MEMBERS then
+					local activeState = FactionState:getSingleton():countPlayers(true, false)
+					for _, player in pairs(FactionState:getSingleton():getOnlinePlayers(true, false)) do
+						if player:getGroup() == group then activeState = activeState - 1 end
+					end
+
+					if activeState < HOUSEROB_MIN_MEMBERS then
 						player:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!", player, HOUSEROB_MIN_MEMBERS))
 						return false
 					end
