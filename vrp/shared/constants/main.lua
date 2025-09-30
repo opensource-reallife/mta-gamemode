@@ -372,38 +372,38 @@ Crime = {
 AMMUNATION_APP_MULTIPLICATOR = 1.5
 AmmuNationInfo = {
 	[30] = { -- AK-47
-		Magazine = {price=60,amount=30},
-		Weapon = 2150
+		Magazine = {price=40,amount=30},
+		Weapon = 700
 	},
 	[31] = { -- M4A1
-		Magazine = {price=90,amount=50},
-		Weapon = 2800
+		Magazine = {price=50,amount=50},
+		Weapon = 750
 	},
 	[29] = { -- MP5
-		Magazine = {price=70,amount=30},
-		Weapon = 1300
+		Magazine = {price=30,amount=30},
+		Weapon = 450
 	},
 	[25] = { -- Shotgun
-		Magazine = {price=10,amount=1},
-		Weapon = 1200
+		Magazine = {price=5,amount=1},
+		Weapon = 300
 	},
 	[33] = { -- Rifle
-		Magazine = {price=20,amount=1},
-		Weapon = 1550
+		Magazine = {price=5,amount=1},
+		Weapon = 500
 	},
 	[22] = { -- Pistol
-		Magazine = {price=35,amount=17},
-		Weapon = 750
+		Magazine = {price=15,amount=17},
+		Weapon = 250
 	},
 	[24] = { -- Desert Eagle
 		Magazine = {price=30,amount=7},
-		Weapon = 1450
+		Weapon = 500
 	},
 	[1] = { -- Brass Knuckles
-		Weapon = 100
+		Weapon = 50
 	},
 	[0] = { -- Armor
-		Weapon = 200
+		Weapon = 150
 	},
 }
 
