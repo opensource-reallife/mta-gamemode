@@ -41,6 +41,7 @@ function ArmsDealer:constructor()
     self.m_BagContent = {}
     self.m_MaxPrice = {}
     self.m_OrderedToday = {}
+    self.m_DestinationBlips = {}
     self.m_BankAccountServer = BankServer.get("gameplay.blackmarket")
     addEventHandler("requestArmsDealerInfo", root, bind(self.sendInfo, self))
     addEventHandler("checkoutArmsDealerCart", root, bind(self.checkoutCart, self))
@@ -160,6 +161,21 @@ function ArmsDealer:processCart( order, faction )
 
     self.m_DropBlip = Blip:new("SniperGame.png", endPoint.x, endPoint.y,  {factionType = {"State", "Evil"}}, 9999, BLIP_COLOR_CONSTANTS.Blue)
     self.m_DropIndicator = createObject(354, endPoint.x, endPoint.y, endPoint.z)
+
+    self.m_DestinationBlips["State"] = {}
+    for i, v in pairs(FactionState:getSingleton().m_EvidenceEquipmentBox) do
+        self.m_DestinationBlips["State"][i] = Blip:new("SniperGame.png", v.position.x, v.position.y, {factionType = {"State", "Evil"}, duty = true}, 9999, BLIP_COLOR_CONSTANTS.Yellow)
+        self.m_DestinationBlips["State"][i]:setDisplayText("Airdrop-Abgabepunkt (Staat)")   
+    end
+	
+	self.m_DestinationBlips["Evil"] = {}
+	for i, faction in pairs(FactionEvil:getSingleton():getFactions()) do
+        local pos = factionWTDestination[faction:getId()]
+        self.m_DestinationBlips["Evil"][i] = Blip:new("SniperGame.png", pos.x, pos.y, {factionType = {"State", "Evil"}, duty = true}, 9999, BLIP_COLOR_CONSTANTS.Yellow)
+        self.m_DestinationBlips["Evil"][i]:setDisplayText("Airdrop-Abgabepunkt")   
+	end
+
+
     if faction:isStateFaction() then
         PlayerManager:getSingleton():breakingNews("Der Luftraum von San Andreas wird aufgrund eines Staatlichen Waffendrops nun verschärft beobachtet!")
     else
