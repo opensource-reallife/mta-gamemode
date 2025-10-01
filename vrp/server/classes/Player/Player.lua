@@ -1576,6 +1576,8 @@ function Player:detachPlayerObject(object, collisionNextFrame, fromBind)
 					setTimer(detach, settings[self.objectAction] and settings[self.objectAction][3] or 0, 1)
 				end
 				setTimer(reset, settings[self.objectAction] and settings[self.objectAction][3] or 0, 1)
+			else 
+				detach()
 			end 
 		end
 	else
