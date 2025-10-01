@@ -175,10 +175,11 @@ function PlaneAccident:createTrashData()
     addEventHandler("onMarkerHit", self.m_TrashDeliveryMarker, 
         function(hitElement, matchingDim)
             if matchingDim then
-                if hitElement:getType("vehicle") and hitElement:isPermanent() and hitElement:getModel() == 455 and hitElement.m_OwnerType == 3 and hitElement.m_Owner == 2 then
+                if hitElement:getType() == "vehicle" and hitElement:isPermanent() and hitElement:getModel() == 455 and hitElement.m_OwnerType == 3 and hitElement.m_Owner == CompanyStaticId.MECHANIC then
                     if self.m_TrashTruckLoaded == true then
                         if hitElement.controller then
-                            BankServer.get("company.mechanic"):transferMoney(hitElement.controller, 5000, "Flugzeug-Wrack Abgabe", "Company", "Plane accident removal", {silent = true})
+                            BankServer.get("company.mechanic"):transferMoney(hitElement.controller, 2500, "Flugzeug-Wrack Abgabe", "Company", "Plane accident removal", {silent = true})
+                            BankServer.get("company.mechanic"):transferMoney({"company", CompanyStaticId.MECHANIC, true, true}, 2500, "Flugzeug-Wrack Abgabe", "Company", "Plane accident removal", {silent = true})
                         end
                         self.m_Flatbed:setVariant(3, 4)
                         self.m_TrashDeliveryMarker:destroy()

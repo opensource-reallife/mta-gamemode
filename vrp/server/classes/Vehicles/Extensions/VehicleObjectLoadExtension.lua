@@ -145,6 +145,8 @@ end
 function VehicleObjectLoadExtension:internalLoadObject(player, object)
     player:detachPlayerObject(object)
     local function load()
+        if player:isDead() then return end
+
         local data = VEHICLE_OBJECT_ATTACH_POSITIONS[self:getModel()]
         local pos = data.positions[self:getObjectCount() + 1]
         object:attach(self, pos, 0, 0, data.randomRotation and math.random(0, 360) or data.rotation)
@@ -163,6 +165,8 @@ function VehicleObjectLoadExtension:internalUnloadObject(player)
     local object = table.remove(self.m_LoadedObjects, #self.m_LoadedObjects)
     player:attachPlayerObject(object)
     local function unload()
+        if player:isDead() then return end
+
         object:detach()
         object:setScale(1)
     end

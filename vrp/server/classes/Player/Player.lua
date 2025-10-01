@@ -1420,8 +1420,8 @@ function Player:toggleControlsWhileObjectAttached(bool, blockWeapons, blockSprin
 	end
 end
 
-function Player:attachPlayerObject(object, fromBind)
-	if (self.m_IsInteractionWithObject) then return end
+function Player:attachPlayerObject(object, force)
+	if (self.m_IsInteractionWithObject and not force) then return end
 	local model = object.model
 	if PlayerAttachObjects[model] then
 		if not self:getPlayerAttachedObject() then
@@ -1442,7 +1442,7 @@ function Player:attachPlayerObject(object, fromBind)
 			self.m_IsInteractionWithObject = true
 
 			local function attach()
-				if (self:isDead()) then
+				if (self:isDead() and not force) then
 					self.m_IsInteractionWithObject = false
 					return
 				end
@@ -1484,7 +1484,7 @@ function Player:attachPlayerObject(object, fromBind)
 				addEventHandler("onPlayerQuit", self, self.m_DetachOnPlayerQuit)
 			end
 
-			if settings[self.objectAction] and #settings[self.objectAction] > 0 then
+			if not force and settings[self.objectAction] and #settings[self.objectAction] > 0 then
 				self:setFrozen(true)
 				self:setAnimation(unpack(settings[self.objectAction]))
 				setTimer(attach, settings[self.objectAction][3], 1)
@@ -1523,16 +1523,16 @@ function Player:detachPlayerObjectBind(presser, key, state, object)
 	self:detachPlayerObject(object)
 end
 
-function Player:detachPlayerObject(object, collisionNextFrame, fromBind)
+function Player:detachPlayerObject(object, collisionNextFrame, force)
 	if not isElement(self) or not self:isLoggedIn() then return end
-	if (self.m_IsInteractionWithObject) then return end
+	if (self.m_IsInteractionWithObject and not force) then return end
 	if isElement(object) and (self:getPlayerAttachedObject() == object) then
 		local model = object.model
 		if PlayerAttachObjects[model] then
 			self.m_IsInteractionWithObject = true
 			local settings = PlayerAttachObjects[model]
 			local function detach(noWorkArround)
-				if (self:isDead()) then return end
+				if (self:isDead() and not force) then return end
 
 				self:toggleControlsWhileObjectAttached(true, unpack(self.m_PlayerAttachedObjectSettings))
 				object:detach(self)
@@ -1574,7 +1574,7 @@ function Player:detachPlayerObject(object, collisionNextFrame, fromBind)
 				self:setFrozen(false)
 			end
 
-			if settings[self.objectAction] and #settings[self.objectAction] > 0 then
+			if not force and settings[self.objectAction] and #settings[self.objectAction] > 0 then
 				self:setFrozen(true)
 				self:setAnimation(unpack(settings[self.objectAction]))
 				if (self.objectAction == "dropAnimation") then

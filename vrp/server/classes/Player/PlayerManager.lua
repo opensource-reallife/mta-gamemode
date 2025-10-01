@@ -455,18 +455,24 @@ function PlayerManager:playerWasted(killer, killerWeapon, bodypart)
 	if self.m_WastedHook:call(client, killer, killerWeapon, bodypart) then
 		return
 	end
-
+	
 	client:setAlcoholLevel(0)
 	client:increaseStatistics("Deaths", 1)
 	client:giveAchievement(37)
 	client.m_LastDamagedBy = {}
 	DamageManager:getSingleton():clearPlayer(client)
-	for key, obj in ipairs(getAttachedElements(client)) do
-		if obj:getData("MoneyBag") then
-			detachElements(obj, client)
-			client:meChat(true, "lies einen Geldbeutel fallen")
+	outputChatBox(("tot"))
+	-- for key, obj in ipairs(getAttachedElements(client)) do
+		-- outputChatBox((key))
+		-- if obj:getData("MoneyBag") then
+		-- 	detachElements(obj, client)
+		-- 	client:meChat(true, "lies einen Geldbeutel fallen")
+		-- end
+		if client.m_PlayerAttachedObject and PlayerAttachObjects[client.m_PlayerAttachedObject.model] and PlayerAttachObjects[client.m_PlayerAttachedObject.model].placeDown then
+			outputChatBox("gr")
+			client:detachPlayerObject(client.m_PlayerAttachedObject, false, true)
 		end
-	end
+	-- end
 
 	local killer = killer
 	local killerVehicle = nil
@@ -1283,7 +1289,7 @@ function PlayerManager:Event_toggleObjectPickup(veh)
 				VehicleManager:getSingleton():loadObject(client, veh, packageType)
 			else		
 				client.objectAction = "dropAnimation"
-				client:detachPlayerObject(client:getPlayerAttachedObject(), false, true)
+				client:detachPlayerObject(client:getPlayerAttachedObject(), false)
 			end
 		end
 	else	
@@ -1300,7 +1306,7 @@ function PlayerManager:Event_toggleObjectPickup(veh)
 					VehicleManager:getSingleton():deloadObject(client, veh, packageType)
 				elseif (not attachedTo and table.size(getEventHandlers("onElementClicked", v)) > 0) then
 					client.objectAction = "pickupAnimation"
-					client:attachPlayerObject(v, true)
+					client:attachPlayerObject(v)
 				break
 			end
 		end
