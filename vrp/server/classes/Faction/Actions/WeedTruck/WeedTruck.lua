@@ -81,7 +81,7 @@ function WeedTruck:constructor(driver)
 	self.m_DestinationBlips["state"]:setDisplayText("Drogentruck-Abgabe (Staat)")
 	self.m_DestinationBlips["state"]:setZ(pos.z)
 
-	self.m_Event_onPackageClickFunc =bind(self.Event_onPackageClick,self)
+	self.m_Event_onPackageClickFunc = bind(self.Event_onPackageClick,self)
 
 	TollStation.openAll()
 	self.m_Timer = setTimer(bind(self.timeUp, self), WeedTruck.Time, 1)
@@ -191,6 +191,7 @@ function WeedTruck:Event_onPackageClick(button, state, player)
 		if player:isDead() then return end
 		if player:getFaction() and player:isFactionDuty() and (player:getFaction():isStateFaction() or player:getFaction():isEvilFaction()) then
 			if getDistanceBetweenPoints3D(player:getPosition(), source:getPosition()) < 3 then
+				player.objectAction = "pickupAnimation"
 				player:attachPlayerObject(source)
 			else
 				player:sendError(_("Du bist zu weit vom Paket entfernt!", player))

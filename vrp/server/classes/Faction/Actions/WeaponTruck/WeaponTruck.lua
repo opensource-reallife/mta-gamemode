@@ -269,7 +269,7 @@ end
 
 function WeaponTruck:loadBoxOnWeaponTruck(player,box)
 	if player.m_IsInteractionWithObject or not box then return end
-	local watchaDoing = player.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt
+	local watchaDoing = player.objectAction
 	player:detachPlayerObject(box)
 	local boxesOnTruck = self:getAttachedBoxes(self.m_Truck) + 1
 
@@ -398,7 +398,7 @@ function WeaponTruck:Event_DeloadBox(veh)
 					if not client.vehicle and not client:isDead() then
 						for key, box in pairs (getAttachedElements(veh)) do
 							if box and box.model == 2912 then
-								local watchaDoing = client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt
+								local watchaDoing = client.objectAction
 								client:attachPlayerObject(box)
 								setTimer(function(player) 
 									box:setScale(1)

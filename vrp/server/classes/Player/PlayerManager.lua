@@ -1279,10 +1279,10 @@ function PlayerManager:Event_toggleObjectPickup(veh)
 		if (objectData.placeDown) then
 			if (veh) then
 				local packageType = convertModelToName(client:getPlayerAttachedObject():getModel(), veh)
-				client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = "loadOnVehicleAnimation"
+				client.objectAction = "loadOnVehicleAnimation"
 				VehicleManager:getSingleton():loadObject(client, veh, packageType)
 			else		
-				client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = "dropAnimation"
+				client.objectAction = "dropAnimation"
 				client:detachPlayerObject(client:getPlayerAttachedObject(), false, true)
 			end
 		end
@@ -1296,15 +1296,15 @@ function PlayerManager:Event_toggleObjectPickup(veh)
 				local attachedTo = v:getAttachedTo()
 				if (attachedTo and attachedTo:getType() == "vehicle") then
 					local packageType = convertModelToName(v:getModel(), veh)
-					client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = "unloadOnVehicleAnimation"
+					client.objectAction = "unloadOnVehicleAnimation"
 					VehicleManager:getSingleton():deloadObject(client, veh, packageType)
 				elseif (not attachedTo and table.size(getEventHandlers("onElementClicked", v)) > 0) then
-					client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = "pickupAnimantion"
+					client.objectAction = "pickupAnimation"
 					client:attachPlayerObject(v, true)
 				break
 			end
 		end
 	end
-		client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = nil;
+		client.objectAction = nil;
 	end
 end

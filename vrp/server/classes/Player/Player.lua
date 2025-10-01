@@ -1479,10 +1479,10 @@ function Player:attachPlayerObject(object, fromBind)
 				addEventHandler("onPlayerQuit", self, self.m_DetachOnPlayerQuit)
 			end
 
-			if settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt] and #settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt] > 0 then
+			if settings[self.objectAction] and #settings[self.objectAction] > 0 then
 				self:setFrozen(true)
-				self:setAnimation(unpack(settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt]))
-				setTimer(attach, settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt][3], 1)
+				self:setAnimation(unpack(settings[self.objectAction]))
+				setTimer(attach, settings[self.objectAction][3], 1)
 			else
 				attach()
 			end 
@@ -1567,15 +1567,15 @@ function Player:detachPlayerObject(object, collisionNextFrame, fromBind)
 				self:setFrozen(false)
 			end
 
-			if settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt] and #settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt] > 0 then
+			if settings[self.objectAction] and #settings[self.objectAction] > 0 then
 				self:setFrozen(true)
-				self:setAnimation(unpack(settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt]))
-				if (self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt == "dropAnimation") then
+				self:setAnimation(unpack(settings[self.objectAction]))
+				if (self.objectAction == "dropAnimation") then
 					detach(true)
 				else
-					setTimer(detach, settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt] and settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt][3] or 0, 1)
+					setTimer(detach, settings[self.objectAction] and settings[self.objectAction][3] or 0, 1)
 				end
-				setTimer(reset, settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt] and settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt][3] or 0, 1)
+				setTimer(reset, settings[self.objectAction] and settings[self.objectAction][3] or 0, 1)
 			end 
 		end
 	else

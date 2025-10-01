@@ -75,8 +75,10 @@ function VehicleObjectLoadExtension:Event_OnLoadingMarkerHit(hitEle, dim)
     if not dim then return false end
     if getElementType(hitEle) == "player" then
         if hitEle:getPlayerAttachedObject() then
+            hitEle.objectAction = "loadOnVehicleAnimation"
             self:tryLoadObject(hitEle, hitEle:getPlayerAttachedObject())
         else
+            hitEle.objectAction = "unloadOnVehicleAnimation"
             self:tryUnloadObject(hitEle)
         end
     end
