@@ -47,8 +47,11 @@ function PlaneAccident:destructor()
     if isElement(self.m_Rubble) then
         self.m_Rubble:destroy()
     end
-    if isElement(self.m_TrashTruck) then
-        self.m_TrashTruck:destroy()
+    if isElement(self.m_TrashDeliveryMarker) then
+        self.m_TrashDeliveryMarker:destroy()
+    end
+    if isElement(self.m_AccidentDeliveryBlip) then
+        self.m_AccidentDeliveryBlip:delete()
     end
 end
 
@@ -81,7 +84,7 @@ function PlaneAccident:createRubble()
     Timer(
         function()
             if #CompanyManager:getSingleton():getFromId(CompanyStaticId.MECHANIC):getOnlinePlayers() >= 1 then
-                self:createTrashTruck()
+                self:createTrashData()
                 local planePos = self.m_Plane:getPosition()
                 local planeRot = self.m_Plane:getRotation()
                 self.m_Rubble = createObject(10985, planePos.x, planePos.y, planePos.z + PlaneRubbleOffsets[self.m_Plane:getModel()], planeRot.x, planeRot.y, planeRot.z + 45)
@@ -111,9 +114,17 @@ function PlaneAccident:removeRubble(button, state, player)
                 if self.m_IsRubbleBeingRemoved ~= true then
                     local playerPos = player:getPosition()
                     local rubblePos = source:getPosition()
-                    local TruckPos = self.m_TrashTruck:getPosition()
+                    local company = player:getCompany()
+                    local vehNearRubble = false
+                    for i, veh in pairs(company.m_Vehicles) do
+                        if veh:getModel() == 455 and getDistanceBetweenPoints3D(playerPos.x, playerPos.y, playerPos.z, veh.position.x, veh.position.y, veh.position.z) < 20 then
+                            vehNearRubble = true
+                            self.m_Flatbed = veh
+                            break
+                        end
+                    end
                     if player:getContactElement() == self.m_Rubble then
-                        if getDistanceBetweenPoints3D(playerPos.x, playerPos.y, playerPos.z, TruckPos.x, TruckPos.y, TruckPos.z) < 20 then
+                        if vehNearRubble then
                             player:setAnimation("BOMBER", "BOM_Plant_Loop", -1, true, false, false)
                             toggleAllControls(player, false)
                             self.m_IsRubbleBeingRemoved = true
@@ -129,7 +140,7 @@ function PlaneAccident:removeRubble(button, state, player)
                                     self.m_Rubble:destroy()
                                     player:setAnimation()
                                     toggleAllControls(player, true)
-                                    self.m_TrashTruck:setVariant(4, 2)
+                                    self.m_Flatbed:setVariant(4, 2)
                                     self.m_TrashDeliveryMarker:setAlpha(255)
                                     self.m_TrashTruckLoaded = true
                                     player:sendInfo(_("Fahre nun die Überreste zurück zur Mech&Tow Base!", player))
@@ -153,37 +164,7 @@ function PlaneAccident:removeRubble(button, state, player)
     end
 end
 
-function PlaneAccident:createTrashTruck()
-    if isElement(self.m_TrashTruck) then
-        self.m_TrashTruck:destroy()
-    end
-    self.m_TrashTruck = TemporaryVehicle.create(455, 878.81, -1226.52, 17.71, 0) -- <- Mech&Tow Flatbed
-    self.m_TrashTruck:setData("TrashTruck", true, true)
-    self.m_TrashTruck:toggleRespawn(false)
-    self.m_TrashTruck:setVariant(4, 3)
-    self.m_TrashTruck:setColor(90, 90, 90)
-    self.m_TrashTruckLoaded = false
-
-    addEventHandler("onVehicleStartEnter", self.m_TrashTruck, 
-        function(player, seat)
-            if player:getCompany() ~= CompanyManager:getSingleton():getFromId(CompanyStaticId.MECHANIC) then
-                cancelEvent()
-                player:sendError(_("Du bist kein Mechaniker!", player))
-            elseif not player:isCompanyDuty() then
-                cancelEvent()
-                player:sendError(_("Du bist nicht im Dienst!", player))
-            end
-        end
-    )
-
-    addEventHandler("onVehicleEnter", self.m_TrashTruck, 
-        function(player)
-            if self.m_TrashTruckLoaded == false then
-                player:sendInfo(_("Fahre die Überreste des Flugzeugunfalls hierher! Klicke auf die Überreste des Flugzeugs um sie auf den Flatbed aufzuladen!", player))
-            end
-        end
-    )
-
+function PlaneAccident:createTrashData()
     self.m_TrashDeliveryMarker = Marker(865.72, -1282.10, 13.21, "cylinder", 4.0, 255, 0, 0, 0)
 
     local planePos = self.m_Plane:getPosition()
@@ -194,12 +175,12 @@ function PlaneAccident:createTrashTruck()
     addEventHandler("onMarkerHit", self.m_TrashDeliveryMarker, 
         function(hitElement, matchingDim)
             if matchingDim then
-                if hitElement == self.m_TrashTruck then
+                if hitElement:getType("vehicle") and hitElement:isPermanent() and hitElement:getModel() == 455 and hitElement.m_OwnerType == 3 and hitElement.m_Owner == 2 then
                     if self.m_TrashTruckLoaded == true then
                         if hitElement.controller then
                             BankServer.get("company.mechanic"):transferMoney(hitElement.controller, 5000, "Flugzeug-Wrack Abgabe", "Company", "Plane accident removal", {silent = true})
                         end
-                        self.m_TrashTruck:destroy()
+                        self.m_Flatbed:setVariant(3, 4)
                         self.m_TrashDeliveryMarker:destroy()
                         self.m_AccidentDeliveryBlip:delete()
                         PlaneManager:getSingleton():endAccident()

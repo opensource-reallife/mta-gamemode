@@ -1271,7 +1271,7 @@ function PlayerManager:Event_DecreaseHunger(loss)
 	client:setHunger(client:getHunger() - loss)
 end
 
-function PlayerManager:Event_toggleObjectPickup(veh) 
+function PlayerManager:Event_toggleObjectPickup(veh)
 	local pos = client.position
 	local eles = getElementsWithinRange(pos.x, pos.y, pos.z, 3, "object", client:getInterior(), client:getDimension())
 	if (client.m_PlayerAttachedObject) then
@@ -1289,12 +1289,12 @@ function PlayerManager:Event_toggleObjectPickup(veh)
 	else	
 		if (veh and getDistanceBetweenPoints3D(veh.position, pos) < 6) then
 			pos = veh.position
-			eles = veh:getAttachedElements()
+			eles = {veh:getAttachedElements()[table.size(veh:getAttachedElements())]}
 		end
 		for i, v in pairs(eles) do
 			if (PlayerAttachObjects[v:getModel()] and PlayerAttachObjects[v:getModel()].placeDown) then
 				local attachedTo = v:getAttachedTo()
-				if (attachedTo and attachedTo:getType() == "vehicle") then
+				if (attachedTo and veh and veh == attachedTo and attachedTo:getType() == "vehicle") then
 					local packageType = convertModelToName(v:getModel(), veh)
 					client.objectAction = "unloadOnVehicleAnimation"
 					VehicleManager:getSingleton():deloadObject(client, veh, packageType)

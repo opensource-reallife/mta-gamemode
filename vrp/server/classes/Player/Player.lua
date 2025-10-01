@@ -1442,6 +1442,11 @@ function Player:attachPlayerObject(object, fromBind)
 			self.m_IsInteractionWithObject = true
 
 			local function attach()
+				if (self:isDead()) then
+					self.m_IsInteractionWithObject = false
+					return
+				end
+
 				self.m_PlayerAttachedObject = object
 				self:setPrivateSync("attachedObject", object)
 				object:setCollisionsEnabled(false)
@@ -1523,10 +1528,12 @@ function Player:detachPlayerObject(object, collisionNextFrame, fromBind)
 	if (self.m_IsInteractionWithObject) then return end
 	if isElement(object) and (self:getPlayerAttachedObject() == object) then
 		local model = object.model
-		self.m_IsInteractionWithObject = true
 		if PlayerAttachObjects[model] then
+			self.m_IsInteractionWithObject = true
 			local settings = PlayerAttachObjects[model]
 			local function detach(noWorkArround)
+				if (self:isDead()) then return end
+
 				self:toggleControlsWhileObjectAttached(true, unpack(self.m_PlayerAttachedObjectSettings))
 				object:detach(self)
 				removeEventHandler("onElementDestroy", object, self.m_detachPlayerObjectFunc)
@@ -1578,6 +1585,7 @@ function Player:detachPlayerObject(object, collisionNextFrame, fromBind)
 				setTimer(reset, settings[self.objectAction] and settings[self.objectAction][3] or 0, 1)
 			else 
 				detach()
+				reset();
 			end 
 		end
 	else
