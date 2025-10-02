@@ -112,7 +112,7 @@ function ChristmasTruck:constructor(driver)
 	addEventHandler("onVehicleExplode",self.m_Truck, self.m_DestroyFunc)
 
 	self:spawnPresents()
-	self:createLoadMarker()
+	--self:createLoadMarker()
 end
 
 function ChristmasTruck:destructor()

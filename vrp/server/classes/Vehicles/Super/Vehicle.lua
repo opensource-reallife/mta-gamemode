@@ -253,7 +253,7 @@ function Vehicle:onPlayerExit(player, seat)
 			local ground = isVehicleOnGround( self )
 			if ground then
 				setElementFrozen(self, true)
-				self:switchObjectLoadingMarker(true)
+				-- self:switchObjectLoadingMarker(true)
 				setVehicleDoorOpenRatio(self, 2, 0, 350)
 			else
 				self.m_HandBrake = false
@@ -491,7 +491,7 @@ function Vehicle:toggleHandBrake(player, preferredState)
 		self.m_HandBrake = false
 		setControlState(player, "handbrake", false)
 		if isElementFrozen(self) then
-			self:switchObjectLoadingMarker(false)
+			-- self:switchObjectLoadingMarker(false)
 			setElementFrozen(self, false)
 		end
 		player:triggerEvent("vehicleHandbrake")

@@ -140,9 +140,7 @@ function WeaponTruck:constructor(driver, boxContent, totalAmount, type)
 	addEventHandler("onVehicleExplode",self.m_Truck,self.m_DestroyFunc)
 
 	self:spawnBoxes()
-	self:createLoadMarker()
-
-
+	--self:createLoadMarker()
 end
 
 function WeaponTruck:destructor()
