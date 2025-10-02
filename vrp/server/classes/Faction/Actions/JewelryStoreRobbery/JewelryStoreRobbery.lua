@@ -20,8 +20,8 @@ JewelryStoreRobbery.EscapeMessages = {
 	"Die Räuber sind nach wie vor auf der Flucht!",
 	"Die Verfolgung der Juweliersräuber dauert weiter an!"
 }
-JewelryStoreRobbery.MinMoney = 50000
-JewelryStoreRobbery.MaxMoney = 65000
+JewelryStoreRobbery.MinMoney = 40000
+JewelryStoreRobbery.MaxMoney = 55000
 
 function JewelryStoreRobbery:constructor(attacker, maxBags)
 	triggerClientEvent("jewelryStoreRobberyAlarmStart", root)
@@ -59,7 +59,7 @@ function JewelryStoreRobbery:constructor(attacker, maxBags)
 	self.m_BreakGlass = bind(self.Event_BreakGlass, self)
 	self.m_BagClick = bind(self.Event_BagClick, self)
 
-	self.m_EvilDeliveryPed = NPC:new(132, -1438.823, 1491.225, 1.867, 270)
+	self.m_EvilDeliveryPed = NPC:new(132, -2725.75, 73.60, 4.34, 20)
     self.m_EvilDeliveryPed:setImmortal(true)
 	self.m_EvilDeliveryPed:setFrozen(true)
 	self.m_EvilDeliveryPed:setData("clickable", true, true)
@@ -78,7 +78,7 @@ function JewelryStoreRobbery:constructor(attacker, maxBags)
 	self.m_StateDeliveryPed:setData("Ped:Name", "Marco Richter")
 	setElementData(self.m_StateDeliveryPed, "Ped:fakeNameTag", "Marco Richter")
 
-	self.m_StateDeliveryPedBlip = Blip:new("Marker.png", self.m_StateDeliveryPed.position.x, self.m_StateDeliveryPed.position.y, self:getBlipVisibleTo(), 9999, BLIP_COLOR_CONSTANTS.Red)
+	self.m_StateDeliveryPedBlip = Blip:new("Marker.png", self.m_StateDeliveryPed.position.x, self.m_StateDeliveryPed.position.y, self:getBlipVisibleTo(), 9999, BLIP_COLOR_CONSTANTS.BLUE)
 	self.m_StateDeliveryPedBlip:setDisplayText("Juwelierraub-Abgabe Staat")
 	self.m_StateDeliveryPedBlip:setZ(self.m_StateDeliveryPed.position.z)
 
