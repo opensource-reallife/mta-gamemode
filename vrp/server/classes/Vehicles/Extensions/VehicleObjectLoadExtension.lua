@@ -51,9 +51,9 @@ function VehicleObjectLoadExtension:initObjectLoading()
     if VEHICLE_OBJECT_ATTACH_POSITIONS[self:getModel()] and not self.m_LoadedObjects then
         self.m_LoadedObjects = {}
         self.m_LastInteraction = getTickCount()
-        if isElementFrozen(self) then
-            self:switchObjectLoadingMarker(true)
-        end
+        -- if isElementFrozen(self) then
+        --     self:switchObjectLoadingMarker(true)
+        -- end
         addEventHandler("onElementDestroy", self, bind(VehicleObjectLoadExtension.Event_OnDestroy, self))
     end
 end
