@@ -572,3 +572,14 @@ function StatisticsLogger:addColorCarsLog(creatorId, lobbyName, password, maxPla
     sqlLogs:queryExec("INSERT INTO ??_ColorCars (UserId, LobbyName, Password, MaxPlayers, Date) VALUES(?, ?, ?, ?, NOW())", sqlLogs:getPrefix(), 
 	creatorId, lobbyName, password, maxPlayers)
 end
+
+function StatisticsLogger:addVehicleDamageLog(player, veh, zone, wpnId, dmg, startDate, tireId)
+	local playerId = 0
+	local vehId = 0
+	if isElement(player) then playerId = player:getId() else playerId = player or 0 end
+	if isElement(veh) then vehId = veh:getId() else vehId = veh or 0 end
+	local totalLoss = math.round(dmg, 3) -- maybe this will fix the out of range warnings
+
+    sqlLogs:queryExec("INSERT INTO ??_vehicle_damage (UserId, VehicleId, Location, Weapon, TotalLoss, TireId, StartDate, Date) VALUES(?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?), NOW())", sqlLogs:getPrefix(), 
+	playerId, vehId, zone, wpnId, totalLoss, tireId, startDate)
+end
