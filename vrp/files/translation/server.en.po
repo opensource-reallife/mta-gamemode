@@ -4910,8 +4910,11 @@ msgstr "A plane crash was reported at %s, %s!"
 msgid "Fahre nun die Überreste zurück zur Mech&Tow Base!"
 msgstr "Return the wreckage to the Mech&Tow base now!"
 
-msgid "Der Flatbed ist zu weit entfernt!"
-msgstr "The flatbed is too far away!"
+msgid "Es ist kein Flatbed in der Nähe!"
+msgstr "There is no flatbed nearby!"
+
+msgid "Der Flatbed ist bereits beladen!"
+msgstr "The flatbed is already loaded!"
 
 msgid "Du musst auf den Wrackteilen stehen!"
 msgstr "You need to stand on the wreckage parts!"
