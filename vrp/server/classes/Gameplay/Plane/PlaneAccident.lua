@@ -44,13 +44,30 @@ function PlaneAccident:setAccidentPlane(flyingTime, colX, colY, colZ, colTime, s
 end
 
 function PlaneAccident:destructor()
+    local player = self.m_RubblePlayer
+    if isElement(player) then
+        player:setAnimation()
+        toggleAllControls(player, true)
+    end
+    if isTimer(self.m_RubbleReduceTimer) then
+        self.m_RubbleReduceTimer:destroy()
+    end
+    if isTimer(self.m_RubbleRemoveTimer) then
+        self.m_RubbleRemoveTimer:destroy()
+    end
+    if isElement(self.m_Flatbed) then
+        self.m_Flatbed:setVariant(3, 4)
+    end
     if isElement(self.m_Rubble) then
         self.m_Rubble:destroy()
     end
     if isElement(self.m_TrashDeliveryMarker) then
         self.m_TrashDeliveryMarker:destroy()
     end
-    if isElement(self.m_AccidentDeliveryBlip) then
+    if self.m_AccidentMechanicBlip then
+        self.m_AccidentMechanicBlip:delete()
+    end
+    if self.m_AccidentDeliveryBlip then
         self.m_AccidentDeliveryBlip:delete()
     end
 end
@@ -111,51 +128,63 @@ function PlaneAccident:removeRubble(button, state, player)
     if button == "left" and state == "down" then
         if source == self.m_Rubble then
             if player:getCompany():getId() == 2 and player:isCompanyDuty() then
-                if self.m_IsRubbleBeingRemoved ~= true then
-                    local playerPos = player:getPosition()
-                    local rubblePos = source:getPosition()
-                    local company = player:getCompany()
-                    local vehNearRubble = false
-                    for i, veh in pairs(company.m_Vehicles) do
-                        if veh:getModel() == 455 and getDistanceBetweenPoints3D(playerPos.x, playerPos.y, playerPos.z, veh.position.x, veh.position.y, veh.position.z) < 20 then
-                            vehNearRubble = true
-                            self.m_Flatbed = veh
-                            break
+                if not self.m_TrashTruckLoaded then
+                    if self.m_IsRubbleBeingRemoved ~= true then
+                        local playerPos = player:getPosition()
+                        local rubblePos = source:getPosition()
+                        local company = player:getCompany()
+                        local vehNearRubble = false
+                        for i, veh in pairs(company.m_Vehicles) do
+                            if veh:getModel() == 455 and getDistanceBetweenPoints3D(playerPos.x, playerPos.y, playerPos.z, veh.position.x, veh.position.y, veh.position.z) < 20 then
+                                vehNearRubble = true
+                                self.m_Flatbed = veh
+                                break
+                            end
                         end
-                    end
-                    if player:getContactElement() == self.m_Rubble then
-                        if vehNearRubble then
-                            player:setAnimation("BOMBER", "BOM_Plant_Loop", -1, true, false, false)
-                            toggleAllControls(player, false)
-                            self.m_IsRubbleBeingRemoved = true
-                            Timer(
-                                function()
-                                    local rubblePos = self.m_Rubble:getPosition()
-                                    self.m_Rubble:setPosition(rubblePos.x, rubblePos.y, rubblePos.z-1)
-                                end
-                            , 5000, 3)
+                        if player:getContactElement() == self.m_Rubble then
+                            if vehNearRubble then
+                                self.m_RubblePlayer = player
+                                player:setAnimation("BOMBER", "BOM_Plant_Loop", -1, true, false, false)
+                                toggleAllControls(player, false)
+                                self.m_IsRubbleBeingRemoved = true
+                                self.m_RubbleReduceTimer = Timer(
+                                    function()
+                                        if isElement(self.m_Rubble) then
+                                            local rubblePos = self.m_Rubble:getPosition()
+                                            self.m_Rubble:setPosition(rubblePos.x, rubblePos.y, rubblePos.z-1)
+                                        end
+                                    end
+                                , 5000, 3)
 
-                            Timer(
-                                function(player)
-                                    self.m_Rubble:destroy()
-                                    player:setAnimation()
-                                    toggleAllControls(player, true)
-                                    self.m_Flatbed:setVariant(4, 2)
-                                    self.m_TrashDeliveryMarker:setAlpha(255)
-                                    self.m_TrashTruckLoaded = true
-                                    player:sendInfo(_("Fahre nun die Überreste zurück zur Mech&Tow Base!", player))
-                                    self.m_AccidentDeliveryBlip = Blip:new("Marker.png", 865.72, -1282.10, {company = 2}, 400, {255, 255, 255}, {175, 175, 175})
-                                    self.m_AccidentMechanicBlip:delete()
-                                end
-                            , 15100, 1, player)
+                                self.m_RubbleRemoveTimer = Timer(
+                                    function(player)
+                                        if isElement(self.m_Rubble) then
+                                            self.m_Rubble:destroy()
+                                            if isElement(player) then
+                                                player:setAnimation()
+                                                toggleAllControls(player, true)
+                                                player:sendInfo(_("Fahre nun die Überreste zurück zur Mech&Tow Base!", player))
+                                                self.m_RubblePlayer = nil
+                                            end
+                                            self.m_Flatbed:setVariant(4, 2)
+                                            self.m_TrashDeliveryMarker:setAlpha(255)
+                                            self.m_TrashTruckLoaded = true
+                                            self.m_AccidentDeliveryBlip = Blip:new("Marker.png", 865.72, -1282.10, {company = 2}, 400, {255, 255, 255}, {175, 175, 175})
+                                            self.m_AccidentMechanicBlip:delete()
+                                        end
+                                    end
+                                , 15100, 1, player)
+                            else
+                                player:sendError(_("Es ist kein Flatbed in der Nähe!", player))
+                            end
                         else
-                            player:sendError(_("Der Flatbed ist zu weit entfernt!", player))
+                            player:sendError(_("Du musst auf den Wrackteilen stehen!", player))
                         end
                     else
-                        player:sendError(_("Du musst auf den Wrackteilen stehen!", player))
+                        player:sendError(_("Die Wrackteile werden bereits verladen!", player))
                     end
                 else
-                    player:sendError(_("Die Wrackteile werden bereits verladen!", player))
+                    player:sendError(_("Der Flatbed ist bereits beladen!", player))
                 end
             else
                 player:sendError(_("Du bist kein Mechaniker im Dienst!", player))
@@ -169,23 +198,21 @@ function PlaneAccident:createTrashData()
 
     local planePos = self.m_Plane:getPosition()
     local zone = getZoneName(planePos).." - "..getZoneName(planePos, true)
-    CompanyManager:getSingleton():getFromId(CompanyStaticId.MECHANIC):sendWarning("Ein Mechaniker wird mit dem Flatbed aus der Basis am Unfallort benötigt!\nPosition: %s", "Flugzeug-Wrack", true, planePos, zone)
+    CompanyManager:getSingleton():getFromId(CompanyStaticId.MECHANIC):sendWarning("Ein Mechaniker wird mit einem Flatbed am Unfallort benötigt!\nPosition: %s", "Flugzeug-Wrack", true, planePos, zone)
     self.m_AccidentMechanicBlip = Blip:new("Marker.png", planePos.x, planePos.y, {company = 2}, 400, {255, 255, 255}, {175, 175, 175})
 
     addEventHandler("onMarkerHit", self.m_TrashDeliveryMarker, 
         function(hitElement, matchingDim)
             if matchingDim then
-                if hitElement:getType() == "vehicle" and hitElement:isPermanent() and hitElement:getModel() == 455 and hitElement.m_OwnerType == 3 and hitElement.m_Owner == CompanyStaticId.MECHANIC then
-                    if self.m_TrashTruckLoaded == true then
-                        if hitElement.controller then
-                            BankServer.get("company.mechanic"):transferMoney(hitElement.controller, 2500, "Flugzeug-Wrack Abgabe", "Company", "Plane accident removal", {silent = true})
-                            BankServer.get("company.mechanic"):transferMoney({"company", CompanyStaticId.MECHANIC, true, true}, 2500, "Flugzeug-Wrack Abgabe", "Company", "Plane accident removal", {silent = true})
-                        end
-                        self.m_Flatbed:setVariant(3, 4)
-                        self.m_TrashDeliveryMarker:destroy()
-                        self.m_AccidentDeliveryBlip:delete()
-                        PlaneManager:getSingleton():endAccident()
+                if hitElement == self.m_Flatbed and self.m_TrashTruckLoaded == true then
+                    if hitElement.controller then
+                        BankServer.get("company.mechanic"):transferMoney(hitElement.controller, 1500, "Flugzeug-Wrack Abgabe", "Company", "Plane accident removal")
                     end
+                    BankServer.get("company.mechanic"):transferMoney(CompanyManager:getSingleton():getFromId(CompanyStaticId.MECHANIC), 3000, "Flugzeug-Wrack Abgabe", "Company", "Plane accident removal")
+                    self.m_Flatbed:setVariant(3, 4)
+                    self.m_TrashDeliveryMarker:destroy()
+                    self.m_AccidentDeliveryBlip:delete()
+                    PlaneManager:getSingleton():endAccident()
                 end
             end
         end
