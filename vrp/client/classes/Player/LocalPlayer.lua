@@ -8,7 +8,7 @@
 LocalPlayer = inherit(Player)
 addRemoteEvents{"retrieveInfo", "playerWasted", "playerCashChange", "disableDamage",
 "playerSendToHospital", "abortDeathGUI", "sendTrayNotification","setClientTime", "setClientAdmin", "toggleRadar", "onTryPickupWeapon", "onServerRunString", "playSound", "stopBleeding", "restartBleeding", "setCanBeKnockedOffBike", "setOcclusion"
-,"onTryEnterExit", "onAllowRadioCommunication", "playSound", "playSFX", "playSFX3D", "sendDropObjectMessage"}
+,"onTryEnterExit", "onAllowRadioCommunication", "playSound", "playSFX", "playSFX3D"}
 
 function LocalPlayer:constructor()
 	self.m_Locale = "en"
@@ -61,7 +61,6 @@ function LocalPlayer:constructor()
 	addEventHandler("setOcclusion",root,function( bool ) setOcclusionsEnabled(bool) end)
 	addEventHandler("onTryEnterExit", root, bind(self.Event_tryEnterExit, self))
 	addEventHandler("onAllowRadioCommunication", root, bind(self.Event_allowRadioCommunication, self))
-	addEventHandler("sendDropObjectMessage", root, bind(self.Event_sendDropObjectMessage, self))
 	addCommandHandler("noafk", bind(self.onAFKCodeInput, self))
 	addCommandHandler("anim", bind(self.startAnimation, self))
 
@@ -1061,8 +1060,4 @@ function LocalPlayer:hungerDecrease()
 	if not self:isAFK() and not self:isDead() and not self:isInJail() and not self:getData("inAdminPrison") then
 		triggerServerEvent("playerDecreaseHunger", localPlayer, Randomizer:get(25, 75) / 100)
 	end
-end
-
-function LocalPlayer:Event_sendDropObjectMessage()
-	
 end

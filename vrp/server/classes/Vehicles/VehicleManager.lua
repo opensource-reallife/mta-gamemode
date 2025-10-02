@@ -1636,74 +1636,73 @@ end
 
 function VehicleManager:loadObject(player, veh, type)
 	local vehicleObjects, model, name
-		vehicleObjects = VEHICLE_BAG_LOAD
+	vehicleObjects = VEHICLE_BAG_LOAD
 
-		if type == "moneyBag" then
-			model = 1550
-			name = "keinen Geldsack"
-		elseif type == "weaponBox" then
-			model = 2912
-			name = "keine Waffenbox"
-
-			if veh:getData("WeaponTruck") then
-				MWeaponTruck:getSingleton().m_CurrentWT:Event_LoadBox(veh)
-				return
-			end
-			
-		elseif type == "drugPackage" then
-			model = 1575
-			name = "kein Drogenpaket"
-
-		elseif type == "christmasPresent" then
-			model = 2912
-			name = "kein Geschenk"
+	if type == "moneyBag" then
+		model = 1550
+		name = "keinen Geldsack"
+	elseif type == "weaponBox" then
+		model = 2912
+		name = "keine Waffenbox"
 		
-			if veh:getData("ChristmasTruck:Truck") then
-				ChristmasTruckManager:getSingleton().m_Current:Event_LoadPresent(veh)
-				return
-			end
-		elseif type == "weaponPackage" then
-			vehicleObjects = VEHICLE_WEAPON_PACKAGE_LOAD
-			model = 2358
-			name = "kein Waffenpaket"
+		if veh:getData("WeaponTruck") then
+			MWeaponTruck:getSingleton().m_CurrentWT:loadBox(player, veh)
+			return
 		end
-		if veh:canObjectBeLoaded(model) then
-			return veh:tryLoadObject(player, player:getPlayerAttachedObject())
+	elseif type == "drugPackage" then
+		model = 1575
+		name = "kein Drogenpaket"
+
+	elseif type == "christmasPresent" then
+		model = 2912
+		name = "kein Geschenk"
+	
+		if veh:getData("ChristmasTruck:Truck") then
+			ChristmasTruckManager:getSingleton().m_Current:loadPresent(player, veh)
+			return
 		end
-		if player:getFaction() then
-			if vehicleObjects[veh.model] then
-				if getDistanceBetweenPoints3D(veh.position, player.position) < 7 then
-					if not player:isDead() then
-						if not player.vehicle then
-							local object = player:getPlayerAttachedObject()
-							if veh:getAttachedObjectsCount() < vehicleObjects[veh.model]["count"] then
-								if object then
-									local count = veh:getAttachedObjectsCount()
-									player:detachPlayerObject(object)
-									object:attach(veh, vehicleObjects[veh.model][count+1])
-									if object.LoadHook then
-										object.LoadHook(player, veh, object)
-									end
-								else
-									player:sendError(_("Du hast %s dabei!", player, name))
+	elseif type == "weaponPackage" then
+		vehicleObjects = VEHICLE_WEAPON_PACKAGE_LOAD
+		model = 2358
+		name = "kein Waffenpaket"
+	end
+	if veh:canObjectBeLoaded(model) then
+		return veh:tryLoadObject(player, player:getPlayerAttachedObject())
+	end
+	if player:getFaction() then
+		if vehicleObjects[veh.model] then
+			if getDistanceBetweenPoints3D(veh.position, player.position) < 7 then
+				if not player:isDead() then
+					if not player.vehicle then
+						local object = player:getPlayerAttachedObject()
+						if veh:getAttachedObjectsCount() < vehicleObjects[veh.model]["count"] then
+							if object then
+								local count = veh:getAttachedObjectsCount()
+								player:detachPlayerObject(object)
+								object:attach(veh, vehicleObjects[veh.model][count+1])
+								if object.LoadHook then
+									object.LoadHook(player, veh, object)
 								end
 							else
-								player:sendError(_("Das Fahrzeug ist bereits voll beladen!", player))
+								player:sendError(_("Du hast %s dabei!", player, name))
 							end
 						else
-							player:sendError(_("Du darfst in keinem Fahrzeug sitzen!", player))
+							player:sendError(_("Das Fahrzeug ist bereits voll beladen!", player))
 						end
+					else
+						player:sendError(_("Du darfst in keinem Fahrzeug sitzen!", player))
 					end
-				else
-					player:sendError(_("Du bist zu weit vom Truck entfernt!", player))
 				end
 			else
-				player:sendError(_("Dieses Fahrzeug kann nicht beladen werden!", player))
+				player:sendError(_("Du bist zu weit vom Truck entfernt!", player))
 			end
 		else
-			player:sendError(_("Nur Fraktionisten können dieses Objekt abladen!", player))
+			player:sendError(_("Dieses Fahrzeug kann nicht beladen werden!", player))
 		end
+	else
+		player:sendError(_("Nur Fraktionisten können dieses Objekt abladen!", player))
 	end
+end
 
 function VehicleManager:Event_DeLoadObject(veh, type)
 	self:deloadObject(client, veh, type)
@@ -1721,7 +1720,7 @@ function VehicleManager:deloadObject(player, veh, type)
 		name = "keine Waffenbox"
 
 		if veh:getData("WeaponTruck") then
-			MWeaponTruck:getSingleton().m_CurrentWT:Event_DeloadBox(veh)
+			MWeaponTruck:getSingleton().m_CurrentWT:deloadBox(player, veh)
 			return
 		end
 		
@@ -1734,7 +1733,7 @@ function VehicleManager:deloadObject(player, veh, type)
 		name = "kein Geschenk"
 
 		if veh:getData("ChristmasTruck:Truck") then
-			ChristmasTruckManager:getSingleton().m_Current:Event_DeloadPresent(veh)
+			ChristmasTruckManager:getSingleton().m_Current:deloadPresent(player, veh)
 			return
 		end
 	elseif type == "weaponPackage" then

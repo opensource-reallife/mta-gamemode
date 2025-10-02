@@ -310,74 +310,82 @@ function ChristmasTruck:forcePresentsToDrop()
 end
 
 function ChristmasTruck:Event_LoadPresent(veh)
-	if client:getFaction() then
+	self:loadPresent(client, veh)
+end
+
+function ChristmasTruck:loadPresent(player, veh)
+	if player:getFaction() then
 		if veh == self.m_Truck or VEHICLE_BOX_LOAD[veh.model] then
-			if getDistanceBetweenPoints3D(veh.position,client.position) < 7 then
-				if not client.vehicle then
-					local box = client:getPlayerAttachedObject()
+			if getDistanceBetweenPoints3D(veh.position, player.position) < 7 then
+				if not player.vehicle then
+					local box = player:getPlayerAttachedObject()
 					if veh == self.m_Truck then
-						self:loadBoxOnChristmasTruck(client,box)
+						self:loadBoxOnChristmasTruck(player, box)
 						return
 					end
 					if self:getAttachedBoxes(veh) < VEHICLE_BOX_LOAD[veh.model]["count"] then
 						if box then
 							local count = self:getAttachedBoxes(veh)
-							client:detachPlayerObject(box)
+							player:detachPlayerObject(box)
 							box:attach(veh, VEHICLE_BOX_LOAD[veh.model][count+1])
 							removeEventHandler("onElementClicked", box, self.m_OnPresentCickFunc)
 						else
-							client:sendError(_("Du hast keine Kiste dabei!",client))
+							player:sendError(_("Du hast keine Kiste dabei!", player))
 						end
 					else
-						client:sendError(_("Das Fahrzeug ist bereits voll beladen!",client))
+						player:sendError(_("Das Fahrzeug ist bereits voll beladen!", player))
 					end
 				else
-					client:sendError(_("Du darfst in keinem Fahrzeug sitzen!",client))
+					player:sendError(_("Du darfst in keinem Fahrzeug sitzen!", player))
 				end
 			else
-				client:sendError(_("Du bist zu weit vom Truck entfernt!",client))
+				player:sendError(_("Du bist zu weit vom Truck entfernt!", player))
 			end
 		else
-			client:sendError(_("Dieses Fahrzeug kann nicht beladen werden!",client))
+			player:sendError(_("Dieses Fahrzeug kann nicht beladen werden!", player))
 		end
 	else
-		client:sendError(_("Nur Fraktionisten können Kisten abladen!",client))
+		player:sendError(_("Nur Fraktionisten können Kisten abladen!", player))
 	end
 end
 
 function ChristmasTruck:Event_DeloadPresent(veh)
+	self:deloadPresent(client, veh)
+end
+
+function ChristmasTruck:deloadPresent(player, veh)
 	if not veh then return end
-	if client:getFaction() then
+	if player:getFaction() then
 		if veh == self.m_Truck or VEHICLE_BOX_LOAD[veh.model] then
-			if getDistanceBetweenPoints3D(veh.position, client.position) < 7 then
-				if not client:getPlayerAttachedObject() then
-					if not client.vehicle and not client:isDead() then
+			if getDistanceBetweenPoints3D(veh.position, player.position) < 7 then
+				if not player:getPlayerAttachedObject() then
+					if not player.vehicle and not player:isDead() then
 						for key, box in pairs (table.reverse(getAttachedElements(veh))) do
 							if box.model == 2912 then
 								box:detach(self.m_Truck)
 								box.Present:setScale(0.6)
-								client:setAnimation("carry", "crry_prtial", 1, true, true, false, true)
-								client:attachPlayerObject(box)
+								player:setAnimation("carry", "crry_prtial", 1, true, true, false, true)
+								player:attachPlayerObject(box)
 								addEventHandler("onElementClicked", box, self.m_OnPresentCickFunc)
 								return
 							end
 						end
-						client:sendError(_("Es befinden sich keine Geschenke auf dem Truck!",client))
+						player:sendError(_("Es befinden sich keine Geschenke auf dem Truck!", player))
 						return
 					else
-						client:sendError(_("Du darfst in keinem Fahrzeug sitzen!",client))
+						player:sendError(_("Du darfst in keinem Fahrzeug sitzen!", player))
 					end
 				else
-					client:sendError(_("Du hast bereits ein Geschenk dabei!",client))
+					player:sendError(_("Du hast bereits ein Geschenk dabei!", player))
 				end
 			else
-				client:sendError(_("Du bist zu weit vom Truck entfernt!",client))
+				player:sendError(_("Du bist zu weit vom Truck entfernt!", player))
 			end
 		else
-			client:sendError(_("Von diesem Fahrzeug können keine Geschenke entladen werden!",client))
+			player:sendError(_("Von diesem Fahrzeug können keine Geschenke entladen werden!", player))
 		end
 	else
-		client:sendError(_("Nur Fraktionisten können Geschenke abladen!",client))
+		player:sendError(_("Nur Fraktionisten können Geschenke abladen!", player))
 	end
 end
 

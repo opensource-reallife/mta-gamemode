@@ -455,24 +455,18 @@ function PlayerManager:playerWasted(killer, killerWeapon, bodypart)
 	if self.m_WastedHook:call(client, killer, killerWeapon, bodypart) then
 		return
 	end
-	
+
 	client:setAlcoholLevel(0)
 	client:increaseStatistics("Deaths", 1)
 	client:giveAchievement(37)
 	client.m_LastDamagedBy = {}
 	DamageManager:getSingleton():clearPlayer(client)
-	outputChatBox(("tot"))
-	-- for key, obj in ipairs(getAttachedElements(client)) do
-		-- outputChatBox((key))
-		-- if obj:getData("MoneyBag") then
-		-- 	detachElements(obj, client)
-		-- 	client:meChat(true, "lies einen Geldbeutel fallen")
-		-- end
-		if client.m_PlayerAttachedObject and PlayerAttachObjects[client.m_PlayerAttachedObject.model] and PlayerAttachObjects[client.m_PlayerAttachedObject.model].placeDown then
-			outputChatBox("gr")
-			client:detachPlayerObject(client.m_PlayerAttachedObject, false, true)
+	for key, obj in ipairs(getAttachedElements(client)) do
+		if obj:getData("MoneyBag") then
+			detachElements(obj, client)
+			client:meChat(true, "lies einen Geldbeutel fallen")
 		end
-	-- end
+	end
 
 	local killer = killer
 	local killerVehicle = nil
@@ -1277,40 +1271,47 @@ function PlayerManager:Event_DecreaseHunger(loss)
 	client:setHunger(client:getHunger() - loss)
 end
 
-function PlayerManager:Event_toggleObjectPickup(veh)
-	local pos = client.position
-	local eles = getElementsWithinRange(pos.x, pos.y, pos.z, 3, "object", client:getInterior(), client:getDimension())
-	if (client.m_PlayerAttachedObject) then
-		local objectData = PlayerAttachObjects[client.m_PlayerAttachedObject:getModel()]
-		if (objectData.placeDown) then
-			if (veh) then
-				local packageType = convertModelToName(client:getPlayerAttachedObject():getModel(), veh)
-				client.objectAction = "loadOnVehicleAnimation"
-				VehicleManager:getSingleton():loadObject(client, veh, packageType)
-			else		
-				client.objectAction = "dropAnimation"
-				client:detachPlayerObject(client:getPlayerAttachedObject(), false)
+function PlayerManager:Event_toggleObjectPickup()
+	if not client:isDead() and not isTimer(client.m_PickupTimer) then
+		local pos = client.position
+		local veh = getElementsWithinRange(pos.x, pos.y, pos.z, 7, "vehicle", client:getInterior(), client:getDimension())[1]
+		if client.m_PlayerAttachedObject then
+			local settings = PlayerAttachObjects[client.m_PlayerAttachedObject:getModel()]
+			if (settings.placeDown) then
+				client:setFrozen(true)
+				client:setAnimation("bomber", "bom_plant", 700, false, false, true, false)
+				client.m_PickupTimer = Timer(function(client)
+					client:setFrozen(false)
+					if (veh) then
+						local packageType = convertModelToName(client:getPlayerAttachedObject():getModel(), veh)
+						VehicleManager:getSingleton():loadObject(client, veh, packageType)
+					else
+						client:detachPlayerObject(client:getPlayerAttachedObject())
+					end
+				end, 700, 1, client)
+			end
+		else
+			local objects = getElementsWithinRange(pos.x, pos.y, pos.z, 3, "object", client:getInterior(), client:getDimension())
+			if (veh and getDistanceBetweenPoints3D(veh.position, pos) < 7) then
+				objects = veh:getAttachedElements()
+			end
+			for _, object in pairs(objects) do
+				if (PlayerAttachObjects[object:getModel()] and PlayerAttachObjects[object:getModel()].placeDown) then
+					client:setFrozen(true)
+					client:setAnimation("bomber", "bom_plant", 700, false, false, true, false)
+					client.m_PickupTimer = Timer(function(client)
+						client:setFrozen(false)
+						local attachedTo = object:getAttachedTo()
+						if (attachedTo and veh and veh == attachedTo and attachedTo:getType() == "vehicle") then
+							local packageType = convertModelToName(object:getModel(), veh)
+							VehicleManager:getSingleton():deloadObject(client, veh, packageType)
+						elseif (not attachedTo and table.size(getEventHandlers("onElementClicked", object)) > 0) then
+							triggerEvent("onElementClicked", object, "left", "down", client)
+						end
+					end, 700, 1, client)
+					break
+				end
 			end
 		end
-	else	
-		if (veh and getDistanceBetweenPoints3D(veh.position, pos) < 6) then
-			pos = veh.position
-			eles = {veh:getAttachedElements()[table.size(veh:getAttachedElements())]}
-		end
-		for i, v in pairs(eles) do
-			if (PlayerAttachObjects[v:getModel()] and PlayerAttachObjects[v:getModel()].placeDown) then
-				local attachedTo = v:getAttachedTo()
-				if (attachedTo and veh and veh == attachedTo and attachedTo:getType() == "vehicle") then
-					local packageType = convertModelToName(v:getModel(), veh)
-					client.objectAction = "unloadOnVehicleAnimation"
-					VehicleManager:getSingleton():deloadObject(client, veh, packageType)
-				elseif (not attachedTo and table.size(getEventHandlers("onElementClicked", v)) > 0) then
-					client.objectAction = "pickupAnimation"
-					client:attachPlayerObject(v)
-				break
-			end
-		end
-	end
-		client.objectAction = nil;
 	end
 end

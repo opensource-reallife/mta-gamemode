@@ -144,10 +144,6 @@ function KeyBinds:getBindsList(type)
 	return self.m_Keys[type]
 end
 
-function KeyBinds:getKeyForBind(name)
-	return core:get("KeyBindings", name, self.m_Keys[name].defaultKey)
-end
-
 function KeyBinds:inventory()
 	Inventory:getSingleton():toggle()
 end
@@ -368,9 +364,7 @@ function KeyBinds:usePoliceMegaphone()
 end
 
 function KeyBinds:toggleObjectPickup()
-	local veh = VehicleInteraction:getSingleton().m_lookAtVehicle;
-	triggerServerEvent("toggleObjectPickup", localPlayer, veh)
-
+	triggerServerEvent("toggleObjectPickup", localPlayer)
 end
 
 --[[

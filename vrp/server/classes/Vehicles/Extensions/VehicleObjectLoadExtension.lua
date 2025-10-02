@@ -75,10 +75,8 @@ function VehicleObjectLoadExtension:Event_OnLoadingMarkerHit(hitEle, dim)
     if not dim then return false end
     if getElementType(hitEle) == "player" then
         if hitEle:getPlayerAttachedObject() then
-            hitEle.objectAction = "loadOnVehicleAnimation"
             self:tryLoadObject(hitEle, hitEle:getPlayerAttachedObject())
         else
-            hitEle.objectAction = "unloadOnVehicleAnimation"
             self:tryUnloadObject(hitEle)
         end
     end
@@ -144,38 +142,18 @@ end
 
 function VehicleObjectLoadExtension:internalLoadObject(player, object)
     player:detachPlayerObject(object)
-    local function load()
-        if player:isDead() then return end
-
-        local data = VEHICLE_OBJECT_ATTACH_POSITIONS[self:getModel()]
-        local pos = data.positions[self:getObjectCount() + 1]
-        object:attach(self, pos, 0, 0, data.randomRotation and math.random(0, 360) or data.rotation)
-        object:setScale(data.scale or 1)
-        table.insert(self.m_LoadedObjects, object)
-    end
-
-    if PlayerAttachObjects[object.model] and #PlayerAttachObjects[object.model][player.objectAction] > 0 then
-        setTimer(load, PlayerAttachObjects[object.model][player.objectAction][3], 1)
-    else
-        load()
-    end
+    local data = VEHICLE_OBJECT_ATTACH_POSITIONS[self:getModel()]
+    local pos = data.positions[self:getObjectCount() + 1]
+    object:attach(self, pos, 0, 0, data.randomRotation and math.random(0, 360) or data.rotation)
+    object:setScale(data.scale or 1)
+    table.insert(self.m_LoadedObjects, object)
 end
 
 function VehicleObjectLoadExtension:internalUnloadObject(player)
     local object = table.remove(self.m_LoadedObjects, #self.m_LoadedObjects)
+    object:detach()
+    object:setScale(1)
     player:attachPlayerObject(object)
-    local function unload()
-        if player:isDead() then return end
-
-        object:detach()
-        object:setScale(1)
-    end
-
-    if PlayerAttachObjects[object.model] and #PlayerAttachObjects[object.model][player.objectAction] > 0 then
-        setTimer(unload, PlayerAttachObjects[object.model][player.objectAction][3], 1)
-    else
-        unload()
-    end
 end
 
 function VehicleObjectLoadExtension:refreshLoadedObjects()

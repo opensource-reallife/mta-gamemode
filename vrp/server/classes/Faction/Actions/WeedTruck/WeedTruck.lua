@@ -191,7 +191,6 @@ function WeedTruck:Event_onPackageClick(button, state, player)
 		if player:isDead() then return end
 		if player:getFaction() and player:isFactionDuty() and (player:getFaction():isStateFaction() or player:getFaction():isEvilFaction()) then
 			if getDistanceBetweenPoints3D(player:getPosition(), source:getPosition()) < 3 then
-				player.objectAction = "pickupAnimation"
 				player:attachPlayerObject(source)
 			else
 				player:sendError(_("Du bist zu weit vom Paket entfernt!", player))
