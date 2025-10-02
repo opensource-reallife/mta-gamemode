@@ -213,8 +213,8 @@ function WeedTruck:Event_OnWeedTruckDestroy()
 	if self and not self.m_Destroyed then
 		self.m_Destroyed = true
 		self:Event_OnWeedTruckExit(self.m_Driver,0)
-		PlayerManager:getSingleton():breakingNews("Der Weed-LKW wurde soeben zerstört!")
-		Discord:getSingleton():outputBreakingNews("Der Weed-LKW wurde soeben zerstört!")
+		PlayerManager:getSingleton():breakingNews("Der Weed-Truck wurde soeben zerstört!")
+		Discord:getSingleton():outputBreakingNews("Der Weed-Truck wurde soeben zerstört!")
 		delete(self)
 	end
 end
