@@ -1297,19 +1297,25 @@ function PlayerManager:Event_toggleObjectPickup()
 			end
 			for _, object in pairs(objects) do
 				if (PlayerAttachObjects[object:getModel()] and PlayerAttachObjects[object:getModel()].placeDown) then
-					client:setFrozen(true)
-					client:setAnimation("bomber", "bom_plant", 700, false, false, true, false)
-					client.m_PickupTimer = Timer(function(client)
-						client:setFrozen(false)
-						local attachedTo = object:getAttachedTo()
-						if (attachedTo and veh and veh == attachedTo and attachedTo:getType() == "vehicle") then
-							local packageType = convertModelToName(object:getModel(), veh)
-							VehicleManager:getSingleton():deloadObject(client, veh, packageType)
-						elseif (not attachedTo and table.size(getEventHandlers("onElementClicked", object)) > 0) then
-							triggerEvent("onElementClicked", object, "left", "down", client)
-						end
-					end, 700, 1, client)
-					break
+					if not object.m_PickupPlayer then
+						client:setFrozen(true)
+						client:setAnimation("bomber", "bom_plant", 700, false, false, true, false)
+						object.m_PickupPlayer = client
+						client.m_PickupTimer = Timer(function(client)
+							if isElement(client) then
+								client:setFrozen(false)
+								local attachedTo = object:getAttachedTo() or exports.bone_attach:isElementAttachedToBone(object)
+								if (attachedTo and veh and veh == attachedTo and attachedTo:getType() == "vehicle") then
+									local packageType = convertModelToName(object:getModel(), veh)
+									VehicleManager:getSingleton():deloadObject(client, veh, packageType)
+								elseif (not attachedTo and table.size(getEventHandlers("onElementClicked", object)) > 0) then
+									triggerEvent("onElementClicked", object, "left", "down", client)
+								end
+							end
+							object.m_PickupPlayer = nil
+						end, 700, 1, client)
+						break
+					end
 				end
 			end
 		end
