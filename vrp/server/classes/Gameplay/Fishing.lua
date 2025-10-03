@@ -415,7 +415,7 @@ end
 
 function Fishing:clientSendFishTrading(list)
 	local fishingLevel = client:getPrivateSync("FishingLevel")
-	local fishingLevelMultiplicator = fishingLevel >= 10 and 1.5 or (fishingLevel >= 5 and 1.25 or 1)
+	local fishingLevelMultiplicator = ((math.floor(fishingLevel / 3) * 10) / 100) + 1
 	local totalPrice = 0
 
 	for _, item in pairs(list) do
@@ -425,7 +425,7 @@ function Fishing:clientSendFishTrading(list)
 			local qualityMultiplicator = fish.quality == 3 and 2 or (fish.quality == 2 and 1.5 or (fish.quality == 1 and 1.25 or 1))
 			local rareBonusMultiplicator = Fishing.Fish[fish.Id].RareBonus + 1
 
-			local fishIncome = default*qualityMultiplicator*rareBonusMultiplicator
+			local fishIncome = default * (fishingLevelMultiplicator + qualityMultiplicator + rareBonusMultiplicator - 2)
 			totalPrice = totalPrice + fishIncome
 
 			self:removeFrishFromCoolingBag(fish.Id, fish.size)

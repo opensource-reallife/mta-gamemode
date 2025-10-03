@@ -49,6 +49,7 @@ function FishingTradeGUI:constructor(CoolingBags, Fishes)
 	self.m_Sell.onLeftClick = bind(FishingTradeGUI.requestTrade, self)
 
 	local fisherLevel = localPlayer:getPrivateSync("FishingLevel")
+	local levelBonus = math.floor(fisherLevel / 3) * 10
 
 	for _, bag in pairs(CoolingBags) do
 		self.m_GridList:addItemNoClick(bag.name)
@@ -68,8 +69,7 @@ function FishingTradeGUI:constructor(CoolingBags, Fishes)
 					self.m_QualityLabel:setText((FontAwesomeSymbols.Star):rep(fish.quality + 1)):setColor(fish.quality == 0 and Color.Brown or (fish.quality == 1 and Color.LightGrey or (fish.quality == 2 and Color.Yellow or Color.Purple)))
 					self.m_PriceLabel:setText(("%s$"):format(Fishes[fish.Id].DefaultPrice))
 					self.m_QualityBonusLabel:setText(fish.quality == 3 and "100%" or (fish.quality == 2 and "50%" or (fish.quality == 1 and "25%" or "-")))
-					-- self.m_LevelBonusLabel:setText(fisherLevel >= 10 and "50%" or (fisherLevel >= 5 and "25%" or "-"))
-					self.m_LevelBonusLabel:setText("-")
+					self.m_LevelBonusLabel:setText(levelBonus == 0 and "-" or levelBonus .. "%")
 					self.m_RareBonusLabel:setText(("%d%%"):format(Fishes[fish.Id].RareBonus*100))
 				end
 		end
@@ -109,7 +109,7 @@ end
 
 function FishingTradeGUI:updateTotalPrice()
 	local fishingLevel = localPlayer:getPrivateSync("FishingLevel")
-	local fishingLevelMultiplicator = fishingLevel >= 10 and 1.5 or (fishingLevel >= 5 and 1.25 or 1)
+	local fishingLevelMultiplicator = ((math.floor(fishingLevel / 3) * 10) / 100) + 1
 	local totalPrice = 0
 
 	for _, item in pairs(self.m_SellList:getItems()) do
@@ -118,7 +118,7 @@ function FishingTradeGUI:updateTotalPrice()
 			local qualityMultiplicator = item.fishQuality == 3 and 2 or (item.fishQuality == 2 and 1.5 or (item.fishQuality == 1 and 1.25 or 1))
 			local rareBonusMultiplicator = self.m_FishTable[item.fishId].RareBonus + 1
 
-			totalPrice = totalPrice + default*qualityMultiplicator*rareBonusMultiplicator
+			totalPrice = totalPrice + (default * (fishingLevelMultiplicator + qualityMultiplicator + rareBonusMultiplicator - 2))
 		end
 	end
 
