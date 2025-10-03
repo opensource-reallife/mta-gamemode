@@ -1275,18 +1275,19 @@ function PlayerManager:Event_toggleObjectPickup()
 	if not client:isDead() and not isTimer(client.m_PickupTimer) then
 		local pos = client.position
 		local veh = getElementsWithinRange(pos.x, pos.y, pos.z, 7, "vehicle", client:getInterior(), client:getDimension())[1]
-		if client.m_PlayerAttachedObject then
-			local settings = PlayerAttachObjects[client.m_PlayerAttachedObject:getModel()]
+		local object = client.m_PlayerAttachedObject
+		if object and not client.vehicle then
+			local settings = PlayerAttachObjects[object:getModel()]
 			if (settings.placeDown) then
-				client:setFrozen(true)
-				client:setAnimation("bomber", "bom_plant", 700, false, false, true, false)
+				--client:setFrozen(true)
+				client:setAnimation("bomber", "bom_plant", 700, true, false, false, false)
 				client.m_PickupTimer = Timer(function(client)
-					client:setFrozen(false)
+					--client:setFrozen(false)
 					if (veh) then
-						local packageType = convertModelToName(client:getPlayerAttachedObject():getModel(), veh)
+						local packageType = convertModelToName(object:getModel(), veh)
 						VehicleManager:getSingleton():loadObject(client, veh, packageType)
 					else
-						client:detachPlayerObject(client:getPlayerAttachedObject())
+						client:detachPlayerObject(object)
 					end
 				end, 700, 1, client)
 			end
@@ -1296,14 +1297,15 @@ function PlayerManager:Event_toggleObjectPickup()
 				objects = veh:getAttachedElements()
 			end
 			for _, object in pairs(objects) do
-				if (PlayerAttachObjects[object:getModel()] and PlayerAttachObjects[object:getModel()].placeDown) then
-					if not object.m_PickupPlayer then
-						client:setFrozen(true)
-						client:setAnimation("bomber", "bom_plant", 700, false, false, true, false)
+				if (PlayerAttachObjects[object:getModel()] and PlayerAttachObjects[object:getModel()].placeDown) and not client.vehicle then
+					local attachedToBone = exports.bone_attach:isElementAttachedToBone(object)
+					if not object.m_PickupPlayer and not attachedToBone then
+						--client:setFrozen(true)
+						client:setAnimation("bomber", "bom_plant", 700, true, false, false, false)
 						object.m_PickupPlayer = client
 						client.m_PickupTimer = Timer(function(client)
 							if isElement(client) then
-								client:setFrozen(false)
+								--client:setFrozen(false)
 								local attachedTo = object:getAttachedTo() or exports.bone_attach:isElementAttachedToBone(object)
 								if (attachedTo and veh and veh == attachedTo and attachedTo:getType() == "vehicle") then
 									local packageType = convertModelToName(object:getModel(), veh)
