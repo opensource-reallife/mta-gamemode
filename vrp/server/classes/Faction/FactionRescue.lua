@@ -131,17 +131,19 @@ end
 function FactionRescue:destructor()
 end
 
-function FactionRescue:countPlayers(afkCheck, dutyCheck, dutyType)
-	return #self:getOnlinePlayers(afkCheck, dutyCheck, dutyType)
+function FactionRescue:countPlayers(afkCheck, dutyCheck, dutyType, radioStatus)
+	return #self:getOnlinePlayers(afkCheck, dutyCheck, dutyType, radioStatus)
 end
 
-function FactionRescue:getOnlinePlayers(afkCheck, dutyCheck, dutyType)
+function FactionRescue:getOnlinePlayers(afkCheck, dutyCheck, dutyType, radioStatus)
     local players = {}
 
     for _, value in pairs(self.m_Faction:getOnlinePlayers(afkCheck, dutyCheck)) do
-        if (dutyCheck and value:getPublicSync("Rescue:Type") == dutyType) or not dutyType then
-            table.insert(players, value)
-        end
+		if (dutyCheck and dutyType and value:getPublicSync("Rescue:Type") == dutyType) or (dutyCheck and value:isFactionDuty()) or not dutyCheck then
+			if (radioStatus and value:getPublicSync("RadioStatus") == radioStatus) or not radioStatus then
+				table.insert(players, value)
+			end
+		end
     end
 
     return players
