@@ -1274,7 +1274,7 @@ end
 function PlayerManager:Event_toggleObjectPickup()
 	if not client:isDead() and not isTimer(client.m_PickupTimer) then
 		local pos = client.position
-		local veh = getElementsWithinRange(pos.x, pos.y, pos.z, 7, "vehicle", client:getInterior(), client:getDimension())[1]
+		local veh = getElementType(getPedTarget(client)) == "vehicle" and getPedTarget(client)
 		local object = client.m_PlayerAttachedObject
 		if object and not client.vehicle then
 			local settings = PlayerAttachObjects[object:getModel()]
@@ -1299,7 +1299,8 @@ function PlayerManager:Event_toggleObjectPickup()
 			for _, object in pairs(objects) do
 				if (PlayerAttachObjects[object:getModel()] and PlayerAttachObjects[object:getModel()].placeDown) and not client.vehicle then
 					local attachedToBone = exports.bone_attach:isElementAttachedToBone(object)
-					if not object.m_PickupPlayer and not attachedToBone then
+					local attachedToElement = object:getAttachedTo()
+					if not object.m_PickupPlayer and not attachedToBone and (not attachedToElement or (veh and attachedToElement)) then
 						--client:setFrozen(true)
 						client:setAnimation("bomber", "bom_plant", 700, true, false, false, false)
 						object.m_PickupPlayer = client
