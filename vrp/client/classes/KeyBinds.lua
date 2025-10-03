@@ -85,7 +85,7 @@ function KeyBinds:constructor()
 	--  ["KeyChatGroup"]           = {["defaultKey"] = "3", ["name"] = "Chat: Gruppe", ["func"] = "chatbox", ["extra"] = "Gruppe"};
 	}
 
-	for i = 1, 7 do
+	for i = 1, 6 do
 		self.m_Keys["FMS"]["KeyStatusFMS"..i] = {["defaultKey"] = "N/A", ["name"] = "Status "..i, ["func"] = function() triggerServerEvent("factionRescueChangeRadioStatus", localPlayer, i) end, ["trigger"] = "down"};
 	end
 
