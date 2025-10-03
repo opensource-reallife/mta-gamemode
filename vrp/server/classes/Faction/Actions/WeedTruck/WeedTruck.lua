@@ -83,6 +83,8 @@ function WeedTruck:constructor(driver)
 
 	self.m_Event_onPackageClickFunc = bind(self.Event_onPackageClick,self)
 
+	MWeedTruck:getSingleton().m_BlipWeedTruck:setOptionalColor({122, 22, 22})
+
 	TollStation.openAll()
 	self.m_Timer = setTimer(bind(self.timeUp, self), WeedTruck.Time, 1)
 
@@ -121,6 +123,7 @@ function WeedTruck:destructor()
 
 	StatisticsLogger:getSingleton():addActionLog("Weed-Truck", "stop", self.m_StartPlayer, self.m_StartFaction, "faction")
 	TollStation.closeAll()
+	MWeedTruck:getSingleton().m_BlipWeedTruck:setOptionalColor({27, 125, 47})
 end
 
 
