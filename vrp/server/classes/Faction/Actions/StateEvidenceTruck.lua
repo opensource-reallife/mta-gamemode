@@ -128,7 +128,7 @@ function StateEvidenceTruck:addDestinationMarker(factionId, type, isEvil, addBli
 
 	if (addBlip) then
 		self.m_DestinationBlips[factionId] = Blip:new("Marker.png", destination.x, destination.y, {factionType = {"State", "Evil"}, duty = true}, 9999, BLIP_COLOR_CONSTANTS.Red)
-		self.m_DestinationBlips[factionId]:setDisplayText("Geldtruck-Abgabepunkt")
+		self.m_DestinationBlips[factionId]:setDisplayText(("Geldtruck-Abgabepunkt%s"):format(FactionManager.Map[factionId] and FactionManager.Map[factionId]:getType() == "State" and " (Staat)" or "" ))
 	end
 
 	self.m_DestinationMarkers[markerId] = createMarker(destination,"cylinder",8, color.r, color.g, color.b, 100)

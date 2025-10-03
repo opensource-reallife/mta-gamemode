@@ -321,6 +321,13 @@ function ArmsDealer:clear()
         self.m_Pilot:destroy()
         self.m_Pilot = nil
     end
+    if (self.m_DestinationBlips) then
+        for i, blipType in pairs(self.m_DestinationBlips) do
+            for _, blip in pairs(blipType) do
+                delete(blip)
+            end
+        end
+    end
     self.m_InAir = false
     StatisticsLogger:getSingleton():addActionLog("Airdrop", "stop", self.m_LastPlayer, self.m_LastFaction, "faction")
     self.m_LastPlayer = nil 
