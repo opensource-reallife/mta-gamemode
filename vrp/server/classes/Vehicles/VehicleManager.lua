@@ -23,6 +23,7 @@ function VehicleManager:constructor()
 	self.m_FactionVehicles = {}
 	self.m_VehiclesWithEngineOn = {}
 	self.m_VehicleMarks = {}
+	self.m_DamageLogCache = {}
 	self.m_BankAccountServer = BankServer.get("server.vehicle")
 	self:setSpeedLimits()
 
@@ -33,7 +34,7 @@ function VehicleManager:constructor()
 	"vehicleGetTuningList", "adminVehicleEdit", "adminVehicleSetInTuning", "adminVehicleGetTextureList", "adminVehicleOverrideTextures", "vehicleLoadObject", "vehicleDeloadObject", "clientMagnetGrabVehicle", "clientToggleVehicleEngine",
 	"clientToggleVehicleLight", "clientToggleHandbrake", "vehicleSetVariant", "vehicleSetTuningPropertyTable", "vehicleRequestHandling", "vehicleResetHandling", "requestVehicleMarks", "vehicleToggleLoadingRamp",
 	"VehicleInfrared:onUse", "VehicleInfrared:onStop", "VehicleInfrared:onPlayerExit", "VehicleInfrared:onSyncLight", "VehicleInfrared:onCreateLight", "VehicleInfrared:onStopLight", "requestVehicles", "onToggleVehicleRegister",
-	"toggleShamalInterior", "requestKeyList", "vehicleToggleRC", "buyVehicleExtraSlot"}
+	"toggleShamalInterior", "requestKeyList", "vehicleToggleRC", "buyVehicleExtraSlot", "onClientVehicleDamage"}
 
 	addEventHandler("vehicleLock", root, bind(self.Event_vehicleLock, self))
 	addEventHandler("vehicleRequestKeys", root, bind(self.Event_vehicleRequestKeys, self))
@@ -78,6 +79,7 @@ function VehicleManager:constructor()
 	addEventHandler("requestKeyList", root, bind(self.Event_requestKeyList, self))
 	addEventHandler("vehicleToggleRC", root, bind(self.Event_vehicleToggleRC, self))
 	addEventHandler("buyVehicleExtraSlot", root, bind(self.Event_buyVehicleExtraSlot, self))
+	addEventHandler("onClientVehicleDamage", root, bind(self.Event_onClientVehicleDamage, self))
 
 	addEventHandler("onVehicleExplode", root,
 		function()
@@ -315,6 +317,7 @@ function VehicleManager:constructor()
 	VehicleManager.sPulse:registerHandler(bind(VehicleManager.removeUnusedVehicles, self))
 
 	setTimer(bind(self.updateFuelOfPermanentVehicles, self), 60*1000, 0)
+	setTimer(bind(self.Event_onDamageLogCacheTick, self), 5000, 0)
 
 	self.NonOptionalTextures = --// Textures that cant be toggled off
 	{
@@ -340,6 +343,10 @@ function VehicleManager:constructor()
 end
 
 function VehicleManager:destructor()
+	for id, cacheObj in pairs(self.m_DamageLogCache) do
+		self:forceDamageLogCache(id)
+	end
+
 	local st, count = getTickCount(), 0
 	for ownerId, vehicles in pairs(self.m_Vehicles) do
 		for k, vehicle in ipairs(table.reverse(vehicles)) do
@@ -2151,6 +2158,99 @@ function VehicleManager:Event_buyVehicleExtraSlot(type)
 			end
 		else
 			return client:sendError(_("Du bist in keiner Gruppe", client))
+		end
+	end
+end
+
+function VehicleManager:Event_onClientVehicleDamage(vehicle, weapon, loss, dx, dy, dz, tId)
+	local attacker = client
+	if not vehicle or not attacker or not isElement(vehicle) or not isElement(attacker) then
+		return
+	end
+	if (not vehicle:isPermanent()) then
+		return
+	end
+	if attacker:getData("isInDeathMatch")  then
+		return
+	end
+	if (attacker:getData("isInColorCars")) then
+		return
+	end
+	self:addVehicleDamageLog(vehicle, attacker, weapon, loss, tId)
+end
+
+function VehicleManager:addVehicleDamageLog(vehicle, attacker, weapon, loss, tId)  -- i would like to thank strobe for sparing me the time writing my own cache functions
+	if self.m_DamageLogCache then
+		local cacheTable = self.m_DamageLogCache[attacker.m_Id]
+		if cacheTable then
+			local cacheWeapon = cacheTable["Weapon"]
+			local cacheTarget = cacheTable["Target"]
+			if weapon == cacheWeapon and vehicle.m_Id == cacheTarget and not tId then
+				cacheTable["TotalLoss"] = cacheTable["TotalLoss"] + loss
+				cacheTable["HitCount"] = cacheTable["HitCount"] + 1
+			else
+				self:forceDamageLogCache( attacker )
+				self.m_DamageLogCache[attacker.m_Id]  = {}
+				self.m_DamageLogCache[attacker.m_Id]["CacheTime"] = getTickCount()
+				self.m_DamageLogCache[attacker.m_Id]["Timestamp"] = getRealTime().timestamp
+				self.m_DamageLogCache[attacker.m_Id]["Weapon"] = weapon
+				self.m_DamageLogCache[attacker.m_Id]["Target"] = vehicle.m_Id
+				self.m_DamageLogCache[attacker.m_Id]["TotalLoss"] = loss
+				self.m_DamageLogCache[attacker.m_Id]["HitCount"] = 1
+				self.m_DamageLogCache[attacker.m_Id]["TireId"] = tId or nil 
+				self.m_DamageLogCache[attacker.m_Id]["Zone"] = StatisticsLogger:getSingleton():getZone(attacker)
+			end
+		else
+			self:forceDamageLogCache( attacker )
+			self.m_DamageLogCache[attacker.m_Id]  = {}
+			self.m_DamageLogCache[attacker.m_Id]["CacheTime"] = getTickCount()
+			self.m_DamageLogCache[attacker.m_Id]["Timestamp"] = getRealTime().timestamp
+			self.m_DamageLogCache[attacker.m_Id]["Weapon"] = weapon
+			self.m_DamageLogCache[attacker.m_Id]["Target"] = vehicle.m_Id
+			self.m_DamageLogCache[attacker.m_Id]["TotalLoss"] = loss
+			self.m_DamageLogCache[attacker.m_Id]["HitCount"] = 1
+			self.m_DamageLogCache[attacker.m_Id]["TireId"] = tId or nil 
+			self.m_DamageLogCache[attacker.m_Id]["Zone"] = StatisticsLogger:getSingleton():getZone(attacker)
+		end
+		if (tId) then
+			self:forceDamageLogCache( attacker )
+		end
+	end
+end
+
+
+function VehicleManager:forceDamageLogCache( player )
+	if self.m_DamageLogCache then
+		local cacheTable, playerId
+		if type(player) == "userdata" then
+			cacheTable = self.m_DamageLogCache[player.m_Id]
+			playerId = player.m_Id
+		else
+			cacheTable = self.m_DamageLogCache[player]
+			playerId = player
+		end
+		if cacheTable then
+			local cacheWeapon = cacheTable["Weapon"]
+			local totalLoss = cacheTable["TotalLoss"]
+			local hitCount = cacheTable["HitCount"]
+			local target = cacheTable["Target"]
+			local startTime = cacheTable["Timestamp"]
+			local zone = cacheTable["Zone"]
+			local tireId = cacheTable["TireId"]
+			StatisticsLogger:getSingleton():addVehicleDamageLog(player, target, zone, cacheWeapon, totalLoss, startTime, tireId)
+			if self.m_DamageLogCache[playerId]  then
+				self.m_DamageLogCache[playerId] = nil
+			end
+		end
+	end
+end
+
+function VehicleManager:Event_onDamageLogCacheTick()
+	local now = getTickCount()
+	local cacheObj, cacheTime
+	for id, cacheObj in pairs(self.m_DamageLogCache) do
+		if now >= cacheObj["CacheTime"] + GUN_CACHE_EMPTY_INTERVAL then
+			self:forceDamageLogCache(  id )
 		end
 	end
 end
