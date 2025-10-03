@@ -4796,6 +4796,9 @@ msgstr "smokes Weed!"
 msgid "isst einen Magic Mushroom!"
 msgstr "eats a Magic Mushroom!"
 
+msgid "isst eine Portion %s!"
+msgstr "eat some  %s!"
+
 msgid "spritzt sich Heroin!"
 msgstr "injects themselves Heroin!"
 
@@ -4834,6 +4837,9 @@ msgstr "Mulled wine"
 
 msgid "Lebkuchen"
 msgstr "Gingerbread"
+
+msgid "Frittiertes Hähnchen"
+msgstr "Fried Chicken"
 
 msgid "Shot"
 msgstr "Shot"

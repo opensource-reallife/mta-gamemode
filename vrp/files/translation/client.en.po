@@ -5332,6 +5332,9 @@ msgstr "Mulled wine"
 msgid "Lebkuchen"
 msgstr "Gingerbread"
 
+msgid "Frittiertes Hähnchen"
+msgstr "Fried Chicken"
+
 msgid "Shot"
 msgstr "Shot"
 
