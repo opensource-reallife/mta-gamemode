@@ -12,7 +12,7 @@ function InventoryManager:constructor()
 	self.m_Slots={
 		["Items"] = 21,
 		["Objekte"] = 5,
-		["Essen"] = 6,
+		["Essen"] = 11,
 		["Drogen"] = 7,
 	}
 
