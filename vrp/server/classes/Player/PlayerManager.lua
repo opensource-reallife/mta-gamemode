@@ -1274,13 +1274,18 @@ end
 function PlayerManager:Event_toggleObjectPickup()
 	if not client:isDead() and not isTimer(client.m_PickupTimer) then
 		local pos = client.position
-		local veh = getElementType(getPedTarget(client)) == "vehicle" and getPedTarget(client)
+		local veh = getPedTarget(client) and getElementType(getPedTarget(client)) == "vehicle" and getPedTarget(client)
 		local object = client.m_PlayerAttachedObject
 		if object and not client.vehicle then
 			local settings = PlayerAttachObjects[object:getModel()]
 			if (settings.placeDown) then
 				--client:setFrozen(true)
-				client:setAnimation("bomber", "bom_plant", 700, true, false, false, false)
+				if (veh) then
+					client:setAnimation("dealer", "dealer_deal", 700, true, false, false, false)
+					nextframe(function(client) client:setAnimationProgress("dealer_deal", 0.6) end, client)
+				else
+					client:setAnimation("bomber", "bom_plant", 700, true, false, false, false)
+				end
 				client.m_PickupTimer = Timer(function(client)
 					--client:setFrozen(false)
 					if (veh) then
@@ -1302,7 +1307,12 @@ function PlayerManager:Event_toggleObjectPickup()
 					local attachedToElement = object:getAttachedTo()
 					if not object.m_PickupPlayer and not attachedToBone and (not attachedToElement or (veh and attachedToElement)) then
 						--client:setFrozen(true)
-						client:setAnimation("bomber", "bom_plant", 700, true, false, false, false)
+						if (veh) then
+							client:setAnimation("dealer", "dealer_deal", 700, true, false, false, false)
+							nextframe(function(client) client:setAnimationProgress("dealer_deal", 0.6) end, client)
+						else
+							client:setAnimation("bomber", "bom_plant", 700, true, false, false, false)
+						end
 						object.m_PickupPlayer = client
 						client.m_PickupTimer = Timer(function(client)
 							if isElement(client) then
