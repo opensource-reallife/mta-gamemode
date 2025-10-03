@@ -23,6 +23,8 @@ ItemFood.Settings = {
 	["Wuerstchen"] = {["Health"] = 60, ["Hunger"] = 60, ["Model"] = 3103, ["ModelScale"] = {2.5, 0.5, 0.5}, ["Text"] = "isst heiße %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, -0.015, 0.03, 0.1, 0, 0, 0}},
 	["Lebkuchen"] = {["Health"] = 40, ["Hunger"] = 40, ["Text"] = "isst %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
 	["KöderDummy"] = {["Health"] = 2, ["Hunger"] = 2, ["Text"] = "isst einen Wurm!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
+	["Frittiertes Hähnchen"] = {["Health"] = 50, ["Hunger"] = 50, ["Text"] = "isst %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
+	["Pommes"] = {["Health"] = 5, ["Hunger"] = 5, ["Text"] = "isst %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
 	-- Alcohol
 	["Bier"] = {["Health"] = 0, ["Model"] = 1486, ["Text"] = "trinkt ein %s!", ["Animation"] = {"BAR", "dnk_stndM_loop", 4500}, ["Alcohol"] = 0.25, ["Attach"] = {12, -0.05, 0.05, 0.09, 0, -90, 0}},
 	["Whiskey"] = {["Health"] = 0, ["Model"] = 1455, ["Text"] = "trinkt einen %s!", ["Animation"] = {"BAR", "dnk_stndM_loop", 4500}, ["Alcohol"] = 1.2, ["Attach"] = {12, 0, 0.05, 0.1, 0, -90, 0}},

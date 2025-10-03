@@ -30,6 +30,8 @@ function ItemManager:constructor()
 		["Burger"] = ItemFood,
 		["Lebkuchen"] = ItemFood,
 		["Wuerstchen"] = ItemFood,
+		["Frittiertes Hähnchen"] = ItemFood,
+		["Pommes"] = ItemFood,
 
 		["Kuheuter mit Pommes"] = ItemFood,
 		["Zombie-Burger"] = ItemFood,
