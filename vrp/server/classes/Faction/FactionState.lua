@@ -347,10 +347,10 @@ function FactionState:loadLSPD(factionId)
 	--InteriorEnterExit:new(Vector3(1564.84, -1666.84, 28.40), Vector3(226.65, 75.95, 1005.04), 0, 0, 6, 0) -- LSPD Roof
 
 	local elevator = Elevator:new()
-	elevator:addStation("UG Garage", Vector3(1568.65, -1690.97, 5.89), 270, 0, 5)
-	elevator:addStation("Erdgeschoss", Vector3(1567.73, -1687.24, 16.20), 84)
 	elevator:addStation("Dach - Heliports", Vector3(1564.94, -1666.13, 28.40), 90)
-
+	elevator:addStation("Erdgeschoss", Vector3(1567.73, -1687.24, 16.20), 84)
+	elevator:addStation("UG Garage", Vector3(1568.65, -1690.97, 5.89), 270, 0, 5)
+	
 	local safe = createObject(2332, 1559.90, -1647.80, 17, 0, 0, 90)
 	FactionManager:getSingleton():getFromId(factionId):setSafe(safe)
 end
