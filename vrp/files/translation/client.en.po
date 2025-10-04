@@ -2494,6 +2494,9 @@ msgstr "Repair"
 msgid "Despawnen"
 msgstr "Despawn"
 
+msgid "Umdrehen"
+msgstr "Flip"
+
 msgid "Fahrzeug despawnen"
 msgstr "Despawn the vehicle"
 
