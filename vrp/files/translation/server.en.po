@@ -229,6 +229,9 @@ msgstr "No ID specified!"
 msgid "Dieses Fahrzeug kann nicht despawnt werden!"
 msgstr "This vehicle cannot be despawnt!"
 
+msgid "Das Fahrzeug steht nicht auf dem Kopf!"
+msgstr "This vehicle is not upside down!"
+
 msgid "%s hat das Fahrzeug %s von %s despawnt (Grund: %s)."
 msgstr "%s has the vehicle  %s of %s despawnt (reason: %s)."
 
