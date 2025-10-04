@@ -286,8 +286,8 @@ addEventHandler("onClientVehicleDamage", root,
 				end
 			end
 		end
-		if (attacker == localPlayer and not Guns:getSingleton().m_NetworkInteruptFreeze) and not NetworkMonitor:getSingleton():getPingDisabled() and not NetworkMonitor:getSingleton():getLossDisabled() then
-			triggerServerEvent("onClientVehicleDamage", localPlayer, source, weapon, loss, dx, dy, dz, tId)
+		if attacker then
+			triggerServerEvent("onClientVehicleDamage", localPlayer, attacker, source, weapon, loss, dx, dy, dz, tId)
 		end
 	end
 )

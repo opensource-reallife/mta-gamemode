@@ -2181,8 +2181,7 @@ function VehicleManager:Event_buyVehicleExtraSlot(type)
 	end
 end
 
-function VehicleManager:Event_onClientVehicleDamage(vehicle, weapon, loss, dx, dy, dz, tId)
-	local attacker = client
+function VehicleManager:Event_onClientVehicleDamage(attacker, vehicle, weapon, loss, dx, dy, dz, tId)
 	if not vehicle or not attacker or not isElement(vehicle) or not isElement(attacker) then
 		return
 	end
