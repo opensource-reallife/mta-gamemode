@@ -99,18 +99,33 @@ function AdminTeleportGUI:loadData(tp, cats)
 	self.m_TeleportPoints = tp
 	self.m_TeleportCategories = cats
 
+	local currentCatId = self.m_CategoryCombobox:getSelectedItem() and self.m_CategoryCombobox:getSelectedItem().catId or -1
 	self.m_CategoryCombobox:clear()
-	local item = self.m_CategoryCombobox:addItem("Keine")
+	local item = self.m_CategoryCombobox:addItem("Alle")
 	item.catId = -1
-
+	local itemIndex = 1
+	local catSet = false
 	for id, name in pairs(self.m_TeleportCategories) do 
+		itemIndex = itemIndex + 1
 		local item = self.m_CategoryCombobox:addItem(name)
 		item.catId = id
+		item.indexId = itemIndex
+
+		if  id == currentCatId and currentCatId ~= -1 then
+			self.m_CategoryCombobox:setSelectedItem(itemIndex)
+			catSet = true
+		end
+	end
+	if (not catSet) then
+		self.m_CategoryCombobox:setSelectedItem(1)
+		currentCatId = -1
 	end
 
 	self.m_TeleportGridList:clear()
 	for i, v  in pairs(self.m_TeleportPoints) do
-		self:addTeleportPointToGridlist(i, v, self.m_TeleportCategories[v.category])
+		if (v.category == currentCatId or currentCatId == -1) then
+			self:addTeleportPointToGridlist(i, v, self.m_TeleportCategories[v.category])
+		end
 	end
 
 	if (AdminTeleportCategoryGUI:isInstantiated()) then
