@@ -1157,6 +1157,9 @@ function FactionState:Command_suspect(player,cmd,target,amount,...)
 		if amount and amount >= 1 and amount <= MAX_WANTED_LEVEL  then
 			local target = PlayerManager:getSingleton():getPlayerFromPartOfName(target,player)
 			if isElement(target) then
+				if target:getFaction() and target:getFaction():isStateFaction() and target:isFactionDuty() then
+					return player:sendError(_("Du kannst Beamten im Dienst keine Wanteds geben.", player))
+				end
 				if not isPedDead(target) then
 					if string.len(reason) > 2 and string.len(reason) < 50 then
 						if target.m_LastWantedsByReason then
@@ -1739,6 +1742,9 @@ function FactionState:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, pl
 				FactionManager:getSingleton():Event_stopNeedhelp(client)
 				--//fix
 			else
+				if client:getWanteds() > 0 then
+					return client:sendError(_("Du kannst nicht in den Dienst gehen, solange du gesucht wirst!", client))
+				end
 				if client:getPublicSync("Company:Duty") and client:getCompany() then
 					--client:sendWarning(_("Bitte beende zuerst deinen Dienst im Unternehmen!", client))
 					--return false
@@ -1861,6 +1867,9 @@ function FactionState:Event_giveWanteds(target, amount, reason)
 	local faction = client:getFaction()
 	if faction and faction:isStateFaction() then
 		if client:isFactionDuty() then
+			if target:getFaction() and target:getFaction():isStateFaction() and target:isFactionDuty() then
+				return client:sendError(_("Du kannst Beamten im Dienst keine Wanteds geben.", client))
+			end
 			target:giveWanteds(amount)
 			outputChatBox(_("Verbrechen begangen: %s, %s Wanted/s, Gemeldet von: %s", client, reason, amount, client:getName()), target, 255, 255, 0 )
 			local msg = ("%s hat %s %d Wanted/s wegen %s gegeben!"):format(client:getName(), target:getName(), amount, reason)

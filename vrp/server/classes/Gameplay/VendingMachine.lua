@@ -41,6 +41,9 @@ function VendingMachine.Event_vendingRob()
 	end
 
 	if not vendingMachine then return end
+	if client:getFaction() and client:getFaction():isStateFaction() and client:isFactionDuty() then
+		return client:sendError(_("Du kannst im Dienst keinen Automaten ausrauben.", client))
+	end
 	if not client.vehicle then
 		if getTickCount() - vendingMachine.m_LastRobTime < 5*60*1000 then
 			client:sendMessage(_("Dieser Automat kann zurzeit nicht ausgeraubt werden!", client), 255, 0, 0)
