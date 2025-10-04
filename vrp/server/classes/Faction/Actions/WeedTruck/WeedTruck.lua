@@ -45,7 +45,7 @@ function WeedTruck:constructor(driver)
 	self.m_Truck:toggleRespawn(false)
 	self.m_Truck:setAlwaysDamageable(true)
 	self.m_Truck:initObjectLoading()
-	--self.m_Truck.m_DisableToggleHandbrake = true
+	self.m_Truck.m_DisableToggleHandbrake = true
 	self.m_Packages = {}
 	self.m_DestinationPeds = {}
 	self.m_DestinationBlips = {}

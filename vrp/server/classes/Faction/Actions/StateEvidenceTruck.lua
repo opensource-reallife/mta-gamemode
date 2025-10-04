@@ -30,6 +30,7 @@ function StateEvidenceTruck:constructor(driver, money)
 	self.m_Truck:setInterior(0)
 	self.m_Truck:setDimension(5)
 	self.m_Truck:initObjectLoading()
+	self.m_Truck.m_DisableToggleHandbrake = true
 	self.m_Timer = setTimer(bind(self.timeUp, self), StateEvidenceTruck.Time, 1)
 
 	self.m_StartTime = getTickCount()

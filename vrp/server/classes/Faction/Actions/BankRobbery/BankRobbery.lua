@@ -468,6 +468,7 @@ function BankRobbery:createTruck(x, y, z, rz)
 	truck:setVariant(0,0)
 	truck:setAlwaysDamageable(true)
 	truck:initObjectLoading()
+	truck.m_DisableToggleHandbrake = true
 	self:setTruckActive(truck, false)
 	self.m_Trucks[truck] = true
 	addEventHandler("onVehicleStartEnter", truck, self.m_Event_OnTruckStartEnterFunc)
