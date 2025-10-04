@@ -43,6 +43,7 @@ function JewelryStoreRobbery:constructor(attacker, maxBags)
 
 	self.m_Players = {}
 	self.m_Bags = {}
+	self.m_BagBlips = {}
 
 	--[[
 	self.m_Vehicle = TemporaryVehicle.create(493, 146.514, 164.884, 0.100, 33.591)
@@ -86,6 +87,9 @@ function JewelryStoreRobbery:constructor(attacker, maxBags)
 	self.m_BreakingNewsTimer = setTimer(bind(self.updateBreakingNews, self), 20000, 0)
 	self.m_TimeUpTimer = setTimer(bind(self.timeUp, self), 15*60*1000, 1)
 
+	self.m_ShowDown = false
+	self.m_TimerUntilShowdown = setTimer(bind(self.showdown, self), 15*60*1000 - MINUTE_TO_SHOWDOWN, 1)
+
 	addEventHandler("onElementClicked", self.m_EvilDeliveryPed, bind(self.Event_EvilDeliveryFaction, self))
 	addEventHandler("onElementClicked", self.m_StateDeliveryPed, bind(self.Event_StateDeliveryFaction, self))
 
@@ -111,6 +115,10 @@ function JewelryStoreRobbery:destructor()
 		if isElement(object) then
 			object:destroy()
 		end
+	end
+
+	for index, blip in pairs(self.m_BagBlips) do
+		blip:delete()
 	end
 
 	--[[
@@ -198,6 +206,19 @@ function JewelryStoreRobbery:Event_BreakGlass(player)
 					table.insert(self.m_Bags, bag)
 					addEventHandler("onElementClicked", bag, self.m_BagClick)
 
+					self.m_Bags[#self.m_Bags].LoadHook = function()
+						if self.m_ShowDown and self.m_BagBlips[self.m_Bags[#self.m_Bags]] then
+							self.m_BagBlips[self.m_Bags[#self.m_Bags]]:delete()
+							self.m_BagBlips[self.m_Bags[#self.m_Bags]] = nil
+						end
+					end	
+
+					self.m_Bags[#self.m_Bags].DeloadHook = function()
+						if (self.m_ShowDown and not self.m_BagBlips[self.m_Bags[#self.m_Bags]]) then
+							self.m_BagBlips[self.m_Bags[#self.m_Bags]] = self:createBlip(self.m_Bags[#self.m_Bags], "Geldsack", self.m_Bags[#self.m_Bags])
+						end
+					end	
+
 					player:attachPlayerObject(bag)
 				end
 			end
@@ -238,6 +259,12 @@ function JewelryStoreRobbery:Event_EvilDeliveryFaction(button, state, player)
 					local bag = player.m_PlayerAttachedObject
 					local value = bag:getData("Value")
 					local money = math.round(value * (self.m_MaxMoney / self.m_MaxBags), 0)
+					
+					if not (self.m_BagBlips[bag]) then
+						self.m_BagBlips[bag]:delete()
+						self.m_BagBlips = nil
+					end
+					
 					player:detachPlayerObject(bag)
 					player:sendSuccess(_("Du hast die Beute abgegeben!", player))
 					bag:destroy()
@@ -268,6 +295,12 @@ function JewelryStoreRobbery:Event_StateDeliveryFaction(button, state, player)
 					local bag = player.m_PlayerAttachedObject
 					local value = bag:getData("Value")
 					local money = math.round(value * (self.m_MaxMoney / self.m_MaxBags), 0)
+					
+					if not (self.m_BagBlips[bag]) then
+						self.m_BagBlips[bag]:delete()
+						self.m_BagBlips = nil
+					end
+
 					player:detachPlayerObject(bag)
 					player:sendSuccess(_("Du hast die Beute abgegeben!", player))
 					bag:destroy()
@@ -341,4 +374,26 @@ function JewelryStoreRobbery:updateBreakingNews()
 			PlayerManager:getSingleton():breakingNews(math.randomchoice(JewelryStoreRobbery.EscapeMessages))
 		end
 	end
+end
+
+function JewelryStoreRobbery:showdown() 
+	self.m_ShowDown = true
+
+	for i, v in pairs(self.m_Bags) do
+		if not table.find(self.m_Truck:getAttachedElements(), v) then
+			self.m_BagBlips[v] = self:createBlip(v, "Geldsack", v)
+		end
+	end
+end
+
+function JewelryStoreRobbery:createBlip(ele, text, attachedTo, marker)
+	marker = marker == nil and "Marker.png" or marker
+	local blip = Blip:new(marker, ele.position.x, ele.position.y, {factionType = {"State", "Evil"}, duty = true}, 9999, BLIP_COLOR_CONSTANTS.Red)
+	if (attachedTo) then
+		blip:attachTo(attachedTo)
+	end
+	if (text) then
+		blip:setDisplayText(text)
+	end
+	return blip
 end

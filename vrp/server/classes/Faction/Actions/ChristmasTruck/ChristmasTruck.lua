@@ -60,6 +60,7 @@ function ChristmasTruck:constructor(driver)
 	self.m_DestinationBlips = {}
 
 	self.m_Presents = {}
+	self.m_PresentsBlips = {}
 	self.m_StartPlayer = driver
 	self.m_StartFaction = driver:getFaction()
 
@@ -102,6 +103,9 @@ function ChristmasTruck:constructor(driver)
 	self.m_Event_loadPresent = bind(self.Event_DeloadPresent,self)
 	self.m_Event_deloadPresent = bind(self.Event_LoadPresent,self)
 
+	self.m_ShowDown = false
+	self.m_TimerUntilShowdown = setTimer(bind(self.showdown, self), ChristmasTruck.Time - MINUTE_TO_SHOWDOWN, 1)
+
 	addRemoteEvents{"ChristmasTruckDeloadBox", "ChristmasTruckLoadBox"}
 	addEventHandler("ChristmasTruckDeloadBox",root, self.m_Event_loadPresent)
 	addEventHandler("ChristmasTruckLoadBox",root, self.m_Event_deloadPresent)
@@ -140,6 +144,11 @@ function ChristmasTruck:destructor()
 		 	value:destroy()
 		end
 	end
+
+	for index, blip in pairs(self.m_PresentsBlips) do
+		blip:delete()
+	end
+
 	killTimer(self.m_WaterCheckTimer)
 	if isTimer(self.m_WaterNotificationTimer) then killTimer(self.m_WaterNotificationTimer) end
 end
@@ -186,6 +195,20 @@ function ChristmasTruck:spawnPresents()
 	for i = 1, self.m_PresentCount, 1 do
 		local pos = ChristmasTruck.presentSpawnCords[i]
 		self.m_Presents[i] = self:createPresent(pos[1], pos[2])
+
+		self.m_Presents[i].LoadHook = function()
+			if self.m_ShowDown and self.m_PresentsBlips[self.m_Presents[i]] then
+				self.m_PresentsBlips[self.m_Presents[i]]:delete()
+				self.m_PresentsBlips[self.m_Presents[i]] = nil
+			end
+		end	
+
+		self.m_Presents[i].DeloadHook = function()
+			if (self.m_ShowDown and not self.m_PresentsBlips[self.m_Presents[i]]) then
+				self.m_PresentsBlips[self.m_Presents[i]] = self:createBlip(self.m_Presents[i], "Geschenk", self.m_Presents[i])
+			end
+		end	
+
 		addEventHandler("onElementClicked", self.m_Presents[i], self.m_OnPresentCickFunc)
 	end
 end
@@ -243,9 +266,11 @@ end
 function ChristmasTruck:loadBoxOnChristmasTruck(player,box)
 	local presentsOnTruck = self:getAttachedPresents(self.m_Truck) + 1
 	player:detachPlayerObject(box)
+	-- if self.m_PresentsBlips[box] then delete(self.m_PresentsBlips[box]) self.m_PresentsBlips[box] = nil end
 	box.Present:setScale(1)
 	box:attach(self.m_Truck, ChristmasTruck.attachCords[presentsOnTruck])
 	box:setCollisionsEnabled(false)
+	
 	removeEventHandler("onElementClicked", box, self.m_OnPresentCickFunc)
 
 	if presentsOnTruck >= 8 then
@@ -329,6 +354,9 @@ function ChristmasTruck:loadPresent(player, veh)
 							player:detachPlayerObject(box)
 							box:attach(veh, VEHICLE_BOX_LOAD[veh.model][count+1])
 							removeEventHandler("onElementClicked", box, self.m_OnPresentCickFunc)
+							if box.LoadHook then
+								box.LoadHook(player, veh, box)
+							end
 						else
 							player:sendError(_("Du hast keine Kiste dabei!", player))
 						end
@@ -367,6 +395,9 @@ function ChristmasTruck:deloadPresent(player, veh)
 								player:setAnimation("carry", "crry_prtial", 1, true, true, false, true)
 								player:attachPlayerObject(box)
 								addEventHandler("onElementClicked", box, self.m_OnPresentCickFunc)
+								if box.DeloadHook then
+									box.DeloadHook(player, veh, box)
+								end
 								return
 							end
 						end
@@ -407,7 +438,11 @@ function ChristmasTruck:onPresentDeliver(player, tree)
 			player:detachPlayerObject(box)
 			box.Present:destroy()
 			box:destroy()
-			
+			if self.m_PresentsBlips[box] then
+				delete(self.m_PresentsBlips[box])
+				self.m_PresentsBlips[box] = nil
+			end
+
 			if table.size(ChristmasTruckManager:getSingleton().m_FactionPresents[player:getFaction():getId()]) < ChristmasTruckManager.MaxPresents then
 				local presentCount = table.size(ChristmasTruckManager:getSingleton().m_FactionPresents[player:getFaction():getId()])
 				ChristmasTruckManager:getSingleton().m_FactionPresents[player:getFaction():getId()][presentCount + 1] = getRealTime().timestamp
@@ -420,4 +455,27 @@ function ChristmasTruck:onPresentDeliver(player, tree)
 	if self:getRemainingPresentAmount() == 0 then
 		delete(self)
 	end
+end
+
+function ChristmasTruck:showdown() 
+	self.m_TruckBlip = self:createBlip(self.m_Truck, "Weihnachtstruck", self.m_Truck, "Logistician.png")
+	self.m_ShowDown = true
+	
+	for i, v in pairs(self.m_Presents) do
+		if not table.find(self.m_Truck:getAttachedElements(), v) then
+			self.m_PresentsBlips[v] = self:createBlip(v, "Geschenk", v)
+		end
+	end
+end
+
+function ChristmasTruck:createBlip(ele, text, attachedTo, marker)
+	marker = marker == nil and "Marker.png" or marker
+	local blip = Blip:new(marker, ele.position.x, ele.position.y, {factionType = {"State", "Evil"}, duty = true}, 9999, BLIP_COLOR_CONSTANTS.Red)
+	if (attachedTo) then
+		blip:attachTo(attachedTo)
+	end
+	if (text) then
+		blip:setDisplayText(text)
+	end
+	return blip
 end
