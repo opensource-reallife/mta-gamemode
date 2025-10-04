@@ -1678,7 +1678,7 @@ function Admin:Event_portToVehicle(veh)
         local pos = veh:getPosition()
 		client:setInterior(veh:getInterior())
 		client:setDimension(veh:getDimension())
-		client:setPosition(pos.x+1, pos.y, pos.z)
+		client:setPosition(pos.x+1, pos.y+1, pos.z+1)
 		client:sendInfo(_("Du wurdest zum Fahrzeug geportet!", client))
 		StatisticsLogger:getSingleton():addAdminVehicleAction(client, "vehiclePort", veh, "admin to vehicle")
     end
