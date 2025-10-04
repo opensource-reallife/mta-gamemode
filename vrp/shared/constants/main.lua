@@ -274,6 +274,7 @@ ADMIN_RANK_PERMISSION = {
 	["parkVehicle"] = RANK.Supporter, -- set spawn position
 	["repairVehicle"] = RANK.Supporter, -- repair per click
 	["despawnVehicle"] = RANK.Supporter, -- despawn
+	["flipVehicle"] = RANK.Supporter, -- despawn
 	["deleteVehicle"] = RANK.Administrator, -- permanently destroy vehicle
 	["looseVehicleHandbrake"] = RANK.Supporter,
 	["endVehicleSale"] = RANK.Supporter, -- also for ending rent

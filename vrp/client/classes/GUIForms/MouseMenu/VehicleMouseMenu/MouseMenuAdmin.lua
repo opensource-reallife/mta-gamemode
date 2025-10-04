@@ -90,6 +90,16 @@ function VehicleMouseMenuAdmin:constructor(posX, posY, element)
 		)
 	end
 
+	if localPlayer:getRank() >= ADMIN_RANK_PERMISSION["flipVehicle"] then
+		self:addItem(_"Umdrehen",
+			function()
+				if self:getElement() then
+					triggerServerEvent("vehicleFlip", self:getElement())
+				end
+			end
+		)
+	end
+
 	if localPlayer:getRank() >= ADMIN_RANK_PERMISSION["looseVehicleHandbrake"] then
 		self:addItem(_"Handbremse lösen",
 			function()

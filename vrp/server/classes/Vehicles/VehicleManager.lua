@@ -28,7 +28,7 @@ function VehicleManager:constructor()
 	self:setSpeedLimits()
 
 	-- Add events
-	addRemoteEvents{"vehicleLock", "vehicleRequestKeys", "vehicleAddKey", "vehicleRemoveKey", "vehicleRepair", "vehicleRespawn", "vehicleRespawnWorld", "vehicleDelete",
+	addRemoteEvents{"vehicleLock", "vehicleRequestKeys", "vehicleAddKey", "vehicleRemoveKey", "vehicleRepair", "vehicleFlip", "vehicleRespawn", "vehicleRespawnWorld", "vehicleDelete",
 	"vehicleSell", "vehicleSellAccept", "vehicleRequestInfo", "vehicleUpgradeGarage", "vehicleEmpty", "vehicleSyncMileage", "vehicleBreak", "vehicleBlow",
 	"vehicleUpgradeHangar", "vehiclePark", "soundvanChangeURL", "soundvanStopSound", "vehicleToggleHandbrake", "onVehicleCrash","checkPaintJobPreviewCar",
 	"vehicleGetTuningList", "adminVehicleEdit", "adminVehicleSetInTuning", "adminVehicleGetTextureList", "adminVehicleOverrideTextures", "vehicleLoadObject", "vehicleDeloadObject", "clientMagnetGrabVehicle", "clientToggleVehicleEngine",
@@ -41,6 +41,7 @@ function VehicleManager:constructor()
 	addEventHandler("vehicleAddKey", root, bind(self.Event_vehicleAddKey, self))
 	addEventHandler("vehicleRemoveKey", root, bind(self.Event_vehicleRemoveKey, self))
 	addEventHandler("vehicleRepair", root, bind(self.Event_vehicleRepair, self))
+	addEventHandler("vehicleFlip", root, bind(self.Event_vehicleFlip, self))
 	addEventHandler("vehicleRespawn", root, bind(self.Event_vehicleRespawn, self))
 	addEventHandler("vehicleRespawnWorld", root, bind(self.Event_vehicleRespawnWorld, self))
 	addEventHandler("vehicleDelete", root, bind(self.Event_vehicleDelete, self))
@@ -1175,6 +1176,24 @@ function VehicleManager:Event_vehicleRepair()
 	local format = {client:getName(), source:getName(), getElementData(source, "OwnerName") or "Unknown"}
 	Admin:getSingleton():sendShortMessage("%s hat das Fahrzeug %s von %s repariert.", format)
 	StatisticsLogger:getSingleton():addAdminVehicleAction(client, "repair", source)
+end
+
+function VehicleManager:Event_vehicleFlip()
+	if client:getRank() < ADMIN_RANK_PERMISSION["flipVehicle"] then
+		AntiCheat:getSingleton():report(client, "DisallowedEvent", CheatSeverity.High)
+		return
+	end
+
+	local rot = source:getRotation()
+	if ( rot.x > 110 ) and ( rot.x < 250 ) then
+		source:setRotation(rot.x + 180, rot.y, rot.z)
+
+		local format = {client:getName(), source:getName(), getElementData(source, "OwnerName") or "Unknown"}
+		Admin:getSingleton():sendShortMessage("%s hat das Fahrzeug %s von %s umgedreht.", format)
+		StatisticsLogger:getSingleton():addAdminVehicleAction(client, "flip", source)
+	else
+		client:sendError(_("Das Fahrzeug steht nicht auf dem Kopf!", client))
+	end
 end
 
 function VehicleManager:Event_vehicleRespawn(garageOnly)
