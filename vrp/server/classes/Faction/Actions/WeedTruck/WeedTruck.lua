@@ -34,10 +34,10 @@ WeedTruck.WeedPerPackage = 300
 
 function WeedTruck:constructor(driver)
 	self.m_Truck = TemporaryVehicle.create(456, WeedTruck.spawnPos.x, WeedTruck.spawnPos.y, WeedTruck.spawnPos.z, WeedTruck.spawnRot.z)
-	self.m_Truck:setDoorOpenRatio(1, 1)
+	--self.m_Truck:setDoorOpenRatio(1, 1)
 	self.m_Truck:setData("WeedTruck", true, true)
     self.m_Truck:setColor(0, 50, 0)
-	self.m_Truck:setFrozen(true)
+	--self.m_Truck:setFrozen(true)
 	self.m_Truck:setVariant(255, 255)
 	self.m_Truck:setMaxHealth(1500, true)
 	self.m_Truck:setBulletArmorLevel(2)
