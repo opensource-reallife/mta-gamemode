@@ -1486,11 +1486,11 @@ function SelfGUI:onSettingChange(setting)
 			core:set("Sounds", "RadioSound", state)
 		end
 
-		self.m_AllowRadioSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.45, self.m_Width*0.9, self.m_Height*0.04, _"Alarm von Bank/Juwelierraub und Shoprob", self.m_SettingBG)
-		self.m_AllowRadioSound:setFont(VRPFont(25))
-		self.m_AllowRadioSound:setFontSize(1)
-		self.m_AllowRadioSound:setChecked(core:get("Action", "PlayAlarm", true))
-		self.m_AllowRadioSound.onChange = function (state)
+		self.m_AllowActionAlertSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.45, self.m_Width*0.9, self.m_Height*0.04, _"Alarm von Bank/Juwelierraub und Shoprob", self.m_SettingBG)
+		self.m_AllowActionAlertSound:setFont(VRPFont(25))
+		self.m_AllowActionAlertSound:setFontSize(1)
+		self.m_AllowActionAlertSound:setChecked(core:get("Action", "PlayAlarm", true))
+		self.m_AllowActionAlertSound.onChange = function (state)
 			core:set("Action", "PlayAlarm", state)
 		end
 
