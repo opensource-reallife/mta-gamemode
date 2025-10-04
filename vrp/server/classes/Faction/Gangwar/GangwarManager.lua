@@ -110,8 +110,8 @@ function Gangwar:onAreaPayday()
 		end
 	end
 	if areasInTotal == 0 then return end
-	local amount = 0;
-	local amount2 = 0;
+	local amount = 0
+	local amount2 = 0
 	local facObj, playersOnline
 	for faction, count in pairs( payouts ) do
 		facObj = FactionManager:getSingleton():getFromId(faction)
@@ -120,7 +120,9 @@ function Gangwar:onAreaPayday()
 			if #playersOnline > 1 then
 				areaCounts[facObj] = count
 				amount = (GANGWAR_PAYOUT_PER_PLAYER * #playersOnline) + (GANGWAR_PAYOUT_PER_AREA * count)
-				self.m_BankAccountServer:transferMoney(facObj, amount+amount2, "Gangwar-Payday", "Faction", "Gangwar")
+				amount2 = PAYDAY_ACTION_BONUS
+				self.m_BankAccountServer:transferMoney(facObj, amount, "Gangwar-Payday", "Faction", "Gangwar")
+				self.m_BankAccountServer:transferMoney(facObj, amount2, "Grundeinkommen", "Faction", "Grundeinkommen")
 				facObj:sendMessage("Gangwar-Payday: #FFFFFFEure Fraktion erhält: "..amount.." $ (Pro Online-Member:"..GANGWAR_PAYOUT_PER_PLAYER.." und Pro Gebiet: "..GANGWAR_PAYOUT_PER_AREA.."$)" , 0, 200, 0, true)
 			else
 				facObj:sendMessage("Gangwar Payday: Es sind nicht genügend Spieler online für den Gangwar-Payday!" , 200, 0, 0, true)
