@@ -5053,3 +5053,18 @@ msgstr "+%s$ (%s$) - %s"
 
 msgid "-%s$ (%s$) - %s"
 msgstr "-%s$ (%s$) - %s"
+
+msgid "Du kannst im Dienst keinen Geldautomaten aufsprengen."
+msgstr "You cannot blow up an ATM while on duty."
+
+msgid "Du kannst im Dienst keinen Geldautomaten ausrauben."
+msgstr "You cannot rob an ATM while on duty."
+
+msgid "Du kannst im Dienst keinen Automaten ausrauben."
+msgstr "You cannot rob a vending machine while on duty."
+
+msgid "Du kannst Beamten im Dienst keine Wanteds geben."
+msgstr "You cannot assign wanteds to officers who are on duty."
+
+msgid "Du kannst nicht in den Dienst gehen, solange du gesucht wirst!"
+msgstr "You cannot go on duty while you are wanted!"
