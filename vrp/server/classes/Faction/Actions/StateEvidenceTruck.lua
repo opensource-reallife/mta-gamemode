@@ -132,9 +132,7 @@ function StateEvidenceTruck:spawnMoneyBags()
 		end	
 
 		self.m_MoneyBag[bagid].DeloadHook = function()
-			outputChatBox(1)
 			if (self.m_ShowDown and not self.m_MoneyBagBlips[self.m_MoneyBag[bagid]]) then
-				outputChatBox(2)
 				self.m_MoneyBagBlips[self.m_MoneyBag[bagid]] = self:createBlip(self.m_MoneyBag[bagid], "Geldsack", self.m_MoneyBag[i])
 			end
 		end	
