@@ -179,6 +179,12 @@ function WeaponTruck:destructor()
 			value:destroy()
 		end
 	end
+
+	for faction, data in pairs(self.m_DeliveryInfos) do
+		local wtName = self.m_StartFaction:isStateFaction() and "Staatswaffentruck" or "Waffentruck"
+		local temp = faction == self.m_StartFaction and "abgegeben" or "gestohlen"
+		faction:addLog(-1, "Aktion", ("%s: Es wurden %s/%s Kisten erfolgreich %s. Davon waren %s."):format(wtName, data.boxCount, self.m_BoxesCount, temp, toMoneyString(data.money)))
+	end
 	
 	if self.m_BoxesBlips then
 		for index, blip in pairs(self.m_BoxesBlips) do
@@ -617,12 +623,6 @@ function WeaponTruck:onDestinationMarkerHit(hitElement)
 	end
 
 	if self:getRemainingBoxAmount() == 0  then
-		for faction, data in pairs(self.m_DeliveryInfos) do
-			local wtName = self.m_StartFaction:isStateFaction() and "Staatswaffentruck" or "Waffentruck"
-			local temp = faction == self.m_StartFaction and "abgegeben" or "gestohlen"
-			faction:addLog(-1, "Aktion", ("%s: Es wurden %s/%s Kisten erfolgreich %s."):format(wtName, data.boxCount, self.m_BoxesCount, temp))
-		end
-
 		delete(self)
 	end
 end

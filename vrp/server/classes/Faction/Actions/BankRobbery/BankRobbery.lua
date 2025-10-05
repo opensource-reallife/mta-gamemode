@@ -163,6 +163,9 @@ function BankRobbery:destroyRob()
 			end
 		end
 	end
+	for faction, data in pairs(self.m_DeliveryInfos) do
+		faction:addLog(-1, "Aktion", ("%s: Es wurde %s %s."):format(self.m_RobName, toMoneyString(data.money), faction:isStateFaction() and "sichergestellt" or "eingenommen"))
+	end
 
 	if self.m_Blip then
 		for index, blip in pairs(self.m_Blip) do delete(blip) end
@@ -647,10 +650,6 @@ function BankRobbery:handleBagDelivery(faction, player)
 			PlayerManager:getSingleton():breakingNews("Der Raub wurde erfolgreich abgeschlossen! %s", faction:isStateFaction() and "Das Geld konnte sichergestellt werden!" or "Die Täter sind mit der Beute entkommen!")
 			Discord:getSingleton():outputBreakingNews(("Der Raub wurde erfolgreich abgeschlossen! %s"):format(faction:isStateFaction() and "Das Geld konnte sichergestellt werden!" or "Die Täter sind mit der Beute entkommen!"))
 			source:destroy()
-
-			for faction, data in pairs(self.m_DeliveryInfos) do
-				faction:addLog(-1, "Aktion", ("%s: Es wurde %s %s."):format(self.m_RobName, toMoneyString(data.money), faction:isStateFaction() and "sichergestellt" or "eingenommen"))
-			end
 
 			self:destroyRob()
 		end

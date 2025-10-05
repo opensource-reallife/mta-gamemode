@@ -137,6 +137,11 @@ function ChristmasTruck:destructor()
 		if value then delete(value) end
 	end
 
+	for faction, data in pairs(self.m_DeliveryInfos) do
+		local temp = faction == self.m_StartFaction and "abgegeben" or "gestohlen"
+		faction:addLog(-1, "Aktion", ("Weihnachtstruck: Es wurden %s/%s Geschenke erfolgreich %s."):format(data.boxCount, self.m_PresentCount, temp))
+	end
+
 	for index, value in pairs(self.m_Presents) do
 		if isElement(value) then
 			if value:isAttached() and isElement(value:getAttachedTo()) and value:getAttachedTo():getType() == "player" then
@@ -490,11 +495,6 @@ function ChristmasTruck:onPresentDeliver(player, tree)
 	end
 
 	if self:getRemainingPresentAmount() == 0 then
-		for faction, data in pairs(self.m_DeliveryInfos) do
-			local temp = faction == self.m_StartFaction and "abgegeben" or "gestohlen"
-			faction:addLog(-1, "Aktion", ("Weihnachtstruck: Es wurden %s/%s Geschenke erfolgreich %s."):format(data.boxCount, self.m_PresentCount, temp))
-		end
-
 		delete(self)
 	end
 end

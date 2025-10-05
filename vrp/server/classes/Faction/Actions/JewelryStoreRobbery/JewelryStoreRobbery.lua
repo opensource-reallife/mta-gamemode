@@ -119,6 +119,10 @@ function JewelryStoreRobbery:destructor()
 		end
 	end
 
+	for faction, data in pairs(self.m_DeliveryInfos) do
+		faction:addLog(-1, "Aktion", ("Juwelierraub: Es wurde %s$ %s."):format(toMoneyString(data.money), faction:isStateFaction() and "sichergestellt" or "eingenommen"))
+	end
+
 	for index, blip in pairs(self.m_BagBlips) do
 		blip:delete()
 	end
@@ -366,11 +370,7 @@ function JewelryStoreRobbery:Event_StateDeliveryFaction(button, state, player)
 	end
 end
 
-function JewelryStoreRobbery:stopRob(state)
-	for faction, data in pairs(self.m_DeliveryInfos) do
-		faction:addLog(-1, "Aktion", ("Juwelierraub: Es wurde %s$ %s"):format(toMoneyString(data.money), faction:isStateFaction() and "sichergestellt" or "eingenommen"))
-	end
-	
+function JewelryStoreRobbery:stopRob(state)	
 	JewelryStoreRobberyManager:getSingleton():stopRobbery(state)
 end
 

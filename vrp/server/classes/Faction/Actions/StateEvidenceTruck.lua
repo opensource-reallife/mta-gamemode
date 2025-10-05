@@ -97,6 +97,10 @@ function StateEvidenceTruck:destructor()
 		end
 	end
 
+	for faction, data in pairs(self.m_DeliveryInfos) do
+		faction:addLog(-1, "Aktion", ("Asservatentruck: Es wurden %s/%s Säcke voller Asservaten (%s) erfolgreich %s."):format(data.boxCount, StateEvidenceTruck.MoneyBagSpawns, toMoneyString(data.money), faction:isStateFaction() and "sichergestellt" or "gestohlen"))
+	end
+
 	if (self.m_MoneyBagBlips) then
 		for index, blip in pairs(self.m_MoneyBagBlips) do
 			blip:delete()
@@ -263,10 +267,6 @@ function StateEvidenceTruck:onDestinationMarkerHit(hitElement)
 	self.m_BankAccountServer:transferMoney(faction, bag.money, "Geldsack (Geldtransport)", "Action", "EvidenceTruck")
 	bag:destroy()
 	if self:getRemainingBagAmount() == 0 then
-		for faction, data in pairs(self.m_DeliveryInfos) do
-			faction:addLog(-1, "Aktion", ("Asservatentruck: Es wurden %s/%s Säcke voller Asservaten (%s) erfolgreich %s."):format(data.boxCount, StateEvidenceTruck.MoneyBagSpawns, data.money, faction:isStateFaction() and "abgegeben" or "gestohlen"))
-		end
-
 		delete(self)
 	end
 end

@@ -127,6 +127,11 @@ function WeedTruck:destructor()
 		end
 	end
 
+	for faction, data in pairs(self.m_DeliveryInfos) do
+		local temp = (faction == self.m_StartFaction and "abgegeben") or (faction:isStateFaction() and "sichergestellt") or "gestohlen" 
+		faction:addLog(-1, "Aktion", ("Drogentruck: Es wurden %s/%s Pakete (%sg) erfolgreich %s."):format(data.boxCount, #self.m_Packages, WeedTruck.WeedPerPackage * data.boxCount, temp))
+	end
+
 	for index, blip in pairs(self.m_PackageBlips) do
 		blip:delete()
 	end
@@ -388,11 +393,6 @@ function WeedTruck:onDestinationPedClick(player, ped, stateDestination)
 	end
 
 	if self:getRemainingPackageAmount() == 0  then
-		for faction, data in pairs(self.m_DeliveryInfos) do
-			local temp = (faction == self.m_StartFaction and "abgegeben") or (faction:isStateFaction() and "sichergestellt") or "gestohlen" 
-			faction:addLog(-1, "Aktion", ("Drogentruck: Es wurden %s/%s Säcke erfolgreich %s."):format(data.boxCount, #self.m_Packages, temp))
-		end
-
 		delete(self)
 	end
 end
