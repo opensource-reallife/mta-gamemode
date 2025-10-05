@@ -562,12 +562,20 @@ function AdminGUI:onPlayerButtonClick(func)
 				end)
 	elseif func == "setGroup" then
 		InputBoxWithChanger:new(_"Gruppe setzen",
-				_"Name der Gruppe", input, {0, 1, 2, 3, 4, 5, 6},
+				_"Gebe den Namen der gewünschten Gruppe ein:", input, {0, 1, 2, 3, 4, 5, 6},
 				function (input, rank)
 					if input ~= "" then
 						triggerServerEvent("adminSetPlayerGroup", root, self.m_SelectedPlayer, input, rank)
 					else
-						ErrorBox:new("Kein Name angegeben!")
+						QuestionBox:new(
+							_"Möchtest du den Spieler aus der aktuellen Gruppe entlassen?",
+							function ()
+								triggerServerEvent("adminSetPlayerGroup", root, self.m_SelectedPlayer)
+							end,
+							function ()
+								ErrorBox:new("Dann gib bitte den Namen einer Gruppe an!")
+							end
+						)
 					end
 				end)
 	elseif func == "nickchange" then

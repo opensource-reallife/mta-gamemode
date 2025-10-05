@@ -1641,14 +1641,28 @@ function Admin:Event_adminSetPlayerCompany(targetPlayer, Id, rank, internal, ext
 	end
 end
 
-function Admin:Event_adminSetPlayerGroup(targetPlayer, name, rank)
+function Admin:Event_adminSetPlayerGroup(targetPlayer, input, rank)
 	if client:getRank() >= ADMIN_RANK_PERMISSION["setGroup"] then
-		local group = GroupManager:getSingleton():getByName(tostring(name))
-		if group then
-			group:addPlayer(targetPlayer, tonumber(rank))
-			client:sendInfo(_("Du hast den Spieler in die Gruppe "..group:getName().." gesetzt!", client))
+		local oldGroup = targetPlayer:getGroup()
+		if input then
+			local group = GroupManager:getSingleton():getByName(tostring(input))
+			if group then
+				if oldGroup then 
+					oldGroup:removePlayer(targetPlayer) 
+				end
+				group:addPlayer(targetPlayer, tonumber(rank))
+				group:spawnVehicles()
+				client:sendInfo(_("Du hast den Spieler %s in die Gruppe %s gesetzt!", client, targetPlayer:getName(), group:getName()))
+			else
+				return client:sendError(_("Die Gruppe exisitiert nicht!", client))
+			end
 		else
-			return client:sendError(_("Die Gruppe exisitiert nicht!", client))
+			if oldGroup then 
+				oldGroup:removePlayer(targetPlayer) 
+				client:sendInfo(_("Du hast den Spieler %s aus der Gruppe %s entfernt!", client, targetPlayer:getName(), oldGroup:getName()))
+			else
+				return client:sendError(_("Der Spieler ist in keiner Gruppe!", client))
+			end
 		end
 	end
 end
@@ -2306,13 +2320,4 @@ function Admin:reloadFCVehicleShop(player, cmd, shopId)
 
 	ShopManager.FCVehicleShopsMap[shopId]:reload()
 	player:sendSuccess(_("Shop #%d neugeladen!", player, shopId))
-end
-
-function Admin:Event_getAllGroups(groupTable)
-	local groupTable = {}
-	local result = sql:queryFetch("SELECT Id, Name FROM ??_groups", sql:getPrefix())
-	for i, row in pairs(result) do
-		groupTable[row.Id] = row.Name
-		outputDebugString(row.Id .. " - " .. row.Name)
-	end
 end
