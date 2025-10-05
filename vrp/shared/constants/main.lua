@@ -251,6 +251,7 @@ ADMIN_RANK_PERMISSION = {
 	--group management
 	["setFaction"] = RANK.Administrator,
 	["setCompany"] = RANK.Administrator,
+	["setGroup"] = RANK.Administrator,
 	["resetAction"] = RANK.Moderator,
 	["playerHistory"] = RANK.Supporter,
 	["respawnFaction"] = RANK.Ticketsupporter, -- respawn whole faction

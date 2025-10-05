@@ -84,7 +84,7 @@ function Admin:constructor()
 	addCommandHandler("drun", bind(self.runString, self))
 	addCommandHandler("dpcrun", bind(self.runPlayerString, self))
 
-    addRemoteEvents{"adminSetPlayerFaction", "adminSetPlayerCompany", "adminTriggerFunction", "adminOfflinePlayerFunction", "adminPlayerFunction", "adminGetOfflineWarns",
+    addRemoteEvents{"adminSetPlayerFaction", "adminSetPlayerCompany", "adminSetPlayerGroup","adminTriggerFunction", "adminOfflinePlayerFunction", "adminPlayerFunction", "adminGetOfflineWarns",
     "adminGetPlayerVehicles", "adminPortVehicle", "adminPortToVehicle", "adminEditVehicle", "adminSeachPlayer", "adminSeachPlayerInfo",
 	"adminRespawnFactionVehicles", "adminRespawnCompanyVehicles", "adminVehicleDespawn", "openAdminGUI","checkOverlappingVehicles","admin:acceptOverlappingCheck",
 	"onClientRunStringResult","adminObjectPlaced","adminGangwarSetAreaOwner","adminGangwarResetArea", "adminLoginFix", "adminTriggerTransaction", "adminRequestMultiAccounts",
@@ -93,6 +93,7 @@ function Admin:constructor()
 
     addEventHandler("adminSetPlayerFaction", root, bind(self.Event_adminSetPlayerFaction, self))
     addEventHandler("adminSetPlayerCompany", root, bind(self.Event_adminSetPlayerCompany, self))
+    addEventHandler("adminSetPlayerGroup", root, bind(self.Event_adminSetPlayerGroup, self))
     addEventHandler("adminTriggerFunction", root, bind(self.Event_adminTriggerFunction, self))
     addEventHandler("adminPlayerFunction", root, bind(self.Event_playerFunction, self))
     addEventHandler("adminOfflinePlayerFunction", root, bind(self.Event_offlineFunction, self))
@@ -1640,6 +1641,18 @@ function Admin:Event_adminSetPlayerCompany(targetPlayer, Id, rank, internal, ext
 	end
 end
 
+function Admin:Event_adminSetPlayerGroup(targetPlayer, name, rank)
+	if client:getRank() >= ADMIN_RANK_PERMISSION["setGroup"] then
+		local group = GroupManager:getSingleton():getByName(tostring(name))
+		if group then
+			group:addPlayer(targetPlayer, tonumber(rank))
+			client:sendInfo(_("Du hast den Spieler in die Gruppe "..group:getName().." gesetzt!", client))
+		else
+			return client:sendError(_("Die Gruppe exisitiert nicht!", client))
+		end
+	end
+end
+
 function Admin:Event_vehicleRequestInfo(target, isGroup)
 	local vehicleTable = {}
 
@@ -2293,4 +2306,13 @@ function Admin:reloadFCVehicleShop(player, cmd, shopId)
 
 	ShopManager.FCVehicleShopsMap[shopId]:reload()
 	player:sendSuccess(_("Shop #%d neugeladen!", player, shopId))
+end
+
+function Admin:Event_getAllGroups(groupTable)
+	local groupTable = {}
+	local result = sql:queryFetch("SELECT Id, Name FROM ??_groups", sql:getPrefix())
+	for i, row in pairs(result) do
+		groupTable[row.Id] = row.Name
+		outputDebugString(row.Id .. " - " .. row.Name)
+	end
 end
