@@ -18,6 +18,8 @@ function BankRobbery:constructor()
 	self.m_Blip = {}
 	self.m_DestinationMarker = {}
 	self.m_MoneyBags = {}
+	self.m_MoneyBagBlips = {}
+	self.m_TruckBlips = {}
 	self.m_BankAccountServer = BankServer.get("action.bank_robbery")
 
 	self.m_OnSafeClickFunction = bind(BankRobbery.Event_onSafeClicked, self)
@@ -98,6 +100,18 @@ function BankRobbery:destroyRob()
 	if self.m_MoneyBags then
 		for index, bag in pairs(self.m_MoneyBags) do	if isElement(bag) then destroyElement(bag) end end
 	end
+	
+	if (self.m_MoneyBagBlips) then
+		for index, blip in pairs(self.m_MoneyBagBlips) do
+			blip:delete()
+		end
+	end
+	if self.m_TruckBlips then
+		for i, v in pairs(self.m_TruckBlips) do
+			delete(self.m_TruckBlip)
+		end
+	end
+	self.m_ShowDown = false
 
 	if isElement(self.m_BankDoor) then destroyElement(self.m_BankDoor) end
 	if isElement(self.m_SafeDoor) then destroyElement(self.m_SafeDoor) end
@@ -127,6 +141,10 @@ function BankRobbery:destroyRob()
 	killTimer(self.m_Timer)
 	if isTimer(self.m_UpdateBreakingNewsTimer) then
 	killTimer(self.m_UpdateBreakingNewsTimer)
+	end
+
+	if isTimer(self.m_TimerUntilShowdown) then
+		killTimer(self.m_TimerUntilShowdown)
 	end
 
 	local onlinePlayers = self:getEvilPeople()
@@ -197,8 +215,14 @@ function BankRobbery:startRobGeneral(player) --ped got targeted
 	self.m_MoneyInSafes = 0
 	self.m_CircuitBreakerPlayers = {}
 	self.m_MoneyBags = {}
+	self.m_MoneyBagBlips = {}
 	self:setAllTrucksActive(true)
 	self.m_StatisticsTimer = Timer(bind(self.triggerStatistics, self), 1000, 0)
+
+	self.m_ShowDown = false
+	self.m_TimerUntilShowdown = setTimer(bind(self.showdown, self), self.ms_BankRobGeneralTime - MINUTE_TO_SHOWDOWN, 1)
+
+	self.m_DeliveryInfos = {}
 
 	StatisticsLogger:getSingleton():addActionLog("BankRobbery", "start", self.m_RobPlayer, self.m_RobFaction, "faction")
 
@@ -448,10 +472,25 @@ function BankRobbery:addMoneyToBag(player, money)
 	if self.ms_BagSpawnInterior then
 		newBag:setInterior(self.ms_BagSpawnInterior)
 	end
-	newBag.DeloadHook = bind(self.deloadBag, self)
+
 	table.insert(self.m_MoneyBags, newBag)
 	newBag:setData("Money", money, true)
 	newBag:setData("MoneyBag", true, true)
+
+	newBag.DeloadHook = bind(self.deloadBag, self)
+	newBag.LoadHook = function(player, veh, box)
+		if self.m_ShowDown then
+			if (self.m_MoneyBagBlips[box]) then
+				delete(self.m_MoneyBagBlips[box])
+				self.m_MoneyBagBlips[box] = nil
+			end
+
+			if (not self.m_TruckBlips[veh]) then
+				self.m_TruckBlips[veh] = self:createBlip(veh, "Transportfahrzeug", veh, "Logistician.png")
+			end
+		end
+	end	
+
 	addEventHandler("onElementClicked", newBag, self.m_Event_onBagClickFunc)
 	player:sendShortMessage(_("%d$ in den Geldsack %d gepackt!", player, money, #self.m_MoneyBags))
 	self.m_MoneyBagCount = #self.m_MoneyBags
@@ -475,6 +514,10 @@ function BankRobbery:createTruck(x, y, z, rz)
 	addEventHandler("onElementDestroy", truck, function()
 		if self.m_Trucks[truck] then
 			self.m_Trucks[truck] = nil
+		end
+		if self.m_TruckBlips[truck] then
+			delete(self.m_TruckBlips[truck])
+			self.m_TruckBlips[truck] = nil
 		end
 	end)
 	return truck
@@ -507,7 +550,26 @@ end
 function BankRobbery:deloadBag(player, veh, bag)
 	if player:getFaction():isStateFaction() and player:isFactionDuty() then
 		player:detachPlayerObject(player:getPlayerAttachedObject())
-		self:statePeopleClickBag(player, object)
+		-- self:statePeopleClickBag(player, object)
+	end
+
+	if (self.m_ShowDown) then
+		local hasAnotherObject = false
+		for i, v in pairs(veh:getAttachedElements()) do
+			if (v:getModel() == 1550 and v:getData("MoneyBag")) then
+				hasAnotherObject = true
+				break
+			end
+		end
+
+		if (not hasAnotherObject and not self.m_Trucks[veh]) then
+			delete(self.m_MoneyBagBlips[veh])
+			self.m_MoneyBagBlips[veh] = nil
+		end
+
+		if ( not self.m_MoneyBagBlips[bag]) then
+			self.m_MoneyBagBlips[bag] = self:createBlip(bag, "Geldsack", bag)
+		end
 	end
 end
 
@@ -564,6 +626,18 @@ function BankRobbery:handleBagDelivery(faction, player)
 				faction:getAllianceFaction():sendShortMessage(text)
 			end
 		end
+		
+		if (self.m_MoneyBagBlips[bag]) then
+			self.m_MoneyBagBlips[bag]:delete()
+			self.m_MoneyBagBlips[bag] = nil
+		end
+
+		if (not self.m_DeliveryInfos[faction]) then
+			self.m_DeliveryInfos[faction] = {["bagCount"] = 0, ["money"] = 0}
+		end
+		self.m_DeliveryInfos[faction].bagCount = self.m_DeliveryInfos[faction].bagCount + 1
+		self.m_DeliveryInfos[faction].money = self.m_DeliveryInfos[faction].money + money
+
 		bag:destroy()
 		table.removevalue(self.m_MoneyBags, bag)
 	end
@@ -573,7 +647,49 @@ function BankRobbery:handleBagDelivery(faction, player)
 			PlayerManager:getSingleton():breakingNews("Der Raub wurde erfolgreich abgeschlossen! %s", faction:isStateFaction() and "Das Geld konnte sichergestellt werden!" or "Die Täter sind mit der Beute entkommen!")
 			Discord:getSingleton():outputBreakingNews(("Der Raub wurde erfolgreich abgeschlossen! %s"):format(faction:isStateFaction() and "Das Geld konnte sichergestellt werden!" or "Die Täter sind mit der Beute entkommen!"))
 			source:destroy()
+
+			for faction, data in pairs(self.m_DeliveryInfos) do
+				faction:addLog(-1, "Aktion", ("%s: Es wurde %s %s."):format(self.m_RobName, toMoneyString(data.money), faction:isStateFaction() and "sichergestellt" or "eingenommen"))
+			end
+
 			self:destroyRob()
 		end
 	end
+end
+
+function BankRobbery:showdown() 
+	self.m_ShowDown = true
+	self.m_TruckBlips = {}
+	for i, v in pairs(self.m_Trucks) do
+		self.m_TruckBlips[i] = self:createBlip(i, "Geldtruck", i, "Logistician.png")
+	end
+
+	for i, v in pairs(self.m_MoneyBag) do
+		local attachedTo = v:getAttachedTo()
+		if v and isElement(v) and (not self.m_Trucks[attachedTo]) then
+			if (attachedTo and attachedTo:getType() == "vehicle") then
+				if not self.m_TruckBlips[attachedTo] then
+					self.m_TruckBlips[attachedTo] = self:createBlip(attachedTo, "Transportfahrzeug", attachedTo, "Logistician.png")
+				end 
+			else
+				if not self.m_MoneyBagBlips[v] then
+					self.m_MoneyBagBlips[v] = self:createBlip(v, "Geldsack", v)
+				end
+			end
+		end
+	end
+end
+
+
+function BankRobbery:createBlip(ele, text, attachedTo, marker, color)
+	color = color and color or BLIP_COLOR_CONSTANTS.Red
+	marker = marker and marker or "Marker.png"
+	local blip = Blip:new(marker, ele.position.x, ele.position.y, {factionType = {"State", "Evil"}, duty = true}, 9999, color)
+	if (attachedTo) then
+		blip:attachTo(attachedTo)
+	end
+	if (text) then
+		blip:setDisplayText(text)
+	end
+	return blip
 end

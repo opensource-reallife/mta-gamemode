@@ -72,6 +72,7 @@ function CasinoHeist:constructor()
 	self.m_UpdateDifficultyPulse:registerHandler(bind(CasinoHeist.updateDifficulty, self))
 
 	self.m_Name = "Casino"
+	self.m_RobName = "Casinoraub"
 	self.m_MarkedPosition = {2282.03, 1726.15, 11.04} -- the marked position where action blips and so on will be located
 end
 

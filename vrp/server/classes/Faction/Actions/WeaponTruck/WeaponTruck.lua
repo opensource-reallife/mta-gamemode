@@ -64,6 +64,8 @@ function WeaponTruck:constructor(driver, boxContent, totalAmount, type)
 	self.m_BoxesBlips = {}
 	self.m_StartPlayer = driver
 	self.m_StartFaction = driver:getFaction()
+
+	self.m_DeliveryInfos = {}
 	
 	self.m_BankAccountServer = BankServer.get("action.weapon_truck")
 
@@ -178,10 +180,15 @@ function WeaponTruck:destructor()
 		end
 	end
 	
-	for index, blip in pairs(self.m_BoxesBlips) do
-		blip:delete()
+	if self.m_BoxesBlips then
+		for index, blip in pairs(self.m_BoxesBlips) do
+			blip:delete()
+		end
 	end
 
+	if isTimer(self.m_TimerUntilShowdown) then
+		killTimer(self.m_TimerUntilShowdown)
+	end
 
 	killTimer(self.m_WaterCheckTimer)
 	if isTimer(self.m_WaterNotificationTimer) then killTimer(self.m_WaterNotificationTimer) end
@@ -252,16 +259,39 @@ function WeaponTruck:spawnBox(i, position)
 		self.m_Boxes[i]:setData("content", self.m_Boxes[i].content, true)
 		setElementData(self.m_Boxes[i], "clickable", true)
 		--self:outputBoxContent(self.m_StartPlayer,i)
-		self.m_Boxes[i].LoadHook = function()
-			if self.m_ShowDown and self.m_BoxesBlips[self.m_Boxes[i]] then
-				self.m_BoxesBlips[self.m_Boxes[i]]:delete()
-				self.m_BoxesBlips[self.m_Boxes[i]] = nil
+		self.m_Boxes[i].LoadHook = function(player, veh, box)
+			if self.m_ShowDown then
+				if (self.m_BoxesBlips[box]) then
+					delete(self.m_BoxesBlips[box])
+					self.m_BoxesBlips[box] = nil
+				end
+
+				if (not self.m_BoxesBlips[veh]) then
+					self.m_BoxesBlips[veh] = self:createBlip(veh, "Transportfahrzeug", veh, "Logistician.png")
+				end
 			end
 		end	
 
-		self.m_Boxes[i].DeloadHook = function()
-			if (self.m_ShowDown and not self.m_BoxesBlips[self.m_Boxes[i]]) then
-				self.m_BoxesBlips[self.m_Boxes[i]] = self:createBlip(self.m_Boxes[i], "Waffenkiste", self.m_Boxes[i])
+		self.m_Boxes[i].DeloadHook = function(player, veh, box)
+			if (self.m_ShowDown) then
+				local hasAnotherObject = false
+				if (self.m_BoxesBlips[veh]) then
+					for i, v in pairs(veh:getAttachedElements()) do
+						if (v:getModel() == 2912 and v:getData("weaponBox")) then
+							hasAnotherObject = true
+							break
+						end
+					end
+
+					if (not hasAnotherObject and self.m_Truck ~= veh) then
+						delete(self.m_BoxesBlips[veh])
+						self.m_BoxesBlips[veh] = nil
+					end
+				end
+
+				if ( not self.m_BoxesBlips[box]) then
+					self.m_BoxesBlips[box] = self:createBlip(box, "Waffenkiste", box)
+				end
 			end
 		end	
 
@@ -498,6 +528,9 @@ function WeaponTruck:loadBox(player, veh)
 					local box = player:getPlayerAttachedObject()
 					if veh == self.m_Truck then
 						self:loadBoxOnWeaponTruck(player, box)
+						if box.LoadHook then
+							box.LoadHook(player, veh, box)
+						end
 						return
 					end
 					if self:getAttachedBoxes(veh) < VEHICLE_BOX_LOAD[veh.model]["count"] then
@@ -551,6 +584,7 @@ end
 function WeaponTruck:onDestinationMarkerHit(hitElement)
 	local faction = source.faction
 	local box
+	local money = 0
 	if isPedInVehicle(hitElement) and getPedOccupiedVehicle(hitElement) == self.m_Truck then
 		hitElement:sendInfo(_("Bitte steig aus um die Kisten zu entladen!", hitElement))
 		return
@@ -559,12 +593,23 @@ function WeaponTruck:onDestinationMarkerHit(hitElement)
 	if hitElement:getPlayerAttachedObject() then
 		if self:getAttachedBoxes(hitElement) > 0 then
 			box = hitElement:getPlayerAttachedObject()
-			if self.m_BoxesBlips[box] then delete(self.m_BoxesBlips[box]) self.m_BoxesBlips[box] = nil end
 			PlayerManager:getSingleton():breakingNews("Waffenkiste %d von %d wurde bei der/den %s abgegeben!", self.m_BoxesCount-self:getRemainingBoxAmount()+1, self.m_BoxesCount, faction:getShortName())
 			hitElement:sendInfo(_("Du hast erfolgreich eine Kiste abgegeben! Die Waffen sind nun im Fraktions-Depot!",hitElement))
-			self:addWeaponsToDepot(hitElement, faction, box.content)
+			money = self:addWeaponsToDepot(hitElement, faction, box.content)
 			hitElement:detachPlayerObject(box)
+
+			if (self.m_BoxesBlips[box]) then
+				self.m_BoxesBlips[box]:delete()
+				self.m_BoxesBlips[box] = nil
+			end
+
 			box:destroy()
+
+			if (not self.m_DeliveryInfos[faction]) then
+				self.m_DeliveryInfos[faction] = {["boxCount"] = 0, ["money"] = 0}
+			end
+			self.m_DeliveryInfos[faction].boxCount = self.m_DeliveryInfos[faction].boxCount + 1
+			self.m_DeliveryInfos[faction].money = self.m_DeliveryInfos[faction].money + money
 		end
 	elseif hitElement:getOccupiedVehicle() then
 		hitElement:sendInfo(_("Du musst die Kisten per Hand abladen!", hitElement))
@@ -572,6 +617,12 @@ function WeaponTruck:onDestinationMarkerHit(hitElement)
 	end
 
 	if self:getRemainingBoxAmount() == 0  then
+		for faction, data in pairs(self.m_DeliveryInfos) do
+			local wtName = self.m_StartFaction:isStateFaction() and "Staatswaffentruck" or "Waffentruck"
+			local temp = faction == self.m_StartFaction and "abgegeben" or "gestohlen"
+			faction:addLog(-1, "Aktion", ("%s: Es wurden %s/%s Kisten erfolgreich %s."):format(wtName, data.boxCount, self.m_BoxesCount, temp))
+		end
+
 		delete(self)
 	end
 end
@@ -676,23 +727,34 @@ function WeaponTruck:addWeaponsToDepot(player, faction, weaponTable)
 	player:sendShortMessage(shortmessageString, "Waffentruck-Kiste", nil, 15000)
 
 	depot:save()
+	return money
 end
 
 function WeaponTruck:showdown() 
-	self.m_TruckBlip = self:createBlip(self.m_Truck, "Waffentruck", self.m_Truck, "Logistician.png")
+	self.m_BoxesBlips[self.m_Truck] = self:createBlip(self.m_Truck, "Waffentruck", self.m_Truck, "Logistician.png")
 	self.m_ShowDown = true
 
 	for i, v in pairs(self.m_Boxes) do
-		if not table.find(self.m_Truck:getAttachedElements(), v) then
-			self.m_BoxesBlips[v] = self:createBlip(v, "Waffenkiste", v)
+		local attachedTo = v:getAttachedTo()
+		if v and isElement(v) and attachedTo ~= self.m_Truck then
+			if (attachedTo and attachedTo:getType() == "vehicle") then
+				if (not self.m_BoxesBlips[attachedTo]) then
+					self.m_BoxesBlips[attachedTo] = self:createBlip(attachedTo, "Transportfahrzeug", attachedTo, "Logistician.png")
+				end
+			else
+				if not self.m_BoxesBlips[v] then
+					self.m_BoxesBlips[v] = self:createBlip(v, "Waffenkiste", v)
+				end
+			end
 		end
 	end
 end
 
 
-function WeaponTruck:createBlip(ele, text, attachedTo, marker)
+function WeaponTruck:createBlip(ele, text, attachedTo, marker, color)
+	color = color and color or BLIP_COLOR_CONSTANTS.Red
 	marker = marker == nil and "Marker.png" or marker
-	local blip = Blip:new(marker, ele.position.x, ele.position.y, {factionType = {"State", "Evil"}, duty = true}, 9999, BLIP_COLOR_CONSTANTS.Red)
+	local blip = Blip:new(marker, ele.position.x, ele.position.y, {factionType = {"State", "Evil"}, duty = true}, 9999, color)
 	if (attachedTo) then
 		blip:attachTo(attachedTo)
 	end

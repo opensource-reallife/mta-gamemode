@@ -53,6 +53,7 @@ function BankPalomino:constructor()
 	self.m_BlipPC:setDisplayText("Bank")
 
 	self.m_Name = "Bank"
+	self.m_RobName = "Bankraub"
 	self.m_MarkedPosition = {2318.43, 11.37, 26.48} -- the marked position where action blips and so on will be located
 end
 

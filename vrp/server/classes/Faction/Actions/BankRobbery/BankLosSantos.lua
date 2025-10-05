@@ -47,6 +47,8 @@ function BankLosSantos:constructor()
 
 	self.m_Difficulty = 1
 
+	self.m_RobName = "Bankraub"
+
 	self:build()
 end
 
