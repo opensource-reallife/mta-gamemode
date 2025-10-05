@@ -7,8 +7,7 @@
 -- ****************************************************************************
 
 WeedTruck = inherit(Object)
-WeedTruck.LoadTime = 30*1000 -- in ms
-WeedTruck.Time = 15*60*1000 -- in ms
+WeedTruck.Time = ACTION_TIME
 WeedTruck.spawnPos = Vector3(-1105.76, -1621.55, 76.54)
 WeedTruck.spawnRot = Vector3(0, 0, 270)
 WeedTruck.Destination = Vector3(2181.59, -2626.35, 11.5)

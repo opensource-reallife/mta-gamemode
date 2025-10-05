@@ -14,6 +14,9 @@ BankPalomino.Map = {}
 local BOMB_TIME = 20*1000
 
 function BankPalomino:constructor()
+	self.ms_VaultOpenTime = 3*(60*1000)
+	self.ms_BankRobGeneralTime = ACTION_TIME
+
 	self.ms_FinishMarker = {
 		Vector3(2766.84, 84.98, 18.39),
 		Vector3(2561.50, -949.89, 81.77),
@@ -43,8 +46,6 @@ function BankPalomino:constructor()
 	}
 
 	self.ms_MoneyPerBag = 3000
-	self.ms_VaultOpenTime = 3*(60*1000)
-	self.ms_BankRobGeneralTime = 60*1000*12
 
 	self:build()
 

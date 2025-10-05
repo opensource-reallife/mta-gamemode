@@ -7,6 +7,7 @@
 -- ****************************************************************************
 ChristmasTruck = inherit(Object)
 
+ChristmasTruck.Time = ACTION_TIME
 ChristmasTruck.spawnPos = {-1563.24, 2693.13, 56.18, 178.93}
 ChristmasTruck.loadMarkerPos = Vector3(-1563.25, 2698.75, 55.83)
 ChristmasTruck.attachCords = {
@@ -29,7 +30,6 @@ ChristmasTruck.blipPos = { -- for now only the positions from active factions
 	[10] = Vector3(2782.35, -2019.28, 12.55),
 	[11] = Vector3(1912.89, 935.21, 9.7),
 }
-ChristmasTruck.Time = 20*60*1000
 ChristmasTruck.MaxPresents = 8
 
 

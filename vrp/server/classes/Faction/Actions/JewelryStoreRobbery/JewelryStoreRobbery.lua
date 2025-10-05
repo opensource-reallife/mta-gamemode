@@ -87,10 +87,10 @@ function JewelryStoreRobbery:constructor(attacker, maxBags)
 
 	self.m_BankAccountServer = BankServer.get("action.jewelry_store_robbery")
 	self.m_BreakingNewsTimer = setTimer(bind(self.updateBreakingNews, self), 20000, 0)
-	self.m_TimeUpTimer = setTimer(bind(self.timeUp, self), 15*60*1000, 1)
+	self.m_TimeUpTimer = setTimer(bind(self.timeUp, self), ACTION_TIME, 1)
 
 	self.m_ShowDown = false
-	self.m_TimerUntilShowdown = setTimer(bind(self.showdown, self), 15*60*1000 - MINUTE_TO_SHOWDOWN, 1)
+	self.m_TimerUntilShowdown = setTimer(bind(self.showdown, self), ACTION_TIME - MINUTE_TO_SHOWDOWN, 1)
 
 	addEventHandler("onElementClicked", self.m_EvilDeliveryPed, bind(self.Event_EvilDeliveryFaction, self))
 	addEventHandler("onElementClicked", self.m_StateDeliveryPed, bind(self.Event_StateDeliveryFaction, self))

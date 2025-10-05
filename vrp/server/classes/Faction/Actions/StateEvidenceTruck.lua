@@ -7,7 +7,7 @@
 -- ****************************************************************************
 
 StateEvidenceTruck = inherit(Singleton)
-StateEvidenceTruck.Time = 20*60*1000 -- in ms
+StateEvidenceTruck.Time = ACTION_TIME
 StateEvidenceTruck.spawnPos = Vector3(1591.18, -1685.65, 6.02)
 StateEvidenceTruck.spawnRot = Vector3(0, 0, 0)
 StateEvidenceTruck.Destination = Vector3(-1726.63, -123.50, 2.55)
