@@ -526,9 +526,15 @@ function AdminGUI:onPlayerButtonClick(func)
 				_"Bitte wähle das gewünschte Unternehmen aus:",companyTable, {0, 1, 2, 3, 4, 5}, _"In Fraktionsverlauf vermerken?",
 				function (companyId, rank, state)
 					if state then
-						HistoryUninviteGUI:new(function(internal, external)
+						if self.m_SelectedPlayer:getCompanyId() == 0 then
+							local internal = "Intern: In Unternehmen gesetzt"
+							local external = "Extern: In Unternehmen gesetzt"
 							triggerServerEvent("adminSetPlayerCompany", root, self.m_SelectedPlayer, companyId, rank, internal, external)
-						end)
+						else
+							HistoryUninviteGUI:new(function(internal, external)
+								triggerServerEvent("adminSetPlayerCompany", root, self.m_SelectedPlayer, companyId, rank, internal, external)
+							end)
+						end
 					else
 						triggerServerEvent("adminSetPlayerCompany", root, self.m_SelectedPlayer, companyId, rank)
 					end
@@ -540,9 +546,15 @@ function AdminGUI:onPlayerButtonClick(func)
 				_"Bitte wähle die gewünschte Fraktion aus:",factionTable, {0, 1, 2, 3, 4, 5, 6}, _"In Fraktionsverlauf vermerken?",
 				function (factionId, rank, state)
 					if state then
-						HistoryUninviteGUI:new(function(internal, external)
+						if self.m_SelectedPlayer:getFactionId() == 0 then
+							local internal = "Intern: In Fraktion gesetzt"
+							local external = "Extern: In Fraktion gesetzt"
 							triggerServerEvent("adminSetPlayerFaction", root, self.m_SelectedPlayer, factionId, rank, internal, external)
-						end)
+						else
+							HistoryUninviteGUI:new(function(internal, external)
+								triggerServerEvent("adminSetPlayerFaction", root, self.m_SelectedPlayer, factionId, rank, internal, external)
+							end)
+						end
 					else
 						triggerServerEvent("adminSetPlayerFaction", root, self.m_SelectedPlayer, factionId, rank)
 					end
