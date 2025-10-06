@@ -5068,3 +5068,9 @@ msgstr "You cannot assign wanteds to officers who are on duty."
 
 msgid "Du kannst nicht in den Dienst gehen, solange du gesucht wirst!"
 msgstr "You cannot go on duty while you are wanted!"
+
+msgid "benutzt ein %s!"
+msgstr "uses a %s!"
+
+msgid "benutzt eine %s!"
+msgstr "uses a %s!"
