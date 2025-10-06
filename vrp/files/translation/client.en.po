@@ -6453,3 +6453,6 @@ msgstr "ELEVATOR"
 
 msgid "HAUS"
 msgstr "HOUSE"
+
+msgid "%s (%s übrig)"
+msgstr "%s (%s left)"
