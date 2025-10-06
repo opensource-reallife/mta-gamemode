@@ -3151,6 +3151,9 @@ msgstr "Last location"
 msgid "Usertreff"
 msgstr "User meeting"
 
+msgid "Stadthalle"
+msgstr "City hall"
+
 msgid "Fraktionsbase"
 msgstr "Faction base"
 
