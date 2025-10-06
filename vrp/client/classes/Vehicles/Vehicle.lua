@@ -279,14 +279,14 @@ addEventHandler("onClientVehicleDamage", root,
 					source:setHealth(VEHICLE_TOTAL_LOSS_HEALTH)
 				end
 			end
-			local controller = source.controller or  (source:getAttachedTo() and source:getAttachedTo().controller)
+			local controller = source.controller or (source:getAttachedTo() and source:getAttachedTo().controller)
 			if controller == localPlayer then
 				if not weapon then
 					triggerServerEvent("onVehicleCrash", source, newLoss)
 				end
 			end
 		end
-		if attacker then
+		if attacker and isElement(attacker) and attacker:geType() == "player" then
 			triggerServerEvent("onClientVehicleDamage", localPlayer, attacker, source, weapon, loss, dx, dy, dz, tId)
 		end
 	end
