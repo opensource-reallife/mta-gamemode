@@ -154,7 +154,7 @@ function FCVehicleShop:buyVehicle(player, vehicleId)
 	end
 
 	local veh = VehicleManager:getSingleton():createNewVehicle(ownerId, ownerType, vehData.model, spawnPos.posX, spawnPos.posY, spawnPos.posZ, spawnPos.interior, spawnPos.dimension, spawnPos.rotZ, 0, 0, vehData.price, nil, vehData.handling)
-	group:addLog(player, "Fahrzeuge", ("hat das Fahrzeug: %s mit der ID: %s für die Fraktion: %s gekauft (%s)"):format(getVehicleNameFromModel(vehData.model). veh:getId(), group:getShortName(), toMoneyString(vehData.price)))
+	group:addLog(player, "Fahrzeuge", ("hat das Fahrzeug: %s mit der ID: %s für die Fraktion: %s gekauft (%s)"):format(getVehicleNameFromModel(vehData.model), veh:getId(), group:getShortName(), toMoneyString(vehData.price)))
 	--if vehType ~= "Sattelauflieger" and vehType ~= "Anhänger" then
 	--	warpPedIntoVehicle(player, veh)
 	--end
