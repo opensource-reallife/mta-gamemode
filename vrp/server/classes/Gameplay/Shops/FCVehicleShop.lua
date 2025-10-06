@@ -90,6 +90,7 @@ end
 function FCVehicleShop:buyVehicle(player, vehicleId)
 	local vehData
 	local vehType
+	local group
 
 	if player:getFaction() and player:isFactionDuty() and table.find(self.m_Factions, player:getFaction():getId()) then
 		vehData = self.m_VehicleList[VehicleTypes.Faction][player:getFaction():getId()][vehicleId]
@@ -113,6 +114,7 @@ function FCVehicleShop:buyVehicle(player, vehicleId)
 			return
 		end
 
+		group = player:getFaction()
 		ownerId = player:getFaction():getId()
 		ownerType = VehicleTypes.Faction
 	elseif player:getCompany() and player:isCompanyDuty() and table.find(self.m_Companies, player:getCompany():getId()) then
@@ -137,6 +139,7 @@ function FCVehicleShop:buyVehicle(player, vehicleId)
 			return
 		end
 
+		group = player:getCompany()
 		ownerId = player:getCompany():getId()
 		ownerType = VehicleTypes.Company
 	end
@@ -151,7 +154,7 @@ function FCVehicleShop:buyVehicle(player, vehicleId)
 	end
 
 	local veh = VehicleManager:getSingleton():createNewVehicle(ownerId, ownerType, vehData.model, spawnPos.posX, spawnPos.posY, spawnPos.posZ, spawnPos.interior, spawnPos.dimension, spawnPos.rotZ, 0, 0, vehData.price, nil, vehData.handling)
-	
+	group:addLog(player, "Fahrzeuge", ("hat das Fahrzeug: %s mit der ID: %s für die Fraktion: %s gekauft (%s)"):format(getVehicleNameFromModel(vehData.model). veh:getId(), group:getShortName(), toMoneyString(vehData.price)))
 	--if vehType ~= "Sattelauflieger" and vehType ~= "Anhänger" then
 	--	warpPedIntoVehicle(player, veh)
 	--end

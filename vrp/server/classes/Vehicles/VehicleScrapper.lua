@@ -106,6 +106,8 @@ function VehicleScrapper:Event_onScrap(player)
 					if not vehicle.m_Premium then 
 						local owner = vehicle:getFaction() or vehicle:getCompany() or player
 						if owner then
+							if vehicle:getFaction() or vehicle:getCompany() then
+								owner:addLog(player, "Fahrzeuge" ("hat das Fahrzeug: %s mit der ID: %s für die Fraktion: %s verkauft (%s | 30%)"):format(getVehicleNameFromModel(vehicle:getModel()). vehicle:getId(), owner:getShortName(), toMoneyString(price)))
 							StatisticsLogger:getSingleton():addVehicleTradeLog(vehicle, player, 0, price, "server")
 							vehicle:purge()
 							self.m_BankAccountServer:transferMoney(owner, price, "Fahrzeug-Verkauf", "Vehicle", "SellToServer (Scrap)")
