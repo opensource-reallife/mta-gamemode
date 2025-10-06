@@ -6456,3 +6456,12 @@ msgstr "HOUSE"
 
 msgid "%s (%s übrig)"
 msgstr "%s (%s left)"
+
+msgid "Spieler:"
+msgstr "Player:"
+
+msgid "Platz:"
+msgstr "Place:"
+
+msgid "Lobby verlassen"
+msgstr "Leave lobby"

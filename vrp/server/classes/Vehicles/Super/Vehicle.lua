@@ -168,7 +168,7 @@ function Vehicle:onPlayerEnter(player, seat)
 	end
 
 	if seat == 0 then
-		if not player:getPublicSync("inDrivingLession") then
+		if not player:getPublicSync("inDrivingLession") and not player.raceLobby then
 			if not player:hasCorrectLicense(source) then
 				player:sendShortMessage(_("Achtung: Du hast keinen Führerschein für dieses Fahrzeug!", player))
 
@@ -410,7 +410,7 @@ function Vehicle:toggleEngine(player)
 					player:sendError(_("Das Fahrzeug ist kaputt und muss erst repariert werden!", player))
 					return false
 				end
-				if not player:getPublicSync("inDrivingLession") then
+				if not player:getPublicSync("inDrivingLession") and not player.raceLobby then
 					if not player:hasPilotsLicense() then
 						local vehicleType = self:getVehicleType()
 						if vehicleType == VehicleType.Helicopter then

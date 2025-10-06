@@ -56,7 +56,7 @@ function Race:changeMap(mapFileName)
 
     local mapName = RaceManager:getSingleton().m_Maps[mapFileName]:getMapName()
     local mapAuthor = RaceManager:getSingleton().m_Maps[mapFileName]:getMapAuthor()
-    self:sendShortMessage(("Die Karte wurde zu '%s' von %s geändert."):format(mapName, mapAuthor))
+    self:sendShortMessage("Die Karte wurde zu '%s' von %s geändert.", {mapName, mapAuthor})
 end
 
 function Race:loadMap(mapFileName)
@@ -80,7 +80,7 @@ function Race:addPlayer(player)
     table.insert(self.m_Players, player)
     player:setDimension(self.m_LobbyDimension)
     player:createStorage(false)
-    player:sendShortMessage(("Du hast die Lobby '%s' betreten."):format(self.m_LobbyName))
+    player:sendShortMessage(_("Du hast die Lobby '%s' betreten.", player, self.m_LobbyName))
     player.raceLobby = self
     player:triggerEvent("setCanBeKnockedOffBike", false)
     player:triggerEvent("HUDRadar:hideRadar")
@@ -91,7 +91,7 @@ function Race:addPlayer(player)
         player:triggerEvent("raceRefreshMatchGUI", self.m_Players, self.m_PlayerScore)
     end
 
-    self:setSpectator(player)
+    self:setSpectator(player, true)
 
     if #self.m_Players <= 1 then
         self:prepareRound()
@@ -99,13 +99,13 @@ function Race:addPlayer(player)
 end
 
 function Race:removePlayer(player)
-    self:disqualifyPlayer(player)
+    self:disqualifyPlayer(player, true)
     if player:getOccupiedVehicle() then player:removeFromVehicle() end
     if isElement(self.m_PlayerVehicle[player]) then self.m_PlayerVehicle[player]:destroy() end
     table.removevalue(self.m_Players, player)
     player:setDimension(0)
     player:restoreStorage()
-    player:sendShortMessage(("Du hast die Lobby '%s' verlassen."):format(self.m_LobbyName))
+    player:sendShortMessage(_("Du hast die Lobby '%s' verlassen.", player, self.m_LobbyName))
     toggleAllControls(player, true)
     player:toggleControl("enter_exit", true)
     player:triggerEvent("setCanBeKnockedOffBike", true)
@@ -121,19 +121,20 @@ function Race:removePlayer(player)
     end
 end
 
-function Race:disqualifyPlayer(player)
+function Race:disqualifyPlayer(player, quit)
     if isElement(self.m_PlayerVehicle[player]) then
         player:removeFromVehicle()
         self.m_PlayerVehicle[player]:destroy()
     end
     self.m_PlayerVehicle[player] = nil
 
-    self.m_PlayerScore[player] = table.size(self.m_PlayerVehicle) + 1
+    local playersLeft = table.size(self.m_PlayerVehicle)
+    self.m_PlayerScore[player] = playersLeft + 1
     if self.m_PlayerScore[player] == 1 then self:prepareRound() end
     for k, v in pairs(self.m_PlayerVehicle) do
-        if table.size(self.m_PlayerVehicle) == 1 then
+        if playersLeft == 1 then
             self.m_PlayerScore[k] = 1
-            self:sendShortMessage(("%s gewinnt!"):format(k:getName()))
+            self:sendShortMessage("%s gewinnt!", {k:getName()})
             self:prepareRound()
         end
     end
@@ -142,14 +143,20 @@ function Race:disqualifyPlayer(player)
         player:triggerEvent("raceRefreshMatchGUI", self.m_Players, self.m_PlayerScore)
     end
 
-    self:setSpectator(player)
+    if not quit then
+        self:setSpectator(player, playersLeft >= 2)
+    end
 end
 
-function Race:setSpectator(player)
+function Race:setSpectator(player, showInfo)
     player:setPosition(2690.84, -1700.05, 10.44)
     player:setCameraMatrix(2828, -1867, 51, 2797.49, -1831, 30)
     takeAllWeapons(player)
     toggleAllControls(player, false, true, false)
+
+    if showInfo then
+        player:sendShortMessage(_("Klicke auf den Namen eines Spielers, um ihn zu beobachten!", player))
+    end
 end
 
 function Race:onPlayerChat(player, text, type)
@@ -166,10 +173,11 @@ function Race:onPlayerChat(player, text, type)
 	end
 end
 
-function Race:sendShortMessage(text, ...)
+function Race:sendShortMessage(text, format, ...)
+    local format = format or {}
 	local color = {139, 102, 229}
 	for k, player in pairs(self.m_Players) do
-		player:sendShortMessage(_(text, player), "Destruction Derby", color, ...)
+		player:sendShortMessage(_(text, player, unpack(format)), "Destruction Derby", color, ...)
 	end
 end
 
@@ -275,7 +283,7 @@ function Race:Event_DDCheckpointHit(hitElement)
     controller:warpIntoVehicle(hitElement)
 
     if RaceManager.DDWarningVehicles[vehicleID] then
-        self:sendShortMessage(("%s hat eine/n %s erhalten!"):format(controller:getName(), hitElement:getName()))
+        self:sendShortMessage("%s hat eine/n %s erhalten!", {controller:getName(), hitElement:getName()})
     end
 
     removeEventHandler("onMarkerHit", source, self.m_DDCheckpointHitFunc)
@@ -293,6 +301,7 @@ function Race:endRound()
         if isElement(v) then
             k:removeFromVehicle()
             v:destroy()
+            self:setSpectator(k)
         end
     end
 
@@ -302,11 +311,6 @@ function Race:endRound()
         removeEventHandler("onMarkerHit", checkpoint, self.m_DDCheckpointHitFunc)
         checkpoint:setVisibleTo(root, false)
         self.m_DDCurrentCheckpoint = false
-    end
-
-    -- make players spectators
-    for k, player in pairs(self.m_Players) do
-        self:setSpectator(player)
     end
 end
 

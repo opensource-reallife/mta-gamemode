@@ -5074,3 +5074,27 @@ msgstr "uses a %s!"
 
 msgid "benutzt eine %s!"
 msgstr "uses a %s!"
+
+msgid "Die Karte wurde zu '%s' von %s geändert."
+msgstr "The map was changed to '%s' from %s."
+
+msgid "Du hast die Lobby '%s' betreten."
+msgstr "You joined the lobby '%s'."
+
+msgid "Du hast die Lobby '%s' verlassen."
+msgstr "You left the lobby '%s'."
+
+msgid "%s gewinnt!"
+msgstr "%s wins!"
+
+msgid "Klicke auf den Namen eines Spielers, um ihn zu beobachten!"
+msgstr "Click on the name of a player to spectate them!"
+
+msgid "Die Karte wird nach dieser Runde geändert!"
+msgstr "The map will be changed after this round!"
+
+msgid "Fehler: Ungültiger Modus!"
+msgstr "Error: Invalid mode!"
+
+msgid "%s hat eine/n %s erhalten!"
+msgstr "%s got a %s!"
