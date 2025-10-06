@@ -1639,11 +1639,17 @@ function FactionState:freePlayer(player, prisonBreak)
 		player:sendShortMessage("Du bist aus dem Gefängnis ausgebrochen!")
 		self:sendShortMessage(player:getName().." ist aus dem Gefängnis ausgebrochen!")
 	else
-
-		player:setInterior(2)
+		if player:getFaction() and getElementData(player, "SpawnAfterJail") and player:isPremium() then
+			local position = factionSpawnpoint[player:getFaction():getId()]
+			player:setPosition(position[1])
+			player:setInterior(position[2])
+			player:setDimension(position[3])
+		else
+			player:setInterior(2)
+			player:setPosition(2616.34, -1411.37, 1040.36)
+			player:setRotation(Vector3(0, 0, 180))
+		end
 		player:setWanteds(0)
-		player:setPosition(2616.34, -1411.37, 1040.36)
-		player:setRotation(Vector3(0, 0, 180))
 	end
 
 	player:setData("inJail",false, true)

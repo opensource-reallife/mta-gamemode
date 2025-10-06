@@ -286,7 +286,7 @@ addEventHandler("onClientVehicleDamage", root,
 				end
 			end
 		end
-		if attacker and isElement(attacker) and attacker:geType() == "player" then
+		if attacker and isElement(attacker) and attacker:getType() == "player" then
 			triggerServerEvent("onClientVehicleDamage", localPlayer, attacker, source, weapon, loss, dx, dy, dz, tId)
 		end
 	end

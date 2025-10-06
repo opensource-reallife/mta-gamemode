@@ -52,6 +52,7 @@ AntiCheat.AllowedDataChange = {
 	["StateChatEnabled"] = true,
 	["GroupChatEnabled"] = true,
 	["HeliGlue"] = true,
+	["SpawnAfterJail"] = true,
 }
 AntiCheat.Check = {
 	[14] = true,
