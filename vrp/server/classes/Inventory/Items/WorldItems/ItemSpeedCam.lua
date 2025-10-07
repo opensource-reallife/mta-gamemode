@@ -8,8 +8,8 @@
 ItemSpeedCam = inherit(Item)
 ItemSpeedCam.Map = {}
 
-local MAX_SPEEDCAMS = 3
-local COST_FACTOR = 15
+local MAX_SPEEDCAMS = 5
+local COST_FACTOR = 5 -- 1km/h = 5$
 local MIN_RANK = 2
 
 function ItemSpeedCam:constructor()
