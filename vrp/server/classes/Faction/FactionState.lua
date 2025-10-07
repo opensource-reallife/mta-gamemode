@@ -703,9 +703,15 @@ function FactionState:Event_CuffSuccess( target )
 end
 
 function FactionState:addLog(player, category, text)
-	FactionManager:getSingleton().Map[1]:addLog(player, category, text)
-	FactionManager:getSingleton().Map[2]:addLog(player, category, text)
-	FactionManager:getSingleton().Map[3]:addLog(player, category, text)
+	if FactionManager.Map[1] then
+		FactionManager:getSingleton().Map[1]:addLog(player, category, text)
+	end
+	if FactionManager.Map[2] then
+		FactionManager:getSingleton().Map[2]:addLog(player, category, text)
+	end
+	if FactionManager.Map[3] then
+		FactionManager:getSingleton().Map[3]:addLog(player, category, text)
+	end
 end
 
 function FactionState:getOnlinePlayers(afkCheck, dutyCheck)
@@ -1129,6 +1135,20 @@ function FactionState:outputMegaphone(player, text, lang)
 
 				StatisticsLogger:getSingleton():addChatLog(player, "chat", text, receivedPlayers)
 				FactionState:getSingleton():addBugLog(player, "(Megafon)", text)
+
+				if getElementData(player, "ExpFeatureEnabled") then
+					local receivedPlayerNames = {}
+
+					for i, player in ipairs(receivedPlayers) do
+						if isElement(player) and getElementType(player) == "player" then
+							table.insert(receivedPlayerNames, player:getName())
+						end
+					end
+
+					setTimer( function(player)
+						player:sendInfo(("Deine Nachricht wurde von folgenden Spielern empfangen: \n %s"):format(table.concat(receivedPlayerNames, ", ")))
+					end, 3000, 1, player)
+				end
 				return true
 			else
 				player:sendError(_("Du sitzt in keinem Fraktions-Fahrzeug!", player))
@@ -1737,6 +1757,7 @@ function FactionState:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, pl
 				client:getInventory():removeAllItem("Blitzer")
 				client:getInventory():removeAllItem("Einsatzhelm")
 				client:getInventory():removeItem("Kevlar", 1)
+				WearableManager:getSingleton():removeWearable(client, "Einsatzhelm")
 				WearableManager:getSingleton():removeWearable(client, "Kevlar")
 				client.m_KevlarShotsCount = nil
 				client:setData("Faction:InSpecialDuty", nil, true)
