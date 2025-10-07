@@ -48,7 +48,7 @@ function BobberBar:constructor(fishData, fishingRodName, baitName, accessorieNam
 
 	self.m_toggleControls(true)
 
-	bindKey("mouse1", "both", self.m_HandleClick)
+	--bindKey("mouse1", "both", self.m_HandleClick)
 	addEventHandler("onClientRender", root, self.m_Render)
 
 	self:setBobberPosition()
@@ -59,7 +59,7 @@ end
 
 function BobberBar:destructor()
 	removeEventHandler("onClientRender", root, self.m_Render)
-	unbindKey("mouse1", "both", self.m_HandleClick)
+	--unbindKey("mouse1", "both", self.m_HandleClick)
 	self.Sound:stopAll()
 
 	if self.m_FadeAnimation:isAnimationRendered() then delete(self.m_FadeAnimation) end

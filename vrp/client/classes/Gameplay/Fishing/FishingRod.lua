@@ -33,13 +33,13 @@ function FishingRod:constructor(fishingRod, fishingRodName, baitName, accessorie
 	self.m_Render = bind(FishingRod.render, self)
 
 	toggleControl("fire", false)
-	bindKey("mouse1", "both", self.m_HandleClick)
+	-- bindKey("mouse1", "both", self.m_HandleClick)
 	addEventHandler("onClientRender", root, self.m_Render)
 end
 
 function FishingRod:destructor()
 	toggleAllControls(true, true, false)
-	unbindKey("mouse1", "both", self.m_HandleClick)
+	-- unbindKey("mouse1", "both", self.m_HandleClick)
 	removeEventHandler("onClientRender", root, self.m_Render)
 	if isTimer(self.m_nibblingTimer) then killTimer(self.m_nibblingTimer) end
 	self.Sound:stopAll()

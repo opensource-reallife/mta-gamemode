@@ -27,6 +27,8 @@ function KeyBinds:constructor()
 	self.m_ToggleDisplays = bind(self.toggleDisplay, self)
 	self.m_ToggleHeliDriveBy = bind(self.toggleHelicopterDriveBy, self)
 	self.m_ToggleObjectPickup = bind(self.toggleObjectPickup, self)
+	self.m_BobberBar = bind(self.bobberBar, self)
+	self.m_ThrowFishingRod = bind(self.throwFishingRod, self)
 	
 	self.m_ThermalLightKey = bind(self.thermalLightKey, self)
 	self.m_ThermaControlModeKey = bind(self.thermalControlKey, self)
@@ -75,6 +77,8 @@ function KeyBinds:constructor()
 			["KeyCinemaVideoGUI"] 		= {["defaultKey"] = "x", ["name"] = "Kino Videoverwaltung öffnen", ["func"] = function() if CinemaLobby:isInstantiated() then CinemaLobby:getSingleton():openVideoGUI() end end, ["trigger"] = "down"};
 			["KeyToggleHouseGarage"] 	= {["defaultKey"] = "h", ["name"] = "Haus Garage benutzen", ["func"] = function() triggerServerEvent("toggleGarageState",localPlayer) end, ["trigger"] = "down"};
 			["KeyObjectPickup"]		 	= {["defaultKey"] = "n", ["name"] = "Objekt aufheben / ablegen", ["func"] = self.m_ToggleObjectPickup, ["trigger"] = "down"};
+			["KeyBobberBar"]		 	= {["defaultKey"] = "mouse1", ["name"] = "Fisch einziehen", ["func"] = self.m_BobberBar, ["trigger"] = "both"};
+			["KeyThrowFishingRod"]		= {["defaultKey"] = "mouse1", ["name"] = "Angel auswerfen", ["func"] = self.m_ThrowFishingRod, ["trigger"] = "both"};
 		},
 		["FMS"] = {},
 
@@ -365,6 +369,18 @@ end
 
 function KeyBinds:toggleObjectPickup()
 	triggerServerEvent("toggleObjectPickup", localPlayer)
+end
+
+function KeyBinds:bobberBar(_, keyState)
+	if BobberBar:isInstantiated() then
+		BobberBar:getSingleton():handleClick(nil, keyState)
+	end
+end
+
+function KeyBinds:throwFishingRod(_, keyState)
+	if FishingRod:isInstantiated() then
+		FishingRod:getSingleton():handleClick(nil, keyState)
+	end
 end
 
 --[[
