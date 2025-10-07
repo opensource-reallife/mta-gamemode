@@ -51,6 +51,13 @@ function TransportBeggar:acceptTransport(player)
 							player:meChat(true, "lässt %s aus seinem Fahrzeug", self.m_Name, false)
 							self:sendMessage(player, BeggarPhraseTypes.Thanks)
 							self:deleteTransport(player)
+
+							-- give Achievement
+							if self.m_Name == BeggarNames[19] then
+								player:giveAchievement(80)
+							elseif self.m_Name == BeggarNames[32] then
+								player:giveAchievement(81)
+							end
 							return
 						else
 							player:sendError(_("Du hast den Bettler nicht dabei", player))

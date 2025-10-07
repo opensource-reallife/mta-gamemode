@@ -50,6 +50,14 @@ function ItemBeggar:buyItem(player, item)
 				player:getInventory():giveItem(item, BeggarItemBuy[item]["amount"])
 				self:sendMessage(player, BeggarPhraseTypes.Thanks)
 				player:meChat(true, "erhält von %s eine Tüte!", self.m_Name, false)
+
+				-- give Achievement
+				if self.m_Name == BeggarNames[19] then
+					player:giveAchievement(80)
+				elseif self.m_Name == BeggarNames[32] then
+					player:giveAchievement(81)
+				end
+
 				setTimer(
 					function ()
 						self:despawn()
