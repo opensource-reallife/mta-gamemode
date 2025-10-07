@@ -605,6 +605,7 @@ function House:leaveHouse(player)
 end
 
 function House:tryRob( player )
+	if player:isFactionDuty() or player:isCompanyDuty() then return player:sendError(_("Du darfst während du im Fraktions-/Unternehmensdienst bist, keinen Hausraub starten!")) end
 	local gRob = GroupHouseRob:getSingleton()
 	local bContinue = gRob:startNewRob( self, player)
 	if bContinue then

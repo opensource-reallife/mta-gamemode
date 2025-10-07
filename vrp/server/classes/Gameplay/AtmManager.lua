@@ -74,9 +74,7 @@ function AtmManager:fixAtms()
 end
 
 function AtmManager:Event_onStartHacking(atm)
-	if client:getFaction() and client:getFaction():isStateFaction() and client:isFactionDuty() then
-		return client:sendError(_("Du kannst im Dienst keinen Geldautomaten ausrauben.", client))
-	end
+	if client:isFactionDuty() or client:isCompanyDuty() then return client:sendError(_("Du kannst im Dienst keinen Geldautomaten ausrauben.", client)) end
     if client:getInventory():getItemAmount("Hacking-Kit") >= 1 then
         if self.m_AtmCooldowns[atm] then
             if getTickCount() - self.m_AtmCooldowns[atm] < AtmManager.Cooldown then
@@ -153,9 +151,7 @@ function AtmManager:Event_onHackFail()
 end
 
 function AtmManager:onBombPlace(atm, bombArea, player)
-	if client:getFaction() and client:getFaction():isStateFaction() and client:isFactionDuty() then
-		return client:sendError(_("Du kannst im Dienst keinen Geldautomaten aufsprengen.", client))
-	end
+    if client:isFactionDuty() or client:isCompanyDuty() then return client:sendError(_("Du kannst im Dienst keinen Geldautomaten aufsprengen.", client)) end
     if self.m_AtmCooldowns[atm] then
         if getTickCount() - self.m_AtmCooldowns[atm] < AtmManager.Cooldown then
             player:sendError(_("Dieser Bankautomat wurde erst kürzlich sabotiert!", player))
