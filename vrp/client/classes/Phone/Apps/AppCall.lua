@@ -268,14 +268,14 @@ function AppCall:openIncoming(caller, voiceEnabled, showSkin)
 	self.m_ButtonBusy.onLeftClick = bind(self.ButtonBusy_Click, self)
 
 	-- Play ring sound
-	if core:get("Sounds", "RingSound", true) then
+	if core:get("Sounds", "RingTone", true) then
 		self:playRingSound(true, false, "player")
 	end
 	showCursor(false)
 end
 
 function AppCall:showIncomingCallShortMessage(caller, voiceEnabled, message, title, tblColor, type)
-	if core:get("Sounds", "OtherRingSound", true) then
+	if core:get("Sounds", "OtherRingTone", true) then
 		self:playRingSound(true, true, type)
 	end
 	local shortMessage = ShortMessage:new(message.._"\nKlicke hier, um abzuheben.", title, tocolor(unpack(tblColor)), -1)
