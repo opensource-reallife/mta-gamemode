@@ -71,6 +71,8 @@ function FishingRod:reset()
 	localPlayer:setAnimation()
 	toggleAllControls(true, true, false)
 	toggleControl("fire", false)
+	toggleControl("jump", true)
+	toggleControl("crouch", true)
 
 	self.m_isCasting = true
 	self.m_isFishing = false
@@ -89,6 +91,8 @@ function FishingRod:handleClick(_, state)
 	if isCursorShowing() then return end
 	setPedControlState("fire", false)
 	toggleControl("fire", false)
+	toggleControl("jump", false)
+	toggleControl("crouch", false)
 	if localPlayer.vehicle then return end
 
 	self.m_MouseDown = state == "down"
@@ -173,6 +177,8 @@ function FishingRod:cast()
 		self.m_PowerProgress = 0
 		WarningBox:new(_("Hier ist kein Wasser!"))
 	end
+	toggleControl("jump", true)
+	toggleControl("crouch", true)
 end
 
 function FishingRod:checkWater()
