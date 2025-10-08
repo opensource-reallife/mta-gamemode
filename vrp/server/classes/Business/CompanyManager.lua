@@ -471,6 +471,7 @@ function CompanyManager:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, 
 					company:stop(client)
 				end
 			else
+				if client:getWanteds() > 0 then return client:sendError(_("Du kannst nicht in den Dienst gehen, solange du gesucht wirst!", client)) end
 				if client:isFactionDuty() then
 					--client:sendWarning(_("Bitte beende zuerst deinen Dienst in deiner Fraktion!", client))
 					--return false

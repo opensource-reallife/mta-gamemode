@@ -226,6 +226,7 @@ function FactionRescue:Event_toggleDuty(type, wasted, prefSkin, dontChangeSkin, 
 				if not wasted then faction:updateDutyGUI(client) end
 			else
 				if wasted then return end
+				if client:getWanteds() > 0 then return client:sendError(_("Du kannst nicht in den Dienst gehen, solange du gesucht wirst!", client)) end
 				if client:getPublicSync("Company:Duty") and client:getCompany() then
 					--client:sendWarning(_("Bitte beende zuerst deinen Dienst im Unternehmen!", client))
 					--return false
