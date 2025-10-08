@@ -21,7 +21,7 @@ function ItemDonutBox:use(player, itemId, bag, place, itemName)
 			player:sendMessage(("#4F4F65%d/9 Donuts übrig!"):format(donutsLeft-1))
 			inventory:setItemValueByBag(bag, place, donutsLeft-1) -- set count -1
 		end
-		if donutsLeft <= 0 then
+		if donutsLeft-1 <= 0 then
 			inventory:removeItemFromPlace(bag, place, 1) -- remove item
 		end
 	end
