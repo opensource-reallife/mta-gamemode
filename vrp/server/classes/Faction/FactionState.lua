@@ -44,7 +44,6 @@ function FactionState:constructor()
 	self.ms_IllegalItems = {"Kokain", "Weed", "Heroin", "Shrooms", "Diebesgut", "Sprengstoff", "Hacking-Kit"}
 
 	self.m_BankAccountServer = BankServer.get("faction.state")
-	self.m_EPTBankAccountServer = BankServer.get("company.public_transport")
 
 	self.m_Bugs = {}
 
@@ -1666,9 +1665,9 @@ function FactionState:freePlayer(player, prisonBreak)
 			local moneyCosts = false
 			local bankCosts = false
 
-			if player:getBankMoney() >= 250 then
+			if player:getBankMoney() >= costs then
 				bankCosts = true
-			elseif player:getMoney() >= 250 then
+			elseif player:getMoney() >= costs then
 				moneyCosts = true
 			else
 				player:setInterior(2)
@@ -1676,23 +1675,23 @@ function FactionState:freePlayer(player, prisonBreak)
 				player:setRotation(Vector3(0, 0, 180))
 				player:sendInfo("Du hast nicht genügend Geld um dich direkt an der Fraktionsbasis spawnen zu lassen. Du wirst am Gefängnis entlassen.")
 			end
-
+			
+			local position = factionSpawnpoint[player:getFaction():getId()]
 			if not player:isPremium() then
-				if (moneyCosts) or (bankCosts) then
+				if moneyCosts or bankCosts then
 					-- TODO: Transaction
+					local target = CompanyManager:getSingleton():getFromId(CompanyStaticId.EPT)
 					if bankCosts then
-						-- player:transferBankMoney(self.m_EPTBankAccountServer, costs, "Gefängnis", "Company", "Taxi")
+						player:transferBankMoney(target, costs, "Transport vom Gefängnis", "Company", "JailTransport")
 					elseif moneycosts then
-						-- player:transferMoney(self.m_EPTBankAccountServer, costs, "Gefängnis", "Company", "Taxi")
+						player:transferMoney(target, costs, "Transport vom Gefängnis", "Company", "JailTransport")
 					end
-					local position = factionSpawnpoint[player:getFaction():getId()]
 					player:setPosition(position[1])
 					player:setInterior(position[2])
 					player:setDimension(position[3])
 					player:sendInfo(("Du wurdest vom EPT zu deiner Fraktionsbasis gebracht. Die Fahrt kostete %s$."):format(costs))
 				end
 			else
-				local position = factionSpawnpoint[player:getFaction():getId()]
 				player:setPosition(position[1])
 				player:setInterior(position[2])
 				player:setDimension(position[3])
