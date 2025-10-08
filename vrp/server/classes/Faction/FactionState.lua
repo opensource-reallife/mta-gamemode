@@ -1744,6 +1744,10 @@ function FactionState:Event_FactionRearm()
 			inv:removeAllItem("Einsatzhelm")
 			inv:giveItem("Einsatzhelm",1)
 		end
+		if client:getFaction():isStateFaction() and client:getData("Faction:InSpecialDuty", true, true) then
+			inv:removeAllItem("Kevlar")
+			inv:giveItem("Kevlar", 1)
+		end
 	end
 end
 
