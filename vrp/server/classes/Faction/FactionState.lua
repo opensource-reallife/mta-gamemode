@@ -44,6 +44,7 @@ function FactionState:constructor()
 	self.ms_IllegalItems = {"Kokain", "Weed", "Heroin", "Shrooms", "Diebesgut", "Sprengstoff", "Hacking-Kit"}
 
 	self.m_BankAccountServer = BankServer.get("faction.state")
+	self.m_EPTBankAccountServer = BankServer.get("company.public_transport")
 
 	self.m_Bugs = {}
 
@@ -62,7 +63,7 @@ function FactionState:constructor()
 	self.m_Items = {
 		["Barrikade"] = 0,
 		["Nagel-Band"] = 0,
-		["Blitzer"] = 0,
+		["Blitzer"] = 1500,
 		["Warnkegel"] = 0,
 		["Rauchgranate"] = 5000,
 		["Gasmaske"] = 1000,
@@ -1659,11 +1660,44 @@ function FactionState:freePlayer(player, prisonBreak)
 		player:sendShortMessage("Du bist aus dem Gefängnis ausgebrochen!")
 		self:sendShortMessage(player:getName().." ist aus dem Gefängnis ausgebrochen!")
 	else
-		if player:getFaction() and getElementData(player, "SpawnAfterJail") and player:isPremium() then
-			local position = factionSpawnpoint[player:getFaction():getId()]
-			player:setPosition(position[1])
-			player:setInterior(position[2])
-			player:setDimension(position[3])
+		--if player:getFaction() and getElementData(player, "SpawnAfterJail") and player:isPremium() then
+		if player:getFaction() and getElementData(player, "SpawnAfterJail") then
+			local costs = 250
+			local moneyCosts = false
+			local bankCosts = false
+
+			if player:getBankMoney() >= 250 then
+				bankCosts = true
+			elseif player:getMoney() >= 250 then
+				moneyCosts = true
+			else
+				player:setInterior(2)
+				player:setPosition(2616.34, -1411.37, 1040.36)
+				player:setRotation(Vector3(0, 0, 180))
+				player:sendInfo("Du hast nicht genügend Geld um dich direkt an der Fraktionsbasis spawnen zu lassen. Du wirst am Gefängnis entlassen.")
+			end
+
+			if not player:isPremium() or DEBUG then
+				if (moneyCosts) or (bankCosts) then
+					-- TODO: Transaction
+					if bankCosts then
+						-- player:transferBankMoney(self.m_EPTBankAccountServer, costs, "Gefängnis", "Company", "Taxi")
+					elseif moneycosts then
+						-- player:transferMoney(self.m_EPTBankAccountServer, costs, "Gefängnis", "Company", "Taxi")
+					end
+					local position = factionSpawnpoint[player:getFaction():getId()]
+					player:setPosition(position[1])
+					player:setInterior(position[2])
+					player:setDimension(position[3])
+					player:sendInfo(("Du wurdest vom EPT zu deiner Fraktionsbasis gebracht. Die Fahrt kostete %s$."):format(costs))
+				end
+			else
+				local position = factionSpawnpoint[player:getFaction():getId()]
+				player:setPosition(position[1])
+				player:setInterior(position[2])
+				player:setDimension(position[3])
+				player:sendInfo("Du wurdest als VIP vom EPT zu deiner Fraktionsbasis gebracht. Die Fahrt war für dich kostenlos.")
+			end
 		else
 			player:setInterior(2)
 			player:setPosition(2616.34, -1411.37, 1040.36)
@@ -1756,7 +1790,7 @@ function FactionState:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, pl
 				client:getInventory():removeAllItem("Nagel-Band")
 				client:getInventory():removeAllItem("Blitzer")
 				client:getInventory():removeAllItem("Einsatzhelm")
-				client:getInventory():removeItem("Kevlar", 1)
+				client:getInventory():removeAllItem("Kevlar")
 				WearableManager:getSingleton():removeWearable(client, "Einsatzhelm")
 				WearableManager:getSingleton():removeWearable(client, "Kevlar")
 				client.m_KevlarShotsCount = nil
@@ -1769,9 +1803,7 @@ function FactionState:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, pl
 				FactionManager:getSingleton():Event_stopNeedhelp(client)
 				--//fix
 			else
-				if client:getWanteds() > 0 then
-					return client:sendError(_("Du kannst nicht in den Dienst gehen, solange du gesucht wirst!", client))
-				end
+				if client:getWanteds() > 0 then return client:sendError(_("Du kannst nicht in den Dienst gehen, solange du gesucht wirst!", client)) end
 				if client:getPublicSync("Company:Duty") and client:getCompany() then
 					--client:sendWarning(_("Bitte beende zuerst deinen Dienst im Unternehmen!", client))
 					--return false
