@@ -16,8 +16,11 @@ function KeyBindings:constructor()
   self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Tastenzuordnungen ändern", true, true, self)
   self.m_Window:addBackButton(function () delete(self) SelfGUI:getSingleton():show() end)
   self.m_KeyGridList = GUIGridList:new(self.m_Width*0.01, self.m_Height*0.2, self.m_Width*0.98, self.m_Height*0.67, self)
-  self.m_KeyGridList:addColumn(_"Name", 0.8)
+  self.m_KeyGridList:addColumn(_"Name", 0.5)
+  self.m_KeyGridList:addColumn(_"Kategorie", 0.3)
   self.m_KeyGridList:addColumn(_"Taste", 0.2)
+	self.m_KeyGridList:setSortable{_"Name", _"Kategorie", _"Taste"}
+	self.m_KeyGridList:setSortColumn(_"Kategorie", "up")
   self:loadGridList()
 
   GUILabel:new(self.m_Width*0.01, self.m_Height*0.07, self.m_Width*0.98, self.m_Height*0.05, _"Hier kannst du deine Tastenzuordnungen ändern. Klicke einfach die gewünschte Funktion in der Liste an. Mit Klick auf den blauen Button kannst du die Zuordnung ändern.", self.m_Window):setMultiline(true)
@@ -48,7 +51,7 @@ function KeyBindings:loadGridList()
     local currKey
     for index, key in kspairs(self.ms_Keys, function (a, b) return a:gsub("KeyStatusFMS", "") < b:gsub("KeyStatusFMS", "") end) do
         local currKey = core:get("KeyBindings", index) or key["defaultKey"]
-        local item = self.m_KeyGridList:addItem(key.name, currKey:upper())
+        local item = self.m_KeyGridList:addItem(key.name, key.category, currKey:upper())
         item.index = index
         item.onLeftClick = function() self:onKeySelect(index) end
     end
