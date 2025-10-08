@@ -1677,7 +1677,7 @@ function FactionState:freePlayer(player, prisonBreak)
 				player:sendInfo("Du hast nicht genügend Geld um dich direkt an der Fraktionsbasis spawnen zu lassen. Du wirst am Gefängnis entlassen.")
 			end
 
-			if not player:isPremium() or DEBUG then
+			if not player:isPremium() then
 				if (moneyCosts) or (bankCosts) then
 					-- TODO: Transaction
 					if bankCosts then
