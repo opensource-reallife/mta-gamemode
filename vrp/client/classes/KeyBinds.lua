@@ -71,6 +71,7 @@ function KeyBinds:constructor()
 			["KeyToggleVehicleLight"]	= {["defaultKey"] = "l", 		["name"] = "Fahrzeug Licht", 				["category"] = "Fahrzeug", 		["func"] = function() if localPlayer.vehicle then localPlayer.vehicle:toggleLight() end end, ["trigger"] = "down"};
 			["KeyToggleVehicleBrake"]	= {["defaultKey"] = "g", 		["name"] = "Handbremse", 					["category"] = "Fahrzeug", 		["func"] = function() if localPlayer.vehicle then localPlayer.vehicle:toggleHandbrake() end end, ["trigger"] = "down"};
 			["KeyToggleVehicleELS"]		= {["defaultKey"] = "z", 		["name"] = "Rundumleuchten", 				["category"] = "Fahrzeug", 		["func"] = self.m_VehicleELS, ["trigger"] = "down"};
+			["KeyToggleSeatbelt"]		= {["defaultKey"] = "m", 		["name"] = "An/Abschnallen", 				["category"] = "Fahrzeug", 		["func"] = function() if getPedOccupiedVehicle(localPlayer) then triggerServerEvent("toggleSeatBelt",localPlayer) end end, ["trigger"] =  "up"};
 
 			-- Flugzeug
 			["KeyToggleShamalInteior"] 	= {["defaultKey"] = "rctrl", 	["name"] = "Shamal Interior betreten", 		["category"] = "Flugzeug", 		["func"] = function() if localPlayer:getData("VSE:IsPassenger") and localPlayer:getData("VSE:Vehicle"):getModel() == 519 then triggerServerEvent("toggleShamalInterior", localPlayer:getData("VSE:Vehicle")) end end, ["trigger"] = "down"};
