@@ -543,7 +543,15 @@ function Player:spawn()
 			end
 		end, 200, 1
 	)
-
+	
+	-- remove special items
+	self:getInventory():removeAllItem("Taser")
+	self:getInventory():removeAllItem("Warnkegel")
+	self:getInventory():removeAllItem("Barrikade")
+	self:getInventory():removeAllItem("Nagel-Band")
+	self:getInventory():removeAllItem("Blitzer")
+	self:getInventory():removeAllItem("Einsatzhelm")
+	self:getInventory():removeAllItem("Kevlar")
 	WearableManager:getSingleton():removeAllWearables(self)
 
 	if self.m_DeathInJail then
