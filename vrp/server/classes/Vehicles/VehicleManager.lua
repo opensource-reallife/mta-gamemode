@@ -997,7 +997,9 @@ function VehicleManager:Event_toggleHandBrake()
 		if getElementData(source, "forRent") then
 			source:setForRent(false, 0)
 		end
-		client:getCompany():addLog(client, "Handbremsen-Logs", ("hat eine Handbremse gelöst. %s von %s"):format(source:getName(), getElementData(source, "OwnerName") or "Unbekannt"))
+		local pos, rot = source:getPosition(), source:getRotation()
+		local formatPos, formatRot = ("%.2f, %.2f, %.2f"):format(pos.x, pos.y, pos.z), ("%.2f, %.2f, %.2f"):format(rot.x, rot.y, rot.z)
+		client:getCompany():addLog(client, "Handbremsen-Logs", ("hat eine Handbremse gelöst. %s von %s. (Position: %s) (Rotation: %s)"):format(source:getName(), getElementData(source, "OwnerName") or "Unbekannt", formatPos, formatRot))
 	elseif client:getRank() >= ADMIN_RANK_PERMISSION["looseVehicleHandbrake"] then
 		StatisticsLogger:getSingleton():addAdminVehicleAction(client, "looseHandbrake", source)
 	else
