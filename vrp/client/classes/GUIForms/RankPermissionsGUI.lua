@@ -11,9 +11,12 @@ inherit(Singleton, RankPermissionsGUI)
 
 addRemoteEvents{"showRankPermissionsList"}
 function RankPermissionsGUI:constructor(permissionsType, type)
+	self.ms_GUISizeX = 32
+	self.ms_GUISizeY = 17
+
 	GUIWindow.updateGrid()
-	self.m_Width = grid("x", 12) 
-	self.m_Height = grid("y", 13)
+	self.m_Width = grid("x", self.ms_GUISizeX) 
+	self.m_Height = grid("y", self.ms_GUISizeY)
 
 	self.m_Changes = {}
 	self.m_PermissionsType = permissionsType
@@ -23,27 +26,14 @@ function RankPermissionsGUI:constructor(permissionsType, type)
 	GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true)
 	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Berechtigungen verwalten", true, true, self)
 	
-	self.m_PermissionsList = GUIGridGridList:new(1, 1, 9, 11, self.m_Window)
-	self.m_PermissionsList:addColumn(_"Berechtigung", 1)
-	self.m_PermissionsList:setSortable{_"Berechtigung"}
+	self.m_PermissionScrollArea = GUIGridScrollableArea:new(1, 3, self.ms_GUISizeX - 1,  13, 1, 90, true, false, self.m_Window, 3)
+	self.m_PermissionScrollArea:updateGrid()
 	
-	self.m_SaveButton = GUIGridButton:new(1, 12, 11, 1, _"Speichern", self.m_Window)
+	self.m_PermissionLabel = {}
+	self.m_PermissionRectangle = {}
+	
+	self.m_SaveButton = GUIGridButton:new(28, 17, 4, 1, _"Speichern", self.m_Window)
 	self.m_SaveButton.onLeftClick = bind(self.saveButton_Click, self)
-	
-	self.m_RankCheckBox = {}
-	self.m_RankCheckBox[0] = GUIGridCheckbox:new(10, 3, 1, 1, _"Rang 0", self.m_Window):setEnabled(false)
-	self.m_RankCheckBox[1] = GUIGridCheckbox:new(10, 4, 1, 1, _"Rang 1", self.m_Window):setEnabled(false)
-	self.m_RankCheckBox[2] = GUIGridCheckbox:new(10, 5, 1, 1, _"Rang 2", self.m_Window):setEnabled(false)
-	self.m_RankCheckBox[3] = GUIGridCheckbox:new(10, 6, 1, 1, _"Rang 3", self.m_Window):setEnabled(false)
-	self.m_RankCheckBox[4] = GUIGridCheckbox:new(10, 7, 1, 1, _"Rang 4", self.m_Window):setEnabled(false)
-	self.m_RankCheckBox[5] = GUIGridCheckbox:new(10, 8, 1, 1, _"Rang 5", self.m_Window):setEnabled(false)
-	if type ~= "company" then 
-		self.m_RankCheckBox[6] = GUIGridCheckbox:new(10, 9, 1, 1, _"Rang 6", self.m_Window):setEnabled(false)
-	end
-	
-	for i, v in pairs(self.m_RankCheckBox) do
-		v.onChange = function(state) self:onCheckBoxChange(i, state) end
-	end
 
 	addEventHandler("showRankPermissionsList", localPlayer, bind(self.updateList, self))
 
@@ -57,13 +47,40 @@ end
 function RankPermissionsGUI:updateList(rankTbl, type)
 	self.m_RankPermissions = rankTbl
 	self.m_Permissions = PermissionsManager:getSingleton():getPermissions(self.m_PermissionsType, type)
+	local permInfo = self.m_PermissionsType == "permission" and PERMISSIONS_INFO or ACTION_PERMISSIONS_INFO
 
-	self.m_PermissionsList:clear()
-	for permission, permissionName in pairs(self.m_Permissions) do
-		local item = self.m_PermissionsList:addItem(permissionName)
-		item.name = permission
-		item.onLeftClick = bind(self.setCheckBoxState, self, item.name)
+	self.m_PermissionScrollArea:clear()
+	self.m_PermissionRectangle = {}
+	self.m_RankLabels = {}
+	self.m_Changes = {}
+
+	local documentSizeY = 0
+	for j = 0, type ~= "company" and 6 or 5, 1 do
+		self.m_RankLabels[j] = GUIGridLabel:new(7 + ((j + 1) * 3), 2, 5, 2, _("Rang %s", j), self.m_Window)
+		documentSizeY = documentSizeY + 1
 	end
+	
+	local i = 0.5
+	for permission, permissionName in pairs(self.m_Permissions) do
+		self.m_PermissionRectangle[permission] = GUIGridRectangle:new(1, (i * 1.5 - 1), self.ms_GUISizeX - 1, 1.5, tocolor(0, 0, 0, 180), self.m_PermissionScrollArea)
+
+		for j = 0, type ~= "company" and 6 or 5, 1 do
+			local checkbox = GUIGridCheckbox:new(7 + ((j + 1) * 3), 1.1, 1, 1.2, "", self.m_PermissionRectangle[permission]):setChecked(self.m_RankPermissions[tostring(j)] and self.m_RankPermissions[tostring(j)][permission])
+			if (tonumber(j) < tonumber(permInfo[permission][2][self.m_Type])) then
+				checkbox:setEnabled(false)
+				checkbox:setAlpha(0)
+			end
+			checkbox.permission = permission
+			checkbox.rank = j
+			checkbox.onChange = function(state) self:onCheckBoxChange(j, permission, state) end
+		end 
+		
+		self.m_PermissionLabel[permission] = GUIGridLabel:new(1.1, 1, 8, 1.5, _(permissionName), self.m_PermissionRectangle[permission])
+		self.m_PermissionLabel[permission].name = permission
+		i = i + 1
+		documentSizeY = documentSizeY + 1
+	end
+	self.m_PermissionScrollArea:resize(17, documentSizeY - 1)
 end
 
 function RankPermissionsGUI:saveButton_Click()
@@ -71,21 +88,9 @@ function RankPermissionsGUI:saveButton_Click()
 	self.m_Changes = {}
 end
 
-function RankPermissionsGUI:setCheckBoxState(name, state)
-	if name then
-		local permInfo = self.m_PermissionsType == "permission" and PERMISSIONS_INFO or ACTION_PERMISSIONS_INFO
-		for i, v in pairs(self.m_RankCheckBox) do
-			v:setEnabled(tonumber(i) >= tonumber(permInfo[name][2][self.m_Type]))
-			v:setChecked((self.m_Changes[i] and self.m_Changes[i][name]) or self.m_RankPermissions[tostring(i)][name])
-		end
+function RankPermissionsGUI:onCheckBoxChange(rank, perm, state)
+	if not self.m_Changes[rank] then
+		self.m_Changes[rank] = {}
 	end
-end
-
-function RankPermissionsGUI:onCheckBoxChange(rank, state)
-	if self.m_PermissionsList:getSelectedItem() then
-		if not self.m_Changes[rank] then
-			self.m_Changes[rank] = {}
-		end
-		self.m_Changes[rank][self.m_PermissionsList:getSelectedItem().name] = state
-	end
+	self.m_Changes[rank][perm] = state
 end
