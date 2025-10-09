@@ -1125,30 +1125,36 @@ function FactionState:outputMegaphone(player, text, lang)
 				local playerId = player:getId()
 				local playersToSend = player:getPlayersInChatRange(3, lang)
 				local receivedPlayers = {}
+				local receivedPlayersWithWanteds = {}
 				local text = ("[[ %s %s: %s ]]"):format(faction:getShortName(), player:getName(), text)
 				for index = 1,#playersToSend do
 					playersToSend[index]:sendMessage(text, 255, 255, 0)
 					if playersToSend[index] ~= player then
 						receivedPlayers[#receivedPlayers+1] = playersToSend[index]
 					end
+					if playersToSend[index]:getWanteds() > 0 then
+						receivedPlayersWithWanteds[#receivedPlayersWithWanteds+1] = playersToSend[index]
+					end
 				end
 
 				StatisticsLogger:getSingleton():addChatLog(player, "chat", text, receivedPlayers)
 				FactionState:getSingleton():addBugLog(player, "(Megafon)", text)
 
-				if getElementData(player, "ExpFeatureEnabled") then
-					local receivedPlayerNames = {}
+				local names = {}
+				for _, p in ipairs(receivedPlayersWithWanteds) do
+					table.insert(names, p:getName())
+				end
 
-					for i, player in ipairs(receivedPlayers) do
-						if isElement(player) and getElementType(player) == "player" then
-							table.insert(receivedPlayerNames, player:getName())
-						end
-					end
-
+				if #receivedPlayersWithWanteds > 0 then
 					setTimer( function(player)
-						player:sendInfo(("Deine Nachricht wurde von folgenden Spielern empfangen: \n %s"):format(table.concat(receivedPlayerNames, ", ")))
+						player:sendInfo(("Deine Nachricht wurde von folgenden gesuchten Spielern empfangen: \n %s"):format(table.concat(names, ", ")))
+					end, 3000, 1, player)
+				else
+					setTimer( function(player)
+						player:sendInfo("Deine Nachricht wurde von niemandem empfangen der gesucht wird.")
 					end, 3000, 1, player)
 				end
+
 				return true
 			else
 				player:sendError(_("Du sitzt in keinem Fraktions-Fahrzeug!", player))
