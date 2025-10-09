@@ -5104,3 +5104,12 @@ msgstr "You have to release the handbrake first!"
 
 msgid "Du hast keine Berechtigung den Kofferraum dieses Fahrzeuges zu benutzen!"
 msgstr "You are not authorized to use the trunk of this vehicle!"
+
+msgid "Deine Nachricht wurde von folgenden gesuchten Spielern empfangen:\n%s"
+msgstr "Your message has been received by the following wanted players:\n%s"
+
+msgid "Deine Nachricht wurde von niemandem empfangen der gesucht wird."
+msgstr "No wanted players have received your message."
+
+msgid "Information"
+msgstr "Information"

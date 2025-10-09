@@ -1147,11 +1147,11 @@ function FactionState:outputMegaphone(player, text, lang)
 
 				if #receivedPlayersWithWanteds > 0 then
 					setTimer( function(player)
-						player:sendInfo(("Deine Nachricht wurde von folgenden gesuchten Spielern empfangen: \n %s"):format(table.concat(names, ", ")))
+						player:sendInfo(_("Deine Nachricht wurde von folgenden gesuchten Spielern empfangen:\n%s", player, table.concat(names, ", ")))
 					end, 3000, 1, player)
 				else
 					setTimer( function(player)
-						player:sendInfo("Deine Nachricht wurde von niemandem empfangen der gesucht wird.")
+						player:sendInfo(_("Deine Nachricht wurde von niemandem empfangen der gesucht wird.", player))
 					end, 3000, 1, player)
 				end
 
