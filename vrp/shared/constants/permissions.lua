@@ -55,7 +55,8 @@ PERMISSIONS_INFO = { -- name = {{type, id} type = 0 for all, {faction min rank, 
 	["disableBug"]	=			{{1, {FactionStaticId.FBI}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}},
 	["changePermissions"] =		{{0}, {["faction"] = 5, ["company"] = 4, ["group"] = 5}},
 	["buyVehicle"] = 			{{0}, {["faction"] = 5, ["company"] = 4, ["group"] = nil}},
-	["scrapVehicle"] = 			{{0}, {["faction"] = 5, ["company"] = 4, ["group"] = nil}}
+	["scrapVehicle"] = 			{{0}, {["faction"] = 5, ["company"] = 4, ["group"] = nil}},
+	["useTrunk"] = 				{{0}, {["faction"] = nil, ["company"] = nil, ["group"] = 0}}
 }
 
 PERMISSION_NAMES = {
@@ -66,8 +67,8 @@ PERMISSION_NAMES = {
 	["editLoan"] =				"Gehalt verwalten",
 	["toggleWeapon"] =			"Waffenentnahme de/aktivieren",
 	["withdrawMoney"] =			"Kassenauszahlung",
-	["vehicleRespawnAll"] =		"Alle Fahrzeuge mit Ankündigung respawnen",
-	["vehicleRespawnInstant"] =	"Alle Fahrzeuge sofort respawnen",
+	["vehicleRespawnAll"] =		"Fahrzeuge respawnen (sofort)",
+	["vehicleRespawnInstant"] =	"Fahrzeuge respawnen (angekündigt)",
 	["editRankSkins"] =			"Rangkleidung verwalten",
 	["editWeaponPermissions"] =	"Waffenberechtigung verwalten",
 	["editDiplomacy"] =			"Diplomatie verwalten",
@@ -90,7 +91,7 @@ PERMISSION_NAMES = {
 	["withdrawBIZMoney"] =		"Kasse von Geschäften leeren",
 	["vehiclePark"] =			"Fahrzeuge parken",
 	["deleteGroup"] =			"Gruppe löschen",
-	["vehicleRespawn"] =		"Fahrzeuge respawnen",
+	["vehicleRespawn"] =		"Fahrzeuge respawnen (einzeln)",
 	["renameGroup"] =			"Gruppe umbenennen",
 	["changeGroupType"] =		"Gruppentyp ändern",
 	["changeRankNames"] =		"Rangnamen verwalten",
@@ -114,7 +115,8 @@ PERMISSION_NAMES = {
 	["changePermissions"] =		"Rechte verwalten (Beinhaltet Vollzugriff)",
 	["buyExtraVehicleSlots"] =	"Fahrzeugeslots kaufen",
 	["buyVehicle"] = 			"Fahrzeug kaufen",
-	["scrapVehicle"] = 			"Fahrzeug verschrotten"
+	["scrapVehicle"] = 			"Fahrzeug verschrotten",
+	["useTrunk"] = 				"Kofferraum benutzen"
 }
 
 ACTION_PERMISSIONS_INFO = {

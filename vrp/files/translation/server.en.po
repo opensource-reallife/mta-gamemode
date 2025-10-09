@@ -5101,3 +5101,6 @@ msgstr "%s got a %s!"
 
 msgid "Du musst zuerst die Handbremse lösen!"
 msgstr "You have to release the handbrake first!"
+
+msgid "Du hast keine Berechtigung den Kofferraum dieses Fahrzeuges zu benutzen!"
+msgstr "You are not authorized to use the trunk of this vehicle!"
