@@ -1107,8 +1107,6 @@ function Player:payDay()
 		self:transferBankMoney({BankServer.get("server.loan_tax"), nil, nil, true}, outgoing_income, _("Lohnsteuer", self), "Loan", "Tax", {silent = true, allowNegative = true})
 		temp_bank_money = temp_bank_money - outgoing_income
 		points_total = points_total + math.floor(outgoing_income / 100)
-	else
-		outgoing_income = 0
 	end
 
 	if HouseManager:isInstantiated() then
