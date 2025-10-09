@@ -5098,3 +5098,6 @@ msgstr "Error: Invalid mode!"
 
 msgid "%s hat eine/n %s erhalten!"
 msgstr "%s got a %s!"
+
+msgid "Du musst zuerst die Handbremse lösen!"
+msgstr "You have to release the handbrake first!"
