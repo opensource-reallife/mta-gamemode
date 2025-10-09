@@ -14,6 +14,10 @@ function MWeedTruck:constructor()
 	self.m_BankAccount = BankServer.get("action.trucks")
 	createObject(3041, -1120.21, -1621.1, 75.3, 0, 0, 90) -- table for the drugs
 
+	self.m_BlipWeedTruck = Blip:new("Logistician.png", -1095.50, -1614.75, {factionType = {"Evil", "Rescue", "State"}}, 400)
+	self.m_BlipWeedTruck:setDisplayText("Drogentruck")
+	self.m_BlipWeedTruck:setOptionalColor({27, 125, 47})
+
 	self.m_HelpColShape = createColSphere(-1095.50, -1614.75, 75.5, 5)
 	addEventHandler("onColShapeHit", self.m_HelpColShape, bind(self.onHelpColHit, self))
 	addEventHandler("onColShapeLeave", self.m_HelpColShape, bind(self.onHelpColHit, self))

@@ -417,7 +417,7 @@ function PlayerManager:playerQuit(quitType, reason, responsibleElement)
 	end
 	VehicleManager:getSingleton():destroyUnusedVehicles( source )
 	if source.m_DeathInJail then
-		FactionState:getSingleton():Event_JailPlayer(source, false, true, false, true)
+		FactionState:getSingleton():Event_JailPlayer(source, false, true, false, true, nil, true)
 	end
 	if DrivingSchool.m_LessonVehicles[source] then
 		if DrivingSchool.m_LessonVehicles[source].m_NPC then
@@ -1262,50 +1262,73 @@ function PlayerManager:Event_requestPlayerWeaponInfo()
 	client:triggerEvent("showPlayerWeapons", temp)
 end
 
-function PlayerManager:Event_DecreaseHunger(loss)
-	if client:getPublicSync("supportMode") then
-		return
-	end
-
+function PlayerManager:Event_DecreaseHunger()
+	if client:getPublicSync("supportMode") then return end
+	local loss = Randomizer:get(25, 75) / 100
 	if client.m_LessHunger then loss = loss / 2 end
 	client:setHunger(client:getHunger() - loss)
 end
 
-function PlayerManager:Event_toggleObjectPickup(veh) 
-	local pos = client.position
-	local eles = getElementsWithinRange(pos.x, pos.y, pos.z, 3, "object", client:getInterior(), client:getDimension())
-	if (client.m_PlayerAttachedObject) then
-		local objectData = PlayerAttachObjects[client.m_PlayerAttachedObject:getModel()]
-		if (objectData.placeDown) then
-			if (veh) then
-				local packageType = convertModelToName(client:getPlayerAttachedObject():getModel(), veh)
-				client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = "loadOnVehicleAnimation"
-				VehicleManager:getSingleton():loadObject(client, veh, packageType)
-			else		
-				client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = "dropAnimation"
-				client:detachPlayerObject(client:getPlayerAttachedObject(), false, true)
+function PlayerManager:Event_toggleObjectPickup()
+	if not client:isDead() and not isTimer(client.m_PickupTimer) then
+		local pos = client.position
+		local veh = getPedTarget(client) and getElementType(getPedTarget(client)) == "vehicle" and getPedTarget(client)
+		local object = client.m_PlayerAttachedObject
+		if object and not client.vehicle then
+			local settings = PlayerAttachObjects[object:getModel()]
+			if (settings.placeDown) then
+				--client:setFrozen(true)
+				if (veh) then
+					client:setAnimation("dealer", "dealer_deal", 700, true, false, false, false)
+					nextframe(function(client) client:setAnimationProgress("dealer_deal", 0.6) end, client)
+				else
+					client:setAnimation("bomber", "bom_plant", 700, true, false, false, false)
+				end
+				client.m_PickupTimer = Timer(function(client)
+					--client:setFrozen(false)
+					if (veh) then
+						local packageType = convertModelToName(object:getModel(), veh)
+						VehicleManager:getSingleton():loadObject(client, veh, packageType)
+					else
+						client:detachPlayerObject(object)
+					end
+				end, 700, 1, client)
+			end
+		else
+			local objects = getElementsWithinRange(pos.x, pos.y, pos.z, 3, "object", client:getInterior(), client:getDimension())
+			if (veh and getDistanceBetweenPoints3D(veh.position, pos) < 7) then
+				objects = veh:getAttachedElements()
+			end
+			for _, object in pairs(objects) do
+				if (PlayerAttachObjects[object:getModel()] and PlayerAttachObjects[object:getModel()].placeDown) and not client.vehicle then
+					local attachedToBone = exports.bone_attach:isElementAttachedToBone(object)
+					local attachedToElement = object:getAttachedTo()
+					if not object.m_PickupPlayer and not attachedToBone and (not attachedToElement or (veh and attachedToElement)) then
+						--client:setFrozen(true)
+						if (veh) then
+							client:setAnimation("dealer", "dealer_deal", 700, true, false, false, false)
+							nextframe(function(client) client:setAnimationProgress("dealer_deal", 0.6) end, client)
+						else
+							client:setAnimation("bomber", "bom_plant", 700, true, false, false, false)
+						end
+						object.m_PickupPlayer = client
+						client.m_PickupTimer = Timer(function(client)
+							if isElement(client) then
+								--client:setFrozen(false)
+								local attachedTo = object:getAttachedTo() or exports.bone_attach:isElementAttachedToBone(object)
+								if (attachedTo and veh and veh == attachedTo and attachedTo:getType() == "vehicle") then
+									local packageType = convertModelToName(object:getModel(), veh)
+									VehicleManager:getSingleton():deloadObject(client, veh, packageType)
+								elseif (not attachedTo and table.size(getEventHandlers("onElementClicked", object)) > 0) then
+									triggerEvent("onElementClicked", object, "left", "down", client)
+								end
+							end
+							object.m_PickupPlayer = nil
+						end, 700, 1, client)
+						break
+					end
+				end
 			end
 		end
-	else	
-		if (veh and getDistanceBetweenPoints3D(veh.position, pos) < 6) then
-			pos = veh.position
-			eles = veh:getAttachedElements()
-		end
-		for i, v in pairs(eles) do
-			outputChatBox(tostring(v.position))
-			if (PlayerAttachObjects[v:getModel()] and PlayerAttachObjects[v:getModel()].placeDown) then
-				local attachedTo = v:getAttachedTo()
-				if (attachedTo and attachedTo:getType() == "vehicle") then
-					local packageType = convertModelToName(v:getModel(), veh)
-					client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = "unloadOnVehicleAnimation"
-					VehicleManager:getSingleton():deloadObject(client, veh, packageType)
-				elseif (not attachedTo and table.size(getEventHandlers("onElementClicked", v)) > 0) then
-					client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = "pickupAnimantion"
-					client:attachPlayerObject(v, true)
-				break
-			end
-		end
-	end
-		client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = nil;
 	end
 end

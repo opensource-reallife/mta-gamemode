@@ -105,15 +105,15 @@ end
 ]]
 
 function Christmas:constructor()
-	self.m_MapParser = MapParser:new(":exo_maps/noobspawn_christmas_old.map")
-	self.m_MapParser:create()
-
 	self.m_ChristmasQuestManager = ChristmasQuestManager:new()
 	self.m_AdventCalender = {}
 
 	self.m_BankServerAccount = BankServer.get("event.christmas")
 
 	if EVENT_CHRISTMAS_MARKET then
+		self.m_MapParser = MapParser:new(":exo_maps/noobspawn_christmas_old.map")
+		self.m_MapParser:create()
+
 		WheelOfFortune:new(Vector3(1479, -1700.3, 14.2), 0) -- in front of tree
 		WheelOfFortune:new(Vector3(1479, -1692.3, 14.2), 180) -- in back of tree
 		--other wheels on side of market

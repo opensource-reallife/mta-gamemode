@@ -8,6 +8,7 @@ PERMISSIONS_INFO = { -- name = {{type, id} type = 0 for all, {faction min rank, 
 	["toggleWeapon"] =			{{0}, {["faction"] = 4, ["company"] = nil, ["group"] = nil}},
 	["withdrawMoney"] =			{{0}, {["faction"] = nil, ["company"] = nil, ["group"] = 0}},
 	["vehicleRespawnAll"] =		{{0}, {["faction"] = 0, ["company"] = 0, ["group"] = 0}},
+	["vehicleRespawnInstant"] =	{{0}, {["faction"] = 0, ["company"] = 0, ["group"] = 0}},
 	["editRankSkins"] =			{{0}, {["faction"] = 4, ["company"] = 3, ["group"] = nil}},
 	["editWeaponPermissions"] =	{{0}, {["faction"] = 4, ["company"] = nil, ["group"] = nil}},
 	["editDiplomacy"] =			{{1, {FactionStaticId.LCN, FactionStaticId.YAKUZA, FactionStaticId.GROVE, FactionStaticId.BALLAS, FactionStaticId.OUTLAWS, FactionStaticId.VATOS, FactionStaticId.TRIAD, FactionStaticId.BRIGADA}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}}, -- f done
@@ -54,7 +55,8 @@ PERMISSIONS_INFO = { -- name = {{type, id} type = 0 for all, {faction min rank, 
 	["disableBug"]	=			{{1, {FactionStaticId.FBI}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}},
 	["changePermissions"] =		{{0}, {["faction"] = 5, ["company"] = 4, ["group"] = 5}},
 	["buyVehicle"] = 			{{0}, {["faction"] = 5, ["company"] = 4, ["group"] = nil}},
-	["scrapVehicle"] = 			{{0}, {["faction"] = 5, ["company"] = 4, ["group"] = nil}}
+	["scrapVehicle"] = 			{{0}, {["faction"] = 5, ["company"] = 4, ["group"] = nil}},
+	["useTrunk"] = 				{{0}, {["faction"] = nil, ["company"] = nil, ["group"] = 0}}
 }
 
 PERMISSION_NAMES = {
@@ -65,7 +67,8 @@ PERMISSION_NAMES = {
 	["editLoan"] =				"Gehalt verwalten",
 	["toggleWeapon"] =			"Waffenentnahme de/aktivieren",
 	["withdrawMoney"] =			"Kassenauszahlung",
-	["vehicleRespawnAll"] =		"Alle Fahrzeuge respawnen",
+	["vehicleRespawnAll"] =		"Fahrzeuge respawnen (angekündigt)",
+	["vehicleRespawnInstant"] =	"Fahrzeuge respawnen (sofort)",
 	["editRankSkins"] =			"Rangkleidung verwalten",
 	["editWeaponPermissions"] =	"Waffenberechtigung verwalten",
 	["editDiplomacy"] =			"Diplomatie verwalten",
@@ -88,7 +91,7 @@ PERMISSION_NAMES = {
 	["withdrawBIZMoney"] =		"Kasse von Geschäften leeren",
 	["vehiclePark"] =			"Fahrzeuge parken",
 	["deleteGroup"] =			"Gruppe löschen",
-	["vehicleRespawn"] =		"Fahrzeuge respawnen",
+	["vehicleRespawn"] =		"Fahrzeuge respawnen (einzeln)",
 	["renameGroup"] =			"Gruppe umbenennen",
 	["changeGroupType"] =		"Gruppentyp ändern",
 	["changeRankNames"] =		"Rangnamen verwalten",
@@ -112,7 +115,8 @@ PERMISSION_NAMES = {
 	["changePermissions"] =		"Rechte verwalten (Beinhaltet Vollzugriff)",
 	["buyExtraVehicleSlots"] =	"Fahrzeugeslots kaufen",
 	["buyVehicle"] = 			"Fahrzeug kaufen",
-	["scrapVehicle"] = 			"Fahrzeug verschrotten"
+	["scrapVehicle"] = 			"Fahrzeug verschrotten",
+	["useTrunk"] = 				"Kofferraum benutzen"
 }
 
 ACTION_PERMISSIONS_INFO = {

@@ -23,23 +23,25 @@ function VehicleManager:constructor()
 	self.m_FactionVehicles = {}
 	self.m_VehiclesWithEngineOn = {}
 	self.m_VehicleMarks = {}
+	self.m_DamageLogCache = {}
 	self.m_BankAccountServer = BankServer.get("server.vehicle")
 	self:setSpeedLimits()
 
 	-- Add events
-	addRemoteEvents{"vehicleLock", "vehicleRequestKeys", "vehicleAddKey", "vehicleRemoveKey", "vehicleRepair", "vehicleRespawn", "vehicleRespawnWorld", "vehicleDelete",
+	addRemoteEvents{"vehicleLock", "vehicleRequestKeys", "vehicleAddKey", "vehicleRemoveKey", "vehicleRepair", "vehicleFlip", "vehicleRespawn", "vehicleRespawnWorld", "vehicleDelete",
 	"vehicleSell", "vehicleSellAccept", "vehicleRequestInfo", "vehicleUpgradeGarage", "vehicleEmpty", "vehicleSyncMileage", "vehicleBreak", "vehicleBlow",
 	"vehicleUpgradeHangar", "vehiclePark", "soundvanChangeURL", "soundvanStopSound", "vehicleToggleHandbrake", "onVehicleCrash","checkPaintJobPreviewCar",
 	"vehicleGetTuningList", "adminVehicleEdit", "adminVehicleSetInTuning", "adminVehicleGetTextureList", "adminVehicleOverrideTextures", "vehicleLoadObject", "vehicleDeloadObject", "clientMagnetGrabVehicle", "clientToggleVehicleEngine",
 	"clientToggleVehicleLight", "clientToggleHandbrake", "vehicleSetVariant", "vehicleSetTuningPropertyTable", "vehicleRequestHandling", "vehicleResetHandling", "requestVehicleMarks", "vehicleToggleLoadingRamp",
 	"VehicleInfrared:onUse", "VehicleInfrared:onStop", "VehicleInfrared:onPlayerExit", "VehicleInfrared:onSyncLight", "VehicleInfrared:onCreateLight", "VehicleInfrared:onStopLight", "requestVehicles", "onToggleVehicleRegister",
-	"toggleShamalInterior", "requestKeyList", "vehicleToggleRC", "buyVehicleExtraSlot"}
+	"toggleShamalInterior", "requestKeyList", "vehicleToggleRC", "buyVehicleExtraSlot", "onClientVehicleDamage"}
 
 	addEventHandler("vehicleLock", root, bind(self.Event_vehicleLock, self))
 	addEventHandler("vehicleRequestKeys", root, bind(self.Event_vehicleRequestKeys, self))
 	addEventHandler("vehicleAddKey", root, bind(self.Event_vehicleAddKey, self))
 	addEventHandler("vehicleRemoveKey", root, bind(self.Event_vehicleRemoveKey, self))
 	addEventHandler("vehicleRepair", root, bind(self.Event_vehicleRepair, self))
+	addEventHandler("vehicleFlip", root, bind(self.Event_vehicleFlip, self))
 	addEventHandler("vehicleRespawn", root, bind(self.Event_vehicleRespawn, self))
 	addEventHandler("vehicleRespawnWorld", root, bind(self.Event_vehicleRespawnWorld, self))
 	addEventHandler("vehicleDelete", root, bind(self.Event_vehicleDelete, self))
@@ -78,6 +80,7 @@ function VehicleManager:constructor()
 	addEventHandler("requestKeyList", root, bind(self.Event_requestKeyList, self))
 	addEventHandler("vehicleToggleRC", root, bind(self.Event_vehicleToggleRC, self))
 	addEventHandler("buyVehicleExtraSlot", root, bind(self.Event_buyVehicleExtraSlot, self))
+	addEventHandler("onClientVehicleDamage", root, bind(self.Event_onClientVehicleDamage, self))
 
 	addEventHandler("onVehicleExplode", root,
 		function()
@@ -315,6 +318,7 @@ function VehicleManager:constructor()
 	VehicleManager.sPulse:registerHandler(bind(VehicleManager.removeUnusedVehicles, self))
 
 	setTimer(bind(self.updateFuelOfPermanentVehicles, self), 60*1000, 0)
+	setTimer(bind(self.Event_onDamageLogCacheTick, self), 5000, 0)
 
 	self.NonOptionalTextures = --// Textures that cant be toggled off
 	{
@@ -340,6 +344,10 @@ function VehicleManager:constructor()
 end
 
 function VehicleManager:destructor()
+	for id, cacheObj in pairs(self.m_DamageLogCache) do
+		self:forceDamageLogCache(id)
+	end
+
 	local st, count = getTickCount(), 0
 	for ownerId, vehicles in pairs(self.m_Vehicles) do
 		for k, vehicle in ipairs(table.reverse(vehicles)) do
@@ -989,7 +997,9 @@ function VehicleManager:Event_toggleHandBrake()
 		if getElementData(source, "forRent") then
 			source:setForRent(false, 0)
 		end
-		client:getCompany():addLog(client, "Handbremsen-Logs", ("hat eine Handbremse gelöst. %s von %s"):format(source:getName(), getElementData(source, "OwnerName") or "Unbekannt"))
+		local pos, rot = source:getPosition(), source:getRotation()
+		local formatPos, formatRot = ("%.2f, %.2f, %.2f"):format(pos.x, pos.y, pos.z), ("%.2f, %.2f, %.2f"):format(rot.x, rot.y, rot.z)
+		client:getCompany():addLog(client, "Handbremsen-Logs", ("hat eine Handbremse gelöst. %s von %s. (Position: %s) (Rotation: %s)"):format(source:getName(), getElementData(source, "OwnerName") or "Unbekannt", formatPos, formatRot))
 	elseif client:getRank() >= ADMIN_RANK_PERMISSION["looseVehicleHandbrake"] then
 		StatisticsLogger:getSingleton():addAdminVehicleAction(client, "looseHandbrake", source)
 	else
@@ -1168,6 +1178,24 @@ function VehicleManager:Event_vehicleRepair()
 	local format = {client:getName(), source:getName(), getElementData(source, "OwnerName") or "Unknown"}
 	Admin:getSingleton():sendShortMessage("%s hat das Fahrzeug %s von %s repariert.", format)
 	StatisticsLogger:getSingleton():addAdminVehicleAction(client, "repair", source)
+end
+
+function VehicleManager:Event_vehicleFlip()
+	if client:getRank() < ADMIN_RANK_PERMISSION["flipVehicle"] then
+		AntiCheat:getSingleton():report(client, "DisallowedEvent", CheatSeverity.High)
+		return
+	end
+
+	local rot = source:getRotation()
+	if ( rot.x > 110 ) and ( rot.x < 250 ) then
+		source:setRotation(rot.x + 180, rot.y, rot.z)
+
+		local format = {client:getName(), source:getName(), getElementData(source, "OwnerName") or "Unknown"}
+		Admin:getSingleton():sendShortMessage("%s hat das Fahrzeug %s von %s umgedreht.", format)
+		StatisticsLogger:getSingleton():addAdminVehicleAction(client, "flip", source)
+	else
+		client:sendError(_("Das Fahrzeug steht nicht auf dem Kopf!", client))
+	end
 end
 
 function VehicleManager:Event_vehicleRespawn(garageOnly)
@@ -1636,74 +1664,73 @@ end
 
 function VehicleManager:loadObject(player, veh, type)
 	local vehicleObjects, model, name
-		vehicleObjects = VEHICLE_BAG_LOAD
-		client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = "loadOnVehicleAnimation"
-		if type == "moneyBag" then
-			model = 1550
-			name = "keinen Geldsack"
-		elseif type == "weaponBox" then
-			model = 2912
-			name = "keine Waffenbox"
+	vehicleObjects = VEHICLE_BAG_LOAD
 
-			if veh:getData("WeaponTruck") then
-				MWeaponTruck:getSingleton().m_CurrentWT:Event_LoadBox(veh)
-				return
-			end
-			
-		elseif type == "drugPackage" then
-			model = 1575
-			name = "kein Drogenpaket"
-
-		elseif type == "christmasPresent" then
-			model = 2912
-			name = "kein Geschenk"
+	if type == "moneyBag" then
+		model = 1550
+		name = "keinen Geldsack"
+	elseif type == "weaponBox" then
+		model = 2912
+		name = "keine Waffenbox"
 		
-			if veh:getData("ChristmasTruck:Truck") then
-				ChristmasTruckManager:getSingleton().m_Current:Event_LoadPresent(veh)
-				return
-			end
-		elseif type == "weaponPackage" then
-			vehicleObjects = VEHICLE_WEAPON_PACKAGE_LOAD
-			model = 2358
-			name = "kein Waffenpaket"
+		if veh:getData("WeaponTruck") then
+			MWeaponTruck:getSingleton().m_CurrentWT:loadBox(player, veh)
+			return
 		end
-		if veh:canObjectBeLoaded(model) then
-			return veh:tryLoadObject(player, player:getPlayerAttachedObject())
+	elseif type == "drugPackage" then
+		model = 1575
+		name = "kein Drogenpaket"
+
+	elseif type == "christmasPresent" then
+		model = 2912
+		name = "kein Geschenk"
+	
+		if veh:getData("ChristmasTruck:Truck") then
+			ChristmasTruckManager:getSingleton().m_Current:loadPresent(player, veh)
+			return
 		end
-		if player:getFaction() then
-			if vehicleObjects[veh.model] then
-				if getDistanceBetweenPoints3D(veh.position, player.position) < 7 then
-					if not player:isDead() then
-						if not player.vehicle then
-							local object = player:getPlayerAttachedObject()
-							if veh:getAttachedObjectsCount() < vehicleObjects[veh.model]["count"] then
-								if object then
-									local count = veh:getAttachedObjectsCount()
-									player:detachPlayerObject(object)
-									object:attach(veh, vehicleObjects[veh.model][count+1])
-									if object.LoadHook then
-										object.LoadHook(player, veh, object)
-									end
-								else
-									player:sendError(_("Du hast %s dabei!", player, name))
+	elseif type == "weaponPackage" then
+		vehicleObjects = VEHICLE_WEAPON_PACKAGE_LOAD
+		model = 2358
+		name = "kein Waffenpaket"
+	end
+	if veh:canObjectBeLoaded(model) then
+		return veh:tryLoadObject(player, player:getPlayerAttachedObject())
+	end
+	if player:getFaction() then
+		if vehicleObjects[veh.model] then
+			if getDistanceBetweenPoints3D(veh.position, player.position) < 7 then
+				if not player:isDead() then
+					if not player.vehicle then
+						local object = player:getPlayerAttachedObject()
+						if veh:getAttachedObjectsCount() < vehicleObjects[veh.model]["count"] then
+							if object then
+								local count = veh:getAttachedObjectsCount()
+								player:detachPlayerObject(object)
+								object:attach(veh, vehicleObjects[veh.model][count+1])
+								if object.LoadHook then
+									object.LoadHook(player, veh, object)
 								end
 							else
-								player:sendError(_("Das Fahrzeug ist bereits voll beladen!", player))
+								player:sendError(_("Du hast %s dabei!", player, name))
 							end
 						else
-							player:sendError(_("Du darfst in keinem Fahrzeug sitzen!", player))
+							player:sendError(_("Das Fahrzeug ist bereits voll beladen!", player))
 						end
+					else
+						player:sendError(_("Du darfst in keinem Fahrzeug sitzen!", player))
 					end
-				else
-					player:sendError(_("Du bist zu weit vom Truck entfernt!", player))
 				end
 			else
-				player:sendError(_("Dieses Fahrzeug kann nicht beladen werden!", player))
+				player:sendError(_("Du bist zu weit vom Truck entfernt!", player))
 			end
 		else
-			player:sendError(_("Nur Fraktionisten können dieses Objekt abladen!", player))
+			player:sendError(_("Dieses Fahrzeug kann nicht beladen werden!", player))
 		end
+	else
+		player:sendError(_("Nur Fraktionisten können dieses Objekt abladen!", player))
 	end
+end
 
 function VehicleManager:Event_DeLoadObject(veh, type)
 	self:deloadObject(client, veh, type)
@@ -1712,7 +1739,7 @@ end
 function VehicleManager:deloadObject(player, veh, type)
 	local vehicleObjects, model, name
 	vehicleObjects = VEHICLE_BAG_LOAD
-	client.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt = "unloadOnVehicleAnimation"
+
 	if type == "moneyBag" then
 		model = 1550
 		name = "kein Geldsack"
@@ -1721,7 +1748,7 @@ function VehicleManager:deloadObject(player, veh, type)
 		name = "keine Waffenbox"
 
 		if veh:getData("WeaponTruck") then
-			MWeaponTruck:getSingleton().m_CurrentWT:Event_DeloadBox(veh)
+			MWeaponTruck:getSingleton().m_CurrentWT:deloadBox(player, veh)
 			return
 		end
 		
@@ -1734,7 +1761,7 @@ function VehicleManager:deloadObject(player, veh, type)
 		name = "kein Geschenk"
 
 		if veh:getData("ChristmasTruck:Truck") then
-			ChristmasTruckManager:getSingleton().m_Current:Event_DeloadPresent(veh)
+			ChristmasTruckManager:getSingleton().m_Current:deloadPresent(player, veh)
 			return
 		end
 	elseif type == "weaponPackage" then
@@ -2152,6 +2179,98 @@ function VehicleManager:Event_buyVehicleExtraSlot(type)
 			end
 		else
 			return client:sendError(_("Du bist in keiner Gruppe", client))
+		end
+	end
+end
+
+function VehicleManager:Event_onClientVehicleDamage(attacker, vehicle, weapon, loss, dx, dy, dz, tId)
+	if not vehicle or not attacker or not isElement(vehicle) or not isElement(attacker) then
+		return
+	end
+	if (not vehicle:isPermanent()) then
+		return
+	end
+	if attacker:getData("isInDeathMatch")  then
+		return
+	end
+	if (attacker:getData("isInColorCars")) then
+		return
+	end
+	self:addVehicleDamageLog(vehicle, attacker, weapon, loss, tId)
+end
+
+function VehicleManager:addVehicleDamageLog(vehicle, attacker, weapon, loss, tId)  -- i would like to thank strobe for sparing me the time writing my own cache functions
+	if self.m_DamageLogCache then
+		local cacheTable = self.m_DamageLogCache[attacker.m_Id]
+		if cacheTable then
+			local cacheWeapon = cacheTable["Weapon"]
+			local cacheTarget = cacheTable["Target"]
+			if weapon == cacheWeapon and vehicle.m_Id == cacheTarget and not tId then
+				cacheTable["TotalLoss"] = cacheTable["TotalLoss"] + loss
+				cacheTable["HitCount"] = cacheTable["HitCount"] + 1
+			else
+				self:forceDamageLogCache( attacker )
+				self.m_DamageLogCache[attacker.m_Id]  = {}
+				self.m_DamageLogCache[attacker.m_Id]["CacheTime"] = getTickCount()
+				self.m_DamageLogCache[attacker.m_Id]["Timestamp"] = getRealTime().timestamp
+				self.m_DamageLogCache[attacker.m_Id]["Weapon"] = weapon
+				self.m_DamageLogCache[attacker.m_Id]["Target"] = vehicle.m_Id
+				self.m_DamageLogCache[attacker.m_Id]["TotalLoss"] = loss
+				self.m_DamageLogCache[attacker.m_Id]["HitCount"] = 1
+				self.m_DamageLogCache[attacker.m_Id]["TireId"] = tId or nil 
+				self.m_DamageLogCache[attacker.m_Id]["Zone"] = StatisticsLogger:getSingleton():getZone(attacker)
+			end
+		else
+			self:forceDamageLogCache( attacker )
+			self.m_DamageLogCache[attacker.m_Id]  = {}
+			self.m_DamageLogCache[attacker.m_Id]["CacheTime"] = getTickCount()
+			self.m_DamageLogCache[attacker.m_Id]["Timestamp"] = getRealTime().timestamp
+			self.m_DamageLogCache[attacker.m_Id]["Weapon"] = weapon
+			self.m_DamageLogCache[attacker.m_Id]["Target"] = vehicle.m_Id
+			self.m_DamageLogCache[attacker.m_Id]["TotalLoss"] = loss
+			self.m_DamageLogCache[attacker.m_Id]["HitCount"] = 1
+			self.m_DamageLogCache[attacker.m_Id]["TireId"] = tId or nil 
+			self.m_DamageLogCache[attacker.m_Id]["Zone"] = StatisticsLogger:getSingleton():getZone(attacker)
+		end
+		if (tId) then
+			self:forceDamageLogCache( attacker )
+		end
+	end
+end
+
+
+function VehicleManager:forceDamageLogCache( player )
+	if self.m_DamageLogCache then
+		local cacheTable, playerId
+		if type(player) == "userdata" then
+			cacheTable = self.m_DamageLogCache[player.m_Id]
+			playerId = player.m_Id
+		else
+			cacheTable = self.m_DamageLogCache[player]
+			playerId = player
+		end
+		if cacheTable then
+			local cacheWeapon = cacheTable["Weapon"]
+			local totalLoss = cacheTable["TotalLoss"]
+			local hitCount = cacheTable["HitCount"]
+			local target = cacheTable["Target"]
+			local startTime = cacheTable["Timestamp"]
+			local zone = cacheTable["Zone"]
+			local tireId = cacheTable["TireId"]
+			StatisticsLogger:getSingleton():addVehicleDamageLog(player, target, zone, cacheWeapon, totalLoss, startTime, tireId)
+			if self.m_DamageLogCache[playerId]  then
+				self.m_DamageLogCache[playerId] = nil
+			end
+		end
+	end
+end
+
+function VehicleManager:Event_onDamageLogCacheTick()
+	local now = getTickCount()
+	local cacheObj, cacheTime
+	for id, cacheObj in pairs(self.m_DamageLogCache) do
+		if now >= cacheObj["CacheTime"] + GUN_CACHE_EMPTY_INTERVAL then
+			self:forceDamageLogCache(  id )
 		end
 	end
 end

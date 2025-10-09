@@ -62,7 +62,7 @@ function FactionState:constructor()
 	self.m_Items = {
 		["Barrikade"] = 0,
 		["Nagel-Band"] = 0,
-		["Blitzer"] = 0,
+		["Blitzer"] = 1500,
 		["Warnkegel"] = 0,
 		["Rauchgranate"] = 5000,
 		["Gasmaske"] = 1000,
@@ -347,10 +347,10 @@ function FactionState:loadLSPD(factionId)
 	--InteriorEnterExit:new(Vector3(1564.84, -1666.84, 28.40), Vector3(226.65, 75.95, 1005.04), 0, 0, 6, 0) -- LSPD Roof
 
 	local elevator = Elevator:new()
-	elevator:addStation("UG Garage", Vector3(1568.65, -1690.97, 5.89), 270, 0, 5)
-	elevator:addStation("Erdgeschoss", Vector3(1567.73, -1687.24, 16.20), 84)
 	elevator:addStation("Dach - Heliports", Vector3(1564.94, -1666.13, 28.40), 90)
-
+	elevator:addStation("Erdgeschoss", Vector3(1567.73, -1687.24, 16.20), 84)
+	elevator:addStation("UG Garage", Vector3(1568.65, -1690.97, 5.89), 270, 0, 5)
+	
 	local safe = createObject(2332, 1559.90, -1647.80, 17, 0, 0, 90)
 	FactionManager:getSingleton():getFromId(factionId):setSafe(safe)
 end
@@ -524,13 +524,13 @@ function FactionState:Command_ticket(source, cmd, target)
 				if source:isFactionDuty() then
 					if getDistanceBetweenPoints3D(source:getPosition(), targetPlayer:getPosition()) <= 5 then
 						if source ~= targetPlayer then
-							if targetPlayer:getWanteds() <= 3 then
-								if targetPlayer:getMoney() >= TICKET_PRICE*targetPlayer:getWanteds() + 500 then
+							if targetPlayer:getWanteds() <= 2 then
+								if targetPlayer:getMoney() >= TICKET_PRICE*targetPlayer:getWanteds() then
 									source.m_CurrentTicket = targetPlayer
 									targetPlayer:triggerEvent("stateFactionOfferTicket", source)
-									source:sendSuccess(_("Du hast %s ein Ticket für %d$ angeboten!", source,  targetPlayer:getName(), TICKET_PRICE*targetPlayer:getWanteds()+500 ))
+									source:sendSuccess(_("Du hast %s ein Ticket für %d$ angeboten!", source,  targetPlayer:getName(), TICKET_PRICE*targetPlayer:getWanteds() ))
 								else
-									source:sendError(_("%s hat nicht genug Geld dabei! (%d$)", source, targetPlayer:getName(),  TICKET_PRICE*targetPlayer:getWanteds()+500 ))
+									source:sendError(_("%s hat nicht genug Geld dabei! (%d$)", source, targetPlayer:getName(),  TICKET_PRICE*targetPlayer:getWanteds() ))
 								end
 							else
 								source:sendError("Der Spieler hat kein oder ein zu hohes Fahndungslevel!")
@@ -554,14 +554,14 @@ end
 
 function FactionState:Event_OnTicketAccept(cop)
 	if client then
-		if client:getMoney() >=  TICKET_PRICE*client:getWanteds()+500  then
-			if client:getWanteds() <= 3 then
+		if client:getMoney() >=  TICKET_PRICE*client:getWanteds() then
+			if client:getWanteds() <= 2 then
 				if cop and isElement(cop) then
 					cop:sendSuccess(_("%s hat dein Ticket angenommen und bezahlt!", cop, client:getName()))
-					self.m_BankAccountServer:transferMoney(cop:getFaction(),  TICKET_PRICE*client:getWanteds()+500 , "Ticket", "Faction", "Ticket")
+					self.m_BankAccountServer:transferMoney(cop:getFaction(),  TICKET_PRICE*client:getWanteds(), "Ticket", "Faction", "Ticket")
 				end
 				client:sendSuccess(_("Du hast das Ticket angenommen! Dir wurde(n) %s Wanted(s) erlassen!", client, client:getWanteds()))
-				client:transferMoney(self.m_BankAccountServer,  TICKET_PRICE*client:getWanteds()+500 , "[SAPD] Kautionsticket", "Faction", "Ticket")
+				client:transferMoney(self.m_BankAccountServer,  TICKET_PRICE*client:getWanteds(), "[SAPD] Kautionsticket", "Faction", "Ticket")
 				client:setWanteds(0)
 			end
 		end
@@ -703,9 +703,15 @@ function FactionState:Event_CuffSuccess( target )
 end
 
 function FactionState:addLog(player, category, text)
-	FactionManager:getSingleton().Map[1]:addLog(player, category, text)
-	FactionManager:getSingleton().Map[2]:addLog(player, category, text)
-	FactionManager:getSingleton().Map[3]:addLog(player, category, text)
+	if FactionManager.Map[1] then
+		FactionManager:getSingleton().Map[1]:addLog(player, category, text)
+	end
+	if FactionManager.Map[2] then
+		FactionManager:getSingleton().Map[2]:addLog(player, category, text)
+	end
+	if FactionManager.Map[3] then
+		FactionManager:getSingleton().Map[3]:addLog(player, category, text)
+	end
 end
 
 function FactionState:getOnlinePlayers(afkCheck, dutyCheck)
@@ -1119,16 +1125,36 @@ function FactionState:outputMegaphone(player, text, lang)
 				local playerId = player:getId()
 				local playersToSend = player:getPlayersInChatRange(3, lang)
 				local receivedPlayers = {}
+				local receivedPlayersWithWanteds = {}
 				local text = ("[[ %s %s: %s ]]"):format(faction:getShortName(), player:getName(), text)
 				for index = 1,#playersToSend do
 					playersToSend[index]:sendMessage(text, 255, 255, 0)
 					if playersToSend[index] ~= player then
 						receivedPlayers[#receivedPlayers+1] = playersToSend[index]
 					end
+					if playersToSend[index]:getWanteds() > 0 then
+						receivedPlayersWithWanteds[#receivedPlayersWithWanteds+1] = playersToSend[index]
+					end
 				end
 
 				StatisticsLogger:getSingleton():addChatLog(player, "chat", text, receivedPlayers)
 				FactionState:getSingleton():addBugLog(player, "(Megafon)", text)
+
+				local names = {}
+				for _, p in ipairs(receivedPlayersWithWanteds) do
+					table.insert(names, p:getName())
+				end
+
+				if #receivedPlayersWithWanteds > 0 then
+					setTimer( function(player)
+						player:sendInfo(_("Deine Nachricht wurde von folgenden gesuchten Spielern empfangen:\n%s", player, table.concat(names, ", ")))
+					end, 3000, 1, player)
+				else
+					setTimer( function(player)
+						player:sendInfo(_("Deine Nachricht wurde von niemandem empfangen der gesucht wird.", player))
+					end, 3000, 1, player)
+				end
+
 				return true
 			else
 				player:sendError(_("Du sitzt in keinem Fraktions-Fahrzeug!", player))
@@ -1157,6 +1183,9 @@ function FactionState:Command_suspect(player,cmd,target,amount,...)
 		if amount and amount >= 1 and amount <= MAX_WANTED_LEVEL  then
 			local target = PlayerManager:getSingleton():getPlayerFromPartOfName(target,player)
 			if isElement(target) then
+				if target:getFaction() and target:getFaction():isStateFaction() and target:isFactionDuty() then
+					return player:sendError(_("Du kannst Beamten im Dienst keine Wanteds geben.", player))
+				end
 				if not isPedDead(target) then
 					if string.len(reason) > 2 and string.len(reason) < 50 then
 						if target.m_LastWantedsByReason then
@@ -1333,13 +1362,17 @@ function FactionState:onTiedExit(exitingPlayer, seat, jacked, door)
 	end
 end
 
-function FactionState:Event_JailPlayer(player, bail, CUTSCENE, police, force, pFactionBonus, offline, isoCell)
+function FactionState:Event_JailPlayer(player, bail, CUTSCENE, police, force, pFactionBonus, offline, isoCell, killed)
 	if player:getWanteds() == 0 then return end
 	local policeman = police or client
 	if not force then
 		if policeman:getFaction() and policeman:getFaction():isStateFaction() then
 			if policeman:isFactionDuty() then
 				if player:getWanteds() > 0 then
+					if (player:getWanteds() < 6 and (offline or killed)) then
+						bail = true
+					end
+
 					local bailcosts = 0
 					local wantedLevel = player:getWanteds()
 					local jailTime = wantedLevel * JAIL_TIME_PER_WANTED_ARREST
@@ -1417,15 +1450,18 @@ function FactionState:Event_JailPlayer(player, bail, CUTSCENE, police, force, pF
 			end
 		end
 	else
+		if (player:getWanteds() < 6 and (offline or killed)) then
+			bail = true
+		end
+
 		local bailcosts = 0
 		local wantedLevel = player:getWanteds()
-		local jailTime = wantedLevel * JAIL_TIME_PER_WANTED_KILL
+		local jailTime = wantedLevel * (killed and JAIL_TIME_PER_WANTED_KILL or JAIL_TIME_PER_WANTED_BAIL)
 		local factionBonus = JAIL_COSTS[wantedLevel]
 
 		if bail then
-			bailcosts = BAIL_PRICES[wantedLevel]
+			bailcosts = BAIL_PRICES[wantedLevel] * 1.5
 			player:setJailBail(bailcosts)
-			jailTime = wantedLevel * JAIL_TIME_PER_WANTED_BAIL
 		end
 		if policeman then
 			if policeman.vehicle and player.vehicle then
@@ -1629,11 +1665,50 @@ function FactionState:freePlayer(player, prisonBreak)
 		player:sendShortMessage("Du bist aus dem Gefängnis ausgebrochen!")
 		self:sendShortMessage(player:getName().." ist aus dem Gefängnis ausgebrochen!")
 	else
+		--if player:getFaction() and getElementData(player, "SpawnAfterJail") and player:isPremium() then
+		if player:getFaction() and getElementData(player, "SpawnAfterJail") then
+			local costs = 250
+			local moneyCosts = false
+			local bankCosts = false
 
-		player:setInterior(2)
+			if player:getBankMoney() >= costs then
+				bankCosts = true
+			elseif player:getMoney() >= costs then
+				moneyCosts = true
+			else
+				player:setInterior(2)
+				player:setPosition(2616.34, -1411.37, 1040.36)
+				player:setRotation(Vector3(0, 0, 180))
+				player:sendInfo("Du hast nicht genügend Geld um dich direkt an der Fraktionsbasis spawnen zu lassen. Du wirst am Gefängnis entlassen.")
+			end
+			
+			local position = factionSpawnpoint[player:getFaction():getId()]
+			if not player:isPremium() then
+				if moneyCosts or bankCosts then
+					-- TODO: Transaction
+					local target = CompanyManager:getSingleton():getFromId(CompanyStaticId.EPT)
+					if bankCosts then
+						player:transferBankMoney(target, costs, "Transport vom Gefängnis", "Company", "JailTransport")
+					elseif moneycosts then
+						player:transferMoney(target, costs, "Transport vom Gefängnis", "Company", "JailTransport")
+					end
+					player:setPosition(position[1])
+					player:setInterior(position[2])
+					player:setDimension(position[3])
+					player:sendInfo(("Du wurdest vom EPT zu deiner Fraktionsbasis gebracht. Die Fahrt kostete %s$."):format(costs))
+				end
+			else
+				player:setPosition(position[1])
+				player:setInterior(position[2])
+				player:setDimension(position[3])
+				player:sendInfo("Du wurdest als VIP vom EPT zu deiner Fraktionsbasis gebracht. Die Fahrt war für dich kostenlos.")
+			end
+		else
+			player:setInterior(2)
+			player:setPosition(2616.34, -1411.37, 1040.36)
+			player:setRotation(Vector3(0, 0, 180))
+		end
 		player:setWanteds(0)
-		player:setPosition(2616.34, -1411.37, 1040.36)
-		player:setRotation(Vector3(0, 0, 180))
 	end
 
 	player:setData("inJail",false, true)
@@ -1674,6 +1749,10 @@ function FactionState:Event_FactionRearm()
 		if inv then
 			inv:removeAllItem("Einsatzhelm")
 			inv:giveItem("Einsatzhelm",1)
+		end
+		if client:getFaction():isStateFaction() and client:getData("Faction:InSpecialDuty", true, true) then
+			inv:removeAllItem("Kevlar")
+			inv:giveItem("Kevlar", 1)
 		end
 	end
 end
@@ -1720,7 +1799,8 @@ function FactionState:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, pl
 				client:getInventory():removeAllItem("Nagel-Band")
 				client:getInventory():removeAllItem("Blitzer")
 				client:getInventory():removeAllItem("Einsatzhelm")
-				client:getInventory():removeItem("Kevlar", 1)
+				client:getInventory():removeAllItem("Kevlar")
+				WearableManager:getSingleton():removeWearable(client, "Einsatzhelm")
 				WearableManager:getSingleton():removeWearable(client, "Kevlar")
 				client.m_KevlarShotsCount = nil
 				client:setData("Faction:InSpecialDuty", nil, true)
@@ -1732,6 +1812,7 @@ function FactionState:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, pl
 				FactionManager:getSingleton():Event_stopNeedhelp(client)
 				--//fix
 			else
+				if client:getWanteds() > 0 then return client:sendError(_("Du kannst nicht in den Dienst gehen, solange du gesucht wirst!", client)) end
 				if client:getPublicSync("Company:Duty") and client:getCompany() then
 					--client:sendWarning(_("Bitte beende zuerst deinen Dienst im Unternehmen!", client))
 					--return false
@@ -1841,7 +1922,7 @@ function FactionState:checkLogout(player)
 	for index, cop in pairs(colPlayers) do
 		if cop:getFaction() and cop:getFaction():isStateFaction() and cop:isFactionDuty() and not cop:isDead() and player ~= cop then
 			if player:getInterior() == cop:getInterior() and player:getDimension() == cop:getDimension() then
-				self:Event_JailPlayer(player, false, false, cop, false, false, true)
+				self:Event_JailPlayer(player, false, false, cop, false, false, true, false, true)
 				player:addOfflineMessage( "Du wurdest offline eingesperrt! Die Knastzeit ist dadurch länger!", 1)
 				return
 			end
@@ -1854,6 +1935,9 @@ function FactionState:Event_giveWanteds(target, amount, reason)
 	local faction = client:getFaction()
 	if faction and faction:isStateFaction() then
 		if client:isFactionDuty() then
+			if target:getFaction() and target:getFaction():isStateFaction() and target:isFactionDuty() then
+				return client:sendError(_("Du kannst Beamten im Dienst keine Wanteds geben.", client))
+			end
 			target:giveWanteds(amount)
 			outputChatBox(_("Verbrechen begangen: %s, %s Wanted/s, Gemeldet von: %s", client, reason, amount, client:getName()), target, 255, 255, 0 )
 			local msg = ("%s hat %s %d Wanted/s wegen %s gegeben!"):format(client:getName(), target:getName(), amount, reason)

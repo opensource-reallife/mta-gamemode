@@ -84,8 +84,9 @@ function BeggarPedManager:spawnPeds()
 			if chance(20) then -- 20% chance they die
 				local random = Randomizer:get(1, 27)*60*1000 -- within 27 minutes
 				Timer(function(ped)
-					if FactionRescue:getSingleton():countPlayers(true, true, "medic") >= 1 then -- only when a rescue member is online, not afk and medic duty
-						if ped and isElement(ped) and not ped:isDead() then
+					local playerCount = FactionRescue:getSingleton():countPlayers(true, true, "medic", 1) + FactionRescue:getSingleton():countPlayers(true, true, "medic", 2)
+					if playerCount >= 1 then -- only when a rescue member is not afk, medic duty and has radio status 1 or 2
+						if isElement(ped) and not ped.m_Dead then
 							ped:kill()
 						end
 					end

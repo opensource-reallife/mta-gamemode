@@ -25,6 +25,7 @@ function RankPermissionsGUI:constructor(permissionsType, type)
 	
 	self.m_PermissionsList = GUIGridGridList:new(1, 1, 9, 11, self.m_Window)
 	self.m_PermissionsList:addColumn(_"Berechtigung", 1)
+	self.m_PermissionsList:setSortable{_"Berechtigung"}
 	
 	self.m_SaveButton = GUIGridButton:new(1, 12, 11, 1, _"Speichern", self.m_Window)
 	self.m_SaveButton.onLeftClick = bind(self.saveButton_Click, self)

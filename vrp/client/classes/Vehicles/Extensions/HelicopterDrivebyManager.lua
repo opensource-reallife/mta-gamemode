@@ -26,8 +26,6 @@ function HelicopterDrivebyManager:tryDriveby()
     else
         if localPlayer:getPublicSync("isDoingHelicopterDriveby") then
             triggerServerEvent("endHelicopterDriveby", localPlayer)
-        else
-            ErrorBox:new(_"Du sitzt nicht in einem Helikopter!")
         end
     end
 end

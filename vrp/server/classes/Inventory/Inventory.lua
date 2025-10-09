@@ -455,6 +455,8 @@ function Inventory:throwItem(item, bag, id, place, name)
 end
 
 function Inventory:giveItem(item, amount, value)
+	local amount = math.floor(amount)
+
 	if self.m_Debug then
 		outputDebugString("INV-DEBUG-giveItem: Spieler: "..self.m_Owner:getName().." | Item: "..item.." | Anzahl: "..amount)
 	end

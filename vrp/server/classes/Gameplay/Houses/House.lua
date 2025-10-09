@@ -605,6 +605,7 @@ function House:leaveHouse(player)
 end
 
 function House:tryRob( player )
+	if player:isFactionDuty() or player:isCompanyDuty() then return player:sendError(_("Du darfst während du im Fraktions-/Unternehmensdienst bist, keinen Hausraub starten!")) end
 	local gRob = GroupHouseRob:getSingleton()
 	local bContinue = gRob:startNewRob( self, player)
 	if bContinue then
@@ -630,7 +631,15 @@ function House:giveRobItem( player )
 				else
 					local item = GroupHouseRob:getSingleton():getRandomItem()
 					player:meChat(true, "entdeckt etwas und versucht es einzustecken. ((%s))", item, true)
-					player:getInventory():giveItem("Diebesgut",1)
+					local inventory = player:getInventory()
+					local itemName = "Diebesgut"
+					if inventory:giveItem(itemName, 1) then
+						local bag = (InventoryManager:getSingleton():getItemDataForItem(itemName))["Tasche"]
+						local place = inventory:getPlaceForItem(itemName, 0)
+						local value = tonumber(inventory:getItemValueByBag(bag, place)) or 0
+						local min = FactionState:getSingleton():countPlayers(true, true) >= 1 and 180 or 90
+						inventory:setItemValueByBag(bag, place, value + Randomizer:get(min, 540))
+					end
 				end
 			end
 		end
@@ -642,7 +651,6 @@ function House:tryToCatchRobbers( player )
 		local group = player:getGroup()
 		if group and self.m_RobGroup then
 			if group == self.m_RobGroup then
-				local item = GroupHouseRob:getSingleton():getRandomItem()
 				local isFaceConcealed = player:getData("isFaceConcealed")
 				local wantedChance = math.random(1,10)
 				if isFaceConcealed then

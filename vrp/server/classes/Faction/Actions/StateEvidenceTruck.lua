@@ -7,7 +7,7 @@
 -- ****************************************************************************
 
 StateEvidenceTruck = inherit(Singleton)
-StateEvidenceTruck.Time = 20*60*1000 -- in ms
+StateEvidenceTruck.Time = ACTION_TIME
 StateEvidenceTruck.spawnPos = Vector3(1591.18, -1685.65, 6.02)
 StateEvidenceTruck.spawnRot = Vector3(0, 0, 0)
 StateEvidenceTruck.Destination = Vector3(-1726.63, -123.50, 2.55)
@@ -18,7 +18,7 @@ StateEvidenceTruck.MoneyBagSpawns = { -- 10
 
 function StateEvidenceTruck:constructor(driver, money)
 	self.m_Truck = TemporaryVehicle.create(428, StateEvidenceTruck.spawnPos, StateEvidenceTruck.spawnRot.z)
-	self.m_Truck:setData("State Evidence Truck", true, true) -- shitty naming
+	self.m_Truck:setData("State Evidence Truck", true, true)
     self.m_Truck:setColor(0, 50, 0, 0, 50, 0)
 	self.m_Truck:setVariant(255, 255)
 	self.m_Truck:setMaxHealth(1500, true)
@@ -26,10 +26,11 @@ function StateEvidenceTruck:constructor(driver, money)
 	self.m_Truck:setRepairAllowed(false)
 	self.m_Truck:toggleRespawn(false)
 	self.m_Truck:setAlwaysDamageable(true)
-	self.m_Truck:setFrozen(true)
+	--self.m_Truck:setFrozen(true)
 	self.m_Truck:setInterior(0)
 	self.m_Truck:setDimension(5)
 	self.m_Truck:initObjectLoading()
+	self.m_Truck.m_DisableToggleHandbrake = true
 	self.m_Timer = setTimer(bind(self.timeUp, self), StateEvidenceTruck.Time, 1)
 
 	self.m_StartTime = getTickCount()
@@ -40,13 +41,19 @@ function StateEvidenceTruck:constructor(driver, money)
 	self.m_Money = money
 	self.ms_MoneyPerBag = math.floor(EVIDENCETRUCK_MAX_LOAD/10) -- 10 bags
 	self.m_MoneyBag = {}
+	self.m_MoneyBagBlips = {}
 	self.m_BankAccountServer = BankServer.get("action.evidence_trunk")
+
+	self.m_DeliveryInfos = {}
 
 	self.m_Event_onBagClickFunc = bind(self.Event_onBagClick, self)
 	self.m_DestroyFunc = bind(self.Event_OnTruckDestroy,self)
 
 	self.m_WaterCheckTimer = setTimer(bind(self.isStateEvidenceTruckInWater, self), 10000, 0)
 	self.m_IsSubmerged = false
+
+	self.m_ShowDown = false
+	self.m_TimerUntilShowdown = setTimer(bind(self.showdown, self), StateEvidenceTruck.Time - MINUTE_TO_SHOWDOWN, 1)
 
 	addEventHandler("onVehicleStartEnter",self.m_Truck,bind(self.Event_OnTruckStartEnter,self))
 	addEventHandler("onVehicleEnter",self.m_Truck,bind(self.Event_OnTruckEnter,self))
@@ -56,13 +63,10 @@ function StateEvidenceTruck:constructor(driver, money)
 
 	local dest = StateEvidenceTruck.Destination
 
-	self.m_DestinationBlips["State"] = Blip:new("Marker.png", dest.x, dest.y, {factionType = "State", duty = true}, 9999, BLIP_COLOR_CONSTANTS.Red)
-	self.m_DestinationBlips["State"]:setDisplayText("Geldtruck-Abgabepunkt")
-
 	for i, faction in pairs(FactionEvil:getSingleton():getFactions()) do
-		self:addDestinationMarker(faction:getId(), "evil", false)
+		self:addDestinationMarker(faction:getId(), "evil", false, true)
 	end
-	self:addDestinationMarker(1, "state") -- State
+	self:addDestinationMarker(1, "state", false, true) -- State
 	self:spawnMoneyBags()
 	TollStation.openAll()
 	FactionState:getSingleton():forceOpenAreaGates()
@@ -93,6 +97,20 @@ function StateEvidenceTruck:destructor()
 		end
 	end
 
+	for faction, data in pairs(self.m_DeliveryInfos) do
+		faction:addLog(-1, "Aktion", ("Asservatentruck: Es wurden %s/%s Säcke voller Asservaten (%s) erfolgreich %s."):format(data.boxCount, StateEvidenceTruck.MoneyBagSpawns, toMoneyString(data.money), faction:isStateFaction() and "sichergestellt" or "gestohlen"))
+	end
+
+	if (self.m_MoneyBagBlips) then
+		for index, blip in pairs(self.m_MoneyBagBlips) do
+			blip:delete()
+		end
+	end
+
+	if isTimer(self.m_TimerUntilShowdown) then
+		killTimer(self.m_TimerUntilShowdown)
+	end
+
 	TollStation.closeAll()
 	setTimer(function()
 		FactionState:getSingleton():forceCloseAreaGates()
@@ -118,16 +136,58 @@ function StateEvidenceTruck:spawnMoneyBags()
 		self.m_MoneyBag[bagid]:setInterior(0)
 		self.m_MoneyBag[bagid]:setDimension(5)
 
+		self.m_MoneyBag[bagid].LoadHook = function(player, veh, bag)
+			if self.m_ShowDown then
+				if (self.m_MoneyBagBlips[bag]) then
+					delete(self.m_MoneyBagBlips[bag])
+					self.m_MoneyBagBlips[bag] = nil
+				end
+
+				if (not self.m_MoneyBagBlips[veh]) then
+					self.m_MoneyBagBlips[veh] = self:createBlip(veh, "Transportfahrzeug", veh, "Logistician.png")
+				end
+			end
+		end	
+
+		self.m_MoneyBag[bagid].DeloadHook = function(player, veh, bag)
+			if (self.m_ShowDown) then
+				local hasAnotherObject = false
+				if (self.m_MoneyBagBlips[veh]) then
+					for i, v in pairs(veh:getAttachedElements()) do
+						if (v:getModel() == 1550 and v:getData("MoneyBag")) then
+							hasAnotherObject = true
+							break
+						end
+					end
+
+					if (not hasAnotherObject and self.m_Truck ~= veh) then
+						delete(self.m_MoneyBagBlips[veh])
+						self.m_MoneyBagBlips[veh] = nil
+					end
+				end
+
+				if ( not self.m_MoneyBagBlips[bag]) then
+					self.m_MoneyBagBlips[bag] = self:createBlip(bag, "Geldsack", bag)
+				end
+			end
+		end	
+
 		bagid = bagid + 1
 		moneyLeft = moneyLeft - money
 	end
 	self.m_BagAmount = bagid - 1
 end
 
-function StateEvidenceTruck:addDestinationMarker(factionId, type, isEvil)
+function StateEvidenceTruck:addDestinationMarker(factionId, type, isEvil, addBlip)
 	local markerId = #self.m_DestinationMarkers+1
 	local color = factionColors[factionId]
 	local destination = factionId == 1 and StateEvidenceTruck.Destination or factionWTDestination[factionId]
+
+	if (addBlip) then
+		self.m_DestinationBlips[factionId] = Blip:new("Marker.png", destination.x, destination.y, {factionType = {"State", "Evil"}, duty = true}, 9999, BLIP_COLOR_CONSTANTS.Red)
+		self.m_DestinationBlips[factionId]:setDisplayText(("Geldtruck-Abgabepunkt%s"):format(FactionManager.Map[factionId] and FactionManager.Map[factionId]:getType() == "State" and " (Staat)" or "" ))
+	end
+
 	self.m_DestinationMarkers[markerId] = createMarker(destination,"cylinder",8, color.r, color.g, color.b, 100)
 	self.m_DestinationMarkers[markerId].type = type
 	self.m_DestinationMarkers[markerId].factionId = factionId
@@ -189,7 +249,19 @@ function StateEvidenceTruck:onDestinationMarkerHit(hitElement)
 			PlayerManager:getSingleton():breakingNews("%d von %d Geldsäcken wurden abgegeben!", self.m_BagAmount-self:getRemainingBagAmount()+1, self.m_BagAmount)
 			hitElement:sendInfo(_("Du hast erfolgreich einen Geldsack abgegeben!",hitElement))
 			bag = hitElement:getPlayerAttachedObject()
+
+			if self.m_MoneyBagBlips[bag] then 
+				delete(self.m_MoneyBagBlips[bag])
+				self.m_MoneyBagBlips[bag] = nil
+			end
+
 			hitElement:detachPlayerObject(bag)
+
+			if (not self.m_DeliveryInfos[faction]) then
+				self.m_DeliveryInfos[faction] = {["bagCount"] = 0, ["money"] = 0}
+			end
+			self.m_DeliveryInfos[faction].bagCount = self.m_DeliveryInfos[faction].bagCount + 1
+			self.m_DeliveryInfos[faction].money = self.m_DeliveryInfos[faction].money + bag.money
 	end
 
 	self.m_BankAccountServer:transferMoney(faction, bag.money, "Geldsack (Geldtransport)", "Action", "EvidenceTruck")
@@ -242,4 +314,38 @@ function StateEvidenceTruck:isStateEvidenceTruckInWater()
 			self.m_IsSubmerged = true
 		end
 	end
+end
+
+function StateEvidenceTruck:showdown() 
+	self.m_ShowDown = true
+	self.m_MoneyBagBlips[self.m_Truck] = self:createBlip(self.m_Truck, "Geldtruck", self.m_Truck, "Logistician.png")
+
+	for i, v in pairs(self.m_MoneyBag) do
+		local attachedTo = v:getAttachedTo()
+		if v and isElement(v) and attachedTo ~= self.m_Truck then
+			if (attachedTo and attachedTo:getType() == "vehicle") then
+				if (not self.m_MoneyBagBlips[attachedTo]) then
+					self.m_MoneyBagBlips[attachedTo] = self:createBlip(attachedTo, "Transportfahrzeug", attachedTo, "Logistician.png")
+				end
+			else
+				if not self.m_MoneyBagBlips[v] then
+					self.m_MoneyBagBlips[v] = self:createBlip(v, "Geldsack", v)
+				end
+			end
+		end
+	end
+end
+
+
+function StateEvidenceTruck:createBlip(ele, text, attachedTo, marker, color)
+	color = color and color or BLIP_COLOR_CONSTANTS.Red
+	marker = marker == nil and "Marker.png" or marker
+	local blip = Blip:new(marker, ele.position.x, ele.position.y, {factionType = {"State", "Evil"}, duty = true}, 9999, color)
+	if (attachedTo) then
+		blip:attachTo(attachedTo)
+	end
+	if (text) then
+		blip:setDisplayText(text)
+	end
+	return blip
 end

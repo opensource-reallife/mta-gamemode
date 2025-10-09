@@ -71,7 +71,14 @@ local createFuncs = {
 			end
 		elseif info.pickuptype == "vehiclechange" then
 			model = 2838
-			func = function(vehicle) setElementModel(vehicle, info.model) end
+			func = function(vehicle)
+				if vehicle:getModel() ~= info.model then
+					local controller = vehicle:getController()
+					controller:removeFromVehicle()
+					setElementModel(vehicle, info.model)
+					controller:warpIntoVehicle(vehicle, 0)
+				end
+			end
 		else
 			model = 2837
 			func = function(vehicle)

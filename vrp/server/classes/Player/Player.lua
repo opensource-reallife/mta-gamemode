@@ -543,11 +543,19 @@ function Player:spawn()
 			end
 		end, 200, 1
 	)
-
+	
+	-- remove special items
+	self:getInventory():removeAllItem("Taser")
+	self:getInventory():removeAllItem("Warnkegel")
+	self:getInventory():removeAllItem("Barrikade")
+	self:getInventory():removeAllItem("Nagel-Band")
+	self:getInventory():removeAllItem("Blitzer")
+	self:getInventory():removeAllItem("Einsatzhelm")
+	self:getInventory():removeAllItem("Kevlar")
 	WearableManager:getSingleton():removeAllWearables(self)
 
 	if self.m_DeathInJail then
-		FactionState:getSingleton():Event_JailPlayer(self, false, true, false, true)
+		FactionState:getSingleton():Event_JailPlayer(self, false, true, false, true, nil, false, false, true)
 	end
 
 	self:triggerEvent("checkNoDm")
@@ -602,9 +610,9 @@ function Player:respawn(position, rotation, bJailSpawn)
 
 	WearableManager:getSingleton():removeAllWearables(self)
 	if self.m_SuicideEscape then
-		FactionState:getSingleton():Event_JailPlayer(self, false, true, self.m_LastCopAttack)
+		FactionState:getSingleton():Event_JailPlayer(self, false, true, self.m_LastCopAttack, false, nil, false, false, true)
 	elseif self.m_DeathInJail then
-		FactionState:getSingleton():Event_JailPlayer(self, false, true, false, true)
+		FactionState:getSingleton():Event_JailPlayer(self, false, true, false, true, nil, false, false, true)
 	end
 		
 	self.m_LastCopAttackTime = 0
@@ -1011,12 +1019,6 @@ function Player:payDay()
 	local points_total = 0
 
 	--Income:
-	if not self:getFaction() and not self:getCompany() then
-		income = income + PAYDAY_UNEMPLOYED
-		BankServer.get("server.bank"):transferMoney({self, true, true}, PAYDAY_UNEMPLOYED, "Bürgergeld", "Bank", "Interest", {silent = true})
-		self:addPaydayText("income", _("Bürgergeld", self), PAYDAY_UNEMPLOYED)
-	end
-
 	if self:getFaction() then
 		income_faction = self:getFaction():paydayPlayer(self)
 		points_total = points_total + self:getFaction():getPlayerRank(self)
@@ -1045,6 +1047,14 @@ function Player:payDay()
 			self:getGroup():transferMoney({self, true, true}, income_group, ("Lohn für %s"):format(self:getName()), "Group", "Loan", {silent = true})
 			self:addPaydayText("income", _("%s-Lohn", self, self:getGroup():getName()), income_group)
 		end
+	end
+
+	local combined_loan = income_faction + income_company
+	if combined_loan < PAYDAY_UNEMPLOYED then
+		income_unemployed = PAYDAY_UNEMPLOYED - combined_loan
+		income = income + income_unemployed
+		BankServer.get("server.bank"):transferMoney({self, true, true}, income_unemployed, "Grundsicherung", "Bank", "Interest", {silent = true})
+		self:addPaydayText("income", _("Grundsicherung", self), income_unemployed)
 	end
 
 	if EVENT_HALLOWEEN and self.m_HalloweenPaydayBonus then
@@ -1088,8 +1098,11 @@ function Player:payDay()
 	--Outgoing
 	local temp_bank_money = self:getBankMoney() + income
 
-	outgoing_income = income_faction / 4 + income_company / 4 + income_group / 4
-	if outgoing_income > 0 then
+	if combined_loan > PAYDAY_UNEMPLOYED then
+		outgoing_income = combined_loan / 4
+		if (combined_loan - outgoing_income) < PAYDAY_UNEMPLOYED then
+			outgoing_income = combined_loan - PAYDAY_UNEMPLOYED
+		end
 		self:addPaydayText("outgoing", _("Lohnsteuer", self), outgoing_income)
 		self:transferBankMoney({BankServer.get("server.loan_tax"), nil, nil, true}, outgoing_income, _("Lohnsteuer", self), "Loan", "Tax", {silent = true, allowNegative = true})
 		temp_bank_money = temp_bank_money - outgoing_income
@@ -1420,8 +1433,7 @@ function Player:toggleControlsWhileObjectAttached(bool, blockWeapons, blockSprin
 	end
 end
 
-function Player:attachPlayerObject(object, fromBind)
-	if (self.m_IsInteractionWithObject) then return end
+function Player:attachPlayerObject(object)
 	local model = object.model
 	if PlayerAttachObjects[model] then
 		if not self:getPlayerAttachedObject() then
@@ -1438,55 +1450,38 @@ function Player:attachPlayerObject(object, fromBind)
 					return false
 				end
 			end
-
-			self.m_IsInteractionWithObject = true
-
-			local function attach()
-				self.m_PlayerAttachedObject = object
-				self:setPrivateSync("attachedObject", object)
-				object:setCollisionsEnabled(false)
-				object:setDoubleSided(true)
-				if settings.scale then
-					object:setScale(settings.scale.x or 1, settings.scale.y or 1, settings.scale.z or 1)
-				end
-				if settings["bone"] then
-					exports.bone_attach:attachElementToBone(object, self, settings["bone"], settings["pos"].x, settings["pos"].y, settings["pos"].z, settings["rot"].x, settings["rot"].y, settings["rot"].z)
-				else
-					object:attach(self, settings["pos"], settings["rot"])
-				end
-
-				if settings["animationData"] then
-					self:setAnimation(unpack(settings["animationData"]))
-				end
-
-				self.m_PlayerAttachedObjectSettings = {settings["blockWeapons"], settings["blockSprint"], settings["blockJump"], settings["blockVehicle"], settings["blockFlyingVehicles"]}
-				self:toggleControlsWhileObjectAttached(false, unpack(self.m_PlayerAttachedObjectSettings))
-
-				if settings.placeDown then
-					-- self:sendShortMessage(_("Drücke 'n' um den/die %s abzulegen!", self, settings["name"]))
-					-- TODO Xonder :)
-				end
-	
-				self.m_IsInteractionWithObject = false
-				self:setFrozen(false)
-
-				self.m_RefreshAttachedObject = bind(self.refreshAttachedObject, self)
-				self.m_DetachOnPlayerQuit = bind(self.Event_detachObjectOnQuit, self)
-				addEventHandler("onElementDimensionChange", self, self.m_RefreshAttachedObject)
-				addEventHandler("onElementInteriorChange", self, self.m_RefreshAttachedObject)
-				addEventHandler("onPlayerWasted", self, self.m_RefreshAttachedObject)
-				addEventHandler("onElementDestroy", object, self.m_detachPlayerObjectFunc)
-				addEventHandler("onPlayerQuit", self, self.m_DetachOnPlayerQuit)
+			self.m_PlayerAttachedObject = object
+			self:setPrivateSync("attachedObject", object)
+			object:setCollisionsEnabled(false)
+			object:setDoubleSided(true)
+			if settings.scale then
+				object:setScale(settings.scale.x or 1, settings.scale.y or 1, settings.scale.z or 1)
+			end
+			if settings["bone"] then
+				exports.bone_attach:attachElementToBone(object, self, settings["bone"], settings["pos"].x, settings["pos"].y, settings["pos"].z, settings["rot"].x, settings["rot"].y, settings["rot"].z)
+			else
+				object:attach(self, settings["pos"], settings["rot"])
 			end
 
-			if settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt] and #settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt] > 0 then
-				self:setFrozen(true)
-				self:setAnimation(unpack(settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt]))
-				setTimer(attach, settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt][3], 1)
-			else
-				attach()
-			end 
+			if settings["animationData"] then
+				self:setAnimation(unpack(settings["animationData"]))
+			end
 
+			self.m_PlayerAttachedObjectSettings = {settings["blockWeapons"], settings["blockSprint"], settings["blockJump"], settings["blockVehicle"], settings["blockFlyingVehicles"]}
+			self:toggleControlsWhileObjectAttached(false, unpack(self.m_PlayerAttachedObjectSettings))
+
+			if settings.placeDown then
+				--self:sendShortMessage(_("Drücke 'n' um den/die %s abzulegen!", self, settings["name"]))
+				--bindKey(self, "n", "down", self.m_detachPlayerObjectBindFunc, object)
+			end
+
+			self.m_RefreshAttachedObject = bind(self.refreshAttachedObject, self)
+			self.m_DetachOnPlayerQuit = bind(self.Event_detachObjectOnQuit, self)
+			addEventHandler("onElementDimensionChange", self, self.m_RefreshAttachedObject)
+			addEventHandler("onElementInteriorChange", self, self.m_RefreshAttachedObject)
+			addEventHandler("onPlayerWasted", self, self.m_RefreshAttachedObject)
+			addEventHandler("onElementDestroy", object, self.m_detachPlayerObjectFunc)
+			addEventHandler("onPlayerQuit", self, self.m_DetachOnPlayerQuit)
 			return true
 		else
 			self:sendError(_("Du hast bereits ein Objekt dabei!", self))
@@ -1518,62 +1513,46 @@ function Player:detachPlayerObjectBind(presser, key, state, object)
 	self:detachPlayerObject(object)
 end
 
-function Player:detachPlayerObject(object, collisionNextFrame, fromBind)
+function Player:detachPlayerObject(object, collisionNextFrame)
 	if not isElement(self) or not self:isLoggedIn() then return end
-	if (self.m_IsInteractionWithObject) then return end
 	if isElement(object) and (self:getPlayerAttachedObject() == object) then
 		local model = object.model
-		self.m_IsInteractionWithObject = true
 		if PlayerAttachObjects[model] then
 			local settings = PlayerAttachObjects[model]
-			local function detach()
-				self:toggleControlsWhileObjectAttached(true, unpack(self.m_PlayerAttachedObjectSettings))
-				object:detach(self)
-				removeEventHandler("onElementDestroy", object, self.m_detachPlayerObjectFunc)
-				if settings.scale then
-					object:setScale(1, 1, 1)
-				end
-				if settings["bone"] then
-					exports.bone_attach:detachElementFromBone(object)
-				else
-					object:detach(self)
-				end
-				object:setPosition(self.position + self.matrix.forward)
-				if collisionNextFrame then
-					nextframe(function() --to "prevent" it from spawning in another player / vehicle (added for RTS)
-						object:setCollisionsEnabled(true)
-					end)
-				else
-					object:setCollisionsEnabled(true)
-				end
-				self:setAnimation("carry", "crry_prtial", 1, false, true, true, false) -- Stop Animation Work Arround
-
-				self.m_IsInteractionWithObject = false
-				self:setFrozen(false)
-
-				if self.m_PlayerAttachedObject then
-					removeEventHandler("onElementDimensionChange", self, self.m_RefreshAttachedObject)
-					removeEventHandler("onElementInteriorChange", self, self.m_RefreshAttachedObject)
-					removeEventHandler("onPlayerWasted", self, self.m_RefreshAttachedObject)
-					removeEventHandler("onPlayerQuit", self, self.m_DetachOnPlayerQuit)
-					self.m_PlayerAttachedObject = nil
-					self:setPrivateSync("attachedObject", false)
-				end
-
+			self:toggleControlsWhileObjectAttached(true, unpack(self.m_PlayerAttachedObjectSettings))
+			object:detach(self)
+			removeEventHandler("onElementDestroy", object, self.m_detachPlayerObjectFunc)
+			if settings.scale then
+				object:setScale(1, 1, 1)
 			end
-			if settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt] and #settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt] > 0 then
-				self:setFrozen(true)
-				self:setAnimation(unpack(settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt]))
-				setTimer(detach, settings[self.whatIsHeDoingWithTheObjectIKnowShittyNameButIDontKnowHowToNameIt][3], 1)
+			if settings["bone"] then
+				exports.bone_attach:detachElementFromBone(object)
 			else
-				detach()
-			end 
+				object:detach(self)
+			end
+			object:setPosition(self.position + self.matrix.forward)
+			if collisionNextFrame then
+				nextframe(function() --to "prevent" it from spawning in another player / vehicle (added for RTS)
+					object:setCollisionsEnabled(true)
+				end)
+			else
+				object:setCollisionsEnabled(true)
+			end
 		end
 	else
 		self:toggleControlsWhileObjectAttached(true, true, true, true, true) --fallback to re-enable all controls
 	end
 
-	-- unbindKey(self, "n", "down", self.m_detachPlayerObjectBindFunc)
+	--unbindKey(self, "n", "down", self.m_detachPlayerObjectBindFunc)
+	self:setAnimation("carry", "crry_prtial", 1, false, true, true, false) -- Stop Animation Work Arround
+	if self.m_PlayerAttachedObject then
+		removeEventHandler("onElementDimensionChange", self, self.m_RefreshAttachedObject)
+		removeEventHandler("onElementInteriorChange", self, self.m_RefreshAttachedObject)
+		removeEventHandler("onPlayerWasted", self, self.m_RefreshAttachedObject)
+		removeEventHandler("onPlayerQuit", self, self.m_DetachOnPlayerQuit)
+		self.m_PlayerAttachedObject = nil
+		self:setPrivateSync("attachedObject", false)
+	end
 end
 
 function Player:getPlayerAttachedObject()

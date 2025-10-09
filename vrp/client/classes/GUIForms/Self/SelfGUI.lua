@@ -906,9 +906,8 @@ function SelfGUI:onSettingChange(setting)
 		self.m_ChartBlue.onChange = function (state) core:set("HUD", "chartColorAccent", state) end
 
 		self.m_ChartDate = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.85, self.m_Width*0.35, self.m_Height*0.04, _"Datum", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
-		self.m_ChartDate:setChecked(core:get("HUD", "chartDateVisible", false))
+		self.m_ChartDate:setChecked(core:get("HUD", "chartDateVisible", true))
 		self.m_ChartDate.onChange = function (state) core:set("HUD", "chartDateVisible", state) end
-
 
 		self.m_ChartLabels = GUICheckbox:new(self.m_Width*0.4, self.m_Height*0.67, self.m_Width*0.35, self.m_Height*0.04, _"Beschriftungen", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
 		self.m_ChartLabels:setChecked(core:get("HUD", "chartLabels", true))
@@ -939,7 +938,6 @@ function SelfGUI:onSettingChange(setting)
 		updateDesignOptions(core:get("HUD", "UIStyle", UIStyle.Chart)) --only show items which are relevant for current UI
 
 	elseif setting == "Radar" then
-
 		local function updateDesignOptions(disable)
 			local enabled = core:get("HUD", "showRadar", true) and not core:get("HUD", "GWRadar", false)
 			self.m_BarsEnabled:setEnabled(enabled)
@@ -979,8 +977,6 @@ function SelfGUI:onSettingChange(setting)
 			updateDesignOptions()
 		end
 
-
-
 		self.m_BarsEnabled = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.31, self.m_Width*0.5, self.m_Height*0.04, _"Statusleisten unter dem Radar", self.m_SettingBG)
 		self.m_BarsEnabled:setFont(VRPFont(25))
 		self.m_BarsEnabled:setFontSize(1)
@@ -1008,7 +1004,6 @@ function SelfGUI:onSettingChange(setting)
 		end
 
 		--Blips
-
 		GUILabel:new(self.m_Width*0.02, self.m_Height*0.58, self.m_Width*0.8, self.m_Height*0.07, _"Blips", self.m_SettingBG)
 		self.m_ColoredBlips = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.66, self.m_Width*0.35, self.m_Height*0.04, _"Bunte Blips", self.m_SettingBG)
 		self.m_ColoredBlips:setFont(VRPFont(25))
@@ -1026,14 +1021,9 @@ function SelfGUI:onSettingChange(setting)
 			Blip.setScaleMultiplier(scale)
 		end
 
-
-
 		updateDesignOptions(not core:get("HUD", "showRadar", true))
 	elseif setting == "Chat" then
-
-
 		GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.07, _"Textkanäle aktivieren/deaktivieren!", self.m_SettingBG)
-
 
 		self.m_FactionChat = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.12, self.m_Width*0.8, self.m_Height*0.04, _"Fraktionschat aktivieren", self.m_SettingBG)
 		self.m_FactionChat:setFont(VRPFont(25))
@@ -1044,7 +1034,7 @@ function SelfGUI:onSettingChange(setting)
 			setElementData(localPlayer, "FactionChatEnabled", state)
 		end
 
-		self.m_FactionChat = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.22, self.m_Width*0.8, self.m_Height*0.04, _"Unternehmenschat aktivieren", self.m_SettingBG)
+		self.m_FactionChat = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.17, self.m_Width*0.8, self.m_Height*0.04, _"Unternehmenschat aktivieren", self.m_SettingBG)
 		self.m_FactionChat:setFont(VRPFont(25))
 		self.m_FactionChat:setFontSize(1)
 		self.m_FactionChat:setChecked(core:get("Chat", "enableCompanyChat", true))
@@ -1053,8 +1043,7 @@ function SelfGUI:onSettingChange(setting)
 			setElementData(localPlayer, "CompanyChatEnabled", state)
 		end
 
-
-		self.m_FactionChat = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.32, self.m_Width*0.8, self.m_Height*0.04, _"Gruppenchat aktivieren", self.m_SettingBG)
+		self.m_FactionChat = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.22, self.m_Width*0.8, self.m_Height*0.04, _"Gruppenchat aktivieren", self.m_SettingBG)
 		self.m_FactionChat:setFont(VRPFont(25))
 		self.m_FactionChat:setFontSize(1)
 		self.m_FactionChat:setChecked(core:get("Chat", "enableGroupChat", true))
@@ -1063,7 +1052,7 @@ function SelfGUI:onSettingChange(setting)
 			setElementData(localPlayer, "GroupChatEnabled", state)
 		end
 
-		self.m_AllianceChat = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.42, self.m_Width*0.8, self.m_Height*0.04, _"Bündnischat aktivieren", self.m_SettingBG)
+		self.m_AllianceChat = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.27, self.m_Width*0.8, self.m_Height*0.04, _"Bündnischat aktivieren", self.m_SettingBG)
 		self.m_AllianceChat:setFont(VRPFont(25))
 		self.m_AllianceChat:setFontSize(1)
 		self.m_AllianceChat:setChecked(core:get("Chat", "enableAllianceChat", true))
@@ -1072,7 +1061,7 @@ function SelfGUI:onSettingChange(setting)
 			setElementData(localPlayer, "AllianceChatEnabled", state)
 		end
 
-		self.m_StateChat = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.52, self.m_Width*0.8, self.m_Height*0.04, _"Staatschat aktivieren", self.m_SettingBG)
+		self.m_StateChat = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.32, self.m_Width*0.8, self.m_Height*0.04, _"Staatschat aktivieren", self.m_SettingBG)
 		self.m_StateChat:setFont(VRPFont(25))
 		self.m_StateChat:setFontSize(1)
 		self.m_StateChat:setChecked(core:get("Chat", "enableStateChat", true))
@@ -1081,17 +1070,16 @@ function SelfGUI:onSettingChange(setting)
 			setElementData(localPlayer, "StateChatEnabled", state)
 		end
 
-
 	elseif setting == "Spawn" then
 		GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.07, _"Spawn nach Login", self.m_SettingBG)
 
-		self.m_Default = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.1, self.m_Width*0.35, self.m_Height*0.04, _"Letzter Standort", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
-		self.m_Noobspawn = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.17, self.m_Width*0.35, self.m_Height*0.04, _"Usertreff", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
-		self.m_FactionBase = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.24, self.m_Width*0.35, self.m_Height*0.04, _"Fraktionsbase", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
-		self.m_CompanyBase = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.31, self.m_Width*0.35, self.m_Height*0.04, _"Unternehmensbase", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
-		self.m_GroupBase = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.38, self.m_Width*0.35, self.m_Height*0.04, _"Gruppe", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
-		self.m_House = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.45, self.m_Width*0.35, self.m_Height*0.04, _"Haus", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
-		self.m_Vehicle = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.52, self.m_Width*0.35, self.m_Height*0.04, _"Wohnwagen/Boot", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
+		self.m_Default = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.1, self.m_Width*0.30, self.m_Height*0.04, _"Letzter Standort", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
+		self.m_Noobspawn = GUICheckbox:new(self.m_Width*0.33, self.m_Height*0.1, self.m_Width*0.30, self.m_Height*0.04, _"Stadthalle", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
+		self.m_FactionBase = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.16, self.m_Width*0.30, self.m_Height*0.04, _"Fraktionsbase", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
+		self.m_CompanyBase = GUICheckbox:new(self.m_Width*0.33, self.m_Height*0.16, self.m_Width*0.30, self.m_Height*0.04, _"Unternehmensbase", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
+		self.m_GroupBase = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.22, self.m_Width*0.30, self.m_Height*0.04, _"Gruppe", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
+		self.m_House = GUICheckbox:new(self.m_Width*0.33, self.m_Height*0.22, self.m_Width*0.30, self.m_Height*0.04, _"Haus", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
+		self.m_Vehicle = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.28, self.m_Width*0.30, self.m_Height*0.04, _"Wohnwagen/Boot", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
 
 		self.m_FactionBase:setEnabled(localPlayer:getFaction() and true or false)
 		self.m_CompanyBase:setEnabled(localPlayer:getCompany() and true or false)
@@ -1120,14 +1108,26 @@ function SelfGUI:onSettingChange(setting)
 		self.m_GroupBase.onChange = function() uncheckAll() self.m_GroupBase:setChecked(true) triggerServerEvent("onPlayerUpdateSpawnLocation", localPlayer, SPAWN_LOCATIONS.GROUP_BASE) end
 
 
-		GUILabel:new(self.m_Width*0.02, self.m_Height*0.59, self.m_Width*0.8, self.m_Height*0.07, _"Spawn nach Tod (Fraktion)", self.m_SettingBG)
+		GUILabel:new(self.m_Width*0.02, self.m_Height*0.38, self.m_Width*0.8, self.m_Height*0.07, _"Spawn nach Tod (Fraktion)", self.m_SettingBG)
 
-		self.m_RescueSpawn = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.67, self.m_Width*0.35, self.m_Height*0.04, _"Am Krankenhaus spawnen", self.m_SettingBG)
+		self.m_RescueSpawn = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.46, self.m_Width*0.35, self.m_Height*0.04, _"Am Krankenhaus spawnen", self.m_SettingBG)
 		self.m_RescueSpawn:setFont(VRPFont(25))
 		self.m_RescueSpawn:setFontSize(1)
 		self.m_RescueSpawn:setChecked(core:get("Other", "RescueSpawnAfterDeath", false))
 		self.m_RescueSpawn.onChange = function (state)
 			core:set("Other", "RescueSpawnAfterDeath", state)
+		end
+
+		GUILabel:new(self.m_Width*0.02, self.m_Height*0.56, self.m_Width*0.8, self.m_Height*0.07, _"Spawn nach Knast (Fraktion)", self.m_SettingBG)
+
+		self.m_JailSpawn = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.64, self.m_Width*0.60, self.m_Height*0.04, _"In Fraktionsbasis spawnen (250$)", self.m_SettingBG)
+		self.m_JailSpawn:setEnabled(localPlayer:isPremium())
+		self.m_JailSpawn:setFont(VRPFont(25))
+		self.m_JailSpawn:setFontSize(1)
+		self.m_JailSpawn:setChecked(core:get("Other", "SpawnAfterJail", false))
+		self.m_JailSpawn.onChange = function (state)
+			core:set("Other", "SpawnAfterJail", state)
+			setElementData(localPlayer, "SpawnAfterJail", state, true)
 		end
 
 		GUILabel:new(self.m_Width*0.02, self.m_Height*0.75, self.m_Width*0.7, self.m_Height*0.055, _"Nutze das Klicksystem bzw. das Hausmenü um den Spawnpunkt für ein Fahrzeug oder Haus festzulegen!", self.m_SettingBG)
@@ -1484,6 +1484,14 @@ function SelfGUI:onSettingChange(setting)
 		self.m_AllowRadioSound:setChecked(core:get("Sounds", "RadioSound", true))
 		self.m_AllowRadioSound.onChange = function (state)
 			core:set("Sounds", "RadioSound", state)
+		end
+
+		self.m_AllowActionAlertSound = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.45, self.m_Width*0.9, self.m_Height*0.04, _"Alarm von Bank/Juwelierraub und Shoprob", self.m_SettingBG)
+		self.m_AllowActionAlertSound:setFont(VRPFont(25))
+		self.m_AllowActionAlertSound:setFontSize(1)
+		self.m_AllowActionAlertSound:setChecked(core:get("Action", "PlayAlarm", true))
+		self.m_AllowActionAlertSound.onChange = function (state)
+			core:set("Action", "PlayAlarm", state)
 		end
 
 		self.m_PoliceSoundsButton = GUIButton:new(self.m_Width*0.02, self.m_Height*0.70, self.m_Width*0.35, self.m_Height*0.07, _"Polizei-Sounds", self.m_SettingBG):setBarEnabled(true)

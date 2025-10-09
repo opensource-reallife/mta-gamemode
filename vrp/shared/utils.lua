@@ -1046,11 +1046,11 @@ end
 function convertModelToName(modelId, veh)
 	if modelId == 1550 then
 		return "moneyBag"
-	elseif modelId == 2912 and veh:getData("ChristmanTruck:Truck") then
+	elseif modelId == 2912 and ActionsCheck:getSingleton():isCurrentAction() == "Weihnachtstruck" then
 		return "christmasPresent"
 	elseif modelId == 1575 then
 		return "drugPackage"
-	elseif modelId == 2912 and veh:getData("WeaponTruck") then
+	elseif modelId == 2912 and (ActionsCheck:getSingleton():isCurrentAction() == "Waffentruck" or ActionsCheck:getSingleton():isCurrentAction() == "Staats-Waffentruck") then
 		return "weaponBox"
 	elseif modelId == 2358 then
 		return "weaponPackage"

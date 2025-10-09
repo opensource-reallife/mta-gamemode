@@ -128,13 +128,13 @@ AFK_POSITIONS = {
 
 BAIL_PRICES =
 {
-	[1] = 1200,
-	[2] = 1600,
-	[3] = 2000,
-	[4] = 2400,
-	[5] = 3000,
-	[6] = 3500,
-	[7] = 4000,
+	[1] = 1000,
+	[2] = 2000,
+	[3] = 3000,
+	[4] = 4000,
+	[5] = 5000,
+	[6] = 6000,
+	[7] = 4000, --ab hier nicht angepasst (max 6 Wanteds)
 	[8] = 5000,
 	[9] = 7000,
 	[10] = 8000,
@@ -144,13 +144,13 @@ BAIL_PRICES =
 
 JAIL_COSTS =
 {
-	[1] = 500,
-	[2] = 1000,
-	[3] = 1500,
-	[4] = 2000,
-	[5] = 2500,
-	[6] = 3000,
-	[7] = 3500,
+	[1] = 250,
+	[2] = 500,
+	[3] = 750,
+	[4] = 1000,
+	[5] = 1250,
+	[6] = 1500,
+	[7] = 3500, --ab hier nicht angepasst (max 6 Wanteds)
 	[8] = 4000,
 	[9] = 5000,
 	[10] = 6000,
@@ -158,9 +158,9 @@ JAIL_COSTS =
 	[12] = 8000,
 }
 
-JAIL_TIME_PER_WANTED_BAIL = 2
-JAIL_TIME_PER_WANTED_ARREST = 2
-JAIL_TIME_PER_WANTED_KILL = 3
+JAIL_TIME_PER_WANTED_BAIL = 3
+JAIL_TIME_PER_WANTED_ARREST = 3
+JAIL_TIME_PER_WANTED_KILL = 4
 JAIL_TIME_PER_WANTED_OFFLINE = 5
 
 RESOURCES_TO_STOP = {

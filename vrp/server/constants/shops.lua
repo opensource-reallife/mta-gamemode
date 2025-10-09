@@ -212,6 +212,8 @@ SHOP_ITEMS = {
 		["Motorcross-Helm"] = 2500,
 		["Pot-Helm"] = 3000,
 		["Tragetasche"] = 1000,
+		["Medikit"] = 250,
+		["Bandage"] = 50,
 	};
 	["Tankstelle"] = {
 		["Zigarettenpackung"] = 150,
@@ -222,6 +224,8 @@ SHOP_ITEMS = {
 		["Motorcross-Helm"] = 2500,
 		["Pot-Helm"] = 3000,
 		["Tragetasche"] = 1000,
+		["Medikit"] = 250,
+		["Bandage"] = 50,
 	};
 	["Stadthalle"] = {
 		["Ausweis"] = 400,
@@ -411,20 +415,25 @@ ROBABLE_SHOP_EVIL_TARGETS = {
 }
 
 ROBABLE_VEHICLE_SHOP_EVIL_TARGETS = {
+	[1] = { -- Auto Bahn LV
+		Vector3(1337.61, 1735.79, 9.82),
+		Vector3(-2479.06, -708.42, 137.17),
+		Vector3(1413.46, 2785.82, 9.82),
+	},
 	[2] = { -- Auto Bahn LV
 		Vector3(-2245.34, -2310.53, 28.90),
 		Vector3(-2861.89, 900.43, 42.51),
 		Vector3(29.61, -2678.44, 39.24),
 	},
+	[3] = { -- Grotti LS
+		Vector3(2059.39, 2431.28, 39.92),
+		Vector3(-1578.64, 2708.96, 54.82),
+		Vector3(-2335.56, -1594.93, 482.68),
+	},
 	[6] = { -- Blueberry Cars
 		Vector3(-1578.64, 2708.96, 54.82),
 		Vector3(2887.56, 2317.29, 9.82),
 		Vector3(-2479.06, -708.42, 137.17),
-	},
-	[7] = { -- Grotti LS
-		Vector3(2059.39, 2431.28, 39.92),
-		Vector3(-1578.64, 2708.96, 54.82),
-		Vector3(-2335.56, -1594.93, 482.68),
 	},
 	[8] = { -- LS Slow & Used
 		Vector3(1413.46, 2785.82, 9.82),

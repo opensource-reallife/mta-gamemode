@@ -40,7 +40,7 @@ function StateFactionArrestGUI:onSelectPlayer(player)
 	if isElement(player) then
 		self.m_SelectedPlayer = player
 		self.m_mitKaution:setEnabled(true)
-		self.m_ohneKaution:setEnabled(true)
+		self.m_ohneKaution:setEnabled(player:getWanteds() < MAX_WANTED_LEVEL and false or true)
 	else
 		self.m_SelectedPlayer = nil
 		self.m_mitKaution:setEnabled(false)
@@ -51,10 +51,10 @@ end
 function StateFactionArrestGUI:refreshGrid()
 	self.m_List:clear()
 
-	local players = getElementsWithinColShape(self.m_ArrestCol,"player")
+	local players = getElementsWithinColShape(self.m_ArrestCol, "player")
 
 	local item
-	for key,playeritem in pairs(players) do
+	for key, playeritem in pairs(players) do
 		if playeritem:getWanteds() > 0 then
 			if playeritem ~= localPlayer then
 				item = self.m_List:addItem(getPlayerName(playeritem),playeritem:getWanteds())

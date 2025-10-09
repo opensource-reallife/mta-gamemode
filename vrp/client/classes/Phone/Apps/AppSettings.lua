@@ -33,8 +33,8 @@ function AppSettings:onOpen(form)
 	local currentModelId = Phone:getSingleton().m_Phone
 	self.m_PhoneChanger:setSelectedItem(PHONE_MODELS[currentModelId].Name)
 
-	GUILabel:new(10, 130, 200, 20, _"Hintergrund", form):setColor(Color.Black)
-	self.m_BackgroundChanger = GUIChanger:new(10, 150, 200, 30, form)
+	GUILabel:new(10, 125, 200, 20, _"Hintergrund", form):setColor(Color.Black)
+	self.m_BackgroundChanger = GUIChanger:new(10, 145, 200, 30, form)
 	self.m_BackgroundChanger.onChange =
 		function(text)
 			Phone:getSingleton():setBackground(text)
@@ -50,8 +50,8 @@ function AppSettings:onOpen(form)
 		self.m_BackgroundChanger:setSelectedItem(core:get("Phone", "Background"))
 	end
 
-	GUILabel:new(10, 195, 200, 20, _"Klingelton", form):setColor(Color.Black)
-	self.m_RingtoneChanger = GUIChanger:new(10, 215, 200, 30, form)
+	GUILabel:new(10, 185, 200, 20, _"Klingelton", form):setColor(Color.Black)
+	self.m_RingtoneChanger = GUIChanger:new(10, 205, 200, 30, form)
 	self.m_RingtoneChanger.onChange =
 		function(text)
 			self:stopRingtone()
@@ -73,7 +73,7 @@ function AppSettings:onOpen(form)
 		self.m_RingtoneChanger:setIndex(items[selected], true)
 	end
 
-	self.m_ShowSkinCheckbox = GUICheckbox:new(10, 265, 300, 20, _"Skin bei Anruf anzeigen", form):setFont(VRPFont(25)):setFontSize(1)
+	self.m_ShowSkinCheckbox = GUICheckbox:new(10, 255, 300, 20, _"Skin bei Anruf anzeigen", form):setFont(VRPFont(25)):setFontSize(1)
 	self.m_ShowSkinCheckbox.onChange =
 		function(state)
 			core:getConfig():set("Phone", "ShowSkin", state)
@@ -83,23 +83,35 @@ function AppSettings:onOpen(form)
 		self.m_ShowSkinCheckbox:setChecked(true)
 	end
 
+	self.m_RingToneCheckbox = GUICheckbox:new(10, 290, 300, 20, _"Klingelton an", form):setFont(VRPFont(25)):setFontSize(1)
+	self.m_RingToneCheckbox:setChecked(core:get("Sounds", "RingTone", true))
+	self.m_RingToneCheckbox.onChange = function (state)
+		core:set("Sounds", "RingTone", state)
+	end
+
+	self.m_OtherRingToneCheckbox = GUICheckbox:new(10, 325, 300, 20, _"Sonstige Klingeltöne an", form):setFont(VRPFont(25)):setFontSize(1)
+	self.m_OtherRingToneCheckbox:setChecked(core:get("Sounds", "OtherRingTones", true))
+	self.m_OtherRingToneCheckbox.onChange = function (state)
+		core:set("Sounds", "OtherRingTones", state)
+	end
+
 	local margin = 35
 	if fileExists(CUSTOM_RINGSOUND_PATH) then
-		self.m_CustomRingtoneCheckbox = GUICheckbox:new(10, 265 + margin, 300, 20, _"Eigenen Klingelton benutzen", form):setFont(VRPFont(25)):setFontSize(1)
+		self.m_CustomRingtoneCheckbox = GUICheckbox:new(10, 325 + margin, 300, 20, _"Eigenen Klingelton benutzen", form):setFont(VRPFont(25)):setFontSize(1)
 		self.m_CustomRingtoneCheckbox:setChecked(true)
 		self.m_CustomRingtoneCheckbox:setEnabled(false)
 		margin = margin + 35
 	end
 
 	if fileExists(CUSTOM_PHONE_BACKGROUND_PATH) then
-		self.m_CustomRingtoneCheckbox = GUICheckbox:new(10, 265 + margin, 300, 20, _"Eigenen Hintergrund benutzen", form):setFont(VRPFont(25)):setFontSize(1)
+		self.m_CustomRingtoneCheckbox = GUICheckbox:new(10, 325 + margin, 300, 20, _"Eigenen Hintergrund benutzen", form):setFont(VRPFont(25)):setFontSize(1)
 		self.m_CustomRingtoneCheckbox:setChecked(true)
 		self.m_CustomRingtoneCheckbox:setEnabled(false)
 		margin = margin + 35
 	end
 
 	if fileExists(CUSTOM_PHONE_MODEL_PATH) then
-		self.m_CustomRingtoneCheckbox = GUICheckbox:new(10, 265 + margin, 300, 20, _"Eigenes Modell benutzen", form):setFont(VRPFont(25)):setFontSize(1)
+		self.m_CustomRingtoneCheckbox = GUICheckbox:new(10, 325 + margin, 300, 20, _"Eigenes Modell benutzen", form):setFont(VRPFont(25)):setFontSize(1)
 		self.m_CustomRingtoneCheckbox:setChecked(true)
 		self.m_CustomRingtoneCheckbox:setEnabled(false)
 		margin = margin + 35

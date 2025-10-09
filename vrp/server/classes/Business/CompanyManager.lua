@@ -400,18 +400,19 @@ function CompanyManager:Event_companyRespawnVehicles(instant)
 	if client:getCompany() then
 		local company = client:getCompany()
 
-		if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "vehicleRespawnAll") then
-			if not client:getCompany().m_RespawnTimer or not isTimer(client:getCompany().m_RespawnTimer) then
-				if instant then
-					company:respawnVehicles()
-				else
-					company:startRespawnAnnouncement(client)
-				end
+		if instant then
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "vehicleRespawnInstant") then
+				company:respawnVehicles()
 			else
-				client:sendError(_("Es wurde bereits eine Respawn Ankündigung erstellt.", client))
+				client:sendError(_("Dazu bist du nicht berechtigt!", client))
 			end
 		else
-			client:sendError(_("Dazu bist du nicht berechtigt.", client))
+			if client:getCompany().m_RespawnTimer or isTimer(client:getCompany().m_RespawnTimer) then return client:sendError(_("Es wurde bereits eine Respawn Ankündigung erstellt.", client)) end
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "vehicleRespawnAll") then
+				company:startRespawnAnnouncement(client)
+			else
+				client:sendError(_("Dazu bist du nicht berechtigt!", client))
+			end
 		end
 	end
 end
@@ -471,6 +472,7 @@ function CompanyManager:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, 
 					company:stop(client)
 				end
 			else
+				if client:getWanteds() > 0 then return client:sendError(_("Du kannst nicht in den Dienst gehen, solange du gesucht wirst!", client)) end
 				if client:isFactionDuty() then
 					--client:sendWarning(_("Bitte beende zuerst deinen Dienst in deiner Fraktion!", client))
 					--return false

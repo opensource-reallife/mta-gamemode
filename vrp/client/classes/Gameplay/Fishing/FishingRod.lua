@@ -33,13 +33,13 @@ function FishingRod:constructor(fishingRod, fishingRodName, baitName, accessorie
 	self.m_Render = bind(FishingRod.render, self)
 
 	toggleControl("fire", false)
-	bindKey("mouse1", "both", self.m_HandleClick)
+	-- bindKey("mouse1", "both", self.m_HandleClick)
 	addEventHandler("onClientRender", root, self.m_Render)
 end
 
 function FishingRod:destructor()
 	toggleAllControls(true, true, false)
-	unbindKey("mouse1", "both", self.m_HandleClick)
+	-- unbindKey("mouse1", "both", self.m_HandleClick)
 	removeEventHandler("onClientRender", root, self.m_Render)
 	if isTimer(self.m_nibblingTimer) then killTimer(self.m_nibblingTimer) end
 	self.Sound:stopAll()
@@ -71,6 +71,8 @@ function FishingRod:reset()
 	localPlayer:setAnimation()
 	toggleAllControls(true, true, false)
 	toggleControl("fire", false)
+	toggleControl("jump", true)
+	toggleControl("crouch", true)
 
 	self.m_isCasting = true
 	self.m_isFishing = false
@@ -89,6 +91,8 @@ function FishingRod:handleClick(_, state)
 	if isCursorShowing() then return end
 	setPedControlState("fire", false)
 	toggleControl("fire", false)
+	toggleControl("jump", false)
+	toggleControl("crouch", false)
 	if localPlayer.vehicle then return end
 
 	self.m_MouseDown = state == "down"
@@ -173,6 +177,8 @@ function FishingRod:cast()
 		self.m_PowerProgress = 0
 		WarningBox:new(_("Hier ist kein Wasser!"))
 	end
+	toggleControl("jump", true)
+	toggleControl("crouch", true)
 end
 
 function FishingRod:checkWater()

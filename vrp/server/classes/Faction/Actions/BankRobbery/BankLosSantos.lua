@@ -11,6 +11,9 @@
 BankLosSantos = inherit(BankRobbery)
 
 function BankLosSantos:constructor()
+	self.ms_VaultOpenTime = 3000 --3 secs
+	self.ms_BankRobGeneralTime = ACTION_TIME
+
 	self.ms_FinishMarker = {
 		Vector3(2001.74, -1093.44, 23.2),
 		Vector3(942.09, -1817.83, 11.2),
@@ -42,10 +45,9 @@ function BankLosSantos:constructor()
 
 	self.ms_MoneyPerBag = 9000
 
-	self.ms_VaultOpenTime = 3000 --3 secs
-	self.ms_BankRobGeneralTime = 60*1000*20 --20 mins
-
 	self.m_Difficulty = 1
+
+	self.m_RobName = "Bankraub"
 
 	self:build()
 end

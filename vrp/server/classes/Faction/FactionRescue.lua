@@ -131,17 +131,19 @@ end
 function FactionRescue:destructor()
 end
 
-function FactionRescue:countPlayers(afkCheck, dutyCheck, dutyType)
-	return #self:getOnlinePlayers(afkCheck, dutyCheck, dutyType)
+function FactionRescue:countPlayers(afkCheck, dutyCheck, dutyType, radioStatus)
+	return #self:getOnlinePlayers(afkCheck, dutyCheck, dutyType, radioStatus)
 end
 
-function FactionRescue:getOnlinePlayers(afkCheck, dutyCheck, dutyType)
+function FactionRescue:getOnlinePlayers(afkCheck, dutyCheck, dutyType, radioStatus)
     local players = {}
 
     for _, value in pairs(self.m_Faction:getOnlinePlayers(afkCheck, dutyCheck)) do
-        if (dutyCheck and value:getPublicSync("Rescue:Type") == dutyType) or not dutyType then
-            table.insert(players, value)
-        end
+		if (dutyCheck and dutyType and value:getPublicSync("Rescue:Type") == dutyType) or (dutyCheck and value:isFactionDuty()) or not dutyCheck then
+			if (radioStatus and value:getPublicSync("RadioStatus") == radioStatus) or not radioStatus then
+				table.insert(players, value)
+			end
+		end
     end
 
     return players
@@ -220,16 +222,19 @@ function FactionRescue:Event_toggleDuty(type, wasted, prefSkin, dontChangeSkin, 
 				RadioCommunication:getSingleton():allowPlayer(client, false)
 				client:setBadge()
 				takeAllWeapons(client)
+				client:restoreStorage()
 				FactionManager:getSingleton():Event_stopNeedhelp(client)
 				if not wasted then faction:updateDutyGUI(client) end
 			else
 				if wasted then return end
+				if client:getWanteds() > 0 then return client:sendError(_("Du kannst nicht in den Dienst gehen, solange du gesucht wirst!", client)) end
 				if client:getPublicSync("Company:Duty") and client:getCompany() then
 					--client:sendWarning(_("Bitte beende zuerst deinen Dienst im Unternehmen!", client))
 					--return false
 					--client:triggerEvent("companyForceOffduty")
 					CompanyManager:getSingleton():companyForceOffduty(client)
 				end
+				client:createStorage()
 				takeAllWeapons(client)
 				if type == "fire" then giveWeapon(client, 42, 0, true) end
 				client:setFactionDuty(true)

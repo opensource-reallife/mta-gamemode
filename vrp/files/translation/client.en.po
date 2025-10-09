@@ -2494,6 +2494,9 @@ msgstr "Repair"
 msgid "Despawnen"
 msgstr "Despawn"
 
+msgid "Umdrehen"
+msgstr "Flip"
+
 msgid "Fahrzeug despawnen"
 msgstr "Despawn the vehicle"
 
@@ -3147,6 +3150,9 @@ msgstr "Last location"
 
 msgid "Usertreff"
 msgstr "User meeting"
+
+msgid "Stadthalle"
+msgstr "City hall"
 
 msgid "Fraktionsbase"
 msgstr "Faction base"
@@ -5332,6 +5338,9 @@ msgstr "Mulled wine"
 msgid "Lebkuchen"
 msgstr "Gingerbread"
 
+msgid "Frittiertes Hähnchen"
+msgstr "Fried Chicken"
+
 msgid "Shot"
 msgstr "Shot"
 
@@ -5608,8 +5617,14 @@ msgstr "Message"
 msgid "Skin bei Anruf anzeigen"
 msgstr "Show skin on call"
 
+msgid "Klingelton an"
+msgstr "Ringtone enabled"
+
+msgid "Sonstige Klingeltöne an"
+msgstr "Other ringtones enabled"
+
 msgid "Eigenen Klingelton benutzen"
-msgstr "Use custom ringtone"
+msgstr "Use custom ringtones"
 
 msgid "Eigenen Hintergrund benutzen"
 msgstr "Use custom background"
@@ -6441,3 +6456,15 @@ msgstr "ELEVATOR"
 
 msgid "HAUS"
 msgstr "HOUSE"
+
+msgid "%s (%s übrig)"
+msgstr "%s (%s left)"
+
+msgid "Spieler:"
+msgstr "Player:"
+
+msgid "Platz:"
+msgstr "Place:"
+
+msgid "Lobby verlassen"
+msgstr "Leave lobby"

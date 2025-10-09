@@ -258,35 +258,37 @@ addEventHandler("onClientVehicleDamage", root,
 		if source:getData("disableDamageCheck") then return end
 		if (not getElementData(source, "syncEngine") and not tId) and not (source.isAlwaysDamageable and source:isAlwaysDamageable()) and (table.size(source:getOccupants() or {}) < 1 or (source:getVehicleType() == 1 or source:getVehicleType() == 3)) then return cancelEvent() end
 		if not tId and (source.isBroken and source:isBroken()) then return cancelEvent() end
+		local newLoss = loss
+
 		--calculate vehicle armor
 		if not tId and weapon and source.getBulletArmorLevel then
 			cancelEvent()
-			local newLoss = loss / source:getBulletArmorLevel()
+			newLoss = loss / source:getBulletArmorLevel()
 			source:setHealth(math.max(0, source:getHealth()-newLoss))
 		end
-		if weapon == 16 or weapon == 19 or weapon == 35 or weapon == 36 or weapon == 39 or weapon == 51 or weapon == 59 then
-			if source:getHealth() < 300 then
-				triggerServerEvent("vehicleBlow", source, weapon)
-				return
-			end
-		end
-		if totalLossVehicleTypes[source:getVehicleType()] then
-			if source:getHealth() - loss <= VEHICLE_TOTAL_LOSS_HEALTH and source:getHealth() > 0 then
-				if isElementSyncer(source) and (source.m_LastBroken and (getTickCount() - source.m_LastBroken > 500) or true ) then
-					source.m_LastBroken = getTickCount()
-					triggerServerEvent("vehicleBreak", source, weapon)
+		if (weapon == 16 or weapon == 19 or weapon == 35 or weapon == 36 or weapon == 39 or weapon == 51 or weapon == 59) and source:getHealth() < 300 then
+			triggerServerEvent("vehicleBlow", source, weapon)
+		else
+			if totalLossVehicleTypes[source:getVehicleType()] then
+				if source:getHealth() - newLoss <= VEHICLE_TOTAL_LOSS_HEALTH and source:getHealth() > 0 then
+					if isElementSyncer(source) and (source.m_LastBroken and (getTickCount() - source.m_LastBroken > 500) or true ) then
+						source.m_LastBroken = getTickCount()
+						triggerServerEvent("vehicleBreak", source, weapon)
+					end
+					setVehicleEngineState(source, false)
+					source:setHealth(VEHICLE_TOTAL_LOSS_HEALTH)
 				end
-				setVehicleEngineState(source, false)
-				source:setHealth(VEHICLE_TOTAL_LOSS_HEALTH)
+			end
+			local controller = source.controller or (source:getAttachedTo() and source:getAttachedTo().controller)
+			if controller == localPlayer then
+				if not weapon then
+					triggerServerEvent("onVehicleCrash", source, newLoss)
+				end
 			end
 		end
-		local controller = source.controller or  (source:getAttachedTo() and source:getAttachedTo().controller)
-		if controller == localPlayer then
-			if not weapon then
-				triggerServerEvent("onVehicleCrash", source, loss)
-			end
+		if attacker and isElement(attacker) and attacker:getType() == "player" then
+			triggerServerEvent("onClientVehicleDamage", localPlayer, attacker, source, weapon, loss, dx, dy, dz, tId)
 		end
-
 	end
 )
 

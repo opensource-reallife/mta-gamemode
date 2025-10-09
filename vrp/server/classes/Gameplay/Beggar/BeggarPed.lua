@@ -115,40 +115,43 @@ function BeggarPed:sendMessage(player, type, arg)
 end
 
 function BeggarPed:Event_onPedWasted(totalAmmo, killer, killerWeapon, bodypart, stealth)
-	self.m_Dead = true
-	--create a rescue mission if there is someone online, otherwise just despawn him
-	if #FactionRescue:getSingleton():getOnlinePlayers(true, false) >= 1 then
-		self:setHealth(20)
-		self:setData("NPC:Immortal", true, true)
-		self:setAnimation("wuzi","cs_dead_guy", -1, true, false, false, true)
-		FactionRescue:getSingleton():createPedDeathPickup(self, self.m_Name)
-		self.m_AbortRescueTimer = setTimer(function()
-			if self.m_DeathPickup then
-				FactionRescue:getSingleton():removePedDeathPickup(self)
-				self:despawn()
-			end
-		end, 5000 * 60, 1) -- 5 minutes
-	else
-		setTimer(function()
-			self:despawn()
-		end, 15000, 1)
-	end
-
-	if killer and isElement(killer) and getElementType(killer) == "vehicle" then killer = killer.controller end
-	if killer and killer ~= source and killerWeapon ~= 3 and getElementType(killer) == "player" then
-		-- Spawn Loot
-		self:createLootPickup()
-
-		-- Give Wanteds
-		local wanteds = WANTED_AMOUNT_MURDER_BEGGAR
-		if chance(25) then
-			setTimer(function()
-				if killer and isElement(killer) then
-					killer:sendWarning(_("Deine illegalen Aktivitäten wurden von einem Augenzeugen an das SAPD gemeldet!", killer))
-					killer:giveWanteds(wanteds)
-					killer:sendMessage(_("Verbrechen begangen: %s, %d Wanted/s", killer, _("Mord", killer), wanteds), 255, 255, 0)
+	if not self.m_Dead then
+		self.m_Dead = true
+		
+		--create a rescue mission if there is someone online, otherwise just despawn him
+		if #FactionRescue:getSingleton():getOnlinePlayers(true, false) >= 1 then
+			self:setHealth(20)
+			self:setData("NPC:Immortal", true, true)
+			self:setAnimation("wuzi","cs_dead_guy", -1, true, false, false, true)
+			FactionRescue:getSingleton():createPedDeathPickup(self, self.m_Name)
+			self.m_AbortRescueTimer = setTimer(function()
+				if self.m_DeathPickup then
+					FactionRescue:getSingleton():removePedDeathPickup(self)
+					self:despawn()
 				end
-			end, math.random(2000, 10000), 1)
+			end, 5000 * 60, 1) -- 5 minutes
+		else
+			setTimer(function()
+				self:despawn()
+			end, 15000, 1)
+		end
+
+		if killer and isElement(killer) and getElementType(killer) == "vehicle" then killer = killer.controller end
+		if killer and killer ~= source and killerWeapon ~= 3 and getElementType(killer) == "player" then
+			-- Spawn Loot
+			self:createLootPickup()
+
+			-- Give Wanteds
+			local wanteds = WANTED_AMOUNT_MURDER_BEGGAR
+			if chance(25) then
+				setTimer(function()
+					if killer and isElement(killer) then
+						killer:sendWarning(_("Deine illegalen Aktivitäten wurden von einem Augenzeugen an das SAPD gemeldet!", killer))
+						killer:giveWanteds(wanteds)
+						killer:sendMessage(_("Verbrechen begangen: %s, %d Wanted/s", killer, _("Mord", killer), wanteds), 255, 255, 0)
+					end
+				end, math.random(2000, 10000), 1)
+			end
 		end
 	end
 end
@@ -177,12 +180,7 @@ function BeggarPed:createLootPickup()
 			if chance(25) then
 				if self.giveLoot then
 					self:giveLoot(hitPlayer)
-				else
-					local amount = math.random(1,2)
-					hitPlayer:getInventory():giveItem("Diebesgut", amount)
-					hitPlayer:sendInfo(_("Du hast %s Diebesgut von %s erhalten.", hitPlayer, amount, self.m_Name))
 				end
-
 			end
 		end
 	end)

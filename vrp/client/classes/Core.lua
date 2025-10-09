@@ -295,6 +295,7 @@ function Core:afterLogin()
 	end
 
 	setElementData(localPlayer, "isEquipmentGUIOpen", false, true)
+	setElementData(localPlayer, "SpawnAfterJail", core:get("Other", "SpawnAfterJail", false), true)
 
 	setTimer(
 		function()

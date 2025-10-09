@@ -168,7 +168,7 @@ function Vehicle:onPlayerEnter(player, seat)
 	end
 
 	if seat == 0 then
-		if not player:getPublicSync("inDrivingLession") then
+		if not player:getPublicSync("inDrivingLession") and not player.raceLobby then
 			if not player:hasCorrectLicense(source) then
 				player:sendShortMessage(_("Achtung: Du hast keinen Führerschein für dieses Fahrzeug!", player))
 
@@ -253,7 +253,7 @@ function Vehicle:onPlayerExit(player, seat)
 			local ground = isVehicleOnGround( self )
 			if ground then
 				setElementFrozen(self, true)
-				self:switchObjectLoadingMarker(true)
+				--self:switchObjectLoadingMarker(true)
 				setVehicleDoorOpenRatio(self, 2, 0, 350)
 			else
 				self.m_HandBrake = false
@@ -410,7 +410,7 @@ function Vehicle:toggleEngine(player)
 					player:sendError(_("Das Fahrzeug ist kaputt und muss erst repariert werden!", player))
 					return false
 				end
-				if not player:getPublicSync("inDrivingLession") then
+				if not player:getPublicSync("inDrivingLession") and not player.raceLobby then
 					if not player:hasPilotsLicense() then
 						local vehicleType = self:getVehicleType()
 						if vehicleType == VehicleType.Helicopter then
@@ -491,7 +491,7 @@ function Vehicle:toggleHandBrake(player, preferredState)
 		self.m_HandBrake = false
 		setControlState(player, "handbrake", false)
 		if isElementFrozen(self) then
-			self:switchObjectLoadingMarker(false)
+			--self:switchObjectLoadingMarker(false)
 			setElementFrozen(self, false)
 		end
 		player:triggerEvent("vehicleHandbrake")

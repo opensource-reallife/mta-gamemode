@@ -55,10 +55,11 @@ local function getEasterDate(year)
     return {["day"] = day, ["month"] = month}
 end
 
+EVENT_EASTER_START_DAY = 0
 local function isEasterEventActive()
     local rt = getRealTime()
     local year = rt.year + 1900
-    local easterDate = getEasterDate(year)
+    local easterDate = getEasterDate(year) -- Ostersonntag
 
     local easterTimestamp = os.time({
         year = year,
@@ -67,8 +68,9 @@ local function isEasterEventActive()
         hour = 0
     })
 
-    local eventStart = easterTimestamp - (7 * 24 * 60 * 60) -- Palmsonntag
-    local eventEnd = easterTimestamp + (1 * 24 * 60 * 60)   -- Ostermontag
+    local eventStart = easterTimestamp - (7 * 24 * 60 * 60)
+    local eventEnd = easterTimestamp + (7 * 24 * 60 * 60)
+	EVENT_EASTER_START_DAY = (os.date("*t", eventStart)).yday
 
     local now = os.time({
         year = year,
@@ -84,8 +86,8 @@ end
 
 EVENT_EASTER = isEasterEventActive()
 EVENT_EASTER_SLOTMACHINES_ACTIVE = EVENT_EASTER
-EVENT_HALLOWEEN = getRealTime().month == 9 and (getRealTime().monthday >= 25 and getRealTime().monthday <= 31)
-EVENT_CHRISTMAS = getRealTime().month == 11 and (getRealTime().monthday >= 1 and getRealTime().monthday <= 31) -- quests, mostly REMEMBER TO ADD/REMOVE <vrpfile src="files/models/skins/kobold.txd" /> AND <vrpfile src="files/models/skins/kobold.dff" /> TO META.XML DUE TO BIG FILE SIZE
+EVENT_HALLOWEEN = (getRealTime().month == 9 and (getRealTime().monthday >= 24 and getRealTime().monthday <= 31)) or (getRealTime().month == 10 and (getRealTime().monthday >= 1 and getRealTime().monthday <= 7))
+EVENT_CHRISTMAS = getRealTime().month == 11 -- quests, mostly REMEMBER TO ADD/REMOVE <vrpfile src="files/models/skins/kobold.txd" /> AND <vrpfile src="files/models/skins/kobold.dff" /> TO META.XML DUE TO BIG FILE SIZE
 EVENT_CHRISTMAS_MARKET = EVENT_CHRISTMAS and (getRealTime().monthday >= 6 and getRealTime().monthday <= 26) -- determines whether the christmas market is enabled at pershing square (shops, ferris wheel, wheels of fortune)
 SNOW_SHADERS_ENABLED = getRealTime().month == 11 or getRealTime().month == 0 -- disable them during summer time
 FIREWORK_ENABLED = true -- can users use firework?
@@ -249,6 +251,7 @@ ADMIN_RANK_PERMISSION = {
 	--group management
 	["setFaction"] = RANK.Administrator,
 	["setCompany"] = RANK.Administrator,
+	["setGroup"] = RANK.Administrator,
 	["resetAction"] = RANK.Moderator,
 	["playerHistory"] = RANK.Supporter,
 	["respawnFaction"] = RANK.Ticketsupporter, -- respawn whole faction
@@ -272,6 +275,7 @@ ADMIN_RANK_PERMISSION = {
 	["parkVehicle"] = RANK.Supporter, -- set spawn position
 	["repairVehicle"] = RANK.Supporter, -- repair per click
 	["despawnVehicle"] = RANK.Supporter, -- despawn
+	["flipVehicle"] = RANK.Supporter, -- flip
 	["deleteVehicle"] = RANK.Administrator, -- permanently destroy vehicle
 	["looseVehicleHandbrake"] = RANK.Supporter,
 	["endVehicleSale"] = RANK.Supporter, -- also for ending rent
@@ -305,6 +309,8 @@ ADMIN_RANK_PERMISSION = {
 	["addHouseToSkyscraper"] = RANK.Developer, -- also includes removing 
 
 	["addVehicleToFCShop"] = RANK.Developer,
+
+	["openGates"] = RANK.Administrator,
 	
 	["pedMenu"] = RANK.Administrator,
 	["fireMenu"] = RANK.Supporter,
@@ -372,38 +378,38 @@ Crime = {
 AMMUNATION_APP_MULTIPLICATOR = 1.5
 AmmuNationInfo = {
 	[30] = { -- AK-47
-		Magazine = {price=60,amount=30},
-		Weapon = 2150
+		Magazine = {price=40,amount=30},
+		Weapon = 700
 	},
 	[31] = { -- M4A1
-		Magazine = {price=90,amount=50},
-		Weapon = 2800
+		Magazine = {price=50,amount=50},
+		Weapon = 750
 	},
 	[29] = { -- MP5
-		Magazine = {price=70,amount=30},
-		Weapon = 1300
+		Magazine = {price=30,amount=30},
+		Weapon = 450
 	},
 	[25] = { -- Shotgun
-		Magazine = {price=10,amount=1},
-		Weapon = 1200
+		Magazine = {price=5,amount=1},
+		Weapon = 300
 	},
 	[33] = { -- Rifle
-		Magazine = {price=20,amount=1},
-		Weapon = 1550
+		Magazine = {price=5,amount=1},
+		Weapon = 500
 	},
 	[22] = { -- Pistol
-		Magazine = {price=35,amount=17},
-		Weapon = 750
+		Magazine = {price=15,amount=17},
+		Weapon = 250
 	},
 	[24] = { -- Desert Eagle
 		Magazine = {price=30,amount=7},
-		Weapon = 1450
+		Weapon = 500
 	},
 	[1] = { -- Brass Knuckles
-		Weapon = 100
+		Weapon = 50
 	},
 	[0] = { -- Armor
-		Weapon = 200
+		Weapon = 150
 	},
 }
 
@@ -720,12 +726,12 @@ STATE_EVIDENCE_OBJECT_PRICE = {
 
 
 PlayerAttachObjects = {
-	[1550] = {model = 1550, name = "Geldsack", pos = Vector3(0, -0.2, 0), rot = Vector3(0, 0, 180), bone = 3, placeDown = true, blockFlyingVehicles = true, pickupAnimantion = {"bomber", "bom_plant", 1000, false, false, true, false}, dropAnimation = {}, loadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false }, unloadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false}},
-	[2912] = {model = 2912, name = "Waffenkiste", pos = Vector3(0, 0.5, 0.35), rot = Vector3(10, 0, 0), blockJump = true, blockSprint = true, blockWeapons = true, blockVehicle = true, animationData = {"carry", "crry_prtial", 1, true, true, false, true}, placeDown = true, pickupAnimantion = {"bomber", "bom_plant", 1000, false, false, true, false}, dropAnimation = {}, loadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false }, unloadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false}},
-	[2919] = {model = 2919, name = "Waffen", pos = Vector3(0, -0.2, 0), rot = Vector3(0, 90, 90), 	blockJump = true, bone = 3, blockSprint = true,  blockVehicle = false, placeDown = true, pickupAnimantion = {"bomber", "bom_plant", 1000, false, false, true, false}, dropAnimation = {}, loadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false }, unloadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false}},
-	[1826] = {model = 1826, name = "Angelruten", pos = Vector3(-0.03, 0.02, 0.05), rot = Vector3(180, 120, 0), blockJump = false, bone = 12, blockSprint = true, blockVehicle = true, pickupAnimantion = {"bomber", "bom_plant", 1000, false, false, true, false}, dropAnimation = {}, loadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false }, unloadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false}},
-	[1575] = {model = 1575, name = "Drogen", pos = Vector3(0, -0.25, 0.12), rot = Vector3(180, 90, 90), bone = 3, blockJump = false, blockSprint = true, blockFlyingVehicles = true, placeDown = true, scale = {x = 1, y = 1.5, z = 1.4}, pickupAnimantion = {"bomber", "bom_plant", 1000, false, false, true, false}, dropAnimation = {}, loadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false }, unloadOnVehicleAnimation = {"ped", "IDLE_chat", 1000, false, false, true, false}},
-	[2358] = {model = 2358, name = "Waffen", pos = Vector3(0, 0.45, 0.62), rot = Vector3(10, 0, 0), blockSprint = true, blockFlyingVehicles = true, blockVehicle = true, placeDown = true, blockWeapons = true, animationData = {"carry", "crry_prtial", 1, true, false, false, true}}
+	[1550] = {model = 1550, name = "Geldsack", pos = Vector3(0, -0.2, 0), rot = Vector3(0, 0, 180), bone = 3, placeDown = true, blockFlyingVehicles = true},
+	[2912] = {model = 2912, name = "Waffenkiste", pos = Vector3(0, 0.5, 0.35), rot = Vector3(10, 0, 0), blockJump = true, blockSprint = true, blockWeapons = true, blockVehicle = true, animationData = {"carry", "crry_prtial", 1, true, true, false, true}, placeDown = true},
+	[2919] = {model = 2919, name = "Waffen", pos = Vector3(0, -0.2, 0), rot = Vector3(0, 90, 90), 	blockJump = true, bone = 3, blockSprint = true,  blockVehicle = false, placeDown = true},
+	[1826] = {model = 1826, name = "Angelruten", pos = Vector3(-0.03, 0.02, 0.05), rot = Vector3(180, 120, 0), blockJump = false, bone = 12, blockSprint = true, blockVehicle = true},
+	[1575] = {model = 1575, name = "Drogen", pos = Vector3(0, -0.25, 0.12), rot = Vector3(180, 90, 90), bone = 3, blockJump = false, blockSprint = true, blockFlyingVehicles = true, placeDown = true, scale = {x = 1, y = 1.5, z = 1.4}},
+	[2358] = {model = 2358, name = "Waffen", pos = Vector3(0, 0.45, 0.62), rot = Vector3(10, 0, 0), blockSprint = true, blockFlyingVehicles = true, blockVehicle = true, placeDown = true, blockWeapons = true, animationData = {"carry", "crry_prtial", 1, true, true, false, true}}
 }
 
 

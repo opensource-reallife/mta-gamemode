@@ -30,6 +30,8 @@ function ItemManager:constructor()
 		["Burger"] = ItemFood,
 		["Lebkuchen"] = ItemFood,
 		["Wuerstchen"] = ItemFood,
+		["Frittiertes Hähnchen"] = ItemFood,
+		["Pommes"] = ItemFood,
 
 		["Kuheuter mit Pommes"] = ItemFood,
 		["Zombie-Burger"] = ItemFood,
@@ -75,7 +77,10 @@ function ItemManager:constructor()
 		["Ausweis"] = ItemIDCard,
 		["Benzinkanister"] = ItemFuelcan,
 		["Reparaturkit"] = ItemRepairKit,
-		["Medikit"] = ItemHealpack,
+
+		--Medical
+		["Medikit"] = ItemFood,
+		["Bandage"] = ItemFood,
 		
 		--Alcohol
 		["Bier"] = ItemFood,

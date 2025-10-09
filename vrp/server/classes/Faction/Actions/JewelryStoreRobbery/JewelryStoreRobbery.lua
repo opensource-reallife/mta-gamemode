@@ -20,8 +20,8 @@ JewelryStoreRobbery.EscapeMessages = {
 	"Die Räuber sind nach wie vor auf der Flucht!",
 	"Die Verfolgung der Juweliersräuber dauert weiter an!"
 }
-JewelryStoreRobbery.MinMoney = 50000
-JewelryStoreRobbery.MaxMoney = 65000
+JewelryStoreRobbery.MinMoney = 40000
+JewelryStoreRobbery.MaxMoney = 55000
 
 function JewelryStoreRobbery:constructor(attacker, maxBags)
 	triggerClientEvent("jewelryStoreRobberyAlarmStart", root)
@@ -43,6 +43,9 @@ function JewelryStoreRobbery:constructor(attacker, maxBags)
 
 	self.m_Players = {}
 	self.m_Bags = {}
+	self.m_BagBlips = {}
+
+	self.m_DeliveryInfos = {}
 
 	--[[
 	self.m_Vehicle = TemporaryVehicle.create(493, 146.514, 164.884, 0.100, 33.591)
@@ -59,7 +62,7 @@ function JewelryStoreRobbery:constructor(attacker, maxBags)
 	self.m_BreakGlass = bind(self.Event_BreakGlass, self)
 	self.m_BagClick = bind(self.Event_BagClick, self)
 
-	self.m_EvilDeliveryPed = NPC:new(132, -1438.823, 1491.225, 1.867, 270)
+	self.m_EvilDeliveryPed = NPC:new(132, -2725.75, 73.60, 4.34, 20)
     self.m_EvilDeliveryPed:setImmortal(true)
 	self.m_EvilDeliveryPed:setFrozen(true)
 	self.m_EvilDeliveryPed:setData("clickable", true, true)
@@ -78,13 +81,16 @@ function JewelryStoreRobbery:constructor(attacker, maxBags)
 	self.m_StateDeliveryPed:setData("Ped:Name", "Marco Richter")
 	setElementData(self.m_StateDeliveryPed, "Ped:fakeNameTag", "Marco Richter")
 
-	self.m_StateDeliveryPedBlip = Blip:new("Marker.png", self.m_StateDeliveryPed.position.x, self.m_StateDeliveryPed.position.y, self:getBlipVisibleTo(), 9999, BLIP_COLOR_CONSTANTS.Red)
+	self.m_StateDeliveryPedBlip = Blip:new("Marker.png", self.m_StateDeliveryPed.position.x, self.m_StateDeliveryPed.position.y, self:getBlipVisibleTo(), 9999, BLIP_COLOR_CONSTANTS.BLUE)
 	self.m_StateDeliveryPedBlip:setDisplayText("Juwelierraub-Abgabe Staat")
 	self.m_StateDeliveryPedBlip:setZ(self.m_StateDeliveryPed.position.z)
 
 	self.m_BankAccountServer = BankServer.get("action.jewelry_store_robbery")
 	self.m_BreakingNewsTimer = setTimer(bind(self.updateBreakingNews, self), 20000, 0)
-	self.m_TimeUpTimer = setTimer(bind(self.timeUp, self), 15*60*1000, 1)
+	self.m_TimeUpTimer = setTimer(bind(self.timeUp, self), ACTION_TIME, 1)
+
+	self.m_ShowDown = false
+	self.m_TimerUntilShowdown = setTimer(bind(self.showdown, self), ACTION_TIME - MINUTE_TO_SHOWDOWN, 1)
 
 	addEventHandler("onElementClicked", self.m_EvilDeliveryPed, bind(self.Event_EvilDeliveryFaction, self))
 	addEventHandler("onElementClicked", self.m_StateDeliveryPed, bind(self.Event_StateDeliveryFaction, self))
@@ -111,6 +117,18 @@ function JewelryStoreRobbery:destructor()
 		if isElement(object) then
 			object:destroy()
 		end
+	end
+
+	for faction, data in pairs(self.m_DeliveryInfos) do
+		faction:addLog(-1, "Aktion", ("Juwelierraub: Es wurde %s$ %s."):format(toMoneyString(data.money), faction:isStateFaction() and "sichergestellt" or "eingenommen"))
+	end
+
+	for index, blip in pairs(self.m_BagBlips) do
+		blip:delete()
+	end
+
+	if isTimer(self.m_TimerUntilShowdown) then
+		killTimer(self.m_TimerUntilShowdown)
 	end
 
 	--[[
@@ -192,11 +210,48 @@ function JewelryStoreRobbery:Event_BreakGlass(player)
 				else
 					local bag = createObject(1550, player.position)
 					bag:setData("Value", 1)
+					bag:setData("JewelryStoreRobbery:MoneyBag", true, true)
 					bag:setInterior(player:getInterior())
 					bag:setDimension(player:getDimension())
 					bag.m_Jewelry = true
 					table.insert(self.m_Bags, bag)
 					addEventHandler("onElementClicked", bag, self.m_BagClick)
+
+					self.m_Bags[bag].LoadHook = function(player, veh, bag)
+						if self.m_ShowDown then
+							if (self.m_BoxesBlips[bag]) then
+								delete(self.m_BoxesBlips[bag])
+								self.m_BoxesBlips[bag] = nil
+							end
+
+							if (not self.m_BoxesBlips[veh]) then
+								self.m_BoxesBlips[veh] = self:createBlip(veh, "Transportfahrzeug", veh, "Logistician.png")
+							end
+						end
+					end	
+
+					self.m_Bags[bag].DeloadHook = function(player, veh, bag)
+						if (self.m_ShowDown) then
+							local hasAnotherObject = false
+							if (self.m_BoxesBlips[veh]) then
+								for i, v in pairs(veh:getAttachedElements()) do
+									if (v:getModel() == 1550 and v:getData("JewelryStoreRobbery:MoneyBag")) then
+										hasAnotherObject = true
+										break
+									end
+								end
+
+								if (not hasAnotherObject) then
+									delete(self.m_BoxesBlips[veh])
+									self.m_BoxesBlips[veh] = nil
+								end
+							end
+
+							if ( not self.m_BoxesBlips[bag]) then
+								self.m_BoxesBlips[bag] = self:createBlip(bag, "Geldsack", bag)
+							end
+						end
+					end	
 
 					player:attachPlayerObject(bag)
 				end
@@ -238,6 +293,12 @@ function JewelryStoreRobbery:Event_EvilDeliveryFaction(button, state, player)
 					local bag = player.m_PlayerAttachedObject
 					local value = bag:getData("Value")
 					local money = math.round(value * (self.m_MaxMoney / self.m_MaxBags), 0)
+					
+					if (self.m_BagBlips[bag]) then
+						self.m_BagBlips[bag]:delete()
+						self.m_BagBlips[bag] = nil
+					end
+					
 					player:detachPlayerObject(bag)
 					player:sendSuccess(_("Du hast die Beute abgegeben!", player))
 					bag:destroy()
@@ -245,8 +306,15 @@ function JewelryStoreRobbery:Event_EvilDeliveryFaction(button, state, player)
 					self.m_PendingBags = self.m_PendingBags - value
 					self.m_BankAccountServer:transferMoney({"faction", player:getFaction():getId(), true}, money, "Juwelier-Beute abgegeben", "Action", "JewelryRobbery", {silent = true})
 
+					if (not self.m_DeliveryInfos[player:getFaction()]) then
+						self.m_DeliveryInfos[player:getFaction()] = {["bagCount"] = 0, ["money"] = 0}
+					end
+					self.m_DeliveryInfos[player:getFaction()].bagCount = self.m_DeliveryInfos[player:getFaction()].bagCount + 1
+					self.m_DeliveryInfos[player:getFaction()].money = self.m_DeliveryInfos[player:getFaction()].money + money
+
+					
 					if self.m_PendingBags == 0 or self.m_MaxBags - self.m_BagsGivenOut == self.m_PendingBags then
-						JewelryStoreRobberyManager:getSingleton():stopRobbery("evil")
+						self:stopRob("evil")
 					end
 				else
 					player:sendError(_("Du hast keine Beute dabei!", player))
@@ -268,6 +336,12 @@ function JewelryStoreRobbery:Event_StateDeliveryFaction(button, state, player)
 					local bag = player.m_PlayerAttachedObject
 					local value = bag:getData("Value")
 					local money = math.round(value * (self.m_MaxMoney / self.m_MaxBags), 0)
+					
+					if (self.m_BagBlips[bag]) then
+						self.m_BagBlips[bag]:delete()
+						self.m_BagBlips[bag] = nil
+					end
+
 					player:detachPlayerObject(bag)
 					player:sendSuccess(_("Du hast die Beute abgegeben!", player))
 					bag:destroy()
@@ -275,8 +349,14 @@ function JewelryStoreRobbery:Event_StateDeliveryFaction(button, state, player)
 					self.m_PendingBags = self.m_PendingBags - value
 					self.m_BankAccountServer:transferMoney({"faction", player:getFaction():getId(), true}, money, "Juwelier-Beute sichergestellt", "Action", "JewelryRobbery", {silent = true})
 
+					if (not self.m_DeliveryInfos[player:getFaction()]) then
+						self.m_DeliveryInfos[player:getFaction()] = {["bagCount"] = 0, ["money"] = 0}
+					end
+					self.m_DeliveryInfos[player:getFaction()].bagCount = self.m_DeliveryInfos[player:getFaction()].bagCount + 1
+					self.m_DeliveryInfos[player:getFaction()].money = self.m_DeliveryInfos[player:getFaction()].money + money
+
 					if self.m_PendingBags == 0 or self.m_MaxBags - self.m_BagsGivenOut == self.m_PendingBags then
-						JewelryStoreRobberyManager:getSingleton():stopRobbery("state")
+						self:stopRob("state")
 					end
 				else
 					player:sendError(_("Du hast keine Beute dabei!", player))
@@ -289,6 +369,11 @@ function JewelryStoreRobbery:Event_StateDeliveryFaction(button, state, player)
 		end
 	end
 end
+
+function JewelryStoreRobbery:stopRob(state)	
+	JewelryStoreRobberyManager:getSingleton():stopRobbery(state)
+end
+
 
 function JewelryStoreRobbery:onShopEnter(player)
 	bindKey(player, "f", "down", self.m_BreakGlass)
@@ -341,4 +426,36 @@ function JewelryStoreRobbery:updateBreakingNews()
 			PlayerManager:getSingleton():breakingNews(math.randomchoice(JewelryStoreRobbery.EscapeMessages))
 		end
 	end
+end
+
+function JewelryStoreRobbery:showdown() 
+	self.m_ShowDown = true
+
+	for i, v in pairs(self.m_Bags) do
+		local attachedTo = v:getAttachedTo()
+		if v and isElement(v) then
+			if (attachedTo and attachedTo:getType() == "vehicle") then
+				if (not self.m_BagBlips[attachedTo]) then
+					self.m_BagBlips[attachedTo] = self:createBlip(attachedTo, "Transportfahrzeug", attachedTo, "Logistician.png")
+				end
+			else
+				if not self.m_BagBlips[v] then
+					self.m_BagBlips[v] = self:createBlip(v, "Geldsack", v)
+				end
+			end
+		end
+	end
+end
+
+function JewelryStoreRobbery:createBlip(ele, text, attachedTo, marker, color)
+	color = color and color or BLIP_COLOR_CONSTANTS.Red
+	marker = marker == nil and "Marker.png" or marker
+	local blip = Blip:new(marker, ele.position.x, ele.position.y, {factionType = {"State", "Evil"}, duty = true}, 9999, color)
+	if (attachedTo) then
+		blip:attachTo(attachedTo)
+	end
+	if (text) then
+		blip:setDisplayText(text)
+	end
+	return blip
 end

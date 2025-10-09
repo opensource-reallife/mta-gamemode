@@ -164,7 +164,8 @@ BeggarNames = { -- Wer namen zwischendrin einfügt wird erschossen!
 	"Stummy Stumpf",
     "Jesus",
     "Donald Trump",
-    "Maestro Emm"
+    "Maestro Emm",
+    "Klaus Müller"
 }
 
 BeggarAnimations = {

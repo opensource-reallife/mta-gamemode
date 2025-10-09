@@ -229,6 +229,9 @@ msgstr "No ID specified!"
 msgid "Dieses Fahrzeug kann nicht despawnt werden!"
 msgstr "This vehicle cannot be despawnt!"
 
+msgid "Das Fahrzeug steht nicht auf dem Kopf!"
+msgstr "This vehicle is not upside down!"
+
 msgid "%s hat das Fahrzeug %s von %s despawnt (Grund: %s)."
 msgstr "%s has the vehicle  %s of %s despawnt (reason: %s)."
 
@@ -4166,8 +4169,8 @@ msgstr "Vending machine rob"
 msgid "Mord"
 msgstr "Murder"
 
-msgid "Bürgergeld"
-msgstr "Unemployment benefit"
+msgid "Grundsicherung"
+msgstr "Social benefit"
 
 msgid "Lohnsteuer"
 msgstr "Income tax"
@@ -4796,6 +4799,9 @@ msgstr "smokes Weed!"
 msgid "isst einen Magic Mushroom!"
 msgstr "eats a Magic Mushroom!"
 
+msgid "isst eine Portion %s!"
+msgstr "eat some  %s!"
+
 msgid "spritzt sich Heroin!"
 msgstr "injects themselves Heroin!"
 
@@ -4834,6 +4840,9 @@ msgstr "Mulled wine"
 
 msgid "Lebkuchen"
 msgstr "Gingerbread"
+
+msgid "Frittiertes Hähnchen"
+msgstr "Fried Chicken"
 
 msgid "Shot"
 msgstr "Shot"
@@ -4910,8 +4919,11 @@ msgstr "A plane crash was reported at %s, %s!"
 msgid "Fahre nun die Überreste zurück zur Mech&Tow Base!"
 msgstr "Return the wreckage to the Mech&Tow base now!"
 
-msgid "Der Flatbed ist zu weit entfernt!"
-msgstr "The flatbed is too far away!"
+msgid "Es ist kein Flatbed in der Nähe!"
+msgstr "There is no flatbed nearby!"
+
+msgid "Der Flatbed ist bereits beladen!"
+msgstr "The flatbed is already loaded!"
 
 msgid "Du musst auf den Wrackteilen stehen!"
 msgstr "You need to stand on the wreckage parts!"
@@ -5041,3 +5053,63 @@ msgstr "+%s$ (%s$) - %s"
 
 msgid "-%s$ (%s$) - %s"
 msgstr "-%s$ (%s$) - %s"
+
+msgid "Du kannst im Dienst keinen Geldautomaten aufsprengen."
+msgstr "You cannot blow up an ATM while on duty."
+
+msgid "Du kannst im Dienst keinen Geldautomaten ausrauben."
+msgstr "You cannot rob an ATM while on duty."
+
+msgid "Du kannst im Dienst keinen Automaten ausrauben."
+msgstr "You cannot rob a vending machine while on duty."
+
+msgid "Du kannst Beamten im Dienst keine Wanteds geben."
+msgstr "You cannot assign wanteds to officers who are on duty."
+
+msgid "Du kannst nicht in den Dienst gehen, solange du gesucht wirst!"
+msgstr "You cannot go on duty while you are wanted!"
+
+msgid "benutzt ein %s!"
+msgstr "uses a %s!"
+
+msgid "benutzt eine %s!"
+msgstr "uses a %s!"
+
+msgid "Die Karte wurde zu '%s' von %s geändert."
+msgstr "The map was changed to '%s' from %s."
+
+msgid "Du hast die Lobby '%s' betreten."
+msgstr "You joined the lobby '%s'."
+
+msgid "Du hast die Lobby '%s' verlassen."
+msgstr "You left the lobby '%s'."
+
+msgid "%s gewinnt!"
+msgstr "%s wins!"
+
+msgid "Klicke auf den Namen eines Spielers, um ihn zu beobachten!"
+msgstr "Click on the name of a player to spectate them!"
+
+msgid "Die Karte wird nach dieser Runde geändert!"
+msgstr "The map will be changed after this round!"
+
+msgid "Fehler: Ungültiger Modus!"
+msgstr "Error: Invalid mode!"
+
+msgid "%s hat eine/n %s erhalten!"
+msgstr "%s got a %s!"
+
+msgid "Du musst zuerst die Handbremse lösen!"
+msgstr "You have to release the handbrake first!"
+
+msgid "Du hast keine Berechtigung den Kofferraum dieses Fahrzeuges zu benutzen!"
+msgstr "You are not authorized to use the trunk of this vehicle!"
+
+msgid "Deine Nachricht wurde von folgenden gesuchten Spielern empfangen:\n%s"
+msgstr "Your message has been received by the following wanted players:\n%s"
+
+msgid "Deine Nachricht wurde von niemandem empfangen der gesucht wird."
+msgstr "No wanted players have received your message."
+
+msgid "Information"
+msgstr "Information"

@@ -152,7 +152,6 @@
 	<script src="server/classes/Inventory/Items/ItemPumpkin.lua" type="server"/>
 	<script src="server/classes/Inventory/Items/ItemTaser.lua" type="server"/>
 	<script src="server/classes/Inventory/Items/Plant.lua" type="server"/>
-	<script src="server/classes/Inventory/Items/ItemHealpack.lua" type="server"/>
 	<script src="server/classes/Inventory/Items/ItemFirework.lua" type="server"/>
 	<script src="server/classes/Inventory/Items/ItemPlayHouseCard.lua" type="server"/>
 	<script src="server/classes/Inventory/Items/ItemPresent.lua" type="server"/>
@@ -1017,6 +1016,7 @@
     <script src="client/classes/GUIForms/BreakingNews.lua" type="client" />
     <script src="client/classes/GUIForms/ChangerBox.lua" type="client" />
     <script src="client/classes/GUIForms/ChangerBoxWithCheck.lua" type="client" />
+    <script src="client/classes/GUIForms/InputBoxWithChanger.lua" type="client" />
     <script src="client/classes/GUIForms/ColorPicker.lua" type="client" />
     <script src="client/classes/GUIForms/CookieClickerGUI.lua" type="client" />
     <script src="client/classes/GUIForms/CoolingBagGUI.lua" type="client" />
@@ -2227,6 +2227,7 @@
 	<vrpfile src="files/images/Inventory/items/Items/Gameboy.png" />
 	<vrpfile src="files/images/Inventory/items/Items/Lottoschein.png" />
 	<vrpfile src="files/images/Inventory/items/Items/Medikit.png" />
+	<vrpfile src="files/images/Inventory/items/Items/Bandage.png" />
 	<vrpfile src="files/images/Inventory/items/Items/Radio.png" />
 	<vrpfile src="files/images/Inventory/items/Items/Wuerfel.png" />
 	<vrpfile src="files/images/Inventory/items/Items/Ausweis.png" />
@@ -2293,6 +2294,7 @@
 	<vrpfile src="files/images/Inventory/items/Essen/ItemDonutBox.png" />
 	<vrpfile src="files/images/Inventory/items/Essen/ItemDonut.png" />
 	<vrpfile src="files/images/Inventory/items/Essen/Zuckerstange.png" />
+	<vrpfile src="files/images/Inventory/items/Essen/Fried Chicken.png" />
 
 	<vrpfile src="files/images/Inventory/items/Objekte/helm.png" />
 	<vrpfile src="files/images/Inventory/items/Objekte/crosshelmet.png" />
