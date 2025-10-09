@@ -1019,12 +1019,6 @@ function Player:payDay()
 	local points_total = 0
 
 	--Income:
-	if not self:getFaction() and not self:getCompany() then
-		income = income + PAYDAY_UNEMPLOYED
-		BankServer.get("server.bank"):transferMoney({self, true, true}, PAYDAY_UNEMPLOYED, "Bürgergeld", "Bank", "Interest", {silent = true})
-		self:addPaydayText("income", _("Bürgergeld", self), PAYDAY_UNEMPLOYED)
-	end
-
 	if self:getFaction() then
 		income_faction = self:getFaction():paydayPlayer(self)
 		points_total = points_total + self:getFaction():getPlayerRank(self)
@@ -1053,6 +1047,14 @@ function Player:payDay()
 			self:getGroup():transferMoney({self, true, true}, income_group, ("Lohn für %s"):format(self:getName()), "Group", "Loan", {silent = true})
 			self:addPaydayText("income", _("%s-Lohn", self, self:getGroup():getName()), income_group)
 		end
+	end
+
+	local combined_loan = income_faction + income_company
+	if combined_loan < PAYDAY_UNEMPLOYED then
+		income_unemployed = PAYDAY_UNEMPLOYED - combined_loan
+		income = income + income_unemployed
+		BankServer.get("server.bank"):transferMoney({self, true, true}, income_unemployed, "Grundsicherung", "Bank", "Interest", {silent = true})
+		self:addPaydayText("income", _("Grundsicherung", self), income_unemployed)
 	end
 
 	if EVENT_HALLOWEEN and self.m_HalloweenPaydayBonus then
@@ -1096,12 +1098,17 @@ function Player:payDay()
 	--Outgoing
 	local temp_bank_money = self:getBankMoney() + income
 
-	outgoing_income = income_faction / 4 + income_company / 4 + income_group / 4
-	if outgoing_income > 0 then
+	if combined_loan > PAYDAY_UNEMPLOYED then
+		outgoing_income = combined_loan / 4
+		if (combined_loan - outgoing_income) < PAYDAY_UNEMPLOYED then
+			outgoing_income = combined_loan - PAYDAY_UNEMPLOYED
+		end
 		self:addPaydayText("outgoing", _("Lohnsteuer", self), outgoing_income)
 		self:transferBankMoney({BankServer.get("server.loan_tax"), nil, nil, true}, outgoing_income, _("Lohnsteuer", self), "Loan", "Tax", {silent = true, allowNegative = true})
 		temp_bank_money = temp_bank_money - outgoing_income
 		points_total = points_total + math.floor(outgoing_income / 100)
+	else
+		outgoing_income = 0
 	end
 
 	if HouseManager:isInstantiated() then

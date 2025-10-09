@@ -4169,8 +4169,8 @@ msgstr "Vending machine rob"
 msgid "Mord"
 msgstr "Murder"
 
-msgid "Bürgergeld"
-msgstr "Unemployment benefit"
+msgid "Grundsicherung"
+msgstr "Social benefit"
 
 msgid "Lohnsteuer"
 msgstr "Income tax"
