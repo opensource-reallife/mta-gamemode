@@ -1077,15 +1077,14 @@ function Player:payDay()
 		end
 	end
 
-	--[[
-	income_interest = math.floor(self:getBankMoney() * 0.01)
+	--[[ income_interest = math.floor(self:getBankMoney() * 0.01)
 	if income_interest > 1500 then income_interest = 1500 end
 	if income_interest > 0 then
 		income = income + income_interest
 		BankServer.get("server.bank"):transferMoney({self, true, true}, income_interest, "Bankzinsen", "Bank", "Interest", {silent = true})
 		self:addPaydayText("income", _("Bankzinsen", self), income_interest)
 		points_total = points_total + math.floor(income_interest/500)
-	end
+	end ]]
 
 	--noob bonus
 	if self:getPlayTime() <= PAYDAY_NOOB_BONUS_MAX_PLAYTIME * 60 then
@@ -1093,13 +1092,12 @@ function Player:payDay()
 		BankServer.get("server.bank"):transferMoney({self, true, true}, PAYDAY_NOOB_BONUS, "Willkommens-Bonus", "Gameplay", "NoobBonus", {silent = true})
 		self:addPaydayText("income", _("Willkommens-Bonus", self), PAYDAY_NOOB_BONUS)
 	end 
-	]]
 
 	--Outgoing
 	local temp_bank_money = self:getBankMoney() + income
 
 	if combined_loan > PAYDAY_UNEMPLOYED then
-		outgoing_income = combined_loan / 4
+		outgoing_income = math.round(combined_loan * math.clamp(0.05, combined_loan / 10000, 0.25))
 		if (combined_loan - outgoing_income) < PAYDAY_UNEMPLOYED then
 			outgoing_income = combined_loan - PAYDAY_UNEMPLOYED
 		end
