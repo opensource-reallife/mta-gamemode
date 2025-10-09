@@ -222,6 +222,7 @@ function FactionRescue:Event_toggleDuty(type, wasted, prefSkin, dontChangeSkin, 
 				RadioCommunication:getSingleton():allowPlayer(client, false)
 				client:setBadge()
 				takeAllWeapons(client)
+				client:restoreStorage()
 				FactionManager:getSingleton():Event_stopNeedhelp(client)
 				if not wasted then faction:updateDutyGUI(client) end
 			else
@@ -233,6 +234,7 @@ function FactionRescue:Event_toggleDuty(type, wasted, prefSkin, dontChangeSkin, 
 					--client:triggerEvent("companyForceOffduty")
 					CompanyManager:getSingleton():companyForceOffduty(client)
 				end
+				client:createStorage()
 				takeAllWeapons(client)
 				if type == "fire" then giveWeapon(client, 42, 0, true) end
 				client:setFactionDuty(true)
