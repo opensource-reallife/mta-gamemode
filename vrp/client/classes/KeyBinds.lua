@@ -58,7 +58,7 @@ function KeyBinds:constructor()
 			["KeyTogglePolicePanel"]	= {["defaultKey"] = "F4", 		["name"] = "Polizei-Computer", 				["category"] = "Fraktion", 		["func"] = self.m_PolicePanel};
 			["KeyToggleRadioComm"]		= {["defaultKey"] = "F5", 		["name"] = "Funkgerät (Staat)", 			["category"] = "Fraktion", 		["func"] = self.m_RadioCommunication};
 			["KeyTriggerChaseSound"]	= {["defaultKey"] = "2", 		["name"] = "Polizei-Megafon", 				["category"] = "Fraktion", 		["func"] = self.m_PoliceMegaphone, ["trigger"] = "down"};
-			["KeyNeedhelp"] 			= {["defaultKey"] = "N/A", 		["name"] = "Hilferuf senden (Fraktion)", 	["category"] = "Fraktion", 		["func"] = function() triggerServerEvent("factionPlayerNeedhelp",localPlayer) end, ["trigger"] = "down"};
+			["KeyNeedhelp"] 			= {["defaultKey"] = "N/A", 		["name"] = "Hilferuf senden", 				["category"] = "Fraktion", 		["func"] = function() triggerServerEvent("factionPlayerNeedhelp",localPlayer) end, ["trigger"] = "down"};
 			
 			-- Fahrzeuge
 			["KeyIndicatorLeft"]		= {["defaultKey"] = ",", 		["name"] = "Blinker Links", 				["category"] = "Fahrzeug", 		["func"] = function() Indicator:getSingleton():switchIndicatorState("left") end};
