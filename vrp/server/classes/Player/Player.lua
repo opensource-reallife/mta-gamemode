@@ -1099,7 +1099,7 @@ function Player:payDay()
 	local temp_bank_money = self:getBankMoney() + income
 
 	if combined_loan > PAYDAY_UNEMPLOYED then
-		outgoing_income = combined_loan / 4
+		outgoing_income = math.round(combined_loan * math.clamp(0.05, combined_loan / 10000, 0.25))
 		if (combined_loan - outgoing_income) < PAYDAY_UNEMPLOYED then
 			outgoing_income = combined_loan - PAYDAY_UNEMPLOYED
 		end
