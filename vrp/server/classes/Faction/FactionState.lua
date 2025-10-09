@@ -1131,9 +1131,9 @@ function FactionState:outputMegaphone(player, text, lang)
 					playersToSend[index]:sendMessage(text, 255, 255, 0)
 					if playersToSend[index] ~= player then
 						receivedPlayers[#receivedPlayers+1] = playersToSend[index]
-					end
-					if playersToSend[index]:getWanteds() > 0 then
-						receivedPlayersWithWanteds[#receivedPlayersWithWanteds+1] = playersToSend[index]
+						if playersToSend[index]:getWanteds() > 0 then
+							receivedPlayersWithWanteds[#receivedPlayersWithWanteds+1] = playersToSend[index]
+						end
 					end
 				end
 
@@ -1147,11 +1147,11 @@ function FactionState:outputMegaphone(player, text, lang)
 
 				if #receivedPlayersWithWanteds > 0 then
 					setTimer( function(player)
-						player:sendInfo(_("Deine Nachricht wurde von folgenden gesuchten Spielern empfangen:\n%s", player, table.concat(names, ", ")))
+						player:sendInfo(_("Deine Nachricht wurde an folgende gesuchte Personen übermittelt:\n%s", player, table.concat(names, ", ")))
 					end, 3000, 1, player)
 				else
 					setTimer( function(player)
-						player:sendInfo(_("Deine Nachricht wurde von niemandem empfangen der gesucht wird.", player))
+						player:sendInfo(_("Es wurden keine gesuchten Personen erreicht.", player))
 					end, 3000, 1, player)
 				end
 
