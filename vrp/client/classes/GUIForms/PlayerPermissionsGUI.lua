@@ -27,6 +27,7 @@ function PlayerPermissionsGUI:constructor(permissionsType, rank, type, playerId)
 
 	if permissionsType == "permission" then
 		self.m_PermissionsList:addColumn(_"Berechtigung", 0.7)
+		self.m_PermissionsList:setSortable{_"Berechtigung"}
 	elseif permissionsType == "action" then
 		self.m_PermissionsList:addColumn(_"Aktion", 0.7)
 	elseif permissionsType == "weapon" then
