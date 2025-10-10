@@ -30,7 +30,7 @@ UNIX_TIMESTAMP_24HRS = 86400 --//86400
 GANGWAR_PAY_PER_DAMAGE = 10
 GANGWAR_PAY_PER_KILL = 1500
 PAYDAY_ACTION_BONUS = 2500
-GANGWAR_COOLDOWN_PER_FACTION = 60 * 25 --// in seconds
+GANGWAR_COOLDOWN_PER_FACTION = 20 --// in minutes
 --//
 addRemoteEvents{ "onLoadCharacter", "onDeloadCharacter", "Gangwar:onClientRequestAttack", "GangwarQuestion:disqualify", "gangwarGetAreas" }
 
@@ -308,7 +308,7 @@ function Gangwar:attackArea( player )
 						end
 					end
 					if factionCount >= GANGWAR_MIN_PLAYERS or DEBUG or (gametime >= GANGWAR_ATTACK_HOUR_START and gametime <= GANGWAR_ATTACK_HOUR_END) then
-						if factionCount2 >= GANGWAR_MIN_PLAYERS or DEBUG or (gametime >= GANGWAR_ATTACK_HOUR_START and gametime <= GANGWAR_ATTACK_HOUR_END)  then
+						if factionCount2 >= GANGWAR_MIN_PLAYERS or DEBUG or (gametime >= GANGWAR_ATTACK_HOUR_START and gametime <= GANGWAR_ATTACK_HOUR_END * 60)  then
 							local activeGangwar = self:getCurrentGangwar()
 							local isGangwarLocked, remainingTime = self.m_GangwarGuard:isGangwarLocked( player:getFaction() )
 							local acFaction1,  acFaction2
