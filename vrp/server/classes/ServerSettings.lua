@@ -10,7 +10,7 @@ ServerSettings = inherit(Singleton)
 function ServerSettings:constructor()
 	self.m_Settings = {}
 
-	local result = sql:queryFetch("SELECT * FROM ??_settings", sql:getPrefix())
+	local result = sql:queryFetch("SELECT `Index`, `Value` FROM ??_settings", sql:getPrefix())
 	for index, row in pairs(result) do
 		if row.Index == "ServerPassword" then
 			if (row.Value) then
@@ -117,7 +117,11 @@ function ServerSettings:constructor()
 		end
 
 		if row.Index == "FireRandomChance" then
-			FIRE_RANDOM_CHANCE = tonumber(row.Value)  -- 1 in X chance that a plane crash happens instead of a fire
+			FIRE_RANDOM_CHANCE = tonumber(row.Value)
+		end
+
+		if row.Index == "RouletteRerollChance" then
+			ROULETTE_REROLL_CHANCE = tonumber(row.Value)
 		end
 
 		self.m_Settings[row.Index] = row.Value
