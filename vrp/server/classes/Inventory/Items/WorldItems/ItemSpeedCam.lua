@@ -39,7 +39,8 @@ function ItemSpeedCam:use(player)
 						setElementData(object, "earning", 0)
 						ItemSpeedCam.Map[#ItemSpeedCam.Map+1] = object
 
-						object.col = worldItem:attach(createColSphere(position, 10))
+
+						object.col = worldItem:attach(createColTube(position, 12, 5))
 						object.col.object = object
 						self.m_func = bind(self.onColShapeHit, self)
 						addEventHandler("onColShapeHit", object.col, self.m_func )
@@ -91,25 +92,26 @@ function ItemSpeedCam:onColShapeHit(element, dim)
 					--give stvo points
 					local oldSTVO = player:getSTVO("Driving")
 					local newSTVO = 0
-					if element:getSpeed() >= 90 and element:getSpeed() < 120 then
-						stvoPoints = 3
-						newSTVO = oldSTVO + stvoPoints
-						player:setSTVO("Driving", newSTVO)
-					elseif element:getSpeed() >= 120 then
-						stvoPoints = 6
-						newSTVO = oldSTVO + stvoPoints
-						player:setSTVO("Driving", newSTVO)
+					if player:hasDrivingLicense() then
+						if element:getSpeed() >= 90 and element:getSpeed() < 120 then
+							stvoPoints = 3
+							newSTVO = oldSTVO + stvoPoints
+							player:setSTVO("Driving", newSTVO)
+						elseif element:getSpeed() >= 120 then
+							stvoPoints = 6
+							newSTVO = oldSTVO + stvoPoints
+							player:setSTVO("Driving", newSTVO)
+						end
+
+						if newSTVO > 0 then
+							outputChatBox(_("Du hast %d STVO-Punkt/e erhalten! Gesamt: %d", player, stvoPoints, newSTVO), player, 255, 255, 0)
+							outputChatBox(_("Grund: Rasen innerhalb der Stadt (%s km/h)", player, speed), player, 255, 255, 0 )
+
+							local msg = ("Blitzer: %s hat %d STVO-Punkt/e wegen Rasen innerhalb der Stadt (%s km/h) erhalten!"):format(player:getName(), stvoPoints, speed)
+							FactionState:getSingleton():addLog(player, "STVO", ("hat %s STVO-Punkte wegen Rasen innerhalb der Stadt (%s km/h) erhalten!"):format(stvoPoints, speed))
+							FactionState:getSingleton():sendMessage(msg, 255,0,0)
+						end
 					end
-
-					if newSTVO > 0 then
-						outputChatBox(_("Du hast %d STVO-Punkt/e erhalten! Gesamt: %d", player, stvoPoints, newSTVO), player, 255, 255, 0)
-						outputChatBox(_("Grund: Rasen innerhalb der Stadt (%s km/h)", player, speed), player, 255, 255, 0 )
-
-						local msg = ("Blitzer: %s hat %d STVO-Punkt/e wegen Rasen innerhalb der Stadt (%s km/h) erhalten!"):format(player:getName(), stvoPoints, speed)
-						FactionState:getSingleton():addLog(player, "STVO", ("hat %s STVO-Punkte wegen Rasen innerhalb der Stadt (%s km/h) erhalten!"):format(stvoPoints, speed))
-						FactionState:getSingleton():sendMessage(msg, 255,0,0)
-					end
-
 					player:giveAchievement(62)
 					if speed > 180 then
 						player:giveAchievement(63)
