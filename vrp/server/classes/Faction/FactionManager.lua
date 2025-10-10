@@ -208,6 +208,18 @@ function FactionManager:Command_needhelp(player)
 	
 	if faction then
 		if player:isFactionDuty() then
+			if player.m_ActiveNeedHelp and not player.m_ActiveNeedHelpSpam then 
+				-- timer 3 seconds to avoid spam
+				player.m_ActiveNeedHelpSpam = true
+				if isTimer(player.m_ActiveNeedHelpSpam) then
+					killTimer(player.m_ActiveNeedHelpSpam)
+				end
+				player.m_ActiveNeedHelpSpam = setTimer(function()
+					player.m_ActiveNeedHelpSpam = false 
+				end, 3000, 1)
+
+				return self:Event_stopNeedhelp(player) 
+			end
 			if not player.m_ActiveNeedHelpRepeat and player.m_ActiveNeedHelpRepeat ~= nil then return end
 			if player:getInterior() == 0 and player:getDimension() == 0 then
 				local rankName = faction:getRankName(faction:getPlayerRank(player))
