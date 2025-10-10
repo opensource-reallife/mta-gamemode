@@ -77,17 +77,14 @@ end
 function ItemSpeedCam:onColShapeHit(element, dim)
 	if dim then
 		if element:getType() == "vehicle" then
-			if element:getSpeed() > 85 then
+			if element:getSpeed() > ALLOWED_SPEED + 5 then
 				if element:getOccupant() then
 					local player = element:getOccupant()
 
 					if player:getFaction() and (player:getFaction():isStateFaction() or player:getFaction():isRescueFaction()) and player:isFactionDuty() then return end
-
+					
 					local speed = math.floor(element:getSpeed())
 					local costs = (speed-ALLOWED_SPEED)*COST_FACTOR
-
-					player:transferBankMoney({FactionManager:getSingleton():getFromId(1), nil, true}, costs, "Blitzer-Strafe", "Gameplay", "Speedcam")
-					player:sendShortMessage(_("Du wurdest mit %d km/h geblitzt!\nStrafe: %d$", player, speed, costs), "SA Police Department")
 
 					--give stvo points
 					local oldSTVO = player:getSTVO("Driving")
@@ -111,7 +108,13 @@ function ItemSpeedCam:onColShapeHit(element, dim)
 							FactionState:getSingleton():addLog(player, "STVO", ("hat %s STVO-Punkte wegen Rasen innerhalb der Stadt (%s km/h) erhalten!"):format(stvoPoints, speed))
 							FactionState:getSingleton():sendMessage(msg, 255,0,0)
 						end
+					else
+						costs = costs * 3
 					end
+
+					player:transferBankMoney({FactionManager:getSingleton():getFromId(1), nil, true}, costs, "Blitzer-Strafe", "Gameplay", "Speedcam")
+					player:sendShortMessage(_("Du wurdest mit %d km/h geblitzt!\nStrafe: %d$", player, speed, costs), "SA Police Department")
+
 					player:giveAchievement(62)
 					if speed > 180 then
 						player:giveAchievement(63)
