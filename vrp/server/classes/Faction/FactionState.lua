@@ -1841,6 +1841,16 @@ function FactionState:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, pl
 				client:getInventory():removeAllItem("Taser")
 				client:getInventory():giveItem("Taser", 1)
 				client:getInventory():removeItem("Kevlar", 1)
+
+				-- remove illegal items
+				local DrugItems = self.ms_IllegalItems
+				local inv = client:getInventory()
+				for index, item in pairs(DrugItems) do
+					if inv:getItemAmount(item) > 0 then
+						inv:removeAllItem(item)
+					end
+				end
+
 				client:setData("Faction:InSpecialDuty", nil, true)
 
 				if not wasted then faction:updateDutyGUI(client) end
@@ -2407,7 +2417,7 @@ function FactionState:startAreaAlert()
 	local counter = 0
 	local wanteds = WANTED_AMOUNT_AREA69
 	for key, player in ipairs(getElementsWithinColShape(self.m_AreaColShape, "player")) do
-		if not player:getFaction() or (player:getFaction() and not player:getFaction():isStateFaction()) then
+		if not player:getFaction() or (player:getFaction() and not player:getFaction():isStateFaction()) or (player:getFaction() and not player:getFaction():isRescueFaction()) then
 			counter = counter + 1
 			if not FactionManager.Map[3] then
 				player:giveWanteds(wanteds)
