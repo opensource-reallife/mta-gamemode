@@ -40,12 +40,18 @@ function Roulette:spin(bets)
     end
     self.m_Player:transferMoney(self.m_BankAccountServer, bet, "Roulette-Einsatz", "Gameplay", "Roulett")
 	RouletteManager:getSingleton():setStats(-bet, true)
-	self.m_Random = math.random(0, 36)
 
     local win = 0
-    for field, tokens in pairs(self.m_Bets) do
-        if table.find(ROULETTE_WINNUMBERS[field], self.m_Random) then
-            win = win + self:calcBetWinOnField(field) + self:calcBetOnField(field)
+    for i = 1, 2 do
+        self.m_Random = Randomizer:get(0, 36)
+        win = 0
+        for field, tokens in pairs(self.m_Bets) do
+            if table.find(ROULETTE_WINNUMBERS[field], self.m_Random) then
+                win = win + self:calcBetWinOnField(field) + self:calcBetOnField(field)
+            end
+        end
+        if win <= bet or not chance(ROULETTE_REROLL_CHANCE) then
+            break
         end
     end
 
