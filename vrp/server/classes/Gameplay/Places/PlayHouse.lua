@@ -49,8 +49,8 @@ function PlayHouse:constructor()
     atm:setInterior(12)
 
     --GlobalTimer:getSingleton():registerEvent(bind(self.open, self), "PlayHouseOpen", 5, 21, 00)
-    GlobalTimer:getSingleton():registerEvent(bind(self.open, self), "PlayHouseOpen", 6, 23, 00)
-    GlobalTimer:getSingleton():registerEvent(bind(self.close, self), "PlayHouseClose", 7, 01, 00)
+    --GlobalTimer:getSingleton():registerEvent(bind(self.open, self), "PlayHouseOpen", 6, 23, 00)
+    --GlobalTimer:getSingleton():registerEvent(bind(self.close, self), "PlayHouseClose", 7, 01, 00)
     --GlobalTimer:getSingleton():registerEvent(bind(self.open, self), "PlayHouseOpen", 7, 21, 00)
 
     local query = "CREATE TABLE IF NOT EXISTS `??_PlayhousePlayers`  (" ..
