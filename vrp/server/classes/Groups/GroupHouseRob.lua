@@ -81,6 +81,10 @@ function GroupHouseRob:Event_OnSellAccept()
 				client:sendError(_("Du bist zu weit entfernt!", client))
 				return
 			end
+			if client and client:getFaction():isStateFaction() and client:isFactionDuty() then 
+				client:sendError(_("Du kannst während du im Dienst bist, kein Diebesgut verkaufen!"), client) 
+				return 
+			end
 			local inv = client:getInventory()
 			if inv then
 				local itemName = "Diebesgut"
