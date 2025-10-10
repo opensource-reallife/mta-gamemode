@@ -654,6 +654,7 @@ function GroupGUI:GroupToggleLoanButton_Click()
 end
 
 function GroupGUI:openPermissionsGUI()
+	self:close()
 	RankPermissionsGUI:new("permission", "group")
 end
 

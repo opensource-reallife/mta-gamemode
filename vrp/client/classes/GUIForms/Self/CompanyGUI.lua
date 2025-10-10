@@ -406,6 +406,7 @@ function CompanyGUI:SanNewsToggleMessage()
 end
 
 function CompanyGUI:openPermissionsGUI()
+	self:close()
 	RankPermissionsGUI:new("permission", "company")
 end
 

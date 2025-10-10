@@ -803,6 +803,7 @@ function FactionGUI:ShowLogs()
 end
 
 function FactionGUI:openPermissionsGUI(type)
+	self:close()
 	RankPermissionsGUI:new(type, "faction")
 end
 
