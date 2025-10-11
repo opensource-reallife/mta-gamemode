@@ -363,7 +363,7 @@ factionWTDestination[10] = Vector3(2768.62, -1944.73, 13.36-0.7)
 factionSpawnpoint[10] = {EVIL_FACTION_SPAWN_POINT, EVIL_FACTION_SPAWN_INTERIOR, 10}
 factionAirDropPoint[10] = Vector3(2770.33, -1945.15, 13.35)
 factionNavigationpoint[10] = evilFactionInteriorEnter[10]
-factionDTDestination[10] = {Vector3(2764.33, -2235.26, 5.19), 272.27, 116, "José Pendejo"} --Actecas {Vector3(1996.05, -2070.55, 13.55), 270, 116, "José Pendejo"}
+factionDTDestination[10] = {Vector3(2751.41, -2094.58, 12.25), 255.60, 116, "José Pendejo"} --Actecas {Vector3(1996.05, -2070.55, 13.55), 270, 116, "José Pendejo"}
 
 -- ID 11 = Triads
 factionRankNames[11] = {
