@@ -12,7 +12,8 @@ addRemoteEvents{"robableShopGiveBagFromCrash"}
 ROBSHOP_TIME = 15*60*1000
 ROBSHOP_PAUSE = 30*60 --in Sec
 ROBSHOP_PAUSE_SAME_SHOP = 6*60*60 -- 6h in Sec
-ROBSHOP_MAX_MONEY = 15000
+ROBSHOP_MIN_MONEY = 6500
+ROBSHOP_MAX_MONEY = 10000
 ROBSHOP_LAST_ROB = 0
 
 function RobableShop:constructor(shop, pedPosition, pedRotation, pedSkin, interiorId, dimension)
@@ -136,6 +137,8 @@ function RobableShop:startRob(shop, attacker, ped)
 
 	StatisticsLogger:getSingleton():addActionLog("Shop-Rob", "start", attacker, self.m_Gang, "group")
 
+	local robRndMoney = Randomizer:get(ROBSHOP_MIN_MONEY, ROBSHOP_MAX_MONEY)
+	
 	self:giveBag(attacker)
 	self.m_Ped.onTargetRefresh = function(count, startingPlayer)
 		outputDebug(count)
@@ -157,7 +160,7 @@ function RobableShop:startRob(shop, attacker, ped)
 		if hasAnyoneBag then
 			local rnd = math.random(40*realCount, 100*realCount)
 			local rob = self.m_Bag.Money + rnd
-			if shop:getMoney() >= rnd and rob <= ROBSHOP_MAX_MONEY then
+			if shop:getMoney() >= rnd and rob <= robRndMoney then
 				if not self.m_Bag.Money then self.m_Bag.Money = 0 end
 				self.m_Bag.Money = rob
 				self.m_Bag:setData("Money", self.m_Bag.Money, true)
