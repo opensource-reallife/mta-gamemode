@@ -89,7 +89,7 @@ function JobHeliTransport:onPickupLoad()
 		self.m_VehData[vehicle].load = true
 		self.m_PickupPos = vehicle:getPosition()
 		if client:getData("JobHeliTransport:Money") and client:getData("JobHeliTransport:Money") > 0 then
-			client:sendInfo(_("Dein Helikopter wurde wieder neu beladen.", client)) --TODO
+			client:sendInfo(_("Dein Helikopter wurde wieder neu beladen.", client))
 			local duration = getRealTime().timestamp - client.m_LastJobAction
 			client.m_LastJobAction = getRealTime().timestamp
 			local money = client:getData("JobHeliTransport:Money") * JOB_PAY_MULTIPLICATOR * self:getMultiplicator()

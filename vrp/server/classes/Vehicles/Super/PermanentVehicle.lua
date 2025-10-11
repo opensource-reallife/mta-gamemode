@@ -173,7 +173,7 @@ function PermanentVehicle:virtual_constructor(data)
 		setElementData(self, "OwnerType", VehicleTypeName[self.m_OwnerType])
 		setElementData(self, "ID", self.m_Id or -1)
 
-		self.m_Keys = data.Keys and fromJSON(data.Keys) or {} -- TODO: check if this works?
+		self.m_Keys = data.Keys and fromJSON(data.Keys) or {}
 		setElementData(self, "VehicleKeys", self.m_Keys)
 		self.m_PositionType = data.PositionType or VehiclePositionType.World
 

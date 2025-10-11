@@ -1438,7 +1438,6 @@ function VehicleManager:Event_vehicleDelete(reason)
 			end
 		end
 
-		-- Todo Add Log
 		StatisticsLogger:getSingleton():addVehicleDeleteLog(source:getOwner(), client, source:getModel(), reason)
 		local format = {client:getName(), source:getName(), getElementData(source, "OwnerName") or "Unknown", reason}
 		Admin:getSingleton():sendShortMessage("%s hat das Fahrzeug %s von %s gelöscht (Grund: %s).", format)

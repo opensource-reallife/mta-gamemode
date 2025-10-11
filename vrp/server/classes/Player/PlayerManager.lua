@@ -835,7 +835,6 @@ function PlayerManager:Event_requestJobLevelUp()
 end
 
 function PlayerManager:Event_playerRequestTrading()
-	-- TODO: Add accept prompt box
 	client:startTrading(source)
 end
 
