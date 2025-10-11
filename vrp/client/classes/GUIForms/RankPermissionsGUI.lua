@@ -44,7 +44,7 @@ function RankPermissionsGUI:constructor(permissionsType, type, wpn)
 		end
 	end)
 	
-	self.m_PermissionScrollArea = GUIGridScrollableArea:new(1, 2.5, self.ms_GUISizeX - 1, self.ms_GUISizeY - 3.5, 1, 50, true, false, self.m_Window, 2.5)
+	self.m_PermissionScrollArea = GUIGridScrollableArea:new(1, 2.5, self.ms_GUISizeX - 1, self.ms_GUISizeY - 3.5, 1, 60, true, false, self.m_Window, 2.5)
 	self.m_PermissionScrollArea:updateGrid()
 	
 	self.m_PermissionLabel = {}
@@ -97,10 +97,29 @@ function RankPermissionsGUI:updateList(rankTbl, type, refresh)
 			self.m_RankLabels[j] = GUIGridLabel:new(7 + ((j + 1) * 2), 1.75, 5, 2, _("Rang %s", j), self.m_Window)
 			documentSizeY = documentSizeY + 1
 		end
-		
-		local i = 0.34
-		for permission, permissionName in pairs(self.m_Permissions) do
-			self.m_PermissionRectangle[permission] = GUIGridRectangle:new(1, (i * 1.5 - 1), self.ms_GUISizeX - 1, 1.5, Color.Background, self.m_PermissionScrollArea)
+
+		if (self.m_PermissionsType ~= "weapon") then
+			local temp = {}
+			for i, v in pairs(self.m_Permissions) do
+				table.insert(temp, {i, v, permInfo[i][2][self.m_Type]})
+			end
+			table.sort(temp, function(a,b) return(a[3] < b[3]) end)
+			self.m_Permissions = temp
+		end
+
+		local i = 0.7
+		for ki, perms in pairs(self.m_Permissions) do
+			local permission
+			local permissionName
+			if self.m_PermissionsType ~= "weapon" then
+				permission = perms[1]
+				permissionName = perms[2]
+			else
+				permission = ki
+				permissionName = perms
+			end
+				
+			self.m_PermissionRectangle[permission] = GUIGridRectangle:new(1, (i * 1.5), self.ms_GUISizeX - 1, 1.5, Color.Background, self.m_PermissionScrollArea)
 	
 			for j = 0, type ~= "company" and 6 or 5, 1 do
 				local rank = tonumber(j)
@@ -122,7 +141,7 @@ function RankPermissionsGUI:updateList(rankTbl, type, refresh)
 			i = i + 1
 			documentSizeY = documentSizeY + 1.25
 		end
-		self.m_PermissionScrollArea:resize(17, documentSizeY - 1)
+		self.m_PermissionScrollArea:resize(17, table.size(self.m_PermissionRectangle) * 1.5)
 	else
 		for rank, v in pairs(self.m_RankPermissions) do
 			for perm, state in pairs(v) do
