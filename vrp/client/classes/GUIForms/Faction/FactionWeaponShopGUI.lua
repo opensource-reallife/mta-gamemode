@@ -136,7 +136,9 @@ function FactionWeaponShopGUI:addWeaponToGUI(weaponID,Waffen,Munition)
 end
 
 function FactionWeaponShopGUI:isPlayerAllowedToTake(weapon)
-	if self.m_WeaponPermissions[tostring(weapon)] == true then
+	if PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changePermissions") then
+		return true 
+	elseif self.m_WeaponPermissions[tostring(weapon)] == true then
 		return true
 	elseif self.m_WeaponPermissions[tostring(weapon)] == false then
 		return false

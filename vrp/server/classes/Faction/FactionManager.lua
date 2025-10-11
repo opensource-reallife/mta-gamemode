@@ -123,7 +123,7 @@ function FactionManager:getFromName(name)
 	end
 end
 
-function FactionManager:Event_factionSaveRank(rank,loan,rankWeapons)
+function FactionManager:Event_factionSaveRank(rank,loan)
 	local success = false
 	local faction = client:getFaction()
 	local wpn = {}
@@ -145,30 +145,30 @@ function FactionManager:Event_factionSaveRank(rank,loan,rankWeapons)
 			end
 		end
 
-		local newWeapons = false
-		for i, v in pairs(faction.m_RankWeapons[tostring(rank)]) do
-			if tonumber(rankWeapons[i]) ~= tonumber(v) then
-				newWeapons = true
-				break
-			end
-		end
-		if newWeapons then
-			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "editWeaponPermissions") then
-				if faction:getPlayerRank(client) > rank or (PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "changePermissions") and faction:getPlayerRank(client) >= rank) then
-					for id, state in pairs(rankWeapons) do
-						if not PermissionsManager:getSingleton():isPlayerAllowedToTake(client, "faction", id) then
-							rankWeapons[id] = faction.m_RankWeapons[tostring(rank)][id]
-						end
-					end
-					faction:setRankWeapons(rank,rankWeapons)
-					success = true
-				else
-					client:sendError(_("Du kannst die Waffenrechte von dem Rang nicht verändern!", client))
-				end
-			else
-				client:sendError(_("Du bist nicht berechtigt die Rangwaffen zu ändern", client))
-			end
-		end
+		-- local newWeapons = false
+		-- for i, v in pairs(faction.m_RankWeapons[tostring(rank)]) do
+		-- 	if tonumber(rankWeapons[i]) ~= tonumber(v) then
+		-- 		newWeapons = true
+		-- 		break
+		-- 	end
+		-- end
+		-- if newWeapons then
+		-- 	if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "editWeaponPermissions") then
+		-- 		if faction:getPlayerRank(client) > rank or (PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "changePermissions") and faction:getPlayerRank(client) >= rank) then
+		-- 			for id, state in pairs(rankWeapons) do
+		-- 				if not PermissionsManager:getSingleton():isPlayerAllowedToTake(client, "faction", id) then
+		-- 					rankWeapons[id] = faction.m_RankWeapons[tostring(rank)][id]
+		-- 				end
+		-- 			end
+		-- 			faction:setRankWeapons(rank,rankWeapons)
+		-- 			success = true
+		-- 		else
+		-- 			client:sendError(_("Du kannst die Waffenrechte von dem Rang nicht verändern!", client))
+		-- 		end
+		-- 	else
+		-- 		client:sendError(_("Du bist nicht berechtigt die Rangwaffen zu ändern", client))
+		-- 	end
+		-- end
 		
 		if success then
 			faction:save()

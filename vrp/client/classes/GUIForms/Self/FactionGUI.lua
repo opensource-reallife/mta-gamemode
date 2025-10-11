@@ -124,9 +124,9 @@ function FactionGUI:constructor()
 	self.m_FactionForumSyncButton.onLeftClick = bind(self.FactionForumSyncButton_Click, self)
 	self.m_FactionPlayerPermissionsButton.onLeftClick = bind(self.factionPlayerPermissionsButton_Click, self)
 
-	self.m_WeaponsName = {}
-	self.m_WeaponsImage = {}
-	self.m_WeaponsCheck = {}
+	-- self.m_WeaponsName = {}
+	-- self.m_WeaponsImage = {}
+	-- self.m_WeaponsCheck = {}
 
 	self.m_TabDiplomacy = self.m_TabPanel:addTab(_"Diplomatie")
 
@@ -168,8 +168,8 @@ function FactionGUI:addLeaderTab()
 		self.m_FactionRangGrid:addColumn(_"Rang", 0.2)
 		self.m_FactionRangGrid:addColumn(_"Name", 0.8)
 
-		self.m_WeaponArea = GUIScrollableArea:new(250, 200, 340, 200, 340, 0, true, false, self.m_TabLeader, 200)
-		self.m_WeaponArea:setVisible(false)
+		-- self.m_WeaponArea = GUIScrollableArea:new(250, 200, 340, 200, 340, 0, true, false, self.m_TabLeader, 200)
+		-- self.m_WeaponArea:setVisible(false)
 
 		GUILabel:new(self.m_Width*0.45, self.m_Height*0.05, self.m_Width*0.4, self.m_Height*0.06, _"Ausgewählter Rang:", self.m_TabLeader):setFont(VRPFont(30)):setColor(Color.Accent)
 		self.m_LeaderRankName = GUILabel:new(self.m_Width*0.45, self.m_Height*0.12, self.m_Width*0.4, self.m_Height*0.06, "", self.m_TabLeader)
@@ -184,13 +184,13 @@ function FactionGUI:addLeaderTab()
 
 		self.m_ChangePermissions = GUIButton:new(self.m_Width*0.02, self.m_Height*0.75, self.m_Width*0.4, self.m_Height*0.07, _"Rechteverwaltung", self.m_TabLeader):setBarEnabled(true)
 		self.m_ChangePermissions.onLeftClick = bind(self.openPermissionsGUI, self, "permission")
-		self.m_ChangePermissions:setEnabled(false)
+		self.m_ChangePermissions:setEnabled((PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changePermissions") or PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editActionPermissions") or PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editWeaponPermissions")) and true or false)
 
-		self.m_ChangeActionPermissions = GUIButton:new(self.m_Width*0.02, self.m_Height*0.845, self.m_Width*0.4, self.m_Height*0.07, _"Aktionsstartberechtigungen", self.m_TabLeader):setBarEnabled(true)
-		self.m_ChangeActionPermissions.onLeftClick = bind(self.openPermissionsGUI, self, "action")
-		self.m_ChangeActionPermissions:setEnabled(false)
+		-- self.m_ChangeActionPermissions = GUIButton:new(self.m_Width*0.02, self.m_Height*0.845, self.m_Width*0.4, self.m_Height*0.07, _"Aktionsstartberechtigungen", self.m_TabLeader):setBarEnabled(true)
+		-- self.m_ChangeActionPermissions.onLeftClick = bind(self.openPermissionsGUI, self, "action")
+		-- self.m_ChangeActionPermissions:setEnabled(false)
 
-		GUILabel:new(self.m_Width*0.45, self.m_Height*0.35, self.m_Width*0.4, self.m_Height*0.06, _"Waffen:", self.m_TabLeader):setFont(VRPFont(30)):setColor(Color.Accent)
+		-- GUILabel:new(self.m_Width*0.45, self.m_Height*0.35, self.m_Width*0.4, self.m_Height*0.06, _"Waffen:", self.m_TabLeader):setFont(VRPFont(30)):setColor(Color.Accent)
 
 		self:refreshLeaderTab()
 
@@ -201,6 +201,15 @@ function FactionGUI:addLeaderTab()
 end
 
 function FactionGUI:refreshLeaderTab()
+	self.m_LeaderLoan:setVisible(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editLoan"))
+	self.m_FactionPlayerFileButton:setEnabled(localPlayer:getPublicSync("FactionRank") >= FactionRank.Manager)	
+
+	--[[
+	self.m_WeaponArea:setVisible(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editWeaponPermissions"))
+	--self.m_FactionForumSyncButton:setVisible(localPlayer:getPublicSync("FactionRank") >= FactionRank.Manager)
+	self.m_ChangePermissions:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changePermissions"))
+	self.m_ChangeActionPermissions:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editActionPermissions"))
+
 	for i = 0, 46 do
 		if self.m_WeaponsName[i] then delete(self.m_WeaponsName[i]) end
 		if self.m_WeaponsImage[i] then delete(self.m_WeaponsImage[i]) end
@@ -209,13 +218,6 @@ function FactionGUI:refreshLeaderTab()
 	self.m_WaffenAnzahl = 0
 	self.m_WaffenRow = 0
 	self.m_WaffenColumn = 0
-
-	self.m_LeaderLoan:setVisible(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editLoan"))
-	self.m_WeaponArea:setVisible(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editWeaponPermissions"))
-	self.m_FactionPlayerFileButton:setEnabled(localPlayer:getPublicSync("FactionRank") >= FactionRank.Manager)
-	--self.m_FactionForumSyncButton:setVisible(localPlayer:getPublicSync("FactionRank") >= FactionRank.Manager)
-	self.m_ChangePermissions:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changePermissions"))
-	self.m_ChangeActionPermissions:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editActionPermissions"))
 
 	self.m_WeaponArea:setScrollPosition(0,0)
 	self.m_WeaponArea:clear()
@@ -236,6 +238,7 @@ function FactionGUI:refreshLeaderTab()
 			self.m_WeaponArea:resize(330, 50+self.m_WaffenColumn*90)
 		end
 	end
+	--]]
 
 	self.m_FactionRangGrid:clear()
 	for rank,name in pairs(self.m_RankNames) do
@@ -255,16 +258,16 @@ end
 
 function FactionGUI:saveRank()
 	if self.m_SelectedRank then
-		local rankWeapons = self.m_RankWeapons[tostring(self.m_SelectedRank)]
-		for weaponID = 0, 46 do
-			if self.m_WeaponsCheck[weaponID] and self.m_WeaponsCheck[weaponID]:isChecked() == true then
-				rankWeapons[tostring(weaponID)] = 1
-			else
-				rankWeapons[tostring(weaponID)] = 0
-			end
-		end
+		-- local rankWeapons = self.m_RankWeapons[tostring(self.m_SelectedRank)]
+		-- for weaponID = 0, 46 do
+		-- 	if self.m_WeaponsCheck[weaponID] and self.m_WeaponsCheck[weaponID]:isChecked() == true then
+		-- 		rankWeapons[tostring(weaponID)] = 1
+		-- 	else
+		-- 		rankWeapons[tostring(weaponID)] = 0
+		-- 	end
+		-- end
 
-		triggerServerEvent("factionSaveRank",localPlayer,self.m_SelectedRank,self.m_LeaderLoan:getText(),rankWeapons)
+		triggerServerEvent("factionSaveRank",localPlayer,self.m_SelectedRank,self.m_LeaderLoan:getText())
 	end
 end
 
@@ -273,15 +276,15 @@ function FactionGUI:onSelectRank(name,rank)
 	self.m_LeaderLoan:setText(tostring(self.m_RankLoans[tostring(rank)]))
 	self.m_SaveRank:setEnabled(true)
 
-	for weaponID,v in pairs(self.m_ValidWeapons) do
-		if v == true then
-			if self.m_RankWeapons[tostring(rank)][tostring(weaponID)] == 1 then
-				self.m_WeaponsCheck[weaponID]:setChecked(true)
-			else
-				self.m_WeaponsCheck[weaponID]:setChecked(false)
-			end
-		end
-	end
+	-- for weaponID,v in pairs(self.m_ValidWeapons) do
+	-- 	if v == true then
+	-- 		if self.m_RankWeapons[tostring(rank)][tostring(weaponID)] == 1 then
+	-- 			self.m_WeaponsCheck[weaponID]:setChecked(true)
+	-- 		else
+	-- 			self.m_WeaponsCheck[weaponID]:setChecked(false)
+	-- 		end
+	-- 	end
+	-- end
 end
 
 function FactionGUI:loadGangwarTab()
@@ -802,9 +805,32 @@ function FactionGUI:ShowLogs()
 	self.m_LogGUI:addBackButton(function() FactionGUI:getSingleton():show() end)
 end
 
-function FactionGUI:openPermissionsGUI(type)
-	self:close()
-	RankPermissionsGUI:new(type, "faction")
+function FactionGUI:openPermissionsGUI()
+	self.m_PermissionsManagmentGUI = GUIButtonMenu:new(_("Rechteverwaltung"))
+	if PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changePermissions") then
+	self.m_PermissionsManagmentGUI:addItem(_"Rechte bearbeiten", Color.Accent,
+		function()
+			RankPermissionsGUI:new("permission", "faction")
+			self:close()
+			self.m_PermissionsManagmentGUI:close()
+		end)
+	end
+	if PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editActionPermissions") then
+		self.m_PermissionsManagmentGUI:addItem(_"Aktionsrechte bearbeiten", Color.Accent,
+		function()
+			RankPermissionsGUI:new("action", "faction")
+			self:close()
+			self.m_PermissionsManagmentGUI:close()
+		end)
+	end
+	if PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editWeaponPermissions") then
+		self.m_PermissionsManagmentGUI:addItem(_"Waffenrechte bearbeiten", Color.Accent,
+		function()
+			RankPermissionsGUI:new("weapon", "faction", self.m_ValidWeapons)
+			self:close()
+			self.m_PermissionsManagmentGUI:close()
+		end)
+	end
 end
 
 function FactionGUI:factionPlayerPermissionsButton_Click()

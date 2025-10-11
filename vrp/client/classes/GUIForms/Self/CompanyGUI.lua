@@ -406,8 +406,22 @@ function CompanyGUI:SanNewsToggleMessage()
 end
 
 function CompanyGUI:openPermissionsGUI()
-	self:close()
-	RankPermissionsGUI:new("permission", "company")
+	self.m_PermissionsManagmentGUI = GUIButtonMenu:new(_("Rechteverwaltung"))
+	if PermissionsManager:getSingleton():hasPlayerPermissionsTo("company", "changePermissions") then
+	self.m_PermissionsManagmentGUI:addItem(_"Rechte bearbeiten", Color.Accent,
+		function()
+			RankPermissionsGUI:new("permission", "company")
+			self:close()
+			self.m_PermissionsManagmentGUI:close()
+		end)
+	end
+	-- if PermissionsManager:getSingleton():hasPlayerPermissionsTo("company", "editActionPermissions") then
+	-- 	self.m_PermissionsManagmentGUI:addItem(_"Aktionsrechte bearbeiten", Color.Accent,
+	-- 	function()
+	-- 		RankPermissionsGUI:new("action", "company")
+	-- 		self:close()
+	-- 	end)
+	-- end
 end
 
 function CompanyGUI:companyPlayerPermissionsButton_Click()

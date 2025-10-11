@@ -7,7 +7,7 @@
 -- ****************************************************************************
 PermissionsManager = inherit(Singleton)
 
-addRemoteEvents{"requestRankPermissionsList", "requestPlayerPermissionsList", "changeRankPermissions", "changePlayerPermissions", "syncPermissions"}
+addRemoteEvents{"requestRankPermissionsList", "requestPlayerPermissionsList", "changeRankPermission", "changeRankPermissions", "changePlayerPermissions", "syncPermissions"}
 function PermissionsManager:constructor()
 	self.m_Types = {["faction"] = 1, ["company"] = 2, ["group"] = 3}
 	self.m_LeaderRank = {["faction"] = 6, ["company"] = 5, ["group"] = 6}
@@ -15,6 +15,7 @@ function PermissionsManager:constructor()
 	addEventHandler("requestRankPermissionsList", root, bind(self.Event_requestRankPermissionsList, self))
 	addEventHandler("requestPlayerPermissionsList", root, bind(self.Event_requestPlayerPermissionsList, self))
 	addEventHandler("changeRankPermissions", root, bind(self.Event_changeRankPermissions, self))
+	addEventHandler("changeRankPermission", root, bind(self.Event_changeRankPermission, self))
 	addEventHandler("changePlayerPermissions", root, bind(self.Event_changePlayerPermissions, self))
 	addEventHandler("syncPermissions", root, bind(self.syncPermissions, self))
 	setTimer(function() self:checkForNewPermissions() end, 5000, 1)
@@ -52,7 +53,7 @@ function PermissionsManager:createRankActions(type, id, rank)
 	return temp 
 end
 
-function PermissionsManager:Event_requestRankPermissionsList(permissionsType, type, sendTo)
+function PermissionsManager:Event_requestRankPermissionsList(permissionsType, type, sendTo, refresh)
 	if not client then client = sendTo end
 	if not self:getInstance(client, type) then return end
 	
@@ -73,9 +74,15 @@ function PermissionsManager:Event_requestRankPermissionsList(permissionsType, ty
 		end
 
 		temp = instance.m_RankActions
-	end
+	elseif permissionsType == "weapon" and type then
+		if not self:hasPlayerPermissionsTo(client, type, "editWeaponPermissions") then 
+			client:sendError(_("Du bist nicht berechtigt die Aktionsrechte zu verändern!", client))
+			return 
+		end
 
-	client:triggerEvent("showRankPermissionsList", temp, type)
+		temp = instance.m_RankWeapons
+	end
+	client:triggerEvent("showRankPermissionsList", temp, type, refresh)
 end
 
 function PermissionsManager:Event_requestPlayerPermissionsList(permissionsType, type, playerId, sendTo)
@@ -97,8 +104,10 @@ function PermissionsManager:Event_requestPlayerPermissionsList(permissionsType, 
 		local playerPerm = instance.m_PlayerPermissions[tonumber(playerId)]
 		
 		for name, state in pairs(rankPerm) do
-			if rank >= PERMISSIONS_INFO[name][2][type] then
-				temp[name] = (playerPerm[name] == true and true) or (playerPerm[name] == nil and "default") or false
+			if (PERMISSIONS_INFO[name] and PERMISSIONS_INFO[name][2] and PERMISSIONS_INFO[name][2][type]) then
+				if rank >= PERMISSIONS_INFO[name][2][type] then
+					temp[name] = (playerPerm[name] == true and true) or (playerPerm[name] == nil and "default") or false
+				end
 			end
 		end
 	elseif permissionsType == "action" and type and rank then
@@ -141,6 +150,73 @@ function PermissionsManager:Event_requestPlayerPermissionsList(permissionsType, 
 	end
 
 	client:triggerEvent("showPlayerPermissionsList", temp, permissionsType)
+end
+
+function PermissionsManager:Event_changeRankPermission(permissionsType, type, rank, perm, state) -- only for sinlge permission changes
+	if not self:getInstance(client, type) then return end
+	if not perm then return end
+	local instance = self:getInstance(client, type)
+	local error = false
+
+	if permissionsType == "permission" then
+		if not self:hasPlayerPermissionsTo(client, type, "changePermissions") then
+			client:sendError(_("Du bist nicht berechtigt die Rechte zu verändern!", client))
+			return 
+		end
+
+		if rank == self.m_LeaderRank[type] or rank > instance:getPlayerRank(client) then 
+			client:sendError(_("Du kannst die Rechte von Rang %s nicht verändern.", client, rank))
+			error = true
+		else
+			if rank >= PERMISSIONS_INFO[perm][2][type] then
+				instance.m_RankPermissions[tostring(rank)][perm] = state
+			else
+				error = true
+			end
+		end
+						
+		if type == "group" then
+			instance:saveRankSettings()
+		end
+	elseif permissionsType == "action" then
+		if not self:hasPlayerPermissionsTo(client, type, "editActionPermissions") then 
+			client:sendError(_("Du bist nicht berechtigt die Aktionsrechte zu verändern!", client)) 
+			return 
+		end
+
+		if rank == self.m_LeaderRank[type] or rank > instance:getPlayerRank(client) then 
+			client:sendError(_("Du kannst die Aktionsrechte von Rang %s nicht verändern.", client, rank))
+			error = true
+		else
+			if rank >= ACTION_PERMISSIONS_INFO[perm][2][type] then
+				instance.m_RankActions[tostring(rank)][perm] = state
+			else
+				error = true
+			end
+		end
+	elseif permissionsType == "weapon" then
+		if not self:hasPlayerPermissionsTo(client, type, "editWeaponPermissions") then 
+			client:sendError(_("Du bist nicht berechtigt die Waffenrechte zu verändern!", client)) 
+			return 
+		end
+
+		if rank == self.m_LeaderRank[type] or rank > instance:getPlayerRank(client) then 
+			client:sendError(_("Du kannst die Aktionsrechte von Rang %s nicht verändern.", client, rank))
+			error = true
+		else
+			instance.m_RankWeapons[tostring(rank)][tostring(perm)] = fromboolean(toboolean(state))
+		end
+	end
+
+	for i, player in pairs(instance:getOnlinePlayers()) do
+		self:syncPermissions(player, type)
+	end
+
+	local text = error and "Einige Rechte konnten nicht geändert werden." or "Rechte erfolgreich geändert."
+	client:sendInfo(_("%s", client, text))
+	self:addLog(instance, client, permissionsType)
+
+	self:Event_requestRankPermissionsList(permissionsType, type, client)
 end
 
 function PermissionsManager:Event_changeRankPermissions(permissionsType, tbl, type)
@@ -190,6 +266,22 @@ function PermissionsManager:Event_changeRankPermissions(permissionsType, tbl, ty
 					else
 						error = true
 					end
+				end
+			end
+		end
+	elseif permissionsType == "weapon" then
+		if not self:hasPlayerPermissionsTo(client, type, "editWeaponPermissions") then 
+			client:sendError(_("Du bist nicht berechtigt die Waffenrechte zu verändern!", client)) 
+			return 
+		end
+
+		for rank, info in pairs(tbl) do
+			if rank == self.m_LeaderRank[type] or rank > instance:getPlayerRank(client) then 
+				client:sendError(_("Du kannst die Aktionsrechte von Rang %s nicht verändern.", client, rank))
+				error = true
+			else
+				for name, state in pairs(info) do
+					instance.m_RankWeapons[tostring(rank)][tostring(name)] = (isNan(state) and state == true and 1 or 0) or state
 				end
 			end
 		end
