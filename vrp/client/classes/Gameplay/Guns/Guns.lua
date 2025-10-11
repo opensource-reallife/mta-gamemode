@@ -210,6 +210,11 @@ function Guns:Event_onClientPlayerDamage(attacker, weapon, bodypart, loss)
 			end
 		end
 	else
+		if attacker and isPedInVehicle(attacker) and not isPedInVehicle(source) then 
+			cancelEvent()
+			outputDebug("canceling drive by damage (from: "..attacker:getName()..") to walking player (to: "..source:getName()..")")
+			return
+		end
 		if attacker and weapon and source == localPlayer and attacker.getPublicSync and attacker:getPublicSync("supportMode") and weapon == 0 then
 			-- source:setAnimation("fight_c", "hitc_3", -1, false, true, true, true, 250, true)
 			localPlayer:setVelocity(0, 0, 0.2)
