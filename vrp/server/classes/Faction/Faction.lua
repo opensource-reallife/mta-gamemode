@@ -324,8 +324,9 @@ function Faction:changeSkin(player, skinId)
 				player:setData("Faction:InSpecialDuty", nil, true)
 			end
 
-			if player:getWeapon(3) == 27 then
+			if player:getWeapon(3) == 27 or player:getWeapon(6) == 34 then
 				self:storageWeapons(player, {[27] = true})
+				self:storageWeapons(player, {[34] = true})
 			end
 		end
 	else

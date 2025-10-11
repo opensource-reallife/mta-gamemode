@@ -70,7 +70,7 @@ function FactionWeaponShopGUI:Event_updateFactionWeaponShopGUI(validWeapons, dep
 	end
 	for k,v in pairs(self.m_SpecialWeapons) do
 		if v == true then
-			if k == 27 then
+			if k == 27 or k == 34 then
 				if localPlayer:getData("Faction:InSpecialDuty") or localPlayer:getFaction():isEvilFaction() then
 					self:addWeaponToGUI(k, depotWeapons[k]["Waffe"], depotWeapons[k]["Munition"])	
 				end
