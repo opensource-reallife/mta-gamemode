@@ -49,7 +49,7 @@ function JobManager:constructor()
 	)
 
 	nextframe(bind(self.refreshJobMultiplicators, self))
-	self.m_TimedPulse = TimedPulse:new(1000*60*120)
+	self.m_TimedPulse = TimedPulse:new(JOBMULT_REFRESH_TIME*1000*60)
 	self.m_TimedPulse:registerHandler(bind(self.refreshJobMultiplicators, self))
 end
 

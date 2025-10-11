@@ -124,6 +124,10 @@ function ServerSettings:constructor()
 			ROULETTE_REROLL_CHANCE = tonumber(row.Value)
 		end
 
+		if row.Index == "JobMultRefreshTime" then
+			JOBMULT_REFRESH_TIME = tonumber(row.Value)
+		end
+
 		self.m_Settings[row.Index] = row.Value
 	end
 end
