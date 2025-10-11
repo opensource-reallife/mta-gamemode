@@ -356,10 +356,16 @@ function StatisticsLogger:onDebugMessageLog(message, level, file, line)
 		sqlLogs:getPrefix(), message, level, file, line)
 end
 
-function StatisticsLogger:GroupBuyImmoLog( groupId, action, immo)
+function StatisticsLogger:GroupBuyImmoLog(groupId, action, immo)
 	if not tonumber(groupId) then return end
-	sqlLogs:queryExec("INSERT INTO ??_GroupImmo (GroupId, Aktion, ImmoId,  Date ) VALUES(?, ?, ?,  NOW())",
+	sqlLogs:queryExec("INSERT INTO ??_GroupImmo (GroupId, Aktion, ImmoId, Date ) VALUES(?, ?, ?, NOW())",
         sqlLogs:getPrefix(), groupId, action, immo)
+end
+
+function StatisticsLogger:addDutyLog(userid, group, groupType, action)
+	if not tonumber(userid) then return end
+	sqlLogs:queryExec("INSERT INTO ??_Duty (UserId, GroupType, GroupId, State, Date ) VALUES(?, ?, ?, ?, NOW())",
+        sqlLogs:getPrefix(), userid, group, groupType, action)
 end
 
 

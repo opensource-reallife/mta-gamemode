@@ -839,12 +839,14 @@ function Player:setFactionDuty(state)
 	self:setPublicSync("Faction:Duty", state)
 	self.m_FactionDuty = state
 	self:reloadBlips()
+	StatisticsLogger:getSingleton():addDutyLog(self:getId(), "faction", self:getFaction():getId(), state)
 end
 
 function Player:setCompanyDuty(state)
 	self:setPublicSync("Company:Duty", state)
 	self.m_CompanyDuty = state
 	self:reloadBlips()
+	StatisticsLogger:getSingleton():addDutyLog(self:getId(), "company", self:getCompany():getId(), state)
 end
 
 function Player:setJobDutySkin(skin)
