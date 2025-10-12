@@ -130,6 +130,10 @@ function Guns:Event_onClientDamage(target, weapon, bodypart, loss, isMelee)
 	if not target or not attacker or not isElement(target) or not isElement(attacker) then
 		return
 	end
+	if attacker:isInVehicle() and not (target:isInVehicle() or target:getPrivateSync("isAttachedToVehicle")) then
+		outputDebug("canceling drive by damage (from: "..attacker:getName()..") to walking player (to: "..target:getName()..")")
+		return
+	end
 	if client:getData("isInDeathMatch") and target:getData("isInDeathMatch") then
 		if not DeathmatchManager:getSingleton():isDamageAllowed(target, attacker, weapon) then return end
 	end
