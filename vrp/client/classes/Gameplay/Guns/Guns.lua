@@ -210,7 +210,7 @@ function Guns:Event_onClientPlayerDamage(attacker, weapon, bodypart, loss)
 			end
 		end
 	else
-		if attacker and isPedInVehicle(attacker) and not isPedInVehicle(source) then 
+		if (attacker and isPedInVehicle(attacker) and not isPedInVehicle(source)) or (attacker and isPedInVehicle(attacker) and source:getPrivateSync("isAttachedToVehicle")) then 
 			cancelEvent()
 			outputDebug("canceling drive by damage (from: "..attacker:getName()..") to walking player (to: "..source:getName()..")")
 			return
