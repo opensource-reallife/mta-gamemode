@@ -494,6 +494,7 @@ function MechanicTow:Event_mechanicAttachBike(vehicle)
 	if not client:isCompanyDuty() then return end
 	if not client.vehicle then return end
 	if client.vehicle:getData("towingBike") then return end
+	if not VEHICLES_THAT_CAN_TOW_BIKES[client.vehicle:getModel()] then return end
 
 	if vehicle and vehicle:isEmpty() then
 		if self:isValidTowableVehicle(vehicle) then

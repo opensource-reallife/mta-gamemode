@@ -486,7 +486,7 @@ function VehicleMouseMenu:constructor(posX, posY, element)
 				):setIcon(FontAwesomeSymbols.Cogs)
 			end
 
-			if localPlayer.vehicle and localPlayer.vehicle:getData("OwnerName") == localPlayer:getCompany():getName() then
+			if localPlayer.vehicle and localPlayer.vehicle:getData("OwnerName") == localPlayer:getCompany():getName() and VEHICLES_THAT_CAN_TOW_BIKES[localPlayer.vehicle:getModel()]then
 				if (element:getVehicleType() == VehicleType.Bike or VEHICLE_BIKES[element:getModel()]) and element:isEmpty() and not localPlayer.vehicle:getData("towingBike") then
 					self:addItem(_("Mechaniker: %s aufladen", element:getVehicleType() == VehicleType.Bike and "Motorrad" or "Fahrrad"),
 						function()
