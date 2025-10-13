@@ -362,10 +362,10 @@ function StatisticsLogger:GroupBuyImmoLog(groupId, action, immo)
         sqlLogs:getPrefix(), groupId, action, immo)
 end
 
-function StatisticsLogger:addDutyLog(userid, group, groupType, action)
+function StatisticsLogger:addDutyLog(userid, groupType, group, action)
 	if not tonumber(userid) then return end
 	sqlLogs:queryExec("INSERT INTO ??_Duty (UserId, GroupType, GroupId, State, Date ) VALUES(?, ?, ?, ?, NOW())",
-        sqlLogs:getPrefix(), userid, group, groupType, action)
+        sqlLogs:getPrefix(), userid, groupType, group, action)
 end
 
 
