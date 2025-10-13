@@ -71,12 +71,16 @@ function ShopVehicleRobManager:Event_onVehicleSteal()
 				client:sendError(_("Dieser Shop kann erst am/um überfallen werden: %s!", client, getOpticalTimestamp(ShopManager.VehicleShopsMap[source:getData("ShopId")].m_LastRob+SHOP_VEHICLE_ROB_PAUSE_SAME_SHOP)))
 				return false
 			end
-			if  not SHOP_VEHICLE_ROB_IS_STARTABLE then
+			if not SHOP_VEHICLE_ROB_IS_STARTABLE then
 				client:sendError(_("Es läuft bereits ein Autohaus-Überfall!", client))
 				return false
 			end
 			if FactionState:getSingleton():countPlayers(true, false) < SHOP_VEHICLE_ROB_MIN_MEMBERS then
 				client:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!", client, SHOP_VEHICLE_ROB_MIN_MEMBERS))
+				return false
+			end
+			if toboolean(ShopManager.VehicleShopsMap[source:getData("ShopId")].m_RandomizeStock) then
+				client:sendError(_("Du kannst dieses Fahrzeug nicht stehlen!", client))
 				return false
 			end
 			self.m_CurrentRob = ShopVehicleRob:new(client, source)

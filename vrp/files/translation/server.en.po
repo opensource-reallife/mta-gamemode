@@ -5119,3 +5119,6 @@ msgstr "You cannot sell drugs while you are on duty!"
 
 msgid "Du kannst während du im Dienst bist, kein Diebesgut verkaufen!"
 msgstr "You cannot sell stolen goods while you are on duty!"
+
+msgid "Du kannst dieses Fahrzeug nicht stehlen!"
+msgstr "You can't steal this vehicle!"
