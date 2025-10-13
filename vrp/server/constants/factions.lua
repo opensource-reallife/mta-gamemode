@@ -98,7 +98,7 @@ factionSpecialWeapons[1] = {
 	["Equipment"] = {},
 }
 factionWTDestination[1] = Vector3(1588.28, -1627.34, 12.38)
-factionSWTDestination[1] = Vector3(145.95, 1917.67, 17.58)
+factionSWTDestination[1] = Vector3(2309.46, 2454.23, 10.82)
 factionSpawnpoint[1] = {Vector3(1558.31, -1684.71, 16.20), 0, 0}
 factionAirDropPoint[1] = Vector3(281.39, 2501.79, 16.48)
 factionNavigationpoint[1] = Vector3(1552.278, -1675.725, 12.6)
@@ -136,7 +136,7 @@ factionSpecialWeapons[2] = {
 	["Equipment"] = {},
 }
 factionWTDestination[2] = Vector3(1588.28, -1627.34, 12.38)
-factionSWTDestination[2] = Vector3(145.95, 1917.67, 17.58)
+factionSWTDestination[2] = Vector3(2309.46, 2454.23, 10.82)
 factionSpawnpoint[2] = {Vector3(1784.53, -1538.81, 9.82), 0, 0}
 factionAirDropPoint[2] = Vector3(281.39, 2501.79, 16.48)
 factionNavigationpoint[2] = Vector3(1805.53, -1575.35, 13)
@@ -175,7 +175,7 @@ factionSpecialWeapons[3] = {
 	["Equipment"] = {},
 }
 factionWTDestination[3] = Vector3(1588.28, -1627.34, 12.38)
-factionSWTDestination[3] = Vector3(145.95, 1917.67, 17.58)
+factionSWTDestination[3] = Vector3(2309.46, 2454.23, 10.82)
 factionSpawnpoint[3] = {Vector3(221.49, 1865.97, 13.14), 0, 0}
 factionAirDropPoint[3] = Vector3(281.39, 2501.79, 16.48)
 factionNavigationpoint[3] = Vector3(134.53, 1929.06, 12.6)
