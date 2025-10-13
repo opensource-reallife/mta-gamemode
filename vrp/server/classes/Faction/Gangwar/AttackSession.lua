@@ -104,7 +104,7 @@ function AttackSession:synchronizeAllParticipants( )
 	local canModify = false 
 	local showPickGUI = false
 	for k,v in ipairs( self.m_Participants ) do
-		canModify = v == self.m_AttackingPlayer or v:getFaction():getPlayerRank(v) >= 3
+		canModify = v == self.m_AttackingPlayer or (v:getFaction() and v:getFaction():getPlayerRank(v)) >= 3
 		showPickGUI = v:getFaction() == self.m_Faction1 
 		v:triggerEvent("AttackClient:launchClient",self.m_Faction1,self.m_Faction2,self.m_Participants,self.m_Disqualified, GANGWAR_MATCH_TIME*60, self.m_AreaObj.m_Position, self.m_AreaObj.m_ID, false, self.m_AreaObj.m_Name, canModify, pickParticipants, showPickGUI )
 		v:triggerEvent("GangwarQuestion:new")
