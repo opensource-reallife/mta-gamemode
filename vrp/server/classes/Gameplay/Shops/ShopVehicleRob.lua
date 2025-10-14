@@ -21,6 +21,9 @@ function ShopVehicleRob:constructor(robber, vehicle)
 	self.m_Timer = setTimer(bind(self.onTimeUp, self), SHOP_VEHICLE_ROB_MAX_TIME*1000, 1)
 	self.m_VehicleShopPrice = self.m_Shop.m_VehicleList[self.m_Vehicle:getModel()][self.m_VehicleIndex].price
 
+	self.m_ShowDown = false
+	self.m_TimerUntilShowdown = setTimer(bind(self.showdown, self), SHOP_VEHICLE_ROB_MAX_TIME*1000 - MINUTE_TO_SHOWDOWN, 1)
+
 	setVehicleDamageProof(self.m_Vehicle, false)
 	self.m_Vehicle:setData("Vehicle:Stolen", true, true)
 	self.m_Shop.m_Ped:setDimension(PRIVATE_DIMENSION_SERVER)
@@ -53,6 +56,10 @@ function ShopVehicleRob:destructor()
 	self.m_Vehicle:fix()
 	self.m_Vehicle:setData("Vehicle:Stolen", false, true)
 	self.m_Vehicle:setData("Vehicle:LockIsPicked", false, true)
+
+	if self.m_VehicleBlip then
+		delete(self.m_VehicleBlip)
+	end
 
 	for i, v in pairs(getVehicleOccupants(self.m_Vehicle)) do
 		removePedFromVehicle(v)
@@ -310,4 +317,22 @@ function ShopVehicleRob:onEstimatePedClick(button, state, player)
 			end
 		end
 	end
+end
+
+function ShopVehicleRob:showdown() 
+	self.m_ShowDown = true
+	self.m_VehicleBlip = self:createBlip(self.m_Vehicle, "Fahrzeug", self.m_Vehicle)
+end
+
+function ShopVehicleRob:createBlip(ele, text, attachedTo, marker, color)
+	color = color and color or BLIP_COLOR_CONSTANTS.Red
+	marker = marker == nil and "Marker.png" or marker
+	local blip = Blip:new(marker, ele.position.x, ele.position.y, {factionType = "State", duty = true, group = self.m_Gang:getId()}, 9999, color)
+	if (attachedTo) then
+		blip:attachTo(attachedTo)
+	end
+	if (text) then
+		blip:setDisplayText(text)
+	end
+	return blip
 end
