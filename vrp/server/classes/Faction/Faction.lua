@@ -10,7 +10,7 @@ Faction = inherit(Object)
 
 -- implement by children
 
-function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, players, rankLoans, rankSkins, rankWeapons, depotId, factionType, diplomacy, rankPermissions, rankActions, playerLimit, maxVehicles, vehicleLimits, discordRole)
+function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, players, rankLoans, rankSkins, rankWeapons, depotId, factionType, diplomacy, rankPermissions, rankActions, playerLimit, maxVehicles, vehicleLimits, discordRole, actionSplits)
 	self.m_Id = Id
 	self.m_Name_Short = name_short
 	self.m_ShorterName = name_shorter
@@ -47,6 +47,7 @@ function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, 
 	
 	self.m_GangwarAttackCheck = {}
 
+	if actionSplits == "" or not actionSplits then	actionSplits = {} end
 	if rankLoans == "" then	rankLoans = {} for i=0,6 do rankLoans[i] = 0 end rankLoans = toJSON(rankLoans) outputDebug("Created RankLoans for faction "..Id) end
 	if rankSkins == "" then	rankSkins = {} for i=0,6 do rankSkins[i] = self:getRandomSkin() end rankSkins = toJSON(rankSkins) outputDebug("Created RankSkins for faction "..Id) end
 	if rankWeapons == "" then rankWeapons = {} for i=0,6 do rankWeapons[i] = {} for wi=0,46 do rankWeapons[i][wi] = 0 end end rankWeapons = toJSON(rankWeapons) outputDebug("Created RankWeapons for faction "..Id) end
@@ -59,6 +60,7 @@ function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, 
 	self.m_RankPermissions = fromJSON(rankPermissions)
 	self.m_RankActions = fromJSON(rankActions)
 	self.m_Type = factionType
+	self.m_ActionSplits = fromJSON(actionSplits)
 
 	self.m_Depot = Depot.load(depotId, self, "faction")
 
@@ -170,7 +172,7 @@ function Faction:save()
 	if self.m_Settings then
 		self.m_Settings:save()
 	end
-	if sql:queryExec("UPDATE ??_factions SET RankLoans = ?, RankSkins = ?, RankWeapons = ?, RankPermissions = ?, RankActions = ?, BankAccount = ?, Depot = ?, Diplomacy = ? WHERE Id = ?", sql:getPrefix(), toJSON(self.m_RankLoans), toJSON(self.m_RankSkins), toJSON(self.m_RankWeapons), toJSON(self.m_RankPermissions), toJSON(self.m_RankActions), self.m_BankAccount:getId(), self.m_Depot:getId(), diplomacy, self.m_Id) then
+	if sql:queryExec("UPDATE ??_factions SET RankLoans = ?, RankSkins = ?, RankWeapons = ?, RankPermissions = ?, RankActions = ?, BankAccount = ?, Depot = ?, Diplomacy = ?, ActionSplits = ? WHERE Id = ?", sql:getPrefix(), toJSON(self.m_RankLoans), toJSON(self.m_RankSkins), toJSON(self.m_RankWeapons), toJSON(self.m_RankPermissions), toJSON(self.m_RankActions), self.m_BankAccount:getId(), self.m_Depot:getId(), diplomacy, toJSON(self.m_ActionSplits or {}), self.m_Id) then
 	else
 		outputDebug(("Failed to save Faction '%s' (Id: %d)"):format(self:getName(), self:getId()))
 	end
@@ -1173,4 +1175,21 @@ function Faction:getAllSpecialSkins(first)
 	end
 
 	return tab
+end
+
+function Faction:getActionSplits()
+	return self.m_ActionSplits
+end
+
+function Faction:getActionSplit(type)
+	return self.m_ActionSplits[type]
+end
+
+function Faction:setActionSplits(splits)
+	self.m_ActionSplits = splits
+end
+
+function Faction:setActionSplit(name, split)
+	if not name or not split then return end
+	self.m_ActionSplits[name] = split
 end

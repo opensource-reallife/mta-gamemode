@@ -181,6 +181,7 @@ function WeaponTruck:destructor()
 	end
 
 	for faction, data in pairs(self.m_DeliveryInfos) do
+		ActionMoneySplitManager:getSingleton():splitMoney(faction, "WeaponTruck", data.money)
 		local wtName = self.m_StartFaction:isStateFaction() and "Staatswaffentruck" or "Waffentruck"
 		local temp = faction == self.m_StartFaction and "abgegeben" or "gestohlen"
 		faction:addLog(-1, "Aktion", ("%s: Es wurden %s/%s Kisten erfolgreich %s. Davon waren %s."):format(wtName, data.boxCount, self.m_BoxesCount, temp, toMoneyString(data.money)))

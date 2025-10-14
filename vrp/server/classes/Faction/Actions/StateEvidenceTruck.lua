@@ -98,7 +98,8 @@ function StateEvidenceTruck:destructor()
 	end
 
 	for faction, data in pairs(self.m_DeliveryInfos) do
-		faction:addLog(-1, "Aktion", ("Asservatentruck: Es wurden %s/%s Säcke voller Asservaten (%s) erfolgreich %s."):format(data.boxCount, StateEvidenceTruck.MoneyBagSpawns, toMoneyString(data.money), faction:isStateFaction() and "sichergestellt" or "gestohlen"))
+		ActionMoneySplitManager:getSingleton():splitMoney(faction, "StateEvidenceTruck", data.money)
+		faction:addLog(-1, "Aktion", ("Asservatentruck: Es wurden %s/%s Säcke voller Asservaten (%s) erfolgreich %s."):format(data.bagCount, StateEvidenceTruck.MoneyBagSpawns, toMoneyString(data.money), faction:isStateFaction() and "sichergestellt" or "gestohlen"))
 	end
 
 	if (self.m_MoneyBagBlips) then

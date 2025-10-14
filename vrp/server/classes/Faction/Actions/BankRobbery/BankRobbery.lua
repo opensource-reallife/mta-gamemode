@@ -164,6 +164,7 @@ function BankRobbery:destroyRob()
 		end
 	end
 	for faction, data in pairs(self.m_DeliveryInfos) do
+		ActionMoneySplitManager:getSingleton():splitMoney(faction, "BankRobbery", data.money)
 		faction:addLog(-1, "Aktion", ("%s: Es wurde %s %s."):format(self.m_RobName, toMoneyString(data.money), faction:isStateFaction() and "sichergestellt" or "eingenommen"))
 	end
 

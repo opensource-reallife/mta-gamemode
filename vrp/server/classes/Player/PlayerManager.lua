@@ -1262,7 +1262,7 @@ function PlayerManager:Event_requestPlayerWeaponInfo()
 end
 
 function PlayerManager:Event_DecreaseHunger()
-	if client:getPublicSync("supportMode") then return end
+	if client:getPublicSync("supportMode") or DEBUG then return end
 	local loss = Randomizer:get(25, 75) / 100
 	if client.m_LessHunger then loss = loss / 2 end
 	client:setHunger(client:getHunger() - loss)

@@ -185,11 +185,16 @@ function FactionGUI:addLeaderTab()
 		self.m_ChangePermissions = GUIButton:new(self.m_Width*0.02, self.m_Height*0.75, self.m_Width*0.4, self.m_Height*0.07, _"Rechteverwaltung", self.m_TabLeader):setBarEnabled(true)
 		self.m_ChangePermissions.onLeftClick = bind(self.openPermissionsGUI, self, "permission")
 		self.m_ChangePermissions:setEnabled((PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changePermissions") or PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editActionPermissions") or PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editWeaponPermissions")) and true or false)
-
+		
 		-- self.m_ChangeActionPermissions = GUIButton:new(self.m_Width*0.02, self.m_Height*0.845, self.m_Width*0.4, self.m_Height*0.07, _"Aktionsstartberechtigungen", self.m_TabLeader):setBarEnabled(true)
 		-- self.m_ChangeActionPermissions.onLeftClick = bind(self.openPermissionsGUI, self, "action")
 		-- self.m_ChangeActionPermissions:setEnabled(false)
-
+		
+		if (localPlayer:getPublicSync("FactionId") and localPlayer:getPublicSync("FactionId") ~= 4) then
+			self.m_ChangeActionMoneySplit = GUIButton:new(self.m_Width*0.02, self.m_Height*0.84, self.m_Width*0.4, self.m_Height*0.07, _"Aktionsbeteiligung", self.m_TabLeader):setBarEnabled(true)
+			self.m_ChangeActionMoneySplit.onLeftClick = bind(self.openActionMoneySplitGUI, self)
+			self.m_ChangeActionMoneySplit:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changeActionMoneySplit"))
+		end
 		-- GUILabel:new(self.m_Width*0.45, self.m_Height*0.35, self.m_Width*0.4, self.m_Height*0.06, _"Waffen:", self.m_TabLeader):setFont(VRPFont(30)):setColor(Color.Accent)
 
 		self:refreshLeaderTab()
@@ -856,5 +861,11 @@ function FactionGUI:factionPlayerPermissionsButton_Click()
 				PlayerPermissionsGUI:new("weapon", selectedItem.Rank, "faction", selectedItem.Id)
 			end)
 		end
+	end
+end
+
+function FactionGUI:openActionMoneySplitGUI()
+	if PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changeActionMoneySplit") then
+		ActionMoneySplitGUI:new()
 	end
 end
