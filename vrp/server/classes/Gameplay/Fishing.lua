@@ -72,7 +72,7 @@ function Fishing:updateStatistics()
 	end
 end
 
-function Fishing:getFish(location, timeOfDay, weather, season, playerLevel, fishingRodEquipments)
+function Fishing:getFish(location, timeOfDay, raining, season, playerLevel, fishingRodEquipments)
 	local tmp = {}
 
 	for _, v in pairs(Fishing.Fish) do
@@ -121,11 +121,11 @@ function Fishing:getFish(location, timeOfDay, weather, season, playerLevel, fish
 		if v.Weather == 0 then			-- Any
 			checkWeather = true
 		elseif v.Weather == 1 then		-- Sunny
-			if weather ~= 8 then
+			if not raining then
 				checkWeather = true
 			end
 		elseif v.Weather == 2 then		-- Rainy
-			if weather == 8 then
+			if raining then
 				checkWeather = true
 			end
 		end
@@ -212,7 +212,7 @@ function Fishing:FishHit(location, castPower)
 	if not self.m_Players[client] then return end
 
 	local time = tonumber(("%s%.2d"):format(getRealTime().hour, getRealTime().minute))
-	local weather = getWeather()
+	local raining = (getRainLevel() or 0) == 0 and false or true
 	local season = getCurrentSeason()
 	local playerLevel = client:getPrivateSync("FishingLevel")
 	local fishingRodName = self.m_Players[client].fishingRodName
@@ -225,7 +225,7 @@ function Fishing:FishHit(location, castPower)
 		self.m_Players[client].lastBait = nil
 	end
 
-	local fish = self:getFish(location, time, weather, season, playerLevel, {baitName, accessorieName})
+	local fish = self:getFish(location, time, raining, season, playerLevel, {baitName, accessorieName})
 	if not fish then
 		client:triggerEvent("onFishingBadCatch")
 		local randomMessage 
@@ -677,13 +677,13 @@ end
 
 --[[
 addCommandHandler("testFish",
-	function(player, cmd, location, weather, season, level, bait, accessorie)
+	function(player, cmd, location, raining, season, level, bait, accessorie)
 		local fish = Fishing:getSingleton()
-		outputConsole(("Location: %s\nWeather: %s\nSeason: %s\nLevel: %s\nBait: %s\nAccessorie: %s"):format(location, weather, season, level, tostring(bait and bait or "keine"), tostring(accessorie and accessorie or "keine")))
+		outputConsole(("Location: %s\nRaining: %s\nSeason: %s\nLevel: %s\nBait: %s\nAccessorie: %s"):format(location, raining, season, level, tostring(bait and bait or "keine"), tostring(accessorie and accessorie or "keine")))
 		outputConsole("Uhrzeit, Anzahl")
 		for i = 1, 24 do
 			local time = tonumber(("%s%.2d"):format(i, 0))
-			local count = fish:getFish(location, time, weather, tonumber(season), tonumber(level), {bait and bait or false, accessorie and accessorie or false})
+			local count = fish:getFish(location, time, raining, tonumber(season), tonumber(level), {bait and bait or false, accessorie and accessorie or false})
 			outputConsole(("%s, %s"):format(time, count))
 		end
 	end

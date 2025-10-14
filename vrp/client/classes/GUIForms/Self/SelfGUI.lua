@@ -1071,7 +1071,7 @@ function SelfGUI:onSettingChange(setting)
 		end
 
 	elseif setting == "Spawn" then
-		GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.07, _"Spawn nach Login", self.m_SettingBG)
+		GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.07, _"Spawnposition (beim Login)", self.m_SettingBG)
 
 		self.m_Default = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.1, self.m_Width*0.30, self.m_Height*0.04, _"Letzter Standort", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
 		self.m_Noobspawn = GUICheckbox:new(self.m_Width*0.33, self.m_Height*0.1, self.m_Width*0.30, self.m_Height*0.04, _"Stadthalle", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
@@ -1107,10 +1107,11 @@ function SelfGUI:onSettingChange(setting)
 		self.m_CompanyBase.onChange = function() uncheckAll() self.m_CompanyBase:setChecked(true) triggerServerEvent("onPlayerUpdateSpawnLocation", localPlayer, SPAWN_LOCATIONS.COMPANY_BASE) end
 		self.m_GroupBase.onChange = function() uncheckAll() self.m_GroupBase:setChecked(true) triggerServerEvent("onPlayerUpdateSpawnLocation", localPlayer, SPAWN_LOCATIONS.GROUP_BASE) end
 
+		GUILabel:new(self.m_Width*0.02, self.m_Height*0.36, self.m_Width*0.6, self.m_Height*0.055, _"Nutze das Klicksystem bzw. das Hausmenü um den Spawnpunkt für ein Fahrzeug oder Haus festzulegen!", self.m_SettingBG)
 
-		GUILabel:new(self.m_Width*0.02, self.m_Height*0.38, self.m_Width*0.8, self.m_Height*0.07, _"Spawn nach Tod (Fraktion)", self.m_SettingBG)
+		GUILabel:new(self.m_Width*0.02, self.m_Height*0.50, self.m_Width*0.8, self.m_Height*0.07, _"Spawneinstellungen (Fraktion)", self.m_SettingBG)
 
-		self.m_RescueSpawn = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.46, self.m_Width*0.35, self.m_Height*0.04, _"Am Krankenhaus spawnen", self.m_SettingBG)
+		self.m_RescueSpawn = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.58, self.m_Width*0.6, self.m_Height*0.04, _"Am Krankenhaus spawnen (nach Tod)", self.m_SettingBG)
 		self.m_RescueSpawn:setFont(VRPFont(25))
 		self.m_RescueSpawn:setFontSize(1)
 		self.m_RescueSpawn:setChecked(core:get("Other", "RescueSpawnAfterDeath", false))
@@ -1118,10 +1119,7 @@ function SelfGUI:onSettingChange(setting)
 			core:set("Other", "RescueSpawnAfterDeath", state)
 		end
 
-		GUILabel:new(self.m_Width*0.02, self.m_Height*0.56, self.m_Width*0.8, self.m_Height*0.07, _"Spawn nach Knast (Fraktion)", self.m_SettingBG)
-
-		self.m_JailSpawn = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.64, self.m_Width*0.60, self.m_Height*0.04, _"In Fraktionsbasis spawnen (250$)", self.m_SettingBG)
-		self.m_JailSpawn:setEnabled(localPlayer:isPremium())
+		self.m_JailSpawn = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.64, self.m_Width*0.6, self.m_Height*0.04, _"In Fraktionsbasis spawnen (250$) (nach Knast)", self.m_SettingBG)
 		self.m_JailSpawn:setFont(VRPFont(25))
 		self.m_JailSpawn:setFontSize(1)
 		self.m_JailSpawn:setChecked(core:get("Other", "SpawnAfterJail", false))
@@ -1129,8 +1127,16 @@ function SelfGUI:onSettingChange(setting)
 			core:set("Other", "SpawnAfterJail", state)
 			setElementData(localPlayer, "SpawnAfterJail", state, true)
 		end
-
-		GUILabel:new(self.m_Width*0.02, self.m_Height*0.75, self.m_Width*0.7, self.m_Height*0.055, _"Nutze das Klicksystem bzw. das Hausmenü um den Spawnpunkt für ein Fahrzeug oder Haus festzulegen!", self.m_SettingBG)
+		
+		self.m_SkinSpawn = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.7, self.m_Width*0.8, self.m_Height*0.04, _"Im Fraktionsdienst spawnen (nur B-Fraktionen)", self.m_SettingBG)
+		self.m_SkinSpawn:setEnabled(localPlayer:getFaction() and localPlayer:getFaction():isEvilFaction())
+		self.m_SkinSpawn:setFont(VRPFont(25))
+		self.m_SkinSpawn:setFontSize(1)
+		self.m_SkinSpawn:setChecked(core:get("HUD", "spawnFactionSkin", true))
+		self.m_SkinSpawn.onChange = function (bool)
+			core:set("HUD", "spawnFactionSkin", bool)
+			triggerServerEvent("switchSpawnWithFactionSkin",localPlayer, bool)
+		end
 	elseif setting == "Nametag/Reddot" then
 		GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.07, "Nametag", self.m_SettingBG)
 		self.m_NametagChange = GUIChanger:new(self.m_Width*0.02, self.m_Height*0.09, self.m_Width*0.35, self.m_Height*0.07, self.m_SettingBG)
@@ -1253,18 +1259,9 @@ function SelfGUI:onSettingChange(setting)
 		end
 		self.m_RadarChange:setIndex(core:get("HUD", "CursorMode", 0) + 1, true)
 
-		GUILabel:new(self.m_Width*0.02, self.m_Height*0.19, self.m_Width*0.8, self.m_Height*0.07, _"Sonstiges", self.m_SettingBG)
+		GUILabel:new(self.m_Width*0.02, self.m_Height*0.18, self.m_Width*0.8, self.m_Height*0.07, _"Sonstiges", self.m_SettingBG)
 
-		self.m_SkinSpawn = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.25, self.m_Width*0.8, self.m_Height*0.04, _"Mit Fraktionsskin spawnen", self.m_SettingBG)
-		self.m_SkinSpawn:setFont(VRPFont(25))
-		self.m_SkinSpawn:setFontSize(1)
-		self.m_SkinSpawn:setChecked(core:get("HUD", "spawnFactionSkin", true))
-		self.m_SkinSpawn.onChange = function (bool)
-			core:set("HUD", "spawnFactionSkin", bool)
-			triggerServerEvent("switchSpawnWithFactionSkin",localPlayer, bool)
-		end
-
-		self.m_HeadLook = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.31, self.m_Width*0.8, self.m_Height*0.04, _"Kopf in Kamerarichtung bewegen", self.m_SettingBG)
+		self.m_HeadLook = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.26, self.m_Width*0.8, self.m_Height*0.04, _"Kopf in Kamerarichtung bewegen", self.m_SettingBG)
 		self.m_HeadLook:setFont(VRPFont(25))
 		self.m_HeadLook:setFontSize(1)
 		self.m_HeadLook:setChecked(core:get("Other", "Movehead", true))
@@ -1277,20 +1274,21 @@ function SelfGUI:onSettingChange(setting)
 			end
 		end
 
-		self.m_GangwarTabView = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.37, self.m_Width*0.9, self.m_Height*0.04, _"Gangwar-Ansicht beim Spielerboard", self.m_SettingBG)
+		self.m_GangwarTabView = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.32, self.m_Width*0.9, self.m_Height*0.04, _"Gangwar-Ansicht beim Spielerboard", self.m_SettingBG)
 		self.m_GangwarTabView:setFont(VRPFont(25))
 		self.m_GangwarTabView:setFontSize(1)
 		self.m_GangwarTabView:setChecked(core:get("Other", "GangwarTabView", true))
 		self.m_GangwarTabView.onChange = function (state)
 			core:set("Other", "GangwarTabView", state)
 		end
+		
 		if core:get("Other","RenderDistance", 922) then
 			setFarClipDistance(math.floor(core:get("Other","RenderDistance",992)) )
 		else
 			setFarClipDistance(992)
 		end
 
-		self.m_SmokeMode = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.43, self.m_Width*0.9, self.m_Height*0.04, _"Low-Modus für Rauch", self.m_SettingBG)
+		self.m_SmokeMode = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.38, self.m_Width*0.9, self.m_Height*0.04, _"Low-Modus für Rauch", self.m_SettingBG)
 		self.m_SmokeMode:setFont(VRPFont(25))
 		self.m_SmokeMode:setFontSize(1)
 		self.m_SmokeMode:setChecked(core:get("Other", "SmokeLowMode", false))
@@ -1303,12 +1301,25 @@ function SelfGUI:onSettingChange(setting)
 			end
 		end
 
-		GUILabel:new(self.m_Width*0.02, self.m_Height*0.52, self.m_Width*0.8, self.m_Height*0.07, _"Sichtweite", self.m_SettingBG)
+		self.m_Rain = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.44, self.m_Width*0.9, self.m_Height*0.04, _"Regen ausblenden", self.m_SettingBG)
+		self.m_Rain:setFont(VRPFont(25))
+		self.m_Rain:setFontSize(1)
+		self.m_Rain:setChecked(core:get("Other", "RainHidden", false))
+		self.m_Rain.onChange = function (state)
+			core:set("Other", "RainHidden", state)
+			if state then
+				setRainLevel(0)
+			else
+				triggerServerEvent("requestRainLevel", resourceRoot)
+			end
+		end
 
-		self.m_RenderDistance = GUISlider:new(self.m_Width*0.02, self.m_Height*0.6, self.m_Width*0.6, self.m_Height*0.04, self.m_SettingBG)
+		GUILabel:new(self.m_Width*0.02, self.m_Height*0.51, self.m_Width*0.8, self.m_Height*0.07, _"Sichtweite", self.m_SettingBG)
+
+		self.m_RenderDistance = GUISlider:new(self.m_Width*0.02, self.m_Height*0.59, self.m_Width*0.6, self.m_Height*0.04, self.m_SettingBG)
 		self.m_RenderDistance:setRange(250, 9000)
 		self.m_RenderDistance:setValue( getFarClipDistance())
-		self.m_RenderDistanceLabel = GUILabel:new(self.m_Width*0.02, self.m_Height*0.64, self.m_Width*0.9, self.m_Height*0.06, _"Sichtweite:"..getFarClipDistance(), self.m_SettingBG)
+		self.m_RenderDistanceLabel = GUILabel:new(self.m_Width*0.02, self.m_Height*0.63, self.m_Width*0.9, self.m_Height*0.06, _"Sichtweite:"..getFarClipDistance(), self.m_SettingBG)
 		self.m_RenderDistanceLabel:setText("Sichtweite: "..math.floor(getFarClipDistance()))
 		self.m_RenderDistanceLabel:setAlignX("center")
 
@@ -1318,7 +1329,7 @@ function SelfGUI:onSettingChange(setting)
 			self.m_RenderDistanceLabel:setText("Sichtweite:"..math.floor(getFarClipDistance()))
 			core:set("Other","RenderDistance", math.floor(dist))
 		end
-		self.m_RenderDistanceReset = GUIButton:new(self.m_Width*0.02, self.m_Height*0.7, self.m_Width*0.6, self.m_Height*0.06, _"Sichtweite zurücksetzen!", self.m_SettingBG)
+		self.m_RenderDistanceReset = GUIButton:new(self.m_Width*0.02, self.m_Height*0.69, self.m_Width*0.6, self.m_Height*0.06, _"Sichtweite zurücksetzen!", self.m_SettingBG)
 		self.m_RenderDistanceReset.onLeftClick  = function() setFarClipDistance(992); core:set("Other","RenderDistance",992);self.m_RenderDistanceLabel:setText("Sichtweite:"..math.floor(getFarClipDistance()));self.m_RenderDistance:setValue( getFarClipDistance()) end
 		--	self.m_StartIntro = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.47, self.m_Width*0.35, self.m_Height*0.04, _"Zeitbildschirm am Login", self.m_SettingBG)
 		--	self.m_StartIntro:setFont(VRPFont(25))

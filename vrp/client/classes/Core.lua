@@ -225,6 +225,7 @@ function Core:ready() --onClientResourceStart
 	VehicleGuns:new()
 	HelicopterDrivebyManager:new()
 	RcVanExtension:new()
+	Weather:new()
 end
 
 function Core:afterLogin()

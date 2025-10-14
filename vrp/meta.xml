@@ -640,6 +640,7 @@
 	<script src="client/classes/ClientStatistics.lua" type="client"/>
 	<script src="client/classes/InfluxLogging.lua" type="client"/>
 	<script src="client/classes/Time.lua" type="client"/>
+	<script src="client/classes/Weather.lua" type="client"/>
 	<script src="client/classes/PedScale.lua" type="client"/>
 
 	<script src="client/classes/Player/Player.lua" type="client"/>
