@@ -866,6 +866,7 @@ end
 
 function FactionGUI:openActionMoneySplitGUI()
 	if PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changeActionMoneySplit") then
+		self:hide()
 		ActionMoneySplitGUI:new()
 	end
 end

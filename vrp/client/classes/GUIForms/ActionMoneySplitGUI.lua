@@ -17,6 +17,7 @@ function ActionMoneySplitGUI:constructor()
 
     GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true)
 	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Aktionsbeteiligung", true, true, self)
+	self.m_Window:addBackButton(function () FactionGUI:getSingleton():show() delete(self) end)
 
 	self.m_Changes = {}
 
