@@ -96,7 +96,7 @@ function FactionGUI:constructor()
 	self.m_FactionRankUpButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.25, self.m_Width*0.3, self.m_Height*0.07, _"Rang hoch", tabMitglieder):setBarEnabled(true)
 	self.m_FactionRankDownButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.35, self.m_Width*0.3, self.m_Height*0.07, _"Rang runter", tabMitglieder):setBarEnabled(true)
 	self.m_FactionToggleLoanButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.45, self.m_Width*0.3, self.m_Height*0.07, _"Gehalt deaktivieren", tabMitglieder):setBarEnabled(true)
-	self.m_FactionToggleWeaponButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.55, self.m_Width*0.3, self.m_Height*0.07, _"Waffen deaktivieren", tabMitglieder):setBarEnabled(true)
+	self.m_FactionToggleActionMoneySplit = GUIButton:new(self.m_Width*0.64, self.m_Height*0.55, self.m_Width*0.3, self.m_Height*0.07, _"Aktionsbet. deaktivieren", tabMitglieder):setBarEnabled(true)
 	self.m_FactionPlayerFileButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.65, self.m_Width*0.3, self.m_Height*0.07, _"Spielerakten", self.m_tabMitglieder)
 	self.m_FactionForumSyncButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.75, self.m_Width*0.3, self.m_Height*0.07, _"Foren-Gruppen", self.m_tabMitglieder):setBarEnabled(true)
 	self.m_FactionPlayerPermissionsButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.75, self.m_Width*0.3, self.m_Height*0.07, _"Rechte bearbeiten", self.m_tabMitglieder):setBarEnabled(true)
@@ -105,7 +105,7 @@ function FactionGUI:constructor()
 	self.m_FactionRankUpButton:setEnabled(false)
 	self.m_FactionRankDownButton:setEnabled(false)
 	self.m_FactionToggleLoanButton:setEnabled(false)
-	self.m_FactionToggleWeaponButton:setEnabled(false)
+	self.m_FactionToggleActionMoneySplit:setEnabled(false)
 	self.m_FactionPlayerFileButton:setEnabled(false)
 	self.m_FactionForumSyncButton:setVisible(false)
 	self.m_FactionPlayerPermissionsButton:setEnabled(false)
@@ -119,7 +119,7 @@ function FactionGUI:constructor()
 	self.m_FactionRankUpButton.onLeftClick = bind(self.FactionRankUpButton_Click, self)
 	self.m_FactionRankDownButton.onLeftClick = bind(self.FactionRankDownButton_Click, self)
 	self.m_FactionToggleLoanButton.onLeftClick = bind(self.FactionToggleLoanButton_Click, self)
-	self.m_FactionToggleWeaponButton.onLeftClick = bind(self.FactionToggleWeaponButton_Click, self)
+	self.m_FactionToggleActionMoneySplit.onLeftClick = bind(self.FactionToggleActionMoneySplit_Click, self)
 	self.m_FactionPlayerFileButton.onLeftClick = bind(self.FactionPlayerFileButton_Click, self)
 	self.m_FactionForumSyncButton.onLeftClick = bind(self.FactionForumSyncButton_Click, self)
 	self.m_FactionPlayerPermissionsButton.onLeftClick = bind(self.factionPlayerPermissionsButton_Click, self)
@@ -649,11 +649,11 @@ function FactionGUI:Event_factionRetrieveInfo(id, name, rank, money, players, ac
 			self.m_FactionPlayersGrid:clear()
 			for playerId, info in pairs(players) do
 				local activitySymbol = info.loanEnabled == 1 and FontAwesomeSymbols.Calender_Check or FontAwesomeSymbols.Calender_Time
-				local weaponSymbol = FontAwesomeSymbols.Gun
-				local item = self.m_FactionPlayersGrid:addItem(activitySymbol, weaponSymbol, info.name, info.rank, tostring(info.activity).." h")
+				local actionMoneySplitSymbol = FontAwesomeSymbols.Money_Bag
+				local item = self.m_FactionPlayersGrid:addItem(activitySymbol, actionMoneySplitSymbol, info.name, info.rank, tostring(info.activity).." h")
 				local color = (getPlayerFromName(info.name) and getPlayerFromName(info.name):getPublicSync("Faction:Duty") and Color.Orange) or (getPlayerFromName(info.name) and Color.Accent) or Color.White
 				item:setColumnFont(1, FontAwesome(20), 1):setColumnColor(1, info.loanEnabled == 1 and Color.Green or Color.Red)
-				item:setColumnFont(2, FontAwesome(20), 1):setColumnColor(2, info.weaponEnabled == 1 and Color.Green or Color.Red)
+				item:setColumnFont(2, FontAwesome(20), 1):setColumnColor(2, info.actionMoneySplitEnabled == 1 and Color.Green or Color.Red)
 				item:setColumnColor(3, color)
 				item.Id = playerId
 				item.Rank = info.rank
@@ -661,7 +661,7 @@ function FactionGUI:Event_factionRetrieveInfo(id, name, rank, money, players, ac
 				item.onLeftClick =
 					function()
 						self.m_FactionToggleLoanButton:setText(("Gehalt %saktivieren"):format(info.loanEnabled == 1 and "de" or ""))
-						self.m_FactionToggleWeaponButton:setText(("Waffen %saktivieren"):format(info.weaponEnabled == 1 and "de" or ""))
+						self.m_FactionToggleActionMoneySplit:setText(("Aktionsbet. %saktivieren"):format(info.actionMoneySplitEnabled == 1 and "de" or ""))
 					end
 			end
 
@@ -682,7 +682,7 @@ function FactionGUI:Event_factionRetrieveInfo(id, name, rank, money, players, ac
 			self.m_FactionRankUpButton:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changeRank"))
 			self.m_FactionRankDownButton:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changeRank"))
 			self.m_FactionToggleLoanButton:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "toggleLoan"))
-			self.m_FactionToggleWeaponButton:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "toggleWeapon"))
+			self.m_FactionToggleActionMoneySplit:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "toggleActionMoneySplit"))
 			self.m_FactionPlayerPermissionsButton:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editWeaponPermissions") or PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editActionPermissions") or PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changePermissions"))
 		end
 	end
@@ -782,10 +782,10 @@ function FactionGUI:FactionToggleLoanButton_Click()
 	end
 end
 
-function FactionGUI:FactionToggleWeaponButton_Click()
+function FactionGUI:FactionToggleActionMoneySplit_Click()
 	local selectedItem = self.m_FactionPlayersGrid:getSelectedItem()
 	if selectedItem and selectedItem.Id then
-		triggerServerEvent("factionToggleWeapon", root, selectedItem.Id)
+		triggerServerEvent("factionToggleActionMoneySplit", root, selectedItem.Id)
 	end
 end
 

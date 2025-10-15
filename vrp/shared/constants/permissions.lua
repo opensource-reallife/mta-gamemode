@@ -57,7 +57,9 @@ PERMISSIONS_INFO = { -- name = {{type, id} type = 0 for all, {faction min rank, 
 	["buyVehicle"] = 				{{0}, {["faction"] = 5, ["company"] = 4, ["group"] = nil}},
 	["scrapVehicle"] = 				{{0}, {["faction"] = 5, ["company"] = 4, ["group"] = nil}},
 	["useTrunk"] = 					{{0}, {["faction"] = nil, ["company"] = nil, ["group"] = 0}},
-	["changeActionMoneySplit"] =	{{0}, {["faction"] = 3, ["company"] = nil, ["group"] = nil}}
+	["changeActionMoneySplit"] =	{{0}, {["faction"] = 3, ["company"] = nil, ["group"] = nil}},
+	["useWeapons"] =				{{0}, {["faction"] = 4, ["company"] = nil, ["group"] = nil}},
+	["toggleActionMoneySplit"] =	{{0}, {["faction"] = 4, ["company"] = nil, ["group"] = nil}},
 }
 
 PERMISSION_NAMES = {
@@ -118,7 +120,9 @@ PERMISSION_NAMES = {
 	["buyVehicle"] = 				"Fahrzeug kaufen",
 	["scrapVehicle"] = 				"Fahrzeug verschrotten",
 	["useTrunk"] = 					"Kofferraum benutzen",
-	["changeActionMoneySplit"] =	"Aktionsbeteiligung ändern"
+	["changeActionMoneySplit"] =	"Aktionsbeteiligung ändern",
+	["useWeapons"] =				"Waffen benutzen",
+	["toggleActionMoneySplit"] =	"Aktionsbeteiligung de/aktivieren",
 }
 
 ACTION_PERMISSIONS_INFO = {

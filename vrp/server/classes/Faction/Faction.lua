@@ -18,7 +18,7 @@ function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, 
 	self.m_DiscordRole = discordRole
 	self.m_Players = players[1]
 	self.m_PlayerLoans = players[2]
-	self.m_PlayerWeapons = players[3]
+	self.m_PlayerActionMoneySplit = players[3]
 	self.m_PlayerPermissions = players[4]
 	self.m_PlayerWeaponPermissions = players[5]
 	self.m_PlayerActionPermissions = players[6]
@@ -350,7 +350,7 @@ function Faction:addPlayer(playerId, rank)
 	rank = rank or 0
 	self.m_Players[playerId] = rank
 	self.m_PlayerLoans[playerId] = 1
-	self.m_PlayerWeapons[playerId] = 1
+	self.m_PlayerActionMoneySplit[playerId] = 1
 	self.m_PlayerPermissions[playerId] = {}
 	self.m_PlayerActionPermissions[playerId] = {}
 	self.m_PlayerWeaponPermissions[playerId] = {}
@@ -384,7 +384,7 @@ function Faction:removePlayer(playerId)
 
 	self.m_Players[playerId] = nil
 	self.m_PlayerLoans[playerId] = nil
-	self.m_PlayerWeapons[playerId] = nil
+	self.m_PlayerActionMoneySplit[playerId] = nil
 	self.m_PlayerPermissions[playerId] = nil
 	self.m_PlayerActionPermissions[playerId] = nil
 	self.m_PlayerWeaponPermissions[playerId] = nil
@@ -482,6 +482,10 @@ function Faction:setPlayerRank(playerId, rank)
 end
 
 function Faction:isPlayerLoanEnabled(playerId)
+	if type(playerId) == "userdata" then
+		playerId = playerId:getId()
+	end
+
 	return self.m_PlayerLoans[playerId] == 1
 end
 
@@ -494,17 +498,21 @@ function Faction:setPlayerLoanEnabled(playerId, state)
 	sql:queryExec("UPDATE ??_character SET FactionLoanEnabled = ? WHERE Id = ?", sql:getPrefix(), state, playerId)
 end
 
-function Faction:isPlayerWeaponEnabled(playerId)
-	return self.m_PlayerWeapons[playerId] == 1
-end
-
-function Faction:setPlayerWeaponEnabled(playerId, state)
+function Faction:isPlayerActionMoneySplitEnabled(playerId)
 	if type(playerId) == "userdata" then
 		playerId = playerId:getId()
 	end
 
-	self.m_PlayerWeapons[playerId] = state
-	sql:queryExec("UPDATE ??_character SET FactionWeaponEnabled = ? WHERE Id = ?", sql:getPrefix(), state, playerId)
+	return self.m_PlayerActionMoneySplit[playerId] == 1
+end
+
+function Faction:setPlayerActionMoneySplitEnabled(playerId, state)
+	if type(playerId) == "userdata" then
+		playerId = playerId:getId()
+	end
+
+	self.m_PlayerActionMoneySplit[playerId] = state
+	sql:queryExec("UPDATE ??_character SET FactionActionMoneySplitEnabled = ? WHERE Id = ?", sql:getPrefix(), state, playerId)
 end
 
 function Faction:savePlayerPermissions(playerId)
@@ -607,10 +615,10 @@ function Faction:getPlayers(getIDsOnly)
 
 	for playerId, rank in pairs(self.m_Players) do
 		local loanEnabled = self.m_PlayerLoans[playerId]
-		local weaponEnabled = self.m_PlayerWeapons[playerId]
+		local actionMoneySplitEnabled = self.m_PlayerActionMoneySplit[playerId]
 		local activity = self.m_PlayerActivity[playerId] or 0
 
-		temp[playerId] = {name = Account.getNameFromId(playerId), rank = rank, loanEnabled = loanEnabled, weaponEnabled = weaponEnabled, activity = activity}
+		temp[playerId] = {name = Account.getNameFromId(playerId), rank = rank, loanEnabled = loanEnabled, actionMoneySplitEnabled = actionMoneySplitEnabled, activity = activity}
 	end
 	return temp
 end
@@ -626,6 +634,17 @@ function Faction:getOnlinePlayers(afkCheck, dutyCheck)
 		end
 	end
 	return players
+end
+
+function Faction:getActionSplitMoneyPlayers()
+	local temp = {}
+	local players = self:getOnlinePlayers(true, true)
+	for i, v in pairs(players) do
+		if (self:isPlayerActionMoneySplitEnabled(v)) then
+			temp[#temp + 1] = v
+		end
+	end
+	return temp
 end
 
 function Faction:sendMessage(text, r, g, b, ...)

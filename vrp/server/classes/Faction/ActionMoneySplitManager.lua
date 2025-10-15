@@ -76,7 +76,7 @@ function ActionMoneySplitManager:splitMoney(faction, action, earnedMoney)
 
     local moneyToSplit = earnedMoney / 100 * actionSplit
 
-    local onlinePlayers = faction:getOnlinePlayers(true, true)
+    local onlinePlayers = faction:getActionSplitMoneyPlayers()
     local count = #onlinePlayers
 
     local moneyPerPersonRaw = math.floor(moneyToSplit / count)  
