@@ -31,8 +31,9 @@ function Tour:start(forceNew)
 	local step = 1
 	if not forceNew == true then
 		for id, data in pairs(Tour.Data) do
-			if not self.m_TourPlayerData[Id][tostring(id)] == true then
+			if not self.m_TourPlayerData[Id][tostring(id)] then
 				step = id
+				break
 			end
 		end
 	end
