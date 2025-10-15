@@ -165,10 +165,13 @@ function ShopVehicleRob:Event_onVehicleEnter(player, seat)
 end
 
 function ShopVehicleRob:Event_onVehicleExit(player, seat)
-	if seat == 0 and player and isElement(player) then
-		player:triggerEvent("CountdownStop", "Fahrzeugdiebstahl")
+	if player and isElement(player) then
+		if seat == 0 then
+			player:triggerEvent("CountdownStop", "Fahrzeugdiebstahl")
+		end
 
 		if isElementWithinMarker(source, self.m_StateMarker) then
+			if table.size(getVehicleOccupants(source)) ~= 0 then return end
 			if player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty() then
 				ShopVehicleRobManager:getSingleton().m_BankAccountServer:transferMoney({player, true}, 2500, "Wiederbeschaffungsprämie", "Gameplay", "ShopVehicleRob")
 				PlayerManager:getSingleton():breakingNews("%s Überfall: Das Fahrzeug wurde sichergestellt!", self.m_Shop:getName())
@@ -177,6 +180,7 @@ function ShopVehicleRob:Event_onVehicleExit(player, seat)
 			else return end
 
 		elseif isElementWithinMarker(source, self.m_EvilMarker) then
+			if table.size(getVehicleOccupants(source)) ~= 0 then return end
 			if player:getGroup() == self.m_Gang and not player:isFactionDuty() then
 				ShopVehicleRobManager:getSingleton().m_BankAccountServer:transferMoney(player, self:calcPrice(), "Fahrzeugdiebstahl", "Gameplay", "ShopVehicleRob")
 				PlayerManager:getSingleton():breakingNews("%s Überfall: Die Täter sind mit dem Fahrzeug entkommen!", self.m_Shop:getName())
