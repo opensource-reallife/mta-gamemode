@@ -132,6 +132,18 @@ function ServerSettings:constructor()
 			MAX_MONEY_PER_PLAYER_FROM_SPLIT = tonumber(row.Value)
 		end
 
+		if row.Index == "VehicleImportPayFactor" then
+			VEHICLE_IMPORT_PAY_FACTOR = tonumber(row.Value)
+		end
+
+		if row.Index == "VehicleImportPayMaximum" then
+			VEHICLE_IMPORT_PAY_MAXIMUM = tonumber(row.Value)
+		end
+
+		if row.Index == "VehicleImportPayFactorDriver" then
+			VEHICLE_IMPORT_PAY_FACTOR_DRIVER = tonumber(row.Value)
+		end
+
 		self.m_Settings[row.Index] = row.Value
 	end
 end

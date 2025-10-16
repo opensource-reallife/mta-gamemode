@@ -11,8 +11,6 @@ VehicleImportManager = inherit(Singleton)
 VehicleImportManager.ImportLocation = Vector3(317.76, -34.81, 1.70)
 VehicleImportManager.ImportRotation = 270
 VehicleImportManager.TransportMissionEndCountdown = 10 -- 10 sec
-VehicleImportManager.VehiclePriceToPaymentFactor = 0.50 -- total payment for both EPT and driver is 50% of vehicle price
-VehicleImportManager.PaymentForDriverFactor = 0.25 -- driver of vehicle (the one who ended the mission) gets 25% of the total payment
 
 addRemoteEvents {"requestVehicleImportList", "startVehicleTransport"}
 
@@ -101,7 +99,7 @@ function VehicleImportManager:startTransport(shopId, model, variant, reloadListF
 			:sendShortMessage(("%s hat den Transport für das Fahrzeug '%s' gestartet."):format(getPlayerName(client), VehicleCategory:getSingleton():getModelName(model)))
 	CompanyManager:getSingleton():getFromId(CompanyStaticId.EPT):addLog(client, "Import", ("hat den Fahrzeugtransport für das Fahrzeug '%s' gestartet!"):format(VehicleCategory:getSingleton():getModelName(model)))
 	
-	local payment = math.round(ShopManager.VehicleShopsMap[shopId].m_VehicleList[model][variant].price * VehicleImportManager.VehiclePriceToPaymentFactor)
+	local payment = math.min(math.round(ShopManager.VehicleShopsMap[shopId].m_VehicleList[model][variant].price * VEHICLE_IMPORT_PAY_FACTOR), VEHICLE_IMPORT_PAY_MAXIMUM)
 
 	self:internalCreateVehicle(shopId, model, variant, payment)
 	
@@ -124,7 +122,7 @@ function VehicleImportManager:getVehicleShopMissingStock()
 						currentStock 			= vehicleData.currentStock,
 						currentlyTransported 	= self:getCurrentlyTransportedVehiclesByShop(id, vehicleModel, index),
                         maxStock 				= vehicleData.maxStock,
-                        price           		= math.round(vehicleData.price * VehicleImportManager.VehiclePriceToPaymentFactor),
+                        price           		= math.min(math.round(vehicleData.price * VEHICLE_IMPORT_PAY_FACTOR), VEHICLE_IMPORT_PAY_MAXIMUM),
 					})
 				end
 			end
@@ -336,8 +334,7 @@ function VehicleImportManager:internalOnVehicleExit(player, seat)
 			player:sendWarning("Schalte den Motor aus um das Fahrzeug abzugeben.")
 			return false 
 		end
-		local moneyTotal = veh.transportPayment * ((veh:getHealth()-900)/100)
-		local moneyEarnedPlayer = math.round(veh.transportPayment * (VehicleImportManager.PaymentForDriverFactor))
+		local moneyEarnedPlayer = math.round(veh.transportPayment * (VEHICLE_IMPORT_PAY_FACTOR_DRIVER))
 		local moneyEarnedCompany = veh.transportPayment - moneyEarnedPlayer
 		local eptInstance = CompanyManager:getSingleton():getFromId(CompanyStaticId.EPT)
 		eptInstance:sendShortMessage(("%s hat das Fahrzeug '%s' abgeliefert (+%s)."):format(getPlayerName(player), veh:getName(), toMoneyString(moneyEarnedCompany)))
