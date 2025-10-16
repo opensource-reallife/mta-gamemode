@@ -136,7 +136,7 @@ end
 function JobManager:refreshJobMultiplicators()
 	self.m_JobMultiplicators = { }
 	for k, v in ipairs(self.m_Jobs) do
-		local random = Randomizer:get(0, 10 * Randomizer:get(0, 2)) * 10
+		local random = Randomizer:get(0, 10 * Randomizer:get(0, 1)) * 10
 		v:setMultiplicator(random)
 		self.m_JobMultiplicators[v:getId()] = random
 	end
