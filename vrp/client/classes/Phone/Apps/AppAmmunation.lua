@@ -8,7 +8,7 @@
 AppAmmunation = inherit(PhoneApp)
 
 function AppAmmunation:constructor()
-	PhoneApp.constructor(self, "Ammu Nation", "IconAmmuNation.png")
+	PhoneApp.constructor(self, "Ammu-Nation", "IconAmmuNation.png")
 end
 
 function AppAmmunation:onOpen(form)
@@ -18,18 +18,13 @@ function AppAmmunation:onOpen(form)
 
 	self.m_TabPanel = GUIPhoneTabPanel:new(0, 0, form.m_Width, form.m_Height, form)
 	self.m_Tabs = {}
-	self.m_Tabs["Info"] = self.m_TabPanel:addTab(_"Information", FontAwesomeSymbols.Info)
-	GUILabel:new(10, 10, 200, 50, _"Ammunation", self.m_Tabs["Info"])
-	GUILabel:new(10, 65, form.m_Width-20, 22, _[[
-		Hier kannst du den Lieferservice von Ammunation nutzen.
-		Wähle einfach die gewünschten Produkte aus und klicke auf bestellen.
-
-		Das Geld wird bequem vom Konto abgebucht!
-	]], self.m_Tabs["Info"]):setMultiline(true)
+	self.m_Tabs["Info"] = self.m_TabPanel:addTab("Information", FontAwesomeSymbols.Info)
+	GUILabel:new(10, 10, 200, 50, "Ammu-Nation", self.m_Tabs["Info"])
+	GUILabel:new(10, 65, form.m_Width-20, 22, _"Hier kannst du den Ammu-Nation Lieferservice nutzen. Wähle dazu einfach die gewünschten Produkte aus und klicke auf bestellen. Für die Lieferung wird ein Aufschlag von 50%% berechnet.", self.m_Tabs["Info"]):setMultiline(true)
 	self.m_Tabs["Order"] = self.m_TabPanel:addTab(_"Bestellen", FontAwesomeSymbols.CartPlus)
 	GUILabel:new(10, 10, 200, 50, _"Bestellen:", self.m_Tabs["Order"])
 	self.m_WeaponChanger = GUIChanger:new(10, 65, 240, 30, self.m_Tabs["Order"])
-	self.m_WeaponChanger:addItem("<< Produkt auswählen >>")
+	self.m_WeaponChanger:addItem(_"<< Produkt auswählen >>")
 	for id, key in pairs(AmmuNationInfo) do
 		if id > 0 then
 			self.m_WeaponChanger:addItem(WEAPON_NAMES[id])
@@ -43,7 +38,7 @@ function AppAmmunation:onOpen(form)
 	self.m_WeaponChanger.onChange = function(text)
 		self:onWeaponChange(text)
 	end
-	self.m_WeaponName = GUILabel:new(10, 105, 240, 20, _"Ammunation", self.m_Tabs["Order"]):setAlignX("center")
+	self.m_WeaponName = GUILabel:new(10, 105, 240, 20, "Ammu-Nation", self.m_Tabs["Order"]):setAlignX("center")
 	self.m_WeaponImage = GUIImage:new(90, 130, 60, 60, "files/images/Other/trans.png", self.m_Tabs["Order"])
 	self.m_CartLabel = GUILabel:new(10, 200, 245, 30, _"In den Warenkorb legen:", self.m_Tabs["Order"])
 	self.m_WeaponBuyBtn = GUIButton:new(10, 240, 240, 25, "Waffe (0$)", self.m_Tabs["Order"])
@@ -55,7 +50,7 @@ function AppAmmunation:onOpen(form)
 	GUILabel:new(10, 310, 240, 30, _"Im Warenkorb:", self.m_Tabs["Order"])
 	self.m_SumLabel = GUILabel:new(10, 340, 240, 20, _"Gesamtsumme:", self.m_Tabs["Order"])
 	GUILabel:new(190, 310, 50, 50, FontAwesomeSymbols.Cart, self.m_Tabs["Order"]):setFont(FontAwesome(50))
-	self.m_OrderBtn = GUIButton:new(10, 365, 240, 30, "Waren bestellen", self.m_Tabs["Order"])
+	self.m_OrderBtn = GUIButton:new(10, 365, 240, 30, _"Waren bestellen", self.m_Tabs["Order"])
 	self.m_OrderBtn:setBackgroundColor(Color.Green)
 	self.m_OrderBtn.onLeftClick = bind(self.order,self)
 
@@ -81,8 +76,7 @@ function AppAmmunation:onOpen(form)
 	self.m_OrderBtnCart:setBackgroundColor(Color.Green)
 	self.m_OrderBtnCart.onLeftClick = bind(self.order,self)
 	self:getPlayerWeapons()
-	ShortMessage:new(_("Links-Shift halten um 10-fache Muniton zu bestellen."), _"Ammunation App", {0, 102, 102})
-
+	ShortMessage:new(_("Links-Shift halten um 10-fache Muniton zu bestellen."), "Ammu-Nation App", {0, 102, 102})
 end
 
 function AppAmmunation:addItemToCart(typ)
@@ -139,9 +133,9 @@ function AppAmmunation:updateCart()
 			end
 		end
 	end
-	self.m_TotalCosts = totalCosts
-	self.m_SumLabel:setText(_("Gesamtsumme: %d$", totalCosts))
-	self.m_SumLabelCart:setText(_("Gesamtsumme: %d$", totalCosts))
+	self.m_TotalCosts = totalCosts * AMMUNATION_APP_MULTIPLICATOR
+	self.m_SumLabel:setText(_("Gesamtsumme: %d$", self.m_TotalCosts))
+	self.m_SumLabelCart:setText(_("Gesamtsumme: %d$", self.m_TotalCosts))
 	self:updateButtons()
 
 end
@@ -180,20 +174,20 @@ function AppAmmunation:onWeaponChange(name)
 
 		if name == "Schutzweste" then
 			self.m_SelectedWeaponId = 0
-			self.m_WeaponImage:setImage("files/images/Weapons/Vest.png")
+			self.m_WeaponImage:setImage(FileModdingHelper:getSingleton():getWeaponImage(-1)) 
 			self.m_WeaponName:setText(name)
-			self.m_WeaponBuyBtn:setText(_("Schutzweste (%d$)", AmmuNationInfo[0].Weapon))
+			self.m_WeaponBuyBtn:setText(_("Schutzweste (%d$)", AmmuNationInfo[0].Weapon * AMMUNATION_APP_MULTIPLICATOR))
 			self.m_MagazineBuyBtn:setVisible(false)
 			self:updateButtons()
 		else
 			local weaponID = WEAPON_IDS[name]
 			self.m_SelectedWeaponId = weaponID
 
-			self.m_WeaponImage:setImage(WeaponIcons[weaponID])
+			self.m_WeaponImage:setImage(FileModdingHelper:getSingleton():getWeaponImage(weaponID))
 			self.m_WeaponName:setText(_("Waffe: %s (Level: %i)", name, MIN_WEAPON_LEVELS[weaponID]))
-			self.m_WeaponBuyBtn:setText(_("Waffe (%d$)", AmmuNationInfo[weaponID].Weapon))
+			self.m_WeaponBuyBtn:setText(_("Waffe (%d$)", AmmuNationInfo[weaponID].Weapon * AMMUNATION_APP_MULTIPLICATOR))
 			if AmmuNationInfo[weaponID].Magazine then
-				self.m_MagazineBuyBtn:setText(_("Magazin (%d$)", AmmuNationInfo[weaponID].Magazine.price))
+				self.m_MagazineBuyBtn:setText(_("Magazin (%d$)", AmmuNationInfo[weaponID].Magazine.price * AMMUNATION_APP_MULTIPLICATOR))
 				self.m_MagazineBuyBtn:setVisible(true)
 			else
 				self.m_MagazineBuyBtn:setVisible(false)

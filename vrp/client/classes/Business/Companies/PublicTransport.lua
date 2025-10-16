@@ -12,6 +12,42 @@ function PublicTransport:constructor()
 	self.m_Event_BusStopStreamIn = bind(PublicTransport.busStopStreamIn, self)
 	self.m_Event_BusStopStreamOut = bind(PublicTransport.busStopStreamOut, self)
 	self:registerBusStopObjects()
+
+	--ped at blueberry
+	self.m_Ped = createPed(17, VEHICLE_IMPORT_POSITION, 180)
+	setElementData(self.m_Ped, "clickable", true)
+	self.m_Ped:setData("NPC:Immortal", true)
+	self.m_Ped:setFrozen(true)
+	SpeakBubble3D:new(self.m_Ped, _"Fahrzeugimporteur", _"Starte den Fahrzeugtransport")
+	self.m_Ped:setData("onClickEvent", bind(self.onImportListRequest, self))
+
+	--ped at import blackboard
+	local blackBoardPed = createPed(17, 1233.2, -42, 1011.33, 180)
+	blackBoardPed:setInterior(12)
+	blackBoardPed:setDimension(4)
+	blackBoardPed:setData("NPC:Immortal", true)
+	blackBoardPed:setFrozen(true)
+	SpeakBubble3D:new(blackBoardPed, _"Fahrzeugimporteur", _"Zu liefernde Fahrzeuge")
+	setElementData(blackBoardPed, "clickable", true)
+	blackBoardPed:setData("onClickEvent", function()
+		PublicTransport:getSingleton():onImportListRequest()
+	end)
+end
+
+function PublicTransport:onImportListRequest()
+	if not localPlayer:getCompany() or localPlayer:getCompany():getId() ~= CompanyStaticId.EPT then 
+		ErrorBox:new(_"Nur Mitglieder des EPT können Fahrzeuge importieren.")
+		return
+	end
+	if not localPlayer:getPublicSync("Company:Duty") then
+		ErrorBox:new(_"Du bist nicht im Unternehmensdienst!")
+		return
+	end
+	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo("company", "startVehicleImport") then
+		ErrorBox:new(_"Du bist nicht berechtigt einen Fahrzeugimport zu starten!")
+		return
+	end
+	triggerServerEvent("requestVehicleImportList", localPlayer) 
 end
 
 function PublicTransport:setBusDisplayText(vehicle, text, line)
@@ -37,7 +73,8 @@ function PublicTransport:busStopStreamIn(obj)
 	local source = source -- scope to local
 	if obj then source = obj end
 	if not source.m_BusCol then
-		source.m_BusCol = createColSphere(source.position, 3)
+		local x, y, z = getElementPosition(source)
+		source.m_BusCol = createColSphere(x, y, z, 3)
 		self.m_StreamedInBusObjects[source] = source:getData("EPT_bus_station")
 		addEventHandler("onClientColShapeHit", source.m_BusCol, function(hit, dim)
 			if not dim then return end
@@ -170,7 +207,7 @@ function BusLineMouseMenu:constructor(posX, posY, element)
 		end
 	)
 
-	self:addItem(_"Linie 1 nach Downtown bedienen",
+	self:addItem(_"Linie 1 nach Ganton bedienen",
 		function()
 			if self:getElement() then
 				triggerServerEvent("publicTransportChangeBusDutyState", self:getElement(), "dutyLine", 1, true)
@@ -178,7 +215,7 @@ function BusLineMouseMenu:constructor(posX, posY, element)
 		end
 	)
 
-	self:addItem(_"Linie 2 nach Montgomery bedienen",
+	self:addItem(_"Linie 2 nach Dillimore bedienen",
 		function()
 			if self:getElement() then
 				triggerServerEvent("publicTransportChangeBusDutyState", self:getElement(), "dutyLine", 2)
@@ -186,7 +223,7 @@ function BusLineMouseMenu:constructor(posX, posY, element)
 		end
 	)
 
-	self:addItem(_"Linie 2 nach East LS bedienen",
+	self:addItem(_"Linie 2 nach Jefferson bedienen",
 		function()
 			if self:getElement() then
 				triggerServerEvent("publicTransportChangeBusDutyState", self:getElement(), "dutyLine", 2, true)

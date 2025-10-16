@@ -8,13 +8,11 @@
 JobRoadSweeper = inherit(Job)
 
 function JobRoadSweeper:constructor()
-	Job.constructor(self, 16, 198.42, -1448.85, 13.02, 320, "Roadsweeper.png", {200, 200, 200}, "files/images/Jobs/HeaderRoadSweeper.png", _(HelpTextTitles.Jobs.RoadSweeper):gsub("Job: ", ""), _(HelpTexts.Jobs.RoadSweeper))
+	Job.constructor(self, 16, 198.42, -1448.85, 13.02, 320, "Roadsweeper.png", {200, 200, 200}, "files/images/Jobs/HeaderRoadSweeper.png", (HelpTextTitles.Jobs.RoadSweeper):gsub("Job: ", ""), _(HelpTexts.Jobs.RoadSweeper), LexiconPages.JobRoadSweeper)
 	self:setJobLevel(JOB_LEVEL_SWEEPER)
 
 	self.m_Rubbish = {}
 
-	-- add job to help menu
-	HelpTextManager:getSingleton():addText("Jobs", _(HelpTextTitles.Jobs.RoadSweeper):gsub("Job: ", ""), "jobs.roadsweeper")
 end
 
 function JobRoadSweeper:start()
@@ -31,7 +29,7 @@ function JobRoadSweeper:start()
 	end
 
 	-- Show text in help menu
-	HelpBar:getSingleton():addText(_(HelpTextTitles.Jobs.RoadSweeper), _(HelpTexts.Jobs.RoadSweeper))
+	HelpBar:getSingleton():setLexiconPage(LexiconPages.JobRoadSweeper)
 end
 
 function JobRoadSweeper:stop()
@@ -43,7 +41,7 @@ function JobRoadSweeper:stop()
 	self.m_Rubbish = {}
 
 	-- Reset text in help menu
-	HelpBar:getSingleton():addText(_(HelpTextTitles.General.Main), _(HelpTexts.General.Main), false)
+	HelpBar:getSingleton():setLexiconPage(nil)
 end
 
 function JobRoadSweeper:Rubbish_Hit(hitElement, matchingDimension)

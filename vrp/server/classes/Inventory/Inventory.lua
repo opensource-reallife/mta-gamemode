@@ -43,6 +43,13 @@ function Inventory:constructor(owner, inventorySlots, itemData, classItems)
 						self.m_Owner:sendMessage(_("Dein Mautpass ist abgelaufen und wurde entfernt!", self.m_Owner), 255, 0, 0)
 					end
 				end
+			elseif row["Objekt"] == "Clubkarte" then 
+				if not row["Value"] or not tonumber(row["Value"]) or tonumber(row["Value"]) < getRealTime().timestamp then
+					self:removeAllItem("Clubkarte")
+					if isElement(self.m_Owner) then
+						self.m_Owner:sendMessage(_("Deine Spiel-Clubkarte ist abgelaufen und wurde entfernt!", self.m_Owner), 255, 0, 0)
+					end
+				end
 			end
 		else
 			self:removeItemFromPlace(row["Tasche"], tonumber(row["Platz"]))
@@ -232,7 +239,7 @@ function Inventory:getItemPlacesByName(item)
 			end
 		end
 	else
-		outputDebugString("[INV] Unglültiges Item: "..item)
+		outputDebugString("[INV] Ungültiges Item: "..item)
 	end
 
 	return placeTable
@@ -310,7 +317,7 @@ function Inventory:getFreePlacesForItem(item)
 		if places > itemMax then places = itemMax	end
 		return places
 	else
-		outputDebugString("[INV] Unglültiges Item: "..item)
+		outputDebugString("[INV] Ungültiges Item: "..item)
 	end
 
 	return 0
@@ -393,7 +400,7 @@ function Inventory:getPlaceForItem(item, itemAmount)
 
 		return false
 	else
-		outputDebugString("[INV] Unglültiges Item: "..item)
+		outputDebugString("[INV] Ungültiges Item: "..item)
 	end
 end
 
@@ -432,19 +439,24 @@ function Inventory:getItemAmount(item, inStack)
 
 		return amount
 	else
-		outputDebugString("[INV] Unglültiges Item: "..item)
+		outputDebugString("[INV] Ungültiges Item: "..item)
 	end
 end
 
 function Inventory:throwItem(item, bag, id, place, name)
 	self.m_Owner:sendInfo(_("Du hast das Item (%s) weggeworfen!", self.m_Owner,name))
-	self.m_Owner:meChat(true, "zerstört "..name.."!")
+	self.m_Owner:meChat(true, "zerstört %s!", name, true)
 	local value = self:getItemValueByBag(bag,place)
 	WearableManager:getSingleton():removeWearable( self.m_Owner, name, value )
 	self:removeItemFromPlace(bag, place)
+	if name == "Clubkarte" then 
+		self.m_Owner:setData("PlayHouse:clubcard", nil, true)	
+	end
 end
 
 function Inventory:giveItem(item, amount, value)
+	local amount = math.floor(amount)
+
 	if self.m_Debug then
 		outputDebugString("INV-DEBUG-giveItem: Spieler: "..self.m_Owner:getName().." | Item: "..item.." | Anzahl: "..amount)
 	end
@@ -455,7 +467,7 @@ function Inventory:giveItem(item, amount, value)
 		local itemMax = self.m_ItemData[item]["Item_Max"]
 
 		if self:getItemAmount(item) + amount > itemMax  then
-			self.m_Owner:sendError(_("Du kannst maximal %d %s in dein Inventar legen!", self.m_Owner,itemMax, item))
+			self.m_Owner:sendError(_("Du kannst maximal %d %s in dein Inventar legen!", self.m_Owner, itemMax, _(item, self.m_Owner)))
 			return
 		end
 
@@ -484,10 +496,10 @@ function Inventory:giveItem(item, amount, value)
 				end
 			end
 		elseif not self.m_Owner.m_Disconnecting then
-			self.m_Owner:sendError(_("Nicht genug Platz für %d %s in deinem Inventar!", self.m_Owner,amount,item))
+			self.m_Owner:sendError(_("Nicht genug Platz für %d %s in deinem Inventar!", self.m_Owner, amount, _(item, self.m_Owner)))
 		end
 	elseif not self.m_Owner.m_Disconnecting then
-		self.m_Owner:sendError(_("Ungültiges Item! (%s)", self.m_Owner,item))
+		self.m_Owner:sendError(_("Ungültiges Item! (%s)", self.m_Owner, item))
 	end
 end
 

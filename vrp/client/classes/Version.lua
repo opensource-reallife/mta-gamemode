@@ -8,10 +8,12 @@
 Version = inherit(Singleton)
 
 function Version:constructor()
-	self.m_VersionString = ("%s %s"):format(PROJECT_NAME, PROJECT_VERSION)
+	if PROJECT_VERSION then
+		self.m_VersionString = ("%s %s"):format(PROJECT_NAME, PROJECT_VERSION)
+	else
+		self.m_VersionString = (PROJECT_NAME)
+	end
 	self.m_GitString = ("%s [%s]"):format(GIT_BRANCH or "master", (GIT_VERSION or ""):sub(0, 8))
-
-
 
 	-- Project name + version
 	self.m_VersionLabel2 = guiCreateLabel(screenWidth - 255, screenHeight - 30, 250, 18, self.m_VersionString, false)

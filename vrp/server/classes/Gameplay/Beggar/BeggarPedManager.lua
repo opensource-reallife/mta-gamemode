@@ -1,7 +1,8 @@
 BeggarPedManager = inherit(Singleton)
 BeggarPedManager.Map = {}
 addRemoteEvents{"robBeggarPed", "giveBeggarPedMoney", "giveBeggarItem", "acceptTransport", "sellBeggarWeed", "buyBeggarItem",
-"adminPedPlaced", "adminPedRequestData", "adminCreatePed", "adminPedChangeRole", "adminPedSpawn", "adminPedDelete"}
+"adminPedPlaced", "adminPedRequestData", "adminCreatePed", "adminPedChangeRole", "adminPedSpawn", "adminPedDelete", 
+"beggarped:onClientColShapeHit", "beggarped:onClientColShapeLeave"}
 
 BeggarPedManager.Classes  = {
 	[1] = {["Class"] = MoneyBeggar, ["Name"] = "Money"},
@@ -32,6 +33,8 @@ function BeggarPedManager:constructor()
 	addEventHandler("adminPedSpawn", root, bind(self.Event_adminPedSpawn, self))
 	addEventHandler("adminPedDelete", root, bind(self.Event_adminPedDelete, self))
 	addEventHandler("buyBeggarItem", root, bind(self.Event_buyBeggarItem, self))
+	addEventHandler("beggarped:onClientColShapeHit", root, bind(self.onClientColShapeHit, self))
+	addEventHandler("beggarped:onClientColShapeLeave", root, bind(self.onClientColShapeLeave, self))
 
 
 end
@@ -66,6 +69,7 @@ function BeggarPedManager:spawnPeds()
 	-- Delete current Peds
 	for i, v in pairs(self.Map) do
 		if not v.vehicle then
+			triggerClientEvent("ColshapeStreamer:deleteColshape", root, "beggarped", v.m_Id)
 			v:destroy()
 		end
 	end
@@ -76,6 +80,18 @@ function BeggarPedManager:spawnPeds()
 			local classId = #v.Roles > 0 and Randomizer:getRandomTableValue(v.Roles) or math.random(1, #BeggarPedManager.Classes)
 			local ped = BeggarPed:new(i, classId, v.Pos, v.Rot)
 			if ped then self:addRef(ped) end
+			triggerClientEvent(PlayerManager:getSingleton():getReadyPlayers(), "ColshapeStreamer:registerColshape", resourceRoot, {v.Pos.x, v.Pos.y, v.Pos.z}, ped, "beggarped", ped.m_Id, 10, "beggarped:onClientColShapeHit", "beggarped:onClientColShapeLeave")
+			if chance(20) then -- 20% chance they die
+				local random = Randomizer:get(1, 27)*60*1000 -- within 27 minutes
+				Timer(function(ped)
+					local playerCount = FactionRescue:getSingleton():countPlayers(true, true, "medic", 1) + FactionRescue:getSingleton():countPlayers(true, true, "medic", 2)
+					if playerCount >= 1 then -- only when a rescue member is not afk, medic duty and has radio status 1 or 2
+						if isElement(ped) and not ped.m_Dead then
+							ped:kill()
+						end
+					end
+				end, random, 1, ped)
+			end
 		end
 	end
 end
@@ -238,7 +254,7 @@ end
 
 function BeggarPedManager:Event_adminPedDelete(pedId)
 	if client:getRank() < ADMIN_RANK_PERMISSION["pedMenu"] then
-		client:sendError(_("Du darfst diese Funktion nicht nutzen!!", client))
+		client:sendError(_("Du darfst diese Funktion nicht nutzen!", client))
 		return
 	end
 
@@ -248,4 +264,24 @@ function BeggarPedManager:Event_adminPedDelete(pedId)
 	self.m_Positions[pedId] = nil
 
 	self:adminSendData(client)
+end
+
+function BeggarPedManager:sendBeggarPedsToClient(player)
+	if not player then player = root end
+	for key, ped in pairs(BeggarPedManager.Map) do
+		local x, y, z = getElementPosition(ped)
+		triggerClientEvent(player, "ColshapeStreamer:registerColshape", player, {x, y, z}, ped, "beggarped", ped.m_Id, 10, "beggarped:onClientColShapeHit", "beggarped:onClientColShapeLeave")
+	end
+end
+
+function BeggarPedManager:onClientColShapeHit(id)
+	if BeggarPedManager.Map[id] then
+		BeggarPedManager.Map[id]:onClientColShapeHit(client, true)
+	end
+end
+
+function BeggarPedManager:onClientColShapeLeave(id)
+	if BeggarPedManager.Map[id] then
+		BeggarPedManager.Map[id]:onClientColShapeLeave(client, true)
+	end
 end

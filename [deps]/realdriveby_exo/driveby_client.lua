@@ -22,6 +22,7 @@ local function pedGotHit ( attacker, weapon, bodypart, loss )
 		triggerEvent ( "onClientPlayerDamage", pedowner[source], attacker, weapon, bodypart, loss )
 		--triggerServerEvent ( "onPlayerDamage", localPlayer, attacker, weapon, bodypart, loss )
 	end
+	cancelEvent()
 end
 
 functions.removeKeyToggles = function ( vehicle )
@@ -69,6 +70,7 @@ end )
 
 functions.toggleDriveby = function()
 	if getElementData(localPlayer, "isTied") then return end
+	if getElementData(localPlayer, "cuffed") then return end
 	if isCursorShowing() then return end
 	if isPedInVehicle( localPlayer ) then
 		local veh = getPedOccupiedVehicle ( localPlayer )

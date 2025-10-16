@@ -31,16 +31,16 @@ function Growable:constructor(id, type, typeData, pos, ownerId, size, planted, l
 	self.ms_Illegal = typeData["Illegal"]
 	self.m_BankAccountServer = BankServer.get("faction.state")
 
-	self.m_Colshape = createColSphere(pos.x, pos.y, pos.z+1, 1)
-	addEventHandler("onColShapeHit", self.m_Colshape, bind(self.onColShapeHit, self))
-	addEventHandler("onColShapeLeave", self.m_Colshape, bind(self.onColShapeLeave, self))
+	--self.m_Colshape = createColSphere(pos.x, pos.y, pos.z+1, 1)
+	--addEventHandler("onColShapeHit", self.m_Colshape, bind(self.onColShapeHit, self))
+	--addEventHandler("onColShapeLeave", self.m_Colshape, bind(self.onColShapeLeave, self))
 
 	self:refreshObjectSize()
 end
 
 function Growable:destructor()
 	GrowableManager:getSingleton():removePlant(self.m_Id)
-	if isElement(self.m_Colshape) then self.m_Colshape:destroy() end
+	--if isElement(self.m_Colshape) then self.m_Colshape:destroy() end
 	if isElement(self.m_Object) then self.m_Object:destroy() end
 end
 
@@ -89,6 +89,7 @@ function Growable:harvest(player)
 					player:sendInfo(_("Du hast einen Blumenstrauß geerntet!", player))
 					giveWeapon(player, 14, 1, true)
 					sql:queryExec("DELETE FROM ??_plants WHERE Id = ?", sql:getPrefix(), self.m_Id)
+					triggerClientEvent("ColshapeStreamer:deleteColshape", player, "growable", self.m_Id)
 					delete(self)
 				else
 					player:sendError(_("Du hast bereits einen Blumenstrauß dabei!", player))
@@ -100,27 +101,41 @@ function Growable:harvest(player)
 		end
 
 		if self.ms_Illegal and player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty() then
-			player:sendInfo(_("Du hast %d %s sichergestellt!", player, amount, self.ms_Item))
-			self.m_BankAccountServer:transferMoney(player:getFaction(), amount*5, "Drogen-Asservation", "Faction", "Drugs")
+			if amount > 0 then
+				StateEvidence:getSingleton():addItemToEvidence(player, self.ms_Item, amount)
+			end
 			player:triggerEvent("hidePlantGUI")
 			self.m_Size = 0
 			sql:queryExec("DELETE FROM ??_plants WHERE Id = ?", sql:getPrefix(), self.m_Id)
+			triggerClientEvent("ColshapeStreamer:deleteColshape", player, "growable", self.m_Id)
 			StatisticsLogger:getSingleton():addDrugHarvestLog(player, self.m_Type, self.m_OwnerId, amount, 1)
 			delete(self)
 		elseif amount > 0 then
 			if player:getInventory():getFreePlacesForItem(self.ms_Item) >= amount then
-				player:sendInfo(_("Du hast %d %s geerntet!", player, amount, self.ms_Item))
-				player:getInventory():giveItem(self.ms_Item, amount)
-				player:triggerEvent("hidePlantGUI")
-				self.m_Size = 0
-				self.m_TimesEarned = self.m_TimesEarned + 1
-				self:refreshObjectSize()
-				StatisticsLogger:getSingleton():addDrugHarvestLog(player, self.m_Type, self.m_OwnerId, amount, 0)
-				if self.m_TimesEarned >= self.ms_TimesEarnedForDestroy  then
-					sql:queryExec("DELETE FROM ??_plants WHERE Id = ?", sql:getPrefix(), self.m_Id)
-					delete(self)
+				if not player.m_IsHarvesting then
+					player.m_IsHarvesting = true
+					toggleAllControls(player, false)
+					player:setAnimation("bomber", "bom_plant", 1500, false, false, false, false)
+					setTimer(function(player, amount)
+						player:sendInfo(_("Du hast %d %s geerntet!", player, amount, self.ms_Item))
+						player:getInventory():giveItem(self.ms_Item, amount)
+						player:triggerEvent("hidePlantGUI")
+						self.m_Size = 0
+						self.m_TimesEarned = self.m_TimesEarned + 1
+						self:refreshObjectSize()
+						StatisticsLogger:getSingleton():addDrugHarvestLog(player, self.m_Type, self.m_OwnerId, amount, 0)
+						if self.m_TimesEarned >= self.ms_TimesEarnedForDestroy  then
+							sql:queryExec("DELETE FROM ??_plants WHERE Id = ?", sql:getPrefix(), self.m_Id)
+							triggerClientEvent("ColshapeStreamer:deleteColshape", player, "growable", self.m_Id)
+							delete(self)
+						end
+						player:setData("Plant:Current", false)
+						toggleAllControls(player, true)
+						player.m_IsHarvesting = false
+					end, 1500, 1, player, amount)
+				else
+					player:sendError(_("Du erntest gerade schon eine Pflanze!", player))
 				end
-				player:setData("Plant:Current", false)
 			else
 				player:sendError(_("Du hast in deinem Inventar nicht Platz für %d %s!", player, amount, self.ms_Item))
 			end
@@ -138,14 +153,13 @@ end
 function Growable:waterPlant(player)
 	if not player.vehicle then
 		self.m_LastWatered = getRealTime().timestamp
-		player:setAnimation("bomber", "BOM_Plant_Loop", 2000, true, false)
-		setTimer(function()
-			player:setAnimation("carry", "crry_prtial", 1, false, true, true, false) -- Stop Animation Work Arround
-		end, 2000 ,1)
+		toggleAllControls(player, false)
+		player:setAnimation("paulnmac", "piss_out", 1500, false, false, false, false)
 		player:triggerEvent("Plant:onWaterPlant", self:getObject())
 		self:getObject():setData("Plant:Hydration", true, true)
 		self:onColShapeLeave(player, true)
 		self:onColShapeHit(player, true)
+		Timer(toggleAllControls, 1500, 1, player, true)
 	else
 		player:sendError(_("Du sitzt in einem Fahrzeug!", player))
 	end

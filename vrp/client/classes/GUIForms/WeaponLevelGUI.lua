@@ -11,12 +11,13 @@ inherit(Singleton, WeaponLevelGUI)
 addRemoteEvents{"openWeaponLevelGUI"}
 
 function WeaponLevelGUI:constructor()
-	GUIForm.constructor(self, screenWidth/2-(300/2), screenHeight/2-(310/2), 300, 310)
+	GUIForm.constructor(self, screenWidth/2-(300/2), screenHeight/2-(310/2), 300, 310, true, false, Vector3(-7190.96, -2482.61, 31.4))
 
 	local currentLevel = localPlayer:getWeaponLevel()
 	local nextLevel = currentLevel+1
 
-	GUIWindow:new(0, 0, 300, 500, _"Waffenlevel", true, true, self)
+	self.m_Window = GUIWindow:new(0, 0, 300, 500, _"Waffenlevel", true, true, self)
+	self.m_Window:addHelpButton(LexiconPages.WeaponLevel)
 	GUILabel:new(10, 40, 280, 20, _"Hier kannst du dein Waffenlevel verbessern.\nEin besseres Waffenlevel wird benötigt um bessere Waffen zu kaufen und bessere Waffenskills zu erhalten!",self):setMultiline(true)
 	GUILabel:new(10, 125, 280, 25, _"Aktuelles Level:", self)
 	self.m_ProgressBar = GUIProgressBar:new(10, 150, 280, 20, self)
@@ -27,7 +28,6 @@ function WeaponLevelGUI:constructor()
 	if nextLevel <= 10 then
 		GUILabel:new(10, 185, 280, 25, _("Nächstes Level:", nextLevel), self)
 		GUILabel:new(10, 210, 280, 20, _("Kosten: %d$", WEAPON_LEVEL[nextLevel]["costs"]), self)
-		GUILabel:new(10, 230, 280, 20, _("Benötigte Spielstunden: %d", WEAPON_LEVEL[nextLevel]["hours"]), self)
 		self.m_TrainButton = GUIButton:new(10, 260, 280, 30, "Trainieren", self):setBackgroundColor(Color.Accent)
 		self.m_TrainButton.onLeftClick = function()
 			triggerServerEvent("startWeaponLevelTraining", localPlayer)

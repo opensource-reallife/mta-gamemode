@@ -9,7 +9,7 @@ JobBoxer = inherit(Job)
 addRemoteEvents{"boxerJobFightList", "boxerJobTopList", "boxerJobStartFight" }
 
 function JobBoxer:constructor()
-    Job.constructor(self, 307, 2228.39, -1718.57, 13.55, 90.98, "BoxingGlove.png", {200, 40, 30}, "files/images/Jobs/HeaderBoxer.png", _(HelpTextTitles.Jobs.Boxer):gsub("Job: ", ""), _(HelpTexts.Jobs.Boxer))
+    Job.constructor(self, 307, 2228.39, -1718.57, 13.55, 90.98, "BoxingGlove.png", {200, 40, 30}, "files/images/Jobs/HeaderBoxer.png", (HelpTextTitles.Jobs.Boxer):gsub("Job: ", ""), _(HelpTexts.Jobs.Boxer), LexiconPages.JobBoxer)
     self:setJobLevel(JOB_LEVEL_BOXER)
 
 
@@ -19,11 +19,11 @@ function JobBoxer:constructor()
 end
 
 function JobBoxer:start()
-    HelpBar:getSingleton():addText(_(HelpTextTitles.Jobs.Boxer), _(HelpTexts.Jobs.Boxer))
+    HelpBar:getSingleton():setLexiconPage(LexiconPages.JobBoxer)
 end
 
 function JobBoxer:stop()
-    HelpBar:getSingleton():addText(_(HelpTextTitles.General.Main), _(HelpTexts.General.Main), false)
+    HelpBar:getSingleton():setLexiconPage(nil)
 end
 
 function JobBoxer:openFightList()
@@ -46,7 +46,10 @@ function JobBoxer:startFight(type, dimension)
     self.m_Boxer = Ped(math.random(80, 81), Vector3(763.25, 11.18, 1001.16), 90)
     self.m_Boxer:setInterior(5)
     self.m_Boxer:setDimension(dimension)
+    self.m_Boxer:setStat(24, 1000)
     self.m_Boxer:setHealth(JobBoxerFights[type][2])
+    self.m_Boxer:setArmor(math.max(0, JobBoxerFights[type][2] - 200))
+    self.m_Boxer.m_isClientSided = true
     self.m_BoxLevel = type
 
     self.m_ColShape = ColShape.Cuboid(757.51, 7.76, 999, 7, 7, 5)

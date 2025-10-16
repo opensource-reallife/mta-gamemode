@@ -1,4 +1,5 @@
 Core = inherit(Object)
+addRemoteEvents{"retrieveWebSecret"}
 
 function Core:constructor()
 	-- Small hack to get the global core immediately
@@ -11,8 +12,14 @@ function Core:constructor()
 	Version:new()
 	TinyInfoLabel:new()
 	Provider:new()
-
+	if not DISABLE_INFLUX then
+		influx = InfluxDB:new("", "", "")
+		InfluxLogging:new()
+	end
 	Cursor = GUICursor:new()
+
+	localPlayer:setLocale(core:get("HUD", "locale", getLocalization()["code"] == "de_DE" and "de" or "en"))
+	self.m_WhitelistChecker = setTimer(bind(self.checkDomainsWhitelist, self), 1000, 0)
 
 	if HTTP_DOWNLOAD then -- In debug mode use old Provider
 		showChat(false)
@@ -22,7 +29,7 @@ function Core:constructor()
 				fadeCamera(true)
 
 				local dgi = HTTPDownloadGUI:getSingleton()
-				local provider = HTTPProvider:new(FILE_HTTP_SERVER_URL, dgi)
+				local provider = HTTPProvider:new(FILE_HTTP_FALLBACK_URL, dgi)
 				if provider:start() then -- did the download succeed
 					delete(dgi)
 					self:onDownloadComplete()
@@ -30,7 +37,7 @@ function Core:constructor()
 					outputConsole("retrying download from different mirror")
 					delete(dgi)
 					local dgi = HTTPDownloadGUI:getSingleton()
-					local provider = HTTPProvider:new(FILE_HTTP_FALLBACK_URL, dgi)
+					local provider = HTTPProvider:new(FILE_HTTP_SERVER_URL, dgi)
 					if provider:start(true) then -- did the download succeed
 						delete(dgi)
 						self:onDownloadComplete()
@@ -39,29 +46,40 @@ function Core:constructor()
 			end
 		)()
 	else
-		local dgi = DownloadGUI:getSingleton()
-		Provider:getSingleton():addFileToRequest("vrp.list")
-		Provider:getSingleton():requestFiles(
-			function()
-				local fh = fileOpen("vrp.list")
-				local json = fileRead(fh, fileGetSize(fh))
-				fileClose(fh)
-				local tbl = fromJSON(json)
-
-				for _, v in pairs(tbl) do
-					Provider:getSingleton():addFileToRequest(v)
-				end
-
-				Provider:getSingleton():requestFiles(
-					bind(DownloadGUI.onComplete, dgi),
-					bind(DownloadGUI.onProgress, dgi)
-				)
+		-- translation first, everything else second
+		for lang, state in pairs(TranslationManager.ms_AvailableTranslations) do
+			if state then
+				Provider:getSingleton():addFileToRequest(("files/translation/client.%s.po"):format(lang))
+				Provider:getSingleton():addFileToRequest(("files/translation/server.%s.po"):format(lang))
 			end
-		)
+		end
 
+		Provider:getSingleton():addFileToRequest("vrp.list")
+		Provider:getSingleton():requestFiles(function()
+			TranslationManager:getSingleton():loadTranslation("en")
+		
+			local fh = fileOpen("vrp.list")
+			local json = fileRead(fh, fileGetSize(fh))
+			fileClose(fh)
+			local tbl = fromJSON(json)
+	
+			for _, v in pairs(tbl) do
+				Provider:getSingleton():addFileToRequest(v)
+			end
+			
+			local dgi = DownloadGUI:getSingleton()
+			Provider:getSingleton():requestFiles(
+				bind(DownloadGUI.onComplete, dgi),
+				bind(DownloadGUI.onProgress, dgi),
+				bind(DownloadGUI.onWrite, dgi)
+			)
+		end)
+		
 		setAmbientSoundEnabled( "gunfire", false )
 		showChat(true)
 	end
+
+	addEventHandler("retrieveWebSecret", localPlayer, function(secret) INGAME_WEB_SECRET = secret end)
 end
 
 function Core:onDownloadComplete()
@@ -85,11 +103,13 @@ function Core:ready() --onClientResourceStart
 		["LastCompanySkin"] = core:get("Cache", "LastCompanySkin", 0),
 	})
 
+	triggerServerEvent("playerLocale", localPlayer, localPlayer:getLocale())
+
 	-- Request Browser Domains
-	Browser.requestDomains{"exo-reallife.de", "forum.exo-reallife.de", INGAME_WEB_PATH:gsub("https://", ""), "i.imgur.com"}
+	Admin:new()
+	Browser.requestDomains(DOMAINS, false, self.m_BrowserWhitelistResponse)
 	DxHelper:new()
 	TranslationManager:new()
-	HelpTextManager:new()
 	MTAFixes:new()
 	ClickHandler:new()
 	HoverHandler:new()
@@ -97,8 +117,6 @@ function Core:ready() --onClientResourceStart
 	--GangAreaManager:new()
 	HelpBar:new()
 	JobManager:new()
-	TippManager:new()
-	--JailBreak:new()
 	RadioStationManager:new()
 	DimensionManager:new()
 	Inventory:new()
@@ -106,9 +124,13 @@ function Core:ready() --onClientResourceStart
 	Guns:getSingleton():toggleHitMark(core:get("HUD","Hitmark", false))
 	Guns:getSingleton():toggleTracer(core:get("HUD","Tracers", false))
 	Guns:getSingleton():toggleMonochromeShader(core:get("HUD", "KillFeedbackShader", false))
+	localPlayer:setChatSettings()
+	ThrowObject:new()
 	Casino:new()
 	TrainManager:new()
-	Fire:new()
+	FireManager:new()
+	SARManager:new()
+	BankRobberyManager:new()
 	VehicleInteraction:new()
 	EventManager:new()
 	DMRaceEvent:new()
@@ -116,10 +138,13 @@ function Core:ready() --onClientResourceStart
 	VehicleGarages:new()
 	SkinShopGUI.initializeAll()
 	ItemManager:new()
+	CinemaManager:new()
+	CustomAnimationManager:new()
+	ColorCarsManager:new()
 	--// Gangwar
 	GangwarClient:new()
 	GangwarStatistics:new()
-
+	Damage:new()
 	if core:get("World", "MostWantedEnabled", true) then MostWanted:new() end
 	if core:get("Other", "Movehead", true) then
 		localPlayer:startLookAt()
@@ -129,21 +154,31 @@ function Core:ready() --onClientResourceStart
 	else
 		setFarClipDistance(992)
 	end
+	if not core:get("Sounds", "Interiors", true) then
+		setInteriorSoundsEnabled(false)
+	end
+
+	localPlayer.m_DisplayMode = core:get("HUD", "ToggleQuickDisplay", true)
+	--Light = DynamicLightingBind:getSingleton() | disabled needs to be rewritten for mutliple pass
 
 	NoDm:new()
 	FactionManager:new()
 	CompanyManager:new()
+	VehicleImportManager:new()
 	DeathmatchManager:new()
 	HorseRace:new()
 	Townhall:new()
 	Sewers:new()
+	PlayHouse:new()
 	PremiumArea:new()
 
+	ColshapeStreamer:new()
 	Plant.initalize()
 	ItemSellContract:new()
 	Neon.initalize()
 	CoronaEffect.initalize()
 	GroupSaleVehicles.initalize()
+	GroupRentVehicles.initalize()
 	EasterEgg:new()
 	EasterEggArcade.Game:new()
 	Shaders.load()
@@ -158,9 +193,9 @@ function Core:ready() --onClientResourceStart
 
 	GroupRob:new()
 	DrivingSchool:new()
-	Help:new()
 	ClientStatistics:new()
 	Nametag:new()
+	VehicleMark:new()
 	PickupWeaponManager:new()
 
 	if EVENT_HALLOWEEN then
@@ -169,18 +204,33 @@ function Core:ready() --onClientResourceStart
 	if EVENT_CHRISTMAS then
 		Christmas:new()
 	end
+	if SNOW_SHADERS_ENABLED then
+		triggerEvent("switchSnowFlakes", root, core:get("Event", "SnowFlakes", EVENT_CHRISTMAS))
+		triggerEvent("switchSnowGround", root, core:get("Event", "SnowGround", EVENT_CHRISTMAS), core:get("Event", "SnowGround_Extra", EVENT_CHRISTMAS))
+	end
 	if EVENT_EASTER_SLOTMACHINES_ACTIVE then --these are only slot machine textures
 		Easter.updateTextures()
 	end
 
 	ItemSmokeGrenade:new() -- this is loaded here instead of beeing loaded in ItemManager.lua due to a shader-bug
 	ExplosiveTruckManager:new()
+	JewelryStoreRobberyManager:new()
 	VehicleTurbo:new()
 	PlaneManager:new()
 	DrugFactory:new()
+	FileModdingHelper:new()
+	PoliceAnnouncements:new()
+	BlackJackTable:new()
+	CasinoWheel:new()
+	PedScale:new()
+	VehicleGuns:new()
+	HelicopterDrivebyManager:new()
+	RcVanExtension:new()
+	Weather:new()
 end
 
 function Core:afterLogin()
+	Time:new()
 	RadioGUI:new()
 	HUDSpeedo:new()
 	HUDAviation:new()
@@ -197,6 +247,14 @@ function Core:afterLogin()
 	WheelOfFortune:new()
 	Atrium:new()
 	ElementInfoManager:new()
+	AtmManager:new()
+	PermissionsManager:new()
+	if EVENT_HALLOWEEN then
+		HalloweenEasterEggs:new()
+	end
+	if EVENT_EASTER then
+		Easter:new()
+	end
 
 	for i = 1,#GUNBOX_CRATES do
 		ElementInfo:new(GUNBOX_CRATES[i], "Waffenbox", 2)
@@ -211,10 +269,6 @@ function Core:afterLogin()
 	ScoreboardGUI:new()
 	ScoreboardGUI:getSingleton():close()
 
-	if not localPlayer:getJob() then
-		-- Change text in help menu (to the main text)
-		HelpBar:getSingleton():addText(_(HelpTextTitles.General.Main), _(HelpTexts.General.Main), false)
-	end
 
 	localPlayer:setPlayTime()
 	localPlayer:deactivateBlur(core:get("Shaders", "BlurLevel", false))
@@ -224,7 +278,7 @@ function Core:afterLogin()
 	Fishing.load()
 	TurtleRace.load()
 	GUIForm3D.load()
-	NonCollidingSphere.load()
+	NonCollisionArea.load()
 	TextureReplacer.loadBacklog()
 
 	addCommandHandler("self", function() KeyBinds:getSingleton():selfMenu() end)
@@ -243,6 +297,7 @@ function Core:afterLogin()
 	end
 
 	setElementData(localPlayer, "isEquipmentGUIOpen", false, true)
+	setElementData(localPlayer, "SpawnAfterJail", core:get("Other", "SpawnAfterJail", false), true)
 
 	setTimer(
 		function()
@@ -260,6 +315,16 @@ function Core:onWebSessionCreated() -- this gets called from LocalPlayer when th
 	Phone:new()
 	Phone:getSingleton():close()
 	showChat(true)
+end
+
+function Core:checkDomainsWhitelist()
+	for k, v in pairs(DOMAINS) do
+		if Browser.isDomainBlocked(v) then
+			Browser.requestDomains(DOMAINS, false, checkRequest)
+			return
+		end
+	end
+	killTimer(self.m_WhitelistChecker)
 end
 
 function Core:destructor()
@@ -296,7 +361,7 @@ setTimer(
 	function()
 		local attachedBlips = {}
 		for _, v in pairs(getElementsByType("blip")) do
-			if v:isAttached() and getElementType(v:getAttachedTo()) == "player" then
+			if v:isAttached() and getElementType(v:getAttachedTo()) == "player" and not v:getData("isGangwarBlip") then
 				table.insert(attachedBlips, v)
 			end
 		end

@@ -8,7 +8,7 @@
 GUIForm3D = inherit(Object)
 GUIForm3D.Map = {}
 
-function GUIForm3D:constructor(position, rotation, size, resolution, streamdistance, follow)
+function GUIForm3D:constructor(position, dim, rotation, size, resolution, streamdistance, follow)
 	-- Calculate Euler angles from plane normals (since Euler angles are easier to handle than line pos + normals)
 	self.m_StartPosition, self.m_EndPosition, self.m_Normal = math.getPlaneInfoFromEuler(position, rotation, size)
 	self.m_CacheArea = false
@@ -18,6 +18,7 @@ function GUIForm3D:constructor(position, rotation, size, resolution, streamdista
 
 	-- Create streaming stuff
 	self.m_StreamArea = createColSphere(position, streamdistance or 150)
+	self.m_StreamArea:setDimension(dim)
 	addEventHandler("onClientColShapeHit", self.m_StreamArea, bind(self.StreamArea_Hit, self))
 	addEventHandler("onClientColShapeLeave", self.m_StreamArea, bind(self.StreamArea_Leave, self))
 

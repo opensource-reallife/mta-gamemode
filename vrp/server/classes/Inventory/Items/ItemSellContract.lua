@@ -23,12 +23,17 @@ function ItemSellContract:Event_OnSellRequest( player, price, veh )
 		local car = getPedOccupiedVehicle(client)
 		if car == veh then
 			if car.m_Premium then
-				client:sendError("Dieses Fahrzeug ist ein Premium Fahrzeug und darf nicht verkauft werden!")
+				client:sendError(_("Dieses Fahrzeug ist ein Premium Fahrzeug und darf nicht verkauft werden!", client))
 				return
 			end
 
-			if #player:getVehicles() >= math.floor(MAX_VEHICLES_PER_LEVEL*player:getVehicleLevel()) then
-				client:sendError("Der Spieler hat die maximalen Fahrzeug-Slots erreicht!")
+			if car:getOwner() ~= client:getId() then
+				client:sendError(_("Das Fahrzeug gehört nicht dir.", client))
+				return
+			end 
+
+			if player:getVehicleCountWithoutPrem() >= player:getMaxVehicles() then
+				client:sendError(_("Der Spieler hat die maximalen Fahrzeug-Slots erreicht!", client))
 				return
 			end
 
@@ -53,18 +58,24 @@ function ItemSellContract:Event_OnTradeSuceed( player, price, car )
 			if player ~= client then
 				if player.lastContract == client then
 					if car.m_Premium then
-						client:sendError("Dieses Fahrzeug ist ein Premium Fahrzeug und darf nicht verkauft werden!")
+						client:sendError(_("Dieses Fahrzeug ist ein Premium Fahrzeug und darf nicht verkauft werden!", client))
 						return
 					end
-					if client:transferBankMoney(player, price, "Fahrzeug-Handel", "Gameplay", "VehicleTrade") then
+					if car:getOwner() ~= player:getId() then
+						player:sendError(_("Das Fahrzeug gehört nicht dir.", player))
+						return
+					end 
+					if client:transferBankMoney({"player", player:getId(), true}, price, "Fahrzeug-Handel", "Gameplay", "VehicleTrade") then
 						client:triggerEvent("closeVehicleAccept")
 						client:sendInfo(_("Der Handel wurde abgeschlossen!", client))
 						player:sendInfo(_("Der Handel wurde abgeschlossen!", player))
 						VehicleManager:getSingleton():removeRef( car, false)
 						car:setOwner( client )
 						car:setData("OwnerName", client.name, true)
+						car:setData("OwnerID", client:getId(), true)
 						VehicleManager:getSingleton():addRef( car, false)
 						car.m_Keys = {}
+						setElementData(car, "VehicleKeys", car.m_Keys)
 						VehicleManager:getSingleton():syncVehicleInfo( player )
 						VehicleManager:getSingleton():syncVehicleInfo( client )
 						player:getInventory():removeItem("Handelsvertrag", 1)

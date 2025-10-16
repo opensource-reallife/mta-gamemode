@@ -40,7 +40,7 @@ function Collectables:checkCollectable(collectableID)
             client:setPrivateSync("Collectables_Collected", #client:getCollectables().collected)
 			client:setCollectables(collectables)
 
-			client:sendShortMessage(_("Du hast ein eXo-Logo gefunden!\nDafür erhälst du %s eXo-Points!", client, 200))
+			client:sendShortMessage(_("Du hast ein Sammelobjekt gefunden!\nDafür erhälst du %s Punkte!", client, 200))
 			client:givePoints(200)
 			client:save() -- dirty but should work to prevent data loss
 			sql:queryExec("UPDATE ??_collectables SET CollectCount = CollectCount + 1 WHERE Id = ?", sql:getPrefix(), collectableID)

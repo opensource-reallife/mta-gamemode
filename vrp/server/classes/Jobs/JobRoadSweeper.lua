@@ -6,8 +6,8 @@
 -- *
 -- ****************************************************************************
 JobRoadSweeper = inherit(Job)
-local SWEEPER_LOAN = 28
-local SWEEPER_MAX_LOAD = 50
+local SWEEPER_LOAN = 3
+local SWEEPER_MAX_LOAD = 30
 
 function JobRoadSweeper:constructor()
 	Job.constructor(self)
@@ -50,19 +50,14 @@ function JobRoadSweeper:onDeliveryHit(hitElement, dim)
 		if hitElement.vehicle and hitElement.vehicle.model == 574 and hitElement:getJob() == self then
 			if hitElement.vehicle.Garbage and hitElement.vehicle.Garbage > 0 then
 				local garbage = hitElement.vehicle.Garbage
-				local loan = garbage*SWEEPER_LOAN
+				local loan = garbage * SWEEPER_LOAN * JOB_PAY_MULTIPLICATOR * self:getMultiplicator()
 				hitElement.vehicle.Garbage = 0
 				hitElement:sendShortMessage(_("%d Abfälle abgegeben!\nAbfallbehälter: %d/%d", hitElement, garbage, hitElement.vehicle.Garbage, SWEEPER_MAX_LOAD))
 
 				local duration = getRealTime().timestamp - hitElement.m_LastJobAction
 				hitElement.m_LastJobAction = getRealTime().timestamp
 				self.m_BankAccount:transferMoney({hitElement, true}, loan, "Straßenreiniger-Job", "Job", "RoadSweeper")
-				local points = 0
-				for i = 0, garbage do
-					if chance(15) then
-						points = points + math.floor(1*JOB_EXTRA_POINT_FACTOR)
-					end
-				end
+				local points = math.round(loan / 50 * JOB_EXTRA_POINT_FACTOR)
 				hitElement:givePoints(points)
 
 				StatisticsLogger:getSingleton():addJobLog(hitElement, "jobRoadSweeper", duration, loan, nil, nil, points)

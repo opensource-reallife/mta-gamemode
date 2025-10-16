@@ -1,15 +1,16 @@
-QuestPackageTransport = inherit(Quest)
+QuestPackageTransport = inherit(ChristmasQuest)
 
 QuestPackageTransport.Targets = {
-	[6] = Vector3(626.15, -601.29, 16),
-	[11] = Vector3(-2149.20, -2445.39, 29.9),
-	[16] = Vector3(30.3, -2507.80, 35.70),
+	[4] = Vector3(-2558.92, 658.28, 13.95),
+	[8] = Vector3(101, -223, 0.7),
+	[11] = Vector3(2721.7, -1925.3, 12.7),
+	[16] = Vector3(2034.548, 983.261, 9.9),
 
 
 }
 
 function QuestPackageTransport:constructor(id)
-	Quest.constructor(self, id)
+	ChristmasQuest.constructor(self, id)
 	self.m_Boxes = {}
 	self.m_Vehicles = {}
 	self.m_Trailers = {}
@@ -30,14 +31,14 @@ function QuestPackageTransport:constructor(id)
 end
 
 function QuestPackageTransport:destructor(id)
-	Quest.destructor(self)
+	ChristmasQuest.destructor(self)
 
 	removeEventHandler("onPlayerVehicleExit", getRootElement(), self.m_ExitBind)
 	removeEventHandler("onTrailerDetach", getRootElement(), self.m_DetachBind)
 end
 
 function QuestPackageTransport:addPlayer(player)
-	Quest.addPlayer(self, player)
+	ChristmasQuest.addPlayer(self, player)
 	self.m_Vehicles[player] = TemporaryVehicle.create(485, 1488.35, -1722, 13.20, 270)
 	self.m_Vehicles[player].owner = player
 	self.m_Vehicles[player].christmas = true
@@ -48,7 +49,7 @@ function QuestPackageTransport:addPlayer(player)
 		player:warpIntoVehicle(self.m_Vehicles[player])
 		self.m_Vehicles[player]:attachTrailer(self.m_Trailers[player])
 		for i=1, 3 do
-			self.m_Boxes[player][i] = createObject(3878, 1484.88, -1721.95, 14.60)
+			self.m_Boxes[player][i] = createObject(2070, 1484.88, -1721.95, 14.60)
 			self.m_Boxes[player][i]:setScale(0.4)
 			self.m_Boxes[player][i]:setCollisionsEnabled(false)
 			self.m_Boxes[player][i]:attach(self.m_Trailers[player], 0 ,-2+i, 0)
@@ -61,7 +62,7 @@ function QuestPackageTransport:addPlayer(player)
 end
 
 function QuestPackageTransport:removePlayer(player)
-	Quest.removePlayer(self, player)
+	ChristmasQuest.removePlayer(self, player)
 	if isElement(self.m_Vehicles[player]) then self.m_Vehicles[player]:destroy() end
 	if isElement(self.m_Trailers[player]) then self.m_Trailers[player]:destroy() end
 	for i, package in pairs(self.m_Boxes[player]) do
@@ -75,7 +76,7 @@ end
 function QuestPackageTransport:detach(vehicle)
 	if vehicle.christmas and vehicle.owner and isElement(vehicle.owner) then
 		local player = vehicle.owner
-		player:sendError("Du hast die Päckchen verloren! Der Quest wurde beendet!")
+		player:sendError("Du hast die Päckchen verloren! Die Quest wurde beendet!")
 		self:removePlayer(player)
 	end
 end
@@ -83,7 +84,7 @@ end
 function QuestPackageTransport:exit(vehicle)
 	if vehicle.christmas and vehicle.owner and isElement(vehicle.owner) then
 		local player = vehicle.owner
-		player:sendError("Du bist ausgestiegen! Der Quest wurde beendet!")
+		player:sendError("Du bist ausgestiegen! Die Quest wurde beendet!")
 		self:removePlayer(player)
 	end
 end

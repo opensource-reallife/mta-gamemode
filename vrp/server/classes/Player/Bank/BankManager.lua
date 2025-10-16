@@ -32,6 +32,10 @@ function BankManager:Event_Withdraw(amount)
 end
 
 function BankManager:Event_Deposit(amount)
+	if FactionEvil:getSingleton().m_Raids[client:getName()] and not timestampCoolDown(FactionEvil:getSingleton().m_Raids[client:getName()], 15) then
+		client:sendError(_("Du kannst während eines Überfalls kein Geld einzahlen!", client))
+		return
+	end
 	amount = tonumber(amount)
 	if not amount or amount <= 0 then return end
 	if isNan(amount) then return end
@@ -60,8 +64,8 @@ function BankManager:Event_Transfer(toPlayerName, amount, purpose)
 			client:transferBankMoney(CompanyManager:getSingleton():getFromId(CompanyStaticId.SANNEWS), amount, ("Spende an San News von %s\nZweck: %s"):format(client:getName(), purpose), "Gameplay", "SanNewsDonation")
 			client:triggerEvent("bankMoneyBalanceRetrieve", client:getBankMoney())
 			CompanyManager:getSingleton():getFromId(CompanyStaticId.SANNEWS):addLog(client, "Spenden", ("hat %d$ gespendet! (Zweck: %s)"):format(amount, purpose))
-		elseif toPlayerName == "eXo Event-Team" then
-			client:transferBankMoney(Admin:getSingleton().m_BankAccount, amount, ("Spende an eXo Event-Team von %s"):format(client:getName()), "Gameplay", "eXoTeamDonation")
+		elseif toPlayerName == "Event-Team" then
+			client:transferBankMoney(Admin:getSingleton().m_BankAccount, amount, ("Spende an Event-Team von %s"):format(client:getName()), "Gameplay", "eXoTeamDonation")
 			client:triggerEvent("bankMoneyBalanceRetrieve", client:getBankMoney())
 		else
 			local id = Account.getIdFromName(toPlayerName)

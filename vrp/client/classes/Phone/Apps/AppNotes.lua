@@ -8,7 +8,7 @@
 AppNotes = inherit(PhoneApp)
 
 function AppNotes:constructor()
-	PhoneApp.constructor(self, "Notizen", "IconNotes.png")
+	PhoneApp.constructor(self, _"Notizen", "IconNotes.png")
 end
 
 function AppNotes:onOpen(form)

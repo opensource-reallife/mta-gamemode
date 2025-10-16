@@ -7,7 +7,7 @@
 -- ****************************************************************************
 local findItems =
 {
-	"TV-Reciever",
+	"TV-Receiver",
 	"Handy",
 	"Armbanduhr",
 	"Kreditkarte",
@@ -17,8 +17,10 @@ local findItems =
 	"Tablet",
 	"Laptop",
 	"MP3-Player",
+	"iPod",
 	"Digitalkamera",
 	"Elektrokabel",
+	"Autoschlüssel",
 }
 
 local sellerPeds =
@@ -30,7 +32,7 @@ local sellerPeds =
 }
 
 GroupHouseRob = inherit( Singleton )
-GroupHouseRob.COOLDOWN_TIME = 1000*60*15
+GroupHouseRob.COOLDOWN_TIME = 60*15 -- in sec
 addRemoteEvents{"GroupRob:SellRobItems"}
 function GroupHouseRob:constructor()
 	self.m_GroupsRobCooldown = {}
@@ -75,15 +77,35 @@ end
 function GroupHouseRob:Event_OnSellAccept()
 	if client then
 		if client.m_ClickPed then
+			if getDistanceBetweenPoints3D(client.m_ClickPed:getPosition(), client:getPosition()) > 10 then
+				client:sendError(_("Du bist zu weit entfernt!", client))
+				return
+			end
+			if client and client:getFaction():isStateFaction() and client:isFactionDuty() then 
+				client:sendError(_("Du kannst während du im Dienst bist, kein Diebesgut verkaufen!"), client) 
+				return 
+			end
 			local inv = client:getInventory()
 			if inv then
-				local amount = inv:getItemAmount("Diebesgut")
-				local randomPrice = math.random( 500,1000)
-				local pay = amount * randomPrice
-				inv:removeAllItem("Diebesgut")
+				local itemName = "Diebesgut"
+				local bag = (InventoryManager:getSingleton():getItemDataForItem(itemName))["Tasche"]
+				local place = inv:getPlaceForItem(itemName, 0)
+				local pay = tonumber(inv:getItemValueByBag(bag, place)) or 0
+				inv:removeAllItem(itemName)
 				self.m_BankServerAccount:transferMoney(client, pay, "Verkauf von Diebesware", "Group", "HouseRob")
 				client:meChat(true, "streckt seine Hand aus und nimmt einen Umschlag mit Scheinen entgegen!")
 				client:sendPedChatMessage(client.m_ClickPed:getData("Ped:Name"), "Gutes Geschäft. Komm wieder wenn du mehr hast!")
+				-- Give Wanteds
+				if chance(5) then
+					local wanteds = WANTED_AMOUNT_HOUSEROB
+					setTimer(function(client)
+						if client and isElement(client) then
+							client:sendWarning(_("Deine illegalen Aktivitäten wurden von einem Augenzeugen an das SAPD gemeldet!", client))
+							client:giveWanteds(wanteds)
+							client:sendMessage(_("Verbrechen begangen: %s, %d Wanted/s", client, _("Handel mit illegalen Gegenständen", client), wanteds), 255, 255, 0)
+						end
+					end, math.random(2000, 10000), 1, client)
+				end
 			end
 		end
 	end
@@ -114,7 +136,7 @@ function GroupHouseRob:Event_onClickPed(  m, s, player)
 					player:meChat(true, "nickt mit dem Kopf.")
 					player.m_ClickPed = source
 					player:sendPedChatMessage( source:getData("Ped:Name"), "Lass mich mal sehen!")
-					player:triggerEvent("showHouseRobSellGUI")
+					player:triggerEvent("showHouseRobSellGUI", source)
 				else
 					player:meChat(true, "schüttelt den Kopf.")
 					player:sendPedChatMessage( source:getData("Ped:Name"), "Hmm... Komm wieder wenn du etwas hast!")
@@ -129,22 +151,23 @@ function GroupHouseRob:startNewRob( house, player )
 		local group = player:getGroup()
 		if group then
 			if group:getType() == "Gang" then
-				if FactionState:getSingleton():countPlayers() < HOUSEROB_MIN_MEMBERS then
-					player:sendError(_("Es müssen mindestens %d Staatsfraktionisten online sein!", player, HOUSEROB_MIN_MEMBERS))
-					return false
+				if player:isFactionDuty() or player:isCompanyDuty() then return player:sendError(_("Du kannst im Fraktions- oder Unternehmensdienst keinen Hausraub starten!", player)) end
+				local activeState = FactionState:getSingleton():countPlayers(true, false)
+				for _, player in pairs(FactionState:getSingleton():getOnlinePlayers(true, false)) do
+					if player:getGroup() == group then activeState = activeState - 1 end
 				end
-				if player:getFaction() and player:getFaction():isStateFaction() then
-					player:sendError(_("Als Staatsfraktionist kannst du keine Häuser ausrauben!", player))
+
+				if activeState < HOUSEROB_MIN_MEMBERS then
+					player:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!", player, HOUSEROB_MIN_MEMBERS))
 					return false
 				end
 
 				if not self.m_HousesRobbed[house] then
-					local tick = getTickCount()
 					if not self.m_GroupsRobCooldown[group] then
-						self.m_GroupsRobCooldown[group]  = 0 - GroupHouseRob.COOLDOWN_TIME
+						self.m_GroupsRobCooldown[group]  = getRealTime().timestamp - GroupHouseRob.COOLDOWN_TIME - 1
 					end
-					if self.m_GroupsRobCooldown[group] + GroupHouseRob.COOLDOWN_TIME <= tick then
-						self.m_GroupsRobCooldown[group]  = tick
+					if timestampCoolDown(self.m_GroupsRobCooldown[group], GroupHouseRob.COOLDOWN_TIME) then
+						self.m_GroupsRobCooldown[group]  = getRealTime().timestamp
 						self.m_HousesRobbed[house] = true
 						return true
 					else
@@ -168,4 +191,3 @@ end
 function GroupHouseRob:destructor()
 
 end
-

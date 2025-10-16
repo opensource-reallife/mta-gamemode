@@ -30,7 +30,7 @@ function TurtleRace:constructor()
 	self.m_ColShapeHit = bind(TurtleRace.onColShapeHit, self)
 
 	self.m_Blip = Blip:new("Turtle.png", 318, -1820)
-	self.m_Blip:setDisplayText("Schildkröten Rennen", BLIP_CATEGORY.Leisure)
+	self.m_Blip:setDisplayText("Schildkrötenrennen", BLIP_CATEGORY.Leisure)
 	self.m_Blip:setOptionalColor({50, 170, 20})
 	self.m_BankAccountServer = BankServer.get("gameplay.turtle_race")
 	
@@ -216,7 +216,7 @@ function TurtleRace:checkWinner()
 				if isOffline then player:load() end
 
 				local win = tonumber(row["Bet"]) * 6
-				self.m_BankAccountServer:transferMoney(player, win, "Schildkrötenrennen", "Gameplay", "TurtleRace")
+				self.m_BankAccountServer:transferMoney({player, true}, win, "Schildkrötenrennen", "Gameplay", "TurtleRace")
 				self.m_Stats["Outgoing"] = self.m_Stats["Outgoing"] + win
 
 				if not isOffline then
@@ -240,10 +240,10 @@ end
 function TurtleRace:addBet(turtleId, money)
 	if not turtleId or not money then return end
 	if self.m_State ~= "None" and self.m_State ~= "Preparing" then client:sendWarning("Du kannst zum aktuellen Zeitpunkt keine Wette setzen!") return end
-	if client:getMoney() < money then client:sendError("Du hast nicht genug Geld dabei!") return end
+	if client:getMoney() < money then client:sendError(_("Du hast nicht genug Geld dabei!", client)) return end
 
 	local row = sql:queryFetchSingle("SELECT * FROM ??_turtle_bets WHERE UserId = ?;", sql:getPrefix(), client:getId())
-	if row then client:sendError("Du hast bereits eine Wette am laufen!") return end
+	if row then client:sendError(_("Du hast bereits eine Wette am laufen!", client)) return end
 
 	client:transferMoney(self.m_BankAccountServer, money, "Schildkrötenrennen", "Gameplay", "TurtleRace")
 	client:sendShortMessage(_("Du hast %s auf Schildkröte %s gesetzt!", client, money, turtleId), _("Schildkrötenrennen", client), {50, 170, 20})

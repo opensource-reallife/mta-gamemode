@@ -8,7 +8,7 @@
 VehicleCustomTextureShop = inherit(Singleton)
 
 addRemoteEvents{"vehicleCustomTextureBuy", "vehicleCustomTextureAbbort", "vehicleCustomTextureLoadPreview",
-"texturePreviewRequestTextures", "texturePreviewStartPreview", "texturePreviewUpdateStatus", "texturePreviewClose"}
+"texturePreviewRequestTextures", "texturePreviewStartPreview", "texturePreviewUpdateStatus", "texturePreviewClose", "vehicleCustomTextureRemove"}
 
 
 function VehicleCustomTextureShop:constructor()
@@ -41,7 +41,7 @@ function VehicleCustomTextureShop:constructor()
         function(player)
             if player.TempTexVehicle and isElement(player.TempTexVehicle) then player.TempTexVehicle:destroy() end
 			local vehicle = player:getOccupiedVehicle()
-            if player.m_VehicleTuningGarageId and vehicle then
+            if player.m_VehicleTextureGarageId and vehicle then
                 self:closeFor(player, vehicle, true)
             end
         end
@@ -55,6 +55,8 @@ function VehicleCustomTextureShop:constructor()
 	addEventHandler("texturePreviewStartPreview", root, bind(self.Event_texPreviewStartPreview, self))
 	addEventHandler("texturePreviewUpdateStatus", root, bind(self.Event_texPreviewUpdateStatus, self))
 	addEventHandler("texturePreviewClose", root, bind(self.Event_texPreviewClose, self))
+
+	addEventHandler("vehicleCustomTextureRemove", root, bind(self.Event_texRemove, self))
 end
 
 function VehicleCustomTextureShop:EntryColShape_Hit(garageId, hitElement, matchingDimension)
@@ -64,7 +66,7 @@ function VehicleCustomTextureShop:EntryColShape_Hit(garageId, hitElement, matchi
 
         if instanceof(vehicle, CompanyVehicle) then
           if not vehicle:canBeModified() then
-              hitElement:sendError(_("Dieser Firmenwagen darf nicht getunt werden!", hitElement))
+              hitElement:sendError(_("Dieser Unternehmens-Wagen darf nicht getunt werden!", hitElement))
               return
           end
 		elseif instanceof(vehicle, FactionVehicle) then
@@ -73,8 +75,16 @@ function VehicleCustomTextureShop:EntryColShape_Hit(garageId, hitElement, matchi
               return
           end
         elseif instanceof(vehicle, GroupVehicle) then
+			if vehicle:getGroup() ~= hitElement:getGroup() then
+                hitElement:sendError(_("Du kannst dieses Fahrzeug nicht tunen!", hitElement))
+                return
+            end
             if not vehicle:canBeModified() then
-                hitElement:sendError(_("Dein Leader muss das Tunen von Fahrzeugen aktivieren! Im Firmen/Gangmenü unter Leader!", hitElement))
+                hitElement:sendError(_("Dein Leader muss das Tunen von Fahrzeugen aktivieren! Im Gruppenmenü unter Leader!", hitElement))
+                return
+            end
+			if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(hitElement, "group", "editVehicleTexture") then
+                hitElement:sendError(_("Du bist nicht berechtigt Gruppen-Fahrzeuge zu tunen!", hitElement))
                 return
             end
         elseif vehicle:isPermanent() then
@@ -92,16 +102,16 @@ function VehicleCustomTextureShop:EntryColShape_Hit(garageId, hitElement, matchi
               hitElement:sendError(_("Dieses Fahrzeug kann nicht getuned werden!", hitElement))
 		end
 
-        -- Remove occupants
-        for seat, player in pairs(vehicle:getOccupants() or {}) do
-            if seat ~= 0 then
-                player:removeFromVehicle()
-            end
+        -- removing occupants via removeFromVehicle() is not save as laggs can delay removal and the occupants end up in the interior
+        if vehicle:getOccupantsCount(true) > 1 then 
+            hitElement:sendError(_("Lasse deine Mitfahrer zuerst aussteigen!", hitElement))
+            return
         end
 
-        local vehicleType = vehicle:getVehicleType()
-        if vehicleType == VehicleType.Automobile or vehicleType == VehicleType.Bike then
+        if vehicle:isLandVehicle() then
             self:openFor(hitElement, vehicle, garageId)
+			vehicle.m_TextureCount = table.size(vehicle.m_Texture or {})
+			vehicle:setData("TextureCount", vehicle.m_TextureCount, true)
         else
             hitElement:sendError(_("Mit diesem Fahrzeugtyp kannst du die Tuningwerkstatt nicht betreten!", hitElement))
         end
@@ -121,7 +131,7 @@ function VehicleCustomTextureShop:openFor(player, vehicle, garageId)
     local position = self.m_GarageInfo[garageId][3]
     vehicle:setPosition(position)
     setTimer(function() warpPedIntoVehicle(player, vehicle) end, 500, 1)
-    player.m_VehicleTuningGarageId = garageId
+    player.m_VehicleTextureGarageId = garageId
 	if not vehicle.m_Tunings then vehicle.m_Tunings = VehicleTuning:new(vehicle) end
 	vehicle.OldTexture = vehicle.m_Tunings:getTuning("Texture")
 	vehicle.OldColor1 = vehicle.m_Tunings:getTuning("Color1")
@@ -135,18 +145,25 @@ function VehicleCustomTextureShop:closeFor(player, vehicle, doNotCallEvent)
         player:triggerEvent("vehicleCustomTextureShopExit")
     end
 
-    local garageId = player.m_VehicleTuningGarageId
+    local garageId = player.m_VehicleTextureGarageId
     if garageId then
         local position, rotation = unpack(self.m_GarageInfo[garageId][2])
         if vehicle then
             vehicle:setFrozen(false)
             vehicle:setPosition(position)
-            vehicle:setRotation(0, 0, rotation)
+			vehicle:setRotation(0, 0, rotation)
+			if vehicle:getTexture() then
+				for name, tex in pairs(vehicle:getTexture()) do
+					if tex:isPreview() then
+						vehicle:removeTexture(name)
+					end
+				end
+			end
         end
 
         player:setPosition(position) -- Set player position also as it will not be updated automatically before quit
         player:setFrozen(false)
-        player.m_VehicleTuningGarageId = nil
+        player.m_VehicleTextureGarageId = nil
 
         -- Hackfix for MTA issue #4658
         if vehicle and getVehicleType(vehicle) == VehicleType.Bike then
@@ -198,9 +215,9 @@ function VehicleCustomTextureShop:Event_texturePreview(url, color1, color2, play
 end
 
 function VehicleCustomTextureShop:Event_vehicleTextureBuy(id, url, color1, color2)
-	if client:getMoney() >= 120000 then
-		--Todo Add Money Funcs/Checks
-		client:transferMoney(self.m_BankAccountServer, 120000, "Custom-Texture", "Vehicle", "Texture")
+	local price = (source.m_TextureCount == 0 and 120000) or 40000
+	if client:getMoney() >= price then
+		client:transferMoney(self.m_BankAccountServer, price, "Custom-Texture", "Vehicle", "Texture")
 		local textureName = VEHICLE_SPECIAL_TEXTURE[source:getModel()] or "vehiclegrunge256"
 		source.OldTexture = {[textureName] = url}
 		source.OldColor1 = color1
@@ -209,9 +226,15 @@ function VehicleCustomTextureShop:Event_vehicleTextureBuy(id, url, color1, color
 		source.m_Tunings:saveTuning("Color2", color2)
 		source.m_Tunings:applyTuning()
 		self:setTexture(source, url, nil, true,false)
-		client:sendInfo("Textur gekauft!")
+		source.m_TextureCount = 1
+		source:setData("TextureCount", 1, true)
+		if price == 120000 then
+			client:sendInfo(_("Textur erstmalig gekauft!", client))
+		else
+			client:sendInfo(_("Textur gekauft!", client))
+		end
 	else
-		client:sendError(_("Du hast nicht genug Geld dabei! ($120000)", client))
+		client:sendError(_("Du hast nicht genug Geld dabei! (%s)", client, toMoneyString(price)))
 	end
 end
 
@@ -231,6 +254,18 @@ function VehicleCustomTextureShop:setTexture(veh, url, textureName, temp, isPrev
 				veh.m_Tunings:addTexture(texturePath, textureName)
 			end
 		end
+	end
+end
+
+function VehicleCustomTextureShop:Event_texRemove()
+	if client and client.vehicle and client.vehicle:getOwner() == client:getId() then
+		client.vehicle:removeTexture()
+		client.vehicle.OldTexture = {}
+		client.vehicle.m_Tunings:saveTuning("Texture", {})
+		client.vehicle.m_Tunings:applyTuning()
+		client.vehicle.m_TextureCount = 0
+		client.vehicle:setData("TextureCount", 0, true)
+		client:sendInfo(_("Du hast alle Texturen entfernt!", client))
 	end
 end
 
@@ -259,8 +294,14 @@ function VehicleCustomTextureShop:Event_texPreviewStartPreview(url, model)
 	local player = client
 	model = model > 0 and model or math.random(400, 600)
 
+	if model == 464 or model == 425 or model == 447 or model == 540 or model == 476 or model == 432 then
+		model = 608 -- prevent preview of forbidden vehicles
+	end
+
 	client.TempTexVehicle = TemporaryVehicle.create(model, 1944.97, -2307.69, 14.54)
 	local veh = client.TempTexVehicle
+	veh:setLocked(true)
+	client:setFrozen(true)
 	veh:setDimension(client:getId()+1000)
 	client:setDimension(client:getId()+1000)
 
@@ -307,6 +348,7 @@ function VehicleCustomTextureShop:Event_texPreviewClose()
 	if client.TempTexVehicle then
 		if client.TempTexVehicle and isElement(client.TempTexVehicle) then client.TempTexVehicle:destroy() end
 	end
+	client:setFrozen(false)
 	client:setDimension(0)
 	client.texturePreviewActive = false
 end

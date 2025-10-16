@@ -1,8 +1,8 @@
 -- ****************************************************************************
 -- *
 -- *  PROJECT:     vRoleplay
--- *  FILE:        client/classes/Phone/AppNotes.lua
--- *  PURPOSE:     A nicer notes app vong nicigkeit her
+-- *  FILE:        client/classes/Phone/Apps/AppSkribble.lua
+-- *  PURPOSE:     Skribble App
 -- *
 -- ****************************************************************************
 AppSkribble = inherit(PhoneApp)
@@ -21,7 +21,7 @@ function AppSkribble:onOpen(form)
 
 	-- infoTab
 	GUILabel:new(10, 10, form.m_Width-20, 50, _"Skribble", infoTab)
-	GUILabel:new(10, 60, form.m_Width-20, 30, "Skribble ist ein Mehrspieler mal und rate Spiel. Während ein Spieler ein Wort malt, müssen andere das Wort erraten um Punkte zu bekommen.\nDer Spieler mit den meisten Punkte am Ende des Spiels gewinnt!", infoTab)
+	GUILabel:new(10, 60, form.m_Width-20, 30, _"Skribble ist ein Mehrspieler mal und rate Spiel. Während ein Spieler ein Wort malt, müssen andere das Wort erraten um Punkte zu bekommen. Der Spieler mit den meisten Punkte am Ende des Spiels gewinnt!", infoTab)
 
 	-- lobbyTab
 	GUILabel:new(10, 10, form.m_Width-20, 50, _"Lobbys", lobbyTab)
@@ -80,14 +80,14 @@ function AppSkribble:receiveLobbys(lobbys)
 				if lobby.password == "" then
 					triggerServerEvent("skribbleJoinLobby", localPlayer, id)
 				else
-					InputBox:new("Passwort eingeben", "Dies ist eine private Lobby, bitte gib das Passwort ein:",
+					InputBox:new(_"Passwort eingeben", _"Dies ist eine private Lobby, bitte gib das Passwort ein:",
 						function(input)
 							if input == lobby.password then
 								triggerServerEvent("skribbleJoinLobby", localPlayer, id)
 								return
 							end
 
-							ErrorBox:new("Falsches Passwort!")
+							ErrorBox:new(_"Falsches Passwort!")
 						end
 					)
 				end

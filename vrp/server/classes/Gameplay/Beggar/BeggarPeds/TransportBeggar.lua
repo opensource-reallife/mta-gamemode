@@ -19,7 +19,7 @@ function TransportBeggar:acceptTransport(player)
 				local pos = Randomizer:getRandomTableValue(BeggarTransportPositions)
 				self:warpIntoVehicle(veh, seat)
 
-				player:meChat(true, ("bittet %s in sein Fahrzeug"):format(self.m_Name))
+				player:meChat(true, "bittet %s in sein Fahrzeug", self.m_Name, false)
 				self:sendMessage(player, BeggarPhraseTypes.Destination, getZoneName(pos.x, pos.y, pos.z))
 				player.beggarTransportVehicle = veh
 				player.beggarTransportStartPos = player.position
@@ -34,9 +34,11 @@ function TransportBeggar:acceptTransport(player)
 
 				self.m_onTransportExitBind = bind(self.onTransportExit, self)
 				self.m_onTransportDestroyBind = bind(self.onTransportDestroy, self)
+				self.m_onPlayerQuitBind = bind(self.deleteTransportOnQuit, self)
 
 				addEventHandler("onVehicleExit", veh, self.m_onTransportExitBind)
 				addEventHandler("onVehicleDestroy", veh, self.m_onTransportDestroyBind)
+				addEventHandler("onPlayerQuit", player, self.m_onPlayerQuitBind)
 
 				addEventHandler("onMarkerHit", player.beggarTransportMarker, function(hitElement, dim)
 					if hitElement:getType() == "player" and dim and source.player == hitElement then
@@ -44,12 +46,18 @@ function TransportBeggar:acceptTransport(player)
 						if player.vehicle and veh:getOccupant(seat) == self then
 							local distance = getDistanceBetweenPoints3D(player.beggarTransportStartPos, player.position)/1000
 							player:giveCombinedReward("Bettler-Transport", {
-								karma = math.ceil(5*distance),
 								points = math.ceil(7*distance),
 							})
-							player:meChat(true, ("lässt %s aus seinem Fahrzeug"):format(self.m_Name))
+							player:meChat(true, "lässt %s aus seinem Fahrzeug", self.m_Name, false)
 							self:sendMessage(player, BeggarPhraseTypes.Thanks)
 							self:deleteTransport(player)
+
+							-- give Achievement
+							if self.m_Name == BeggarNames[19] then
+								player:giveAchievement(80)
+							elseif self.m_Name == BeggarNames[32] then
+								player:giveAchievement(81)
+							end
 							return
 						else
 							player:sendError(_("Du hast den Bettler nicht dabei", player))
@@ -87,9 +95,20 @@ function TransportBeggar:deleteTransport(player)
 	local veh = player.beggarTransportVehicle
 	removeEventHandler("onVehicleExit", veh, self.m_onTransportExitBind)
 	removeEventHandler("onVehicleDestroy", veh, self.m_onTransportExitBind)
+	removeEventHandler("onPlayerQuit", player, self.m_onPlayerQuitBind)
 
 	player.beggarTransportMarker:destroy()
 	delete(player.beggarTransportBlip)
+
+	self:removeFromVehicle()
+	setTimer(function() self:despawn() end, 50, 1)
+end
+
+function TransportBeggar:deleteTransportOnQuit()
+	local veh = source.vehicle
+	removeEventHandler("onVehicleExit", veh, self.m_onTransportExitBind)
+	removeEventHandler("onVehicleDestroy", veh, self.m_onTransportExitBind)
+	removeEventHandler("onPlayerQuit", source, self.m_onPlayerQuitBind)
 
 	self:removeFromVehicle()
 	setTimer(function() self:despawn() end, 50, 1)

@@ -8,12 +8,9 @@
 JobHeliTransport = inherit(Job)
 
 function JobHeliTransport:constructor()
-	Job.constructor(self, 16, 1786.09, -2271.62, 26.80, 180, "HeliTransport.png", {120, 70, 0}, "files/images/Jobs/HeaderHeliTransport.png", _(HelpTextTitles.Jobs.HeliTransport):gsub("Job: ", ""), _(HelpTexts.Jobs.HeliTransport))
+	Job.constructor(self, 16, 1786.09, -2271.62, 26.80, 180, "HeliTransport.png", {120, 70, 0}, "files/images/Jobs/HeaderHeliTransport.png", (HelpTextTitles.Jobs.HeliTransport):gsub("Job: ", ""), _(HelpTexts.Jobs.HeliTransport), LexiconPages.JobHeliTransport)
 	self.m_Target = {}
 	self:setJobLevel(JOB_LEVEL_HELITRANSPORT)
-
-	-- add job to help menu
-	HelpTextManager:getSingleton():addText("Jobs", _(HelpTextTitles.Jobs.HeliTransport):gsub("Job: ", ""), "jobs.helitransport")
 
 	addRemoteEvents{"jobHeliTransportCreateMarker", "endHeliTransport"}
 	addEventHandler("jobHeliTransportCreateMarker", root, bind(self.createTarget, self))
@@ -21,11 +18,11 @@ function JobHeliTransport:constructor()
 end
 
 function JobHeliTransport:start()
-	HelpBar:getSingleton():addText(_(HelpTextTitles.Jobs.HeliTransport), _(HelpTexts.Jobs.HeliTransport))
+	HelpBar:getSingleton():setLexiconPage(LexiconPages.JobHeliTransport)
 end
 
 function JobHeliTransport:stop()
-	HelpBar:getSingleton():addText(_(HelpTextTitles.General.Main), _(HelpTexts.General.Main), false)
+	HelpBar:getSingleton():setLexiconPage(nil)
 end
 
 function JobHeliTransport:endHeliTransport()

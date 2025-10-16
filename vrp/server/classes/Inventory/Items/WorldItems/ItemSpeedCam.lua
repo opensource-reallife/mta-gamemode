@@ -8,9 +8,10 @@
 ItemSpeedCam = inherit(Item)
 ItemSpeedCam.Map = {}
 
-local MAX_SPEEDCAMS = 3
-local COST_FACTOR = 15
+local MAX_SPEEDCAMS = 5
+local COST_FACTOR = 5 -- 1km/h = 5$
 local MIN_RANK = 2
+local ALLOWED_SPEED = 80
 
 function ItemSpeedCam:constructor()
 
@@ -23,14 +24,14 @@ end
 function ItemSpeedCam:use(player)
 	if player:getFaction() and player:getFaction():getId() == 1 and player:isFactionDuty() then
 		if self:count() < MAX_SPEEDCAMS then
-			if player:getFaction():getPlayerRank(player) >= MIN_RANK then
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "faction", "useSpeedCam") then
 				local result = self:startObjectPlacing(player,
 					function(item, position, rotation)
 						if item ~= self or not position then return end
 
 						local worldItem = FactionWorldItem:new(self, player:getFaction(), position, rotation, false, player)
 						worldItem:setFactionSuperOwner(true)
-						worldItem:setMinRank(MIN_RANK)
+						--worldItem:setMinRank(MIN_RANK)
 
 						player:getInventory():removeItem(self:getName(), 1)
 
@@ -38,10 +39,15 @@ function ItemSpeedCam:use(player)
 						setElementData(object, "earning", 0)
 						ItemSpeedCam.Map[#ItemSpeedCam.Map+1] = object
 
-						object.col = worldItem:attach(createColSphere(position, 10))
+
+						object.col = worldItem:attach(createColTube(position, 12, 5))
 						object.col.object = object
 						self.m_func = bind(self.onColShapeHit, self)
 						addEventHandler("onColShapeHit", object.col, self.m_func )
+
+						object.radarDetectorCol = worldItem:attach(createColSphere(position, 100))
+						self.m_RadarDetectorFunc = bind(self.onRadarDetectorColShapeHit, self)
+						addEventHandler("onColShapeHit", object.radarDetectorCol, self.m_RadarDetectorFunc)
 
 						local pos = player:getPosition()
 						FactionState:getSingleton():sendShortMessage(_("%s hat einen Blitzer bei %s/%s aufgestellt!", player, player:getName(), getZoneName(pos), getZoneName(pos, true)))
@@ -49,7 +55,7 @@ function ItemSpeedCam:use(player)
 					end
 				)
 			else
-				player:sendError(_("Dafür brauchst du mind. Rang %d!", player, MIN_RANK))
+				player:sendError(_("Du bist nicht berechtigt Blitzer aufzustellen!", player))
 			end
 		else
 			player:sendError(_("Es sind bereits %d/%d Anlagen aufgestellt!", player, self:count(), MAX_SPEEDCAMS))
@@ -71,17 +77,39 @@ end
 function ItemSpeedCam:onColShapeHit(element, dim)
 	if dim then
 		if element:getType() == "vehicle" then
-			if element:getSpeed() > 85 then
+			if element:getSpeed() > ALLOWED_SPEED + 5 then
 				if element:getOccupant() then
 					local player = element:getOccupant()
 
 					if player:getFaction() and (player:getFaction():isStateFaction() or player:getFaction():isRescueFaction()) and player:isFactionDuty() then return end
-
+					
 					local speed = math.floor(element:getSpeed())
-					local costs = (speed-80)*COST_FACTOR
+					local costs = (speed-ALLOWED_SPEED)*COST_FACTOR
 
-					if player:getBankMoney() < costs then
-						costs = player:getBankMoney()
+					--give stvo points
+					local oldSTVO = player:getSTVO("Driving")
+					local newSTVO = 0
+					if player:hasDrivingLicense() then
+						if element:getSpeed() >= 90 and element:getSpeed() < 120 then
+							stvoPoints = 3
+							newSTVO = oldSTVO + stvoPoints
+							player:setSTVO("Driving", newSTVO)
+						elseif element:getSpeed() >= 120 then
+							stvoPoints = 6
+							newSTVO = oldSTVO + stvoPoints
+							player:setSTVO("Driving", newSTVO)
+						end
+
+						if newSTVO > 0 then
+							outputChatBox(_("Du hast %d STVO-Punkt/e erhalten! Gesamt: %d", player, stvoPoints, newSTVO), player, 255, 255, 0)
+							outputChatBox(_("Grund: Rasen innerhalb der Stadt (%s km/h)", player, speed), player, 255, 255, 0 )
+
+							local msg = ("Blitzer: %s hat %d STVO-Punkt/e wegen Rasen innerhalb der Stadt (%s km/h) erhalten!"):format(player:getName(), stvoPoints, speed)
+							FactionState:getSingleton():addLog(player, "STVO", ("hat %s STVO-Punkte wegen Rasen innerhalb der Stadt (%s km/h) erhalten!"):format(stvoPoints, speed))
+							FactionState:getSingleton():sendMessage(msg, 255,0,0)
+						end
+					else
+						costs = costs * 3
 					end
 
 					player:transferBankMoney({FactionManager:getSingleton():getFromId(1), nil, true}, costs, "Blitzer-Strafe", "Gameplay", "Speedcam")
@@ -100,6 +128,17 @@ function ItemSpeedCam:onColShapeHit(element, dim)
 
 					setElementData(source.object, "earning", getElementData(source.object, "earning") + costs)
 				end
+			end
+		end
+	end
+end
+
+function ItemSpeedCam:onRadarDetectorColShapeHit(element, dim)
+	if dim then
+		if element:getType() == "vehicle" and instanceof(element, PermanentVehicle) then
+			if element:getOccupant() and element:hasRadarDetector() then
+				local player = element:getOccupant()
+				player:sendWarning(_("Achtung! Das Radarwarngerät meldet einen Blitzer in der Nähe!", player))
 			end
 		end
 	end

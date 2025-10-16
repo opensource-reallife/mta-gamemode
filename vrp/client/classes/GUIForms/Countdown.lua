@@ -72,7 +72,7 @@ end
 addEvent("Countdown", true)
 addEventHandler("Countdown", root,
 	function(seconds, title)
-		Countdown:new(seconds, title)
+		Countdown:new(seconds, _(title))
 	end
 )
 

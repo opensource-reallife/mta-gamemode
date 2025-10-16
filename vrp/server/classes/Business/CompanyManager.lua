@@ -12,10 +12,14 @@ function CompanyManager:constructor()
 	self:loadCompanies()
 
 	-- Events
-	addRemoteEvents{"getCompanies", "companyRequestInfo", "companyQuit", "companyDeposit", "companyWithdraw", "companyAddPlayer", "companyDeleteMember", "companyInvitationAccept", "companyInvitationDecline", "companyRankUp", "companyRankDown", "companySaveRank","companyRespawnVehicles", "companyChangeSkin", "companyToggleDuty", "companyToggleLoan", "companyRequestSkinSelection", "companyPlayerSelectSkin", "companyUpdateSkinPermissions"}
+	addRemoteEvents{"getCompanies", "companyRequestInfo", "companyQuit", "companyDeposit", "companyWithdraw", "companyAddPlayer", 
+		"companyDeleteMember", "companyInvitationAccept", "companyInvitationDecline", "companyRankUp", "companyRankDown", 
+		"companySaveRank","companyRespawnVehicles", "companyChangeSkin", "companyToggleDuty", "companyToggleLoan", "companyRequestSkinSelection", 
+		"companyPlayerSelectSkin", "companyUpdateSkinPermissions", "stopCompanyRespawnAnnouncement"}
 
 	addEventHandler("getCompanies", root, bind(self.Event_getCompanies, self))
 	addEventHandler("companyRequestInfo", root, bind(self.Event_companyRequestInfo, self))
+	addEventHandler("companyQuit", root, bind(self.Event_companyQuit, self))
 	addEventHandler("companyDeposit", root, bind(self.Event_companyDeposit, self))
 	addEventHandler("companyWithdraw", root, bind(self.Event_companyWithdraw, self))
 	addEventHandler("companyAddPlayer", root, bind(self.Event_companyAddPlayer, self))
@@ -32,6 +36,7 @@ function CompanyManager:constructor()
 	addEventHandler("companyRequestSkinSelection", root, bind(self.Event_requestSkins, self))
 	addEventHandler("companyPlayerSelectSkin", root, bind(self.Event_setPlayerDutySkin, self))
 	addEventHandler("companyUpdateSkinPermissions", root, bind(self.Event_UpdateSkinPermissions, self))
+	addEventHandler("stopCompanyRespawnAnnouncement", root, bind(self.Event_stopRespawnAnnoucement, self))
 end
 
 function CompanyManager:destructor()
@@ -44,15 +49,16 @@ function CompanyManager:loadCompanies()
 	local st, count = getTickCount(), 0
 	local result = sql:queryFetch("SELECT * FROM ??_companies", sql:getPrefix())
 	for i, row in pairs(result) do
-		local result2 = sql:queryFetch("SELECT Id, CompanyRank, CompanyLoanEnabled FROM ??_character WHERE CompanyId = ?", sql:getPrefix(), row.Id)
-		local players, playerLoans = {}, {}
+		local result2 = sql:queryFetch("SELECT Id, CompanyRank, CompanyLoanEnabled, CompanyPermissions FROM ??_character WHERE CompanyId = ?", sql:getPrefix(), row.Id)
+		local players, playerLoans, playerPermissions = {}, {}, {}
 		for i, row2 in ipairs(result2) do
 			players[row2.Id] = row2.CompanyRank
 			playerLoans[row2.Id] = row2.CompanyLoanEnabled
+			playerPermissions[row2.Id] = fromJSON(row2.CompanyPermissions)
 		end
 
 		if Company.DerivedClasses[row.Id] then
-			self:addRef(Company.DerivedClasses[row.Id]:new(row.Id, row.Name, row.Name_Short, row.Name_Shorter, row.Creator, {players, playerLoans}, row.lastNameChange, row.BankAccount, fromJSON(row.Settings) or {["VehiclesCanBeModified"]=false}, row.RankLoans, row.RankSkins))
+			self:addRef(Company.DerivedClasses[row.Id]:new(row.Id, row.Name, row.Name_Short, row.Name_Shorter, row.Creator, {players, playerLoans, playerPermissions}, row.lastNameChange, row.BankAccount, fromJSON(row.Settings) or {["VehiclesCanBeModified"]=false}, row.RankLoans, row.RankSkins, row.RankPermissions, row.PlayerLimit, row.MaxVehicles, row.VehicleLimits))
 		else
 			outputServerLog(("Company class for Id %s not found!"):format(row.Id))
 			--self:addRef(Company:new(row.Id, row.Name, row.Name_Short, row.Creator, players, row.lastNameChange, row.BankAccount, fromJSON(row.Settings) or {["VehiclesCanBeModified"]=false}, row.RankLoans, row.RankSkins))
@@ -83,20 +89,26 @@ function CompanyManager:sendInfosToClient(client)
 	local company = client:getCompany()
 
 	if company then --use triggerLatentEvent to improve serverside performance
-        client:triggerLatentEvent("companyRetrieveInfo",company:getId(), company:getName(), company:getPlayerRank(client), company:getMoney(), company:getPlayers(), company.m_Skins, company.m_RankNames, company.m_RankLoans, company.m_RankSkins)
+		if company:getPlayerRank(client) < CompanyRank.Manager and not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "editLoan") then
+        	client:triggerLatentEvent("companyRetrieveInfo",company:getId(), company:getName(), company:getPlayerRank(client), company:getMoney(), company:getPlayers(), company.m_RankNames, table.size(company:getPlayers(true)), company:hasPlayerLimit() and company:getPlayerLimit() or false)
+		else
+			client:triggerLatentEvent("companyRetrieveInfo",company:getId(), company:getName(), company:getPlayerRank(client), company:getMoney(), company:getPlayers(), company.m_RankNames, table.size(company:getPlayers(true)), company:hasPlayerLimit() and company:getPlayerLimit() or false, company.m_RankLoans)
+		end
 	else
 		client:triggerEvent("companyRetrieveInfo")
 	end
 end
 
-function CompanyManager:Event_companyQuit()
+function CompanyManager:Event_companyQuit(reason)
 	local company = client:getCompany()
-	if not company then return end
 
+	if not company then return end
 	if company:getPlayerRank(client) == CompanyRank.Leader then
 		client:sendWarning(_("Als Leader kannst du nicht das Unternehmen verlassen!", client))
 		return
 	end
+
+	HistoryPlayer:getSingleton():addLeaveEntry(client.m_Id, client.m_Id, company.m_Id, "company", company:getPlayerRank(client.m_Id), reason, _("Eigenwunsch", client))
 	company:removePlayer(client)
 	client:sendSuccess(_("Du hast das Unternehmen erfolgreich verlassen!", client))
     company:addLog(client, "Unternehmen", "hat das Unternehmen verlassen!")
@@ -124,18 +136,24 @@ function CompanyManager:Event_companyWithdraw(amount)
 	if not company then return end
     if not amount then return end
 
-	if company:getPlayerRank(client) < CompanyRank.Manager then
+	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "withdrawMoney") then
 		client:sendError(_("Du bist nicht berechtigt Geld abzuheben!", client))
 		-- Todo: Report possible cheat attempt
 		return
 	end
 
-	if company:transferMoney(client, amount, "Unternehmen-Auslage", "Company", "Withdraw") then
+	if company:getMoney() < amount then
+		client:sendError(_("In der Unternehmenskasse befindet sich nicht genügend Geld!", client))
+		return
+	end
+
+	if company:getMoney() - amount >= 150000 then
+		company:transferMoney(client, amount, "Unternehmen-Auslage", "Company", "Withdraw")
 		company:addLog(client, "Kasse", "hat "..toMoneyString(amount).." aus der Kasse genommen!")
 		self:sendInfosToClient(client)
 		company:refreshBankAccountGUI(client)
 	else
-		client:sendError(_("In der Unternehmenskasse befindet sich nicht genügend Geld!", client))
+		client:sendError(_("In der Unternehmenskasse müssen sich mindestens 150.000$ befinden!", client))
 	end
 end
 
@@ -144,9 +162,14 @@ function CompanyManager:Event_companyAddPlayer(player)
 	local company = client:getCompany()
 	if not company then return end
 
-	if company:getPlayerRank(client) < CompanyRank.Manager then
+	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "invite"	) then
 		client:sendError(_("Du bist nicht berechtigt Mitglieder hinzuzufügen!", client))
 		-- Todo: Report possible cheat attempt
+		return
+	end
+
+	if company:hasPlayerLimit() and company:getPlayerLimit() <= table.size(company:getPlayers(true))  then
+		client:sendError(_("Dein Unternehmen kann keine weiteren Spieler aufnehmen", client))
 		return
 	end
 
@@ -180,9 +203,14 @@ function CompanyManager:Event_companyDeleteMember(playerId, reasonInternaly, rea
 		return
 	end
 
-	if company:getPlayerRank(client) < CompanyRank.Manager then
+	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "uninvite") then
 		client:sendError(_("Du kannst den Spieler nicht rauswerfen!", client))
 		-- Todo: Report possible cheat attempt
+		return
+	end
+
+	if company:getPlayerRank(client) <= company:getPlayerRank(playerId) then
+		client:sendError(_("Du kannst den Spieler nicht rauswerfen!", client))
 		return
 	end
 
@@ -209,6 +237,11 @@ function CompanyManager:Event_companyInvitationAccept(companyId)
 	end
 
 	if company:hasInvitation(client) then
+		if company:hasPlayerLimit() and company:getPlayerLimit() <= table.size(company:getPlayers(true))  then
+			client:sendError(_("Das Unternehmen kann keine weiteren Spieler aufnehmen", client))
+			return
+		end
+
 		if not client:getCompany() then
 			company:addPlayer(client)
 
@@ -241,7 +274,7 @@ function CompanyManager:Event_companyInvitationDecline(companyId)
 	end
 end
 
-function CompanyManager:Event_companyRankUp(playerId)
+function CompanyManager:Event_companyRankUp(playerId, leaderSwitch)
 	if not playerId then return end
 	local company = client:getCompany()
 	if not company then return end
@@ -255,14 +288,30 @@ function CompanyManager:Event_companyRankUp(playerId)
 		return
 	end
 
-	if company:getPlayerRank(client) < CompanyRank.Manager then
+	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "changeRank") then
 		client:sendError(_("Du bist nicht berechtigt den Rang zu verändern!", client))
 		-- Todo: Report possible cheat attempt
 		return
 	end
 
+	if company:getPlayerRank(client) ~= CompanyRank.Leader and company:getPlayerRank(client) <= company:getPlayerRank(playerId) + 1 then
+		client:sendError(_("Du bist nicht berechtigt den Rang zu verändern!", client))
+		return
+	end
+
+	if company:getPlayerRank(playerId) + 1 >= CompanyRank.Manager then
+		if LeaderCheck:getSingleton():hasPlayerLeaderBan(playerId) then
+			client:sendError(_("Dieser Spieler kann aufgrund einer Leadersperre nicht befördert werden!", client))
+			return
+		end
+	end
+
 	if company:getPlayerRank(playerId) < CompanyRank.Leader then
 		if company:getPlayerRank(playerId) < company:getPlayerRank(client) then
+			if leaderSwitch then
+				self:switchLeaders(client, playerId)
+			end
+
 			company:setPlayerRank(playerId, company:getPlayerRank(playerId) + 1)
 			HistoryPlayer:getSingleton():setHighestRank(playerId, company:getPlayerRank(playerId), company.m_Id, "company")
 			company:addLog(client, "Unternehmen", "hat den Spieler "..Account.getNameFromId(playerId).." auf Rang "..company:getPlayerRank(playerId).." befördert!")
@@ -272,6 +321,7 @@ function CompanyManager:Event_companyRankUp(playerId)
 				player:setPublicSync("CompanyRank", company:getPlayerRank(playerId))
 			end
 			self:sendInfosToClient(client)
+			PermissionsManager:getSingleton():onRankChange("up", client, playerId, "company")
 			Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(playerId)
 		else
 			client:sendError(_("Mit deinem Rang kannst du Spieler maximal auf Rang %d befördern!", client, company:getPlayerRank(client)))
@@ -296,9 +346,14 @@ function CompanyManager:Event_companyRankDown(playerId)
 		return
 	end
 
-	if company:getPlayerRank(client) < CompanyRank.Manager then
+	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "changeRank") then
 		client:sendError(_("Du bist nicht berechtigt den Rang zu verändern!", client))
 		-- Todo: Report possible cheat attempt
+		return
+	end
+
+	if company:getPlayerRank(client) ~= CompanyRank.Leader and company:getPlayerRank(client) <= company:getPlayerRank(playerId) then
+		client:sendError(_("Du bist nicht berechtigt den Rang zu verändern!", client))
 		return
 	end
 
@@ -313,6 +368,7 @@ function CompanyManager:Event_companyRankDown(playerId)
 				player:setPublicSync("CompanyRank", company:getPlayerRank(playerId))
 			end
 			self:sendInfosToClient(client)
+			PermissionsManager:getSingleton():onRankChange("down", client, playerId, "company")
 			Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(playerId)
 		else
 			client:sendError(_("Du kannst ranghöhere Mitglieder nicht degradieren!", client))
@@ -320,13 +376,43 @@ function CompanyManager:Event_companyRankDown(playerId)
 	end
 end
 
-function CompanyManager:Event_companyRespawnVehicles()
+function CompanyManager:switchLeaders(oldLeader, newLeader)
+	Async.create(
+		function(oldLeader)
+			local company = oldLeader:getCompany()
+			
+			company:setPlayerRank(oldLeader, company:getPlayerRank(oldLeader) - 1)
+			company:addLog(newLeader, "Unternehmen", "hat den Spieler "..oldLeader:getName().." auf Rang "..company:getPlayerRank(oldLeader).." degradiert!")
+
+			if isElement(oldLeader) then
+				oldLeader:sendShortMessage(_("Du wurdest von %s auf Rang %d degradiert!", player, Account.getNameFromId(newLeader), company:getPlayerRank(oldLeader)), company:getName())
+				oldLeader:setPublicSync("CompanyRank", company:getPlayerRank(oldLeader))
+			end
+			
+			self:sendInfosToClient(oldLeader)
+			PermissionsManager:getSingleton():onRankChange("down", oldLeader, oldLeader:getId(), "company")
+			Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(oldLeader:getId())
+		end
+	)(oldLeader)
+end
+
+function CompanyManager:Event_companyRespawnVehicles(instant)
 	if client:getCompany() then
 		local company = client:getCompany()
-		if company:getPlayerRank(client) >= CompanyRank.Manager then
-			company:respawnVehicles()
+
+		if instant then
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "vehicleRespawnInstant") then
+				company:respawnVehicles()
+			else
+				client:sendError(_("Dazu bist du nicht berechtigt!", client))
+			end
 		else
-			client:sendError(_("Die Fahrzeuge können erst ab Rang %d respawnt werden!", client, CompanyRank.Manager))
+			if client:getCompany().m_RespawnTimer or isTimer(client:getCompany().m_RespawnTimer) then return client:sendError(_("Es wurde bereits eine Respawn Ankündigung erstellt.", client)) end
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "vehicleRespawnAll") then
+				company:startRespawnAnnouncement(client)
+			else
+				client:sendError(_("Dazu bist du nicht berechtigt!", client))
+			end
 		end
 	end
 end
@@ -338,10 +424,22 @@ function CompanyManager:Event_companySaveRank(rank,loan)
 			client:sendError(_("Der maximale Lohn für diesen Rang beträgt %d$", client, COMPANY_MAX_RANK_LOANS[rank]))
 			return
 		end
-        company:setRankLoan(rank,loan)
-		company:save()
-		client:sendInfo(_("Die Einstellungen für Rang %d wurden gespeichert!", client, rank))
-        company:addLog(client, "Unternehmen", "hat die Einstellungen für Rang "..rank.." geändert!")
+
+		if tonumber(company.m_RankLoans[tostring(rank)]) ~= tonumber(loan) then
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "editLoan") then
+				if company:getPlayerRank(client) > rank or company:getPlayerRank(client) == CompanyRank.Leader then
+					company:setRankLoan(rank,loan)
+					company:save()
+					client:sendInfo(_("Die Einstellungen für Rang %d wurden gespeichert!", client, rank))
+					company:addLog(client, "Unternehmen", "hat die Einstellungen für Rang "..rank.." geändert!")
+				else
+					client:sendError(_("Du kannst das Gehalt von dem Rang nicht verändern!", client))
+				end
+			else
+				client:sendError(_("Du bist nicht berechtigt das Gehalt zu ändern", client))
+			end
+		end
+
 		self:sendInfosToClient(client)
 	end
 end
@@ -352,7 +450,8 @@ function CompanyManager:Event_changeSkin()
 	end
 end
 
-function CompanyManager:Event_toggleDuty(wasted, preferredSkin)
+function CompanyManager:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, player)
+	if not client then client = player end
 	if getPedOccupiedVehicle(client) and not wasted then
 		return client:sendError("Steige erst aus dem Fahrzeug aus!")
 	end
@@ -360,26 +459,32 @@ function CompanyManager:Event_toggleDuty(wasted, preferredSkin)
 	if company then
 		if getDistanceBetweenPoints3D(client.position, company.m_DutyPickup.position) <= 10 or wasted then
 			if client:isCompanyDuty() then
-				client:setCorrectSkin(true)
+				if not dontChangeSkin then
+					client:setCorrectSkin(true)
+				end
 				client:setCompanyDuty(false)
 				company:updateCompanyDutyGUI(client)
 				client:sendInfo(_("Du bist nicht mehr im Unternehmens-Dienst!", client))
 				client:setPublicSync("Company:Duty",false)
 				takeAllWeapons(client)
+				client:restoreStorage()
 				if company.stop then
 					company:stop(client)
 				end
 			else
+				if client:getWanteds() > 0 then return client:sendError(_("Du kannst nicht in den Dienst gehen, solange du gesucht wirst!", client)) end
 				if client:isFactionDuty() then
-					client:sendWarning(_("Bitte beende zuerst deinen Dienst in deiner Fraktion!", client))
-					return false
+					--client:sendWarning(_("Bitte beende zuerst deinen Dienst in deiner Fraktion!", client))
+					--return false
+					FactionManager:getSingleton():factionForceOffduty(client)
 				end
-				company:changeSkin(client, preferredSkin)
+				company:changeSkin(client, preferredSkin) 
 				client:setCompanyDuty(true)
+
 				company:updateCompanyDutyGUI(client)
 				client:sendInfo(_("Du bist nun im Dienst deines Unternehmens!", client))
 				client:setPublicSync("Company:Duty",true)
-				takeAllWeapons(client)
+				client:createStorage()
 				if company.m_Id == CompanyStaticId.SANNEWS then
 					giveWeapon(client, 43, 50) -- Camera
 				end
@@ -406,12 +511,18 @@ function CompanyManager:Event_toggleLoan(playerId)
 		return
 	end
 
-	if company:getPlayerRank(client) < CompanyRank.Manager then
+	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "toggleLoan") then
 		client:sendError(_("Dazu bist du nicht berechtigt!", client))
 		return
 	end
 
 	local current = company:isPlayerLoanEnabled(playerId)
+	
+	if company:getPlayerRank(client) <= company:getPlayerRank(playerId) and company:getPlayerRank(client) ~= CompanyRank.Leader then
+		client:sendError(_("Du kannst das Gehalt vom dem Spieler nicht %saktivieren", client, current and "de" or ""))
+		return
+	end
+	
 	company:setPlayerLoanEnabled(playerId, current and 0 or 1)
 	self:sendInfosToClient(client)
 
@@ -420,7 +531,7 @@ end
 
 function CompanyManager:Event_getCompanies()
 	for id, company in pairs(CompanyManager.Map) do
-		client:triggerEvent("loadClientCompany", company:getId(), company:getName(), company:getShortName(), company.m_RankNames)
+		client:triggerEvent("loadClientCompany", company:getId(), company:getName(), company:getShortName(), company.m_RankNames, companyColors[company:getId()])
 	end
 end
 
@@ -432,7 +543,7 @@ function CompanyManager:Event_requestSkins()
 	end
 	local c = client:getCompany()
 	local r = c:getPlayerRank(client)
-	triggerClientEvent(client, "openSkinSelectGUI", client, c:getSkinsForRank(r), c:getId(), "company", r >= CompanyRank.Manager, c:getAllSkins())
+	triggerClientEvent(client, "openSkinSelectGUI", client, c:getSkinsForRank(r), c:getId(), "company", PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "editRankSkins"), c:getAllSkins())
 end
 
 function CompanyManager:Event_setPlayerDutySkin(skinId)
@@ -453,7 +564,7 @@ function CompanyManager:Event_UpdateSkinPermissions(skinTable)
 		client:sendError(_("Du gehörst keinem Unternehmen an!", client))
 		return false
 	end
-	if client:getCompany():getPlayerRank(client) < CompanyRank.Manager then
+	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "editRankSkins") then
 		client:sendError(_("Dein Rang ist zu niedrig!", client))
 		return false
 	end
@@ -464,5 +575,26 @@ function CompanyManager:Event_UpdateSkinPermissions(skinTable)
 
 	local c = client:getCompany()
 	local r = c:getPlayerRank(client)
-	triggerClientEvent(client, "openSkinSelectGUI", client, c:getSkinsForRank(r), c:getId(), "company", r >= CompanyRank.Manager, c:getAllSkins())
+	triggerClientEvent(client, "openSkinSelectGUI", client, c:getSkinsForRank(r), c:getId(), "company", PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "editRankSkins"), c:getAllSkins())
+end
+
+function CompanyManager:getFromName(name)
+	for k, company in pairs(CompanyManager.Map) do
+		if company:getName() == name then
+			return company
+		end
+	end
+	return false
+end
+
+function CompanyManager:companyForceOffduty(player)
+	if player:getPublicSync("Company:Duty") and player:getCompany() then
+		self:Event_toggleDuty(true, false, true, player)
+	end
+end
+
+function CompanyManager:Event_stopRespawnAnnoucement()
+	if client:getCompany() then
+		client:getCompany():stopRespawnAnnouncement(client)
+	end
 end

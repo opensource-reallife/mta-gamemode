@@ -28,37 +28,27 @@ function Discord:outputBreakingNews( text )
 				username="Breaking News",
 			},
 		}
-		fetchRemote ( "https://discordapp.com/api/webhooks/401093257481682944/xX4jy3rTLFByTtGoXJeT8efFcJhLlh09ny0DS3xvLHIlBvYl0-z_cbmcY8cUXEVRnVbv", postData, function() end )
+		fetchRemote ( Config.get("DISCORD_WEBHOOK_URL"), postData, function() end )
 	else 
 		outputDebugString("Discord Breaking-News was not sent ( Debug-Mode )", 3)
 	end
 end
 
-function Discord:outputGangwarNews( text ) --TODO: do this lol
-	--if not DEBUG then
-		local textScaffhold = 
-[[
-Das Gebiet '%s' der Fraktion %s wurde von der Fraktion %s angegriffen%s. Details:
-```diff
-+++ %s (%s Verteidiger, %s Damagepunkte)
-%s
---- %s (%s Verteidiger, %s Damagepunkte)
-%s
-```
-]]
+function Discord:outputGangwarNews( text )
+	if not DEBUG then
 		local postData = 
 		{
-			queueName = "Discord Gangwar-News",
+			queueName = "Discord Gangwar-Notifications",
 			connectionAttempts = 3,
 			connectTimeout = 5000,
 			formFields = 
 			{
-				content=textScaffhold,
-				username="Gangwar-Ergebnisse",
+				content=text,
+				username="Gangwar Notifications",
 			},
 		}
-		fetchRemote ( "https://discordapp.com/api/webhooks/446674374230016012/oX1s0ReBw1vurodCnQnYVC-MSVFRqKeN_-ed-cB3rFj33PUO4g-QoJLPOeGSU0aZzn6r", postData, function() end )
-	--else 
-		outputDebugString("Discord Breaking-News was not sent ( Debug-Mode )", 3)
-	--end
+		fetchRemote ( Config.get("DISCORD_WEBHOOK_URL_GW"), postData, function() end )
+	else 
+		outputDebugString("Discord Gangwar-Notification was not sent ( Debug-Mode )", 3)
+	end
 end

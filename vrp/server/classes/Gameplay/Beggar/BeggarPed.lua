@@ -18,7 +18,7 @@ function BeggarPed:virtual_constructor(id, classId)
 	self.m_Id = id
 	self.m_Name = Randomizer:getRandomTableValue(BeggarNames)
 	self:setData("Ped:fakeNameTag", self.m_Name, true)
-	self.m_ColShape = createColSphere(self:getPosition(), 10)
+	--self.m_ColShape = createColSphere(self:getPosition(), 10)
 	self.m_Type = classId
 	self.m_RoleName = BeggarTypeNames[self.m_Type]
 
@@ -26,8 +26,8 @@ function BeggarPed:virtual_constructor(id, classId)
 	self.m_BankAccountServer = BankServer.get("gameplay.beggar")
 
 	addEventHandler("onPedWasted", self, bind(self.Event_onPedWasted, self))
-	addEventHandler("onColShapeHit", self.m_ColShape, bind(self.Event_onColShapeHit, self))
-	addEventHandler("onColShapeLeave", self.m_ColShape, bind(self.Event_onColShapeLeave, self))
+	--addEventHandler("onColShapeHit", self.m_ColShape, bind(self.Event_onColShapeHit, self))
+	--addEventHandler("onColShapeLeave", self.m_ColShape, bind(self.Event_onColShapeLeave, self))
 
 	if chance(50) then
 		local animation = Randomizer:getRandomTableValue(BeggarAnimations)
@@ -42,7 +42,7 @@ function BeggarPed:virtual_constructor(id, classId)
 end
 
 function BeggarPed:virtual_destructor()
-	if self.m_ColShape and isElement(self.m_ColShape) then destroyElement(self.m_ColShape) end
+	--if self.m_ColShape and isElement(self.m_ColShape) then destroyElement(self.m_ColShape) end
 	if self.m_AbortRescueTimer and isTimer(self.m_AbortRescueTimer) then killTimer(self.m_AbortRescueTimer) end
 	if self.m_LootPickup and isElement(self.m_LootPickup) then destroyElement(self.m_LootPickup) end
 	if self.m_DeathPickup then
@@ -63,6 +63,7 @@ function BeggarPed:despawn()
 			local newAlpha = self:getAlpha() - 10
 			if newAlpha < 10 then newAlpha = 0 end
 			if newAlpha == 0 then
+				triggerClientEvent("ColshapeStreamer:deleteColshape", root, "beggarped", self.m_Id)
 				self:destroy()
 			else
 				self:setAlpha(newAlpha)
@@ -91,10 +92,13 @@ function BeggarPed:rob(player)
 				category = "Gameplay",
 				subcategory = "BeggarRob"
 			},
-			karma = -math.ceil(money/2),
 		})
 		self:sendMessage(player, BeggarPhraseTypes.Rob)
-		player:meChat(true, ("packt %s und entreißt ihm %s"):format(self.m_Name, money == 1 and "einen Schein" or "ein paar Scheine"))
+		if money == 1 then
+			player:meChat(true, "packt %s und entreißt ihm einen Schein!", self.m_Name, false)
+		else
+			player:meChat(true, "packt %s und entreißt ihm ein paar Scheine!", self.m_Name, false)
+		end
 		-- give Achievement
 		player:giveAchievement(50)
 
@@ -107,45 +111,48 @@ function BeggarPed:rob(player)
 end
 
 function BeggarPed:sendMessage(player, type, arg)
-    player:sendMessage(_("#FE8A00%s: #FFFFFF%s", player, self.m_Name, BeggarPedManager:getSingleton():getPhrase(self.m_Type, type, arg)))
+    player:sendMessage(("#FE8A00%s: #FFFFFF%s"):format(self.m_Name, _(BeggarPedManager:getSingleton():getPhrase(self.m_Type, type, arg), player)))
 end
 
 function BeggarPed:Event_onPedWasted(totalAmmo, killer, killerWeapon, bodypart, stealth)
-	self.m_Dead = true
-	--create a rescue mission if there is someone online, otherwise just despawn him
-	if #FactionRescue:getSingleton():getOnlinePlayers(true, false) >= 1 then
-		self:setHealth(20)
-		self:setData("NPC:Immortal", true, true)
-		self:setAnimation("wuzi","cs_dead_guy", -1, true, false, false, true)
-		FactionRescue:getSingleton():createPedDeathPickup(self, self.m_Name)
-		self.m_AbortRescueTimer = setTimer(function()
-			if self.m_DeathPickup then
-				FactionRescue:getSingleton():removePedDeathPickup(self)
-				self:despawn()
-			end
-		end, 5000 * 60, 1) -- 5 minutes
-	else
-		setTimer(function()
-			self:despawn()
-		end, 15000, 1)
-	end
-
-	--give loot
-	self:createLootPickup()
-
-	if killer and isElement(killer) and getElementType(killer) == "vehicle" then killer = killer.controller end
-	if killer and killer ~= source and killerWeapon ~= 3 and getElementType(killer) == "player" then
-		-- Take karma
-		killer:takeKarma(3)
-		-- Give Wanteds
-		if (getZoneName(self.position, true) == "Los Santos" and chance(50) or chance(25)) then
-			setTimer(function()
-				if killer and isElement(killer) then
-				killer:sendWarning("Dein Mord wurde von einem Augenzeuge an das LSPD gemeldet!")
-				killer:giveWanteds(4)
-				killer:sendMessage("Verbrechen begangen: Mord, 4 Wanteds", 255, 255, 0)
+	if not self.m_Dead then
+		self.m_Dead = true
+		
+		--create a rescue mission if there is someone online, otherwise just despawn him
+		if #FactionRescue:getSingleton():getOnlinePlayers(true, false) >= 1 then
+			self:setHealth(20)
+			self:setData("NPC:Immortal", true, true)
+			self:setAnimation("wuzi","cs_dead_guy", -1, true, false, false, true)
+			FactionRescue:getSingleton():createPedDeathPickup(self, self.m_Name)
+			self.m_AbortRescueTimer = setTimer(function()
+				if self.m_DeathPickup then
+					FactionRescue:getSingleton():removePedDeathPickup(self)
+					self:despawn()
 				end
-			end, math.random(2000, 10000), 1)
+			end, 5000 * 60, 1) -- 5 minutes
+		else
+			setTimer(function()
+				self:despawn()
+			end, 15000, 1)
+		end
+
+		if killer and killer:getFaction():isStateFaction() and killer:isFactionDuty() then return end
+		if killer and isElement(killer) and getElementType(killer) == "vehicle" then killer = killer.controller end
+		if killer and killer ~= source and killerWeapon ~= 3 and getElementType(killer) == "player" then
+			-- Spawn Loot
+			self:createLootPickup()
+
+			-- Give Wanteds
+			local wanteds = WANTED_AMOUNT_MURDER_BEGGAR
+			if chance(25) then
+				setTimer(function()
+					if killer and isElement(killer) then
+						killer:sendWarning(_("Deine illegalen Aktivitäten wurden von einem Augenzeugen an das SAPD gemeldet!", killer))
+						killer:giveWanteds(wanteds)
+						killer:sendMessage(_("Verbrechen begangen: %s, %d Wanted/s", killer, _("Mord", killer), wanteds), 255, 255, 0)
+					end
+				end, math.random(2000, 10000), 1)
+			end
 		end
 	end
 end
@@ -170,36 +177,26 @@ function BeggarPed:createLootPickup()
 					category = "Gameplay",
 					subcategory = "BeggarRob"
 				},
-				karma = -math.random(0, 1),
 			})
 			if chance(25) then
 				if self.giveLoot then
 					self:giveLoot(hitPlayer)
-				else
-					local amount = math.random(1,2)
-					hitPlayer:getInventory():giveItem("Diebesgut", amount)
-					hitPlayer:sendInfo(_("Du hast %s Diebesgut von %s erhalten.", hitPlayer, amount, self.m_Name))
 				end
-
 			end
 		end
 	end)
 end
 
---function BeggarPed:
-
-function BeggarPed:Event_onColShapeHit(hitElement, dim)
+function BeggarPed:onClientColShapeHit(hitElement, dim)
     if dim and not self.m_Dead then
-        if hitElement:getType() ~= "player" then return end
-        self:sendMessage(hitElement, BeggarPhraseTypes.Help)
-		hitElement:triggerEvent("setManualHelpBarText", "HelpTextTitles.Gameplay.Beggar", "HelpTexts.Gameplay.Beggar", true)
+		self:sendMessage(hitElement, BeggarPhraseTypes.Help)
+		hitElement:triggerEvent("setHelpBarLexiconPage", LexiconPages.BeggarPed)
     end
 end
 
-function BeggarPed:Event_onColShapeLeave(hitElement, dim)
+function BeggarPed:onClientColShapeLeave(hitElement, dim)
     if dim and not self.m_Dead then
-        if hitElement:getType() ~= "player" then return end
-        self:sendMessage(hitElement, BeggarPhraseTypes.NoHelp)
-		hitElement:triggerEvent("resetManualHelpBarText")
+		self:sendMessage(hitElement, BeggarPhraseTypes.NoHelp)
+		hitElement:triggerEvent("resetHelpBar")
     end
 end

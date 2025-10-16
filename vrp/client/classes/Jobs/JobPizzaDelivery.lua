@@ -14,17 +14,16 @@ addRemoteEvents{ "nextPizzaDelivery" }
 local PickupX, PickupY, PickupZ =  2098.50, -1808.93, 13.07
 local objID = 1582
 function JobPizza:constructor()
-	Job.constructor(self, 155, 2108.99, -1790.68, 13.55, 0, "Pizza.png", {170, 150, 100}, "files/images/Jobs/HeaderPizzaDelivery.png", _(HelpTextTitles.Jobs.PizzaDelivery):gsub("Job: ", ""), _(HelpTexts.Jobs.PizzaDelivery), self.onInfo)
+	Job.constructor(self, 155, 2108.99, -1790.68, 13.55, 0, "Pizza.png", {170, 150, 100}, "files/images/Jobs/HeaderPizzaDelivery.png", (HelpTextTitles.Jobs.PizzaDelivery):gsub("Job: ", ""), _(HelpTexts.Jobs.PizzaDelivery), LexiconPages.JobPizzaDelivery, self.onInfo)
 	self:setJobLevel(JOB_LEVEL_PIZZA)
 
-	-- add job to help menu
-	HelpTextManager:getSingleton():addText("Jobs", _(HelpTextTitles.Jobs.PizzaDelivery):gsub("Job: ", ""), "jobs.pizzadelivery")
 	addEventHandler("nextPizzaDelivery", localPlayer, bind(JobPizza.nextDeliver, self))
 end
 
 
 function JobPizza:start()
 	self:nextDeliver()
+	HelpBar:getSingleton():setLexiconPage(LexiconPages.JobPizzaDelivery)
 end
 
 function JobPizza:throwPizza()
@@ -54,6 +53,7 @@ function JobPizza:stop( )
 	if isElement(self.m_PizzaPickupMarker) then
 		destroyElement( self.m_PizzaPickupMarker )
 	end
+	HelpBar:getSingleton():setLexiconPage(nil)
 end
 
 function JobPizza:nextDeliver( )
@@ -66,7 +66,7 @@ function JobPizza:nextDeliver( )
 	addEventHandler("onClientMarkerHit",self.m_PizzaJobMarker,bind( JobPizza.onMarkerHit, self))
 	self.m_PizzaJobBlip = Blip:new("Marker.png",x , y,9999)
 	self.m_PizzaJobBlip:setColor(BLIP_COLOR_CONSTANTS.Red)
-	self.m_PizzaJobBlip:setDisplayText("Pizza-Lieferadresse")
+	self.m_PizzaJobBlip:setDisplayText(_"Pizza-Lieferadresse")
 
 	self.m_PizzaTick = getTickCount()
 end
@@ -97,7 +97,7 @@ function JobPizza:pickupDeliver( )
 	GPS:getSingleton():startNavigationTo(Vector3(PickupX, PickupY, PickupZ))
 	self.m_PizzaJobBlip = Blip:new("Marker.png", PickupX, PickupY, 9999)
 	self.m_PizzaJobBlip:setColor(BLIP_COLOR_CONSTANTS.Red)
-	self.m_PizzaJobBlip:setDisplayText("Pizza-Stack")
+	self.m_PizzaJobBlip:setDisplayText(_"Pizza-Stack")
 	addEventHandler("onClientMarkerHit",self.m_PizzaPickupMarker,bind( JobPizza.onNextDeliver, self))
 end
 

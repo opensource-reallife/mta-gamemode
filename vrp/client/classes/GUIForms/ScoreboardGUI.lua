@@ -21,20 +21,20 @@ function ScoreboardGUI:constructor()
 	self.m_Grid:setColumnBackgroundColor(Color.Clear)
 	self.m_Grid:addColumn(_"VIP", 0.05)
 	self.m_Grid:addColumn(_"Name", 0.2)
-	self.m_Grid:addColumn(_"Fraktion", 0.14)
+	self.m_Grid:addColumn(_"Fraktion", 0.1)
+	self.m_Grid:addColumn("", 0.06)
 	self.m_Grid:addColumn(_"Unternehmen", 0.15)
-	self.m_Grid:addColumn(_"Gang/Firma", 0.19)
+	self.m_Grid:addColumn(_"Gruppe", 0.27)
 	self.m_Grid:addColumn(_"Spielzeit", 0.08)
-	self.m_Grid:addColumn(_"Karma", 0.08)
 	self.m_Grid:addColumn(_"Ping", 0.11)
-	self.m_Grid:setSortable{"VIP", "Name", "Fraktion", "Unternehmen", "Gang/Firma", "Spielzeit"} --We can't sort Ping and Karma (Ping can be a number and also a string; karma is a numeric string eg. "+123" which will be not sort properly)
-	self.m_Grid:setSortColumn(_"Fraktion")
+	self.m_Grid:setSortable{_"VIP", _"Name", _"Fraktion", _"Unternehmen", _"Gruppe", _"Spielzeit"} --We can't sort Ping (Ping can be a number and also a string)
+	--self.m_Grid:setSortColumn(_"Fraktion")
 
 	self.m_Line = GUIRectangle:new(0, self.m_Height*0.65, self.m_Width, self.m_Height*0.05, Color.Accent, self.m_Rect)
 	self.m_PlayerCount = GUILabel:new(self.m_Width*0.05, self.m_Height*0.65, self.m_Width/2, self.m_Height*0.05, "", self.m_Rect)
-	self.m_PlayerCount:setColor(Color.White):setFont(VRPFont(self.m_Height*0.05))
+	self.m_PlayerCount:setColor(tocolor(0, 0, 0, 200)):setFont(VRPFont(self.m_Height*0.05))
 	self.m_Ping = GUILabel:new(self.m_Width/2, self.m_Height*0.65, self.m_Width/2-self.m_Width*0.05, self.m_Height*0.05, "", self.m_Rect)
-	self.m_Ping:setColor(Color.White):setFont(VRPFont(self.m_Height*0.05)):setAlignX("right")
+	self.m_Ping:setColor(tocolor(0, 0, 0, 200)):setFont(VRPFont(self.m_Height*0.05)):setAlignX("right")
 
 	self.m_OldWeaponSlot = localPlayer:getWeaponSlot()
 
@@ -90,18 +90,16 @@ function ScoreboardGUI:refresh()
 	self.m_FactionAFKCount = {}
 
 	for k, player in pairs(getElementsByType("player")) do
-		local factionId = player:getFaction() and player:getFaction():getId() or 0
+		local factionId = player:getFaction() and not player:getFaction():isInsurgentFaction() and player:getFaction():getId() or 0 -- not = Count Insurgent as civilian (Insurgent = Civilian)
 		local companyId = player:getCompany() and player:getCompany():getId() or 0
-		table.insert(self.m_Players, player)
+		table.insert(self.m_Players, {player, factionId})
 
-		if factionId ~= 0 then
-			if not self.m_FactionCount[factionId] then self.m_FactionCount[factionId] = 0 end
-			if not self.m_FactionAFKCount[factionId] then self.m_FactionAFKCount[factionId] = 0 end
+		if not self.m_FactionCount[factionId] then self.m_FactionCount[factionId] = 0 end
+		if not self.m_FactionAFKCount[factionId] then self.m_FactionAFKCount[factionId] = 0 end
 
-			self.m_FactionCount[factionId] = self.m_FactionCount[factionId] + 1
-			if player:isAFK() then
-				self.m_FactionAFKCount[factionId] = self.m_FactionAFKCount[factionId] + 1
-			end
+		self.m_FactionCount[factionId] = self.m_FactionCount[factionId] + 1
+		if player:isAFK() then
+			self.m_FactionAFKCount[factionId] = self.m_FactionAFKCount[factionId] + 1
 		end
 
 		if companyId ~= 0 then
@@ -115,6 +113,13 @@ function ScoreboardGUI:refresh()
 		end
 	end
 
+	if localPlayer:getFaction() and localPlayer:getFaction():isRescueFaction() then
+		self.m_Grid:setColumnText(4, _"FMS")
+	else
+		self.m_Grid:setColumnText(4, "")
+	end
+
+	table.sort(self.m_Players, function (a, b) return (a[2] < b[2]) end)
 	self:insertPlayers()
 
 	local scrollAreaDocumentSize_new = self.m_Grid.m_ScrollArea.m_DocumentHeight
@@ -132,79 +137,115 @@ function ScoreboardGUI:refresh()
 	end
 	self.m_CountRow = 0
 	self.m_CountColumn = 0
+	self:addPlayerCount(_"Zivilisten", self.m_FactionCount[0] or 0, self.m_FactionAFKCount[0] or 0, tocolor(255, 255, 255))
+
 	for id, faction in pairs(FactionManager.Map) do
-		local color = faction:getColor()
-		self:addPlayerCount(faction:getShortName(), self.m_FactionCount[id] or 0, self.m_FactionAFKCount[id] or 0, tocolor(color.r, color.g, color.b))
+		if id ~= 13 then -- Hide Insurgent count (Insurgent = Civilian)
+			local color = faction:getColor()
+			self:addPlayerCount(faction:getShortName(), self.m_FactionCount[id] or 0, self.m_FactionAFKCount[id] or 0, tocolor(color.r, color.g, color.b))
+		end
 	end
 	for id, company in ipairs(CompanyManager.Map) do
-		self:addPlayerCount(company:getShortName(), self.m_CompanyCount[id] or 0, self.m_CompanyAFKCount[id] or 0)
+		if id ~= 1 then -- Hide Driving School count
+			local color = company:getColor()
+			self:addPlayerCount(company:getShortName(), self.m_CompanyCount[id] or 0, self.m_CompanyAFKCount[id] or 0, tocolor(color.r, color.g, color.b))
+		end
 	end
 
 	self.m_PlayerCount:setText(_("Derzeit sind %d Spieler online", #getElementsByType("player")))
-	self.m_Ping:setText(_("eigener Ping: %dms", localPlayer:getPing()))
+	self.m_Ping:setText(_("Ping: %dms", localPlayer:getPing()))
 end
 
 function ScoreboardGUI:addPlayerCount(name, value, valueAFK, color)
+	local id = (self.m_CountRow + 1) + self.m_CountColumn * 3
+
 	if self.m_CountRow >= 3 then
 		self.m_CountRow = 0
-		self.m_CountColumn =  self.m_CountColumn+1
+		self.m_CountColumn =  self.m_CountColumn + 1
 	end
-	if not self.m_PlayerCountLabels[name] then
-		self.m_PlayerCountLabels[name] = GUILabel:new(self.m_Width*0.05 + (self.m_Width/6*self.m_CountColumn), self.m_Height*0.72 + (self.m_Height*0.05*self.m_CountRow), self.m_Width/4, self.m_Height*0.05, "", self.m_Rect)
+
+	if not self.m_PlayerCountLabels[id] then
+		self.m_PlayerCountLabels[id] = GUILabel:new(self.m_Width*0.05 + (self.m_Width/6*self.m_CountColumn), self.m_Height*0.72 + (self.m_Height*0.05*self.m_CountRow), self.m_Width/4, self.m_Height*0.05, "", self.m_Rect)
 		if color then
-			self.m_PlayerCountLabels[name]:setColor(color)
+			self.m_PlayerCountLabels[id]:setColor(color)
 		end
 	end
 
 	if valueAFK ~= 0 then
-		self.m_PlayerCountLabels[name]:setText(("%s: %d (%d AFK)"):format(name, value, valueAFK))
+		self.m_PlayerCountLabels[id]:setText(("%s: %d (%d AFK)"):format(name, value, valueAFK))
 	else
-		self.m_PlayerCountLabels[name]:setText(("%s: %d"):format(name, value))
+		self.m_PlayerCountLabels[id]:setText(("%s: %d"):format(name, value))
 	end
 
 	self.m_CountRow = self.m_CountRow + 1
 end
 
 function ScoreboardGUI:insertPlayers()
-	local gname
-	for index, player in ipairs(self.m_Players) do
-		local karma = math.floor(player:getKarma() or 0)
-		local hours, minutes = math.floor(player:getPlayTime()/60), (player:getPlayTime() - math.floor(player:getPlayTime()/60)*60)
+	for index, playerTable in ipairs(self.m_Players) do
+		local player = playerTable[1]
+		local isLoggedIn = not player:getName():find("Gast_")
+
+		local playtime = ("%d:%.2d"):format(math.floor(player:getPlayTime()/60), (player:getPlayTime() - math.floor(player:getPlayTime()/60)*60))
+
 		local ping
 		if player:isAFK() then
 			ping = "AFK"
 		elseif player:isInJail() then
 			ping = "Knast"
+		elseif player:getPublicSync("gangwarParticipant") then
+			ping = "GW"
 		else
 			ping = player:getPing().."ms"
 		end
 
-		gname = player:getGroupName()
+		local gname = player:getGroupName()
 		if gname == "" or #gname == 0 then
-			gname = "-Keine-"
+			gname = "- Keine -"
 		end
+		
 		local item = self.m_Grid:addItem(
-			player:isPremium() and "files/images/Nametag/premium.png" or "files/images/Textures/Other/trans.png",
-			player:getName(),
-			player:getFaction() and player:getFaction():getShortName() or "- Keine -",
-			player:getCompany() and player:getCompany():getShortName()  or "- Keins -",
-			string.short(gname, 16),
-			("%d:%.2d"):format(hours, minutes), --hours..":"..minutes,
-			("%s%d"):format(karma >= 0 and "+" or "-", math.abs(karma)), --karma >= 0 and "+"..karma or " "..tostring(karma),
+			(isLoggedIn and player:isPremium()) and "files/images/Nametag/premium.png" or "files/images/Textures/Other/trans.png",
+			(player.getPublicSync and (player:getPublicSync("supportMode") or player:getPublicSync("ticketsupportMode")) and ("[%s] %s"):format(RANKSCOREBOARD[player.getPublicSync and player:getPublicSync("Rank") or 3] or "Support", player:getName())) or player:getName(),
+			isLoggedIn and (player:getFaction() and not player:getFaction():isInsurgentFaction() and player:getFaction():getShortName() or "- Keine -") or "-", -- not = Dont show player as Insurgent (Insurgent = Civilian)
+			isLoggedIn and ((localPlayer:getFaction() and localPlayer:getFaction():isRescueFaction()) and (player:getFaction() and player:getFaction():isRescueFaction() and player:getRadioStatus() or "-")) or "",
+			isLoggedIn and (player:getCompany() and player:getCompany():getShortName()  or "- Keins -") or "-",
+			isLoggedIn and gname or "-",
+			isLoggedIn and playtime or "-",
 			ping or " - "
 		)
 		item:setColumnToImage(1, true, item.m_Height)
 		item:setFont(VRPFont(24))
+
 		if player:getFaction() then
 			local color = player:getFaction():getColor()
-			item:setColumnColor(3, tocolor(color.r, color.g, color.b))
+			if player:getFaction():isInsurgentFaction() or not player:getPublicSync("Faction:Duty") then -- Hide Insurgent color (Insurgent = Civilian) / Dont show player faction color when off duty
+				item:setColumnColor(3, tocolor(255, 255, 255))
+			else
+				item:setColumnColor(3, tocolor(color.r, color.g, color.b))
+			end
+
+			if (localPlayer:getFaction() and localPlayer:getFaction():isRescueFaction()) and (player:getFaction() and player:getFaction():isRescueFaction()) then
+				if tonumber(player:getRadioStatus()) and FMS_STATUS_COLORS[tonumber(player:getRadioStatus())] then
+					local colorFMS = FMS_STATUS_COLORS[tonumber(player:getRadioStatus())]
+					item:setColumnColor(4, tocolor(colorFMS[1], colorFMS[2], colorFMS[3]))
+				end
+			end
+		end
+
+		if player:getCompany() and player:getPublicSync("Company:Duty") then
+			local color = player:getCompany():getColor()
+			item:setColumnColor(5, tocolor(color.r, color.g, color.b))
+		end
+
+		if player.getPublicSync and player:getPublicSync("supportMode") or player:getPublicSync("ticketsupportMode") then 
+			item:setColumnColor(2, tocolor(unpack(RANKCOLORS[player.getPublicSync and player:getPublicSync("Rank") or 3])))
 		end
 
 		if player:getGroupType() then
 			if player:getGroupType() == "Gang" then
-				item:setColumnColor(5, Color.Red)
+				item:setColumnColor(6, Color.Red)
 			elseif player:getGroupType() == "Firma" then
-				item:setColumnColor(5, Color.Accent)
+				item:setColumnColor(6, Color.Accent)
 			end
 		end
 
@@ -212,54 +253,8 @@ function ScoreboardGUI:insertPlayers()
 			item:setColumnColor(8, Color.Red)
 		elseif ping == "Knast" then
 			item:setColumnColor(8, Color.Yellow)
-		end
-
-		if karma >= 5 then
-			item:setColumnColor(7, Color.Green)
-		elseif karma <= -5 then
-			item:setColumnColor(7, Color.Red)
-		end
-	end
-
-	if DEBUG and add then
-		local rndFaction = {"SAPD", "FBI", "SASF", "Rescue", "LCN", "Yakuzza", "Grove", "Ballas", "Outlaws", "Aztecas", "Kartell", "- Keine -"}
-		local rndCompany = {"Fahrschule", "M & T", "San News", "EPT", "- Keins -" }
-
-		for i = 1, 50 do
-			local faction = rndFaction[math.random(1, #rndFaction)]
-			local company = rndCompany[math.random(1, #rndCompany)]
-			local karma = math.random(-150, 150)
-			local ping = math.random(1,3) == 1 and (math.random(1,5) == 1 and "Knast" or "AFK") or math.random(15, 200)
-
-			local item = self.m_Grid:addItem(
-				math.random(1,2) == 1 and "files/images/Nametag/premium.png" or "files/images/Textures/Other/trans.png",
-				getRandomUniqueNick(),
-				faction,
-				company,
-				"- Keine -",
-				("%d:%.2d"):format(math.random(1, 1337), math.random(0, 59)),
-				("%s%d"):format(karma >= 0 and "+" or "-", math.abs(karma)),
-				ping or " - "
-			)
-			item:setColumnToImage(1, true, item.m_Height)
-			item:setFont(VRPFont(24))
-
-			if FactionManager:getSingleton():getFromName(faction) then
-				local color = FactionManager:getSingleton():getFromName(faction):getColor()
-				item:setColumnColor(3, tocolor(color.r, color.g, color.b))
-			end
-
-			if ping == "AFK" then
-				item:setColumnColor(8, Color.Red)
-			elseif ping == "Knast" then
-				item:setColumnColor(8, Color.Yellow)
-			end
-
-			if karma >= 5 then
-				item:setColumnColor(7, Color.Green)
-			elseif karma <= -5 then
-				item:setColumnColor(7, Color.Red)
-			end
+		elseif ping == "GW" then
+			item:setColumnColor(8, Color.Red)
 		end
 	end
 end

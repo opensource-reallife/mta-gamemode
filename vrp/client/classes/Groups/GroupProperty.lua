@@ -53,7 +53,7 @@ end
 
 function GroupProperty:createBlips( x, y, z, id, groupType)
 	self.m_BlipProperties[id] =  Blip:new("House.png", x, y, 500, groupType == "Firma" and {50, 200, 255} or {178, 35, 33})
-	self.m_BlipProperties[id]:setDisplayText(groupType == "Firma" and "Firmensitz" or "Gangversteck")
+	self.m_BlipProperties[id]:setDisplayText("Gruppenimmobilie")
 	self.m_BlipProperties[id]:setZ(z)
 end
 

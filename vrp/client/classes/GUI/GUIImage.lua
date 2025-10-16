@@ -7,12 +7,14 @@
 -- ****************************************************************************
 GUIImage = inherit(GUIElement)
 inherit(GUIColorable, GUIImage)
+inherit(GUIRotatable, GUIImage)
 
 function GUIImage:constructor(posX, posY, width, height, path, parent)
 	self.m_Image = path
 
 	GUIElement.constructor(self, posX, posY, width, height, parent)
 	GUIColorable.constructor(self)
+	GUIRotatable.constructor(self)
 end
 
 function GUIImage:drawThis()
@@ -26,18 +28,8 @@ function GUIImage:drawThis()
 	dxSetBlendMode("blend")
 end
 
-function GUIImage:setRotation(rotation, rotationCenterOffsetX, rotationCenterOffsetY)
-	assert(type(rotation) == "number", "Bad argument #1 @ GUIImage.setRotation")
-
-	self.m_Rotation = rotation
-	self.m_RotationCenterOffsetX = rotationCenterOffsetX
-	self.m_RotationCenterOffsetY = rotationCenterOffsetY
-
-	return self
-end
-
 function GUIImage:setImage(path)
-	assert(type(path) == "string", "Bad argument @ GUIImage.setImage")
+	assert(type(path) == "string" or path:getType() == "texture", "Bad argument @ GUIImage.setImage")
 
 	self.m_Image = path
 	self:anyChange()

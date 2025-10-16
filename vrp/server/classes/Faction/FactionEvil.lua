@@ -17,9 +17,16 @@ function FactionEvil:constructor()
 	self.m_Raids = {}
 
 	nextframe(function()
-		--self:loadLCNGates(5)
-		self:loadCartelGates(11)
-		self:loadYakGates(6)
+		if FactionManager.Map[5] then
+			self:loadLCNGates(5)
+		end
+		if FactionManager.Map[6] then
+			self:loadYakGates(6)
+		end
+		if FactionManager.Map[11] then
+			--self:loadCartelGates(11)
+			self:loadTriadGates(11)
+		end
 	end)
 
 	for Id, faction in pairs(FactionManager:getAllFactions()) do
@@ -33,6 +40,7 @@ function FactionEvil:constructor()
 		self:loadDiplomacy()
 	end)
 
+	setGarageOpen(9, true) -- Grove Street Garage
 
 	addRemoteEvents{"factionEvilStartRaid", "factionEvilSuccessRaid", "factionEvilFailedRaid", "factionEvilToggleDuty", "factionEvilRearm", "factionEvilStorageWeapons"}
 	addEventHandler("factionEvilStartRaid", root, bind(self.Event_StartRaid, self))
@@ -65,7 +73,7 @@ function FactionEvil:createInterior(Id, faction)
 	self.m_ItemDepot[Id]:setData("clickable",true,true) -- Makes Ped clickable
 	addEventHandler("onElementClicked", self.m_ItemDepot[Id], bind(self.onDepotClicked, self))
 	ElementInfo:new(self.m_ItemDepot[Id], "Itemlager")
-	
+
 	self.m_EquipmentDepot[Id] = createObject(964, 2819.84, -1173.51, 1024.57, 0, 0, 0)
 	self.m_EquipmentDepot[Id]:setDimension(Id)
 	self.m_EquipmentDepot[Id]:setInterior(8)
@@ -137,12 +145,6 @@ function FactionEvil:countPlayers(afkCheck, dutyCheck)
 	return count
 end
 
-function FactionEvil:giveKarmaToOnlineMembers(karma, reason)
-	for k, player in pairs(self:getOnlinePlayers()) do
-		player:giveKarma(karma)
-	end
-end
-
 function FactionEvil:sendWarning(text, header, withOffDuty, pos, ...)
 	for k, player in pairs(self:getOnlinePlayers(false, not withOffDuty)) do
 		player:sendWarning(_(text, player, ...), 30000, header)
@@ -174,7 +176,7 @@ end
 function FactionEvil:onDepotClicked(button, state, player)
 	if button == "left" and state == "up" then
 		if player:getFaction() and player:getFaction() == source.Faction then
-			player:getFaction():getDepot():showItemDepot(player)
+			player:getFaction():getDepot():showItemDepot(player, source)
 		else
 			player:sendError(_("Dieses Depot gehört nicht deiner Fraktion!", player))
 		end
@@ -185,13 +187,13 @@ function FactionEvil:onEquipmentDepotClicked(button, state, player)
 	if button == "left" and state == "down" then
 		if player:getFaction() and player:getFaction() == source.Faction then
 			local box = player:getPlayerAttachedObject()
-			if box and isElement(box) and box.m_Content then 
+			if box and isElement(box) and box.m_Content then
 				self:putOrderInDepot(player, box)
 			else
 				if not getElementData(player, "isEquipmentGUIOpen") then -- get/setData doesnt seem to sync to client despite sync-arguement beeing true(?)
-					setElementData(player, "isEquipmentGUIOpen", true, true) 
+					setElementData(player, "isEquipmentGUIOpen", true, true)
 					player.m_LastEquipmentDepot = source
-					player:getFaction():getDepot():showEquipmentDepot(player)
+					player:getFaction():getDepot():showEquipmentDepot(player, source)
 				end
 			end
 		else
@@ -200,35 +202,60 @@ function FactionEvil:onEquipmentDepotClicked(button, state, player)
 	end
 end
 
-function FactionEvil:isSpecialProduct(product) 
-	return (product == "RPG-7" or product == "Granate" or product == "Scharfschützengewehr" or product == "Gasgranate") 
+function FactionEvil:isSpecialProduct(product)
+	return (product == "RPG-7" or product == "Granate" or product == "Scharfschützengewehr" or product == "Gasgranate")
 end
 
 function FactionEvil:putOrderInDepot(player, box)
-	local content = box.m_Content 
-	local type, product, amount, price, id = unpack(box.m_Content)
+	local insertWeapomAmount = 0
+	local insertAmmoAmount = 0
+	local content = box.m_Content
 	local depot = player:getFaction():getDepot()
-	if type == "Waffe" or self:isSpecialProduct(product) then
-		if not self:isSpecialProduct(product) then
-			if id then
-				depot:addWeaponD(id,amount)
-				player:getFaction():sendShortMessage(("%s hat %s Waffe/n [ %s ] ins Lager gelegt!"):format(player:getName(), amount, product))
-			end
-		else 
-			if id then
-				depot:addWeaponD(id,amount)
-				depot:addMagazineD(id,amount)
-				player:getFaction():sendShortMessage(("%s hat %s Spezial-Waffe/n [ %s ] ins Lager gelegt!"):format(player:getName(), amount, product))
+	local depotInfo = factionWeaponDepotInfo
+
+	for i, data in pairs(box.m_Content) do
+		if i ~= "BagPrice" then
+			local type, product, amount, price, id = unpack(data)
+			if type == "Waffe" or self:isSpecialProduct(product) then
+				if id then
+					if depotInfo[id]["Waffe"] >= depot.m_Weapons[id]["Waffe"] + amount then
+						insertWeapomAmount = amount
+					else
+						insertWeapomAmount = (depotInfo[id]["Waffe"] - depot.m_Weapons[id]["Waffe"] >= 0 and depotInfo[id]["Waffe"] - depot.m_Weapons[id]["Waffe"] or 0)
+					end
+					depot:addWeaponD(id, insertWeapomAmount)
+					if self:isSpecialProduct(product) then
+						player:getFaction():sendShortMessage(("%s hat %s Spezial-Waffe/n [ %s ] ins Lager gelegt!"):format(player:getName(), insertWeapomAmount, product))
+						--player:getFaction():sendShortMessage(("%s hat %s Spezial-Munition [ %s ] ins Lager gelegt!"):format(player:getName(), insertAmmoAmount, product))
+						player:getFaction():addLog(player, "Lager", ("%s hat %s Spezial-Waffe/n [ %s ] ins Lager gelegt!"):format(player:getName(), insertAmmoAmount, product))
+					else
+						player:getFaction():sendShortMessage(("%s hat %s Waffe/n [ %s ] ins Lager gelegt!"):format(player:getName(), insertWeapomAmount, product))
+						--player:getFaction():sendShortMessage(("%s hat %s Munition [ %s ] ins Lager gelegt!"):format(player:getName(), insertAmmoAmount, product))
+						player:getFaction():addLog(player, "Lager", ("%s hat %s Waffe/n [ %s ] ins Lager gelegt!"):format(player:getName(), insertWeapomAmount, product))
+					end
+				end
+			elseif type == "Munition" then
+				if id then
+					if depotInfo[id]["Magazine"] >= depot.m_Weapons[id]["Munition"] + amount then
+						insertAmmoAmount = amount
+					else
+						insertAmmoAmount = (depotInfo[id]["Magazine"] - depot.m_Weapons[id]["Munition"] >= 0 and depotInfo[id]["Magazine"] - depot.m_Weapons[id]["Munition"] or 0)
+					end
+					depot:addMagazineD(id,insertAmmoAmount)
+					if self:isSpecialProduct(product) then
+						player:getFaction():sendShortMessage(("%s hat %s Spezial-Munition [ %s ] ins Lager gelegt!"):format(player:getName(), insertAmmoAmount, product))
+						player:getFaction():addLog(player, "Lager", ("%s hat %s Spezial-Waffe/n [ %s ] ins Lager gelegt!"):format(player:getName(), insertAmmoAmount, product))
+					else
+						player:getFaction():sendShortMessage(("%s hat %s Munition [ %s ] ins Lager gelegt!"):format(player:getName(), insertAmmoAmount, product))
+						player:getFaction():addLog(player, "Lager", ("%s hat %s Munition [ %s ] ins Lager gelegt!"):format(player:getName(), insertAmmoAmount, product)) 
+					end
+				end
+			else
+				depot:addEquipment(player, id, amount, true)
+				player:getFaction():sendShortMessage(("%s hat %s Stück %s ins Lager gelegt!"):format(player:getName(), amount, product))
+				player:getFaction():addLog(player, "Lager", ("%s hat %s Stück %s ins Lager gelegt!"):format(player:getName(), amount, product))
 			end
 		end
-	elseif type == "Munition" then
-		if id then
-			depot:addMagazineD(id,amount)
-			player:getFaction():sendShortMessage(("%s hat %s Munition [ %s ] ins Lager gelegt!"):format(player:getName(), amount, product))
-		end
-	else 
-		depot:addEquipment(player, product, amount, true) 
-		player:getFaction():sendShortMessage(("%s hat %s Stück %s ins Lager gelegt!"):format(player:getName(), amount, product))
 	end
 	box.m_Package:delete()
 end
@@ -242,20 +269,41 @@ function FactionEvil:loadYakGates(factionId)
 	end
 	setObjectScale(lcnGates[1].m_Gates[1], 1.1)
 	local elevator = Elevator:new()
-	elevator:addStation("UG Garage", Vector3(1413.57, -1355.19, 8.93))
-	elevator:addStation("Hinterhof", Vector3(1423.35, -1356.26, 13.57))
 	elevator:addStation("Dach", Vector3(1418.78, -1329.92, 23.99))
+	elevator:addStation("Hinterhof", Vector3(1423.35, -1356.96, 13.57))
+	elevator:addStation("UG Garage", Vector3(1413.57, -1355.19, 8.93))
 	local pillar = createObject(2774, Vector3(1397.404, -1450.227, -0.422))
 	local pillar2 = createObject(2774, Vector3(1407.404, -1450.227,	 -0.422 ))
 
 end
 
-function FactionEvil:loadCartelGates( factionId) 
-	 
+function FactionEvil:loadTriadGates(factionId)
+
+	local lcnGates = {}
+	--[[lcnGates[1] = Gate:new(10558, Vector3(1901.549, 967.301, 11.120 ), Vector3(0, 0, 270), Vector3(1901.549, 967.301, 11.120-4.04))
+	for index, gate in pairs(lcnGates) do
+		gate:setOwner(FactionManager:getSingleton():getFromId(factionId))
+		gate.onGateHit = bind(self.onBarrierGateHit, self)
+	end]]
+	local pillar = createObject( 2774, 1906.836, 967.180+0.6, 10.820-7)
+	local door = Door:new(6400, Vector3(1908.597, 967.407, 10.750), Vector3(0, 0, 90))
+	setElementDoubleSided(door.m_Door, true)
+	local crate = createObject(3576, 1909.020,965.252,11.320)
+	setElementRotation(crate, 0, 0, 180)
+	local box = createObject(18260, 1910.220, 969.863, 11.420)
+	local elevator = Elevator:new()
+	elevator:addStation("Hinterhof", Vector3(1930.55, 951.98, 10.82), 351-180)
+	elevator:addStation("Casino", Vector3(1963.30, 973.03, 994.27), 204-180, 10, 0)
+	elevator:addStation("Dach - Heliports", Vector3(1941.15, 988.72, 52.74), 0)
+end
+
+
+function FactionEvil:loadCartelGates( factionId)
+
 	local lcnGates = {}
 	lcnGates[1] = Gate:new(6400, Vector3(2520.203, -1493.003, 25.094), Vector3(0, 0, 270), Vector3(2520.203, -1493.003, 20.094))
 	lcnGates[2] = Gate:new(16773, Vector3(2446.400, -1464.300, 23.800), Vector3(0, 0, 270), Vector3(2446.400, -1464.300, 17.800))
-	
+
 	for index, gate in pairs(lcnGates) do
 		gate:setOwner(FactionManager:getSingleton():getFromId(factionId))
 		gate.onGateHit = bind(self.onBarrierGateHit, self)
@@ -265,16 +313,24 @@ end
 
 function FactionEvil:loadLCNGates(factionId)
 
-	local lcnGates = {}
-	lcnGates[1] = Gate:new(980, Vector3(784.56561, -1152.40520, 24.93374), Vector3(0, 0, 275), Vector3(784.56561, -1152.40520, 18.53374))
-	lcnGates[2] = Gate:new(980, Vector3(659.12753, -1227.00923, 17.42981), Vector3(0, 0, 64), Vector3(659.12753, -1227.00923, 11.92981))
-	lcnGates[3] = Gate:new(980, Vector3(664.99264, -1309.83203, 15.06094), Vector3(0, 0, 182), Vector3(664.99264, -1309.83203, 8.46094))
+	self.m_LCNGates = {}
+	self.m_LCNGates[1] = Gate:new(988, Vector3(783.255, -1149.449, 23.641), Vector3(0, 0, 90), Vector3(783.255, -1145.52, 23.641))
+	self.m_LCNGates[1]:addGate(988, Vector3(783.255, -1155.3, 23.641), Vector3(0, 0, 90), Vector3(783.255, -1159.25, 23.641))
+	self.m_LCNGates[1]:setGateScale(Vector3(1.065, 1, 1.09))
+
+	self.m_LCNGates[2] = Gate:new(988, Vector3(660.249, -1230.912, 15.675), Vector3(0, 0, 242), Vector3(658.4, -1234.39, 15.675))
+	self.m_LCNGates[2]:addGate(988, Vector3(662.999, -1225.739, 15.675), Vector3(0, 0, 242), Vector3(664.849, -1222.261, 15.675))
+	self.m_LCNGates[2]:setGateScale(Vector3(1.065, 1, 1))
+	
+	self.m_LCNGates[3] = Gate:new(988, Vector3(667.909, -1307.242, 13.6), Vector3(0, 0, 0), Vector3(671.83, -1307.242, 13.6))
+	self.m_LCNGates[3]:addGate(988, Vector3(662.059, -1307.242, 13.6), Vector3(0, 0, 0), Vector3(658.12, -1307.242, 13.6))
+	self.m_LCNGates[3]:setGateScale(Vector3(1.065, 1, 1.09))
 
 	--setObjectScale(lcnGates[1].m_Gates[1], 1.1)
 	-- setObjectBreakable(lcnGates[1].m_Gates[1], false) <- works only clientside
-	for index, gate in pairs(lcnGates) do
+	for index, gate in pairs(self.m_LCNGates) do
 		gate:setOwner(FactionManager:getSingleton():getFromId(factionId))
-		gate.onGateHit = bind(self.onBarrierGateHit, self)
+		gate.onGateHit = bind(self.onLCNBarrierGateHit, self)
 	end
 	--// remove some objects for the new base that totally looks like a bullshit-fortress for some unauthentic factions called "weaboo-yakuza"
 	--// ps: have I told you that I hate this new faction-base?
@@ -282,7 +338,7 @@ function FactionEvil:loadLCNGates(factionId)
 end
 
 function FactionEvil:onBarrierGateHit(player, gate)
-    if player:getFaction() == gate:getOwner() then
+    if player:getFaction() == gate:getOwner() or player:getFaction():getAllianceFaction() == gate:getOwner() then
 		return true
 	else
 		return false
@@ -331,7 +387,7 @@ function FactionEvil:Event_StartRaid(target)
 					end
 					target:sendMessage(_("Du wirst von %s (%s) überfallen!", target, client:getName(), client:getFaction():getShortName()), 255, 0, 0)
 					target:sendMessage(_("Lauf weg oder bleibe bis der Überfall beendet ist!", target), 255, 0, 0)
-					client:meChat(true, _("überfällt %s!", client, targetName))
+					client:meChat(true, "überfällt %s!", targetName, false)
 
 					target:triggerEvent("CountdownStop",  15, "Überfallen in")
 					target:triggerEvent("Countdown", 15, "Überfallen in")
@@ -352,8 +408,8 @@ function FactionEvil:Event_SuccessRaid(target)
 	local money = target:getMoney()
 	if money > 750 then money = 750 end
 	if money > 0 then
-		client:meChat(true,"überfällt "..target:getName().." erfolgreich!")
-		target:meChat(true, _("wurde erfolgreich von %s überfallen!", target, client:getName()))
+		client:meChat(true,"überfällt %s erfolgreich!", target:getName(), false)
+		target:meChat(true, "wurde erfolgreich von %s überfallen!", client:getName(), false)
 		target:transferMoney(client, money, "Überfall", "Faction", "Robbery")
 		client:triggerEvent("CountdownStop", "Überfallen in", 15)
 		target:triggerEvent("CountdownStop", "Überfallen in", 15)
@@ -366,7 +422,7 @@ end
 function FactionEvil:Event_FailedRaid(target)
 	target:sendSuccess(_("Du bist dem Überfall entkommen!", target))
 	client:sendWarning(_("Der Spieler ist dem Überfall entkommen!", client))
-	target:meChat(true, _("ist aus dem Überfall von %s entkommen!", target, client:getName()))
+	target:meChat(true, "ist aus dem Überfall von %s entkommen!", client:getName(), false)
 	StatisticsLogger:getSingleton():addRaidLog(client, target, 0, 0)
 end
 
@@ -379,22 +435,29 @@ function FactionEvil:loadDiplomacy()
 	end
 end
 
-function FactionEvil:setPlayerDuty(player, state, wastedOrNotOnMarker, preferredSkin)
+function FactionEvil:setPlayerDuty(player, state, wastedOrNotOnMarker, preferredSkin, dontChangeSkin)
 	local faction = player:getFaction()
 	if not state and player:isFactionDuty() then
-		player:setCorrectSkin(true)
+		if not dontChangeSkin then
+			player:setCorrectSkin(true)
+		end
 		player:setFactionDuty(false)
 		player:sendInfo(_("Du bist nun in zivil unterwegs!", player))
 		if not wastedOrNotOnMarker then faction:updateDutyGUI(player) end
 	elseif state and not player:isFactionDuty() then
 		if player:getPublicSync("Company:Duty") and player:getCompany() then
-			player:sendWarning(_("Bitte beende zuerst deinen Dienst im Unternehmen!", player))
-			return false
+			--player:sendWarning(_("Bitte beende zuerst deinen Dienst im Unternehmen!", player))
+			--return false
+			--client:triggerEvent("companyForceOffduty")
+			CompanyManager:getSingleton():companyForceOffduty(player)
 		end
 		player:setFactionDuty(true)
 		faction:changeSkin(player, preferredSkin or (player.m_tblClientSettings and player.m_tblClientSettings["LastFactionSkin"]))
 		player:setHealth(100)
 		player:setArmor(100)
+		StatisticsLogger:getSingleton():addHealLog(player, 100, "Faction Duty Heal")
+		DamageManager:getSingleton():clearPlayer(player)
+		player:checkLastDamaged() 
 		player:sendInfo(_("Du bist nun als Gangmitglied gekennzeichnet!", player))
 		if not wastedOrNotOnMarker then faction:updateDutyGUI(player) end
 	end
@@ -405,10 +468,12 @@ function FactionEvil:isPlayerInDutyPickup(player)
 	return getDistanceBetweenPoints3D(player.position, player.m_CurrentDutyPickup.position) <= 10
 end
 
-function FactionEvil:Event_toggleDuty(wasted, preferredSkin)
+function FactionEvil:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, player)
+	if not client then client = player end
+	
 	if wasted then
 		client:removeFromVehicle()
-		client.m_WasOnDuty = true
+		client:setPublicSync("Faction:WasDuty", true)
 	end
 
 	if getPedOccupiedVehicle(client) then
@@ -417,7 +482,8 @@ function FactionEvil:Event_toggleDuty(wasted, preferredSkin)
 	local faction = client:getFaction()
 	if faction:isEvilFaction() then
 		if wasted or (client.m_CurrentDutyPickup and getDistanceBetweenPoints3D(client.position, client.m_CurrentDutyPickup.position) <= 10) then
-			self:setPlayerDuty(client, not client:isFactionDuty(), wasted, preferredSkin)
+			self:setPlayerDuty(client, not client:isFactionDuty(), wasted, preferredSkin, dontChangeSkin)
+			FactionManager:getSingleton():Event_stopNeedhelp(client)
 		else
 			client:sendError(_("Du bist zu weit entfernt!", client))
 		end
@@ -431,9 +497,12 @@ function FactionEvil:Event_FactionRearm()
 	if not self:isPlayerInDutyPickup(client) then return client:sendError(_("Du bist zu weit entfernt!", client)) end
 	if client:isFactionDuty() then
 		client.m_WeaponStoragePosition = client.position
-		client:triggerEvent("showFactionWeaponShopGUI")
+		client:triggerEvent("showFactionWeaponShopGUI", client.m_CurrentDutyPickup)
 		client:setHealth(100)
 		client:setArmor(100)
+		StatisticsLogger:getSingleton():addHealLog(client, 100, "Faction Rearm Heal")
+		DamageManager:getSingleton():clearPlayer(client)
+		client:checkLastDamaged()
 		local wStorage, aStorage
 		for i = 1,12 do
 			wStorage, aStorage = Guns:getSingleton():getWeaponInStorage( client, i)
@@ -454,51 +523,25 @@ function FactionEvil:Event_storageWeapons(player)
 	local faction = client:getFaction()
 	if faction and faction:isEvilFaction() then
 		if client:isFactionDuty() then
-			local depot = faction:getDepot()
-			local logData = {}
-			for i= 1, 12 do
-				if client:getWeapon(i) > 0 then
-					local weaponId = client:getWeapon(i)
-					local clipAmmo = getWeaponProperty(weaponId, "pro", "maximum_clip_ammo") or 0
-					if WEAPON_CLIPS[weaponId] then
-						clipAmmo = WEAPON_CLIPS[weaponId]
-					end
-
-					local magazines = clipAmmo > 0 and math.floor(client:getTotalAmmo(i)/clipAmmo) or 0
-
-					local depotWeapons, depotMagazines = faction:getDepot():getWeapon(weaponId)
-					local depotMaxWeapons, depotMaxMagazines = faction.m_WeaponDepotInfo[weaponId]["Waffe"], faction.m_WeaponDepotInfo[weaponId]["Magazine"]
-					if depotWeapons+1 <= depotMaxWeapons then
-						if magazines > 0 and depotMagazines + magazines <= depotMaxMagazines or WEAPON_PROJECTILE[weaponId] then
-							depot:addWeaponD(weaponId, 1)
-							depot:addMagazineD(weaponId, magazines)
-							takeWeapon(client, weaponId)
-							logData[WEAPON_NAMES[weaponId]] = magazines
-						elseif magazines > 0 then
-							local magsToMax = depotMaxMagazines - depotMagazines
-							depot:addMagazineD(weaponId, magsToMax)
-							setWeaponAmmo(client, weaponId, getPedTotalAmmo(client, i) - magsToMax*clipAmmo)
-							logData[WEAPON_NAMES[weaponId]] = magsToMax
-							client:sendError(_("Im Depot ist nicht Platz für %s %s Magazin/e! Es wurden nur %s Magazine eingelagert.", client, magazines, WEAPON_NAMES[weaponId], magsToMax))
-						end
-					else
-						client:sendError(_("Im Depot ist nicht Platz für eine/n %s!", client, WEAPON_NAMES[weaponId]))
-					end
-				end
-			end
-			local textForPlayer = "Du hast folgende Waffen in das Lager gelegt:"
-			local wepaponsPut = false
-			for i,v in pairs(logData) do
-				wepaponsPut = true
-				textForPlayer = textForPlayer.."\n"..i
-				if v > 0 then
-					textForPlayer = textForPlayer.. " mit ".. v .. " Magazin(en)"
-					faction:addLog(client, "Waffenlager", ("hat ein/e(n) %s mit %s Magazin(en) in das Lager gelegt!"):format(i, v))
-				else
-					faction:addLog(client, "Waffenlager", ("hat ein/e(n) %s in das Lager gelegt!"):format(i))
-				end
-			end
-			if wepaponsPut then client:sendInfo(textForPlayer) end
+			faction:storageWeapons(client)
 		end
 	end
+end
+
+function FactionEvil:forceOpenLCNGates()
+	if not self.m_LCNGates then return end
+	
+	for i, gate in pairs(self.m_LCNGates) do
+		if gate.m_Closed == true then
+			gate:triggerMovement(false, true)
+		end
+	end
+end
+
+function FactionEvil:onLCNBarrierGateHit(player)
+	if player:getFaction() and player:getFaction():getId() == FactionStaticId.LCN and ActionsCheck:getSingleton():isCurrentAction() ~= "Weihnachtstruck" then
+		return true
+	else
+		return false 
+	end 
 end

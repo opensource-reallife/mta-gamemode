@@ -11,7 +11,7 @@ Roulette.ColorNames = {
     ["black"] = "schwarz"
 }
 
-addRemoteEvents{"rouletteOpen", "rouletteClose", "rouletteStartSpin"}
+addRemoteEvents{"rouletteOpen", "rouletteClose", "rouletteStartSpin", "rouletteRemoveTableLock"}
 
 function Roulette:constructor()
     GUIForm.constructor(self, screenWidth/2 - 1024/2, screenHeight/2-506/2, 1024, 506, false)
@@ -41,13 +41,16 @@ function Roulette:constructor()
     self:createTokens()
 
     self.m_StartSpinEvent = bind(self.Event_startSpin, self)
+    self.m_TableLockBind = bind(self.removeTableLock, self)
 
     addEventHandler("rouletteStartSpin", root, self.m_StartSpinEvent)
+    addEventHandler("rouletteRemoveTableLock", root, self.m_TableLockBind)
 end
 
 function Roulette:destructor()
     GUIForm.destructor(self)
-	removeEventHandler("rouletteStartSpin", root, self.m_StartSpinEvent)
+    removeEventHandler("rouletteStartSpin", root, self.m_StartSpinEvent)
+    removeEventHandler("rouletteRemoveTableLock", root, self.m_TableLockBind)
 end
 
 function Roulette:loadColors()
@@ -186,8 +189,8 @@ function Roulette:placeToken(field)
 
     local color = self.m_AttachedToken
 
-    if self:calcBet() + ROULETTE_TOKENS[color] > ROULETTE_MAX_BET then
-        ErrorBox:new(_("Der maximal Einsatz beträgt %s!", toMoneyString(ROULETTE_MAX_BET)))
+    if self:calcBet() + ROULETTE_TOKENS[color] > ROULETTE_MAX_BET and not (Sewers:getSingleton().m_AppliedCasino) then
+        ErrorBox:new(_("Der maximale Einsatz beträgt $%s!", convertNumber(ROULETTE_MAX_BET)))
         return
     end
 
@@ -305,13 +308,19 @@ function Roulette:createTokens()
     local i = 0
 
     for color, amount in spairs(ROULETTE_TOKENS, function(t,a,b) return t[b] > t[a] end) do
-        self.m_Token[color] = GUIImage:new(450+40*i, 440, 28, 28, ("files/images/Roulette/token_%s.png"):format(color), self)
-        self.m_Token[color].amount = amount
-        self.m_Token[color].onHover = function() self.m_InfoLabel:setText(("%ser Jetton - Wert pro Stück: %s"):format(Roulette.ColorNames[color], toMoneyString(amount))) end
-        self.m_Token[color].onUnhover = function() self.m_InfoLabel:setText("") end
-        self.m_Token[color].onLeftClick = function() self:attachTokenToMouse(color) end
-        i = i+1
+        if amount <= ROULETTE_MAX_BET then
+            self.m_Token[color] = GUIImage:new(450+40*i, 440, 28, 28, ("files/images/Roulette/token_%s.png"):format(color), self)
+            self.m_Token[color].amount = amount
+            self.m_Token[color].onHover = function() self.m_InfoLabel:setText(("%ser Jetton - Wert pro Stück: %s"):format(Roulette.ColorNames[color], toMoneyString(amount))) end
+            self.m_Token[color].onUnhover = function() self.m_InfoLabel:setText("") end
+            self.m_Token[color].onLeftClick = function() self:attachTokenToMouse(color) end
+            i = i+1
+        end
     end
+end
+
+function Roulette:removeTableLock()
+    self.m_TableLocked = false
 end
 
 addEventHandler("rouletteOpen", root, function()

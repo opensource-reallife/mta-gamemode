@@ -26,7 +26,7 @@ Inventory.Tabs = {
 }
 
 function Inventory:constructor()
-	GUIForm.constructor(self, screenWidth/2 - 330/2, screenHeight/2 - (160+106+80)/2, 330, (80+106+80))
+	GUIForm.constructor(self, screenWidth/2 - 330/2, screenHeight/2 - (160+110+80)/2, 330, (80+110+80))
 	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Inventar", true, false, self)
 	self.m_CurrentTab = 1
 
@@ -40,14 +40,14 @@ function Inventory:constructor()
 	self.m_Tabs[1] = self:addTab("files/images/Inventory/items.png", tabArea)
 	self:addItemSlots(21, self.m_Tabs[1])
 	self.m_Tabs[2] = self:addTab("files/images/Inventory/items/Objekte.png", tabArea)
-	self:addItemSlots(5, self.m_Tabs[2])
+	self:addItemSlots(21, self.m_Tabs[2])
 	self.m_Tabs[3] = self:addTab("files/images/Inventory/food.png", tabArea)
-	self:addItemSlots(6, self.m_Tabs[3])
+	self:addItemSlots(21, self.m_Tabs[3])
 	self.m_Tabs[4] = self:addTab("files/images/Inventory/drogen.png", tabArea)
-	self:addItemSlots(7, self.m_Tabs[4])
+	self:addItemSlots(21, self.m_Tabs[4])
 
-	self.m_InfoText1 = GUILabel:new(0, self.m_Height-45, self.m_Width, 20, _"Info: Zum Löschen von Items Control und Linksklick!", self.m_Window):setAlignX("center")
-	self.m_InfoText2 = GUILabel:new(0, self.m_Height-25, self.m_Width, 20, "", self.m_Window):setAlignX("center")
+	self.m_InfoText1 = GUILabel:new(0, self.m_Height-44.5, self.m_Width, 20, _"Info: Zum Löschen von Items Control und Linksklick!", self.m_Window):setAlignX("center")
+	self.m_InfoText2 = GUILabel:new(0, self.m_Height-24.5, self.m_Width, 20, "", self.m_Window):setAlignX("center")
 
 	self.m_func1 = bind(self.Event_loadPlayerInventarClient,  self)
 	self.m_func2 = bind(self.Event_syncInventoryFromServer,  self)
@@ -269,11 +269,14 @@ function Inventory:addItemEvents(item)
 			item:setColor(Inventory.Color.ItemBackgroundHover)
 			if item.Item then
 				local itemName = item.ItemName
-				self.m_InfoText1:setText(_("%s - Menge: %s", itemName, tostring(item.Amount)))
+				self.m_InfoText1:setText(_("%s - Menge: %s", _(itemName), tostring(item.Amount)))
 				if itemName == "Kleidung" and item.Value and SkinInfo[tonumber(item.Value)] then
-					self.m_InfoText2:setText(SkinInfo[tonumber(item.Value)][1])
+					self.m_InfoText2:setText(_(SkinInfo[tonumber(item.Value)][1]))
+				elseif (itemName == "Zigarettenpackung" or itemName == "Donutbox") and tonumber(item.Value) then
+					local info = _(self.m_ItemData[itemName]["Info"])
+					self.m_InfoText2:setText(_("%s (%s übrig)", info, tonumber(item.Value)))
 				else
-					self.m_InfoText2:setText(self.m_ItemData[itemName]["Info"])
+					self.m_InfoText2:setText(_(self.m_ItemData[itemName]["Info"]))
 				end
 			end
 		else
@@ -293,8 +296,10 @@ function Inventory:addItemEvents(item)
 			local itemDelete = false
 			if self.m_ItemData[itemName]["Verbraucht"] == 1 then itemDelete = true end
 			if not self.m_IsDeleteKeyDown then
+				if localPlayer:getData("isTied") or localPlayer:getPublicSync("cuffed") or localPlayer:getData("Admin:IsFrozen") then return ErrorBox:new(_"Du kannst derzeit nichts benutzen.") end
 				triggerServerEvent("onPlayerItemUseServer", localPlayer, item.Id, Inventory.Tabs[self.m_CurrentTab], itemName, item.Place, itemDelete)
 			else
+				if localPlayer:getData("isTied") or localPlayer:getPublicSync("cuffed") or localPlayer:getData("Admin:IsFrozen") then return ErrorBox:new(_"Du kannst derzeit nichts wegwerfen.") end
 				if self.m_InventoryActionPrompt then
 					self.m_InventoryActionPrompt:close()
 				end
@@ -311,6 +316,7 @@ function Inventory:addItemEvents(item)
 
 	item.onRightClick = function()
 		if item.Item then
+			if localPlayer:getData("isTied") or localPlayer:getPublicSync("cuffed") or localPlayer:getData("Admin:IsFrozen") then return ErrorBox:new(_"Du kannst derzeit nichts benutzen.") end
 			local itemName = item.ItemName
 			triggerServerEvent("onPlayerSecondaryItemUseServer", localPlayer, item.Id, Inventory.Tabs[self.m_CurrentTab], itemName, item.Place)
 		end

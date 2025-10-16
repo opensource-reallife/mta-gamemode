@@ -7,7 +7,7 @@
 -- ****************************************************************************
 
 Fonts = {
-	FontAwesome = "files/fonts/FontAwesome5.ttf",					-- Icons
+	FontAwesome = "files/fonts/FontAwesome6.1.0.otf",				-- Icons
 	EkMukta = "files/fonts/EkMukta.ttf",							-- Main font
 	EkMukta_Bold = "files/fonts/EkMukta-Bold.ttf",					-- Toast messages
 	Digital = "files/fonts/digital-7.ttf",							-- Speedo
@@ -74,6 +74,7 @@ end
 
 --for new icons: https://fontawesome.com/icons?d=gallery&m=free -> search -> click on icon -> copy from subtitle (unicode glyph). name it after its original name in the table below
 FontAwesomeSymbols = {
+	Utensils = "",
 	Close = "",
 	Left = "",
 	ArrowsAlt = "",
@@ -93,7 +94,7 @@ FontAwesomeSymbols = {
 	Dollar = "",
 	Money = "",
 	Info = "",
-	Question = "",
+	Question = "?",
 	CheckSquare = "",
 	Check = "",
 	Square = "",
@@ -109,7 +110,7 @@ FontAwesomeSymbols = {
 	Gamepad = "",
 	Suitcase = "",
 	Minus = "",
-	Plus = "",
+	Plus = "+",
 	Lock = "",
 	Unlock = "",
 	Key = "",
@@ -128,6 +129,7 @@ FontAwesomeSymbols = {
 	Double_Left = "",
 	Double_Right = "",
 	Music = "",
+	Dice = "",
 	Random = "",
 	Handshake = "",
 	Building = "",
@@ -173,6 +175,20 @@ FontAwesomeSymbols = {
 	UserLock = "",
 	Calendar = "",
 	Crosshair = "",
+	Egg = "",
+	HandHoldingUSD = "",
+	Gun = "",
+	Ticket = "",
+	Fire_Extinguisher = "",
+	Ship = "",
+	Plane = "",
+	Lock_Open = "",
+	People_Robbery = "",
+	Plane_Slash = "",
+	Map_Location_Dot = "",
+	Location_Dot = "",
+	Money_Bag = "",
+
 }
 
 -- uncomment this to render a list of all loaded fonts

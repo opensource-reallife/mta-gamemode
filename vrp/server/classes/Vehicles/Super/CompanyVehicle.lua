@@ -47,6 +47,15 @@ function CompanyVehicle:constructor(data)
 		table.insert(self.m_Company.m_Vehicles, self)
 	end
 
+	if taxiSignOffsets[self:getModel()] and self:getCompany():getId() == 4 then
+		PublicTransport:createTaxiSign(self)
+	end
+
+	if self:getCompany():getId() == 4 and self:getModel() == 578 then --ept dft
+		self:initTransportExtension()
+		VehicleImportManager:getSingleton():addVehicleTransporter(self)
+	end
+
 	addEventHandler("onVehicleExplode",self, function()
 		setTimer(
 			function(veh)
@@ -59,7 +68,7 @@ function CompanyVehicle:constructor(data)
 	addEventHandler("onVehicleStartEnter",self, bind(self.onStartEnter, self))
 	addEventHandler("onTrailerAttach", self, bind(self.onAttachTrailer, self))
 
-	self:setPlateText((self.m_Company.m_ShorterName .. " " .. ("000000" .. tostring(self.m_Id)):sub(-5)):sub(0,8))
+	self:setPlateText((self.m_Company.m_ShorterName .. " " .. ("000000" .. tostring(self.m_Id)):sub(-5, -1)):sub(0,8))
 
 	self:setLocked(false) -- Unlock company vehicles
 end
@@ -78,7 +87,7 @@ end
 
 function CompanyVehicle:onStartEnter(player,seat)
 	if seat == 0 then
-		if (player:getCompany() == self.m_Company) or (self:getCompany():getId() == 1 and player:getPublicSync("inDrivingLession") == true) then
+		--[[if (player:getCompany() == self.m_Company) or (self:getCompany():getId() == 1 and player:getPublicSync("inDrivingLession") == true) then
 			if not player:isCompanyDuty() and not player:getPublicSync("inDrivingLession") then
 				cancelEvent()
 				player:sendError(_("Du bist nicht im Dienst!", player))
@@ -86,7 +95,7 @@ function CompanyVehicle:onStartEnter(player,seat)
 		else
 			cancelEvent()
 			player:sendError(_("Du darfst dieses Fahrzeug nicht benutzen!", player))
-		end
+		end]]
 	else
 		if self:getCompany():getId() == 4 then
 			self:getCompany():onVehicleStartEnter(source, player, seat)
@@ -101,10 +110,6 @@ function CompanyVehicle:onAttachTrailer(truck)
 end
 
 function CompanyVehicle:onEnter(player, seat)
-	if self:isFrozen() then
-		self:setFrozen(false)
-	end
-
 	if self:getCompany().onVehicleEnter then
 		self:getCompany():onVehicleEnter(source, player, seat)
 	end
@@ -148,7 +153,7 @@ end
 function CompanyVehicle:hasKey(player)
   if self:isPermanent() then
     if player:getCompany() == self:getCompany() then
-      return true
+      return player:isCompanyDuty()
     elseif self:getCompany():getId() == CompanyStaticId.DRIVINGSCHOOL then
 		return player:getPublicSync("inDrivingLession") == true
 	end
@@ -169,11 +174,26 @@ function CompanyVehicle:canBeModified()
   return self:getCompany():canVehiclesBeModified()
 end
 
-function CompanyVehicle:respawn(force)
+function CompanyVehicle:respawn(force, ignoreCooldown)
     local vehicleType = self:getVehicleType()
 	if vehicleType ~= VehicleType.Plane and vehicleType ~= VehicleType.Helicopter and vehicleType ~= VehicleType.Boat and self:getHealth() <= 310 and not force then
 		self:getCompany():sendShortMessage("Fahrzeug-respawn ["..self.getNameFromModel(self:getModel()).."] ist fehlgeschlagen!\nFahrzeug muss zuerst repariert werden!")
 		return false
+	end
+
+	if self.m_RespawnHook:call(self) then
+		return false
+	end
+	
+	if not ignoreCooldown then
+		if self.m_LastDrivers[#self.m_LastDrivers] then
+			local lastDriver = getPlayerFromName(self.m_LastDrivers[#self.m_LastDrivers])
+			if lastDriver and (not lastDriver:getCompany() or lastDriver:getCompany() and lastDriver:getCompany() ~= self:getCompany()) then
+				if self.m_LastUseTime and getTickCount() - self.m_LastUseTime < 300000 then
+					return false
+				end
+			end
+		end
 	end
 
 	-- Teleport to Spawnlocation
@@ -192,6 +212,17 @@ function CompanyVehicle:respawn(force)
 	if self:getCompany():getId() == 4 then -- Public Transport
 		if self:getCompany():isBusOnTour(self) then
 			self:getCompany():stopBusTour(self)
+		end
+	end
+
+	if self:hasSeatExtension() then
+		self:vseRemoveAttachedPlayers()
+	end
+
+	if self.m_RcVehicleUser then
+		for i, player in pairs(self.m_RcVehicleUser) do
+			self:toggleRC(player, player:getData("RcVehicle"), false, true)
+			player:removeFromVehicle()
 		end
 	end
 

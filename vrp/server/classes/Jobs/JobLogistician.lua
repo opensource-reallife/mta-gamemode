@@ -6,8 +6,8 @@
 -- *
 -- ****************************************************************************
 JobLogistician = inherit(Job)
-local MONEY_PER_TRANSPORT_MIN = 520*2 --// default 200
-local MONEY_PER_TRANSPORT_MAX = 1020*2 --// default 500
+local MONEY_PER_TRANSPORT_MIN = 120
+local MONEY_PER_TRANSPORT_MAX = 240
 
 function JobLogistician:constructor()
 	Job.constructor(self)
@@ -138,9 +138,11 @@ function JobLogistician:onMarkerHit(hitElement, dim)
 							local duration = getRealTime().timestamp - hitElement.m_LastJobAction
 							hitElement.m_LastJobAction = getRealTime().timestamp
 							outputDebug(getDistanceBetweenPoints3D(hitElement:getData("Logistician:LastCrane").m_Object:getPosition(), crane.m_Object:getPosition()))
-							StatisticsLogger:getSingleton():addJobLog(hitElement, "jobLogistician", duration, self.m_MoneyPerTransport, nil, nil, math.floor(10*JOB_EXTRA_POINT_FACTOR), nil)
-							self.m_BankAccount:transferMoney({hitElement, true}, self.m_MoneyPerTransport, "Logistiker Job", "Job", "Logistician")
-							hitElement:givePoints(math.floor(10*JOB_EXTRA_POINT_FACTOR))
+							local money = self.m_MoneyPerTransport * JOB_PAY_MULTIPLICATOR * self:getMultiplicator()
+							local points = math.round(money / 50 * JOB_EXTRA_POINT_FACTOR)
+							StatisticsLogger:getSingleton():addJobLog(hitElement, "jobLogistician", duration, money, nil, nil, points, nil)
+							self.m_BankAccount:transferMoney({hitElement, true}, money, "Logistiker Job", "Job", "Logistician")
+							hitElement:givePoints(points)
 						end)
 					else
 						hitElement:sendError(_("Du bist am falschen Kran!", hitElement))
@@ -197,6 +199,11 @@ function Crane:dropContainer(vehicle, player, callback)
 		player:sendInfo(_("Der Kran ist aktuell beschäftigt! Bitte warte einen kleinen Moment!", player))
 		return false
 	end
+	if getAttachedElements(vehicle)[1] and getElementType(getAttachedElements(vehicle)[1]) == "player" then
+		player:sendError(_("Es darf sich kein Spieler am LKW festhalten!", player))
+		return
+	end
+
 	self.m_Busy = true
 	vehicle:setFrozen(true)
 	toggleAllControls(player, false, true, false)

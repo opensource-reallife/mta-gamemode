@@ -21,26 +21,18 @@ end
 function AppDashboard:onOpen(form)
 	self.m_TabPanel = GUIPhoneTabPanel:new(0, 0, form.m_Width, form.m_Height, form)
 
-	local tabInfo = self.m_TabPanel:addTab(_"Information", FontAwesomeSymbols.Info)
+	local tabInfo = self.m_TabPanel:addTab("Information", FontAwesomeSymbols.Info)
 	GUILabel:new(10, 3, 200, 50, "Dashboard", tabInfo):setColor(Color.White)
 	self.m_TabInfo = tabInfo
-	GUILabel:new(10, 65, form.m_Width-20, 22, _[[
-		Verschiedene Anfragen wie Fraktions,
-		Unternehmens, Firmen und Gang
-		Einladungen aber auch Spiele-Anfragen
-		von anderen usern werden dir hier
-		zentral angezeigt.
-
-		Du kannst diese hier akzeptieren oder ablehnen!
-	]], self.m_TabInfo):setMultiline(true)
+	GUILabel:new(10, 65, form.m_Width-20, 22, _"Verschiedene Anfragen wie Fraktions-, Unternehmens- und Gruppeneinladungen aber auch Spiele-Anfragen anderer User werden dir hier angezeigt.\n\nDu kannst diese hier akzeptieren oder ablehnen!", self.m_TabInfo):setMultiline(true)
 
 	local tabInvitation = self.m_TabPanel:addTab(_"Einladungen", FontAwesomeSymbols.Mail)
-	GUILabel:new(10, 3, 200, 50, "Einladungen", tabInvitation):setColor(Color.White)
+	GUILabel:new(10, 3, 200, 50, _"Einladungen", tabInvitation):setColor(Color.White)
 	tabInvitation.m_DashArea = GUIScrollableArea:new(1, 53, 258, 355, 258, 1, true, false, tabInvitation, 53)
 	self.m_TabInvitation = tabInvitation
 
 	local tabGameInvitation = self.m_TabPanel:addTab(_"Anfragen", FontAwesomeSymbols.Gamepad)
-	GUILabel:new(10, 3, 200, 50, "Spielanfragen", tabGameInvitation):setColor(Color.White)
+	GUILabel:new(10, 3, 200, 50, _"Anfragen", tabGameInvitation):setColor(Color.White)
 	tabGameInvitation.m_DashArea = GUIScrollableArea:new(1, 53, 258, 355, 258, 1, true, false, tabGameInvitation, 53)
 	self.m_TabGameInvitation = tabGameInvitation
 

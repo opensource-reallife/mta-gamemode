@@ -25,7 +25,7 @@ FishingLocation.Map = {
 	{location = "river", func = createColCuboid, waterHeight = -0.2, args = {Vector3(2091.12, 80.22, -2), 150, 240, 50}},
 	{location = "river", func = createColPolygon, waterHeight = -0.2, args = {-2863.18, -778.91, -2863.18, -778.91, -2306.00, -788.46, -992.86, -1936.82, -991.34, -2861.35, -1380.37, -2859.66, -2918.87, -1210.92}},
 
-	{location = "sump", func = createColCircle, waterHeight = 5, args = {Vector2(-749, -1959), 120}},
+	{location = "swamp", func = createColCircle, waterHeight = 5, args = {Vector2(-749, -1959), 120}},
 	{location = "desert", func = createColCircle, waterHeight = 12.2, args = {Vector2(6, 1532), 100}},
 	{location = "sewer", func = createColCuboid, waterHeight = -38, args = {Vector3(1411, -1896, -39), 35, 37, 5}}
 }

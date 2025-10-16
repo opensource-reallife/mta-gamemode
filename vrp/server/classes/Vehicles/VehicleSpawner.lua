@@ -63,7 +63,7 @@ function VehicleSpawner:markerHit(hitElement, matchingDimension)
 				return
 			end
 
-			hitElement:triggerEvent("vehicleSpawnGUI", self.m_Id, self.m_Vehicles, self.m_ShowEPTAdvertisement)
+			hitElement:triggerEvent("vehicleSpawnGUI", self.m_Id, self.m_Vehicles, self.m_ShowEPTAdvertisement, self.m_Marker)
 		end
 	end
 end
@@ -147,18 +147,19 @@ end
 function VehicleSpawner:initializeAll()
 	-- Create 'general' vehicle spawners
 	local function spawnCondition(player)
-		if player:getMoney() >= 200 then
+		if player:getMoney() >= VEHICLE_RENTAL_PRICE then
 			return true
 		else
-			player:sendError(_("Du hast nicht genug Geld dabei! (200$)", player))
+			player:sendError(_("Du hast nicht genug Geld dabei! (%s$)", player, VEHICLE_RENTAL_PRICE))
 		end
 	end
 
 	local function postSpawn(vehicle, player)
-		player:transferMoney({CompanyManager:getSingleton():getFromId(CompanyStaticId.EPT), nil, true}, 200, "Fahrzeugverleih", "Gameplay", "VehicleRent")
+		player:transferMoney({CompanyManager:getSingleton():getFromId(CompanyStaticId.EPT), nil, true}, VEHICLE_RENTAL_PRICE, "Fahrzeugverleih", "Gameplay", "VehicleRent")
 	end
 
-	VehicleSpawner:new( 1508.79, -1749.41, 12.55, {"Bike", "BMX", "Faggio"}, 0, spawnCondition, postSpawn):toggleConditionError(false):showEPTAdvertisement(true) -- city hall
-	VehicleSpawner:new(1417.75, -1659.78, 12.5, {"Bike", "BMX", "Faggio"}, 270, spawnCondition, postSpawn):toggleConditionError(false):showEPTAdvertisement(true) -- driving school
-	VehicleSpawner:new(1182.59, -1331.99, 12.5, {"Bike", "BMX", "Faggio"}, 270, spawnCondition, postSpawn):toggleConditionError(false):showEPTAdvertisement(true)
+	VehicleSpawner:new( 1508.79, -1749.41, 12.55, {"Bike", "BMX", "Faggio"}, 0, spawnCondition, postSpawn):toggleConditionError(false):showEPTAdvertisement(false) -- city hall
+	VehicleSpawner:new(1767.34, -1723.21, 12.55, {"Bike", "BMX", "Faggio"}, 270, spawnCondition, postSpawn):toggleConditionError(false):showEPTAdvertisement(false) -- driving school
+	VehicleSpawner:new(1182.59, -1331.99, 12.5, {"Bike", "BMX", "Faggio"}, 270, spawnCondition, postSpawn):toggleConditionError(false):showEPTAdvertisement(false)
+	VehicleSpawner:new(-469.88, -544.56, 24.40, {"Bike", "BMX", "Faggio"}, 84, spawnCondition, postSpawn):toggleConditionError(false):showEPTAdvertisement(false)
 end

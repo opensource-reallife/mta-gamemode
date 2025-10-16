@@ -22,12 +22,14 @@ function MinigameManager:constructor()
 	self.m_2Cars.ms_Highscore = Highscore:new("2Cars")
 
 	-- Zombie Survival
-	--ZombieSurvival.initalize()
-	--self.m_ZombieSurvivalHighscore = Highscore:new("ZombieSurvival")
+	if EVENT_HALLOWEEN then
+		ZombieSurvival.initalize()
+		self.m_ZombieSurvivalHighscore = Highscore:new("ZombieSurvival")
+	end
 
 	-- Sniper Game
-	--SniperGame.initalize()
-	--self.m_SniperGameHighscore = Highscore:new("SniperGame")
+	SniperGame.initalize()
+	self.m_SniperGameHighscore = Highscore:new("SniperGame")
 
 	self:addHooks()
 
@@ -36,6 +38,9 @@ function MinigameManager:constructor()
 
 	SlotGameManager:new()
 	RouletteManager:new()
+	HighStakeRouletteManager:new()
+	BlackJackManager:new()
+	CasinoWheelManager:new()
 end
 
 function MinigameManager.getRealTime()
@@ -63,6 +68,8 @@ function MinigameManager:addHooks()
 	PlayerManager:getSingleton():getWastedHook():register(
 		function(player)
 			if player.Minigame then
+				player:respawn(player:getPosition())
+				FactionRescue:getSingleton():removePedDeathPickup(player)
 				player:triggerEvent("abortDeathGUI", true)
 				player.Minigame:removePlayer(player)
 				return true

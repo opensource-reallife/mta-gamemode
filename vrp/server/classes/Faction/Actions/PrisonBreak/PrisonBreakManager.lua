@@ -12,6 +12,8 @@
 -- Countdown liegen übereinander
 
 PrisonBreakManager = inherit(Singleton)
+PrisonBreakManager.BombCountdown = 10 * 1000
+PrisonBreakManager.OfficerCount = DEBUG and 0 or 5
 
 function PrisonBreakManager:constructor()
     self.m_WeaponBoxes = {}
@@ -30,18 +32,10 @@ function PrisonBreakManager:constructor()
     local antifall3 = createColCuboid(2555.62, -1462.42, 1031.07, 200, 200, 7) -- prevents suicide
     antifall3:setInterior(2)
     InstantTeleportArea:new(antifall3, 0, 2, Vector3(2611.23, -1414.81, 1040.36))
-end
 
-function PrisonBreakManager:start(button, state, player)
-    if
-        button ~= "left"
-        or state ~= "down"
-    then
-        return
-    end
-
-    self.m_Instance = PrisonBreak:new()
-    self.m_Instance:placeBomb(player)
+    self.m_BombAreaPosition = Vector3(-719.92, -401.11, 7.48)
+	self.m_BombArea = BombArea:new(self.m_BombAreaPosition, bind(self.BombArea_Place, self), bind(self.BombArea_Explode, self), PrisonBreakManager.BombCountdown)
+	self.m_BombColShape = createColSphere(self.m_BombAreaPosition, 20)
 end
 
 function PrisonBreakManager:stop()
@@ -57,13 +51,12 @@ function PrisonBreakManager:stop()
 end
 
 function PrisonBreakManager:createEntrance()
-    self.m_Entrance = createObject(2904, Vector3(3629.8999023438, -1548.0999755859, 5.5999999046326), Vector3(0, 0, 335.49987792969))
-    self.m_Entrance:setScale(1.29999995)
-	addEventHandler("onElementClicked", self.m_Entrance, bind(self.start, self))
+    self.m_Entrance = createObject(1381, Vector3(-720.17698974609, -402.13763427734, 8.146), Vector3(80.0, 0.00, 342.50))
+    self.m_Entrance:setScale(0.9, 0.85, 0.8)
 end
 
 function PrisonBreakManager:createDummyPoliceman()
-    self.m_Officer = ShopNPC:new(276, Vector3(2564.98, -1432.98, 1044.52), 345.4)
+    self.m_Officer = TargetableNPC:new(276, Vector3(2564.98, -1432.98, 1044.52), 345.4)
     self.m_Officer:setInterior(2)
     self.m_Officer:setImmortal(true)
     self.m_Officer:setFrozen(true)
@@ -74,10 +67,9 @@ end
 
 function PrisonBreakManager:PedTargetted(ped, attacker)
     if not self:getCurrent() then
-        attacker:sendError("Derzeit läuft kein Knastausbruch!")
+        attacker:sendError(_("Derzeit läuft kein Knastausbruch!", attacker))
         return false
     end
-    self:getCurrent():Ped_Targetted(ped, attacker)
 end
 
 function PrisonBreakManager:PedTargetRefresh(count, startingPlayer)
@@ -86,6 +78,37 @@ function PrisonBreakManager:PedTargetRefresh(count, startingPlayer)
     end
     self:getCurrent():PedTargetRefresh(count, startingPlayer)    
 end
+
+function PrisonBreakManager:BombArea_Place(bombArea, player)
+	if not player:getFaction() or not player:getFaction():isEvilFaction() then
+		player:sendError(_("Du kannst nur als Mitglied einer bösen Fraktion in das Gefängnis einbrechen!", player))
+		return false
+    end
+    
+	if not PermissionsManager:getSingleton():isPlayerAllowedToStart(player, "faction", "PrisonBreak") then
+		player:sendError(_("Du bist nicht berechtigt einen Knastausbruch zu starten!", player))
+		return false
+	end
+
+	if FactionState:getSingleton():countPlayers(true, false) < PRISONBREAK_MIN_MEMBERS then
+		player:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!", player, PRISONBREAK_MIN_MEMBERS))
+		return false
+	end
+
+	if not ActionsCheck:getSingleton():isActionAllowed(player) then	return false end
+
+	ActionsCheck:getSingleton():setAction("Knastausbruch")
+
+	for k, player in pairs(getElementsWithinColShape(self.m_BombColShape, "player")) do
+		player:triggerEvent("Countdown", PrisonBreakManager.BombCountdown/1000, "Bombe zündet")
+	end
+	return true
+end
+
+function PrisonBreakManager:BombArea_Explode(bombArea, player, faction)
+	self.m_Instance = PrisonBreak:new(faction)
+end
+
 
 function PrisonBreakManager:createWeaponBoxes()
     table.insert(self.m_WeaponBoxes, createObject(964, Vector3(2567.8000488281, -1433.9000244141, 1043.5), Vector3(0, 0, 180)))

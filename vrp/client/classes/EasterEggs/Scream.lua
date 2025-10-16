@@ -8,7 +8,7 @@
 EasterEgg.Scream = inherit(Object)
 
 function EasterEgg.Scream:constructor()
-	self.m_Position = Vector3(1719.126, -1765.652, 38.133)
+	self.m_Position = Vector3(1272.28, 2529.57, 16.74)
 	self.m_colshape =  createColSphere(self.m_Position, 2)
 	addEventHandler("onClientColShapeHit", self.m_colshape, bind(EasterEgg.Scream.onHit, self))
 end

@@ -90,6 +90,16 @@ function VehicleMouseMenuAdmin:constructor(posX, posY, element)
 		)
 	end
 
+	if localPlayer:getRank() >= ADMIN_RANK_PERMISSION["flipVehicle"] then
+		self:addItem(_"Umdrehen",
+			function()
+				if self:getElement() then
+					triggerServerEvent("vehicleFlip", self:getElement())
+				end
+			end
+		)
+	end
+
 	if localPlayer:getRank() >= ADMIN_RANK_PERMISSION["looseVehicleHandbrake"] then
 		self:addItem(_"Handbremse lösen",
 			function()
@@ -98,6 +108,40 @@ function VehicleMouseMenuAdmin:constructor(posX, posY, element)
 				end
 			end
 		)
+	end
+
+	if localPlayer:getRank() >= ADMIN_RANK_PERMISSION["endVehicleSale"] then
+		if getElementData(element, "forSale") then
+			self:addItem(_"Verkauf beenden",
+				function()
+					if not self:getElement() then return end
+					InputBox:new(_"Verkauf beenden", _"Aus welchem Grund möchtest du den Verkauf beenden?",
+						function(reason)
+							if self:getElement() then
+								triggerServerEvent("adminStopVehicleForSale", self:getElement(), reason)
+							end
+						end
+					)
+				end
+			)
+		end
+	end
+	
+	if localPlayer:getRank() >= ADMIN_RANK_PERMISSION["endVehicleSale"] then
+		if getElementData(element, "forRent") then
+			self:addItem(_"Vermietung beenden",
+				function()
+					if not self:getElement() then return end
+					InputBox:new(_"Vermietung beenden", _"Aus welchem Grund möchtest du die Vermietung beenden?",
+						function(reason)
+							if self:getElement() then
+								triggerServerEvent("adminStopVehicleForRent", self:getElement(), reason)
+							end
+						end
+					)
+				end
+			)
+		end
 	end
 
 	if localPlayer:getRank() >= ADMIN_RANK_PERMISSION["editVehicleGeneral"] then

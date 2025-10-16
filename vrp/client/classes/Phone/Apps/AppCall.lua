@@ -13,7 +13,10 @@ local CALL_RESULT_ANSWER = 2
 CALL_RESULT_CALLING = 3 -- used in AppContacts
 
 function AppCall:constructor()
-	PhoneApp.constructor(self, "Telefon", "IconCall.png")
+	PhoneApp.constructor(self, _"Telefon", "IconCall.png")
+
+	self.m_PewPew = true
+
 	self.m_EasterEggFont = VRPFont(35, Fonts.BitBold) --dxCreateFont(EASTEREGG_FILE_PATH.."/BitBold.ttf", 22*EASTEREGG_FONT_SCALE)
 	self.m_EasterEggRenderFunction = function()
 		dxDrawText("SUPER SMASH STROBE", 0,2, screenWidth, screenHeight, tocolor(0, 0, 0, 255), 1, getVRPFont(self.m_EasterEggFont), "center", "center")
@@ -43,7 +46,6 @@ end
 
 function AppCall:closeAll()
 	if self.m_Background then delete(self.m_Background) end
-	if self.m_WebView then delete(self.m_WebView) end
 	self.m_Background = GUIRectangle:new(0, 0, self.m_Width, self.m_Height, Color.Clear, self.m_Form)
 end
 
@@ -105,9 +107,9 @@ function AppCall:openMain()
 	self.m_ButtonCallService = GUIButton:new(self.m_Width-110, 370, 100, 30, _"Anrufen", self.m_Tabs["Service"]):setBackgroundColor(Color.Green):setBarEnabled(false)
 	self.m_ButtonCallService.onLeftClick = function() self:startSpecialCall(self.m_ServiceListGrid) end
 
-	self.m_Tabs["Group"] = self.m_TabPanel:addTab(_"Firmen/Gangs", FontAwesomeSymbols.Group)
+	self.m_Tabs["Group"] = self.m_TabPanel:addTab(_"Gruppen", FontAwesomeSymbols.Group)
 	self.m_GroupListGrid = GUIGridList:new(10, 10, self.m_Width-20, self.m_Height-110, self.m_Tabs["Group"])
-	self.m_GroupListGrid:addColumn(_"Firma/Gang", 0.7)
+	self.m_GroupListGrid:addColumn(_"Gruppe", 0.7)
 	self.m_GroupListGrid:addColumn(_"Num.", 0.3)
 	self.m_ButtonCallGroup = GUIButton:new(self.m_Width-110, 370, 100, 30, _"Anrufen", self.m_Tabs["Group"]):setBackgroundColor(Color.Green):setBarEnabled(false)
 	self.m_ButtonCallGroup.onLeftClick = function() self:startSpecialCall(self.m_GroupListGrid) end
@@ -153,7 +155,7 @@ function AppCall:ButtonCallNumpad_Click()
 		if getPlayerFromName(self.m_PhoneNumbers[number]["OwnerName"]) then
 			local player = getPlayerFromName(self.m_PhoneNumbers[number]["OwnerName"])
 			self:openInCall("player", player, CALL_RESULT_CALLING, self.m_CheckVoiceNumpad:isChecked())
-			triggerServerEvent("callStart", root, player, self.m_CheckVoiceNumpad:isChecked())
+			triggerServerEvent("callStart", root, player, self.m_CheckVoiceNumpad:isChecked(), core:getConfig():get("Phone", "ShowSkin", true))
 		else
 			ErrorBox:new(_"Der Spieler ist nicht online!")
 		end
@@ -170,6 +172,13 @@ function AppCall:startSpecialCall(grid)
 end
 
 function AppCall:ButtonCallPlayer_Click()
+	if self.m_PlayerListGrid:getSelectedItem().Owner == "PewX" then
+		localPlayer:giveAchievement(98)
+		triggerEvent("renderPewPewAchievement", localPlayer)
+		self:openInCall(false, false, CALL_RESULT_BUSY, false)
+		return
+	end
+
 	local player = getPlayerFromName(self.m_PlayerListGrid:getSelectedItem().Owner)
 	if not player then
 		ErrorBox:new(_"Dieser Spieler ist nicht online!")
@@ -182,7 +191,7 @@ function AppCall:ButtonCallPlayer_Click()
 
 	self:openInCall("player", player, CALL_RESULT_CALLING, false)
 
-	triggerServerEvent("callStart", root, player, false)
+	triggerServerEvent("callStart", root, player, false, core:getConfig():get("Phone", "ShowSkin", true))
 end
 
 function AppCall:ButtonAddContact_Click()
@@ -191,7 +200,7 @@ function AppCall:ButtonAddContact_Click()
 
 	for _, contact in pairs(playerContacts) do
 		if contact[1] == item.Owner then
-			ErrorBox:new("Kontakt ist bereits in der Kontaktliste!")
+			ErrorBox:new(_"Kontakt ist bereits in der Kontaktliste!")
 			return
 		end
 	end
@@ -226,18 +235,31 @@ function AppCall:Event_receivePhoneNumbers(list)
 		item.Owner = numData["OwnerName"]
 		item.Number = number
 	end
+
+	if self.m_PewPew and Randomizer:get(1, 1000) == 420 then
+		local name = "PewX"
+		local number = Randomizer:get(100000, 999999)
+		local item = grid["player"]:addItem(name, number)
+		item.Owner = name
+		item.Number = number
+		self.m_PewPew = false
+	end
 end
 
-function AppCall:openIncoming(caller, voiceEnabled)
+function AppCall:openIncoming(caller, voiceEnabled, showSkin)
 	self:closeAll()
 	local parent, width, height = self.m_Background, self.m_Background.m_Width, self.m_Background.m_Height
 
 	self.m_Caller = caller
 	self.m_VoiceEnabled = voiceEnabled
+	self.m_ShowSkin = showSkin
 
 	self.m_CallLabel = GUILabel:new(8, 10, width, 30, _("Eingehender Anruf von \n%s", caller:getName()), parent):setMultiline(true):setAlignX("center")
 	self.m_CallLabel:setColor(Color.Black)
-	self.m_WebView = GUIWebView:new(width/2-80, 70, 160, 250, INGAME_WEB_PATH .. "/ingame/skinPreview/skinPreviewHead.php?skin="..caller:getModel(), true, parent)
+	if showSkin then
+		self.m_SkinPreview = GUIImage:new(width/2-80, 70, 160, 250, string.format("files/images/Skins/head/%s.png", caller:getModel()), parent)
+		self.m_SkinPreview:fitBySize(270, 300)
+	end
 	self.m_ButtonAnswer = GUIButton:new(10, height-50, 110, 30, _"Annehmen", parent)
 	self.m_ButtonAnswer:setBackgroundColor(Color.Green)
 	self.m_ButtonAnswer.onLeftClick = bind(self.ButtonAnswer_Click, self)
@@ -246,16 +268,24 @@ function AppCall:openIncoming(caller, voiceEnabled)
 	self.m_ButtonBusy.onLeftClick = bind(self.ButtonBusy_Click, self)
 
 	-- Play ring sound
-	self:playRingSound(true)
+	if core:get("Sounds", "RingTone", true) then
+		self:playRingSound(true, false, "player")
+	end
 	showCursor(false)
 end
 
-function AppCall:showIncomingCallShortMessage(caller, voiceEnabled, message, title, tblColor)
-	self:playRingSound(true,true)
+function AppCall:showIncomingCallShortMessage(caller, voiceEnabled, message, title, tblColor, type)
+	if core:get("Sounds", "OtherRingTone", true) then
+		self:playRingSound(true, true, type)
+	end
 	local shortMessage = ShortMessage:new(message.._"\nKlicke hier, um abzuheben.", title, tocolor(unpack(tblColor)), -1)
 	shortMessage.m_Callback = function()
 		if not Phone:getSingleton():isOn() then
 			ErrorBox:new(_"Dein Handy ist ausgeschaltet!")
+			return "forceOpen"
+		end
+		if localPlayer:isDead() then
+			ErrorBox:new(_"Du bist nicht in der Lage den Anruf anzunehmen!")
 			return "forceOpen"
 		end
 		if shortMessage.m_CallData then
@@ -298,12 +328,25 @@ function AppCall:removeIncomingCallShortMessage(caller, callee)
 	end
 end
 
-function AppCall:playRingSound(state, singleRing)
+function AppCall:playRingSound(state, singleRing, type)
 	if state and not self.m_RingSound then
 		local ringsound = core:getConfig():get("Phone", "Ringtone", "files/audio/Ringtones/Klingelton1.mp3")
-		if ringsound == CUSTOM_RINGSOUND_PATH and not fileExists(CUSTOM_RINGSOUND_PATH) then
-			ringsound = "files/audio/Ringtones/Klingelton1.mp3"
-			core:getConfig():set("Phone", "Ringtone", ringsound)
+		if type == "player" then
+			if fileExists(CUSTOM_RINGSOUND_PATH) then
+				ringsound = CUSTOM_RINGSOUND_PATH
+			end
+		elseif type == "faction" then
+			if fileExists(CUSTOM_FACTION_RINGSOUND_PATH) then
+				ringsound = CUSTOM_FACTION_RINGSOUND_PATH
+			end
+		elseif type == "company" then
+			if fileExists(CUSTOM_COMPANY_RINGSOUND_PATH) then
+				ringsound = CUSTOM_COMPANY_RINGSOUND_PATH
+			end
+		elseif type == "group" then
+			if fileExists(CUSTOM_GROUP_RINGSOUND_PATH) then
+				ringsound = CUSTOM_GROUP_RINGSOUND_PATH
+			end
 		end
 		self.m_RingSound = playSound(ringsound, not singleRing)
 	elseif not state and self.m_RingSound then
@@ -315,8 +358,8 @@ end
 function AppCall:ButtonAnswer_Click()
 	self:playRingSound(false)
 	if isElement(self.m_Caller) then -- He might have quit meanwhile
-		triggerServerEvent("callAnswer", root, self.m_Caller, self.m_VoiceEnabled)
-		self:openInCall("player",self.m_Caller, CALL_RESULT_ANSWER, self.m_VoiceEnabled)
+		triggerServerEvent("callAnswer", root, self.m_Caller, self.m_VoiceEnabled, core:getConfig():get("Phone", "ShowSkin", true))
+		self:openInCall("player",self.m_Caller, CALL_RESULT_ANSWER, self.m_VoiceEnabled, self.m_ShowSkin)
 	end
 end
 
@@ -338,7 +381,7 @@ function AppCall:getCaller()
 	return self.m_Caller
 end
 
-function AppCall:openInCall(calleeType, callee, resultType, voiceCall)
+function AppCall:openInCall(calleeType, callee, resultType, voiceCall, showSkin)
 	self:closeAll()
 	local parent, width, height = self.m_Background, self.m_Background.m_Width, self.m_Background.m_Height
 
@@ -356,7 +399,10 @@ function AppCall:openInCall(calleeType, callee, resultType, voiceCall)
 		if voiceCall then
 			GUILabel:new(8, self.m_Height-110, self.m_Width, 20, _"Drücke z für Voicechat", parent):setColor(Color.Black):setAlignX("center")
 		end
-		GUIWebView:new(self.m_Width/2-80, 80, 160, 250, INGAME_WEB_PATH .. "/ingame/skinPreview/skinPreviewHead.php?skin="..callee:getModel(), true, parent)
+		if showSkin then
+			self.m_SkinPreview = GUIImage:new(self.m_Width/2-80, 80, 160, 250, string.format("files/images/Skins/head/%s.png", callee:getModel()), parent)
+			self.m_SkinPreview:fitBySize(270, 300)
+		end
 		self.m_ButtonSendLocation = GUIButton:new(10, self.m_Height-100, self.m_Width-20, 40, _"Position senden", parent)
 		self.m_ButtonSendLocation:setBackgroundColor(Color.Green)
 		self.m_ButtonSendLocation.onLeftClick = function()
@@ -430,20 +476,20 @@ function AppCall:onClose()
 	end
 end
 
-function AppCall:Event_callIncoming(caller, voiceEnabled)
+function AppCall:Event_callIncoming(caller, voiceEnabled, showSkin)
 	if not caller then return end
 
 	Phone:getSingleton():closeAllApps()
 	Phone:getSingleton():openApp(self)
-	self:openIncoming(caller, voiceEnabled)
+	self:openIncoming(caller, voiceEnabled, showSkin)
 end
 
 
-function AppCall:Event_callIncomingSM(caller, voiceEnabled, message, title, tblColor)
+function AppCall:Event_callIncomingSM(caller, voiceEnabled, message, title, tblColor, type)
 	outputDebug(caller, voiceEnabled, message, title, tblColor)
 	if not caller then return end
 
-	self:showIncomingCallShortMessage(caller, voiceEnabled, message, title, tblColor)
+	self:showIncomingCallShortMessage(caller, voiceEnabled, message, title, tblColor, type)
 end
 
 function AppCall:Event_callRemoveSM(caller, callee)
@@ -457,9 +503,9 @@ function AppCall:Event_callBusy(callee)
 	end
 end
 
-function AppCall:Event_callAnswer(callee, voiceCall)
+function AppCall:Event_callAnswer(callee, voiceCall, showSkin)
 	Phone:getSingleton():openApp(self)
-	self:openInCall("player", callee, CALL_RESULT_ANSWER, voiceCall)
+	self:openInCall("player", callee, CALL_RESULT_ANSWER, voiceCall, showSkin)
 end
 
 function AppCall:Event_callReplace(responsiblePlayer)
@@ -480,7 +526,7 @@ function AppCall:startCall(type, target)
 		end
 
 		self:openInCall(type, target, CALL_RESULT_CALLING, false)
-		triggerServerEvent("callStart", root, target, false)
+		triggerServerEvent("callStart", root, target, false, core:getConfig():get("Phone", "ShowSkin", true))
 	else
 		WarningBox:new("Dein Handy ist ausgeschaltet!")
 	end

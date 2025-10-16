@@ -9,6 +9,7 @@ HUDUI = inherit(Singleton)
 
 function HUDUI:constructor()
 	self.m_IsVisible = false
+	self.m_RenderTarget = dxCreateRenderTarget(screenWidth, screenHeight, true)
 	self.m_Font = VRPFont(70)
 	self.m_UIMode = core:get("HUD", "UIStyle", UIStyle.Chart)
 	self.m_Enabled = core:get("HUD", "showUI", true)
@@ -57,21 +58,23 @@ function HUDUI:draw()
 	if not self.m_Enabled then return end
 	if not self.m_IsVisible then return end
 	if DEBUG then ExecTimeRecorder:getSingleton():startRecording("UI/HUD_general") end
+	dxSetRenderTarget(self.m_RenderTarget, true)
+	dxSetBlendMode("modulate_add")
 	if self.m_UIMode == UIStyle.Default then
 		self:drawDefault()
 	elseif self.m_UIMode == UIStyle.vRoleplay then
 		self:drawVRP()
 		if self.m_DefaultHealhArmor == true then
 			self:drawVRPHealthArmor()
-			self:drawKarmaBar(0.0325*screenHeight, 1.2)
-		else
-			self:drawKarmaBar(0.0425*screenHeight, 1.6)
 		end
 	elseif self.m_UIMode == UIStyle.eXo then
 		self:drawExo()
 	elseif self.m_UIMode == UIStyle.Chart then
 		self:drawChart()
 	end
+	dxSetRenderTarget()
+	dxSetBlendMode("blend")
+	dxDrawImage(0, 0, screenWidth, screenHeight, self.m_RenderTarget)
 
 	if self.m_RedDot == true then
 		self:drawRedDot()
@@ -129,12 +132,40 @@ end
 
 function HUDUI:drawDefault()
 	dxSetAspectRatioAdjustmentEnabled(true)
-	if self:getLocalTarget():getWanteds() > 0 then
-		local width = math.floor(screenWidth / 5.8)
-		local height = math.floor(screenHeight / 25)
-		local x = math.floor(screenWidth * 0.78)
-		local y = math.floor(screenHeight * 0.22 )
-		dxDrawText(("%s Wanteds"):format(self:getLocalTarget():getWanteds()), x, y, x + width, y + height, Color.White, 1.3, "pricedown", "center", "center")
+
+	local wanteds = self:getLocalTarget():getWanteds()
+	if wanteds > 0 then
+		local x = screenWidth * 0.7834
+		local y = screenHeight * 0.222
+		local width = screenWidth * 0.1658333333333333
+		local height = screenHeight * 0.0377142857142857
+		local filledWidth = (math.min(6, wanteds) / 6) * width
+		local texWidth = (filledWidth / width) * 199
+		local texX = (1 - (filledWidth / width)) * 199
+		dxDrawImage(x, y, width, height, "files/images/HUD/wanteds_empty.png")
+		dxDrawImageSection(x + (width - filledWidth), y, filledWidth, height, texX, 0, texWidth, 33, "files/images/HUD/wanteds_full.png")
+		
+		if wanteds > 6 then 
+			y = screenHeight * (0.222 + 0.042)
+			filledWidth = (math.min(6, wanteds - 6) / 6) * width
+			texWidth = (filledWidth / width) * 199
+			texX = (1 - (filledWidth / width)) * 199
+			dxDrawImage(x, y, width, height, "files/images/HUD/wanteds_empty.png")
+			dxDrawImageSection(x + (width - filledWidth), y, filledWidth, height, texX, 0, texWidth, 33, "files/images/HUD/wanteds_full.png")
+		end
+	end
+
+	local oxygen = math.percent(getPedOxygenLevel(self:getLocalTarget()), (1000 + getPedStat(self:getLocalTarget(), 22)*1.5 + getPedStat(self:getLocalTarget(), 225)*1.5))
+	if oxygen >= 100 then
+		local x = screenWidth * 0.85328
+		local y = screenHeight * 0.1252
+		local width = screenWidth * 0.0964285714285714
+		local height = screenHeight * 0.019047619047619
+		dxDrawImage(x, y, width, height, "files/images/HUD/hunger_empty.png")
+
+		local filledWidth = (self:getLocalTarget():getPublicSync("Hunger") / 100) * width
+		local texWidth = filledWidth * 185 / width
+		dxDrawImageSection(x, y, filledWidth, height, 0, 0, texWidth, 21, "files/images/HUD/hunger_full.png")
 	end
 end
 
@@ -197,7 +228,7 @@ function HUDUI:drawVRP()
 	local addX = math.floor(interpolateBetween(0,0,0,0.156*screenWidth,0,0,self.m_MunitionProgress,"OutBack"))
 	dxDrawRectangle(screenWidth-(0.25*screenWidth+addX),0.04*screenHeight,0.05*screenWidth,0.092*screenHeight,tocolor(0,0,0,150))
 
-	local weaponIconPath = WeaponIcons[self:getLocalTarget():getWeapon()]
+	local weaponIconPath = FileModdingHelper:getSingleton():getWeaponImage(self:getLocalTarget():getWeapon())
 	if weaponIconPath then
 		if munitionWindowActive then
 			dxDrawImage(f(screenWidth-(0.25*screenWidth+addX)+(0.05*screenWidth/2)-(0.033*screenWidth/2)), f(0.0465*screenHeight+(0.09*screenHeight/2)-(0.059*screenHeight/2)), f(0.033*screenWidth), f(0.059*screenHeight), weaponIconPath)
@@ -224,30 +255,6 @@ function HUDUI:drawVRP()
 	self:drawLevelRect()
 end
 
-function HUDUI:drawKarmaBar(height, fontSize)
-	local left, top = screenWidth-0.25*screenWidth, 0.14*screenHeight
-	local width = 0.195*screenWidth
-
-	local karma = math.floor(self:getLocalTarget():getKarma()) or 0
-
-	local barWidth = width*(math.abs(karma) <= 150 and math.abs(karma) or 150)/MAX_KARMA_LEVEL/2
-	if karma == 0 then
-		dxDrawRectangle(left, top, width/2-1, height, tocolor(0,0,0,150))
-		dxDrawRectangle(left+width/2+1, top, width/2-1, height, tocolor(0,0,0,150))
-		dxDrawText("Karma neutral", left, top, left+width, top+height, Color.White, fontSize, "default-bold", "center", "center")
-	elseif karma > 0 then
-		dxDrawRectangle(left, top, width/2-1, height, tocolor(0,0,0,150))
-		dxDrawRectangle(left+width/2+1, top, width/2-1, height, tocolor(0,50,0,220))
-		dxDrawRectangle(left+width/2+1, top, barWidth, height, tocolor(75,160,75,220))
-		dxDrawText("Karma: +"..math.round(karma), left+width/2+1, top, left+width, top+height, Color.White, fontSize, "default-bold", "center", "center")
-	else
-		dxDrawRectangle(left, top, width/2-1, height, tocolor(50,0,0,220))
-		dxDrawRectangle(left+width/2+1, top, width/2-1, height, tocolor(0,0,0,150))
-		dxDrawRectangle((left + width/2)-barWidth-1, top, barWidth, height, tocolor(160,75,75,220))
-		dxDrawText("Karma: "..math.round(karma), left, top, left+width/2-1, top+height, Color.White, fontSize, "default-bold", "center", "center")
-	end
-end
-
 function HUDUI:drawVRPHealthArmor()
 	local health = self:getLocalTarget():getHealth()
 	--local color = tocolor(0,150,50) -- Todo find better solution
@@ -261,7 +268,7 @@ function HUDUI:drawVRPHealthArmor()
 		end
 	end
 
-	local left, top = screenWidth-0.25*screenWidth, 0.175*screenHeight
+	local left, top = screenWidth-0.25*screenWidth, 0.14*screenHeight
 	local width, height = 0.195*screenWidth, 0.0325*screenHeight
 
 	dxDrawRectangle(left, top, width, height,tocolor(0,0,0,150))
@@ -273,17 +280,26 @@ function HUDUI:drawVRPHealthArmor()
 		dxDrawRectangle(left, top, width*health/100, height, color)
 	end
 
-	health = "Leben: "..math.floor(health).." %"
+	health = _("Leben: %s %%", math.ceil(health))
 	dxDrawText(health, left , top, left+width, top+height, Color.White, 1.2, "default-bold", "center", "center")
 
-	top =  0.21*screenHeight
+	top =  0.175*screenHeight
 
 	local armor = self:getLocalTarget():getArmor()
 	dxDrawRectangle(left, top, width, height, tocolor(0, 0, 0, 150))
 	dxDrawRectangle(left, top, width*armor/100, height, tocolor(0, 0, 128))
 
-	local armor = "Schutzweste: "..math.floor(armor).." %"
+	local armor = _("Schutzweste: %s %%", math.ceil(armor))
 	dxDrawText(armor, left , top, left+width, top+height, Color.White, 1.2, "default-bold", "center", "center")
+
+	top =  0.21*screenHeight
+
+	local hunger = self:getLocalTarget():getPublicSync("Hunger")
+	dxDrawRectangle(left, top, width, height, tocolor(0, 0, 0, 150))
+	dxDrawRectangle(left, top, width*hunger/100, height, tocolor(128, 0, 0))
+
+	local hunger = _("Hunger: %s %%", math.ceil(hunger))
+	dxDrawText(hunger, left , top, left+width, top+height, Color.White, 1.2, "default-bold", "center", "center")
 end
 
 function HUDUI:getZone()
@@ -296,7 +312,7 @@ function HUDUI:getZone()
 	else
 		zone = zone1.." - "..zone2
 	end
-	if zone == "Unknown - Unknown" then zone = "Kein GPS-Signal" end
+	if zone == "Unknown - Unknown" then zone = _"Kein GPS-Signal" end
 	return zone
 end
 
@@ -310,6 +326,8 @@ function HUDUI:drawExo()
 	local r_os = 0
 	local hudStartX = math.floor(screenWidth-width-r_os)
 	local lebensanzeige = getElementHealth(self:getLocalTarget())
+	local hungeranzeige = self:getLocalTarget():getPublicSync("Hunger")
+	local atemluftanzeige = math.percent(getPedOxygenLevel(self:getLocalTarget()), (1000 + getPedStat(self:getLocalTarget(), 22)*1.5 + getPedStat(self:getLocalTarget(), 225)*1.5))
 	local imageWidth = 303
 	local imageHeight = 322
 	local progressBarSpeed = 24000
@@ -324,7 +342,11 @@ function HUDUI:drawExo()
 	local prog = elapsed / duration
 	local scroll_ = interpolateBetween(207,0,0,-207,0,0,prog,'Linear')
 	local time =  string.format("%02d:%02d",getRealTime().hour,getRealTime().minute)
-	dxDrawImage(hudStartX,1,math.floor(width),math.floor(height),'files/images/HUD/exo/bg.png')
+	if atemluftanzeige >= 100 then
+		dxDrawImage(hudStartX,1,math.floor(width),math.floor(height),'files/images/HUD/exo/bg.png')
+	else
+		dxDrawImage(hudStartX,1,math.floor(width),math.floor(height),'files/images/HUD/exo/bg_oxy.png')
+	end
 	dxDrawText (convertNumber(self:getLocalTarget():getMoney()),screenWidth-width*0.7-r_os,width*0.265,width,height, tocolor ( 255, 255, 255, 255 ), 1.2*width*0.0039, "default-bold" ) --Money
 	dxDrawText (time,screenWidth-width*0.22-r_os,width*0.265,width,height, tocolor ( 255, 255, 255, 255 ), 1.2*width*0.0039, "default" ) -- Clock
 	dxDrawText (self:getZone(),screenWidth-width*0.7-r_os,width*0.372,width,height, tocolor ( 255, 255, 255, 255 ), 1.02*width*0.0039, "default" ) -- ORT
@@ -346,36 +368,41 @@ function HUDUI:drawExo()
 		dxDrawImageSection(bar_x ,height*(186/imageHeight),bar_width*b_x,bar_height,scroll_,0,207*b_x,15,'files/images/HUD/exo/red_b.png',0,0,0,tocolor(255,255,255,200)) -- zweiter Balken
 	end
 
-	local karma = self:getLocalTarget():getKarma()
-	b_x = math.abs(karma)/150
-	if karma < 0 then
-		dxDrawImageSection(bar_x ,height*(218/imageHeight),bar_width*b_x,bar_height,scroll_,0,207*b_x,15,'files/images/HUD/exo/cyan_b.png',0,0,0,tocolor(255,255,255,200))
-	elseif karma > 0 then
+	if atemluftanzeige >= 100 then
+		b_x = self:getLocalTarget():getPublicSync("Hunger")/100
+		if b_x > (15*0.01) then
+			dxDrawImageSection(bar_x ,height*(218/imageHeight),bar_width*b_x,bar_height,scroll_,0,207*b_x,15,'files/images/HUD/exo/green_b.png',0,0,0,tocolor(255,255,255,200))
+		elseif b_x <= (15*0.01) and ( getTickCount() % 1000 > 500 ) then
+			dxDrawImageSection(bar_x ,height*(218/imageHeight),bar_width*b_x,bar_height,scroll_,0,207*b_x,15,'files/images/HUD/exo/green_b.png',0,0,0,tocolor(255,255,255,200)) -- zweiter Balken
+		end
+	else
+		b_x = (getPedOxygenLevel(localPlayer))/(1000 + getPedStat(localPlayer, 22)*1.5 + getPedStat(localPlayer, 225)*1.5)
 		dxDrawImageSection(bar_x ,height*(218/imageHeight),bar_width*b_x,bar_height,scroll_,0,207*b_x,15,'files/images/HUD/exo/cyan_b.png',0,0,0,tocolor(255,255,255,200))
 	end
+	
 	if prog >= 1 then
 		start_count = getTickCount()
 		end_count = start_count + progressBarSpeed
 	end
 	local r,g,b,a = 0,0,0,200
 
-	if lebensanzeige > 0 and lebensanzeige < 1 then lebensanzeige = 1 end
-	lebensanzeige = math.floor(lebensanzeige)
-
-	dxDrawText ("SCHUTZWESTE: "..math.floor(getPedArmor(self:getLocalTarget())).."%",screenWidth-width*0.5-r_os,width*0.475,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" ) --Money
-	dxDrawText ("LEBEN: "..lebensanzeige.."%",screenWidth-width*0.5-r_os,width*0.57,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" ) --Money
-	dxDrawText ("KARMA: "..math.round(self:getLocalTarget():getKarma()),screenWidth-width*0.5-r_os,width*0.675,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" ) --Money
-
-	dxDrawImage(screenWidth-width*0.3-r_os,0,width*0.24,width*0.24, WeaponIcons[self:getLocalTarget():getWeapon()])
+	dxDrawText (_("SCHUTZWESTE: %s%%", math.ceil(getPedArmor(self:getLocalTarget()))),screenWidth-width*0.5-r_os,width*0.475,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
+	dxDrawText (_("LEBEN: %s%%", math.ceil(lebensanzeige)),screenWidth-width*0.5-r_os,width*0.57,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
+	if atemluftanzeige >= 100 then
+		dxDrawText (_("HUNGER: %s%%", math.ceil(hungeranzeige)),screenWidth-width*0.5-r_os,width*0.675,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
+	else
+		dxDrawText (_("ATEMLUFT: %s%%", math.ceil(atemluftanzeige)),screenWidth-width*0.5-r_os,width*0.675,screenWidth-10,height, tocolor ( r,g,b,a ), 0.8*width*0.0039, "sans","center" )
+	end
+	dxDrawImage(screenWidth-width*0.3-r_os,0,width*0.24,width*0.24, FileModdingHelper:getSingleton():getWeaponImage(self:getLocalTarget():getWeapon()))
 	local tAmmo = getPedTotalAmmo( self:getLocalTarget() )
 	local iClip = getPedAmmoInClip( self:getLocalTarget() )
 	local weaponSlot = getPedWeaponSlot(self:getLocalTarget())
 	if weaponSlot >= 2 then
-		dxDrawText ( iClip.."-"..tAmmo-iClip,hudStartX+width*0.5, height*0.125,width*0.5, height*0.28, tocolor ( 255,255,255,255 ), 1.1*width*0.0039, "sans","left","top" ) --Money
+		dxDrawText ( iClip.."-"..tAmmo-iClip,hudStartX+width*0.5, height*0.125,width*0.5, height*0.28, tocolor ( 255,255,255,255 ), 1.1*width*0.0039, "sans","left","top" )
 	end
-	dxDrawText(math.floor(self:getLocalTarget():getPlayTime()/60).." Std.",hudStartX+width*0.5, height*0.77,width*0.5, height*0.08, tocolor ( 255,255,255,255 ), 0.9*width*0.0039, "sans","left","top" ) --Money
+	dxDrawText(_("%s Std.", math.floor(self:getLocalTarget():getPlayTime()/60)),hudStartX+width*0.5, height*0.77,width*0.5, height*0.08, tocolor ( 255,255,255,255 ), 0.9*width*0.0039, "sans","left","top" )
 
-	dxDrawText(self:getLocalTarget():getWanteds() or 0,hudStartX+width*0.89, height*0.77,width*0.5, height*0.08, tocolor ( 255,255,255,255 ), 0.9*width*0.0039, "sans","left","top" ) --Money
+	dxDrawText(self:getLocalTarget():getWanteds() or 0,hudStartX+width*0.89, height*0.77,width*0.5, height*0.08, tocolor ( 255,255,255,255 ), 0.9*width*0.0039, "sans","left","top" )
 
 
 	--[[if getPedWeapon(localPlayer) > 9  then
@@ -390,33 +417,6 @@ function HUDUI:drawExo()
 				dxDrawText ("Spezialmunition: "..ammo.."",screenWidth-width*0.687-r_os,sx*0.22,screenWidth*0.99,sx, tocolor ( 255,255,255,255 ), 1.2*width*0.0039, "default","right")
 			end
 	end]]
-
-	if isElementInWater(self:getLocalTarget()) then
-		dxDrawRectangle ((screenWidth-width)*1.05,sx*0.318,sx*0.4,sx*0.02, tocolor ( 50,200,255,125 ))
-		dxDrawText ("Sauerstoff: "..math.floor((getPedOxygenLevel(localPlayer)*100)/2500).."%",sx*0.9-r_os,sx*0.32,screenWidth*0.99,sx, tocolor ( 255,255,255,255 ), 1.2*width*0.0039, "default","right")
-	end
-end
-
-function HUDUI:getSkinBrowserSave(skinid, w, h) -- get the correct skin texture and manage the underlying browser
-	if not self.m_SkinBrowser then
-		self.m_SkinBrowser = createBrowser(w, h, false, true)
-		self.m_SkinID = skinid
-		self.m_BrowserW = w
-		self.m_BrowserH = h
-		addEventHandler("onClientBrowserCreated", self.m_SkinBrowser, function()
-			self.m_SkinBrowser:loadURL(INGAME_WEB_PATH .. "/ingame/skinPreview/skinPreviewChartUI.php?skin="..skinid)
-		end)
-	end
-	if skinid ~= self.m_SkinID then
-		self.m_SkinBrowser:loadURL(INGAME_WEB_PATH .. "/ingame/skinPreview/skinPreviewChartUI.php?skin="..skinid)
-		self.m_SkinID = skinid
-	end
-	if w ~= self.m_BrowserW or h ~= self.m_BrowserH then
-		resizeBrowser (self.m_SkinBrowser, w, h)
-		self.m_BrowserW = w
-		self.m_BrowserH = h
-	end
-	return self.m_SkinBrowser
 end
 
 function HUDUI:drawChart()
@@ -466,7 +466,7 @@ function HUDUI:drawChart()
 		local isIcon = icon and icon:len() == 1
 
 		--change colors based on setting
-		if core:get("HUD", "chartColorBlue", false) then
+		if core:get("HUD", "chartColorAccent", false) then
 			color = color ~= Color.Clear and Color.Accent or color
 			iconBgColor = iconBgColor ~= Color.Clear and Color.DarkLightBlue or iconBgColor
 		end
@@ -489,34 +489,37 @@ function HUDUI:drawChart()
 		end
 	end
 
-	local health, armor, karma = self:getLocalTarget():getHealth(), self:getLocalTarget():getArmor(), math.round(self:getLocalTarget():getKarma())
-	local oxygen = math.percent(getPedOxygenLevel(self:getLocalTarget()), 1000)
+	local health, armor, hunger = self:getLocalTarget():getHealth(), self:getLocalTarget():getArmor(), self:getLocalTarget():getPublicSync("Hunger")
+	local oxygen = math.percent(getPedOxygenLevel(self:getLocalTarget()), (1000 + getPedStat(self:getLocalTarget(), 22)*1.5 + getPedStat(self:getLocalTarget(), 225)*1.5))
 	local dsc = core:get("HUD", "chartLabels", true)
 	local healthColor = Color.HUD_Red
 	if health <= 20 then --quick and dirty flash animation
 		healthColor = Color.changeAlphaRate(healthColor, getProgress("health-color", getTickCount()%1000 > 500))
 	end
+	local hungerColor = Color.HUD_Green
+	if hunger <= 20 then --quick and dirty flash animation
+		hungerColor = Color.changeAlphaRate(hungerColor, getProgress("hunger-color", getTickCount()%1000 > 500))
+	end
 	local oxygenColor = Color.HUD_Blue
 	if oxygen <= 50 then
-		oxygenColor = Color.changeAlphaRate(oxygenColor, getProgress("health-color", getTickCount()%1000 > 500))
+		oxygenColor = Color.changeAlphaRate(oxygenColor, getProgress("oxygen-color", getTickCount()%1000 > 500))
 	end
 
 	drawCol(1, 0, Color.Clear, ("%02d.%02d.%04d"):format(getRealTime().monthday, getRealTime().month+1, getRealTime().year+1900), FontAwesomeSymbols.Calendar, Color.HUD_Brown_D, "date", not core:get("HUD", "chartDateVisible", false))
-	drawCol(1, health, healthColor, dsc and math.ceil(health).."% Leben" or math.ceil(health), FontAwesomeSymbols.Heart, Color.HUD_Red_D, "health", health == 0)
-	drawCol(1, armor, Color.HUD_Grey, dsc and math.ceil(armor).."% Schutzweste" or math.ceil(armor), FontAwesomeSymbols.Shield, Color.HUD_Grey_D, "armor", armor == 0)
-	drawCol(1, oxygen, oxygenColor, dsc and math.ceil(oxygen).."% Atemluft" or math.ceil(oxygen), FontAwesomeSymbols.Comment, Color.HUD_Blue_D, "oxygen", oxygen == 100)
-	drawCol(1, math.percent(math.abs(karma), 150), Color.HUD_Cyan, dsc and karma.." Karma" or karma, FontAwesomeSymbols.Circle_O_Notch, Color.HUD_Cyan_D, "karma")
+	drawCol(1, armor, Color.HUD_Grey, dsc and _("%s%% Schutzweste", math.ceil(armor)) or math.ceil(armor), FontAwesomeSymbols.Shield, Color.HUD_Grey_D, "armor", armor == 0)
+	drawCol(1, health, healthColor, dsc and _("%s%% Leben", math.ceil(health)) or math.ceil(health), FontAwesomeSymbols.Heart, Color.HUD_Red_D, "health", health == 0)
+	drawCol(1, hunger, hungerColor, dsc and _("%s%% Hunger", math.ceil(hunger)) or math.ceil(hunger), FontAwesomeSymbols.Utensils, Color.HUD_Green_D, "hunger", hunger == 0)
+	drawCol(1, oxygen, oxygenColor, dsc and _("%s%% Atemluft", math.ceil(oxygen)) or math.ceil(oxygen), FontAwesomeSymbols.Comment, Color.HUD_Blue_D, "oxygen", oxygen == 100)
 	drawCol(1, 0, Color.Clear, toMoneyString(self:getLocalTarget():getMoney()), FontAwesomeSymbols.Money, Color.HUD_Green_D, "money")
-	drawCol(1, 0, Color.Clear, dsc and localPlayer:getPoints().." Punkte" or localPlayer:getPoints(), FontAwesomeSymbols.Points, Color.HUD_Lime_D, "points", not core:get("HUD", "chartPointLevelVisible", true))
-	drawCol(1, 0, Color.Clear, getZoneName(self:getLocalTarget().position), FontAwesomeSymbols.Waypoint, Color.HUD_Brown_D, "zone", self:getLocalTarget():getInterior() ~= 0 or not core:get("HUD", "chartZoneVisible", true))
+	drawCol(1, 0, Color.Clear, dsc and _("%s Punkte", localPlayer:getPoints()) or localPlayer:getPoints(), FontAwesomeSymbols.Points, Color.HUD_Lime_D, "points", not core:get("HUD", "chartPointLevelVisible", true))
+	drawCol(1, 0, Color.Clear, getZoneName(getElementPosition(self:getLocalTarget())), FontAwesomeSymbols.Waypoint, Color.HUD_Brown_D, "zone", self:getLocalTarget():getInterior() ~= 0 or not core:get("HUD", "chartZoneVisible", true))
 
 	drawCol(2, 0, Color.Clear, ("%02d:%02d"):format(getRealTime().hour, getRealTime().minute), false, Color.Clear, "clock")
 	if core:get("HUD", "chartSkinVisible", false) or getProgress("skin", true, true) > 0 then
 		local prog = getProgress("skin", not core:get("HUD", "chartSkinVisible", false))
 
 		dxDrawRectangle(col2_x, border + (height + margin)*col2_i - margin * (1 - prog), col2_w, w_height, tocolor(0, 0, 0, 150*prog)) --skin
-		dxDrawImage(col2_x, border + (height + margin)*col2_i - margin * (1 - prog), col2_w, w_height, self:getSkinBrowserSave(localPlayer:getModel(), col2_w + margin_save*2, w_height), 0, 0, 0, tocolor(255, 255, 255, 255*prog))
-
+		dxDrawImageSection(col2_x, border + (height + margin)*col2_i - margin * (1 - prog), col2_w, w_height, 20, 40, 260, 260, string.format("files/images/Skins/head/%s.png", localPlayer:getModel()), 0, 0, 0, tocolor(255, 255, 255, 255*prog))
 		col2_i = col2_i + prog * 2
 	end
 	drawCol(2, 0, Color.Clear, ("%d-%d"):format(getPlayerPing(self:getLocalTarget()), getNetworkStats().packetlossLastSecond), false, Color.Clear, "net", not DEBUG_NET)
@@ -530,7 +533,7 @@ function HUDUI:drawChart()
 	drawCol(2, 0, Color.Clear, math.min(self.m_FPSLimit, localPlayer.FPS.frames + 1), FontAwesomeSymbols.Desktop, Color.Clear, "fps", not core:get("HUD", "chartFPSVisible", true))
 
 	--weapons
-	local weaponIconPath = WeaponIcons[self:getLocalTarget():getWeapon()]
+	local weaponIconPath = FileModdingHelper:getSingleton():getWeaponImage(self:getLocalTarget():getWeapon())
 	if weaponIconPath and (self:getLocalTarget():getWeapon() ~= 0 or getProgress("weapon", true, true) > 0) then
 		local prog = getProgress("weapon", self:getLocalTarget():getWeapon() == 0)
 		local base_y = border + (height + margin)*col1_i - margin * (1 - prog)
@@ -548,6 +551,7 @@ function HUDUI:drawChart()
 end
 
 function HUDUI:drawRedDot()
+	if localPlayer:getWeapon() == 35 then return end
 	if getPedWeaponSlot(self:getLocalTarget()) >= 2 and getPedWeaponSlot(self:getLocalTarget()) <= 7 then
 		if getPedControlState(self:getLocalTarget(), "aim_weapon" ) then
 			local x1, y1, z1 = getPedWeaponMuzzlePosition(self:getLocalTarget())

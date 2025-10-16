@@ -9,12 +9,21 @@ GroupVehicle = inherit(PermanentVehicle)
 
 -- This function converts a normal (User/PermanentVehicle) to an GroupVehicle
 function GroupVehicle.convertVehicle(vehicle, group)
+	if group:getVehicleCountWithoutPrem() >= group:getMaxVehicles() and not vehicle:isPremiumVehicle() then
+		return false -- Apply vehilce limit
+	end
+
+	-- don't convert them if they have occupants or are currently towed
+	if (vehicle:getOccupants() and table.size(vehicle:getOccupants()) > 0) or vehicle.towingVehicle or vehicle:getData("towedByVehicle") or (vehicle.m_SeatExtensionPassengers and #vehicle.m_SeatExtensionPassengers ~= 0) then
+		return false
+	end
+
 	if vehicle:isPermanent() then
 		if vehicle:getPositionType() == VehiclePositionType.World then
 			local id = vehicle:getId()
 			local premium = vehicle.m_Premium and vehicle.m_Owner or 0
 
-			sql:queryExec("UPDATE ??_vehicles SET SalePrice = 0, Premium = ? WHERE Id = ?", sql:getPrefix(), premium, id)
+			sql:queryExec("UPDATE ??_vehicles SET SalePrice = 0, RentPrice = 0, Premium = ? WHERE Id = ?", sql:getPrefix(), premium, id)
 
 			VehicleManager:getSingleton():removeRef(vehicle)
 			vehicle.m_Owner = group:getId()
@@ -62,12 +71,19 @@ function GroupVehicle:constructor(data)
 		table.insert(self.m_Group.m_Vehicles, self)
 	end
 
+	self.m_IsRented = false
+
 	if data.SalePrice > 0 then
 		self:setForSale(true, data.SalePrice)
 	else
 		self:setForSale(false, 0)
 	end
 
+	if data.RentPrice > 0 then
+		self:setForRent(true, data.RentPrice)
+	else
+		self:setForRent(false)
+	end
 
 	addEventHandler("onVehicleExplode",self, function()
 		setTimer(function(veh)
@@ -105,6 +121,7 @@ function GroupVehicle:purge()
 	if sql:queryExec("UPDATE ??_vehicles SET Deleted = NOW() WHERE Id = ?", sql:getPrefix(), self.m_Id) then
 		VehicleManager:getSingleton():removeRef(self)
 		triggerClientEvent("groupSaleVehiclesDestroyBubble", root, self)
+		triggerClientEvent("groupRentVehiclesDestroyBubble", root, self)
 		destroyElement(self)
 		return true
 	end
@@ -126,31 +143,39 @@ function GroupVehicle:isGroupPremiumVehicle()
 end
 
 function GroupVehicle:hasKey(player)
-  if self:isPermanent() then
-    if player:getGroup() == self:getGroup() then
-      return true
-    end
-  end
+	if self:isPermanent() then
+    	if player:getGroup() == self:getGroup() then
+    		return true
+		end
 
-  return false
+		if self.m_RentedBy == player:getId() then
+			return true
+		end
+	end
+
+	return false
 end
 
 function GroupVehicle:addKey(player)
-  return false
+	return false
 end
 
 function GroupVehicle:removeKey(player)
-  return false
+	return false
 end
 
 function GroupVehicle:canBeModified()
   return self:getGroup():canVehiclesBeModified()
 end
 
-function GroupVehicle:respawn(force)
+function GroupVehicle:respawn(force, suppressMessage)
     local vehicleType = self:getVehicleType()
 	if vehicleType ~= VehicleType.Plane and vehicleType ~= VehicleType.Helicopter and vehicleType ~= VehicleType.Boat and self:getHealth() <= 310 and not force then
 		self:getGroup():sendShortMessage("Fahrzeug-respawn ["..self.getNameFromModel(self:getModel()).."] ist fehlgeschlagen!\nFahrzeug muss zuerst repariert werden!")
+		return false
+	end
+
+	if self.m_RespawnHook:call(self) then
 		return false
 	end
 
@@ -167,12 +192,22 @@ function GroupVehicle:respawn(force)
 		end
 	end
 
+	if self:hasSeatExtension() then
+		self:vseRemoveAttachedPlayers()
+	end
+
+	if self.m_RcVehicleUser then
+		for i, player in pairs(self.m_RcVehicleUser) do
+			self:toggleRC(player, player:getData("RcVehicle"), false, true)
+			player:removeFromVehicle()
+		end
+	end
 
 	self:setEngineState(false)
 	self:setPosition(self.m_SpawnPos)
 	self:setRotation(self.m_SpawnRot)
-	setElementDimension(self, self.m_Dimesion or 0)
-	setElementInterior(self, self.m_Interior or 0)
+	setElementDimension(self, self.m_SpawnDim or 0)
+	setElementInterior(self, self.m_SpawnInt or 0)
 	setVehicleOverrideLights(self, 1)
 	self:setSirensOn(false)
 	self:setFrozen(true)
@@ -183,10 +218,12 @@ function GroupVehicle:respawn(force)
 	self:resetIndicator()
 	self:fix()
 	self:setForSale(self.m_ForSale, self.m_SalePrice)
-	if not force then
-		self:getGroup():sendShortMessage("Euer Fahrzeug ["..self.getNameFromModel(self:getModel()).."] wurde respawnt!")
-	else 
-		self:getGroup():sendShortMessage("Euer Fahrzeug ["..self.getNameFromModel(self:getModel()).."] wurde respawnt (administrativ)!")
+	if not suppressMessage then
+		if not force then
+			self:getGroup():sendShortMessage("Euer Fahrzeug ["..self.getNameFromModel(self:getModel()).."] wurde respawnt!")
+		else
+			self:getGroup():sendShortMessage("Euer Fahrzeug ["..self.getNameFromModel(self:getModel()).."] wurde respawnt (administrativ)!")
+		end
 	end
 	if self.m_Magnet then
 		detachElements(self.m_Magnet)
@@ -207,23 +244,54 @@ function GroupVehicle:setForSale(sale, price)
 	if sale then
 		self.m_ForSale = true
 		self.m_SalePrice = tonumber(price)
+		self.m_HandBrake = true
+		self:setData("Handbrake", true, true)
 		self.m_DisableToggleEngine = true
 		self.m_DisableToggleHandbrake = true
 		self:setFrozen(true)
 	else
 		self.m_ForSale = false
 		self.m_SalePrice = 0
-		self.m_DisableToggleEngine = false
-		self.m_DisableToggleHandbrake = false
+		if not self:isForRent() then
+			self.m_DisableToggleEngine = false
+			self.m_DisableToggleHandbrake = false
+		end
 	end
 	setElementData(self, "forSale", self.m_ForSale, true)
 	setElementData(self, "forSalePrice", tonumber(self.m_SalePrice), true)
 end
 
+function GroupVehicle:isForRent()
+	return self.m_ForRent
+end
+
+function GroupVehicle:setForRent(state, rate)
+	if state then
+		self.m_ForRent = true
+		self.m_RentRate = tonumber(rate)
+		self.m_HandBrake = true
+		self:setData("Handbrake", true, true)
+		self.m_DisableToggleEngine = true
+		self.m_DisableToggleHandbrake = true
+		self:setFrozen(true)
+	else
+		self.m_ForRent = false
+		self.m_RentRate = 0
+		if not self:isForSale() then
+			self.m_DisableToggleEngine = false
+			self.m_DisableToggleHandbrake = false
+		end
+	end
+	setElementData(self, "forRent", self.m_ForRent, true)
+	setElementData(self, "forRentRate", tonumber(self.m_RentRate), true)
+end
+
 function GroupVehicle:getVehicleTaxForGroup() -- some vehicles may not need taxation in groups, but if owned private
 	if self:isGroupPremiumVehicle() then return 0 end
 	if self:isForSale() and self:getSalePrice() <= 500000 then return 0 end
-	if self:getPositionType() == VehiclePositionType.Mechanic then return 0 end
+	if self:getPositionType() == VehiclePositionType.Mechanic then
+		return math.floor(self:getTax() / 2), true
+	end
 	return self:getTax()
 end
 
@@ -232,9 +300,14 @@ function GroupVehicle:getSalePrice()
 end
 
 function GroupVehicle:buy(player)
+	if self.m_IsRented then
+		player:sendInfo(_("Es ist ein Fehler aufgetreten!", player))
+		return
+	end
+
 	if self.m_ForSale then
 		if self.m_SalePrice >= 0 and player:getBankMoney() >= self.m_SalePrice then
-			if #player:getVehicles() < math.floor(MAX_VEHICLES_PER_LEVEL*player:getVehicleLevel()) then
+			if player:getVehicleCountWithoutPrem() < player:getMaxVehicles() then
 				local group = self:getGroup()
 				local price = self.m_SalePrice
 				if player:transferBankMoney(group, price, "Firmen-Fahrzeug Kauf", "Group", "VehicleSell") then
@@ -250,7 +323,7 @@ function GroupVehicle:buy(player)
 					player:sendError(_("Es ist ein Fehler aufgetreten!", player))
 				end
 			else
-				player:sendError(_("Du hast keinen freien Fahrzeug-Slot! Erhöhe dein Fahrzeuglevel! (%d/%d)", player, #player:getVehicles(), math.floor(MAX_VEHICLES_PER_LEVEL*player:getVehicleLevel())))
+				player:sendError(_("Du hast keinen freien Fahrzeug-Slot! Erhöhe dein Fahrzeuglevel oder kaufe dir Fahrzeugslots! (%d/%d)", player, #player:getVehicles(), player:getMaxVehicles()))
 			end
 		else
 			player:sendError(_("Du hast nicht genug Geld dabei! (%d$)", player, self.m_SalePrice))
@@ -260,8 +333,131 @@ function GroupVehicle:buy(player)
 	end
 end
 
-function GroupVehicle:onEnter()
-	return true -- otherwise last driver will not added
+function GroupVehicle:rent(player, duration)
+	if self.m_IsRented then
+		player:sendInfo(_("Es ist ein Fehler aufgetreten!", player))
+		return
+	end
+
+	local duration = math.ceil(duration)
+	local currentHour = getRealTime().hour
+	local endHour = currentHour + duration
+	if endHour >= 24 then
+		endHour = endHour - 24
+		if endHour > 5 then
+			duration = duration - (endHour - 5)
+		end
+	end
+
+	if duration == 0 or duration > 24 then
+		player:sendInfo(_("Ungültige Dauer!", player))
+		return
+	end
+
+	if self.m_ForRent and self.m_RentRate >= 0 then
+		local rental = self.m_RentRate * duration
+		if player:getBankMoney() >= rental + 2000 then
+			local group = self:getGroup()
+
+			if player:transferBankMoney(group, rental, "Firmen-Fahrzeug Vermietung", "Group", "VehicleRent") then
+				player:transferBankMoney(BankServer.get("group.deposit"), 2000, "Firmen-Fahrzeug Vermietung: Kaution", "Group", "VehicleDeposit")
+				self.m_LastRentRate = self.m_RentRate
+				self:setForRent(false)
+
+				self.m_IsRented = true
+				self.m_RentedBy = player:getId()
+				self.m_RentedByName = player:getName()
+				self.m_RentedSince = getRealTime().timestamp
+				self.m_RentedUntil = getRealTime().timestamp + duration * 60 * 60
+				self.m_RentedFuel = self:getFuel()
+
+				setElementData(self, "isRented", self.m_IsRented, true)
+				setElementData(self, "rentedBy", self.m_RentedBy, true)
+				setElementData(self, "rentedByName", self.m_RentedByName, true)
+				setElementData(self, "rentedSince", self.m_RentedSince, true)
+				setElementData(self, "rentedUntil", self.m_RentedUntil, true)
+
+				group:sendShortMessage(_("%s hat ein Fahrzeug für %d$ gemietet! (%s)", player, player:getName(), rental, self:getName()))
+				group:addLog(player, "Fahrzeugverleih", "hat das Fahrzeug "..self.getNameFromModel(self:getModel()).." für "..rental.." gemietet!")
+				player:sendInfo(_("Das Fahrzeug erfolgreich gemietet!", player))
+				GroupManager:getSingleton():addRentedVehicle(self)
+				StatisticsLogger:getSingleton():addVehicleRentLog(group:getId(), player:getId(), self:getId(), rental, duration)
+			else
+				player:sendError(_("Es ist ein Fehler aufgetreten!", player))
+			end
+		else
+			player:sendError(_("Du hast nicht genug Geld! (%d$)", player, rental))
+		end
+	else
+		player:sendError(_("Dieses Fahrzeug kann nicht gemietet werden!", player))
+	end
+end
+
+function GroupVehicle:rentEnd()
+	if self.m_IsRented then
+		local player = DatabasePlayer.Map[self.m_RentedBy]
+		if player and isElement(player) then
+			outputChatBox(_("Die Mietzeit deines gemieteten Fahrzeuges ist nun vorbei.", player), player, 244, 182, 66)
+		end
+
+		local deposit = 2000
+
+		if self:getPositionType() == VehiclePositionType.Mechanic then
+			deposit = deposit - 1000
+			BankServer.get("group.deposit"):transferMoney(CompanyManager.Map[2], 1000, "Fahrzeug freigekauft", "Company", "VehicleFreeBought")
+			self:getPositionType(VehiclePositionType.World)
+		end
+
+		if self:getFuelType() ~= "nofuel" then
+			local currentFuel = self:getFuel()
+			if currentFuel < self.m_RentedFuel then
+				local needFuel = self.m_RentedFuel - currentFuel
+				local price = (GasStationManager.Shops["Idlewood"].m_FuelTypePrices[self:getFuelType()] or 1)
+				local tankSize = self:getFuelTankSize()
+				local opticalFuelRequired = tankSize * needFuel
+				local maxFuelWithMoney = deposit / price
+
+				if opticalFuelRequired > maxFuelWithMoney then
+					deposit = 0
+					self:setFuel(self:getFuel() + maxFuelWithMoney / tankSize)
+				else
+					deposit = math.floor(deposit - opticalFuelRequired * price)
+					self:setFuel(self:getFuel() + opticalFuelRequired / tankSize)
+				end
+			end
+		end
+
+		if deposit > 0 then
+			BankServer.get("group.deposit"):transferMoney({"player", self.m_RentedBy}, deposit, "Firmen-Fahrzeug Vermietung: Kaution", "Group", "VehicleDeposit")
+		end
+
+		removeElementData(self, "isRented")
+		removeElementData(self, "rentedBy")
+		removeElementData(self, "rentedByName")
+		removeElementData(self, "rentedSince")
+		removeElementData(self, "rentedUntil")
+
+		self.m_IsRented = false
+		self.m_RentedBy = nil
+		self.m_RentedByName = nil
+		self.m_RentedSince = nil
+		self.m_RentedUntil = nil
+		self.m_RentedFuel = nil
+
+		for k, player in pairs(self:getOccupants()) do
+			player:removeFromVehicle()
+		end
+
+		GroupManager:getSingleton():removeRentedVehicle(self)
+		self:respawn(true, true)
+
+		if not self:getGroup().m_VehiclesSpawned then
+			VehicleManager:getSingleton():destroyGroupVehicles(self:getGroup())
+		else
+			self:setForRent(true, self.m_LastRentRate)
+			self.m_LastRentRate = nil
+		end
+	end
 end
 
 function GroupVehicle:sendOwnerMessage(msg)

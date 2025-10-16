@@ -8,7 +8,7 @@
 JobTrashman = inherit(Job)
 
 function JobTrashman:constructor()
-	Job.constructor(self, 260, 2090.34, -2079.65, 13.5, 180, "Trashman.png", {100, 100, 100}, "files/images/Jobs/HeaderTrashman.png", _(HelpTextTitles.Jobs.Trashman):gsub("Job: ", ""), _(HelpTexts.Jobs.Trashman), self.onInfo)
+	Job.constructor(self, 260, 2090.34, -2079.65, 13.5, 180, "Trashman.png", {100, 100, 100}, "files/images/Jobs/HeaderTrashman.png", (HelpTextTitles.Jobs.Trashman):gsub("Job: ", ""), _(HelpTexts.Jobs.Trashman), LexiconPages.JobTrashman, self.onInfo)
 	self:setJobLevel(JOB_LEVEL_TRASHMAN)
 
 	self.m_DumpAreaTexture = dxCreateTexture("files/images/Jobs/TrashDumpArea.png")
@@ -17,9 +17,6 @@ function JobTrashman:constructor()
 
 	addRemoteEvents{"trashcanReset"}
 	addEventHandler("trashcanReset", root, bind(JobTrashman.reset, self))
-
-	-- add job to help menu
-	HelpTextManager:getSingleton():addText("Jobs", _(HelpTextTitles.Jobs.Trashman):gsub("Job: ", ""), "jobs.trashman")
 end
 
 function JobTrashman:start()
@@ -43,7 +40,7 @@ function JobTrashman:start()
 	self:reset()
 
 	-- Show text in help menu
-	HelpBar:getSingleton():addText(_(HelpTextTitles.Jobs.Trashman), _(HelpTexts.Jobs.Trashman), true, self.onInfo)
+	HelpBar:getSingleton():setLexiconPage(LexiconPages.JobTrashman)
 end
 
 function JobTrashman:onInfo()
@@ -84,7 +81,7 @@ function JobTrashman:stop()
 	delete(self.m_ContainerLabel)
 
 	-- Reset text in help menu
-	HelpBar:getSingleton():addText(_(HelpTextTitles.General.Main), _(HelpTexts.General.Main), false)
+	HelpBar:getSingleton():setLexiconPage(nil)
 end
 
 function JobTrashman:reset()

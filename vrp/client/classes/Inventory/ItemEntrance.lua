@@ -79,7 +79,7 @@ function ItemEntrance:Event_OnRender()
 		dxDrawText(lastDesc, 0, 0, screenWidth, (screenHeight*0.9+fontHeight)+1, tocolor(255, 255, 255, 255), 1.5, "default-bold", "center", "bottom")
 		dxDrawText(lastDesc, 0, 0, screenWidth, screenHeight*0.9+fontHeight, tocolor(255, 255, 255, 255), 1.5, "default-bold", "center", "bottom")
 	end
-	local key = core:get("KeyBindings", "KeyEntranceUse", KeyBinds:getSingleton().m_Keys["KeyEntranceUse"]["defaultKey"])
+	local key = core:get("KeyBindings", "KeyEntranceUse", KeyBinds:getSingleton().m_Keys["general"]["KeyEntranceUse"]["defaultKey"])
 	dxDrawText(("Drücke %s zum Eintreten!"):format(key:upper()), 0, 0, screenWidth, screenHeight*0.9+fontHeight*1.1+fontHeight2*1.1, tocolor(255, 255, 255, 255), 1, "default-bold", "center", "bottom")
 end
 
@@ -88,7 +88,7 @@ function ItemEntrance:constructor( id, pos )
 	self.m_Width = grid("x", 10)
 	self.m_Height = grid("y", 7)
 	GUIForm.constructor(self, screenWidth/2-(350/2)/2, 300, self.m_Width, self.m_Height, true)
-	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Eingang", true, false, self)
+	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, "Eingang", true, false, self)
 	self.m_CoordLabel = GUIGridLabel:new(1, 1, 12, 1, "Koordinate: "..pos[1].." , "..pos[2].." , "..pos[3], self.m_Window):setFont(VRPFont(18, Fonts.EkMukta))
 	self.m_EditKeyPadLink = GUIGridEdit:new(1, 2, 3, 1, self.m_Window):setNumeric(true, true):setFont(VRPFont(20, Fonts.EkMukta)):setCaption("+Keypad ID")
 	self.m_RemoveKeyPadLink = GUIGridEdit:new(4, 2, 3, 1, self.m_Window):setNumeric(true, true):setFont(VRPFont(20, Fonts.EkMukta)):setCaption("-Keypad ID")

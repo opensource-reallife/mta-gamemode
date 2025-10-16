@@ -28,6 +28,7 @@ function Area:destructor( )
 	if self.m_CenterSphere and isElement(self.m_CenterSphere) then destroyElement(self.m_CenterSphere) end
 	if self.m_BlipImage then self.m_BlipImage:delete() end
 	if self.m_AttackSession then self.m_AttackSession:stopClients( true ); self.m_AttackSession:delete() end
+	self:destroySurroundingCol()
 end
 
 function Area:getName()
@@ -66,6 +67,34 @@ function Area:createRadar()
 	self.m_RadarArea = RadarArea:new(areaX, areaY, areaWidth, -1*areaHeight,factionColor )
 end
 
+--colshape where players who do not participate in the gang war get a warning
+function Area:createSurroundingCol()
+	if self.m_SurroundingCol then self:destroySurroundingCol() end
+	local surroundingDistance = 100
+	local areaX,areaY = self.m_PositionRadar[1],self.m_PositionRadar[2]
+	local areaX2, areaY2 = self.m_PositionRadar[3],self.m_PositionRadar[4]
+	local centerZ = self.m_Position[3]
+	local areaWidth = math.abs(areaX -  areaX2) + surroundingDistance*2
+	local areaHeight = math.abs(areaY - areaY2) + surroundingDistance*2
+
+	self.m_SurroundingCol = createColCuboid (areaX-surroundingDistance, areaY-surroundingDistance, centerZ - surroundingDistance, areaWidth, areaHeight, surroundingDistance*2 )
+	addEventHandler("onColShapeHit" ,self.m_SurroundingCol, bind(self.onSurroundingEnter,self))
+end
+
+function Area:destroySurroundingCol()
+	if self.m_SurroundingCol and isElement(self.m_SurroundingCol) then
+		destroyElement(self.m_SurroundingCol)
+		self.m_SurroundingCol = nil
+	end
+end
+
+--player is near a gang zone, but did not enter it by now
+function Area:onSurroundingEnter(hitElement, dim)
+	if hitElement and getElementType(hitElement) == "player" and dim and not hitElement:isInGangwar() then
+		hitElement:sendWarning("Du näherst dich einem aktiven Gangwar-Gebiet! Bitte verlasse dieses Areal und nutze eine andere Route oder warte, bis der Kampf vorbei ist.")
+	end
+end
+
 function Area:createCenterPickup()
 	local x,y,z = self.m_Position[1],self.m_Position[2],self.m_Position[3]
 	self.m_Pickup = createPickup( x,y,z ,3,2993,5)
@@ -83,21 +112,32 @@ function Area:createCenterCol()
 end
 
 function Area:attack( faction1, faction2, attackingPlayer)
-	if not self.m_IsAttacked then
-		self.m_IsAttacked = true
-		faction1:sendMessage("[Gangwar] #FFFFFFIhre Fraktion hat einen Attack gestartet! ( Gebiet: "..self.m_Name.." )", 0,204,204,true)
-		faction2:sendMessage("[Gangwar] #FFFFFFIhre Fraktion wurde attackiert von "..faction1.m_Name_Short.." ! ( Gebiet: "..self.m_Name.." )", 204,20,0,true)
-		self.m_AttackSession = AttackSession:new( self, faction1 , faction2, attackingPlayer)
-		self.m_LastAttack = getRealTime().timestamp
-		self.m_RadarArea:delete()
-		self.m_BlipImage = Blip:new("Gangwar.png", self.m_Position[1], self.m_Position[2], {faction = {faction1:getId(), faction2:getId()}}, 9999)
-		self:createRadar()
-		self.m_GangwarManager.m_GangwarGuard:addAttack( faction1 )
-		local attackCount = self.m_GangwarManager.m_GangwarGuard:getAttackCount( faction1 )
-		faction1:sendMessage("[Gangwar] #FFFFFFDurch diesen Attack (Nr. "..attackCount..") ist eure Cooldown-Zeit auf ".. (30+(10*attackCount)).." Sekunden gestiegen !", 204,204, 0,true)
-		self.m_RadarArea:setFlashing(true)
-		setPickupType(self.m_Pickup,3,GANGWAR_ATTACK_PICKUPMODEL)
-		self.m_GangwarManager:addAreaToAttacks( self )
+	if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "startGangWar") then
+		if not self.m_IsAttacked then
+			self.m_IsAttacked = true
+			faction1:sendMessage("[Gangwar] #FFFFFFIhre Fraktion hat einen Attack gestartet! ( Gebiet: "..self.m_Name.." )", 0,204,204,true)
+			faction2:sendMessage("[Gangwar] #FFFFFFIhre Fraktion wurde attackiert von "..faction1.m_Name_Short.." ! ( Gebiet: "..self.m_Name.." )", 204,20,0,true)
+			if not faction1.m_DiscordRole or not faction2.m_DiscordRole then
+				Discord:getSingleton():outputGangwarNews("Das Gebiet "..self.m_Name.." der Fraktion "..faction2.m_Name_Short.." wird von der Fraktion "..faction1.m_Name_Short.." angegriffen!")
+			else
+				Discord:getSingleton():outputGangwarNews("Das Gebiet "..self.m_Name.." der Fraktion <@&"..faction2.m_DiscordRole.."> wird von der Fraktion <@&"..faction1.m_DiscordRole.."> angegriffen!")
+			end
+			self.m_AttackSession = AttackSession:new( self, faction1 , faction2, attackingPlayer)
+			self.m_LastAttack = getRealTime().timestamp
+			self.m_RadarArea:delete()
+			self.m_BlipImage = Blip:new("Gangwar.png", self.m_Position[1], self.m_Position[2], {faction = {faction1:getId(), faction2:getId()}}, 9999)
+			self:createRadar()
+			self.m_GangwarManager.m_GangwarGuard:addAttack( faction1 )
+			local attackCount = self.m_GangwarManager.m_GangwarGuard:getAttackCount( faction1 )
+			faction1:sendMessage("[Gangwar] #FFFFFFDurch diesen Attack (Nr. "..attackCount..") ist eure Cooldown-Zeit auf ".. (30+(10*attackCount)).." Sekunden gestiegen !", 204,204, 0,true)
+			self.m_RadarArea:setFlashing(true)
+			setPickupType(self.m_Pickup,3,GANGWAR_ATTACK_PICKUPMODEL)
+			self.m_GangwarManager:addAreaToAttacks( self )
+			self:createSurroundingCol()
+			faction1:addLog(attackingPlayer, "Gangwar", ("hat das Gebiet %s attackiert!"):format(self.m_Name))
+		end
+	else
+		client:sendError(_("Dazu bist du nicht berechtigt!", client))
 	end
 end
 
@@ -138,6 +178,7 @@ function Area:attackEnd(  )
 		self.m_BlipImage:delete()
 		setPickupType(self.m_Pickup,3,2993)
 		self.m_GangwarManager:removeAreaFromAttacks( )
+		self:destroySurroundingCol()
 	end
 end
 

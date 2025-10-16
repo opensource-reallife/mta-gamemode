@@ -29,6 +29,10 @@ function GangwarQuestion:onClick( b, s )
 	if b == "left" then
 		if s == "up" then
 			if self.m_Option then
+				if self.m_Option == 1 and not PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "joinGangWar") then
+					ErrorBox:new(_"Dazu hast du keine Berechtigung!")
+					return
+				end
 				if not self.m_SureCheck then
 					self.m_SureCheck = self.m_Option
 					self.m_DrawSure = true

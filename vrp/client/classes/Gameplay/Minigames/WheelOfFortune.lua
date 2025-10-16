@@ -10,8 +10,8 @@ WheelOfFortune = inherit(Singleton)
 addRemoteEvents{"WheelOfFortunePlaySound"}
 
 function WheelOfFortune:constructor()
-    
-   -- self.m_WheelTexture = StaticFileTextureReplacer:new("WheelOfFortune.png", "white256")
+    -- self.m_WheelTexture = StaticFileTextureReplacer:new("WheelOfFortune.png", "white256")
+    self.m_WheelTexture = StaticFileTextureReplacer:new("FortuneWheelChristmas.png", "fortunewheel")
     addEventHandler("WheelOfFortunePlaySound", resourceRoot, bind(WheelOfFortune.playWheelSound, self))
 end
 

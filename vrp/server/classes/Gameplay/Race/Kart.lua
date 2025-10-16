@@ -210,7 +210,7 @@ function Kart:startMarkerHit(hitElement, matchingDimension)
 	if not matchingDimension then return end
 	if hitElement.type ~= "player" then return end
 
-	hitElement:triggerEvent("showKartGUI", true)
+	hitElement:triggerEvent("showKartGUI", true, source)
 end
 
 function Kart:startFinishMarkerHit(hitElement, matchingDimension)
@@ -460,7 +460,7 @@ function Kart:onKartZoneEnter(hitElement, matchingDimension)
 	end
 
 	if hitElement.controller then
-		hitElement.controller:sendError("Du darfst die Kartbahn nicht mit einem Fahrzeug betreten!")
+		hitElement.controller:sendError(_("Du darfst die Kartbahn nicht mit einem Fahrzeug betreten!", hitElement.controller))
 	end
 
 	hitElement:setPosition(1268.794, 196.042, 19.414)

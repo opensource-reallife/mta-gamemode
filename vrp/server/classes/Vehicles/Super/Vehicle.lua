@@ -9,6 +9,10 @@ Vehicle = inherit(MTAElement)
 inherit(VehicleDataExtension, Vehicle)
 inherit(VehicleObjectLoadExtension, Vehicle)
 inherit(VehicleELS, Vehicle)
+inherit(VehicleTransportExtension, Vehicle)
+inherit(VehicleSeatExtension, Vehicle)
+inherit(ShamalExtension, Vehicle)
+inherit(RcVanExtension, Vehicle)
 Vehicle.constructor = pure_virtual -- Use PermanentVehicle / TemporaryVehicle instead
 function Vehicle:virtual_constructor()
 	addEventHandler("onVehicleEnter", self, bind(self.onPlayerEnter, self))
@@ -25,6 +29,9 @@ function Vehicle:virtual_constructor()
 	self.m_RepairAllowed = true
 	self.m_RespawnAllowed = true
 	self.m_BrokenHook = Hook:new()
+	self.m_HandbrakeHook = Hook:new()
+	self.m_RespawnHook = Hook:new()
+	self.m_DamageHook = Hook:new()
 
 	self.m_LastDrivers = {}
 
@@ -53,6 +60,10 @@ function Vehicle:virtual_constructor()
 		self.m_MagnetUp = bind(Vehicle.magnetMoveUp, self)
 		self.m_MagnetDown = bind(Vehicle.magnetMoveDown, self)
 	end
+
+	if VEHICLES_WITH_BULLET_ARMOR[self:getModel()] then
+		self:setBulletArmorLevel(VEHICLES_WITH_BULLET_ARMOR[self:getModel()])
+	end
 end
 
 function Vehicle:virtual_destructor()
@@ -64,6 +75,8 @@ function Vehicle:virtual_destructor()
 	if self.m_Magnet and self.m_Magnet.type == "object" then
 		self.m_Magnet:destroy()
 	end
+
+	self:removeELS()
 
 	local occs = getVehicleOccupants(self)
 	if occs then
@@ -92,15 +105,28 @@ function Vehicle:getOwner()
 	return self.m_Owner
 end
 
-function Vehicle:getOccupantsCount()
-	if not self:getOccupants() then return 0 end
+function Vehicle:getOwnerType()
+	return self.m_OwnerType
+end
 
+function Vehicle:getOccupantsCount(countAttachedPlayers)
 	local i = 0
-	for seat, player in pairs(self:getOccupants()) do
+	for seat, player in pairs(self:getOccupants(countAttachedPlayers)) do
 		i = i+1
 	end
 	return i
 end
+
+function Vehicle:getOccupants(countAttachedPlayers) -- wrapper for occupant table check and to return attached players
+	local occs = getVehicleOccupants(self) or {}
+	if countAttachedPlayers then
+		for i, player in pairs(self:getAttachedPlayers()) do
+			occs[3+i] = player -- 3+i -> 3 - amount of seats in gta vehicle, i - index 1-x where x #players attached to veh
+		end
+	end
+	return occs
+end
+
 
 function Vehicle:hasKey(player)
 	if type(player) == "userdata" then
@@ -134,7 +160,7 @@ end
 
 function Vehicle:onPlayerEnter(player, seat)
 	if player:getType() ~= "player" then return end
-
+	if self:hasInfrared() then player:sendInfo(_("Dieses Fahrzeug verfügt über eine Wärmesichtkamera!", player)) end
 	if self.onEnter and self:onEnter(player, seat) then
 		if seat == 0 then
 			self:setDriver(player)
@@ -142,8 +168,20 @@ function Vehicle:onPlayerEnter(player, seat)
 	end
 
 	if seat == 0 then
-		if not player:hasCorrectLicense(source) then
-			player:sendShortMessage(_("Achtung: Du hast keinen Führerschein für dieses Fahrzeug!", player))
+		if not player:getPublicSync("inDrivingLession") and not player.raceLobby then
+			if not player:hasCorrectLicense(source) then
+				player:sendShortMessage(_("Achtung: Du hast keinen Führerschein für dieses Fahrzeug!", player))
+
+				local vehicleType = self:getVehicleType()
+				if (vehicleType == VehicleType.Plane or vehicleType == VehicleType.Helicopter) and not player:hasPilotsLicense() then
+					self:setEngineState(false)
+					Timer(function()
+						if self:getController() == player then
+							self:setEngineState(false)
+						end
+					end, 3000, 1)
+				end
+			end
 		end
 
 		if VEHICLE_SPECIAL_SMOKE[self:getModel()] then
@@ -169,6 +207,15 @@ function Vehicle:onPlayerEnter(player, seat)
 				bindKey(player, "special_control_down", "both", self.m_MagnetDown)
 			end
 		end
+
+		if self:hasKey(player) and getVehicleTowedByVehicle(self) and getVehicleType(getVehicleTowedByVehicle(self)) == VehicleType.Trailer then
+			local towedVeh = getVehicleTowedByVehicle(self)
+			if towedVeh:getOwner() == self:getOwner() then
+				towedVeh:setFrozen(false)
+			end
+		end
+
+		self:allowControl(player, getVehicleEngineState(self))
 	end
 
 	if self.m_HasBeenUsed then
@@ -180,8 +227,8 @@ end
 
 function Vehicle:onPlayerExit(player, seat)
 	self.m_LastUseTime = getTickCount()
-	local hbState = getControlState( player, "handbrake")
 	if player:getType() ~= "player" then return end
+	local hbState = getControlState( player, "handbrake")
 
 	if seat == 0 then
 		if hbState then
@@ -206,12 +253,16 @@ function Vehicle:onPlayerExit(player, seat)
 			local ground = isVehicleOnGround( self )
 			if ground then
 				setElementFrozen(self, true)
-				self:switchObjectLoadingMarker(true)
+				--self:switchObjectLoadingMarker(true)
 				setVehicleDoorOpenRatio(self, 2, 0, 350)
 			else
 				self.m_HandBrake = false
 				self:setData( "Handbrake",  self.m_HandBrake , true )
 			end
+		end
+
+		if self:getAttachedTo() then --when vehicle is attached to another element (e.g. transport vehicle)
+			setVehicleDoorOpenRatio(self, 2, 0, 350)
 		end
 
 		if self.m_CountdownDestroy then
@@ -241,6 +292,16 @@ function Vehicle:removeAttachedPlayers()
 			v:attachToVehicle(true)
 		end
 	end
+end
+
+function Vehicle:getAttachedPlayers()
+	local tbl = {}
+	for i,v in pairs(getAttachedElements(self)) do
+		if v and getElementType(v) == "player" then -- I really don't know why we have to check if there even is a 'v'... but there were warnings with some async stuff - MasterM
+			table.insert(tbl, v)
+		end
+	end
+	return tbl
 end
 
 function Vehicle:playCustomHorn(player)
@@ -297,6 +358,7 @@ function Vehicle:setCustomHorn(id)
 	self.m_CustomHorn = id
 	if self:getOccupant() then
 		local player = self:getOccupant()
+		if not type(id) == "number" then return end
 		if id > 0 then
 			bindKey(player, "j", "down", self.ms_CustomHornPlayBind)
 		else
@@ -337,7 +399,7 @@ function Vehicle:toggleEngine(player)
 		return true
 	end
 
-	if self:hasKey(player) or player:getRank() >= ADMIN_RANK_PERMISSION["toggleVehicleHandbrake"] or not self:isPermanent() or (self.getCompany and self:getCompany():getId() == 1 and player:getPublicSync("inDrivingLession") == true) then
+	if self:hasKey(player) or player:getRank() >= ADMIN_RANK_PERMISSION["toggleVehicleHandbrake"] or not self:isPermanent() or (self.getCompany and self:getCompany() and self:getCompany():getId() == 1 and player:getPublicSync("inDrivingLession") == true) then
 		if state == true then
 			if not VEHICLE_BIKES[self:getModel()] then
 				if self.m_Fuel <= 0 then
@@ -347,6 +409,18 @@ function Vehicle:toggleEngine(player)
 				if self:isBroken() then
 					player:sendError(_("Das Fahrzeug ist kaputt und muss erst repariert werden!", player))
 					return false
+				end
+				if not player:getPublicSync("inDrivingLession") and not player.raceLobby then
+					if not player:hasPilotsLicense() then
+						local vehicleType = self:getVehicleType()
+						if vehicleType == VehicleType.Helicopter then
+							player:sendError(_("Du weißt nicht wie man einen Helikopter fliegt!", player))
+							return false
+						elseif vehicleType == VehicleType.Plane then
+							player:sendError(_("Du weißt nicht wie man ein Flugzeug fliegt!", player))
+							return false
+						end
+					end
 				end
 			end
 
@@ -369,6 +443,10 @@ function Vehicle:toggleEngine(player)
 						setTimer(
 							function()
 								if not isElement(self) then return end
+								if self:isBroken() then
+									player:sendError(_("Das Fahrzeug ist kaputt und muss erst repariert werden!", player))
+									return
+								end
 								self:setEngineState(true)
 								local occs = self:getOccupants()
 								if occs then
@@ -400,7 +478,9 @@ end
 function Vehicle:toggleHandBrake(player, preferredState)
 	if self.m_DisableToggleHandbrake then return end
 	if preferredState ~= nil and preferredState == self.m_HandBrake then return false end
-
+	if self.m_HandbrakeHook:call(self) then
+		return
+	end
 	if not self.m_HandBrake or preferredState then
 		if self:isOnGround() then
 			setControlState(player, "handbrake", true)
@@ -411,7 +491,7 @@ function Vehicle:toggleHandBrake(player, preferredState)
 		self.m_HandBrake = false
 		setControlState(player, "handbrake", false)
 		if isElementFrozen(self) then
-			self:switchObjectLoadingMarker(false)
+			--self:switchObjectLoadingMarker(false)
 			setElementFrozen(self, false)
 		end
 		player:triggerEvent("vehicleHandbrake")
@@ -441,21 +521,41 @@ function Vehicle:toggleHandBrake(player, preferredState)
 	StatisticsLogger:getSingleton():addVehicleLog(player, owner, ownerType, self.m_Id, self:getModel(), self.m_HandBrake and "Handbremse gezogen" or "Handbremse gelöst")
 end
 
+function Vehicle:getHandbrakeHook()
+	return self.m_HandbrakeHook
+end
+
 function Vehicle:setEngineState(state)
 	setVehicleEngineState(self, state)
 
 	if self:getFuelType() ~= "nofuel" then
 		VehicleManager:getSingleton().m_VehiclesWithEngineOn[self] = state and self:getMileage() or nil -- toggle fuel consumption
 	end
-
+	
 	self:setData("syncEngine", state, true)
 	self.m_EngineState = state
 	self.m_StartingEnginePhase = false
+	if self.controller and self.controller:getType() == "player" then
+		self:allowControl(self.controller, state)
+		self.controller:triggerEvent("vehicleEngineStateChange", self, state)
+	end
 
-	if instanceof(self, PermanentVehicle, true) then return end
+	--if instanceof(self, PermanentVehicle, true) then return end
 	if self.controller and self.controller:getType() == "player" then
 		self:setDriver(self.controller)
 	end
+end
+
+
+function Vehicle:allowControl(player, bool)
+    if isValidElement(player) then
+        player:toggleControl("accelerate", bool)
+        if self:getVehicleType() ~= VehicleType.Bike and not VEHICLE_BIKES[self:getModel()] then
+            player:toggleControl("brake_reverse", bool)
+        else
+            player:toggleControl("brake_reverse", true)
+        end
+    end
 end
 
 function Vehicle:getEngineState()
@@ -543,7 +643,7 @@ function Vehicle:countdownDestroyStart(player)
 	end
 	self.m_CountdownDestroyPlayer = player
 	player:sendWarning(_("Vorsicht: Steig innerhalb von %d Sekunden wieder ein, oder das Fahrzeug wird gelöscht!", player, self.m_CountdownDestroy))
-	player:triggerEvent("Countdown", self.m_CountdownDestroy, "Fahrzeug")
+	player:triggerEvent("Countdown", self.m_CountdownDestroy, _("Fahrzeug", player))
 	self.m_CountdownDestroyTimer = setTimer(function()
 		player:sendInfo(_("Zeit abgelaufen! Das Fahrzeug wurde gelöscht!", player))
 		if self and isElement(self) then
@@ -679,7 +779,22 @@ function Vehicle:setCurrentPositionAsSpawn(type)
   self.m_SpawnInt = self:getInterior()
 end
 
-function Vehicle:respawnOnSpawnPosition()
+function Vehicle:respawnOnSpawnPosition()  
+	if self.m_RespawnHook:call(self) then
+		return
+	end
+
+	if self:hasSeatExtension() then
+		self:vseRemoveAttachedPlayers()
+	end
+
+	if self.m_RcVehicleUser then
+		for i, player in pairs(self.m_RcVehicleUser) do
+			self:toggleRC(player, player:getData("RcVehicle"), false, true)
+			player:removeFromVehicle()
+		end
+	end
+
 	if self.m_PositionType == VehiclePositionType.World then
 		self:setPosition(self.m_SpawnPos)
 		self:setRotation(self.m_SpawnRot)
@@ -696,6 +811,7 @@ function Vehicle:respawnOnSpawnPosition()
 		self:toggleELS(false)
 		self:toggleDI(false)
 		self:resetIndicator()
+		self.m_HasBeenUsed = 0
 
 		if self.despawned then
 			self.despawned = false
@@ -717,6 +833,15 @@ function Vehicle:respawnOnSpawnPosition()
 	end
 end
 
+function Vehicle:getRespawnHook()
+	return self.m_RespawnHook
+end
+
+function Vehicle:getDamageHook()
+	return self.m_DamageHook
+end
+
+
 function Vehicle:getTrunk()
   return self.m_Trunk or false
 end
@@ -737,6 +862,13 @@ function Vehicle:addMagnet()
 	setElementData(self, "Magnet", self.m_Magnet)
 end
 
+local magnetPlanes = {
+	[511] = true,
+	[513] = true,
+	[519] = true,
+	[593] = true
+}
+
 function Vehicle:magnetVehicleCheck(groundPosition)
 	if self.m_MagnetActivated then
 		local groundDiff = self.m_GrabbedVehicle.position.z - groundPosition
@@ -751,7 +883,7 @@ function Vehicle:magnetVehicleCheck(groundPosition)
 				client:getCompany():checkLeviathanTowing(client, self.m_GrabbedVehicle)
 			end
 		else
-			client:sendError("Das Fahrzeug kann nur auf dem Boden abgestellt werden!")
+			client:sendError(_("Das Fahrzeug kann nur auf dem Boden abgestellt werden!", client))
 		end
 	else
 		if not self.m_Magnet and not isElement(self.m_Magnet) then
@@ -762,11 +894,11 @@ function Vehicle:magnetVehicleCheck(groundPosition)
 		local vehicles = getElementsWithinColShape(colShape, "vehicle")
 		colShape:destroy()
 
-		for _, vehicle in pairs(vehicles) do
+		for __, vehicle in pairs(vehicles) do
 			if vehicle ~= self then
-				if vehicle:isRespawnAllowed() and (vehicle:getVehicleType() == VehicleType.Automobile or vehicle:getVehicleType() == VehicleType.Bike) then
+				if vehicle:isRespawnAllowed() and (vehicle:getVehicleType() == VehicleType.Automobile or vehicle:getVehicleType() == VehicleType.Bike or vehicle:getVehicleType() == VehicleType.Helicopter or magnetPlanes[vehicle:getModel()]) then
 					if vehicle.m_HandBrake and (client:getCompany() and (client:getCompany():getId() ~= CompanyStaticId.MECHANIC or not client:isCompanyDuty())) then
-						client:sendWarning("Bitte löse erst die Handbremse von diesem Fahrzeug!")
+						client:sendWarning(_("Bitte löse erst die Handbremse von diesem Fahrzeug!", client))
 					else
 						if table.size(getVehicleOccupants(vehicle)) == 0 then
 							self.m_MagnetActivated = true
@@ -775,7 +907,7 @@ function Vehicle:magnetVehicleCheck(groundPosition)
 							setElementData(self, "MagnetGrabbedVehicle", vehicle)
 							break
 						else
-							client:sendWarning("Das Fahrzeug ist nicht leer!")
+							client:sendWarning(_("Das Fahrzeug ist nicht leer!", client))
 						end
 					end
 				end
@@ -828,7 +960,7 @@ function Vehicle:getTuningList(player)
 	if self.m_Tunings and self.m_Tunings.getList then
 		player:triggerEvent("vehicleReceiveTuningList", self, self.m_Tunings:getList())
 	else
-		player:triggerEvent("vehicleReceiveTuningList", self, {"(keine)"}, {"(keine)"})
+		player:triggerEvent("vehicleReceiveTuningList", self, {"(keine)"}, {"(keine)"}, {"(keine)"})
 	end
 end
 
@@ -855,7 +987,8 @@ end
 
 function Vehicle:setDriver(player)
 	if not self:getEngineState() then return end
-
+	if not self:isPermanent() then return end
+	
 	if self.m_LastDrivers[#self.m_LastDrivers] == player:getName() then
 		return
 	end
@@ -872,6 +1005,8 @@ end
 
 function Vehicle:getFaction() end
 
+function Vehicle:getCompany() end
+
 function Vehicle:updateTemplate()
 	if self.m_Template then
 		self.m_TemplateName = TuningTemplateManager:getSingleton():getNameFromId( self.m_Template ) or ""
@@ -885,6 +1020,23 @@ end
 
 function Vehicle:getTemplateName()
 	return self.m_TemplateName
+end
+
+function Vehicle:setInfrared(value)
+	self.m_HasInfrared = value
+	self:setData("isInfraredVehicle", value, true)
+end
+
+function Vehicle:hasInfrared() return self.m_HasInfrared end
+
+function Vehicle:getAttachedObjectsCount()
+	local count = 0
+	for i, v in pairs(getAttachedElements(self)) do
+		if v.model ~= 1921 then -- if not ELS light object
+			count = count + 1
+		end
+	end
+	return count
 end
 
 Vehicle.isPermanent = pure_virtual

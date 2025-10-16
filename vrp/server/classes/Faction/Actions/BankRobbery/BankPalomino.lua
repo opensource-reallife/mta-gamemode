@@ -1,8 +1,8 @@
 -- ****************************************************************************
 -- *
 -- *  PROJECT:     vRoleplay
--- *  FILE:        server/classes/BankRobbery.lua
--- *  PURPOSE:     Bank robbery class
+-- *  FILE:        server/classes/Faction/Actions/BankRobbery/BankPalomino.lua
+-- *  PURPOSE:     Bank Palomino class
 -- *
 -- ****************************************************************************
 
@@ -14,13 +14,15 @@ BankPalomino.Map = {}
 local BOMB_TIME = 20*1000
 
 function BankPalomino:constructor()
+	self.ms_VaultOpenTime = 3*(60*1000)
+	self.ms_BankRobGeneralTime = ACTION_TIME
+
 	self.ms_FinishMarker = {
 		Vector3(2766.84, 84.98, 18.39),
 		Vector3(2561.50, -949.89, 81.77),
 		Vector3(1935.24, 169.98, 36.28)
 	}
 	self.ms_StateFinishMarker = Vector3(2278.23, -82.70, 25.53)
-	self.ms_MinBankrobStateMembers = DEBUG and 0 or 3
 
 	self.ms_BagSpawns = {
 		Vector3(2307.25, 17.90, 26),
@@ -44,12 +46,15 @@ function BankPalomino:constructor()
 	}
 
 	self.ms_MoneyPerBag = 3000
-	self.ms_VaultOpenTime = 3*(60*1000)
-	self.ms_BankRobGeneralTime = 60*1000*12
 
 	self:build()
 
+	self.m_BlipPC = Blip:new("Bank.png", 2310.46, -13.25, root, 400)
+	self.m_BlipPC:setOptionalColor({27, 125, 47})
+	self.m_BlipPC:setDisplayText("Bank")
+
 	self.m_Name = "Bank"
+	self.m_RobName = "Bankraub"
 	self.m_MarkedPosition = {2318.43, 11.37, 26.48} -- the marked position where action blips and so on will be located
 end
 
@@ -82,9 +87,10 @@ function BankPalomino:build()
 	self:createBombableBricks()
 
 	self.m_HelpColShape = createColSphere(2301.44, -15.98, 26.48, 5)
-	self.m_HelpColFunc = bind(self.onHelpColHit, self)
-	addEventHandler("onColShapeHit", self.m_HelpColShape, self.m_HelpColFunc)
-	addEventHandler("onColShapeLeave", self.m_HelpColShape, self.m_HelpColFunc)
+	self.m_HelpColHitFunc = bind(self.onHelpColHit, self)
+	self.m_HelpColLeaveFunc = bind(self.onHelpColLeave, self)
+	addEventHandler("onColShapeHit", self.m_HelpColShape, self.m_HelpColHitFunc)
+	addEventHandler("onColShapeLeave", self.m_HelpColShape, self.m_HelpColLeaveFunc)
 
 	addEventHandler("onColShapeHit", self.m_SecurityRoomShape, function(hitElement, dim)
 		if hitElement:getType() == "player" and dim then
@@ -100,9 +106,12 @@ function BankPalomino:build()
 end
 
 function BankPalomino:startRob(player)
-
 	self:createTruck(2337.54, 16.67, 26.61, 0) --this first ad startRobGeneral unfreezes the truck
 	self:startRobGeneral(player)
+
+	if self.m_BlipPC then
+		self.m_BlipPC:setOptionalColor({122, 22, 22})
+	end
 
 	PlayerManager:getSingleton():breakingNews("Eine derzeit unbekannte Fraktion überfällt die Palomino-Creek Bank!")
 	Discord:getSingleton():outputBreakingNews("Eine derzeit unbekannte Fraktion überfällt die Palomino-Creek Bank!")
@@ -128,7 +137,18 @@ function BankPalomino:spawnGuards()
 				self.m_GuardPed1:startShooting(hitElement)
 			end
 		end
+	end)
 
+	self.m_GuardPed2 = GuardActor:new(Vector3(2309.21, 14.94, 26.53))
+	self.m_GuardPed2:setRotation(0, 0, 180, "default", true)
+	self.m_GuardPed2:setFrozen(true)
+	self.m_GuardPed2.Colshape = createColCuboid(2314.4 ,1.15 ,25 ,2.5 ,21.45 , 4)
+	addEventHandler("onColShapeHit", self.m_GuardPed2.Colshape, function(hitElement, dim)
+		if dim and hitElement.type == "player" then
+			if hitElement:getFaction() and hitElement:getFaction():isEvilFaction() then
+				self.m_GuardPed2:startShooting(hitElement)
+			end
+		end
 	end)
 end
 
@@ -248,8 +268,13 @@ function BankPalomino:BombArea_Place(bombArea, player)
 
 	if not ActionsCheck:getSingleton():isActionAllowed(player) then	return false end
 
-	if not DEBUG and FactionState:getSingleton():countPlayers() < 3 then
-		player:sendError(_("Um den Überfall starten zu können müssen mindestens 3 Staats-Fraktionisten online sein!", player))
+	if not PermissionsManager:getSingleton():isPlayerAllowedToStart(player, "faction", "BankRobbery") then
+		player:sendError(_("Du bist nicht berechtigt einen Banküberfall zu starten!", player))
+		return false
+	end
+	
+	if FactionState:getSingleton():countPlayers(true, false) < BANKROB_MIN_MEMBERS then
+		player:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!", player, BANKROB_MIN_MEMBERS))
 		return false
 	end
 

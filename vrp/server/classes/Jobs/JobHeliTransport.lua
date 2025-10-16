@@ -58,7 +58,7 @@ function JobHeliTransport:onVehicleSpawn(player,vehicleModel,vehicle)
 	addEventHandler("onVehicleExplode", vehicle, bind(self.onCargoBobExplode, self))
 	addEventHandler("onVehicleStartEnter",vehicle, function(vehPlayer, seat)
 		if vehPlayer ~= player then
-			vehPlayer:sendError("Du kannst nicht in dieses Job-Fahrzeug!")
+			vehPlayer:sendError(_("Du kannst nicht in dieses Job-Fahrzeug!", vehPlayer))
 			cancelEvent()
 		end
 	end)
@@ -89,13 +89,15 @@ function JobHeliTransport:onPickupLoad()
 		self.m_VehData[vehicle].load = true
 		self.m_PickupPos = vehicle:getPosition()
 		if client:getData("JobHeliTransport:Money") and client:getData("JobHeliTransport:Money") > 0 then
-			client:sendInfo(_("Dein Helikopter wurde wieder neu beladen.", client)) --TODO
+			client:sendInfo(_("Dein Helikopter wurde wieder neu beladen.", client))
 			local duration = getRealTime().timestamp - client.m_LastJobAction
 			client.m_LastJobAction = getRealTime().timestamp
-			StatisticsLogger:getSingleton():addJobLog(client, "jobHeliTransport", duration, client:getData("JobHeliTransport:Money"), nil, nil, math.floor(10*JOB_EXTRA_POINT_FACTOR))
-			self.m_BankAccount:transferMoney({client, true}, client:getData("JobHeliTransport:Money"), "Helitransport-Job", "Job", "HeliTransport")
+			local money = client:getData("JobHeliTransport:Money") * JOB_PAY_MULTIPLICATOR * self:getMultiplicator()
+			local points = math.round(money / 50 * JOB_EXTRA_POINT_FACTOR)
+			StatisticsLogger:getSingleton():addJobLog(client, "jobHeliTransport", duration, money, nil, nil, points)
+			self.m_BankAccount:transferMoney({client, true}, money, "Helitransport-Job", "Job", "HeliTransport")
 			client:setData("JobHeliTransport:Money", 0)
-			client:givePoints(math.floor(10*JOB_EXTRA_POINT_FACTOR))
+			client:givePoints(points)
 		else
 			client:sendInfo(_("Ladung aufgenommen! Liefere Sie nun ab!", client))
 		end
@@ -111,7 +113,7 @@ function JobHeliTransport:onDelivery()
 		self.m_VehData[vehicle].package:setAlpha(0)
 		self.m_VehData[vehicle].load = false
 		local distance = getDistanceBetweenPoints3D(self.m_PickupPos, vehicle:getPosition())
-		client:setData("JobHeliTransport:Money", math.floor(distance/(3.489/2))) --// Default distance/8
+		client:setData("JobHeliTransport:Money", math.floor((distance / 60) * 3.55))
 		client:sendInfo(_("Du hast die Ladung abgegeben! Flieg zurück und hole dir dein Geld ab!", client))
 		client:triggerEvent("jobHeliTransportCreateMarker", "pickup")
 		vehicle:setFuel(100)

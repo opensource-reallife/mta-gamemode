@@ -41,6 +41,9 @@ function VendingMachine.Event_vendingRob()
 	end
 
 	if not vendingMachine then return end
+	if client:getFaction() and client:getFaction():isStateFaction() and client:isFactionDuty() then
+		return client:sendError(_("Du kannst im Dienst keinen Automaten ausrauben.", client))
+	end
 	if not client.vehicle then
 		if getTickCount() - vendingMachine.m_LastRobTime < 5*60*1000 then
 			client:sendMessage(_("Dieser Automat kann zurzeit nicht ausgeraubt werden!", client), 255, 0, 0)
@@ -50,11 +53,11 @@ function VendingMachine.Event_vendingRob()
 		-- Play animation
 		client:setAnimation("BOMBER", "BOM_Plant", -1, false, true, false, false)
 
-		-- Give wage
-		client:giveWanteds(1)
-		client:sendMessage("Verbrechen begangen: Automaten-Raub, 1 Wanted", 255, 255, 0)
-		BankServer.get("gameplay.vending_machine"):transferMoney(client, math.random(10, 100), "Automaten-Raub", "Gameplay", "VendingMachineRob")
-		client:takeKarma(1)
+		-- Give wage and wanteds
+		local wanteds = WANTED_AMOUNT_VENDINGMACHINE
+		client:giveWanteds(wanteds)
+		client:sendMessage(_("Verbrechen begangen: %s, %d Wanted/s", client, _("Automaten-Raub", client), wanteds), 255, 255, 0)
+		BankServer.get("gameplay.vending_machine"):transferMoney(client, math.random(10, 100), _("Automaten-Raub", client), "Gameplay", "VendingMachineRob")
 
 		-- give Achievement
 		client:giveAchievement(19)
@@ -68,11 +71,12 @@ end
 
 function VendingMachine.Event_vendingBuySnack()
 	if not client.vehicle then
-		if client:getMoney() >= 20 then
+		if client:getMoney() >= 5 then
 			client:setAnimation("VENDING", "vend_eat1_P", -1, false, true, false, false)
-			client:setHealth(client:getHealth() + 10)
-			StatisticsLogger:getSingleton():addHealLog(client, 10, "VendingMachine")
-			client:transferMoney(BankServer.get("gameplay.vending_machine"), 20, "Automat", "Gameplay", "VendingMachine")
+			client:setHunger(client:getHunger() + 5)
+			--StatisticsLogger:getSingleton():addHealLog(client, 10, "VendingMachine")
+			client:checkLastDamaged() 
+			client:transferMoney(BankServer.get("gameplay.vending_machine"), 5, "Automat", "Gameplay", "VendingMachine")
 		else
 			client:sendError(_("Du hast nicht genügend Geld!", client))
 		end

@@ -12,12 +12,12 @@ function CluckinBell:constructor(id, name, position, rotation, typeData, dimensi
 
 	self.m_Type = "CluckinBell"
 	self.m_Menues = {
-		["Small"] = {["Name"] = "Kleines Menü", ["Price"] = 30, ["Health"] = 30},
-		["Middle"] = {["Name"] = "Mittleres Menü", ["Price"] = 50, ["Health"] = 50},
-		["Big"] = {["Name"] = "Großes Menü", ["Price"] = 80, ["Health"] = 80},
-		["Healthy"] = {["Name"] = "Vegetarier Menü", ["Price"] = 50, ["Health"] = 50}
+		["Small"] = {["Name"] = "Kleines Menü", ["Price"] = 30, ["Hunger"] = 30, ["Health"] = 30},
+		["Middle"] = {["Name"] = "Mittleres Menü", ["Price"] = 50, ["Hunger"] = 50, ["Health"] = 50},
+		["Big"] = {["Name"] = "Großes Menü", ["Price"] = 80, ["Hunger"] = 80, ["Health"] = 80},
+		["Healthy"] = {["Name"] = "Vegetarier Menü", ["Price"] = 50, ["Hunger"] = 50, ["Health"] = 50}
 	}
-	self.m_Items = {}
+	self.m_Items = {["Frittiertes Hähnchen"] = 55, ["Pommes"] = 5}
 
 	addEventHandler("onMarkerHit", self.m_Marker, bind(self.onFoodMarkerHit, self))
 

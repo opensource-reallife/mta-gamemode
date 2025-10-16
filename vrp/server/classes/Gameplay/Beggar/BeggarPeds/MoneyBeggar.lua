@@ -9,8 +9,7 @@ function MoneyBeggar:giveBeggarMoney(player, money)
 		if self.m_Robber == player:getId() then return self:sendMessage(player, BeggarPhraseTypes.NoTrust) end
 		if player:getMoney() >= money then
 			-- give wage
-			local karma = math.min(money, 5)
-			player:giveCombinedReward("Bettler-Geschenk", {
+			player:giveCombinedReward(_("Bettler-Geschenk", player), {
 				money = {
 					mode = "take",
 					bank = false,
@@ -19,10 +18,13 @@ function MoneyBeggar:giveBeggarMoney(player, money)
 					category = "Gameplay",
 					subcategory = "Beggar"
 				},
-				karma = karma,
 				points = 1,
 			})
-			player:meChat(true, ("übergibt %s %s"):format(self.m_Name, money == 1 and "einen Schein" or "ein paar Scheine"))
+			if money == 1 then
+				player:meChat(true, "übergibt %s einen Schein!", self.m_Name, false)
+			else
+				player:meChat(true, "übergibt %s ein paar Scheine!", self.m_Name, false)
+			end
 			self:sendMessage(player, BeggarPhraseTypes.Thanks)
 
 			-- give Achievement
@@ -46,5 +48,3 @@ function MoneyBeggar:giveBeggarMoney(player, money)
 		self:sendMessage(player, BeggarPhraseTypes.InVehicle)
 	end
 end
-
-

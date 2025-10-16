@@ -10,15 +10,28 @@ function SanNews:constructor()
 	self.m_SanNewsMessageEnabled = false
 	self.m_RunningEvent = false
 
-	local safe = createObject(2332, 732.40, -1341.90, 13, 0, 0, 90)
+	local safe = createObject(2332, 294.43, -22.6, 1031.7)
+	safe:setInterior(10)
  	self:setSafe(safe)
 
 	local id = self:getId()
-	local blip = Blip:new("House.png", 732.40, -1339.90, {company = id}, 400, {companyColors[id].r, companyColors[id].g, companyColors[id].b})
+	local blip = Blip:new("House.png", 1219.20, -1812.31, {company = id}, 400, {companyColors[id].r, companyColors[id].g, companyColors[id].b})
 	blip:setDisplayText(self:getName(), BLIP_CATEGORY.Company)
 
-   	Gate:new(968, Vector3(781.40, -1384.60, 13.50), Vector3(0, 90, 180), Vector3(781.40, -1384.60, 13.50), Vector3(0, 5, 180), false).onGateHit = bind(self.onBarrierHit, self)
-	Gate:new(968, Vector3(781.30, -1330.30, 13.40), Vector3(0, 90, 180), Vector3(781.30, -1330.30, 13.40), Vector3(0, 5, 180), false).onGateHit = bind(self.onBarrierHit, self)
+	local elevator = Elevator:new()
+	elevator:addStation("Heliport", Vector3(1242, -1777.0996, 33.7), 270)
+	elevator:addStation("Erdgeschoss", Vector3(296.49, -36.23, 1032.20), 90, 10)
+
+	local gateLeft = Gate:new(988, Vector3(1211, -1841.9004, 13.4), Vector3(0, 0, 0), Vector3(1206, -1841.9004, 13.4))
+	gateLeft.onGateHit = bind(self.onBarrierHit, self)
+	gateLeft:addGate(988, Vector3(1216.5, -1841.9004, 13.4), Vector3(0, 0, 0), Vector3(1221.9004, -1841.9004, 13.4))
+
+	local gateRight = Gate:new(988, Vector3(1267.4, -1841.9004, 13.4), Vector3(0, 0, 0), Vector3(1262, -1841.9004, 13.4))
+	gateRight.onGateHit = bind(self.onBarrierHit, self)
+	gateRight:addGate(988, Vector3(1272.9004, -1841.9004, 13.4), Vector3(0, 0, 0), Vector3(1277.9004, -1841.9004, 13.4))
+
+	InteriorEnterExit:new(Vector3(1211.15, -1749.66, 13.6), Vector3(267.03, -23.87, 1032.20), 220, 0, 10) -- main entrance
+	InteriorEnterExit:new(Vector3(1219.20, -1812.25, 16.59), Vector3(259.91, -74.91, 1037.35), 0, 180, 10) -- back entrance / parking lot
 
 	-- Register in Player Hooks
 	Player.getQuitHook():register(bind(self.Event_onPlayerQuit, self))
@@ -56,9 +69,11 @@ function SanNews:Event_news(player, cmd, ...)
 			outputChatBox(_("#FE8D14Reporter %s:#FEDD42 %s", player, player.name, text), root, 255, 200, 20, true)
 
     		local receivedPlayers = {}
-			for k, targetPlayer in ipairs(getElementsByType("player")) do
+			for k, targetPlayer in pairs(PlayerManager:getSingleton():getReadyPlayers()) do
 				if targetPlayer ~= player then
-					receivedPlayers[#receivedPlayers+1] = targetPlayer
+					if targetPlayer:isLoggedIn() then
+						receivedPlayers[#receivedPlayers+1] = targetPlayer
+					end
 				end
 			end
 			StatisticsLogger:getSingleton():addChatLog(player, "news", text, receivedPlayers)
@@ -145,9 +160,11 @@ function SanNews:Event_onPlayerChat(player, text, type)
 				end
 
 				local receivedPlayers = {}
-				for k, targetPlayer in ipairs(getElementsByType("player")) do
+				for k, targetPlayer in pairs(getElementsByType("player")) do
 					if targetPlayer ~= player then
-						receivedPlayers[#receivedPlayers+1] = targetPlayer
+						if targetPlayer:isLoggedIn() then
+							receivedPlayers[#receivedPlayers+1] = targetPlayer
+						end
 					end
 				end
 				StatisticsLogger:getSingleton():addChatLog(player, "interview", text, receivedPlayers)
@@ -168,28 +185,32 @@ function SanNews:Event_advertisement(senderIndex, text, color, duration)
 
 		local costs = (length*AD_COST_PER_CHAR + AD_COST + durationExtra) * colorMultiplicator
 
-		if client:getBankMoney() >= costs then
-			if self.m_NextAd < getRealTime().timestamp then
-				client:transferBankMoney({self, nil, true}, costs, "San News Ad", "Company", "Ads")
-				self.m_NextAd = getRealTime().timestamp + AD_DURATIONS[duration] + AD_BREAK_TIME
-				StatisticsLogger:getSingleton():addAdvert(client, text)
+		if (client:getPlayTime() / 60) >= AD_MIN_PLAYTIME then
+			if client:getBankMoney() >= costs then
+				if self.m_NextAd < getRealTime().timestamp then
+					client:transferBankMoney({self, nil, true}, costs, "San News Ad", "Company", "Ads")
+					self.m_NextAd = getRealTime().timestamp + AD_DURATIONS[duration] + AD_BREAK_TIME
+					StatisticsLogger:getSingleton():addAdvert(client, text)
 
-				local sender = {referenz = "player", name = client:getName()}
-				if senderIndex == 2 and client:getGroup() and client:getGroup():getName() then
-					sender = {referenz = "group", name = client:getGroup():getName(), number = client:getGroup():getPhoneNumber()}
-				elseif senderIndex == 3 and client:getFaction() and client:getFaction():getShortName() then
-					sender = {referenz = "faction", name = client:getFaction():getShortName(), number = client:getFaction():getPhoneNumber()}
-				elseif senderIndex == 4 and client:getCompany() and client:getCompany():getShortName() then
-					sender = {referenz = "company", name = client:getCompany():getShortName(), number = client:getCompany():getPhoneNumber()}
+					local sender = {referenz = "player", name = client:getName()}
+					if senderIndex == 2 and client:getGroup() and client:getGroup():getName() then
+						sender = {referenz = "group", name = client:getGroup():getName(), number = client:getGroup():getPhoneNumber()}
+					elseif senderIndex == 3 and client:getFaction() and client:getFaction():getShortName() then
+						sender = {referenz = "faction", name = client:getFaction():getShortName(), number = client:getFaction():getPhoneNumber()}
+					elseif senderIndex == 4 and client:getCompany() and client:getCompany():getShortName() then
+						sender = {referenz = "company", name = client:getCompany():getShortName(), number = client:getCompany():getPhoneNumber()}
+					end
+
+					triggerClientEvent("showAd", client, sender, text, color, duration)
+				else
+					local next = self.m_NextAd - getRealTime().timestamp
+					client:sendError(_("Die nächste Werbung kann erst in %d Sekunden gesendet werden!", client, next))
 				end
-
-				triggerClientEvent("showAd", client, sender, text, color, duration)
 			else
-				local next = self.m_NextAd - getRealTime().timestamp
-				client:sendError(_("Die nächste Werbung kann erst in %d Sekunden gesendet werden!", client, next))
+				client:sendError(_("Du hast zu wenig Geld dabei! (%s$)", client, costs))
 			end
 		else
-			client:sendError(_("Du hast zu wenig Geld dabei! (%s$)", client, costs))
+			client:sendError(_("Du benötigst dafür mindestens %d Spielstunden!", client, AD_MIN_PLAYTIME))
 		end
 	end
 end
@@ -205,20 +226,24 @@ function SanNews:Event_toggleMessage()
 end
 
 function SanNews:Event_startStreetrace()
-	if not EventManager:getSingleton():isEvent(self.m_RunningEvent) then
-		self.m_RunningEvent = EventManager:getSingleton():openRandomEvent()
-		self:addLog(client, "Events", "hat ein Straßenrennen gestartet!")
+	if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "startStreetRace") then
+		if not EventManager:getSingleton():isEvent(self.m_RunningEvent) then
+			self.m_RunningEvent = EventManager:getSingleton():openRandomEvent()
+			self:addLog(client, "Events", "hat ein Straßenrennen gestartet!")
+		else
+			client:sendError("Es läuft bereits ein Event!")
+		end
 	else
-		client:sendError("Es läuft bereits ein Event!")
+		client:sendError(_("Du bist nicht berechtigt ein Straßenrennen zu starten!", client))
 	end
 end
 
 function SanNews:Event_addBlip(posX, posY, text)
-	if self:getPlayerRank(client) == CompanyRank.Normal then
+	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "addBlip") then
 		client:sendError("Du bist nicht berechtigt Marker zu erstellen!")
 		return
 	end
-	
+
 	local id = self:getId()
 	local color = {companyColors[id].r, companyColors[id].g, companyColors[id].b}
 	local blipName = ("San News - %s"):format(text or "Marker")
@@ -231,6 +256,11 @@ function SanNews:Event_addBlip(posX, posY, text)
 end
 
 function SanNews:Event_deleteBlips()
+	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "addBlip") then
+		client:sendError("Du bist nicht berechtigt Marker zu entfernen!")
+		return
+	end
+
 	for _, blip in pairs(self.m_Blips) do
 		blip:delete()
 	end
@@ -243,6 +273,7 @@ function SanNews:Event_sanNewsMessage(player, cmd, ...)
 	if self.m_SanNewsMessageEnabled then
 		local argTable = {...}
 		local msg = table.concat(argTable, " ")
+		StatisticsLogger:getSingleton():addChatLog(player, "sannews", msg, self:getOnlinePlayers())
 		self:sendMessage(("#9cff00[SanNews-Nachricht] %s: #FFFFFF%s"):format(player:getName(), msg), 255, 255 ,0, true)
 		player:sendMessage(("#9cff00[Msg an Sannews]: #FFFFFF%s"):format(msg), 255, 255 ,0, true)
 	else

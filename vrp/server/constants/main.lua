@@ -28,7 +28,7 @@ CheatSeverity = {Low = 1, Middle = 2, High = 3, Brutal = 4}
 NOOB_SPAWN = Vector3(1481.07, -1764.84, 18.80)
 NOOB_SKIN = 78
 
-START_MONEY_BAR = 5000
+START_MONEY_BAR = 7500
 
 Interiors = {
     -- Name -- Dimension ("Allocate" a block of dimensions)
@@ -128,13 +128,13 @@ AFK_POSITIONS = {
 
 BAIL_PRICES =
 {
-	[1] = 1200,
-	[2] = 1600,
-	[3] = 2000,
-	[4] = 2400,
-	[5] = 3000,
-	[6] = 3500,
-	[7] = 4000,
+	[1] = 1000,
+	[2] = 2000,
+	[3] = 3000,
+	[4] = 4000,
+	[5] = 5000,
+	[6] = 6000,
+	[7] = 4000, --ab hier nicht angepasst (max 6 Wanteds)
 	[8] = 5000,
 	[9] = 7000,
 	[10] = 8000,
@@ -144,13 +144,13 @@ BAIL_PRICES =
 
 JAIL_COSTS =
 {
-	[1] = 500,
-	[2] = 1000,
-	[3] = 1500,
-	[4] = 2000,
-	[5] = 2500,
-	[6] = 3000,
-	[7] = 3500,
+	[1] = 250,
+	[2] = 500,
+	[3] = 750,
+	[4] = 1000,
+	[5] = 1250,
+	[6] = 1500,
+	[7] = 3500, --ab hier nicht angepasst (max 6 Wanteds)
 	[8] = 4000,
 	[9] = 5000,
 	[10] = 6000,
@@ -163,18 +163,20 @@ JAIL_TIME_PER_WANTED_ARREST = 3
 JAIL_TIME_PER_WANTED_KILL = 4
 JAIL_TIME_PER_WANTED_OFFLINE = 5
 
-CHAT_MSG_REPEAT_COOLDOWN = 500 -- cooldown for different chat messages
-CHAT_SAME_MSG_REPEAT_COOLDOWN = 3000 -- cooldown for same chat messages
-
 RESOURCES_TO_STOP = {
     "scoreboard";
     "helpmanager";
 }
 
 JobBoxerMoney = {
-    75,
-    185,
-    325,
-    450,
-    700
+    15,
+    30,
+	60,
+	90,
+	120
+}
+
+DRUG_NPC_SPAWNPOINTS = {
+	Vector3(1520.64, -1676.92, 13.55),
+	Vector3(1520.96, -1680.14, 13.55),
 }

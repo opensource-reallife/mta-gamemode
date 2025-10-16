@@ -21,83 +21,17 @@ Halloween.ms_Phrases = {
 
 Halloween.ms_Bonus = {
 	{
-		["Text"] = "Schutzweste",
-		["Image"] = "Bonus_Vest.png",
-		["Pumpkin"] = 1,
-		["Sweets"] = 25,
-		["Type"] = "Special"
-	},
-	{
-		["Text"] = "50 Weed",
-		["Image"] = "Bonus_Weed.png",
-		["Pumpkin"] = 5,
-		["Sweets"] = 75,
-		["Type"] = "Item",
-		["ItemName"] = "Weed",
-		["ItemAmount"] = 50
-	},
-	{
-		["Text"] = "5 Heroin",
-		["Image"] = "Bonus_Heroin.png",
-		["Pumpkin"] = 5,
-		["Sweets"] = 100,
-		["Type"] = "Item",
-		["ItemName"] = "Heroin",
-		["ItemAmount"] = 5
-	},
-	{
-		["Text"] = "Deagle (20 Schuss)",
-		["Image"] = "Bonus_Deagle.png",
-		["Pumpkin"] = 10,
-		["Sweets"] = 150,
-		["Type"] = "Weapon",
-		["WeaponId"] = 24,
-		["Ammo"] = 20
-	},
-	{
-		["Text"] = "Dildo",
-		["Image"] = "Bonus_Dildo.png",
-		["Pumpkin"] = 15,
-		["Sweets"] = 200,
-		["Type"] = "Weapon",
-		["WeaponId"] = 10,
-		["Ammo"] = 1
-	},
-	{
-		["Text"] = "5.000$",
-		["Image"] = "Bonus_Money.png",
-		["Pumpkin"] = 20,
-		["Sweets"] = 350,
-		["Type"] = "Money",
-		["MoneyAmount"] = 5000
-	},
-	{
-		["Text"] = "10.000$",
-		["Image"] = "Bonus_Money.png",
-		["Pumpkin"] = 30,
-		["Sweets"] = 500,
-		["Type"] = "Money",
-		["MoneyAmount"] = 10000
-	},
-	{
 		["Text"] = "Payday Bonus",
 		["Image"] = "Bonus_Payday.png",
-		["Pumpkin"] = 50,
-		["Sweets"] = 700,
-		["Type"] = "Special"
-	},
-	{
-		["Text"] = "Karma Reset",
-		["Image"] = "Bonus_Karma.png",
-		["Pumpkin"] = 70,
-		["Sweets"] = 1300,
+		["Pumpkin"] = 20,
+		["Sweets"] = 100,
 		["Type"] = "Special"
 	},
 	{
 		["Text"] = "Nick Change",
 		["Image"] = "Bonus_NickChange.png",
 		["Pumpkin"] = 75,
-		["Sweets"] = 1400,
+		["Sweets"] = 500,
 		["Type"] = "Special"
 	},
 	{
@@ -108,44 +42,85 @@ Halloween.ms_Bonus = {
 		["Type"] = "Special"
 	},
 	{
-		["Text"] = "75.000$",
+		["Text"] = "10.000$",
 		["Image"] = "Bonus_Money.png",
-		["Pumpkin"] = 125,
-		["Sweets"] = 2400,
+		["Pumpkin"] = 30,
+		["Sweets"] = 150,
 		["Type"] = "Money",
-		["MoneyAmount"] = 75000
+		["MoneyAmount"] = 10000
 	},
 	{
-		["Text"] = "30 Tage VIP",
-		["Image"] = "Bonus_VIP.png",
-		["Pumpkin"] = 150,
-		["Sweets"] = 3000,
-		["Type"] = "Special"
+		["Text"] = "50.000$",
+		["Image"] = "Bonus_Money.png",
+		["Pumpkin"] = 120,
+		["Sweets"] = 600,
+		["Type"] = "Money",
+		["MoneyAmount"] = 50000
 	},
 	{
 		["Text"] = "Romero",
 		["Image"] = "Bonus_Romero.png",
-		["Pumpkin"] = 240,
-		["Sweets"] = 4200,
+		["Pumpkin"] = 500,
+		["Sweets"] = 5000,
 		["Type"] = "Vehicle",
 		["VehicleModel"] = 442
 	},
 	{
-		["Text"] = "Bravura",
-		["Image"] = "Bonus_Bravura.png",
-		["Pumpkin"] = 250,
-		["Sweets"] = 4500,
+		["Text"] = "Bloodring Banger",
+		["Image"] = "Bonus_Bloodring.png",
+		["Pumpkin"] = 1000,
+		["Sweets"] = 7500,
 		["Type"] = "Vehicle",
-		["VehicleModel"] = 401
-	}
+		["VehicleModel"] = 504
+	},
 }
 
+local day = getRealTime().monthday
+local month = getRealTime().month+1
+
+--[[
+if (month == 10 and day == 31) or (month == 11 and day <= 6) then
+	Halloween.ms_PricePoolName = "Halloween2022-1"
+	Halloween.ms_PricePoolEnd = 1667754000
+	Halloween.ms_PricePoolPrices = {
+		{"money", 150000},
+		{"vehicle", 568},
+
+		{"money", 150000},
+		{"vehicle", 545},
+
+		{"money", 150000},
+		{"VIP", 1},
+	}
+elseif month == 11 and day <= 13 then
+	Halloween.ms_PricePoolName = "Halloween2022-2"
+	Halloween.ms_PricePoolEnd = 1668358800
+	Halloween.ms_PricePoolPrices = {
+		{"money", 150000},
+		{"vehicle", 459},
+
+		{"money", 150000},
+		{"vehicle", 547},
+
+		{"money", 150000},
+		{"VIP", 1},
+	}
+end
+]]
+
+Halloween.maxPumpkinsToDropPerPlayer = 3
+
 function Halloween:constructor()
+	self.m_MapParser = MapParser:new(":exo_maps/events/halloween.map")
+	self.m_MapParser:create()
+
+	HalloweenQuestManager:new()
 	DrawContest:new()
 	WareManager:new()
+	
 	self.m_TrickOrTreatPIDs = {}
 
-	self.m_EventSign = createObject(1903, 1484.80, -1710.70, 12.4, 0, 0, 90)
+	self.m_EventSign = createObject(1903, 1507.73, -1753.96, 12.59, 0, 0, 270)
 	self.m_EventSign:setDoubleSided(true)
 	self.m_BankServerAccount = BankServer.get("event.halloween")
 
@@ -167,12 +142,22 @@ function Halloween:constructor()
 	romero:setAlwaysDamageable(true)
 	romero.m_DisableToggleHandbrake = true
 
-
 	addRemoteEvents{"eventRequestBonusData", "eventBuyBonus"}
 	addEventHandler("eventRequestBonusData", root, bind(self.Event_requestBonusData, self))
 	addEventHandler("eventBuyBonus", root, bind(self.Event_buyBonus, self))
 
 	self:initHalloweenDM()
+
+	HalloweenEasterEggs:new()
+
+	if Halloween.ms_PricePoolName then
+		self.m_PricePool = PricePoolManager:getSingleton():getPricePool(Halloween.ms_PricePoolName, "Kürbis", Halloween.ms_PricePoolPrices, Halloween.ms_PricePoolEnd)
+		if self.m_PricePool then
+			PricePoolManager:getSingleton():createPed(self.m_PricePool, 185, Vector3(884.832, -1080.05, 24.297), 220)
+			self.m_PricePool:setDailyEntryBuyLimit(100)
+			self.m_PricePool:addBuyCallback(bind(self.onEntryBuy, self))
+		end
+	end
 end
 
 function Halloween:initTTPlayer(pId)
@@ -227,7 +212,7 @@ function Halloween:checkForTTScream(player, text)
 
 	self:initTTPlayer(pId)
 	local d = self.m_TrickOrTreatPIDs[pId]
-	if text:lower():gsub("ß", "ss"):find("süsses oder saures") then
+	if text:lower():gsub("ß", "ss"):find("süsses oder saures") or text:lower():find("trick or treat") then
 		outputDebug("chatted tt", player)
 		d.lastMessage = getTickCount()
 	end
@@ -237,7 +222,7 @@ function Halloween:finishTrickOrTreat(pId, houseId)
 	if self.m_TrickOrTreatPIDs[pId] and self.m_TrickOrTreatPIDs[pId].playersNearby then
 		local pCount = table.size(self.m_TrickOrTreatPIDs[pId].playersNearby)
 		local ownerId = HouseManager:getSingleton().m_Houses[houseId]:getOwner()
-		local ownerAtHome = (ownerId and ownerId ~= 0) and chance(75) or false -- chance that somebody is there to give sweets
+		local ownerAtHome = (ownerId and ownerId ~= 0) and chance(75) or chance(50) -- chance that somebody is there to give sweets
 		local rndPhrase = Halloween.ms_Phrases[pCount > 1 and "multi" or "single"]
 			rndPhrase = rndPhrase[math.random(1, #rndPhrase)]
 
@@ -256,8 +241,8 @@ function Halloween:finishTrickOrTreat(pId, houseId)
 									rnd = rnd + (chance(15) and 1 or 0)
 								end
 								pl:getInventory():giveItem("Suessigkeiten", rnd)
-								pl:sendSuccess(_("Du hast %d %s bekommen!", pl, rnd, rnd > 1 and "Süßigkeiten" or "Süßigkeit"))
-								pl:sendMessage(("Bewohner sagt: %s"):format(rndPhrase), 200, 200, 200)
+								pl:sendSuccess(_("Du hast %d %s bekommen!", pl, rnd, rnd > 1 and _("Süßigkeiten", pl) or _("Süßigkeit", pl)))
+								pl:sendMessage(_("Bewohner sagt: %s", pl, _(rndPhrase, pl)), 200, 200, 200)
 							else
 								pl:sendShortMessage(_("Es scheint niemand zu Hause zu sein...", pl))
 							end
@@ -328,11 +313,9 @@ function Halloween:Event_buyBonus(bonusId)
 				client:sendError(_("Du hast den Payday Bonus bereits aktiviert!", client))
 				return
 			end
-		elseif bonus["Text"] == "Karma Reset" then
-			client:setKarma(0)
 		elseif bonus["Text"] == "Nick Change" then
-			outputChatBox("Bitte schreib ein Ticket um den Nick-Change von einem Admin durchführen zu lassen.", client, 0, 255, 0)
-			outputChatBox("Schreib unbedingt dazu, dass du diesen durchs Halloween Event kostenlos erhälst!", client, 0, 255, 0)
+			outputChatBox(_("Bitte schreib ein Ticket um den Nick-Change von einem Admin durchführen zu lassen.", client), client, 0, 255, 0)
+			outputChatBox(_("Schreib unbedingt dazu, dass du diesen durchs Halloween Event kostenlos erhälst!", client), client, 0, 255, 0)
 		elseif bonus["Text"] == "Zombie Skin" then
 			client:getInventory():giveItem("Kleidung", 1, 310)
 			client:sendShortMessage("Der Zombie-Skin wurde in dein Inventar gelegt!")
@@ -344,8 +327,7 @@ function Halloween:Event_buyBonus(bonusId)
 	client:getInventory():removeItem("Suessigkeiten", bonus["Sweets"])
 	client:getInventory():removeItem("Kürbis", bonus["Pumpkin"])
 	client:sendSuccess(_("Du hast erfolgreich den Bonus %s für %d Kürbisse und %d Süßigkeiten gekauft!", client, bonus["Text"], bonus["Pumpkin"], bonus["Sweets"]))
-	StatisticsLogger:getSingleton():addHalloweenLog(client, bonus["Text"], bonus["Pumpkin"], bonus["Sweets"])
-
+	StatisticsLogger:getSingleton():addEventShopLog(client, bonus["Text"], bonus["Pumpkin"], bonus["Sweets"])
 end
 
 function Halloween:initHalloweenDM()
@@ -381,5 +363,31 @@ function Halloween:halloweenDmStart()
 	DeathmatchManager:getSingleton():createLobby("Halloween Event", "Server", "halloween", {}, "halloween", 10)
 	for index, playeritem in pairs(PlayerManager:getSingleton():getReadyPlayers()) do
 		playeritem:sendShortMessage(_("Die Halloween-Deathmatch Lobby wurde geöffnet!", playeritem), _("Halloween-DM", playeritem), {255, 130, 0})
+	end
+end
+
+function Halloween:onEntryBuy(playerId, amount)
+	local pumpkinsToDrop = 0
+
+	local minX, minY, minZ = 884.377, -1078.099, 28
+	local maxX, maxY, maxZ = 887.316, -1076.691, 32
+	local groundZ = 22
+
+	if amount < Halloween.maxPumpkinsToDropPerPlayer then
+		pumpkinsToDrop = amount
+	else
+		pumpkinsToDrop = Halloween.maxPumpkinsToDropPerPlayer
+	end
+
+	for i = 1, pumpkinsToDrop do
+		local x = math.random(minX*100, maxX*100)/100
+		local y = math.random(minY*100, maxY*100)/100
+		local z = math.random(minZ*100, maxZ*100)/100
+
+		local time = (1 + ((z - groundZ) / 10)) * 750
+
+		local pumpkin = createObject(1935, x, y, z)
+		pumpkin:move(time, x, y, groundZ, 0, 0, 0, "InQuad")
+		setTimer(destroyElement, time+50, 1, pumpkin)
 	end
 end

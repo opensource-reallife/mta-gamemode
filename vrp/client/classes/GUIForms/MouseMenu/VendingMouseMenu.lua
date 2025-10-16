@@ -13,13 +13,13 @@ function VendingMouseMenu:constructor(posX, posY, element)
 	local snackString = ""
 	if element:getModel() == 1775 then
 		self:addItem(_"Sprunk-Automat"):setTextColor(Color.Red)
-		snackString = "Getränk kaufen (20$)"
+		snackString = "Getränk kaufen (5$)"
 	elseif element:getModel() == 1776 then
 		self:addItem(_"Süßigkeiten-Automat"):setTextColor(Color.Red)
-		snackString = "Snack kaufen (20$)"
+		snackString = "Snack kaufen (5$)"
 	elseif element:getModel() == 1209 then
 		self:addItem(_"Soda-Automat"):setTextColor(Color.Red)
-		snackString = "Getränk kaufen (20$)"
+		snackString = "Getränk kaufen (5$)"
 	end
 
 	self:addItem(_(snackString),
@@ -33,7 +33,9 @@ function VendingMouseMenu:constructor(posX, posY, element)
 		function()
 			if self:getElement() then
 				QuestionBox:new(_("Möchtest du wirklich den Automaten ausrauben? Du erhälst dafür 1 Wanted!"),
-					function() 	triggerServerEvent("vendingRob", self:getElement()) end
+					function() 	triggerServerEvent("vendingRob", self:getElement()) end,
+					nil,
+					element
 				)
 			end
 		end

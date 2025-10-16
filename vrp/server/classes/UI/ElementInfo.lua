@@ -15,16 +15,12 @@ function ElementInfo:constructor(object, text, offset, icon, iconOnly)
 	self.m_Offset = offset
 	self.m_Icon = icon
 	self.m_IconOnly = iconOnly
-	for k, player in pairs(getElementsByType("player")) do
-		if player:isLoggedIn() then
-			player:triggerEvent("elementInfoCreate", object, text, offset, icon, iconOnly)
-		end
-	end
+	triggerClientEvent(PlayerManager:getSingleton():getReadyPlayers(), "elementInfoCreate", resourceRoot, object, text, offset, icon, iconOnly)
 end
 
 function ElementInfo:destructor()
-	ElementInfo.Map[self.m_Id] = nil
-	triggerClientEvent("elementInfoDestroy", resourceRoot, self.m_Id)
+	ElementInfo.Map[self.m_Object] = nil
+	triggerClientEvent("elementInfoDestroy", root, self.m_Object)
 end
 
 function ElementInfo.sendAllToClient(player)

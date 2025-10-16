@@ -8,11 +8,14 @@
 GroupProperty = inherit(Object)
 local PICKUP_SOLD = 1272
 local PICKUP_FOR_SALE = 1273
-function GroupProperty:constructor(Id, Name, OwnerId, Type, Price, Pickup, InteriorId, InteriorSpawn, Cam, Open, Message, depotId, elevatorData)
+function GroupProperty:constructor(Id, Name, OwnerId, Type, Price, Pickup, InteriorId, InteriorSpawn, Cam, Open, Message, depotId, elevatorData, SalePrice)
 
 	self.m_Id = Id
 	self.m_Name = Name
 	self.m_Price = Price
+	self.m_SalePrice = SalePrice
+	self.m_ForSale = (SalePrice and SalePrice > 0) and true or false
+	self.m_IsLockable = not self.m_ForSale
 	self.m_OwnerID = OwnerId
 	self.m_Message = Message
 	self.m_Owner = GroupManager:getSingleton():getFromId(OwnerId) or false
@@ -24,7 +27,7 @@ function GroupProperty:constructor(Id, Name, OwnerId, Type, Price, Pickup, Inter
 	self.m_Interior = InteriorId
 	self.m_InteriorPosition = InteriorSpawn
 	self.m_Dimension = Id+1000
-	self.m_CamMatrix = {tonumber(gettok(Cam,1,",")), tonumber(gettok(Cam,2,",")), tonumber(gettok(Cam,3,",")), Pickup.x, Pickup.y, Pickup.z}
+	self.m_CamMatrix = Cam and {tonumber(gettok(Cam,1,",")), tonumber(gettok(Cam,2,",")), tonumber(gettok(Cam,3,",")), Pickup.x, Pickup.y, Pickup.z} or false
 
 	self.m_Pickup = createPickup(Pickup, 3, PICKUP_FOR_SALE, 0)
 	if self.m_OwnerID ~= 0 then setPickupType(self.m_Pickup, 3, PICKUP_SOLD) end
@@ -58,7 +61,7 @@ function GroupProperty:constructor(Id, Name, OwnerId, Type, Price, Pickup, Inter
 	self.m_ExitMarker:setDimension(self.m_Dimension)
 	addEventHandler("onColShapeHit", colshape,
 		function(hitElement, matchingDimension)
-			if hitElement:getDimension() == source:getDimension() and hitElement:getInterior() == source:getInterior() then
+			if hitElement.type == "player" and hitElement:getDimension() == source:getDimension() and hitElement:getInterior() == source:getInterior() then
 				hitElement.m_LastGroupPropertyInside = true
 				hitElement.m_LastPropertyPickup = self
 				hitElement:triggerEvent("onTryEnterExit", source, "Ausgang")
@@ -94,7 +97,7 @@ function GroupProperty:destructor()
 			end
 		end
 	end
-	sql:queryExec("UPDATE ??_group_property SET open=?, DepotId=? WHERE Id=?", sql:getPrefix(), self.m_Open, self.m_DepotId, self.m_Id)
+	sql:queryExec("UPDATE ??_group_property SET open=?, DepotId=?, SalePrice = ? WHERE Id=?", sql:getPrefix(), self.m_Open, self.m_DepotId, tonumber(self.m_SalePrice) or 0, self.m_Id)
 	if self.m_Depot then
 		self.m_Depot:save()
 	else
@@ -117,8 +120,9 @@ function GroupProperty:Event_requestImmoPanel( client )
 	end
 	if rank then
 		if rank >= 1 then
-			client:triggerEvent("setPropGUIActive", self)
+			client:triggerEvent("setPropGUIActive", self, self:isForSale())
 			client:triggerEvent("sendGroupKeyList",self.m_Keys, self.m_ChangeKeyMap)
+			client:triggerEvent("isPropertyForSale", self:isForSale())
 		end
 	end
 end
@@ -135,10 +139,10 @@ function GroupProperty:giveKey( player, client )
 				table.remove(self.m_ChangeKeyMap,bCheck2)
 			end
 			self.m_ChangeKeyMap[#self.m_ChangeKeyMap+1] = {"add",id,self.m_Id,Account.getNameFromId(id)}
-			outputChatBox("Du hast einen Schlüssel für die Immobilie "..self.m_Name.." erhalten!",player,0,200,0)
+			outputChatBox(_("Du hast einen Schlüssel für die Immobilie %s erhalten!", player, self.m_Name),player,0,200,0)
 		end
 	else
-		client:sendError("Spieler hat bereits einen Schlüssel!")
+		client:sendError(_("Spieler hat bereits einen Schlüssel!", client))
 	end
 end
 
@@ -160,11 +164,11 @@ function GroupProperty:removeKey( player, client )
 				table.remove(self.m_ChangeKeyMap, bCheck)
 			end
 			self.m_ChangeKeyMap[#self.m_ChangeKeyMap+1] = {"remove",id,self.m_Id,Account.getNameFromId(id)}
-			outputChatBox("Dein Schlüssel für die Immobilie "..self.m_Name.." wurde abgenommen!",player,200,0,0)
+			outputChatBox(_("Dein Schlüssel für die Immobilie %s wurde abgenommen!", player, self.m_Name),player,200,0,0)
 			return
 		end
 	else
-		player:sendError("Spieler hat keinen Schlüssel!")
+		player:sendError(_("Spieler hat keinen Schlüssel!", player))
 	end
 end
 
@@ -226,7 +230,7 @@ function GroupProperty:openForPlayer(player)
 				setTimer( bind( GroupProperty.setInside,self),2500,1, player)
 			end
 		else
-			player:sendError("Tür kann nicht geöffnet werden!")
+			player:sendError(_("Tür kann nicht geöffnet werden!", player))
 		end
 	end
 end
@@ -283,7 +287,7 @@ function GroupProperty:closeForPlayer(player)
 				setTimer( bind( GroupProperty.setOutside,self),2500,1, player)
 			end
 		else
-			player:sendError("Tür kann nicht geöffnet werden!")
+			player:sendError(_("Tür kann nicht geöffnet werden!", player))
 		end
 	end
 end
@@ -297,6 +301,10 @@ end
 
 --// now the so-called EVENT-ZONE //
 function GroupProperty:Event_ChangeDoor( client )
+	if not self.m_IsLockable then
+		return client:sendError(_("Die Immobilie steht zum Verkauf und kann daher nicht abgeschlossen werden", client))
+	end
+
 	if self.m_Open == 1 then
 		self.m_Open = 0
 		self.m_Owner:sendMessage("["..self.m_Owner:getName().."] #ffffff"..client:getName().." schloss die Tür ab! ("..self.m_Name..")", 0,200,200,true)
@@ -337,7 +345,7 @@ function GroupProperty:Event_keyChange( player, action, client )
 				self:removeKey( player, client )
 			end
 			self:Event_RefreshPlayer( client )
-		else client:sendError("Spieler nicht gefunden!")
+		else client:sendError(_("Spieler nicht gefunden!", client))
 		end
 	end
 end
@@ -367,6 +375,50 @@ function GroupProperty:setOwner( id )
 		self.m_OwnerID = id
 	end
 	return self.m_Owner
+end
+
+function GroupProperty:setForSale(state, price)
+	if state == true then
+		self.m_ForSale = true
+		self.m_SalePrice = tonumber(price)
+		self.m_IsLockable = false
+		self.m_Open = 1
+	else
+		self.m_ForSale = false
+		self.m_SalePrice = 0
+		self.m_IsLockable = true
+	end
+end
+
+function GroupProperty:isForSale()
+	return self.m_ForSale
+end
+
+function GroupProperty:getSalePrice()
+	return self.m_SalePrice
+end
+
+function GroupProperty:sellToPlayer(sellerGroup, buyerPlayer)
+	if sellerGroup and sellerGroup:getId() == self.m_OwnerID then
+		local sellerId = sellerGroup:getId()
+		local salePrice = self.m_SalePrice
+		local price = self.m_Price * 0.75
+		local buyerGroup = buyerPlayer:getGroup()
+
+		sellerGroup:sendShortMessage(_("%s (%s) hat eure Immobilie für %s gekauft", buyerPlayer, buyerPlayer:getName(), buyerGroup:getName(), toMoneyString(salePrice)))
+		buyerGroup:sendShortMessage(_("%s hat die Immobilie %s für %s (Grundpreis + Ablöse) von %s gekauft", buyerPlayer, buyerPlayer:getName(), self:getName(), toMoneyString(salePrice + self.m_Price), sellerGroup:getName()))
+
+		GroupPropertyManager:getSingleton().m_BankAccountServer:transferMoney({"group", sellerId, true}, price, "Immobilien-Verkauf", "Group", "PropertySell")
+		buyerGroup:transferMoney({"group", sellerId, true}, salePrice, "Immobilien-Kauf (Kaufpreis)", "GroupProperty", "SellToGroup")
+		
+		GroupPropertyManager:getSingleton():clearProperty(self:getId(), self:getOwner():getId())
+		GroupPropertyManager:getSingleton():BuyProperty(self:getId(), buyerPlayer)
+
+		StatisticsLogger:getSingleton():GroupBuyImmoLog(sellerId, "sellToGroup", self.m_Id)
+		StatisticsLogger:getSingleton():GroupBuyImmoLog(buyerGroup:getId(), "buyFromGroup", self.m_Id)
+	else
+		return false
+	end
 end
 
 -- Short getters

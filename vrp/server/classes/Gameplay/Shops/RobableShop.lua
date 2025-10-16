@@ -9,10 +9,11 @@ RobableShop = inherit(Object)
 
 addRemoteEvents{"robableShopGiveBagFromCrash"}
 
-local ROBSHOP_TIME = 15*60*1000
-local ROBSHOP_PAUSE = 30*60 --in Sec
-local ROBSHOP_PAUSE_SAME_SHOP = 6*60*60 -- 6h in Sec
-local ROBSHOP_MAX_MONEY = 15000
+ROBSHOP_TIME = 15*60*1000
+ROBSHOP_PAUSE = 30*60 --in Sec
+ROBSHOP_PAUSE_SAME_SHOP = 6*60*60 -- 6h in Sec
+ROBSHOP_MIN_MONEY = 6500
+ROBSHOP_MAX_MONEY = 10000
 ROBSHOP_LAST_ROB = 0
 
 function RobableShop:constructor(shop, pedPosition, pedRotation, pedSkin, interiorId, dimension)
@@ -36,7 +37,7 @@ function RobableShop:spawnPed(shop, pedPosition, pedRotation, pedSkin, interiorI
 		self.m_Ped:destroy()
 	end
 
-	self.m_Ped = ShopNPC:new(pedSkin, pedPosition.x, pedPosition.y, pedPosition.z, pedRotation)
+	self.m_Ped = TargetableNPC:new(pedSkin, pedPosition.x, pedPosition.y, pedPosition.z, pedRotation)
 	self.m_Ped:setInterior(interiorId)
 	self.m_Ped:setDimension(dimension)
 	self.m_Ped.Shop = shop
@@ -48,42 +49,35 @@ function RobableShop:Ped_Targetted(ped, attacker)
 	if attacker:getGroup() then
 		if attacker:getGroup() == self.m_AttackerGroup then return false end -- prevent error toasts when the robbers of the current rob attack the shop ped
 		if attacker:getGroup():getType() == "Gang" then
-			if not (attacker:getFaction() and attacker:getFaction():isStateFaction()) then
-				if not attacker:isFactionDuty() then
-					if not timestampCoolDown(ROBSHOP_LAST_ROB, ROBSHOP_PAUSE) then
-						attacker:sendError(_("Der nächste Shop-Überfall ist am/um möglich: %s!", attacker, getOpticalTimestamp(ROBSHOP_LAST_ROB+ROBSHOP_PAUSE)))
-						return false
-					end
+			if attacker:isFactionDuty() or attacker:isCompanyDuty() then return attacker:sendError(_("Du bist im Dienst, du darfst keinen Überfall machen!", attacker)) end
+			if not timestampCoolDown(ROBSHOP_LAST_ROB, ROBSHOP_PAUSE) then
+				attacker:sendError(_("Der nächste Shop-Überfall ist am/um möglich: %s!", attacker, getOpticalTimestamp(ROBSHOP_LAST_ROB+ROBSHOP_PAUSE)))
+				return false
+			end
 
-					if not timestampCoolDown(self.m_LastRob, ROBSHOP_PAUSE_SAME_SHOP) then
-						attacker:sendError(_("Dieser Shop kann erst am/um überfallen werden: %s!", attacker, getOpticalTimestamp(ROBSHOP_LAST_ROB+ROBSHOP_PAUSE)))
-						return false
-					end
+			if not timestampCoolDown(self.m_LastRob, ROBSHOP_PAUSE_SAME_SHOP) then
+				attacker:sendError(_("Dieser Shop kann erst am/um überfallen werden: %s!", attacker, getOpticalTimestamp(ROBSHOP_LAST_ROB+ROBSHOP_PAUSE_SAME_SHOP)))
+				return false
+			end
 
-					if FactionState:getSingleton():countPlayers() < SHOPROB_MIN_MEMBERS then
-						attacker:sendError(_("Es müssen mindestens %d Staatsfraktionisten online sein!",attacker, SHOPROB_MIN_MEMBERS))
-						return false
-					end
-					local shop = ped.Shop
-					self.m_Shop = shop
-					if shop:getMoney() >= 250 then
-						self.m_LastRob = getRealTime().timestamp
-						ROBSHOP_LAST_ROB = getRealTime().timestamp
-						self:startRob(shop, attacker, ped)
-					else
-						attacker:sendError(_("Es ist nicht genug Geld zum ausrauben in der Shopkasse!", attacker))
-					end
-				else
-					attacker:sendError(_("Du bist im Dienst, du darfst keinen Überfall machen!", attacker))
-				end
+			if FactionState:getSingleton():countPlayers(true, false) < SHOPROB_MIN_MEMBERS then
+				attacker:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!",attacker, SHOPROB_MIN_MEMBERS))
+				return false
+			end
+			local shop = ped.Shop
+			self.m_Shop = shop
+			if shop:getMoney() >= 250 then
+				self.m_LastRob = getRealTime().timestamp
+				ROBSHOP_LAST_ROB = getRealTime().timestamp
+				self:startRob(shop, attacker, ped)
 			else
-				attacker:sendError(_("Du bist Polizist, du darfst keinen Überfall machen!", attacker))
+				attacker:sendError(_("Es ist nicht genug Geld zum ausrauben in der Shopkasse!", attacker))
 			end
 		else
-			attacker:sendError(_("Du bist Mitglied einer privaten Firma! Nur Gangs können überfallen!", attacker))
+			attacker:sendError(_("Deine Gruppe hat dafür den falschen Typ!", attacker))
 		end
 	else
-		attacker:sendError(_("Du bist kein Mitglied einer privaten Gang!", attacker))
+		attacker:sendError(_("Du bist kein Mitglied einer Gruppe!", attacker))
 	end
 end
 
@@ -138,11 +132,13 @@ function RobableShop:startRob(shop, attacker, ped)
 	addEventHandler("onMarkerHit", self.m_StateMarker, self.m_onDeliveryMarkerHit)
 	self.m_onCrash = bind(self.onCrash, self)
 	addEventHandler("robableShopGiveBagFromCrash", root, self.m_onCrash)
-	self.m_characterInitializedFunc = bind(self.characterInitialized, self)
-	addEventHandler("characterInitialized", root, self.m_characterInitializedFunc)
+	--self.m_characterInitializedFunc = bind(self.characterInitialized, self)
+	--addEventHandler("characterInitialized", root, self.m_characterInitializedFunc)
 
 	StatisticsLogger:getSingleton():addActionLog("Shop-Rob", "start", attacker, self.m_Gang, "group")
 
+	local robRndMoney = Randomizer:get(ROBSHOP_MIN_MONEY, ROBSHOP_MAX_MONEY)
+	
 	self:giveBag(attacker)
 	self.m_Ped.onTargetRefresh = function(count, startingPlayer)
 		outputDebug(count)
@@ -159,13 +155,12 @@ function RobableShop:startRob(shop, attacker, ped)
 			end
 			if attacker:getGroup() == self.m_AttackerGroup then
 				realCount = realCount + 1
-				if chance(2) then attacker:takeKarma(1, "Shop-Überfall") end
 			end
 		end
 		if hasAnyoneBag then
 			local rnd = math.random(40*realCount, 100*realCount)
 			local rob = self.m_Bag.Money + rnd
-			if shop:getMoney() >= rnd and rob <= ROBSHOP_MAX_MONEY then
+			if shop:getMoney() >= rnd and rob <= robRndMoney then
 				if not self.m_Bag.Money then self.m_Bag.Money = 0 end
 				self.m_Bag.Money = rob
 				self.m_Bag:setData("Money", self.m_Bag.Money, true)
@@ -201,7 +196,7 @@ function RobableShop:m_onExpire()
 		removeEventHandler("onPlayerDamage", player, self.m_onDamageFunc)
 		removeEventHandler("onPlayerVehicleEnter", player, self.m_onVehicleEnterFunc)
 		removeEventHandler("onPlayerVehicleExit", player, self.m_onVehicleExitFunc)
-		removeEventHandler("onPlayerQuit", player, self.m_onPlayerQuitFunc)
+		--removeEventHandler("onPlayerQuit", player, self.m_onPlayerQuitFunc)
 	end
 
 	local money = self.m_Bag.Money or 0
@@ -210,7 +205,7 @@ function RobableShop:m_onExpire()
 	self.m_BankAccountServer:transferMoney(self.m_Shop.m_BankAccount, stateMoney*2, "Shop Raub Sicherstellung 2/3", "Gameplay", "ShopRob")
 	self.m_Bag:destroy()
 
-	removeEventHandler("characterInitialized", root, self.m_characterInitializedFunc)
+	--removeEventHandler("characterInitialized", root, self.m_characterInitializedFunc)
 
 	delete(self.m_EvilBlip)
 	delete(self.m_StateBlip)
@@ -220,8 +215,8 @@ function RobableShop:m_onExpire()
 
 	self.m_Gang:removePlayerMarkers()
 	removeEventHandler("robableShopGiveBagFromCrash", root, self.m_onCrash)
-	self.m_Gang:sendMessage("[Shop-Rob] Die Zeit für den Rob ist ausgelaufen!",200,0,0,true)
-	FactionManager:getSingleton():getFromId(1):sendMessage("[Shop-Rob] #EEEEEEDie Zeit für den Rob ist ausgelaufen!",200,200,0,true)
+	self.m_Gang:sendMessage("[Shop-Rob] Die Zeit für den Rob ist abgelaufen!",200,0,0,true)
+	FactionManager:getSingleton():getFromId(1):sendMessage("[Shop-Rob] #EEEEEEDie Zeit für den Rob ist abgelaufen!",200,200,0,true)
 
 	if self.m_Attacker and isElement(self.m_Attacker) then
 		self.m_Attacker:triggerEvent("CountdownStop", "Shop Überfall")
@@ -259,8 +254,8 @@ function RobableShop:stopRob(player)
 	removeEventHandler("onPlayerDamage", player, self.m_onDamageFunc)
 	removeEventHandler("onPlayerVehicleEnter", player, self.m_onVehicleEnterFunc)
 	removeEventHandler("onPlayerVehicleExit", player, self.m_onVehicleExitFunc)
-	removeEventHandler("onPlayerQuit", player, self.m_onPlayerQuitFunc)
-	removeEventHandler("characterInitialized", root, self.m_characterInitializedFunc)
+	--removeEventHandler("onPlayerQuit", player, self.m_onPlayerQuitFunc)
+	--removeEventHandler("characterInitialized", root, self.m_characterInitializedFunc)
 
 	delete(self.m_EvilBlip)
 	delete(self.m_StateBlip)
@@ -292,13 +287,13 @@ function RobableShop:giveBag(player)
 	self.m_onWastedFunc = bind(self.onWasted, self)
 	self.m_onVehicleEnterFunc = bind(self.onVehicleEnter, self)
 	self.m_onVehicleExitFunc = bind(self.onVehicleExit, self)
-	self.m_onPlayerQuitFunc = bind(self.onPlayerQuit, self)
+	--self.m_onPlayerQuitFunc = bind(self.onPlayerQuit, self)
 
 	addEventHandler("onPlayerDamage", player, self.m_onDamageFunc)
 	addEventHandler("onPlayerWasted", player, self.m_onWastedFunc)
 	addEventHandler("onPlayerVehicleEnter", player, self.m_onVehicleEnterFunc)
 	addEventHandler("onPlayerVehicleExit", player, self.m_onVehicleExitFunc)
-	addEventHandler("onPlayerQuit", player, self.m_onPlayerQuitFunc)
+	--addEventHandler("onPlayerQuit", player, self.m_onPlayerQuitFunc)
 
 	player:sendShortMessage(_("Du hast die Beute erhalten!", player))
 
@@ -317,7 +312,7 @@ function RobableShop:onBagClick(button, state, player)
 			player:sendError(_("Du darfst die Beute nicht besitzen!", player))
 			end
 		else
-			player:sendError(_("Du bist zuweit von dem Geldsack entfernt!", player))
+			player:sendError(_("Du bist zu weit von dem Geldsack entfernt!", player))
 		end
 	end
 end
@@ -330,7 +325,7 @@ function RobableShop:removeBag(player, logout)
 	removeEventHandler("onPlayerDamage", player, self.m_onDamageFunc)
 	removeEventHandler("onPlayerVehicleEnter", player, self.m_onVehicleEnterFunc)
 	removeEventHandler("onPlayerVehicleExit", player, self.m_onVehicleExitFunc)
-	removeEventHandler("onPlayerQuit", player, self.m_onPlayerQuitFunc)
+	--removeEventHandler("onPlayerQuit", player, self.m_onPlayerQuitFunc)
 
 	player:sendShortMessage(_("Du hast die Beute verloren!", player))
 end
@@ -425,7 +420,6 @@ function RobableShop:onDeliveryMarkerHit(hitElement, dim)
 				hitElement:sendInfo(_("Beute sichergestellt! Der Shop, du und die Staatskasse haben je %d$ erhalten!", hitElement, stateMoney))
 				Discord:getSingleton():outputBreakingNews(string.format("Die Beute des %s Überfall wurde sichergestellt!", self.m_Shop:getName()))
 				PlayerManager:getSingleton():breakingNews("Die Beute des %s Überfall wurde sichergestellt!", self.m_Shop:getName())
-				FactionState:getSingleton():giveKarmaToOnlineMembers(5, "Shop Raub Beute sichergestellt!")
 			else
 				hitElement:sendError(_("Du darfst die Beute hier nicht abgeben!", hitElement))
 				return

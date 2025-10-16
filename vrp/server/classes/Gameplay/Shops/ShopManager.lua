@@ -8,14 +8,18 @@
 ShopManager = inherit(Singleton)
 ShopManager.Map = {}
 ShopManager.VehicleShopsMap = {}
+ShopManager.FCVehicleShopsMap = {}
+ShopManager.ShopVehicle = {}
 
 function ShopManager:constructor()
 	self:loadShops()
 	self:loadVehicleShops()
+	self:loadFCVehicleShops()
+
 	addRemoteEvents{"foodShopBuyMenu", "shopBuyItem", "shopBuyWeapon", "shopBuyClothes", "vehicleBuy", "shopOpenGUI", "shopBuy", "shopSell",
 	"barBuyDrink", "barShopMusicChange", "barShopMusicStop", "barShopStartStripper", "barShopStopStripper",
 	"shopOpenBankGUI", "shopBankDeposit", "shopBankWithdraw", "shopOnTattooSelection", "ammunationBuyItem", "onAmmunationAppOrder", 
-	"requestVehicleShops", "editVehicleShop"
+	"requestVehicleShops", "editVehicleShop", "onVehicleShopOpen","barRequestShopItems", "barRentStrippers", "buyFCVehicle"
 	}
 
 	addEventHandler("foodShopBuyMenu", root, bind(self.foodShopBuyMenu, self))
@@ -38,15 +42,24 @@ function ShopManager:constructor()
 
 	addEventHandler("barShopMusicChange", root, bind(self.barMusicChange, self))
 	addEventHandler("barShopMusicStop", root, bind(self.barMusicStop, self))
-	addEventHandler("barShopStartStripper", root, bind(self.barStartStripper, self))
+	--addEventHandler("barShopStartStripper", root, bind(self.barStartStripper, self))
 	addEventHandler("barShopStopStripper", root, bind(self.barStopStripper, self))
+	addEventHandler("barRequestShopItems", root, bind(self.barRequestShopItems, self))
+	addEventHandler("barRentStrippers", root, bind(self.barRentStripper, self))
 	addEventHandler("requestVehicleShops", root, bind(self.onRequestVehicleShops, self))
 	addEventHandler("editVehicleShop", root, bind(self.editShopVehicle, self))
+	addEventHandler("buyFCVehicle", root, bind(self.buyFCVehicle, self))
 	addEventHandler("shopOpenGUI", root, function(id)
 		if ShopManager.Map[id] then
 			ShopManager.Map[id]:onItemMarkerHit(client, true)
 		else
 			client:sendError(_("Invalid Shop ID!", client))
+		end
+	end)
+
+	addEventHandler("onVehicleShopOpen", root, function() 
+		if client and client.m_VehicleShop then 
+			client.m_VehicleShop:Event_onShopOpen(client)
 		end
 	end)
 end
@@ -83,7 +96,7 @@ end
 function ShopManager:loadVehicleShops()
 	local result = sql:queryFetch("SELECT * FROM ??_vehicle_shops", sql:getPrefix())
     for k, row in ipairs(result) do
-		local instance = VehicleShop:new(row.Id, row.Name, row.Marker, row.NPC, row.Spawn, row.Image, row.Owner, row.Price, row.Money)
+		local instance = VehicleShop:new(row.Id, row.Name, row.Marker, row.NPC, row.Spawn, row.Image, row.Owner, row.Price, row.Money, toboolean(row.RandomizeStock))
 		ShopManager.VehicleShopsMap[row.Id] = instance
 		if row.Blip then
 			instance:addBlip(row.Blip)
@@ -92,8 +105,18 @@ function ShopManager:loadVehicleShops()
 
 	local result = sql:queryFetch("SELECT * FROM ??_vehicle_shop_veh", sql:getPrefix())
     for k, row in ipairs(result) do
+		if getVehicleType(row.Model) == VehicleType.Automobile or getVehicleType(row.Model) == VehicleType.Bike then
+			table.insert(ShopManager.ShopVehicle, row.Model)
+		end
 		local shop = self:getFromId(row.ShopId, true)
-		shop:addVehicle(row.Id, row.Model, row.Name, row.Category, row.Price, row.Level, Vector3(row.X, row.Y, row.Z), Vector3(row.RX, row.RY, row.RZ), row.TemplateId)
+		shop:addVehicle(row.Id, row.Model, row.Name, row.Category, row.Price, row.Level, Vector3(row.X, row.Y, row.Z), Vector3(row.RX, row.RY, row.RZ), row.TemplateId, row.CurrentStock, row.MaxStock)
+	end
+end
+
+function ShopManager:loadFCVehicleShops()
+	local result = sql:queryFetch("SELECT * FROM ??_fc_vehicle_shops", sql:getPrefix())
+    for k, row in ipairs(result) do
+		ShopManager.FCVehicleShopsMap[row.Id] = FCVehicleShop:new(row.Id, row.Name, row.NPC, row.VehicleSpawn, row.AircraftSpawn, row.BoatSpawn, row.Factions, row.Companies)
 	end
 end
 
@@ -121,9 +144,11 @@ function ShopManager:foodShopBuyMenu(shopId, menu)
 	if shop.m_Menues[menu] then
 		if client:getMoney() >= shop.m_Menues[menu]["Price"] then
 			client:setHealth(client:getHealth() + shop.m_Menues[menu]["Health"])
+			client:setHunger(client:getHunger() + shop.m_Menues[menu]["Hunger"])
 			StatisticsLogger:getSingleton():addHealLog(client, shop.m_Menues[menu]["Health"], "Shop "..shop.m_Menues[menu]["Name"])
+			client:checkLastDamaged() 
 			client:transferMoney(shop.m_BankAccount, shop.m_Menues[menu]["Price"], "Essen", "Gameplay", "Food")
-			client:sendInfo(_("%s wünscht guten Appetit!", client, shop.m_Name))
+			client:sendInfo(_("%s wünscht guten Appetit!", client, _(shop.m_Name, client)))
 		else
 			client:sendError(_("Du hast nicht genug Geld dabei!", client))
 		end
@@ -156,7 +181,7 @@ function ShopManager:buyItem(shopId, item, amount)
 
 			if client:getInventory():giveItem(item, amount, value) then
 				client:transferMoney(shop.m_BankAccount, shop.m_Items[item]*amount, "Item-Einkauf", "Gameplay", "Item")
-				client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, shop.m_Name))
+				client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, _(shop.m_Name, client)))
 			else
 				--client:sendError(_("Die maximale Anzahl dieses Items beträgt %d!", client, client:getInventory():getMaxItemAmount(item)))
 				return
@@ -186,7 +211,7 @@ function ShopManager:buyClothes(shopId, typeId, clotheId)
 					client:addClothesPermanently(texture, model, typeId)
 				end
 				client:giveAchievement(23)
-				client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, shop.m_Name))
+				client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, _(shop.m_Name, client)))
 				if clothesData.Price > 0 then
 					client:transferMoney(shop.m_BankAccount, clothesData.Price, "Kleidungs-Kauf", "Gameplay", "Clothes")
 				end
@@ -221,7 +246,7 @@ function ShopManager:buyWeaponFromItemShop(shopId, weaponId)
 
 					StatisticsLogger:addAmmunationLog(client, "Shop", toJSON({[weaponId] = ammo}), price)
 					client:transferMoney(shop.m_BankAccount, price, "Shop-Einkauf", "Gameplay", "Weapon")
-					client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, shop.m_Name))
+					client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, _(shop.m_Name, client)))
 				else
 					client:sendError(_("Du hast bereits ein/e(n) %s auf dem Platz der/des %s!", client, WEAPON_NAMES[client:getWeapon(getSlotFromWeapon(weaponId))], WEAPON_NAMES[weaponId]))
 				end
@@ -242,6 +267,7 @@ function ShopManager:buyWeapon(shopId, itemType, weaponId, amount)
 	if client:isDead() then return false end
 	if not itemType then return end
 	if not weaponId then return end
+	if amount <= 0 then return end
 	local shop = self:getFromId(shopId)
 	if shop then
 		if MIN_WEAPON_LEVELS[weaponId] <= client:getWeaponLevel() then
@@ -267,7 +293,7 @@ function ShopManager:buyWeapon(shopId, itemType, weaponId, amount)
 				end
 
 				StatisticsLogger:addAmmunationLog(client, "Shop", toJSON({[weaponId] = weaponAmount}), price)
-				client:transferMoney(shop.m_BankAccount, price, "Ammunation-Einkauf", "Gameplay", "Weapon")
+				client:transferMoney(shop.m_BankAccount, price, "Ammu-Nation Einkauf", "Gameplay", "Weapon")
 			else
 				client:sendError(_("Du hast nicht genug Geld dabei!", client))
 				return
@@ -302,7 +328,7 @@ function ShopManager:barBuyDrink(shopId, item, amount)
 	if shop.m_Items[item] then
 		if client:getMoney() >= shop.m_Items[item]*amount then
 			client:transferMoney(shop.m_BankAccount, shop.m_Items[item]*amount, "Item-Einkauf", "Gameplay", "Item")
-			client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, shop.m_Name))
+			client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, _(shop.m_Name, client)))
 
 			local instance = ItemManager.Map[item]
 			if instance.use then
@@ -341,11 +367,21 @@ function ShopManager:barMusicStop(shopId)
 	end
 end
 
-function ShopManager:barStartStripper(shopId)
+--[[function ShopManager:barStartStripper(shopId)
 	if client:isDead() then return false end
 	local shop = self:getFromId(shopId)
 	if shop then
 		shop:startStripper(client)
+	else
+		client:sendError(_("Internal Error! Shop not found!", client))
+	end
+end]]
+
+function ShopManager:barRentStripper(shopId, minutes)
+	if client:isDead() then return false end
+	local shop = self:getFromId(shopId)
+	if shop then
+		shop:rentStrippers(client, minutes)
 	else
 		client:sendError(_("Internal Error! Shop not found!", client))
 	end
@@ -356,6 +392,15 @@ function ShopManager:barStopStripper(shopId)
 	local shop = self:getFromId(shopId)
 	if shop then
 		shop:stopStripper(client)
+	else
+		client:sendError(_("Internal Error! Shop not found!", client))
+	end
+end
+
+function ShopManager:barRequestShopItems(shopId)
+	local shop = self:getFromId(shopId)
+	if shop then
+		shop:requestBarShopItems(client)
 	else
 		client:sendError(_("Internal Error! Shop not found!", client))
 	end
@@ -402,8 +447,8 @@ function ShopManager:withdraw(amount, shopId)
 	if shop then
 		if not amount then return end
 
-		if not shop:isManageAllowed(client) then
-			client:sendError(_("Du bist nicht berechtigt Geld abzuheben!", client))
+		if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "withdrawBIZMoney") then
+			client:sendError(_("Du bist nicht berechtigt Geld von Shops abzuheben!", client))
 			-- Todo: Report possible cheat attempt
 			return
 		end
@@ -441,7 +486,7 @@ function ShopManager:getPlayerWeapons(player)
 end
 
 function ShopManager:onAmmunationAppOrder(weaponTable)
-	if client:getInterior() > 0 or client:getDimension() > 0 or client.m_JailTime > 0 then
+	if client:getInterior() > 0 or client:getDimension() > 0 or client.m_JailTime > 0 or client:getData("inAdminPrison") then
 		client:sendError(_("Du kannst hier nicht bestellen!",client))
 		return
 	end
@@ -463,10 +508,11 @@ function ShopManager:onAmmunationAppOrder(weaponTable)
 		end
 	end
 	if canBuyWeapons then
+		totalAmount = totalAmount * AMMUNATION_APP_MULTIPLICATOR
 		if client:getBankMoney() >= totalAmount then
 			if totalAmount > 0 then
 
-				client:transferBankMoney(BankServer.get("shop.ammunation"), totalAmount, "AmmuNation Bestellung", "Shop", "Ammunation")
+				client:transferBankMoney(BankServer.get("shop.ammunation"), totalAmount, "Ammu-Nation Bestellung", "Shop", "Ammunation")
 				StatisticsLogger:getSingleton():addAmmunationLog(client, "Bestellung", toJSON(weaponTable), totalAmount)
 				self:createOrder(client, weaponTable)
 			else
@@ -506,26 +552,26 @@ end
 
 function ShopManager:giveWeaponsFromOrder(player, weaponTable)
 	local playerWeapons = self:getPlayerWeapons(player)
-	outputChatBox("Du hast folgende Waffen und Magazine erhalten:",player,255,255,255)
+	outputChatBox(_("Du hast folgende Waffen und Magazine erhalten:", player),player,255,255,255)
 	for weaponID,v in pairs(weaponTable) do
 		for typ,amount in pairs(weaponTable[weaponID]) do
 			if amount > 0 then
 				local mag = getWeaponProperty(weaponID, "pro", "maximum_clip_ammo") or 1
 				if typ == "Waffe" then
 					if weaponID > 0 then
-						outputChatBox(amount.." "..WEAPON_NAMES[weaponID],player,255,125,0)
+						outputChatBox(_("%s %s", player, amount, WEAPON_NAMES[weaponID]),player,255,125,0)
 						giveWeapon(player, weaponID, mag)
 					else
-						outputChatBox("1 Schutzweste",player,255,125,0)
+						outputChatBox(_("1 Schutzweste", player),player,255,125,0)
 						player:setArmor(100)
 					end
 				elseif typ == "Munition" then
 					playerWeapons = self:getPlayerWeapons(player)
 					if playerWeapons[weaponID] then
 						giveWeapon(player,weaponID,amount*mag)
-						outputChatBox(amount.." "..WEAPON_NAMES[weaponID].." Magazin/e",player,255,125,0)
+						outputChatBox(_("%s %s Magazin/e", player, amount, WEAPON_NAMES[weaponID]),player,255,125,0)
 					else
-						outputChatBox("Du hast keine "..WEAPON_NAMES[weaponID].." für ein Magazin!",player,255,0,0)
+						outputChatBox(_("Du hast keine %s für ein Magazin!", player, WEAPON_NAMES[weaponID]),player,255,0,0)
 					end
 				end
 			end
@@ -540,4 +586,8 @@ function ShopManager:editShopVehicle( shop, model, index, property, value)
 	else 
 		client:sendError(_("Ein Fehler ist aufgetreten, Fahrzeug nicht gefunden!", client))
 	end
+end
+
+function ShopManager:buyFCVehicle(shop, vehicleId)
+	ShopManager.FCVehicleShopsMap[shop]:buyVehicle(client, vehicleId)
 end

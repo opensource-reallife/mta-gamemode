@@ -1,0 +1,5 @@
+VEHICLE_RENTAL_PRICE = 50
+
+VEHICLES_THAT_CAN_TOW_BIKES = {
+    [525] = true,
+}

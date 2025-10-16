@@ -1,4 +1,4 @@
-QuestSantaKill = inherit(Quest)
+QuestSantaKill = inherit(ChristmasQuest)
 
 QuestSantaKill.Positions = {
 	{2170.53, -110.03, 3.26},
@@ -17,13 +17,17 @@ QuestSantaKill.Positions = {
 	{-1354.82, 2048.56, 52.52},
 	{ -1273.64, 2723.18, 50.27,},
 	{-2912.11, 1040.22, 36.29},
+	--
+	{-1798.91, 1222.60, 23.98},
+	{-2705.08, -1624.43, 240.88},
+	{-477.62, 2196.58, 41.76},
 
 }
 
 function QuestSantaKill:constructor(id)
 	self.m_KilledSantas = { }
 
-	Quest.constructor(self, id)
+	ChristmasQuest.constructor(self, id)
 
 	self.m_KillSantaBind = bind(self.Event_onSantaKilled, self)
 
@@ -32,13 +36,13 @@ function QuestSantaKill:constructor(id)
 end
 
 function QuestSantaKill:destructor(id)
-	Quest.destructor(self)
+	ChristmasQuest.destructor(self)
 	removeEventHandler("onQuestSantaKilled", root, self.m_KillSantaBind)
 end
 
 function QuestSantaKill:addPlayer(player)
 	self.m_KilledSantas[getPlayerName(player)] = 0
-	Quest.addPlayer(self, player, QuestSantaKill.Positions)
+	ChristmasQuest.addPlayer(self, player, QuestSantaKill.Positions)
 end
 
 function QuestSantaKill:Event_onSantaKilled( )

@@ -10,19 +10,21 @@ BombArea.Map = {}
 local DEFAULT_TIMEOUT = 60*1000
 
 function BombArea:constructor(position, placeCallback, explodeCallback, timeout)
+    self.m_Id = #BombArea.Map + 1
     self.m_Position = position
     self.m_PlaceCallback = placeCallback
     self.m_ExplodeCallback = explodeCallback
     self.m_Timeout = timeout
     self.m_BombObject = false
 
-    BombArea.Map[#BombArea.Map + 1] = self
+    BombArea.Map[self.m_Id] = self
 end
 
 function BombArea:destructor()
     if self.m_Timer and isTimer(self.m_Timer) then
         killTimer(self.m_Timer)
     end
+    BombArea.Map[self.m_Id] = nil
 end
 
 function BombArea:explode()
@@ -33,7 +35,7 @@ function BombArea:explode()
     end
 
     if self.m_ExplodeCallback then
-        self.m_ExplodeCallback(self, self.m_Placer)
+        self.m_ExplodeCallback(self, self.m_Placer, self.m_PlacerFaction)
     end
 end
 
@@ -44,12 +46,12 @@ function BombArea:fire(player)
     end
 
     if not player:getFaction():isEvilFaction() then
-		player:sendError("Nur Spieler in bösen Fraktionen können Bomben legen!")
+		player:sendError(_("Nur Spieler in bösen Fraktionen können Bomben legen!", player))
 		return
 	end
 
 	if not player:getInventory():removeItem("Sprengstoff", 1) then
-		player:sendError("Du hast keine Bombe im Inventar!")
+		player:sendError(_("Du hast keine Bombe im Inventar!", player))
 		return
 	end
 
@@ -57,12 +59,13 @@ function BombArea:fire(player)
     self.m_BombObject:setInterior(player:getInterior())
     self.m_BombObject:setDimension(player:getDimension())
     self.m_Placer = player
+    self.m_PlacerFaction = player:getFaction()
     self.m_Timer = setTimer(bind(BombArea.explode, self), self.m_Timeout, 1)
 end
 
 function BombArea.findAt(targetPosition)
     for k, area in pairs(BombArea.Map) do
-        if (targetPosition - area.m_Position).length < 10 then
+        if (targetPosition - area.m_Position).length < 3 then
             return area
         end
     end

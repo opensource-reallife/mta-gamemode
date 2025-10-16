@@ -65,15 +65,15 @@ function QuestDrawGUI:constructor(id, name)
 	local slider = GUIGridSlider:new(13, 11, 5, 1, self.m_Window):setRange(10, 300)
 	slider.onUpdate = function(size) self.m_Skribble:setDrawSize(size) end
 
-	local save = GUIGridButton:new(18, 11, 3, 1, "Einsenden", self.m_Window)
+	local save = GUIGridButton:new(18, 11, 3, 1, _"Einsenden", self.m_Window)
 	save.onLeftClick = function()
 		if not dxGetStatus().AllowScreenUpload then
-			ErrorBox:new("Bitte aktiviere die Option \"Erlauben von Screenshots\" unter MTA -> Einstellungen um den Quest zu machen!")
+			ErrorBox:new(_"Bitte aktiviere die Option \"Erlauben von Screenshots\" unter MTA -> Einstellungen um die Quest zu machen!")
 			return
 		end
-		QuestionBox:new("Möchtest du das Bild wirklich einsenden? Warnung: Du kannst nur ein einziges Bild für das Event einsenden!", function()
+		QuestionBox:new(_"Möchtest du das Bild wirklich einsenden? Warnung: Du kannst nur ein einziges Bild für das Event einsenden!", function()
 			if not dxGetStatus().AllowScreenUpload then
-				ErrorBox:new("Bitte aktiviere die Option \"Erlauben von Screenshots\" unter MTA -> Einstellungen um den Quest zu machen!")
+				ErrorBox:new(_"Bitte aktiviere die Option \"Erlauben von Screenshots\" unter MTA -> Einstellungen um die Quest zu machen!")
 				return
 			end
 			self.m_Skribble:setDrawingEnabled(false)
@@ -81,7 +81,7 @@ function QuestDrawGUI:constructor(id, name)
 			self:showInfoText("Das Bild wird gespeichert...")
 
 			local options = {
-				["postData"] =  ("secret=%s&playerId=%d&contest=%s&img=%s"):format("8H041OAyGYk8wEpIa1Fv", localPlayer:getPrivateSync("Id"), name, base64Encode(self.m_Skribble:getImage("png"))),
+				["postData"] = ("secret=%s&playerId=%d&contest=%s&img=%s"):format(INGAME_WEB_SECRET, localPlayer:getPrivateSync("Id"), name, encodeString("base64", self.m_Skribble:getImage("png"))),
 			}
 
 			fetchRemote(("%s/drawContest/upload.php%s"):format(PICUPLOAD_PATH, DEBUG and "?debug=true" or ""), options,
@@ -268,4 +268,3 @@ function QuestDrawAdminGUI:resetOverview(labelText)
 	self.m_AcceptDrawBtn:setVisible(false)
 	self.m_DeclineDrawBtn:setVisible(false)
 end
-

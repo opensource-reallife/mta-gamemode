@@ -29,6 +29,12 @@ function StaticWorldItems:constructor()
 			["chance"] = 33,
 			["enabled"] = EVENT_HALLOWEEN
 		},
+		["Päckchen"] = {
+			["class"] = ItemManager:getSingleton():getInstance("Päckchen"),
+			["offsetZ"] = -0.55,
+			["chance"] = 33,
+			["enabled"] = EVENT_CHRISTMAS
+		},
 	}
 
 	self.m_TimedPulse = TimedPulse:new(1000*60*60)
@@ -66,12 +72,13 @@ function StaticWorldItems:addPosition(player, cmd, type, dontSave)
 
 	if not player:getOccupiedVehicle() then
         local pos = player:getPosition()
-        pos.z = pos.z + self.m_Items[type]["offsetZ"]
-		self.m_Items[type]["class"]:addObject(sql:lastInsertId(), pos)
+		pos.z = pos.z + self.m_Items[type]["offsetZ"]
+		local rot = player:getRotation()
+		self.m_Items[type]["class"]:addObject(sql:lastInsertId(), pos, rot+Vector3(0, 0, 180), player:getInterior(), player:getDimension()) 
 		player:sendInfo(_("%s hinzugefügt!", player, type))
 
 		if dontSave then return end
-		sql:queryExec("INSERT INTO ??_word_objects(Typ, PosX, PosY, PosZ, ZoneName, Admin, Date) VALUES(?, ?, ?, ?, ?, ?, NOW());", sql:getPrefix(), type, pos.x, pos.y, pos.z, getZoneName(pos).."/"..getZoneName(pos, true), player:getId())
+		sql:queryExec("INSERT INTO ??_static_world_items(Typ, PosX, PosY, PosZ, RotationZ, Interior, Dimension, ZoneName, Admin, Date) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, NOW());", sql:getPrefix(), type, pos.x, pos.y, pos.z, rot.z, player:getInterior(), player:getDimension(), getZoneName(pos).."/"..getZoneName(pos, true), player:getId())
     else
         player:sendError(_("Du darfst in keinem Fahrzeug sitzen!", player))
     end
@@ -91,9 +98,9 @@ function StaticWorldItems:removePosition(player)
 		for index, element in pairs(getElementsWithinColShape(tempCol, "object")) do
 			if element.Id then
 				player:sendInfo(_("%s entfernt!", player, element.Type))
-				sql:queryExec("DELETE FROM ??_word_objects WHERE Id = ?;", sql:getPrefix(), element.Id)
-				element:destroy()
+				sql:queryExec("DELETE FROM ??_static_world_items WHERE Id = ?;", sql:getPrefix(), element.Id)
 				self.m_Objects[element.Id] = nil
+				element:destroy()
 			else
 				player:sendError(_("Osterei nicht gefunden!", player))
 			end
@@ -120,7 +127,7 @@ function StaticWorldItems:reload(firstLoad)
 	for typ, data in pairs(self.m_Items) do
 		if data["enabled"] == true and ( firstLoad or not data["notReload"] ) then
 			local st, count = getTickCount(), 0
-			result = sql:queryFetch("SELECT * FROM ??_word_objects WHERE Typ = ?;", sql:getPrefix(), typ)
+			result = sql:queryFetch("SELECT * FROM ??_static_world_items WHERE Typ = ?;", sql:getPrefix(), typ)
 			for i, row in pairs(result) do
 				if row.Typ and self.m_Items[row.Typ] then
 					if DEBUG or chance(data["chance"]) then

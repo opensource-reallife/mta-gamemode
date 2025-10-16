@@ -81,6 +81,7 @@ function DeathmatchHalloween:constructor(id, name, owner, map, weapons, mode, ma
 	self.m_Markers = {}
 	self.m_Colshapes = {}
 	self.m_Deleted = false
+	self.m_PlayerTeams = {}
 
 	self.m_CheckMarkerBind = bind(self.checkMarkers, self)
 	self.m_ZombieHealBind = bind(self.healZombies, self)
@@ -196,17 +197,22 @@ end
 
 function DeathmatchHalloween:addPlayer(player)
 	if not self.m_IsOpen then
-		player:sendError("Die Arena ist bereits geschlossen! Bitte komme zur nächsten Runde wieder")
+		player:sendError(_("Die Arena ist bereits geschlossen! Bitte komme zur nächsten Runde wieder", player))
 		return
 	end
 	DeathmatchLobby.addPlayer(self, player)
 	player:triggerEvent("dmHalloweenToggleDamageEvent", true)
 
 	local team
-	if table.size(self.m_Zombies) <= table.size(self.m_Residents) then
-		team = DeathmatchHalloween.Teams[2]
+	if not self.m_PlayerTeams[player:getId()] then
+		if table.size(self.m_Zombies) <= table.size(self.m_Residents) then
+			team = DeathmatchHalloween.Teams[2]
+		else
+			team = DeathmatchHalloween.Teams[1]
+		end
+		self.m_PlayerTeams[player:getId()] = team
 	else
-		team = DeathmatchHalloween.Teams[1]
+		team = self.m_PlayerTeams[player:getId()]
 	end
 
 
@@ -339,7 +345,7 @@ function DeathmatchHalloween:checkMarkers()
 			player:getInventory():giveItem("Kürbis", 25)
 		end
 		for key, player in pairs(self.m_Residents) do
-			player:triggerEvent("showDmHalloweenFinishedGUI", "Verloren", "Die Zombies haben alle eure Stadt erobert!")
+			player:triggerEvent("showDmHalloweenFinishedGUI", "Verloren", "Die Zombies haben eure Stadt erobert!")
 		end
 		delete(self)
 	end
@@ -419,7 +425,7 @@ end
 
 addEvent("dmHalloweenOnDamage", true)
 addEventHandler("dmHalloweenOnDamage", root, function(attacker, weapon)
-	if attacker and client.deathmatchLobby and attacker.deathmatchLobby and client.deathmatchLobby == attacker.deathmatchLobby then
-		client.deathmatchLobby:onMeleeDamage(client, attacker, weapon)
+	if attacker and source and source.deathmatchLobby and attacker.deathmatchLobby and source.deathmatchLobby == attacker.deathmatchLobby then
+		attacker.deathmatchLobby:onMeleeDamage(source, attacker, weapon)
 	end
 end)

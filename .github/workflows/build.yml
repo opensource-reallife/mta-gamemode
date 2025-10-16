@@ -1,0 +1,41 @@
+name: Docker Image Build
+
+on:
+  push:
+    branches:
+      - "master"
+      - "release/production"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Building Script
+        run: |
+          sudo apt-get update && sudo apt-get install -y python3 git lua5.1
+          echo "GIT_VERSION=\"$(git rev-parse HEAD)\" ; GIT_BRANCH=\"$GITHUB_REF_NAME\"" >> vrp/buildinfo.lua
+          python3 build/lint.py
+          python3 build/buildscript.py --branch $GITHUB_REF_NAME
+          python3 build/packAssets.py
+          ./build/make_archives.sh
+          wget -q -O build/ml_jwt.so https://github.com/eXo-OpenSource/ml_jwt/releases/download/1.0-wip/ml_jwt.so
+          wget -q -O build/ml_redis.so https://github.com/eXo-OpenSource/ml_redis/releases/download/1.0-wip/ml_redis.so
+      -
+        name: Building Docker
+        run: |
+          docker build -t rl-mta .
+          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          DOCKERTAG=latest-$(echo $GITHUB_REF_NAME | tr -d /)
+          [ "$GITHUB_REF_NAME" == "master" ] && DOCKERTAG=latest
+          docker tag rl-mta ghcr.io/$GITHUB_REPOSITORY:$DOCKERTAG
+          docker push ghcr.io/$GITHUB_REPOSITORY:$DOCKERTAG
+  
+  deploy:
+    if: github.ref == 'refs/heads/master'
+    needs: build
+    uses: ./.github/workflows/deployment.yml
+    secrets: inherit

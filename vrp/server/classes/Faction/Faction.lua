@@ -10,13 +10,18 @@ Faction = inherit(Object)
 
 -- implement by children
 
-function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, players, rankLoans, rankSkins, rankWeapons, depotId, factionType, diplomacy)
+function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, players, rankLoans, rankSkins, rankWeapons, depotId, factionType, diplomacy, rankPermissions, rankActions, playerLimit, maxVehicles, vehicleLimits, discordRole, actionSplits)
 	self.m_Id = Id
 	self.m_Name_Short = name_short
 	self.m_ShorterName = name_shorter
 	self.m_Name = name
+	self.m_DiscordRole = discordRole
 	self.m_Players = players[1]
 	self.m_PlayerLoans = players[2]
+	self.m_PlayerActionMoneySplit = players[3]
+	self.m_PlayerPermissions = players[4]
+	self.m_PlayerWeaponPermissions = players[5]
+	self.m_PlayerActionPermissions = players[6]
 	self.m_PlayerActivity = {}
 	self.m_LastActivityUpdate = 0
 	self.m_BankAccount = BankAccount.load(bankAccountId) or BankAccount.create(BankAccountTypes.Faction, self:getId())
@@ -24,23 +29,38 @@ function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, 
 	self.m_Invitations = {}
 	self.m_RankNames = factionRankNames[Id]
 	self.m_Skins = factionSkins[Id]
-	self.m_SpecialSkin = false
-	for i, v in pairs(self.m_Skins) do if tonumber(self:getSetting("Skin", i, 0)) == -1 then self.m_SpecialSkin = i end end
+	
+	if factionType == "State" then
+		self.m_SpecialSkin = factionSpecialSkins[Id] or {}
+	else 
+		for i, v in pairs(self.m_Skins) do if tonumber(self:getSetting("Skin", i, 0)) == -1 then self.m_SpecialSkin = i end end
+	end
+	
 	self.m_ValidWeapons = factionWeapons[Id]
+	self.m_SpecialWeapons = factionSpecialWeapons[Id]
 	self.m_Color = factionColors[Id]
 	self.m_WeaponDepotInfo = factionType == "State" and factionWeaponDepotInfoState or factionWeaponDepotInfo
+	self.m_EquipmentDepotInfo = factionEquipmentDepotInfo
 	self.m_Countdowns = {}
 
 	self.m_Vehicles = {}
+	
+	self.m_GangwarAttackCheck = {}
 
+	if actionSplits == "" or not actionSplits then	actionSplits = {} end
 	if rankLoans == "" then	rankLoans = {} for i=0,6 do rankLoans[i] = 0 end rankLoans = toJSON(rankLoans) outputDebug("Created RankLoans for faction "..Id) end
 	if rankSkins == "" then	rankSkins = {} for i=0,6 do rankSkins[i] = self:getRandomSkin() end rankSkins = toJSON(rankSkins) outputDebug("Created RankSkins for faction "..Id) end
 	if rankWeapons == "" then rankWeapons = {} for i=0,6 do rankWeapons[i] = {} for wi=0,46 do rankWeapons[i][wi] = 0 end end rankWeapons = toJSON(rankWeapons) outputDebug("Created RankWeapons for faction "..Id) end
+	if not rankPermissions or rankPermissions == "" then rankPermissions = {} for i=0,6 do rankPermissions[i] = PermissionsManager:getSingleton():createRankPermissions("faction", self.m_Id, i) end rankPermissions = toJSON(rankPermissions) outputDebug("Created RankPermissions for faction "..Id) end
+	if not rankActions or rankActions == "" then rankActions = {} for i=0,6 do rankActions[i] = PermissionsManager:getSingleton():createRankActions("faction", self.m_Id, i) end rankActions = toJSON(rankActions) outputDebug("Created RankActions for faction "..Id) end
 
 	self.m_RankWeapons = fromJSON(rankWeapons)
 	self.m_RankLoans = fromJSON(rankLoans)
 	self.m_RankSkins = fromJSON(rankSkins)
+	self.m_RankPermissions = fromJSON(rankPermissions)
+	self.m_RankActions = fromJSON(rankActions)
 	self.m_Type = factionType
+	self.m_ActionSplits = fromJSON(actionSplits)
 
 	self.m_Depot = Depot.load(depotId, self, "faction")
 
@@ -51,8 +71,24 @@ function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, 
 
 	self.m_DiplomacyJSON = diplomacy
 
+	self.m_PlayerLimit = playerLimit > 0 and true or false
+	self.m_MaxPlayers = playerLimit
+
+	self.m_MaxVehicles = maxVehicles
+
+	local limits = fromJSON(vehicleLimits) or {}
+	local temp = {}
+	for k, v in pairs(limits) do
+		temp[tonumber(k)] = v
+	end
+	self.m_VehicleLimits = temp
+
 	if not DEBUG then
-		self:getActivity()
+		Async.create(
+			function(self)
+				self:getActivity()
+			end
+		)(self)
 	end
 	self:checkEquipmentPermissions()
 end
@@ -136,35 +172,30 @@ function Faction:save()
 	if self.m_Settings then
 		self.m_Settings:save()
 	end
-	if sql:queryExec("UPDATE ??_factions SET RankLoans = ?, RankSkins = ?, RankWeapons = ?, BankAccount = ?, Diplomacy = ? WHERE Id = ?", sql:getPrefix(), toJSON(self.m_RankLoans), toJSON(self.m_RankSkins), toJSON(self.m_RankWeapons), self.m_BankAccount:getId(), diplomacy, self.m_Id) then
+	if sql:queryExec("UPDATE ??_factions SET RankLoans = ?, RankSkins = ?, RankWeapons = ?, RankPermissions = ?, RankActions = ?, BankAccount = ?, Depot = ?, Diplomacy = ?, ActionSplits = ? WHERE Id = ?", sql:getPrefix(), toJSON(self.m_RankLoans), toJSON(self.m_RankSkins), toJSON(self.m_RankWeapons), toJSON(self.m_RankPermissions), toJSON(self.m_RankActions), self.m_BankAccount:getId(), self.m_Depot:getId(), diplomacy, toJSON(self.m_ActionSplits or {}), self.m_Id) then
 	else
 		outputDebug(("Failed to save Faction '%s' (Id: %d)"):format(self:getName(), self:getId()))
 	end
-end
-
-function Faction:isStateFaction()
-	if self.m_Type == "State" then
-		return true
-	end
-	return false
 end
 
 function Faction:setDepotId(Id)
 	self.m_Depot = Depot.load(Id, self, "faction")
 end
 
-function Faction:isRescueFaction()
-	if self.m_Type == "Rescue" then
-		return true
-	end
-	return false
+function Faction:isStateFaction()
+	return self.m_Type == "State"
 end
 
 function Faction:isEvilFaction()
-	if self.m_Type == "Evil" then
-		return true
-	end
-	return false
+	return self.m_Type == "Evil"
+end
+
+function Faction:isRescueFaction()
+	return self.m_Type == "Rescue"
+end
+
+function Faction:isInsurgentFaction()
+	return self.m_Type == "Insurgent"
 end
 
 function Faction:setSetting(category, key, value, responsiblePlayer)
@@ -172,24 +203,21 @@ function Faction:setSetting(category, key, value, responsiblePlayer)
 	if responsiblePlayer and isElement(responsiblePlayer) and getElementType(responsiblePlayer) == "player" then
 		if not responsiblePlayer:getFaction() then allowed = false end
 		if responsiblePlayer:getFaction() ~= self then allowed = false end
-		if self:getPlayerRank(responsiblePlayer) ~= FactionRank.Leader then allowed = false end
+		if category == "Equipment" then
+			if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "editEquipment") then allowed = false end
+		elseif category == "Skin" then
+			if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "editRankSkins") then allowed = false end
+		end
 	end
 	if allowed then
 		self.m_Settings:setSetting(category, key, value)
 	else
-		responsiblePlayer:sendError(_("Nur Leader (Rang %s) der Fraktion %s können deren Einstellungen ändern!", responsiblePlayer, FactionRank.Leader, self:getShortName()))
+		responsiblePlayer:sendError(_("Du bist nicht berechtigt die %s Einstellungen zu ändern!", responsiblePlayer, category))
 	end
 end
 
 function Faction:getSetting(category, key, defaultValue)
 	return self.m_Settings:getSetting(category, key, defaultValue)
-end
-
-function Faction:giveKarmaToOnlineMembers(karma, reason)
-	for k, player in pairs(self:getOnlinePlayers()) do
-		player:giveKarma(karma)
-		player:sendShortMessage(_("%s\nDu hast %d Karma erhalten!", player, reason, karma), "Karma")
-	end
 end
 
 function Faction:getType()
@@ -210,6 +238,10 @@ end
 
 function Faction:getShortName()
 	return self.m_Name_Short
+end
+
+function Faction:getDiscordRole()
+	return self.m_DiscordRole
 end
 
 function Faction:getRankName(rank)
@@ -275,10 +307,29 @@ function Faction:changeSkin(player, skinId)
 				player:sendWarning(_("Deine ausgewählte Kleidung ist erst ab Rang %s verfügbar, dir wurde eine andere gegeben.", player, minRank))
 				player:setModel(self:getSkinsForRank(playerRank)[1])
 			end
+		elseif self:isStateFaction() and self.m_SpecialSkin[skinId] then
+			player:setModel(skinId)
 		else
 			--player:sendWarning(_("Deine ausgewählte Kleidung ist nicht mehr verfügbar, dir wurde eine andere gegeben.", player, minRank))
 			-- ^useless if player switches faction
 			player:setModel(self:getSkinsForRank(playerRank)[1])
+		end
+		
+		if self:isStateFaction() then
+			if self.m_SpecialSkin[skinId] then
+				player:getInventory():giveItem("Kevlar", 1)
+				player:setData("Faction:InSpecialDuty", true, true)
+			else
+				player:getInventory():removeItem("Kevlar", 1)
+				WearableManager:getSingleton():removeWearable(player, "Kevlar")
+				player.m_KevlarShotsCount = nil
+				player:setData("Faction:InSpecialDuty", nil, true)
+			end
+
+			if player:getWeapon(3) == 27 or player:getWeapon(6) == 34 then
+				self:storageWeapons(player, {[27] = true})
+				self:storageWeapons(player, {[34] = true})
+			end
 		end
 	else
 		player:sendError(_("Du bist nicht im Dienst deiner Fraktion aktiv!", player))
@@ -299,6 +350,10 @@ function Faction:addPlayer(playerId, rank)
 	rank = rank or 0
 	self.m_Players[playerId] = rank
 	self.m_PlayerLoans[playerId] = 1
+	self.m_PlayerActionMoneySplit[playerId] = 1
+	self.m_PlayerPermissions[playerId] = {}
+	self.m_PlayerActionPermissions[playerId] = {}
+	self.m_PlayerWeaponPermissions[playerId] = {}
 	local player = Player.getFromId(playerId)
 	if player then
 		player:setFaction(self)
@@ -307,11 +362,19 @@ function Faction:addPlayer(playerId, rank)
 		if self.m_Name_Short == "SAPD" then
 			player:giveAchievement(9) -- Gutes blaues Männchen
 		end
+		if self.m_Name_Short == "Rescue" then
+			player:setPublicSync("RadioStatus", 6)
+		end
+		bindKey(player, "y", "down", "chatbox", "Fraktion")
+		PermissionsManager:getSingleton():syncPermissions(player, "faction")
 	end
-	bindKey(player, "y", "down", "chatbox", "Fraktion")
-	sql:queryExec("UPDATE ??_character SET FactionId = ?, FactionRank = ?, FactionLoanEnabled = 1 WHERE Id = ?", sql:getPrefix(), self.m_Id, rank, playerId)
+	sql:queryExec("UPDATE ??_character SET FactionId = ?, FactionRank = ?, FactionLoanEnabled = 1, FactionWeaponEnabled = 1, FactionPermissions = ?, FactionWeaponPermissions = ?, FactionActionPermissions = ?, FactionTraining = 0 WHERE Id = ?", sql:getPrefix(), self.m_Id, rank, toJSON({}), toJSON({}), toJSON({}), playerId)
 
-  	self:getActivity(true)
+	Async.create(
+		function(self)
+			self:getActivity(true)
+		end
+	)(self)
 end
 
 function Faction:removePlayer(playerId)
@@ -321,22 +384,49 @@ function Faction:removePlayer(playerId)
 
 	self.m_Players[playerId] = nil
 	self.m_PlayerLoans[playerId] = nil
+	self.m_PlayerActionMoneySplit[playerId] = nil
+	self.m_PlayerPermissions[playerId] = nil
+	self.m_PlayerActionPermissions[playerId] = nil
+	self.m_PlayerWeaponPermissions[playerId] = nil
 	local player = Player.getFromId(playerId)
 	if player then
+		if (self:isStateFaction() or self:isRescueFaction()) and player:isFactionDuty() then
+			takeAllWeapons(player)
+			RadioCommunication:getSingleton():allowPlayer(player, false)
+			
+			if self.m_Name_Short == "Rescue" then
+				player:setPublicSync("RadioStatus", nil)
+			end
+		end
+		if (Gangwar:getSingleton():getCurrentGangwar() and Gangwar:getSingleton():getCurrentGangwar():isParticipantInList(player)) then
+			Gangwar:getSingleton():getCurrentGangwar():removeParticipant(player)
+		end
+
+		player:saveAccountActivity()
+		setElementData(player, "playingTimeFaction", 0)
+		setElementData(player, "dutyTimeFaction", 0)
+		player:setFactionDuty(false)
 		player:setFaction(nil)
 		player:giveAchievement(67)
 		player:setCorrectSkin()
-		player:setFactionDuty(false)
+		player:getInventory():removeAllItem("Taser")
+		player:getInventory():removeAllItem("Warnkegel")
+		player:getInventory():removeAllItem("Barrikade")
+		player:getInventory():removeAllItem("Nagel-Band")
+		player:getInventory():removeAllItem("Blitzer")
+		player:getInventory():removeAllItem("Einsatzhelm")
+		player:getInventory():removeAllItem("Kevlar")
+		WearableManager:getSingleton():removeWearable(player, "Kevlar")
+		WearableManager:getSingleton():removeWearable(player, "Einsatzhelm")
+		player.m_KevlarShotsCount = nil
+		player:setData("Faction:InSpecialDuty", nil, true)
 		player:sendShortMessage(_("Du wurdest aus deiner Fraktion entlassen!", player))
 		self:sendShortMessage(_("%s hat deine Fraktion verlassen!", player, player:getName()))
-		if self:isStateFaction() and player:isFactionDuty() then
-			takeAllWeapons(player)
-			player:reloadBlips()
-		end
 		player:reloadBlips()
 		unbindKey(player, "y", "down", "chatbox", "Fraktion")
+		PermissionsManager:getSingleton():syncPermissions(player, "faction", true)
 	end
-	sql:queryExec("UPDATE ??_character SET FactionId = 0, FactionRank = 0, FactionLoanEnabled = 0 WHERE Id = ?", sql:getPrefix(), playerId)
+	sql:queryExec("UPDATE ??_character SET FactionId = 0, FactionRank = 0, FactionLoanEnabled = 0, FactionWeaponEnabled = 0, FactionPermissions = ?, FactionWeaponPermissions = ?, FactionActionPermissions = ?, FactionTraining = 0 WHERE Id = ?", sql:getPrefix(), toJSON({}), toJSON({}), toJSON({}), playerId)
 end
 
 function Faction:invitePlayer(player)
@@ -392,6 +482,10 @@ function Faction:setPlayerRank(playerId, rank)
 end
 
 function Faction:isPlayerLoanEnabled(playerId)
+	if type(playerId) == "userdata" then
+		playerId = playerId:getId()
+	end
+
 	return self.m_PlayerLoans[playerId] == 1
 end
 
@@ -402,6 +496,31 @@ function Faction:setPlayerLoanEnabled(playerId, state)
 
 	self.m_PlayerLoans[playerId] = state
 	sql:queryExec("UPDATE ??_character SET FactionLoanEnabled = ? WHERE Id = ?", sql:getPrefix(), state, playerId)
+end
+
+function Faction:isPlayerActionMoneySplitEnabled(playerId)
+	if type(playerId) == "userdata" then
+		playerId = playerId:getId()
+	end
+
+	return self.m_PlayerActionMoneySplit[playerId] == 1
+end
+
+function Faction:setPlayerActionMoneySplitEnabled(playerId, state)
+	if type(playerId) == "userdata" then
+		playerId = playerId:getId()
+	end
+
+	self.m_PlayerActionMoneySplit[playerId] = state
+	sql:queryExec("UPDATE ??_character SET FactionActionMoneySplitEnabled = ? WHERE Id = ?", sql:getPrefix(), state, playerId)
+end
+
+function Faction:savePlayerPermissions(playerId)
+	if type(playerId) == "userdata" then
+		playerId = playerId:getId()
+	end
+
+	sql:queryExec("UPDATE ??_character SET FactionPermissions = ?, FactionWeaponPermissions = ?, FactionActionPermissions = ? WHERE Id = ?", sql:getPrefix(), toJSON(self.m_PlayerPermissions[tonumber(playerId)]) or toJSON({}), toJSON(self.m_PlayerWeaponPermissions[tonumber(playerId)]) or toJSON({}), toJSON(self.m_PlayerActionPermissions[tonumber(playerId)]) or toJSON({}), playerId)
 end
 
 function Faction:getMoney()
@@ -452,18 +571,33 @@ function Faction:getActivity(force)
 	if self.m_LastActivityUpdate > getRealTime().timestamp - 30 * 60 and not force then
 		return
 	end
+
 	self.m_LastActivityUpdate = getRealTime().timestamp
+	local playerIds = {}
 
 	for playerId, rank in pairs(self.m_Players) do
-		local row = sql:queryFetchSingle("SELECT FLOOR(SUM(Duration) / 60) AS Activity FROM ??_accountActivity WHERE UserID = ? AND Date BETWEEN DATE(DATE_SUB(NOW(), INTERVAL 1 WEEK)) AND DATE(NOW());", sql:getPrefix(), playerId)
+		table.insert(playerIds, playerId)
+	end
 
+	local query = "SELECT UserId, FLOOR(SUM(Duration) / 60) AS Activity FROM ??_account_activity WHERE UserId IN (?" .. string.rep(", ?", #playerIds - 1) ..  ") AND Date BETWEEN DATE(DATE_SUB(NOW(), INTERVAL 1 WEEK)) AND DATE(NOW()) GROUP BY UserId"
+
+	sql:queryFetch(Async.waitFor(), query, sql:getPrefix(), unpack(playerIds))
+
+	local rows = Async.wait()
+
+	self.m_PlayerActivity = {}
+	for playerId, rank in pairs(self.m_Players) do
+		self.m_PlayerActivity[playerId] = 0
+	end
+
+	for _, row in ipairs(rows) do
 		local activity = 0
 
 		if row and row.Activity then
 			activity = row.Activity
 		end
 
-		self.m_PlayerActivity[playerId] = activity
+		self.m_PlayerActivity[row.UserId] = activity
 	end
 end
 
@@ -471,16 +605,20 @@ function Faction:getPlayers(getIDsOnly)
 	if getIDsOnly then
 		return self.m_Players
 	end
-
 	local temp = {}
 
-	self:getActivity()
+	Async.create(
+		function(self)
+			self:getActivity()
+		end
+	)(self)
 
 	for playerId, rank in pairs(self.m_Players) do
 		local loanEnabled = self.m_PlayerLoans[playerId]
+		local actionMoneySplitEnabled = self.m_PlayerActionMoneySplit[playerId]
 		local activity = self.m_PlayerActivity[playerId] or 0
 
-		temp[playerId] = {name = Account.getNameFromId(playerId), rank = rank, loanEnabled = loanEnabled, activity = activity}
+		temp[playerId] = {name = Account.getNameFromId(playerId), rank = rank, loanEnabled = loanEnabled, actionMoneySplitEnabled = actionMoneySplitEnabled, activity = activity}
 	end
 	return temp
 end
@@ -498,6 +636,17 @@ function Faction:getOnlinePlayers(afkCheck, dutyCheck)
 	return players
 end
 
+function Faction:getActionSplitMoneyPlayers()
+	local temp = {}
+	local players = self:getOnlinePlayers(true, true)
+	for i, v in pairs(players) do
+		if (self:isPlayerActionMoneySplitEnabled(v)) then
+			temp[#temp + 1] = v
+		end
+	end
+	return temp
+end
+
 function Faction:sendMessage(text, r, g, b, ...)
 	for k, player in pairs(self:getOnlinePlayers()) do
 		player:sendMessage(text, r, g, b, ...)
@@ -508,6 +657,29 @@ function Faction:sendShortMessage(text, ...)
 	local color = {factionColors[self.m_Id].r, factionColors[self.m_Id].g, factionColors[self.m_Id].b}
 	for k, player in pairs(self:getOnlinePlayers()) do
 		player:sendShortMessage(_(text, player), self:getName(), color, ...)
+	end
+end
+
+function Faction:sendMessageWithRank(text, r, g, b, minRank, withPrefix, ...)
+	local r = r or factionColors[self.m_Id].r
+	local g = g or factionColors[self.m_Id].g
+	local b = b or factionColors[self.m_Id].b
+	local prefix = withPrefix and ("[%s] "):format(self:getName()) or ""
+
+	for k, player in pairs(self:getOnlinePlayers()) do
+		if self:getPlayerRank(player) >= (minRank or 0) then
+			player:sendMessage(prefix .. text, r, g, b, true, ...)
+		end
+	end
+end
+
+function Faction:sendShortMessageWithRank(text, minRank, title, color, ...)
+	local color = {color.r or factionColors[self.m_Id].r, color.g or factionColors[self.m_Id].g, color.b or factionColors[self.m_Id].b}
+	local suffix = title and ": " .. title or ""
+	for k, player in pairs(self:getOnlinePlayers()) do
+		if self:getPlayerRank(player) >= (minRank or 0) then
+			player:sendShortMessage(text, self:getName() .. suffix, color, ...)
+		end
 	end
 end
 
@@ -535,7 +707,8 @@ function Faction:sendSuccess(text)
 	end
 end
 
-function Faction:sendChatMessage(sourcePlayer, message)
+function Faction:sendChatMessage(sourcePlayer, message, lang)
+	if not getElementData(sourcePlayer, "FactionChatEnabled") then return sourcePlayer:sendError(_("Du hast den Fraktionschat deaktiviert!", sourcePlayer)) end
 	--if self:isEvilFaction() or (self:isStateFaction() or self:isRescueFaction() and sourcePlayer:isFactionDuty()) then
 		local lastMsg, msgTimeSent = sourcePlayer:getLastChatMessage()
 		if getTickCount()-msgTimeSent < (message == lastMsg and CHAT_SAME_MSG_REPEAT_COOLDOWN or CHAT_MSG_REPEAT_COOLDOWN) then -- prevent chat spam
@@ -552,10 +725,14 @@ function Faction:sendChatMessage(sourcePlayer, message)
 		message = message:gsub("%%", "%%%%")
 		local text = ("%s %s: %s"):format(rankName,getPlayerName(sourcePlayer), message)
 		for k, player in ipairs(self:getOnlinePlayers()) do
-			player:sendMessage(text, r, g, b)
-			if player ~= sourcePlayer then
-	            receivedPlayers[#receivedPlayers+1] = player
-	        end
+			if getElementData(player, "FactionChatEnabled") then
+				if not lang or player:getLocale() == lang then
+					player:sendMessage(text, r, g, b)
+					if player ~= sourcePlayer then
+						receivedPlayers[#receivedPlayers+1] = player
+					end
+				end
+			end
 		end
 		StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "faction:"..self.m_Id, message, receivedPlayers)
 	--else
@@ -563,30 +740,34 @@ function Faction:sendChatMessage(sourcePlayer, message)
 	--end
 end
 
-function Faction:sendBndChatMessage(sourcePlayer, message, alliance)
+function Faction:sendBndChatMessage(sourcePlayer, message, alliance, lang)
+	if not getElementData(sourcePlayer, "AllianceChatEnabled") then return sourcePlayer:sendError(_("Du hast den Bündnischat deaktiviert!", sourcePlayer)) end
 	local playerId = sourcePlayer:getId()
 	local receivedPlayers = {}
 	local r,g,b = 20, 140, 0
 	local text = ("[Bündnis] %s: %s"):format(getPlayerName(sourcePlayer), message)
 	for k, player in ipairs(self:getOnlinePlayers()) do
-		player:sendMessage(text, r, g, b)
-		if player ~= sourcePlayer then
-			receivedPlayers[#receivedPlayers+1] = player
+		if getElementData(player, "AllianceChatEnabled") then
+			if not lang or player:getLocale() == lang then
+				player:sendMessage(text, r, g, b)
+				if player ~= sourcePlayer then
+					receivedPlayers[#receivedPlayers+1] = player
+				end
+			end
 		end
 	end
 	StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "factionBnd:"..self.m_Id, message, receivedPlayers)
 end
 
-function Faction:respawnVehicles( isAdmin )
-	local time = getRealTime().timestamp
-	if self.m_LastRespawn and not isAdmin then
-		if time - self.m_LastRespawn <= 900 then --// 15min
-			return self:sendShortMessage("Fahrzeuge können nur alle 15 Minuten respawned werden!")
-		end
+function Faction:respawnVehicles(player)
+	local isAdmin = player and player:getRank() >= RANK.Supporter
+	if not self:isRespawnPossible() and not isAdmin then
+		return self:sendShortMessage("Fahrzeuge können nur alle 15 Minuten respawned werden!")
 	end
+
 	if isAdmin then
 		self:sendShortMessage("Ein Admin hat eure Fraktionsfahrzeuge respawned!")
-		isAdmin:sendShortMessage("Du hast die Fraktionsfahrzeuge respawned!")
+		player:sendShortMessage("Du hast die Fraktionsfahrzeuge respawned!")
 	end
 	local factionVehicles = VehicleManager:getSingleton():getFactionVehicles(self.m_Id)
 	local fails = 0
@@ -594,7 +775,8 @@ function Faction:respawnVehicles( isAdmin )
 	for factionId, vehicle in pairs(factionVehicles) do
 		if vehicle:getFaction() == self then
 			vehicles = vehicles + 1
-			if not vehicle:respawn(true) then
+			vehicle:removeAttachedPlayers()
+			if not vehicle:respawn(true, isAdmin) then
 				fails = fails + 1
 			else
 				vehicle:setInterior(vehicle.m_SpawnInt or 0)
@@ -607,12 +789,22 @@ function Faction:respawnVehicles( isAdmin )
 	self:sendShortMessage(("%s/%s Fahrzeuge wurden respawned!"):format(vehicles-fails, vehicles))
 end
 
+function Faction:isRespawnPossible()
+	local time = getRealTime().timestamp
+	if self.m_LastRespawn then
+		if time - self.m_LastRespawn <= 900 then --// 15min
+			return false
+		end
+	end
+	return true
+end
+
 function Faction:phoneCall(caller)
 	for k, player in ipairs(self:getOnlinePlayers()) do
 		if not player:getPhonePartner() then
 			if player ~= caller then
 				local color = {factionColors[self.m_Id].r, factionColors[self.m_Id].g, factionColors[self.m_Id].b}
-				triggerClientEvent(player, "callIncomingSM", resourceRoot, caller, false, ("%s ruft euch an."):format(caller:getName()), ("eingehender Anruf - %s"):format(self:getShortName()), color)
+				triggerClientEvent(player, "callIncomingSM", resourceRoot, caller, false, ("%s ruft euch an."):format(caller:getName()), ("eingehender Anruf - %s"):format(self:getShortName()), color, "faction")
 			end
 		end
 	end
@@ -876,4 +1068,147 @@ function Faction:takeEquipment(player)
 			end
 		end
 	end
+end
+
+function Faction:storageWeapons(player, weapons)
+	local depot = self:getDepot()
+	local logData = {}
+	for i= 1, 12 do
+		local weaponId = player:getWeapon(i)
+		if weaponId > 0 then
+			if not weapons or weapons[weaponId] then
+				local clipAmmo = getWeaponProperty(weaponId, "pro", "maximum_clip_ammo") or 0
+				if WEAPON_CLIPS[weaponId] then
+					clipAmmo = WEAPON_CLIPS[weaponId]
+				end
+
+				local magazines = clipAmmo > 0 and math.floor(player:getTotalAmmo(i)/clipAmmo) or 0
+				if THROWABLE_WEAPONS[weaponId] then -- don't divide by magazine size
+					magazines = player:getTotalAmmo(i)
+				end
+
+				local depotWeapons, depotMagazines = depot:getWeapon(weaponId)
+				local depotMaxWeapons, depotMaxMagazines = self.m_WeaponDepotInfo[weaponId]["Waffe"], self.m_WeaponDepotInfo[weaponId]["Magazine"]
+
+				if depotWeapons == -1 then
+					takeWeapon(player, weaponId)
+				else
+					if THROWABLE_WEAPONS[weaponId] then -- grenade etc
+						if depotWeapons+magazines <= depotMaxWeapons then --magazines = duplicates of weapon
+							depot:addWeaponD(weaponId, magazines)
+							takeWeapon(player, weaponId)
+							logData[WEAPON_NAMES[weaponId]] = magazines
+						elseif magazines > 0 then
+							local weaponsToMax = depotMaxWeapons - depotWeapons
+							
+							if weaponsToMax > 0 then
+								depot:addWeaponD(weaponId, weaponsToMax)
+								setWeaponAmmo(player, weaponId, getPedTotalAmmo(player, i) - weaponsToMax)
+							
+								logData[WEAPON_NAMES[weaponId]] = weaponsToMax
+								player:sendError(_("Im Depot ist nicht Platz für %s %s! Es wurden nur %s eingelagert.", player, magazines, WEAPON_NAMES[weaponId], weaponsToMax))
+							else
+								player:sendError(_("Im Depot ist nicht Platz für eine/n %s!", player, WEAPON_NAMES[weaponId]))
+							end
+						end
+					else
+						if depotWeapons+1 <= depotMaxWeapons then
+							if depotMagazines + magazines <= depotMaxMagazines then
+								depot:addWeaponD(weaponId, 1)
+								depot:addMagazineD(weaponId, magazines)
+								takeWeapon(player, weaponId)
+								logData[WEAPON_NAMES[weaponId]] = magazines
+							elseif magazines > 0 then
+								local magsToMax = depotMaxMagazines - depotMagazines
+								
+								if magsToMax > 0 then	
+									depot:addMagazineD(weaponId, magsToMax)
+									setWeaponAmmo(player, weaponId, getPedTotalAmmo(player, i) - magsToMax*clipAmmo)
+									logData[WEAPON_NAMES[weaponId]] = magsToMax
+									player:sendError(_("Im Depot ist nicht Platz für %s %s Magazin/e! Es wurden nur %s Magazine eingelagert.", player, magazines, WEAPON_NAMES[weaponId], magsToMax))
+								end
+							end
+						else
+							player:sendError(_("Im Depot ist nicht Platz für eine/n %s!", player, WEAPON_NAMES[weaponId]))
+						end
+					end
+				end
+			end
+		end
+	end
+	local textForPlayer = "Du hast folgende Waffen in das Lager gelegt:"
+	local wepaponsPut = false
+	for i,v in pairs(logData) do
+		wepaponsPut = true
+		textForPlayer = textForPlayer.."\n"..i
+		if v > 0 then
+			textForPlayer = textForPlayer.. " mit ".. v .. " Magazin(en)"
+			self:addLog(player, "Waffenlager", ("hat ein/e(n) %s mit %s Magazin(en) in das Lager gelegt!"):format(i, v))
+		else
+			self:addLog(player, "Waffenlager", ("hat ein/e(n) %s in das Lager gelegt!"):format(i))
+		end
+	end
+	if wepaponsPut then player:sendInfo(textForPlayer) end
+end
+
+function Faction:startRespawnAnnouncement(announcer)
+	if not self:isRespawnPossible() then
+		return self:sendShortMessage("Fahrzeuge können nur alle 15 Minuten respawned werden!")
+	end
+
+	for __, fPlayer in pairs(self:getOnlinePlayers()) do
+		fPlayer:triggerEvent("startFactionRespawnAnnouncement", announcer)
+	end
+	self.m_RespawnTimer = setTimer(function() self:respawnVehicles() end, 15500, 1)
+end
+
+function Faction:stopRespawnAnnouncement(stopper)
+	for __, fPlayer in pairs(self:getOnlinePlayers()) do
+		fPlayer:triggerEvent("stopFactionRespawnAnnoucement", stopper)
+	end
+	killTimer(self.m_RespawnTimer)
+end
+
+function Faction:hasPlayerLimit()
+	return self.m_PlayerLimit
+end
+
+function Faction:getPlayerLimit()
+	return self.m_MaxPlayers
+end
+
+function Faction:reloadPlayerLimit()
+	local result = sql:queryFetch("SELECT PlayerLimit from ??_factions WHERE Id = ?", sql:getPrefix(), self:getId())
+	local newLimit = result[1]["PlayerLimit"] or 0
+	self.m_PlayerLimit = newLimit > 0 and true or false
+	self.m_MaxPlayers = newLimit
+end
+
+function Faction:getAllSpecialSkins(first)
+	local tab = {}
+
+	for skinId, state in pairs(self.m_SpecialSkin) do
+		if state then
+			table.insert(tab, skinId)
+		end
+	end
+
+	return tab
+end
+
+function Faction:getActionSplits()
+	return self.m_ActionSplits
+end
+
+function Faction:getActionSplit(type)
+	return self.m_ActionSplits[type]
+end
+
+function Faction:setActionSplits(splits)
+	self.m_ActionSplits = splits
+end
+
+function Faction:setActionSplit(name, split)
+	if not name or not split then return end
+	self.m_ActionSplits[name] = split
 end

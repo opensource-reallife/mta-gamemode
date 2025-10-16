@@ -19,11 +19,11 @@ SniperGame.Positions = {
 }
 
 function SniperGame.initalize()
-	--[[
-	--local sniperPed = createPed(162 ,-531.40, 1972.36, 60.56, 333.32)
-	--sniperPed:setFrozen(true)
-	--local sniperMarker = createMarker(-530.19, 1974.61, 59.5, "cylinder", 1, 255, 0, 0, 125)
-	--Blip:new("SniperGame.png", -530.19, 1974.61) -- Todo: Change Blip
+	local sniperPed = createPed(162 ,-531.40, 1972.36, 60.56, 333.32)
+	sniperPed:setFrozen(true)
+	local sniperMarker = createMarker(-530.19, 1974.61, 59.5, "cylinder", 1, 255, 0, 0, 125)
+	local b = Blip:new("SniperGame.png", -530.19, 1974.61)
+	b:setDisplayText("Sniper Game", BLIP_CATEGORY.Leisure)
 
 	addEventHandler("onMarkerHit", sniperMarker, function(hitElement, dim)
 		if hitElement:getType() == "player" and dim and not hitElement.vehicle then
@@ -47,14 +47,12 @@ function SniperGame.initalize()
 			ped:kill(client, 34, 9)
 			client:giveWeapon(34, 2, true)
 		else
-			ped:setAnimation("ped", "WOMAN_walknorm")
+			ped:setAnimation("ped", "walk_civi")
 		end
 	end)
-	]]
 end
 
 function SniperGame:constructor()
-
 	self.m_Dimension = math.random(1, 999) -- Testing
 	self.m_Peds = {}
 	self.m_PedKills = {}
@@ -77,7 +75,6 @@ function SniperGame:constructor()
 
 	self:addPed()
 	self:loadMap()
-
 end
 
 function SniperGame:destructor()
@@ -101,9 +98,7 @@ function SniperGame:destructor()
 	if isTimer(self.m_IncreaseTimer) then killTimer(self.m_IncreaseTimer) end
 	if isElement(self.m_TargetSphere) then self.m_TargetSphere:destroy() end
 	if isElement(self.m_PlayerSphere) then self.m_PlayerSphere:destroy() end
-
 end
-
 
 function SniperGame:onColshapeHit(hitElement, dim)
 	if hitElement:getType() == "ped" and dim then
@@ -111,8 +106,8 @@ function SniperGame:onColshapeHit(hitElement, dim)
 			if score then
 				player:sendInfo(_("Ein Ped hat die Linie überschritten! Score: %d", player, self.m_PedKills[player]))
 			end
+			self:removePlayer(player)
 		end
-		delete(self)
 	end
 end
 
@@ -151,6 +146,9 @@ function SniperGame:removePlayer(player)
 	if MinigameManager:getSingleton():checkForFreaks(player) then
 		player:giveAchievement(22)
 	end
+
+	player.Minigame = nil
+	self:delete()
 end
 
 function SniperGame:getPlayers()
@@ -183,9 +181,9 @@ function SniperGame:spawnPed(pos, rot)
 	local ped = createPed(183, pos, rot)
 	ped:setDimension(self.m_Dimension)
 	if math.random(0,5) == 5 then
-		ped:setAnimation("ped", "woman_run")
+		ped:setAnimation("ped", "run_civi")
 	else
-		ped:setAnimation("ped", "WOMAN_walknorm")
+		ped:setAnimation("ped", "walk_civi")
 	end
 	for player, score in pairs(self.m_PedKills) do
 		if player and isElement(player) then

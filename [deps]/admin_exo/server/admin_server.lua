@@ -50,7 +50,7 @@ function giveWeapon( player, weapon, ammo, current)
 	else 
 		if player and ammo then
 			if ammo ~= 0 then
-				local currentWeapon = getPlayerWeapon(player,slot)
+				local currentWeapon = getPedWeapon(player,slot)
 				if currentWeapon ~= weapon then
 					triggerEvent("WeaponAttach:onWeaponGive", player, weapon, slot, current, object)
 				end
@@ -1075,13 +1075,13 @@ addEventHandler ( "aPlayer", _root, function ( player, action, data, additional,
 				action = nil
 			end
 		elseif ( action == "jetpack" ) then
-			if ( doesPedHaveJetPack ( player ) ) then
-				removePedJetPack ( player )
+			if ( isPedWearingJetpack ( player ) ) then
+				setPedWearingJetpack ( player, false )
 				action = "jetpackr"
 			else
 				if ( getPedOccupiedVehicle ( player ) ) then outputChatBox ( "Unable to give a jetpack - "..getPlayerName ( player ).." is in a vehicle", source, 255, 0, 0 )
 				else
-					if ( givePedJetPack ( player ) ) then
+					if ( setPedWearingJetpack ( player, true ) ) then
 						action = "jetpacka"
 					end
 				end

@@ -85,7 +85,8 @@ function GasStation:nonInteriorRequest()
 		end,
 		function()
 			GasStation.PendingTransaction = nil
-		end
+		end,
+		localPlayer.position
 	)
 end
 
@@ -94,6 +95,8 @@ function GasStation:renderGasStation()
 		if isElement(element) then
 			local station = element:getData("attachedGasStation")
 			if isElement(station) then
+				local x, y, z = getElementPosition(station)
+				local px, py, pz = getElementPosition(element)
 				dxDrawLine3D(station.matrix:transformPosition(Vector3(0, 0, 1.2)), element.matrix:transformPosition(Vector3(0.07, 0, -0.11)), Color.Black, 5)
 
 				if element:getData("attachedPlayer") == localPlayer then
@@ -107,7 +110,7 @@ function GasStation:renderGasStation()
 						VehicleFuel:new(localPlayer.lastWorldVehicle, self.m_FilledDone, false, station)
 					end
 
-					if localPlayer.vehicle or (station.position - element.position).length > 10 then
+					if localPlayer.vehicle or getDistanceBetweenPoints3D(x, y, z, px, py, pz) > 10 then
 						localPlayer.lastWorldVehicle = nil
 						localPlayer.usingGasStation = nil
 						self.m_RenderFuelHoles[element] = nil
@@ -141,7 +144,7 @@ end
 function GasStation:renderDisplay()
 	if localPlayer:getPrivateSync("hasGasStationFuelNozzle") and localPlayer.usingGasStation then
 		self.m_Amount = VehicleFuel:isInstantiated() and VehicleFuel:getSingleton():getOpticalFuelAmount() or 0
-		self.m_Price = VehicleFuel:isInstantiated() and VehicleFuel:getSingleton():getFuelPrice() or 0
+		self.m_Price = VehicleFuel:isInstantiated() and VehicleFuel:getSingleton():getFuelPrice(localPlayer.usingGasStation) or 0
 	else
 		self.m_Amount = "-"
 		self.m_Price = "-"

@@ -16,7 +16,7 @@ local readFuncs = {
 	end;
 	spawnpoint = function(attributes)
 		return {type = "spawnpoint", model = tonumber(attributes.vehicle), x = tonumber(attributes.posX), y = tonumber(attributes.posY), z = tonumber(attributes.posZ),
-			rx = tonumber(attributes.rotX), ry = tonumber(attributes.rotY), rz = tonumber(attributes.rotZ)}
+			rx = tonumber(attributes.rotX), ry = tonumber(attributes.rotY), rz = tonumber(attributes.rotZ) or tonumber(attributes.rotation)}
 	end;
 	racepickup = function(attr)
 		return {type = "racepickup", pickuptype = attr.type, x = tonumber(attr.posX), y = tonumber(attr.posY), z = tonumber(attr.posZ),
@@ -65,18 +65,42 @@ local createFuncs = {
 		local model, func
 		if info.pickuptype == "nitro" then
 			model = 2839
-			func = function(vehicle) addVehicleUpgrade(vehicle, 1010) end
+			func = function(vehicle)
+				playSoundFrontEnd(vehicle:getOccupant(), 46)
+				addVehicleUpgrade(vehicle, 1010)
+			end
 		elseif info.pickuptype == "vehiclechange" then
 			model = 2838
-			func = function(vehicle) setElementModel(vehicle, info.model) end
+			func = function(vehicle)
+				if vehicle:getModel() ~= info.model then
+					local controller = vehicle:getController()
+					controller:removeFromVehicle()
+					setElementModel(vehicle, info.model)
+					controller:warpIntoVehicle(vehicle, 0)
+				end
+			end
 		else
 			model = 2837
-			func = function(vehicle) vehicle:fix() end
+			func = function(vehicle)
+				playSoundFrontEnd(vehicle:getOccupant(), 46)
+				vehicle:fix()
+				vehicle:setFuel(100)
+			end
 		end
-		local pickup = createPickup(info.x, info.y, info.z, 3, model, 0)
-		addEventHandler("onPickupHit", pickup, function(player)
-			local vehicle = getPedOccupiedVehicle(player)
-			if vehicle then func(vehicle) end
+		--local pickup = createPickup(info.x, info.y, info.z, 3, model, 0)
+		local pickup = createObject(model, info.x, info.y, info.z)
+		pickup:setCollisionsEnabled(false)
+		setTimer(function()
+			if isElement(pickup) then
+				pickup:move(1500, pickup:getPosition(), 0, 0, 360)
+			else
+				sourceTimer:destroy()
+			end
+		end, 1000, 0)
+		local colshape = createColSphere(info.x, info.y, info.z, 3.5)
+		colshape:attach(pickup)
+		addEventHandler("onColShapeHit", colshape, function(element)
+			if getElementType(element) == "vehicle" then func(element) end
 		end)
 		if info.pickuptype == "vehiclechange" then pickup.targetModel = info.model end
 		return pickup
@@ -134,6 +158,10 @@ function MapParser:destroy(index)
 
 	for k, element in pairs(self.m_Maps[index]) do
 		if isElement(element) then
+			local attachedElements = getAttachedElements(element)
+			for k, v in ipairs(attachedElements) do
+				if isElement(v) then destroyElement(v) end
+			end
 			destroyElement(element)
 		elseif type(element) == "table" then -- that's a small hack
 			-- do not uncomment the following!!!

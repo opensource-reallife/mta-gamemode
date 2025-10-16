@@ -8,7 +8,7 @@
 AppContacts = inherit(PhoneApp)
 
 function AppContacts:constructor()
-	PhoneApp.constructor(self, "Kontakte", "IconContacts.png")
+	PhoneApp.constructor(self, _"Kontakte", "IconContacts.png")
 end
 
 function AppContacts:onOpen(form)

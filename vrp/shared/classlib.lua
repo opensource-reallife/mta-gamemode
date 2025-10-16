@@ -294,6 +294,8 @@ function bind(func, ...)
 		error("Bad function pointer @ bind. See console for more details")
 	end
 
+	local stacktrace = debug.traceback()
+
 	local boundParams = {...}
 	return
 		function(...)
@@ -308,30 +310,15 @@ function bind(func, ...)
 			for i = 1, select("#", ...) do
 				params[boundParamSize + i] = funcParams[i]
 			end
-			--[[local hookInfo = ""
-			local dHook = function(sourceResource, functionName, isAllowedByACL, luaFilename, luaLineNumber, ...)
-				if hookInfo ~= "" then hookInfo = hookInfo .. " - " end
-				hookInfo = hookInfo .. inspect({sourceResource = sourceResource, functionName = functionName, isAllowedByACL = isAllowedByACL, luaFilename = luaFilename, luaLineNumber = luaLineNumber, args = {...}}, {newline=' ', indent=""})
-			end
-
-			if not triggerServerEvent then
-				addDebugHook("preFunction", dHook)
-			end]]
 
 			local retValue = func(unpack(params))
 
-			--[[if not triggerServerEvent then
-				removeDebugHook("preFunction", dHook)
-			end]]
-
-			--[[if not triggerServerEvent then
+			if DEBUG_MONITOR_CLASSLIB and triggerServerEvent then
 				local time = getTickCount() - perfTest
-				if time >= 50 then -- log everthing over 50ms ;)
-					local data = inspect({...}, {newline=' ', indent=""}) .. " - " .. inspect({source = source, this = this, client = client, eventName = eventName}, {newline=' ', indent=""})
-					data = data .. " -  " .. hookInfo .. " "
-					FileLogger:getSingleton():addPerfLog(time, "classlib@bind", data)
+				if time >= DEBUG_MONITOR_CLASSLIB_TIME then -- log everthing over 50ms ;)
+					writePerfTable(func, stacktrace, time, hookInfo)
 				end
-			end]]
+			end
 			return retValue
 		end
 end

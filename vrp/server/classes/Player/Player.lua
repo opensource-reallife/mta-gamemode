@@ -19,6 +19,7 @@ addEvent("characterInitialized")
 function Player:constructor()
 	self:setVoiceBroadcastTo(nil)
 
+	self.m_Ready = false
 	self.m_PrivateSync = {}
 	self.m_PrivateSyncUpdate = {}
 	self.m_PublicSync = {}
@@ -33,9 +34,21 @@ function Player:constructor()
 	self.m_Crimes = {}
 	self.m_LastPlayTime = 0
 	self.m_LastJobAction = 0
+	self.m_VirtualTime = false
+	self.m_VirtualTimeHour = 0
+	self.m_VirtualTimeMinute = 0
+
+	self.m_LastDamagedBy = {}
 
 	self.m_detachPlayerObjectBindFunc = bind(Player.detachPlayerObjectBind, self)
 	self.m_detachPlayerObjectFunc = bind(Player.detachPlayerObject, self)
+
+	setElementData(self, "playingTimeFaction", 0)
+	setElementData(self, "playingTimeCompany", 0)
+	setElementData(self, "playingTimeGroup", 0)
+	setElementData(self, "dutyTimeFaction", 0)
+	setElementData(self, "dutyTimeCompany", 0)
+	setElementData(self, "dutyTime", 0)
 end
 
 function Player:destructor()
@@ -93,9 +106,29 @@ function Player:connect()
 
 end
 
+function Player:reconnect()
+	self:redirect("", 0)
+end
+
+function Player:setVirtualTime(hour, minute)
+	self.m_VirtualTime = true
+	self.m_VirtualTimeHour = hour
+	self.m_VirtualTimeMinute = minute
+	if self.m_Ready then
+		self:Event_requestTime()
+	end
+end
+
+function Player:clearVirtualTime()
+	self.m_VirtualTime = false
+
+	if self.m_Ready then
+		self:Event_requestTime()
+	end
+end
 
 function Player:Event_requestTime()
-	self:triggerEvent("setClientTime",getRealTime())
+	self:triggerEvent("setClientTime", self.m_VirtualTime and self.m_VirtualTimeHour or getRealTime().hour, self.m_VirtualTime and self.m_VirtualTimeMinute or getRealTime().minute)
 end
 
 function Player:join()
@@ -152,13 +185,15 @@ function Player:loadCharacter()
 	DatabasePlayer.Map[self.m_Id] = self
 	self:loadCharacterInfo()
 	self:setPrivateSync("Id", self.m_Id)
+	self:setPublicSync("Id", self.m_Id)
 
 	-- Send infos to client
 	local info = {
 		Rank = self:getRank();
 	}
 	self:triggerEvent("retrieveInfo", info)
-
+	self:triggerEvent("retrieveWebSecret", Config.get("INGAME_WEB_SECRET"))
+	self:triggerEvent("receiveJobMultiplicators", JobManager:getSingleton().m_JobMultiplicators)
 
 	-- Send initial sync
 	self:sendInitialSync()
@@ -200,7 +235,15 @@ function Player:loadCharacter()
 	if self:getFaction() and self:getFaction():isStateFaction() then
 		self:getFaction():takeEquipment(self)
 	end
+	if self:getFaction() and self:getFaction():isRescueFaction() then
+		self:setPublicSync("RadioStatus", 6)
+	end
+
 	FactionState:getSingleton():checkInsideGarage(self)
+	BeggarPedManager:getSingleton():sendBeggarPedsToClient(self)
+	InteriorEnterExitManager:getSingleton():sendInteriorEnterExitToClient(self)
+	GrowableManager:getSingleton():sendGrowablesToClient(self)
+	PedScale:getSingleton():updateClients(self)
 end
 
 function Player:createCharacter()
@@ -216,7 +259,7 @@ function Player:loadCharacterInfo()
 		return
 	end
 
-	local row = sql:asyncQueryFetchSingle("SELECT Health, Armor, Weapons, UniqueInterior, IsDead, BetaPlayer, TakeWeaponsOnLogin FROM ??_character WHERE Id = ?", sql:getPrefix(), self.m_Id)
+	local row = sql:asyncQueryFetchSingle("SELECT PlayTime, Health, Armor, Hunger, Weapons, UniqueInterior, IsDead, BetaPlayer, TakeWeaponsOnLogin, RadioCommunication FROM ??_character WHERE Id = ?", sql:getPrefix(), self.m_Id)
 	if not row then
 		return false
 	end
@@ -232,6 +275,11 @@ function Player:loadCharacterInfo()
 	-- Load health data
 	self.m_Health = row.Health
 	self.m_Armor = row.Armor
+	self.m_Hunger = row.Hunger
+	self.m_StartTime = row.PlayTime
+	self.m_PlayTimeAtLastSave = row.PlayTime
+	self.m_LoginTime = getRealTime().timestamp
+	self.m_JoinTime = getTickCount()
 
 	-- Load weapons
 	self.m_Weapons = fromJSON(row.Weapons or "") or {}
@@ -253,6 +301,7 @@ function Player:loadCharacterInfo()
 	VehicleCategory:getSingleton():syncWithClient(self)
 
 	self.m_IsDead = row.IsDead or 0
+	self.m_SpawnedDead = self.m_IsDead
 
 	-- Group blips
 	local props = GroupPropertyManager:getSingleton():getPropsForPlayer( self )
@@ -280,6 +329,12 @@ function Player:loadCharacterInfo()
 		self:sendShortMessage("Deine Waffen wurden abgenommen, weil du nicht richtig ausgeloggt wurdest!")
 		self:setTakeWeaponsOnLogin(false)
 	end
+
+	setElementData(self, "Badge", nil, true)
+	setElementData(self, "BadgeTitle", nil, true)
+	setElementData(self, "BadgeImage", nil, true)
+	setElementData(self, "Damage:isTreating", nil, true)
+	self:setPublicSync("LastHealTime", 0)
 end
 
 
@@ -287,6 +342,8 @@ function Player:initialiseBinds()
 	if self:getFaction() then
 		bindKey(self, "y", "down", "chatbox", "Fraktion")
 	end
+	bindKey(self, "horn", "both", PoliceAnnouncements:getSingleton().m_BindFunction)
+	bindKey(self, "aim_weapon", "both", Guns:getSingleton().m_GrenadeBind)
 end
 
 function Player:buckleSeatBelt(vehicle)
@@ -305,7 +362,12 @@ function Player:buckleSeatBelt(vehicle)
 	end
 
 	if self.vehicle then
-		self:sendShortMessage(_("Du hast dich %sgeschnallt!", self, self.m_SeatBelt and "an" or "ab"))
+		if self.m_SeatBelt then
+			self:sendShortMessage(_("Du hast dich angeschnallt!", self))
+		else
+			self:sendShortMessage(_("Du hast dich abgeschnallt!", self))
+		end
+		--self:sendShortMessage(_("Du hast dich %sgeschnallt!", self, self.m_SeatBelt and "an" or "ab"))
 	end
 end
 
@@ -346,10 +408,14 @@ function Player:save()
 		local sSkin = self.m_Skin
 		--if interior > 0 then dimension = self:getDimension() end Needed for places like LSPD-Garage
 		local spawnWithFac = self.m_SpawnWithFactionSkin and 1 or 0
-
+		if not self.m_PlayTimeAtLastSave then
+			outputServerLog("[PLAYER] Player " .. tostring(self.m_Id) .. " has no playTimeSave set - playtime " .. tostring(self:getPlayTime()))
+			self.m_PlayTimeAtLastSave = self:getPlayTime()
+		end
+		local timeDiff = self:getPlayTime() - self.m_PlayTimeAtLastSave
 		DatabasePlayer.save(self)
-		sql:queryExec("UPDATE ??_character SET PosX = ?, PosY = ?, PosZ = ?, Interior = ?, Dimension = ?, UniqueInterior = ?,Skin = ?, Health = ?, Armor = ?, Weapons = ?, PlayTime = ?, SpawnWithFacSkin = ?, IsDead =? WHERE Id = ?", sql:getPrefix(),
-			x, y, z, interior, dimension, self.m_UniqueInterior, sSkin, math.floor(sHealth), math.floor(sArmor), toJSON(weapons, true), self:getPlayTime(), spawnWithFac, self.m_IsDead or 0, self.m_Id)
+		sql:queryExec("UPDATE ??_character SET PosX = ?, PosY = ?, PosZ = ?, Interior = ?, Dimension = ?, UniqueInterior = ?,Skin = ?, Health = ?, Armor = ?, Weapons = ?, PlayTime = PlayTime + ?, SpawnWithFacSkin = ?, IsDead =?, Hunger = ? WHERE Id = ?", sql:getPrefix(),
+			x, y, z, interior, dimension, self.m_UniqueInterior, sSkin, math.floor(sHealth), math.floor(sArmor), toJSON(weapons, true), timeDiff, spawnWithFac, self.m_IsDead or 0, self.m_Hunger, self.m_Id)
 
 		VehicleManager:getSingleton():savePlayerVehicles(self)
 
@@ -360,6 +426,8 @@ function Player:save()
 		if DEBUG_LOAD_SAVE then
 			outputDebugString("Saved Data for Player "..self:getName())
 		end
+
+		self.m_PlayTimeAtLastSave = self:getPlayTime()
 	end
 end
 
@@ -367,6 +435,10 @@ function Player:spawn()
 	local quitTick = PlayerManager:getSingleton().m_QuitPlayers[self:getId()]
 	local spawnSuccess = false
 	local SpawnLocationProperty = self:getSpawnLocationProperty()
+
+	--Increasing the max. oxygen (must be done before the player spawns)
+	self:setStat(22, 1000)
+	self:setStat(225, 1000)
 
 	if not quitTick or (getTickCount() - quitTick > 300000) then
 		if self.m_SpawnLocation == SPAWN_LOCATIONS.DEFAULT then
@@ -408,8 +480,6 @@ function Player:spawn()
 				local position = companySpawnpoint[self:getCompany():getId()]
 				spawnSuccess = spawnPlayer(self, position[1], 0, self.m_Skin or 0, position[2], position[3])
 			end
-		--elseif self.m_SpawnLocation == SPAWN_LOCATIONS.GARAGE and self.m_LastGarageEntrance ~= 0 then
-		--	VehicleGarages:getSingleton():spawnPlayerInGarage(self, self.m_LastGarageEntrance)
 		elseif self.m_SpawnLocation == SPAWN_LOCATIONS.GROUP_BASE then
 			local groupProperties = GroupPropertyManager:getSingleton():getPropsForPlayer(self)
 			if self:getGroup() and #groupProperties > 0 then
@@ -433,6 +503,7 @@ function Player:spawn()
 	-- Apply and delete health data
 	self:setHealth(math.max(self.m_Health, 1))
 	self:setArmor(self.m_Armor)
+	self:setHunger(self.m_Hunger)
 	--self.m_Health, self.m_Armor = nil, nil -- this leads to errors as Player:spawn is called twice atm (--> introFinished event at the top)
 	-- Update Skin
 	self:setCorrectSkin()
@@ -440,7 +511,9 @@ function Player:spawn()
 
 	if self:isPremium() then
 		self:setArmor(100)
-		giveWeapon(self, 24, 35)
+		if self.m_JailTime == 0 then
+			giveWeapon(self, 24, 35)
+		end
 	end
 
 	if self.m_PrisonTime > 0 then
@@ -460,17 +533,29 @@ function Player:spawn()
 	setCameraTarget(self, self)
 	fadeCamera(self, true)
 
-	if self.m_IsDead == 1 then
-		if not self:getData("isInDeathMatch") then
-			self:setReviveWeapons()
-		end
-		killPed(self)
-	end
-
+	Timer(
+		function()
+			if self.m_IsDead == 1 then
+				if not self:getData("isInDeathMatch") then
+					self:setReviveWeapons()
+				end
+				self:kill()
+			end
+		end, 200, 1
+	)
+	
+	-- remove special items
+	self:getInventory():removeAllItem("Taser")
+	self:getInventory():removeAllItem("Warnkegel")
+	self:getInventory():removeAllItem("Barrikade")
+	self:getInventory():removeAllItem("Nagel-Band")
+	self:getInventory():removeAllItem("Blitzer")
+	self:getInventory():removeAllItem("Einsatzhelm")
+	self:getInventory():removeAllItem("Kevlar")
 	WearableManager:getSingleton():removeAllWearables(self)
 
 	if self.m_DeathInJail then
-		FactionState:getSingleton():Event_JailPlayer(self, false, true, false, true)
+		FactionState:getSingleton():Event_JailPlayer(self, false, true, false, true, nil, false, false, true)
 	end
 
 	self:triggerEvent("checkNoDm")
@@ -478,6 +563,7 @@ function Player:spawn()
 	triggerEvent("WeaponAttach:onInititate", self)
 
 	VehicleTexture.requestTextures(self)
+	ElementTexture.requestTextures(self)
 end
 
 function Player:respawn(position, rotation, bJailSpawn)
@@ -492,10 +578,12 @@ function Player:respawn(position, rotation, bJailSpawn)
 	end
 
 	if self.m_PrisonTime > 0 then
-		self:setPrison(self.m_PrisonTime, true)
+		self:setPrison(self:getRemainingPrisonTime(), true)
 	end
 
-	if self.m_JailTime == 0 or not self.m_JailTime then
+	PickupWeaponManager:getSingleton():detachWeapons(self)
+
+	if not self.m_JailTime or self.m_JailTime == 0 then
 		spawnPlayer(self, position, rotation, self.m_Skin or 0)
 	else
 		spawnPlayer(self, position, rotation, self.m_Skin or 0)
@@ -507,16 +595,12 @@ function Player:respawn(position, rotation, bJailSpawn)
 
 	self:setCorrectSkin()
 
-	if self:isPremium() then
-		self:setArmor(100)
-		giveWeapon(self, 24, 35)
-	end
-
 	self:setHeadless(false)
 	self:setOnFire(false)
 	setCameraTarget(self, self)
 	self:triggerEvent("checkNoDm")
 	self.m_IsDead = 0
+	self.m_SpawnedDead = 0
 	FactionState:getSingleton():uncuffPlayer(self)
 	setPedAnimation(self,false)
 	setElementAlpha(self,255)
@@ -525,17 +609,41 @@ function Player:respawn(position, rotation, bJailSpawn)
 	if self:getExecutionPed() then delete(self:getExecutionPed()) end
 
 	WearableManager:getSingleton():removeAllWearables(self)
-	if self.m_DeathInJail then
-		FactionState:getSingleton():Event_JailPlayer(self, false, true, false, true)
+	if self.m_SuicideEscape then
+		FactionState:getSingleton():Event_JailPlayer(self, false, true, self.m_LastCopAttack, false, nil, false, false, true)
+	elseif self.m_DeathInJail then
+		FactionState:getSingleton():Event_JailPlayer(self, false, true, false, true, nil, false, false, true)
 	end
+		
+	self.m_LastCopAttackTime = 0
+	self.m_LastCopAttack = nil
+	self.m_SuicideEscape = false
+
+	if self:isPremium() then
+		self:setArmor(100)
+		if self.m_JailTime == 0 then
+			giveWeapon(self, 24, 35)
+		end
+	end
+
+	if self:isInSewer() then
+		self:setInSewer(false)
+		self:triggerEvent("Sewers:removeTexture")
+	end
+
 	triggerEvent("WeaponAttach:removeAllWeapons", self)
 	triggerEvent("WeaponAttach:onInititate", self)
-
-	PrisonBreak.RemoveKeycard(self)
 end
 
 function Player:clearReviveWeapons()
 	self.m_ReviveWeaponsInfo = nil
+end
+
+function Player:dropReviveMoney()
+	if self.m_DeathMoneyDrop and self.m_DeathMoneyDrop > 0 then
+		PickupMoney:new(self.position.x, self.position.y, self.position.z, self.dimension, self.interior, self.m_DeathMoneyDrop)
+		self.m_DeathMoneyDrop = 0
+	end
 end
 
 function Player:dropReviveWeapons()
@@ -544,20 +652,27 @@ function Player:dropReviveWeapons()
 		local pickupWeapon, weapon, ammo, model, x, y, z, dim, int
 		for i = 1, 12 do
 			if self.m_ReviveWeaponsInfo[i] then
-				x,y,z = getElementPosition(self)
-				x,y = getPointFromDistanceRotation(x, y, 3, 360*(i/12))
+				px,py,z = getElementPosition(self)
+				x,y = getPointFromDistanceRotation(px, py, 3, 360*(i/12))
 				int = getElementInterior(self)
 				dim = getElementDimension(self)
 				weapon =  self.m_ReviveWeaponsInfo[i][1]
 				ammo = self.m_ReviveWeaponsInfo[i][2]
-				if weapon ~= 23 and weapon ~= 38 and weapon ~= 37 and weapon ~= 39 and  weapon ~= 16 and weapon ~= 17 and weapon ~= 9 then
-					pickupWeapon = PickupWeapon:new(x, y, z, int , dim, weapon, ammo, self)
+				if weapon ~= 23 and weapon ~= 38 and weapon ~= 37 and weapon ~= 39 and weapon ~= 42 and weapon ~= 9 then
+					pickupWeapon = PickupWeapon:new(x, y, z, int , dim, weapon, ammo, self, false, true, x-px, y-py)
 					if pickupWeapon then
 						self.m_ReviveWeapons[#self.m_ReviveWeapons+1] = pickupWeapon
 					end
 				end
 			end
 		end
+		--[[nextframe( Workaround, Pickups werden erst attached, wenn man den Skin kurz darauf wechselt (Warum auch immer...)
+			function ()
+				local model = self:getModel()
+				self:setModel(0)
+				self:setModel(model)
+			end
+		)]]
 		triggerEvent("WeaponAttach:removeAllWeapons", self)
 	end
 end
@@ -631,6 +746,7 @@ function Player:sendInfo(text, timeout, title)		self:triggerEvent("infoBox", tex
 function Player:sendSuccess(text, timeout, title)	self:triggerEvent("successBox", text)	end
 
 function Player:sendShortMessage(text, ...) self:triggerEvent("shortMessageBox", text, ...)	end
+function Player:deleteShortMessage(text) self:triggerEvent("shortMessageDelete", text) end
 
 function Player:sendTrayNotification(text, icon, sound)	self:triggerEvent("sendTrayNotification", text, icon, sound)	end
 
@@ -723,12 +839,14 @@ function Player:setFactionDuty(state)
 	self:setPublicSync("Faction:Duty", state)
 	self.m_FactionDuty = state
 	self:reloadBlips()
+	StatisticsLogger:getSingleton():addDutyLog(self:getId(), "faction", self:getFaction():getId(), state)
 end
 
 function Player:setCompanyDuty(state)
 	self:setPublicSync("Company:Duty", state)
 	self.m_CompanyDuty = state
 	self:reloadBlips()
+	StatisticsLogger:getSingleton():addDutyLog(self:getId(), "company", self:getCompany():getId(), state)
 end
 
 function Player:setJobDutySkin(skin)
@@ -788,6 +906,35 @@ end
 
 function Player:removeSyncListener(player)
 	self.m_SyncListener[player] = nil
+end
+
+function Player:addLastDamaged(player)
+	if player and isValidElement(player, "player") then
+		self.m_LastDamagedBy[player] = getRealTime().timestamp
+	end
+end
+
+function Player:removeLastDamaged(player)
+	self.m_LastDamagedBy[player] = nil
+end
+
+function Player:checkLastDamaged()
+	local now = getRealTime().timestamp
+	for player, tick in pairs(self.m_LastDamagedBy) do
+		if player and isValidElement(player, "player") then
+			if now - tick < 60*3 then
+				local secondsMinutes = string.format("%.2d:%.2d", (now - tick)/60%60, (now - tick)%60)
+				player:sendShortMessage(_("Der Spieler %s hat sich geheilt! (Zeit: %s Minuten)", player, self:getName(), secondsMinutes), _("Kampfheilung!", player), nil, -1)
+				self:removeLastDamaged(player)
+			else
+				if now - tick > 60*3 then
+					self:removeLastDamaged(player)
+				end
+			end
+		else
+			self:removeLastDamaged(player)
+		end
+	end
 end
 
 function Player:updateSync()
@@ -870,8 +1017,9 @@ function Player:payDay()
 
 	local income, outgoing, total = 0, 0, 0
 	local income_faction, income_company, income_group, income_interest = 0, 0, 0, 0
-	local outgoing_vehicles, outgoing_house = 0, 0
+	local outgoing_vehicles, outgoing_rent, outgoing_house, outgoing_income = 0, 0, 0, 0
 	local points_total = 0
+
 	--Income:
 	if self:getFaction() then
 		income_faction = self:getFaction():paydayPlayer(self)
@@ -882,6 +1030,7 @@ function Player:payDay()
 			self:addPaydayText("income", _("%s-Lohn", self, self:getFaction():getShortName()), income_faction)
 		end
 	end
+
 	if self:getCompany() then
 		income_company = self:getCompany():paydayPlayer(self)
 		points_total = points_total + self:getCompany():getPlayerRank(self)
@@ -891,6 +1040,7 @@ function Player:payDay()
 			self:addPaydayText("income", _("%s-Lohn", self, self:getCompany():getShortName()), income_company)
 		end
 	end
+	
 	if self:getGroup() then
 		income_group = self:getGroup():paydayPlayer(self)
 		points_total = points_total + self:getGroup():getPlayerRank(self)
@@ -899,6 +1049,14 @@ function Player:payDay()
 			self:getGroup():transferMoney({self, true, true}, income_group, ("Lohn für %s"):format(self:getName()), "Group", "Loan", {silent = true})
 			self:addPaydayText("income", _("%s-Lohn", self, self:getGroup():getName()), income_group)
 		end
+	end
+
+	local combined_loan = income_faction + income_company
+	if combined_loan < PAYDAY_UNEMPLOYED then
+		income_unemployed = PAYDAY_UNEMPLOYED - combined_loan
+		income = income + income_unemployed
+		BankServer.get("server.bank"):transferMoney({self, true, true}, income_unemployed, "Grundsicherung", "Bank", "Interest", {silent = true})
+		self:addPaydayText("income", _("Grundsicherung", self), income_unemployed)
 	end
 
 	if EVENT_HALLOWEEN and self.m_HalloweenPaydayBonus then
@@ -911,63 +1069,86 @@ function Player:payDay()
 		income = income + 200
 		BankServer.get("event.christmas"):transferMoney({self, true, true}, 200, "Weihnachtsgeld", "Event", "ChristmasBonus", {silent = true})
 		self:addPaydayText("income", _("Weihnachtsgeld", self), 200)
+
+		if self:getFaction() and not self:getFaction():isRescueFaction() and ChristmasTruckManager:getSingleton():getPresentsCount(self:getFaction()) then
+			local presentCount = ChristmasTruckManager:getSingleton():getPresentsCount(self:getFaction())
+			local presentMoney = presentCount * ChristmasTruckManager.MoneyBonusPerPresent
+			income = income + presentMoney
+			BankServer.get("event.christmas"):transferMoney({self, true, true}, presentMoney, "Weihnachtsbaum-Bonus", "Event", "ChristmasBonus", {silent = true})
+			self:addPaydayText("income", _("Weihnachtsbaum-Bonus", self), presentMoney)
+		end
 	end
 
-	income_interest = math.floor(self:getBankMoney()*0.01)
+	--[[ income_interest = math.floor(self:getBankMoney() * 0.01)
 	if income_interest > 1500 then income_interest = 1500 end
 	if income_interest > 0 then
 		income = income + income_interest
 		BankServer.get("server.bank"):transferMoney({self, true, true}, income_interest, "Bankzinsen", "Bank", "Interest", {silent = true})
 		self:addPaydayText("income", _("Bankzinsen", self), income_interest)
 		points_total = points_total + math.floor(income_interest/500)
-	end
+	end ]]
 
 	--noob bonus
 	if self:getPlayTime() <= PAYDAY_NOOB_BONUS_MAX_PLAYTIME * 60 then
 		income = income + PAYDAY_NOOB_BONUS
 		BankServer.get("server.bank"):transferMoney({self, true, true}, PAYDAY_NOOB_BONUS, "Willkommens-Bonus", "Gameplay", "NoobBonus", {silent = true})
 		self:addPaydayText("income", _("Willkommens-Bonus", self), PAYDAY_NOOB_BONUS)
-	end
+	end 
 
 	--Outgoing
 	local temp_bank_money = self:getBankMoney() + income
 
-	outgoing_vehicles, vehiclesTaxAmount = self:calcVehiclesTax()
-	if outgoing_vehicles > 0 then
-		self:addPaydayText("outgoing", _("Fahrzeugsteuer", self), outgoing_vehicles)
-		self:transferBankMoney({BankServer.get("server.vehicle_tax"), nil, nil, true}, outgoing_vehicles, _("Fahrzeugsteuer", self), "Vehicle", "Tax", {silent = true, allowNegative = true})
-		temp_bank_money = temp_bank_money - outgoing_vehicles
-		points_total = points_total + vehiclesTaxAmount*2
+	if combined_loan > PAYDAY_UNEMPLOYED then
+		outgoing_income = math.round(combined_loan * math.clamp(0.05, combined_loan / 10000, 0.25))
+		if (combined_loan - outgoing_income) < PAYDAY_UNEMPLOYED then
+			outgoing_income = combined_loan - PAYDAY_UNEMPLOYED
+		end
+		self:addPaydayText("outgoing", _("Lohnsteuer", self), outgoing_income)
+		self:transferBankMoney({BankServer.get("server.loan_tax"), nil, nil, true}, outgoing_income, _("Lohnsteuer", self), "Loan", "Tax", {silent = true, allowNegative = true})
+		temp_bank_money = temp_bank_money - outgoing_income
+		points_total = points_total + math.floor(outgoing_income / 100)
 	end
 
 	if HouseManager:isInstantiated() then
 		local houses = HouseManager:getSingleton():getPlayerRentedHouses(self)
 		for index, house in pairs(houses) do
 			local rent = house:getRent()
-			if self:getBankMoney() - rent >= 0 then
-				outgoing_house = outgoing_house + rent
-				temp_bank_money = temp_bank_money - rent
-				points_total = points_total + 1
-				self:transferBankMoney({house.m_BankAccount, nil, nil, true}, outgoing_house, _("Miete an %s von %s", self, Account.getNameFromId(house:getOwner()), self:getName()), "House", "Rent", {silent = true})
-				self:addPaydayText("outgoing", _("Miete an %s", self, Account.getNameFromId(house:getOwner())), rent)
-			else
-				self:addPaydayText("info", _("Du konntest die Miete von %s's Haus nicht bezahlen.", self, Account.getNameFromId(house:getOwner())))
-				house:unrentHouse(self, true)
+			if rent > 0 then
+				if self:getBankMoney() - rent >= 0 then
+					outgoing_rent = outgoing_rent + rent
+					temp_bank_money = temp_bank_money - rent
+					points_total = points_total + 1
+					self:transferBankMoney({house.m_BankAccount, nil, nil, true}, rent, _("Miete an %s von %s", self, Account.getNameFromId(house:getOwner()), self:getName()), "House", "Rent", {silent = true})
+					self:addPaydayText("outgoing", _("Miete an %s", self, Account.getNameFromId(house:getOwner())), rent)
+				else
+					self:addPaydayText("info", _("Du konntest die Miete von %s's Haus nicht bezahlen.", self, Account.getNameFromId(house:getOwner())))
+					house:unrentHouse(self, true)
+				end
 			end
 		end
-		--give points if the player owns a house
-		if HouseManager:getSingleton():getPlayerHouse(self) then
-			points_total = points_total + 10
+		local house = HouseManager:getSingleton():getPlayerHouse(self)
+		if house then
+			outgoing_house = outgoing_house + house.m_BuyPrice / 1000
+			self:addPaydayText("outgoing", _("Grundsteuer", self), outgoing_house)
+			self:transferBankMoney({BankServer.get("server.property_tax"), nil, nil, true}, outgoing_house, _("Grundsteuer", self), "Property", "Tax", {silent = true, allowNegative = true})
+			temp_bank_money = temp_bank_money - outgoing_house
+			points_total = points_total + math.ceil(house.m_BuyPrice / 10000)
 		end
 	end
 
-	outgoing = outgoing_vehicles + outgoing_house
+	outgoing_vehicles, vehiclesTaxAmount = self:calcVehiclesTax()
+	if outgoing_vehicles > 0 then
+		self:addPaydayText("outgoing", _("Fahrzeugsteuer", self), outgoing_vehicles)
+		self:transferBankMoney({BankServer.get("server.vehicle_tax"), nil, nil, true}, outgoing_vehicles, _("Fahrzeugsteuer", self), "Vehicle", "Tax", {silent = true, allowNegative = true})
+		temp_bank_money = temp_bank_money - outgoing_vehicles
+		points_total = points_total + vehiclesTaxAmount * 2
+	end
 
+	outgoing = outgoing_vehicles + outgoing_rent + outgoing_house + outgoing_income
 	total = income - outgoing
 	self:addPaydayText("totalIncome", "", income)
 	self:addPaydayText("totalOutgoing", "", outgoing)
 	self:addPaydayText("total", "Total", total)
-
 
 	if self:getWanteds() > 0 then
 		self:addPaydayText("info", _("Dir wurde ein Wanted erlassen!", self))
@@ -985,8 +1166,20 @@ function Player:payDay()
 	if EVENT_CHRISTMAS then
 		self:addPaydayText("info", _("Du hast 3 Zuckerstangen bekommen!", self))
 		self:getInventory():giveItem("Zuckerstange", 3)
+
+		if self:getFaction() and not self:getFaction():isRescueFaction() and ChristmasTruckManager:getSingleton():getPresentsCount(self:getFaction()) then
+			local presentCount = ChristmasTruckManager:getSingleton():getPresentsCount(self:getFaction())
+			if presentCount >= ChristmasTruckManager.MaxPresents then
+				self:addPaydayText("info", _("Du hast %s zusätzliche Zuckerstangen bekommen (Voller Baum)!", self, ChristmasTruckManager.SugarcaneBonusIfFull))
+				self:getInventory():giveItem("Zuckerstange", ChristmasTruckManager.SugarcaneBonusIfFull)
+			end
+		end
 	end
 
+	if EVENT_HALLOWEEN then
+		self:addPaydayText("info", _("Du hast 5 Süßigkeiten bekommen!", self))
+		self:getInventory():giveItem("Suessigkeiten", 5)
+	end
 
 	triggerClientEvent ( self, "paydayBox", self, self.m_paydayTexts)
 	-- Add Payday again
@@ -998,7 +1191,7 @@ function Player:calcVehiclesTax()
 	local tax = 0
 	local amount = 0
 	for key, vehicle in pairs(self:getVehicles()) do
-		if vehicle:getTax() > 0 then
+		if vehicle:getTax() > 0 and not vehicle:isPremiumVehicle() and not vehicle:isUnregistered()  then
 			tax = tax + vehicle:getTax()
 			amount = amount + 1
 		end
@@ -1017,6 +1210,10 @@ end
 function Player:togglePhone(status)
 	self.m_PhoneOn = status
 	self:setPublicSync("Phone", status)
+
+	if not status and self:getFaction() and self:getFaction():isEvilFaction() then
+		FactionManager:getSingleton():Event_stopNeedhelp(self)
+	end
 end
 
 function Player:isPhoneEnabled()
@@ -1065,7 +1262,7 @@ function Player:__giveBankMoney(money, reason, silent) -- Overriden
 	local success = DatabasePlayer.__giveBankMoney(self, money, reason, silent)
 	if success then
 		if money ~= 0 and not silent then
-			self:sendShortMessage(("%s$%s"):format("+"..money, reason ~= nil and " - "..reason or ""), "SA National Bank (Konto)", {0, 94, 255}, 3000)
+			self:sendShortMessage(("%s%s"):format("+"..toMoneyString(money), reason ~= nil and " - "..reason or ""), "SA National Bank (Konto)", {0, 94, 255}, 3000)
 		end
 		self:triggerEvent("playerCashChange", bNoSound)
 	end
@@ -1077,7 +1274,7 @@ function Player:__takeBankMoney(money, reason, silent) -- Overriden
 	local success = DatabasePlayer.__takeBankMoney(self, money, reason, silent)
 	if success then
 		if money ~= 0 and not silent then
-			self:sendShortMessage(("%s$%s"):format("-"..money, reason ~= nil and " - "..reason or ""), "SA National Bank (Konto)", {0, 94, 255}, 3000)
+			self:sendShortMessage(("%s%s"):format("-"..toMoneyString(money), reason ~= nil and " - "..reason or ""), "SA National Bank (Konto)", {0, 94, 255}, 3000)
 		end
 		self:triggerEvent("playerCashChange", bNoSound)
 	end
@@ -1115,47 +1312,6 @@ end
 
 function Player.getScreamHook()
 	return Player.ms_ScreamHook
-end
-
-function Player:setKarma(karma)
-	if karma < 0 and self.m_Karma >= 0 then
-		self:giveAchievement(1)
-	end
-	if karma >= 0 and self.m_Karma < 0 then
-		self:giveAchievement(2)
-	end
-
-	DatabasePlayer.setKarma(self, karma)
-end
-
-function Player:giveKarma(karma, reason, bNoSound, silent)
-	if not karma then return false end
-	local oldKarma = self.m_Karma
-	local success = DatabasePlayer.giveKarma(self, karma, reason)
-	if success then
-		if karma < 0 and self.m_Karma >= 0 then
-			self:giveAchievement(1)
-		end
-		if karma ~= 0 and not silent then
-			self:sendShortMessage(("%s Karma%s"):format("+"..karma, reason ~= nil and " - "..reason or ""), "Spielfortschritt", {0, 94, 255}, 3000)
-		end
-	end
-	return success
-end
-
-function Player:takeKarma(karma, reason, bNoSound, silent)
-	if not karma or karma < 1 then return false end
-	local oldKarma = self.m_Karma
-	local success = DatabasePlayer.takeKarma(self, karma, reason)
-	if success then
-		if oldKarma >= 0 and self.m_Karma < 0 then
-			self:giveAchievement(2)
-		end
-		if karma ~= 0 and not silent then
-			self:sendShortMessage(("%s Karma%s"):format("-"..karma, reason ~= nil and " - "..reason or ""), "Spielfortschritt", {0, 94, 255}, 3000)
-		end
-	end
-	return success
 end
 
 function Player:givePoints(p, reason, bNoSound, silent) -- Overriden
@@ -1205,14 +1361,6 @@ function Player:giveCombinedReward(reason, tblReward)
 					self:takePoints(math.abs(amount), reason, false, true)
 					smText = smText .. ("%s Punkte\n"):format(amount)
 				end
-			elseif name == "karma" then
-				if amount > 0 then
-					self:giveKarma(amount, reason, false, true)
-					smText = smText .. ("+%s Karma\n"):format(amount)
-				elseif amount < 0 then
-					self:takeKarma(math.abs(amount), reason, false, true)
-					smText = smText .. ("%s Karma\n"):format(amount)
-				end
 			end
 		end
 	end
@@ -1235,7 +1383,7 @@ function Player:setLastChatMessage(msg)
 end
 
 
-function Player:getPlayersInChatRange( irange)
+function Player:getPlayersInChatRange(irange, lang)
 	local range
 	if irange == 0 then
 		range = CHAT_WHISPER_RANGE
@@ -1250,14 +1398,16 @@ function Player:getPlayersInChatRange( irange)
 	local playersInRange = {}
 	local elementTable = getElementsByType("player")
 	local player,dimension,interior,check
-	for index = 1,#elementTable do
-		if (pos - elementTable[index]:getPosition()).length <= range then
-			player = elementTable[index]
+	for index = 1, #elementTable do
+		player = elementTable[index]
+		if (pos - player:getPosition()).length <= range then
 			dimension = player.dimension
 			interior = player.interior
 			if interior == self.interior then
 				if dimension == self.dimension then
-					playersInRange[#playersInRange+1] = player
+					if not lang or player:getLocale() == lang then
+						playersInRange[#playersInRange + 1] = player
+					end					
 				end
 			end
 		end
@@ -1265,7 +1415,7 @@ function Player:getPlayersInChatRange( irange)
 	return playersInRange
 end
 
-function Player:toggleControlsWhileObjectAttached(bool, blockWeapons, blockSprint, blockJump, blockVehicle)
+function Player:toggleControlsWhileObjectAttached(bool, blockWeapons, blockSprint, blockJump, blockVehicle, blockFlyingVehicle)
 	--if bool == true --enable controls, else, disable controls
 	if (bool and (blockWeapons and not getElementData(self,"schutzzone")) or (not bool and blockWeapons)) then
 		toggleControl(self, "fire", bool )
@@ -1275,8 +1425,11 @@ function Player:toggleControlsWhileObjectAttached(bool, blockWeapons, blockSprin
 	if blockSprint then		toggleControl(self, "sprint", bool)	end
 	if blockJump then	toggleControl(self, "jump", bool)	end
 	if blockVehicle then
-		toggleControl(self, "enter_exit", bool)
-		toggleControl(self, "enter_passenger", bool)
+		self:setData("PreventVehicles", not bool, true)
+	end
+	if blockFlyingVehicle or blockVehicle then
+		self:setData("PreventFlyingVehicles", not bool, true)
+		setElementData(self, "preventHeliGrab", not bool)
 	end
 end
 
@@ -1285,14 +1438,25 @@ function Player:attachPlayerObject(object)
 	if PlayerAttachObjects[model] then
 		if not self:getPlayerAttachedObject() then
 			local settings = PlayerAttachObjects[model]
-			if settings.blockVehicle and self.vehicle then
-				self:sendError(_("Mit diesem Objekt kannst du nicht in Fahrzeuge einsteigen!", self))
+			-- first, check if the player is in any blocked vehicle and stop attaching the object
+			if settings.blockVehicle and (self.vehicle or (getElementAttachedTo(self) and getElementType(getElementAttachedTo(self)) == "vehicle")) then
+				self:sendError(_("Mit diesem Objekt kannst du dich nicht in Fahrzeugen befinden!", self))
 				return false
+			end
+			if settings.blockFlyingVehicles then
+				local veh = self.vehicle or (getElementAttachedTo(self) and getElementType(getElementAttachedTo(self)) == "vehicle" and getElementAttachedTo(self))
+				if veh and veh:isAirVehicle() or self:getPublicSync("isDoingHelicopterDriveby") then
+					self:sendError(_("Mit diesem Objekt kannst du dich nicht in Fluggeräten befinden!", self))
+					return false
+				end
 			end
 			self.m_PlayerAttachedObject = object
 			self:setPrivateSync("attachedObject", object)
 			object:setCollisionsEnabled(false)
 			object:setDoubleSided(true)
+			if settings.scale then
+				object:setScale(settings.scale.x or 1, settings.scale.y or 1, settings.scale.z or 1)
+			end
 			if settings["bone"] then
 				exports.bone_attach:attachElementToBone(object, self, settings["bone"], settings["pos"].x, settings["pos"].y, settings["pos"].z, settings["rot"].x, settings["rot"].y, settings["rot"].z)
 			else
@@ -1303,18 +1467,21 @@ function Player:attachPlayerObject(object)
 				self:setAnimation(unpack(settings["animationData"]))
 			end
 
-			self:toggleControlsWhileObjectAttached(false, settings["blockWeapons"], settings["blockSprint"], settings["blockJump"], settings["blockVehicle"])
+			self.m_PlayerAttachedObjectSettings = {settings["blockWeapons"], settings["blockSprint"], settings["blockJump"], settings["blockVehicle"], settings["blockFlyingVehicles"]}
+			self:toggleControlsWhileObjectAttached(false, unpack(self.m_PlayerAttachedObjectSettings))
 
 			if settings.placeDown then
-				self:sendShortMessage(_("Drücke 'n' um den/die %s abzulegen!", self, settings["name"]))
-				bindKey(self, "n", "down", self.m_detachPlayerObjectBindFunc, object)
+				--self:sendShortMessage(_("Drücke 'n' um den/die %s abzulegen!", self, settings["name"]))
+				--bindKey(self, "n", "down", self.m_detachPlayerObjectBindFunc, object)
 			end
 
 			self.m_RefreshAttachedObject = bind(self.refreshAttachedObject, self)
+			self.m_DetachOnPlayerQuit = bind(self.Event_detachObjectOnQuit, self)
 			addEventHandler("onElementDimensionChange", self, self.m_RefreshAttachedObject)
 			addEventHandler("onElementInteriorChange", self, self.m_RefreshAttachedObject)
 			addEventHandler("onPlayerWasted", self, self.m_RefreshAttachedObject)
 			addEventHandler("onElementDestroy", object, self.m_detachPlayerObjectFunc)
+			addEventHandler("onPlayerQuit", self, self.m_DetachOnPlayerQuit)
 			return true
 		else
 			self:sendError(_("Du hast bereits ein Objekt dabei!", self))
@@ -1352,9 +1519,12 @@ function Player:detachPlayerObject(object, collisionNextFrame)
 		local model = object.model
 		if PlayerAttachObjects[model] then
 			local settings = PlayerAttachObjects[model]
-			self:toggleControlsWhileObjectAttached(true, settings["blockWeapons"], settings["blockSprint"], settings["blockJump"], settings["blockVehicle"])
+			self:toggleControlsWhileObjectAttached(true, unpack(self.m_PlayerAttachedObjectSettings))
 			object:detach(self)
 			removeEventHandler("onElementDestroy", object, self.m_detachPlayerObjectFunc)
+			if settings.scale then
+				object:setScale(1, 1, 1)
+			end
 			if settings["bone"] then
 				exports.bone_attach:detachElementFromBone(object)
 			else
@@ -1373,12 +1543,13 @@ function Player:detachPlayerObject(object, collisionNextFrame)
 		self:toggleControlsWhileObjectAttached(true, true, true, true, true) --fallback to re-enable all controls
 	end
 
-	unbindKey(self, "n", "down", self.m_detachPlayerObjectBindFunc)
+	--unbindKey(self, "n", "down", self.m_detachPlayerObjectBindFunc)
 	self:setAnimation("carry", "crry_prtial", 1, false, true, true, false) -- Stop Animation Work Arround
 	if self.m_PlayerAttachedObject then
 		removeEventHandler("onElementDimensionChange", self, self.m_RefreshAttachedObject)
 		removeEventHandler("onElementInteriorChange", self, self.m_RefreshAttachedObject)
 		removeEventHandler("onPlayerWasted", self, self.m_RefreshAttachedObject)
+		removeEventHandler("onPlayerQuit", self, self.m_DetachOnPlayerQuit)
 		self.m_PlayerAttachedObject = nil
 		self:setPrivateSync("attachedObject", false)
 	end
@@ -1391,6 +1562,16 @@ function Player:getPlayerAttachedObject()
 	return self.m_PlayerAttachedObject
 end
 
+function Player:dropPlayerAttachedObjectOnDamage()
+	if self.m_PlayerAttachedObject and self.m_PlayerAttachedObject:getModel() == 2912 then
+		self:detachPlayerObject(self:getPlayerAttachedObject(), true)
+	end
+end
+
+function Player:Event_detachObjectOnQuit()
+	self:detachPlayerObject(self:getPlayerAttachedObject(), true)
+end
+
 function Player:attachToVehicle(forceDetach)
 	if self:getPrivateSync("isAttachedToVehicle") then
 		self:setPrivateSync("isAttachedToVehicle", false)
@@ -1398,8 +1579,10 @@ function Player:attachToVehicle(forceDetach)
 		return
 	end
 
+	if self:getData("PreventVehicles") then return self:sendError(_("Du kannst dich mit deinem Objekt nicht am Fahrzeug festhalten!", self)) end
+
 	if forceDetach or not self.contactElement or self.contactElement:getType() ~= "vehicle" then return end
-	if self.contactElement:getVehicleType() == VehicleType.Boat or VEHICLE_PICKUP[self.contactElement:getModel()] then
+	if (self.contactElement:getVehicleType() == VehicleType.Boat or VEHICLE_PICKUP[self.contactElement:getModel()]) or (self:getPublicSync("supportMode") and self:getRank() >= RANK.Administrator) then
 		if self.contactElement:getSpeed() < 20 then
 			local px, py, pz = getElementPosition(self)
 			local vx, vy, vz = getElementPosition(self.contactElement)
@@ -1462,39 +1645,40 @@ function Player:endPrison()
 	end
 end
 
-function Player:meChat(system, ...)
+function Player:meChat(system, text, format, translateFormat, lang)
 	if self:isDead() then
 		return
 	end
 
-	local argTable = { ... }
-	local text = table.concat ( argTable , " " )
-	local playersToSend = self:getPlayersInChatRange( 1 )
+	local playersToSend = self:getPlayersInChatRange(1, lang)
 	local systemText = ""
 	local receivedPlayers = {}
-	local message = ("%s %s"):format(self:getName(), text)
-	if system == true then systemText = "★" end
-	for index = 1,#playersToSend do
-		outputChatBox(("%s %s"):format(systemText, message), playersToSend[index], 255,105,180)
+	local senderName = self:getName()
+	local message = ""
+	for index = 1, #playersToSend do
+		if system == true then
+			message = ("★ %s %s"):format(senderName, _(text, playersToSend[index], translateFormat and _(format, playersToSend[index]) or format))
+		else
+			message = ("%s %s"):format(senderName, text) 
+		end
+		outputChatBox(message, playersToSend[index], 255, 105, 180)
 		if playersToSend[index] ~= self then
 			receivedPlayers[#receivedPlayers+1] = playersToSend[index]:getName()
 		end
-
 	end
 end
 
-function Player:sendPedChatMessage( name, ...)
+function Player:sendPedChatMessage(name, ...)
 	if self:isDead() then
 		return
 	end
 	local argTable = { ... }
 	local text = table.concat ( argTable , " " )
 	local playersToSend = self:getPlayersInChatRange( 1 )
-	local systemText = name.." sagt:"
 	local receivedPlayers = {}
 	local message = text
 	for index = 1,#playersToSend do
-		outputChatBox(("%s %s"):format(systemText, message), playersToSend[index], 220,220,220)
+		outputChatBox(_("%s sagt: %s", playersToSend[index], name, message), playersToSend[index], 220, 220, 220)
 		if playersToSend[index] ~= self then
 			receivedPlayers[#receivedPlayers+1] = playersToSend[index]:getName()
 		end
@@ -1502,18 +1686,15 @@ function Player:sendPedChatMessage( name, ...)
 	end
 end
 
-function Player:districtChat(...)
+function Player:districtChat(text, ...)
 	if self:isDead() then
 		return
 	end
 	local argTable = { ... }
-	local text = table.concat ( argTable , " " )
 	local playersToSend = self:getPlayersInChatRange( 3 )
 	local receivedPlayers = {}
-	local message = ("%s"):format(text)
-	local systemText = "✪"
 	for index = 1,#playersToSend do
-		outputChatBox(("%s %s"):format(systemText, message), playersToSend[index],192, 196, 194)
+		outputChatBox(("✪ %s"):format(_(text, playersToSend[index], table.concat(argTable, " "))), playersToSend[index],192, 196, 194)
 		if playersToSend[index] ~= self then
 			receivedPlayers[#receivedPlayers+1] = playersToSend[index]:getName()
 		end
@@ -1521,6 +1702,7 @@ function Player:districtChat(...)
 end
 
 function Player:moveToJail(CUTSCENE, alreadySpawned)
+	if self.m_PrisonTime > 0 then return end
 	if self.m_JailTime > 0 then
 		if not alreadySpawned and not self.m_DeathInJail then
 			self:respawn(false, false, true)
@@ -1560,7 +1742,7 @@ function Player:moveToJail(CUTSCENE, alreadySpawned)
 			end, self.m_JailTime * 60000, 1
 		)
 
-		self:triggerEvent("playerJailed", self.m_JailTime, CUTSCENE)
+		--self:triggerEvent("playerJailed", self.m_JailTime, CUTSCENE)
 	end
 end
 
@@ -1651,4 +1833,88 @@ end
 
 function Player:getWalkingstyle()
 	return self.m_WalkingStyle or 0
+end
+
+function Player:setBadge(badgeTitle, badgeId, badgeImage)
+	setElementData(self, "Badge", badgeId, true)
+	setElementData(self, "BadgeTitle", badgeTitle, true)
+	setElementData(self, "BadgeImage", badgeImage, true)
+end
+
+function Player:setThrowingObject(object)
+	self.m_ThrowingObject = object
+end
+
+function Player:getThrowingObject() return self.m_ThrowingObject end
+
+function Player:setScale(scaleX, scaleY, scaleZ, offset)
+	PedScale:getSingleton():setPedScale(self, scaleX, scaleY, scaleZ, offset)
+end
+
+function Player:removeScale()
+	PedScale:getSingleton():removePedScale(self)
+end
+
+function Player:isDisconnecting()
+	return self.m_Disconnecting or false
+end
+
+function Player:setGhostMode(state)
+	self:setAlpha(state and 150 or 255)
+	self.m_GhostMode = state
+end
+
+function Player:isInGhostMode()
+	return self.m_GhostMode
+end
+
+function Player:isEating()
+	return self.m_IsEating
+end
+
+function Player:getExtraVehicleClots()
+
+end
+
+function Player:getMaxVehicles()
+	local bonus = self.m_Premium:isPremium() and 2 or 0
+	return math.floor(self:getVehicleLevel() * MAX_VEHICLES_PER_LEVEL) + self:getVehicleExtraSlots() + bonus
+end
+
+function Player:getVehicleCountWithoutPrem()
+	local nonPremCarsCount = 0
+	for i, v in pairs(self:getVehicles()) do
+		if not v:isPremiumVehicle() then
+			nonPremCarsCount = nonPremCarsCount + 1
+		end
+	end
+	return nonPremCarsCount
+end
+
+function Player:setHunger(hunger)
+	local oldHunger = self.m_Hunger
+	local hunger = math.min(100, hunger)
+
+	if self.m_AlcoholLevel <= 0 and not self:isStateCuffed() then
+		if hunger <= 20 then
+			self:toggleControl("sprint", false)
+		else
+			self:toggleControl("sprint", true)
+		end
+	end
+	
+	if (oldHunger > 20 and hunger <= 20) or (oldHunger > 10 and hunger <= 10) or (oldHunger > 5 and hunger <= 5) then
+		self:sendWarning(_("Du musst dringend etwas essen, sonst stirbst du!", self))
+	elseif hunger <= 0 then
+		self:sendShortMessage(_("Du wurdest wegen akuter Mangelernährung außer Gefecht gesetzt!", self))
+		nextframe(function() self:kill() end)
+		hunger = Randomizer:get(40, 60)
+	end
+
+	self.m_Hunger = hunger
+	self:setPublicSync("Hunger", hunger)
+end
+
+function Player:getHunger()
+	return self.m_Hunger
 end

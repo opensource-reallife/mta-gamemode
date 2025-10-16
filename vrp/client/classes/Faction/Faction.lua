@@ -5,221 +5,10 @@
 -- *  PURPOSE:     Faction Client
 -- *
 -- ****************************************************************************
-FactionManager = inherit(Singleton)
-FactionManager.Map = {}
-
-function FactionManager:constructor()
-	triggerServerEvent("getFactions", localPlayer)
-
-	self.m_NeedHelpBlip = {}
-
-	addRemoteEvents{"loadClientFaction", "factionStateStartCuff","stateFactionOfferTicket"; "updateCuffImage","playerSelfArrest", "factionEvilStartRaid","SpeedCam:showSpeeder"}
-	addEventHandler("loadClientFaction", root, bind(self.loadFaction, self))
-	addEventHandler("factionStateStartCuff", root, bind(self.stateFactionStartCuff, self))
-	addEventHandler("factionEvilStartRaid", root, bind(self.factionEvilStartRaid, self))
-	addEventHandler("stateFactionOfferTicket", root, bind(self.stateFactionOfferTicket, self))
-	addEventHandler("updateCuffImage", root, bind(self.Event_onPlayerCuff, self))
-	addEventHandler("playerSelfArrest", localPlayer, bind(self.Event_selfArrestMarker, self))
-	addEventHandler("SpeedCam:showSpeeder", localPlayer, bind(self.Event_OnSpeederCatch,self))
-
-	self.m_DrawSpeed = bind(self.OnRenderSpeed, self)
-	self.m_DrawCuffFunc = bind(self.drawCuff, self)
-end
-
-function FactionManager:loadFaction(Id, name, name_short, rankNames, factionType, color, navigationPosition)
-	FactionManager.Map[Id] = Faction:new(Id, name, name_short, rankNames, factionType, color, navigationPosition)
-end
-
-function FactionManager:stateFactionStartCuff( target )
-	if target then
-		local timer = localPlayer.stateCuffTimer
-		if timer then
-			if isTimer(timer) then
-				killTimer(timer)
-			end
-		end
-		localPlayer.m_CuffTarget = target
-		localPlayer.stateCuffTimer = setTimer( self.endStateFactionCuff, 10000, 1)
-	end
-end
-
-
-function FactionManager:factionEvilStartRaid(target)
-	if target then
-		local timer = localPlayer.evilRaidTimer
-		if timer then
-			if isTimer(timer) then
-				killTimer(timer)
-			end
-		end
-		localPlayer.m_evilRaidTarget = target
-		localPlayer.evilRaidTimer = setTimer(self.endEvilFactionRaid, 15000, 1)
-	end
-end
-
-function FactionManager:endEvilFactionRaid()
-	local target = localPlayer.m_evilRaidTarget
-	if target then
-		if getDistanceBetweenPoints3D(target:getPosition(), localPlayer:getPosition()) <= 5 and not (target.vehicle and localPlayer:isSurfOnCar(target.vehicle)) then
-			triggerServerEvent("factionEvilSuccessRaid", localPlayer, localPlayer.m_evilRaidTarget)
-		else
-			triggerServerEvent("factionEvilFailedRaid", localPlayer, localPlayer.m_evilRaidTarget)
-		end
-	end
-end
-
-function FactionManager:Event_onPlayerCuff( bool )
-	removeEventHandler("onClientRender",root, self.m_DrawCuffFunc)
-	if bool then
-		addEventHandler("onClientRender",root, self.m_DrawCuffFunc)
-	end
-end
-
-function FactionManager:drawCuff()
-	dxDrawImage(screenWidth*0.88, screenHeight - screenWidth*0.1, screenWidth*0.08,screenWidth*0.0436,"files/images/Other/cuff.png")
-end
-
-function FactionManager:Event_selfArrestMarker( client )
-	if not localPlayer.m_selfArrest then
-		localPlayer.m_selfArrest = true
-		QuestionBox:new(
-			_"Möchtest du dich mit Kaution stellen?",
-			function ()
-				triggerServerEvent("playerSelfArrestConfirm", root )
-				localPlayer.m_selfArrest = false
-			end,
-			function ()
-				localPlayer.m_selfArrest = false
-			end)
-	end
-end
-
-function FactionManager:Event_OnSpeederCatch( speed, vehicle)
-	removeEventHandler("onClientRender", root, self.m_DrawSpeed)
-	local now = getTickCount()
-	self.m_SpeedCamSpeed = speed
-	self.m_SpeedCamVehicle = vehicle
-	self.m_DrawStart = now + 2000
-	self.m_RemoveDraw = self.m_DrawStart + 5000
-	self.m_bLineChecked = false
-	self.m_PlaySoundOnce = false
-	self.m_PlaySoundSnap = false
-	addEventHandler("onClientRender", root, self.m_DrawSpeed)
-end
-
-function FactionManager:OnRenderSpeed()
-	if DEBUG then ExecTimeRecorder:getSingleton():startRecording("3D/SpeedCamText") end
-	local now = getTickCount()
-	if now <= self.m_RemoveDraw then
-		if now >= self.m_DrawStart then
-			if self.m_SpeedCamSpeed and self.m_SpeedCamVehicle then
-				if self.m_bLineChecked == self.m_SpeedCamVehicle then
-					local speed = math.floor(self.m_SpeedCamSpeed)
-					local vName = self.m_SpeedCamVehicle:getName()
-					local occ = getVehicleOccupant(self.m_SpeedCamVehicle)
-					local c1, c2 = getVehicleColor(self.m_SpeedCamVehicle)
-					local colName = getColorNameFromVehicle(c1, c2)
-					local text = ("Radar: %s fährt %s km/h in %sem %s!"):format(occ and occ:getName() or "-", speed, colName, vName)
-
-					if DEBUG then ExecTimeRecorder:getSingleton():addIteration("3D/SpeedCamText", true) end
-					dxDrawText(text, 0, 1, screenWidth, screenHeight*0.8+1, tocolor(0,0,0,255), 2, "default-bold", "center", "bottom")
-					dxDrawText(text, 1, 1, screenWidth+1, screenHeight*0.8+1, tocolor(0,0,0,255), 2, "default-bold", "center", "bottom")
-					dxDrawText(text, 0, 0, screenWidth, screenHeight*0.8, tocolor(0,150,0,255), 2, "default-bold" ,"center", "bottom")
-
-					local speeder = getVehicleOccupant(self.m_SpeedCamVehicle)
-					if speeder then
-						local px,py,pz = getPedBonePosition(speeder,8)
-						local dx,dy = getScreenFromWorldPosition(px,py,pz)
-						if dx and dy then
-							dxDrawText(("%s km/h"):format(speed), dx, dy+1, dx, dy+1, tocolor(0,0,0,255), 1, "default-bold")
-							dxDrawText(("%s km/h"):format(speed), dx, dy, dx, dy, tocolor(230,0,0,255), 1, "default-bold")
-						end
-					end
-
-					if not self.m_PlaySoundOnce then
-						playSoundFrontEnd(5)
-						self.m_PlaySoundOnce = true
-					end
-				else
-					local localVeh = getPedOccupiedVehicle(localPlayer)
-					if localVeh then
-						local speeder = getVehicleOccupant(self.m_SpeedCamVehicle)
-						if speeder then
-							local x,y,z = getElementPosition(localVeh)
-							local px,py,pz = getPedBonePosition(speeder,8)
-							local bLineCheck = isLineOfSightClear (Vector3(x, y, z), Vector3(px, py, pz), true, false, false, true)
-							if bLineCheck then
-								self.m_bLineChecked = self.m_SpeedCamVehicle
-								self.m_RemoveDraw = self.m_DrawStart + 10000
-							end
-						end
-					end
-				end
-			end
-		else
-			if self.m_SpeedCamSpeed and self.m_SpeedCamVehicle then
-				local localVeh = getPedOccupiedVehicle(localPlayer)
-				if localVeh then
-					local speeder = getVehicleOccupant(self.m_SpeedCamVehicle)
-					if speeder then
-						local x,y,z = getElementPosition(localVeh)
-						local px,py,pz = getPedBonePosition(speeder,8)
-						local bLineCheck = isLineOfSightClear (Vector3(x, y, z), Vector3(px, py, pz), true, false, false, true)
-						if bLineCheck then
-							self.m_bLineChecked = self.m_SpeedCamVehicle
-							self.m_RemoveDraw = self.m_DrawStart + 10000
-							if not self.m_PlaySoundSnap then
-								playSound("files/audio/speedcam.ogg")
-								self.m_PlaySoundSnap = true
-							end
-						end
-					end
-				end
-			end
-		end
-	else
-		removeEventHandler("onClientRender", root, self.m_DrawSpeed)
-	end
-	if DEBUG then ExecTimeRecorder:getSingleton():endRecording("3D/SpeedCamText") end
-end
-
-function FactionManager:stateFactionOfferTicket( cop )
-	ShortMessage:new(_(cop:getName().." bietet dir ein Ticket für den Erlass eines Wanteds für $2000 an. Klicke hier um es anzunehmen!"), "Wanted-Ticket", Color.DarkLightBlue, 30000)
-	.m_Callback = function (this)	triggerServerEvent("factionStateAcceptTicket", localPlayer, cop); delete(this)	end
-
-end
-
-function FactionManager:endStateFactionCuff( )
-	if localPlayer.m_CuffTarget then
-		if getDistanceBetweenPoints3D( localPlayer.m_CuffTarget:getPosition(), localPlayer:getPosition()) <= 5 then
-			triggerServerEvent("stateFactionSuccessCuff", localPlayer,localPlayer.m_CuffTarget)
-		end
-	end
-end
-
-function FactionManager:getFromId(id)
-	return FactionManager.Map[id]
-end
-
-function FactionManager:getFromName(name)
-	for i, faction in pairs(self.Map) do
-		if faction.m_NameShort == name then
-			return faction
-		end
-	end
-end
-
-function FactionManager:getFactionNames()
-	local table = {}
-	for id, faction in pairs(FactionManager.Map) do
-		table[id] = faction:getShortName()
-	end
-	return table
-end
 
 Faction = inherit(Object)
 
-function Faction:constructor(Id, name, name_short, rankNames, factionType, color, navigationPosition)
+function Faction:constructor(Id, name, name_short, rankNames, factionType, color, navigationPosition, diplomacy)
 	self.m_Id = Id
 	self.m_Name = name
 	self.m_NameShort = name_short
@@ -227,6 +16,7 @@ function Faction:constructor(Id, name, name_short, rankNames, factionType, color
 	self.m_Type = factionType
 	self.m_Color = color
 	self.m_NavigationPosition = normaliseVector(navigationPosition)
+	self.m_Diplomacy = diplomacy
 end
 
 function Faction:getId()
@@ -245,6 +35,10 @@ function Faction:isRescueFaction()
 	return self.m_Type == "Rescue"
 end
 
+function Faction:isInsurgentFaction()
+	return self.m_Type == "Insurgent"
+end
+
 function Faction:getName()
 	return self.m_Name
 end
@@ -259,4 +53,90 @@ end
 
 function Faction:getNavigationPosition()
 	return self.m_NavigationPosition
+end
+
+function Faction:setDiplomacy(diplomacy)
+	self.m_Diplomacy = diplomacy
+end
+
+function Faction:getDiplomacy(targetFaction)
+	local factionId, status
+	for index, data in pairs(self.m_Diplomacy) do
+		factionId, status = unpack(data)
+		if factionId == targetFaction:getId() then
+			return status
+		end
+	end
+end
+
+function Faction:getAllianceFaction()
+	local factionId, status
+	if not self.m_Diplomacy then return false end
+	for index, data in pairs(self.m_Diplomacy) do
+		factionId, status = unpack(data)
+		if status == FACTION_DIPLOMACY["Verbündet"] then
+			if FactionManager:getSingleton():getFromId(factionId) then
+				return FactionManager:getSingleton():getFromId(factionId)
+			end
+		end
+	end
+	return false
+end
+
+function Faction:hasWarWith(faction)
+	local factionId, status
+	if not self.m_Diplomacy then return false end
+	for index, data in pairs(self.m_Diplomacy) do
+		factionId, status = unpack(data)
+		if factionId == faction:getId() then
+			if status == FACTION_DIPLOMACY["Im Krieg"] then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+function Faction:startRespawnAnnouncement(announcer)
+	local seconds = 15
+	local whoAnnouncedText = _("%s einen Respawn angekündigt.", announcer == localPlayer and "Du hast" or _("%s hat", announcer:getName())) 
+	local secondsLeftText = _("Alle Fahrzeuge werden in %d Sekunden respawned!", seconds)
+	local stopRespawnText = _"Klicke hier, um den Respawn zu stoppen."
+
+	self.m_RespawnAnnouncement = ShortMessage:new(_("%s %s\n %s", whoAnnouncedText, secondsLeftText, stopRespawnText), 
+	_"Fahrzeug Respawn", 
+	tocolor(self:getColor().r, self:getColor().g, self:getColor().b), 
+	15000, function()
+		triggerServerEvent("stopFactionRespawnAnnouncement", localPlayer, self:getId())
+	end)
+
+	self.m_RespawnCountdown = setTimer(function() 
+		seconds = seconds - 1
+		secondsLeftText = _("Alle Fahrzeuge werden in %d Sekunde%s respawned!", seconds, seconds ~= 1 and "n" or "")
+		self.m_RespawnAnnouncement:setText(_("%s %s\n%s", whoAnnouncedText, secondsLeftText, stopRespawnText))
+	end, 1000, 15)
+end
+
+function Faction:stopRespawnAnnoucement(stopper)
+	local whoStoppedText
+	if stopper == localPlayer then
+		whoStoppedText = _"Du hast den Respawn gestoppt."
+	else
+		whoStoppedText = _("%s hat den Respawn gestoppt.", stopper:getName())
+	end
+	killTimer(self.m_RespawnCountdown)
+	self.m_RespawnAnnouncement:delete()
+	self.m_RespawnAnnouncement = ShortMessage:new(whoStoppedText, _"Fahrzeug Respawn")
+end
+
+function Faction:getOnlinePlayers(afkCheck, dutyCheck)
+	local players = {}
+	for _, player in pairs(getElementsByType("player")) do
+		if player and isElement(player) and not player:getName():find("Gast_") then
+			if (not afkCheck or not player:getPublicSync("AFK")) and (not dutyCheck or player:getPublicSync("Faction:Duty")) and (player:getFactionId() == self:getId()) then
+				players[#players + 1] = player
+			end
+		end
+	end
+	return players
 end

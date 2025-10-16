@@ -1,4 +1,4 @@
-ANIMATION_GROUPS = {"Standard", "Tänze", "Sonstiges", "Vulgär"}
+ANIMATION_GROUPS = {"Standard", "Tänze", "Sonstiges", "Vulgär", "Verletzung"}
 
 ANIMATIONS = {
 	["Hände hoch"] = 			{["group"] = "Standard", ["block"] = "shop", ["animation"] = "SHP_HandsUp_Scr", ["loop"] = false, ["interruptable"] = false, ["freezeLastFrame"] = true},
@@ -15,7 +15,7 @@ ANIMATIONS = {
 	["Handstand"] =				{["group"] = "Standard", ["block"] = "dam_jump", ["animation"] = "DAM_Dive_Loop", ["loop"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
 	["Waffe beidhändig"] =		{["group"] = "Standard", ["block"] = "ped", ["animation"] = "arrestgun", ["loop"] = false, ["interruptable"] = false, ["freezeLastFrame"] = true},
 	["Waffe Gangster"] =		{["group"] = "Standard", ["block"] = "ped", ["animation"] = "gang_gunstand", ["loop"] = false, ["interruptable"] = false, ["freezeLastFrame"] = true},
-	["Bombe plazieren"] =		{["group"] = "Standard", ["block"] = "bomber", ["animation"] = "bom_plant", ["loop"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
+	["Bombe platzieren"] =		{["group"] = "Standard", ["block"] = "bomber", ["animation"] = "bom_plant", ["loop"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
 	["Tanz Wave"] = 			{["group"] = "Tänze", ["block"] = "DANCING", ["animation"] = "dnce_M_a", ["loop"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
 	["Tanz Chill"] = 			{["group"] = "Tänze", ["block"] = "DANCING", ["animation"] = "dnce_M_b", ["loop"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
 	["Tanz Ruhig"] = 			{["group"] = "Tänze", ["block"] = "DANCING", ["animation"] = "dnce_M_d", ["loop"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
@@ -32,11 +32,14 @@ ANIMATIONS = {
 	["Bezahlen"] =				{["group"] = "Sonstiges", ["block"] = "dealer", ["animation"] = "drugs_buy", ["loop"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
 	["Geld abheben"] =			{["group"] = "Sonstiges", ["block"] = "ped", ["animation"] = "atm", ["loop"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
 	["Kaugummi"] =				{["group"] = "Sonstiges", ["block"] = "ped", ["animation"] = "gum_eat", ["loop"] = false, ["interruptable"] = false, ["freezeLastFrame"] = true},
+	["Rauchen"] =				{["group"] = "Sonstiges", ["block"] = "smoking", ["animation"] = "M_smkstnd_loop", ["loop"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
 	["Pinkeln"] =				{["group"] = "Vulgär", ["block"] = "PAULNMAC", ["animation"] = "Piss_loop", ["loop"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true, ["object"] = 1904},
 	["Wichsen"] =				{["group"] = "Vulgär", ["block"] = "PAULNMAC", ["animation"] = "wank_loop", ["loop"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
 	["Sex oben"] =				{["group"] = "Vulgär", ["block"] = "sex", ["animation"] = "sex_1_cum_p", ["loop"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
 	["Sex unten"] =				{["group"] = "Vulgär", ["block"] = "sex", ["animation"] = "sex_1_cum_w", ["loop"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
 	["Kotzen"] =				{["group"] = "Vulgär", ["block"] = "food", ["animation"] = "EAT_Vomit_P", ["loop"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
+	["Seitenlage"] =			{["group"] = "Verletzung", ["block"] = "CRACK", ["animation"] = "crckidle2", ["loop"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
+	["Schmerzen"] =				{["group"] = "Verletzung", ["block"] = "SWEET", ["animation"] = "Sweet_injuredloop", ["loop"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
 }
 
 WALKINGSTYLE_GROUPS = {"Standard", "Mann", "Frau", "Sonstiges"}
@@ -59,4 +62,33 @@ WALKINGSTYLES = {
 	["Gangster 1"] = 				{["group"] = "Sonstiges", ["id"] = 121},
 	["Gangster 2"] = 				{["group"] = "Sonstiges", ["id"] = 122},
 	["SWAT"] = 						{["group"] = "Sonstiges", ["id"] = 128},
+}
+
+CUSTOM_ANIMATION_IFP = {
+	["files/animations/parkour.ifp"] = "VRP.PARKOUR",
+	["files/animations/dance.ifp"] = "VRP.DANCE",
+	["files/animations/other.ifp"] = "VRP.OTHER",
+}
+
+CUSTOM_ANIMATION_GROUPS = {"Parkour", "Tänze", "Sonstiges"}
+
+CUSTOM_ANIMATIONS = {
+	["Flick-Flack mit Salto"] = {["group"] = "Parkour", ["block"] = "VRP.PARKOUR", ["animation"] = "BckHndSpingBTuck", ["loop"] = false, ["updatePosition"] = true, ["interruptable"] = false, ["freezeLastFrame"] = false},
+	["Flick-Flack"] = 			{["group"] = "Parkour", ["block"] = "VRP.PARKOUR", ["animation"] = "BckHndSping", ["loop"] = false, ["updatePosition"] = true, ["interruptable"] = false, ["freezeLastFrame"] = false},
+	["Rad"] = 					{["group"] = "Parkour", ["block"] = "VRP.PARKOUR", ["animation"] = "CartWheel", ["loop"] = false, ["updatePosition"] = true, ["interruptable"] = false, ["freezeLastFrame"] = false},
+	["Überschlag"] = 			{["group"] = "Parkour", ["block"] = "VRP.PARKOUR", ["animation"] = "FrntHndSpring", ["loop"] = false, ["updatePosition"] = true, ["interruptable"] = false, ["freezeLastFrame"] = false},
+	["Handplant"] = 			{["group"] = "Parkour", ["block"] = "VRP.PARKOUR", ["animation"] = "HandPlant", ["loop"] = false, ["updatePosition"] = true, ["interruptable"] = false, ["freezeLastFrame"] = false},
+
+	["Huhn"] = 					{["group"] = "Tänze", ["block"] = "VRP.DANCE", ["animation"] = "DANCECHICKEN", ["loop"] = true, ["updatePosition"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
+	["Liebe"] = 				{["group"] = "Tänze", ["block"] = "VRP.DANCE", ["animation"] = "DANCELOVE", ["loop"] = true, ["updatePosition"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
+	["Macarena"] = 				{["group"] = "Tänze", ["block"] = "VRP.DANCE", ["animation"] = "DANCEMACARENA", ["loop"] = true, ["updatePosition"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
+	["Tanzbein"] = 				{["group"] = "Tänze", ["block"] = "VRP.DANCE", ["animation"] = "DANCELEG", ["loop"] = true, ["updatePosition"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
+	["Wiggler"] = 				{["group"] = "Tänze", ["block"] = "VRP.DANCE", ["animation"] = "DANCEWIGGLE", ["loop"] = true, ["updatePosition"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
+	["Chill"] = 				{["group"] = "Tänze", ["block"] = "VRP.DANCE", ["animation"] = "DANCECHILL", ["loop"] = true, ["updatePosition"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
+	["Sexy"] = 					{["group"] = "Tänze", ["block"] = "VRP.DANCE", ["animation"] = "DANCESEXY", ["loop"] = true, ["updatePosition"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
+	["Hardcore"] = 				{["group"] = "Tänze", ["block"] = "VRP.DANCE", ["animation"] = "DANCEHARD", ["loop"] = true, ["updatePosition"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
+	["Pump It"] = 				{["group"] = "Tänze", ["block"] = "VRP.DANCE", ["animation"] = "DANCEPUMPIT", ["loop"] = true, ["updatePosition"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
+	["Betrunken"] = 			{["group"] = "Tänze", ["block"] = "VRP.DANCE", ["animation"] = "DANCEDRUNK", ["loop"] = true, ["updatePosition"] = true, ["interruptable"] = false, ["freezeLastFrame"] = true},
+
+	["Hände hinter Kopf"] = 	{["group"] = "Sonstiges", ["block"] = "VRP.OTHER", ["animation"] = "cowerHandsBehindHead", ["loop"] = true, ["updatePosition"] = false, ["interruptable"] = false, ["freezeLastFrame"] = true},
 }

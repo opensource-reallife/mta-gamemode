@@ -21,7 +21,9 @@ function PlayerMouseMenu:constructor(posX, posY, element)
 	self:addItem(_"Geld geben",
 		function()
 			if self:getElement() then
-				SendMoneyGUI:new(function(amount) triggerServerEvent("playerSendMoney", self:getElement(), amount) end)
+				if Vector3(localPlayer:getPosition() - element:getPosition()):getLength() < 10 then
+					SendMoneyGUI:new(function(amount) triggerServerEvent("playerSendMoney", self:getElement(), amount) end)
+				end
 			end
 		end
 	):setIcon(FontAwesomeSymbols.Money)
@@ -57,10 +59,12 @@ function PlayerMouseMenu:constructor(posX, posY, element)
 			self:addItem(_"Fraktion: Spieler überfallen",
 				function()
 					if self:getElement() then
-						triggerServerEvent("factionEvilStartRaid", localPlayer, self:getElement())
+						if Vector3(localPlayer:getPosition() - element:getPosition()):getLength() < 10 then
+							triggerServerEvent("factionEvilStartRaid", localPlayer, self:getElement())
+						end
 					end
 				end
-			):setIcon(FontAwesomeSymbols.Bolt)
+			):setIcon(FontAwesomeSymbols.People_Robbery)
 		end
 	end
 
@@ -75,16 +79,6 @@ function PlayerMouseMenu:constructor(posX, posY, element)
 		):setIcon(FontAwesomeSymbols.Building)
 	end
 
-	if localPlayer:getFactionId() == 4 and localPlayer:getPublicSync("Faction:Duty") == true then
-		self:addItem(_"Medic: heilen",
-			function()
-				if self:getElement() then
-					triggerServerEvent("factionRescueHealPlayerQuestion", localPlayer, self:getElement())
-				end
-			end
-		):setIcon(FontAwesomeSymbols.Medikit)
-	end
-
 	if localPlayer:getRank() >= RANK.Supporter then
 		self:addItem(_"Admin: kicken",
 			function()
@@ -93,9 +87,9 @@ function PlayerMouseMenu:constructor(posX, posY, element)
 						_("Aus welchem Grund möchtest du den Spieler %s vom Server kicken?", self:getElement():getName()),
 						function (reason)
 							if reason then
-								triggerServerEvent("adminTriggerFunction", localPlayer, "rkick", self:getElement():getName(), reason)
+								triggerServerEvent("adminPlayerFunction", localPlayer, "rkick", self:getElement(), reason)
 							else
-								ErrorBox:new("Kein Grund angegeben!")
+								ErrorBox:new(_"Kein Grund angegeben!")
 							end
 						end)
 				end
@@ -104,9 +98,26 @@ function PlayerMouseMenu:constructor(posX, posY, element)
 		self:addItem(_"Admin: ent/freezen",
 			function()
 				if self:getElement() then
-					triggerServerEvent("adminTriggerFunction", localPlayer, "freeze", self:getElement():getName())
+					triggerServerEvent("adminPlayerFunction", localPlayer, "freeze", self:getElement())
 				end
 			end
+		):setIcon(FontAwesomeSymbols.Star)
+		self:addItem(_"Admin: specten",
+			function()
+				if self:getElement() then
+					triggerServerEvent("adminPlayerFunction", localPlayer, "spect", self:getElement())
+				end
+			end
+		):setIcon(FontAwesomeSymbols.Star)
+	end
+
+	if localPlayer:getRank() >= RANK.Moderator then
+		self:addItem(_"Admin: Wegschmeißen",
+		function()
+			if self:getElement() then
+				triggerServerEvent("adminPlayerFunction", localPlayer, "throwaway", self:getElement())
+			end
+		end
 		):setIcon(FontAwesomeSymbols.Star)
 	end
 

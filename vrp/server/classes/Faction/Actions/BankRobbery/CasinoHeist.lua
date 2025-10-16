@@ -23,6 +23,9 @@ CasinoHeist.StateMembersPerTruck = 3
 local BOMB_TIME = 20*1000
 
 function CasinoHeist:constructor()
+	self.ms_VaultOpenTime = 3*(60*1000) --3 minutes
+	self.ms_BankRobGeneralTime = ACTION_TIME
+
 	self.ms_FinishMarker = {
 		Vector3(969.43, 2059.40, 10), --mafia meat factory
 		Vector3(1679.28, 688.10, 10), --boat shop
@@ -32,7 +35,6 @@ function CasinoHeist:constructor()
 		Vector3(2200.73, 2793.33, 10), -- north garage near burger shot
 	}
 	self.ms_StateFinishMarker = Vector3(2299.06, 2475.52, 2.27)
-	self.ms_MinBankrobStateMembers = DEBUG and 0 or 3 
 
 	self.ms_BagSpawns = {
 		Vector3(2141.81, 1628.31, 992.97),
@@ -61,9 +63,6 @@ function CasinoHeist:constructor()
 
     --self.m_SecuriCarSaveColshape = createColCuboid(2252.6, 1680.01, 0, 64.6, 83, 18)
 	self.m_SecuricarsById = {}
-	
-	self.ms_VaultOpenTime = 3000 --3 secs
-	self.ms_BankRobGeneralTime = 60*1000*20
 
     self.ms_MoneyPerBag = 3000
     self.m_MaxBagsPerTruck = #VEHICLE_OBJECT_ATTACH_POSITIONS[428].positions
@@ -73,6 +72,7 @@ function CasinoHeist:constructor()
 	self.m_UpdateDifficultyPulse:registerHandler(bind(CasinoHeist.updateDifficulty, self))
 
 	self.m_Name = "Casino"
+	self.m_RobName = "Casinoraub"
 	self.m_MarkedPosition = {2282.03, 1726.15, 11.04} -- the marked position where action blips and so on will be located
 end
 
@@ -95,7 +95,12 @@ function CasinoHeist:build()
 	self.m_SecurityRoomShape = createColCuboid(2140.20, 1626.9, 992, 8, 17, 6)
 	self.m_SecurityRoomShape:setInterior(1)
 	self.m_Timer = false
-    self.m_ColShape = createColSphere(2283.52, 1710.49, 11.05, 60)
+	self.m_ColShape = createColSphere(2283.52, 1710.49, 11.05, 60)
+	
+	self.m_HelpColHitFunc = bind(self.onHelpColHit, self)
+	self.m_HelpColLeaveFunc = bind(self.onHelpColLeave, self)
+	addEventHandler("onColShapeHit", self.m_ColShape, self.m_HelpColHitFunc)
+	addEventHandler("onColShapeLeave", self.m_ColShape, self.m_HelpColLeaveFunc)
     
 	--self:spawnGuards()
 	self:createSafes()
@@ -126,7 +131,7 @@ function CasinoHeist:updateDifficulty(DEBUG_moneyInBank, DEBUG_stateMembersOnlin
 		local difficulty_money = math.min((self.m_CurrentMoneyTotal > min_money) and difficulty or 0, 5)
 		self.m_Difficulty = math.min(difficulty_money, math.floor(online_state_members/3)) -- diffculty based on money and state members online, both need to be high for high diff
 		self.m_CurrentMoney = math.min(self.m_CurrentMoneyTotal, online_state_members*10000) -- 10000 per cop, aka 30k per 3 cops per truck -> save it to var
-		self.ms_MinBankrobStateMembers = self.m_Difficulty * 3
+		CASINOHEIST_MIN_MEMBERS = self.m_Difficulty * 3
 		
 		--[[outputDebug("updated casino!", "money total:", self.m_CurrentMoneyTotal, 
 		"state members online:", online_state_members, 
@@ -178,8 +183,6 @@ function CasinoHeist:startAlarm()
 	FactionState:getSingleton():sendWarning("Caligula's Casino wird überfallen!", "Neuer Einsatz", true, {2193.39, 1677.15, 12.37})
 	triggerClientEvent("bankAlarm", root, unpack(self.m_MarkedPosition)) --back
 end
-
-
 
 function CasinoHeist:openSafeDoor()
 	local pos = self.m_SafeDoor:getPosition()

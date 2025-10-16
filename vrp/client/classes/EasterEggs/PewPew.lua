@@ -21,9 +21,9 @@ end
 local rndText = {"Pew Pew!", "PEW", "PewX", "#PewPorn.com", "<3", "50", "CATS", "meow", "OMG", "PR0N", "grills"}
 local colors = {Color.DarkLightBlue, Color.Red, Color.Blue, Color.Green, Color.Orange, Color.Brown, Color.White}
 function EasterEgg.PewPew:startRender()
-	playSound("http://pewx.de/res/sounds/tactical_nuke.mp3")
-	playSound("http://pewx.de/res/sounds/SKRILLEX_Scary.mp3")
-	playSound("http://pewx.de/res/sounds/OMG_TRICKSHOT_CHILD.mp3")
+	playSound("https://www.myinstants.com/media/sounds/modern-warfare-2-tactical-nuke-sound.mp3")
+	playSound("https://www.myinstants.com/media/sounds/cinema-skrillex-320-kbps-audiotrimmer.mp3")
+	playSound("https://www.myinstants.com/media/sounds/omg-trickshot-child.mp3"):setVolume(0.5)
 
 	self.m_OffsetX = -452
 	self.m_Wank = -10
@@ -59,17 +59,17 @@ function EasterEgg.PewPew:startRender()
 	setTimer(
 		function()
 			self.m_TextMoveOut = true
-			playSound("http://pewx.de/res/sounds/SPOOKY.mp3")
-			playSound("http://pewx.de/res/sounds/AIRPORN.mp3")
-			playSound("http://pewx.de/res/sounds/wow.mp3")
-		end, 20000, 1
+			playSound("https://www.myinstants.com/media/sounds/annihilation-the-alien.mp3")
+			playSound("https://www.myinstants.com/media/sounds/mlg-airhorn.mp3")
+			playSound("https://www.myinstants.com/media/sounds/wow-.mp3")
+		end, 15000, 1
 	)
 
 	setTimer(
 		function()
-			playSound("http://pewx.de/res/sounds/DAMN_SON_WHERED_YOU_FIND_THIS.mp3")
+			playSound("https://www.myinstants.com/media/sounds/damn-son-whered-you-find-this.mp3")
 			removeEventHandler("onClientRender", root, self.m_RenderPewPewAchievement)
-		end, 23000, 1
+		end, 18000, 1
 	)
 end
 
@@ -113,6 +113,6 @@ function EasterEgg.PewPew:render()
 
 	if math.random(1, 10) == 5 then
 		dxDrawImage(screenWidth/2-25, screenHeight/2-25, 50, 50, "files/images/Other/PewPew/hit.png")
-		playSound("http://pewx.de/res/sounds/HITMARKER.mp3")
+		playSound("https://www.myinstants.com/media/sounds/hitmarker-sound-effect.mp3")
 	end
 end

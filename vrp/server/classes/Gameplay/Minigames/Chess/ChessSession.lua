@@ -76,6 +76,9 @@ function ChessSession:endGame( winner, reason )
 	triggerClientEvent("onClientChessStop", self.m_Players[1], reason, winner)
 	triggerClientEvent("onClientChessStop", self.m_Players[2], reason, winner)
 	self.m_End = true
+	if (self.m_Players[1]:getRank() >= RANK.Administrator and winner == self.m_Players[2]) or (self.m_Players[2]:getRank() >= RANK.Administrator and winner == self.m_Players[1]) then
+		winner:giveAchievement(113)
+	end
 	delete(self)
 end
 

@@ -5,11 +5,14 @@ function CutscenePlayer:constructor()
 	self.m_CutsceneList = {}
 end
 
-function CutscenePlayer:playCutscene(name, finishcallback, dim)
+function CutscenePlayer:playCutscene(name, finishcallback, dim, hidePlayer)
 	assert(self.m_CutsceneList[name])
 
 	localPlayer:setDimension(dim or PRIVATE_DIMENSION_CLIENT)
 	localPlayer:setFrozen(true)
+
+	local playerPos = localPlayer:getPosition()
+	if hidePlayer then localPlayer:setPosition(0, 0, 0) end
 
 	local savedWeather = getWeather()
 
@@ -20,6 +23,8 @@ function CutscenePlayer:playCutscene(name, finishcallback, dim)
 			localPlayer:setDimension(0)
 			localPlayer:setFrozen(false)
 			setCameraTarget(localPlayer)
+
+			if hidePlayer then localPlayer:setPosition(playerPos) end
 
 			if finishcallback then
 				finishcallback()

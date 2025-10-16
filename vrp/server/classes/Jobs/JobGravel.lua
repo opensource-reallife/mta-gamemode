@@ -10,9 +10,9 @@ JobGravel = inherit(Job)
 MAX_STONES_IN_STOCK = 250
 MAX_STONES_MINED = 100
 
-LOAN_MINING = 29*2 -- Per Stone
-LOAN_DOZER = 59*2 -- Per Stone
-LOAN_DUMPER = 79*2 -- Per Stone
+LOAN_MINING = 1.8
+LOAN_DOZER = 4.5
+LOAN_DUMPER = 9
 
 MAX_STONES_IN_DUMPER = 10
 
@@ -114,7 +114,7 @@ function JobGravel:Event_gravelOnSync(posX, posY, posZ, velX, velY, velZ)
 	if getElementData(source, "syncer") == client then
 		source.m_Position = Vector3(posX, posY, posZ)
 		source.m_Velocity = Vector3(velX, velY, velZ)
-		
+
 		for k, v in ipairs(self.m_Col:getElementsWithin("player")) do
 			if v ~= client then
 				v:triggerEvent("gravelOnSync", {{element = source, posX = source.m_Position.x, posY = source.m_Position.y, posZ = source.m_Position.z, velX = source.m_Velocity.x, velY = source.m_Velocity.y, velZ = source.m_Velocity.z}})
@@ -238,13 +238,11 @@ function JobGravel:Event_onGravelMine(rockDestroyed, times)
 		if rockDestroyed then
 			local duration = getRealTime().timestamp - client.m_LastJobAction
 			client.m_LastJobAction = getRealTime().timestamp
-			local points = 0
-			self.m_BankAccount:transferMoney({client, true}, times*LOAN_MINING, "Kiesgruben-Job", "job", "gravel.mining")
-			if chance(6) then
-				points = math.floor(1*JOB_EXTRA_POINT_FACTOR)
-				client:givePoints(points)
-			end
-			StatisticsLogger:getSingleton():addJobLog(client, "jobGravel.mining", duration, times*LOAN_MINING, nil, nil, points)
+			local money = times * LOAN_MINING * JOB_PAY_MULTIPLICATOR * self:getMultiplicator()
+			local points = math.round(money / 50 * JOB_EXTRA_POINT_FACTOR)
+			self.m_BankAccount:transferMoney({client, true}, money, "Kiesgruben-Job", "job", "gravel.mining")
+			client:givePoints(points)
+			StatisticsLogger:getSingleton():addJobLog(client, "jobGravel.mining", duration, money, nil, nil, points)
 		end
 
 		self:updateGravelAmount("mined", true)
@@ -285,14 +283,11 @@ function JobGravel:Event_onCollectingContainerHit(track)
 
 					if not self.m_DozerDropTimer[client] then
 						self.m_DozerDropTimer[client] = setTimer(function()
-							local loan = LOAN_DOZER * (self.m_DozerDropStones[client] or 0)
+							local loan = LOAN_DOZER * (self.m_DozerDropStones[client] or 0) * JOB_PAY_MULTIPLICATOR * self:getMultiplicator()
 							local duration = getRealTime().timestamp - client.m_LastJobAction
 							client.m_LastJobAction = getRealTime().timestamp
-							local points = 0
-							if chance(6) then
-								points = math.floor(1*JOB_EXTRA_POINT_FACTOR)
-								client:givePoints(points)
-							end
+							local points = math.round(loan / 50 * JOB_EXTRA_POINT_FACTOR)
+							client:givePoints(points)
 							self.m_BankAccount:transferMoney({source.vehicle:getOccupant(), true}, loan, ("Kiesgruben-Job (%d Steine)"):format(self.m_DozerDropStones[client]), "job", "gravel.dozer")
 							StatisticsLogger:getSingleton():addJobLog(client, "jobGravel.dozer", duration, loan, nil, nil, points, self.m_DozerDropStones[client])
 							self.m_DozerDropStones[client] = nil
@@ -407,9 +402,9 @@ end
 function JobGravel:giveDumperDeliverLoan(player)
 	local amount = self.m_DumperDeliverStones[player] or 0
 	if amount > MAX_STONES_IN_DUMPER then amount = MAX_STONES_IN_DUMPER end
-	local loan = amount*LOAN_DUMPER
+	local loan = amount * LOAN_DUMPER * JOB_PAY_MULTIPLICATOR * self:getMultiplicator()
 	local duration = getRealTime().timestamp - player.m_LastJobAction
-	local points = math.floor(math.floor(amount/2)*JOB_EXTRA_POINT_FACTOR)
+	local points = math.round(loan / 50 * JOB_EXTRA_POINT_FACTOR)
 	player.m_LastJobAction = getRealTime().timestamp
 	StatisticsLogger:getSingleton():addJobLog(player, "jobGravel.dumper", duration, loan, nil, nil, points)
 	self.m_BankAccount:transferMoney({player, true}, loan, ("Kiesgruben-Job (%d Steine)"):format(amount), "job", "gravel.dumper")

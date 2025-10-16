@@ -6,9 +6,11 @@
 -- *
 -- ****************************************************************************
 Job = inherit(Singleton)
+
 function Job:constructor()
 	self.m_DontEndOnVehicleDestroy = false
 	self.m_OnJobVehicleDestroyBind = bind(self.onJobVehicleDestroy, self)
+	self.m_Multiplicator = 0
 end
 
 function Job:getId()
@@ -17,6 +19,14 @@ end
 
 function Job:setId(Id)
 	self.m_Id = Id
+end
+
+function Job:getMultiplicator()
+	return self.m_Multiplicator / 100 + 1
+end
+
+function Job:setMultiplicator(mult)
+	self.m_Multiplicator = mult
 end
 
 function Job:requireVehicle(player)
@@ -29,10 +39,11 @@ function Job:registerJobVehicle(player, vehicle, countdown, stopJobOnDestroy)
 	end
 	player.jobVehicle = vehicle
 	vehicle.jobPlayer = player
+	setElementData(vehicle, "JobVehicle", true)
 
 	addEventHandler("onVehicleStartEnter",vehicle, function(vehPlayer, seat)
 		if seat==0 and vehPlayer ~= player then
-			vehPlayer:sendError("Du kannst nicht in dieses Job-Fahrzeug!")
+			vehPlayer:sendError(_("Du kannst nicht in dieses Job-Fahrzeug!", vehPlayer))
 			cancelEvent()
 		end
 	end)
@@ -63,7 +74,7 @@ function Job:onJobVehicleDestroy()
 	local player = source.jobPlayer
 
 	if not self.m_DontEndOnVehicleDestroy then
-		nextframe( -- Workarround to avoid Stack Overflow
+		nextframe( -- Workaround to avoid Stack Overflow
 			function()
 				if player and player.setJob then
 					player:setJob(nil)
@@ -99,4 +110,3 @@ function Job:countPlayers()
 end
 
 Job.start = pure_virtual
-

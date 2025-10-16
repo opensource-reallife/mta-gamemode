@@ -79,6 +79,11 @@ function Shop:create(id, name, position, rotation, typeData, dimension, robable,
 			self.m_Ped:setDimension(dimension)
 			self.m_Ped:setFrozen(true)
 		end
+		if typeData["PedAnimation"] then
+			self.m_AnimationColShape = createColSphere(pedPosition, 75)
+			self.m_PedAnimationBlock, self.m_PedAnimation = unpack(typeData["PedAnimation"])
+			addEventHandler("onColShapeHit", self.m_AnimationColShape, bind(self.onAnimationColShapeHit, self))
+		end
 	end
 
 	if self.m_Ped then
@@ -140,7 +145,7 @@ function Shop:onFoodMarkerHit(hitElement, dim)
 	if dim and hitElement:getType() == "player" then
 		if self.m_Robable and self.m_Robable.m_RobActive then return end
 
-		hitElement:triggerEvent("showFoodShopMenu")
+		hitElement:triggerEvent("showFoodShopMenu", self.m_Ped or self.m_Position)
 		triggerClientEvent(hitElement, "refreshFoodShopMenu", hitElement, self.m_Id, self.m_Type, self.m_Menues, self.m_Items)
 	end
 end
@@ -149,7 +154,7 @@ function Shop:onItemMarkerHit(hitElement, dim)
 	if dim and hitElement:getType() == "player" then
 		if self.m_Robable and self.m_Robable.m_RobActive then return end
 
-		hitElement:triggerEvent("showItemShopGUI")
+		hitElement:triggerEvent("showItemShopGUI", self.m_Ped or self.m_Position)
 		triggerClientEvent(hitElement, "refreshItemShopGUI", hitElement, self.m_Id, self.m_Items, self.m_SortedItems, self.m_WeaponItems)
 	end
 end
@@ -158,7 +163,7 @@ function Shop:onGasStationMarkerHit(hitElement, dim)
 	if dim and hitElement:getType() == "player" then
 		if self.m_Robable and self.m_Robable.m_RobActive then return end
 
-		hitElement:triggerEvent("showGasStationShopGUI", self.m_Name)
+		hitElement:triggerEvent("showGasStationShopGUI", self.m_Name, self.m_Ped or self.m_Position)
 		triggerClientEvent(hitElement, "refreshGasStationShopGUI", hitElement, self.m_Id, self.m_Items)
 	end
 end
@@ -197,10 +202,10 @@ function Shop:buy(player)
 		if self.m_OwnerType == SHOP_OWNER_TYPES.Group then
 			if player:getGroup() and player:getGroup():getType() == "Firma" then
 				local group = player:getGroup()
-				if group:getPlayerRank(player) >= GroupRank.Manager then
+				if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "group", "buyBIZ") then
 					if group:getMoney() >= self.m_Price then
-						group:transferMoney(self.m_BankAccountServer, self.m_Price, "Shop-Verkauf", "Shop", "Buy")
-						group:sendMessage(_("[FIRMA] %s hat den Shop '%s' für %d$ gekauft!", player, player:getName(), self.m_Name, self.m_Price), 0, 255, 0)
+						group:transferMoney(self.m_BankAccountServer, self.m_Price, "Shop-Kauf", "Shop", "Buy")
+						group:sendMessage(_("[GRUPPE] %s hat den Shop '%s' für %d$ gekauft!", player, player:getName(), self.m_Name, self.m_Price), 0, 255, 0)
 						group:addLog(player, "Immobilien", _("hat den Shop '%s' für %d$ gekauft!", player, self.m_Name, self.m_Price))
 						self.m_OwnerId = group:getId()
 						self:loadOwner()
@@ -209,13 +214,13 @@ function Shop:buy(player)
 						player:sendError(_("In der Firmenkasse ist nicht genug Geld! (%d$)", player, self.m_Price))
 					end
 				else
-					player:sendError(_("Nur Leader und Co-Leader deiner Firma können den Shop kaufen!", player))
+					player:sendError(_("Du bist nicht berechtigt einen Shop zu kaufen!", player))
 				end
 			else
-				player:sendError(_("Du bist in keiner privaten Firma!", player))
+				player:sendError(_("Du bist in keiner Gruppe mit dem Typ Firma!", player))
 			end
 		else
-			player:sendError(_("Dieser Shop kann nur von privaten Firmen gekauft werden!", player))
+			player:sendError(_("Dieser Shop kann nur von Gruppen mit dem Typ Firma gekauft werden!", player))
 		end
 	else
 		player:sendError(_("Dieser Shop kann nicht gekauft werden!", player))
@@ -226,19 +231,19 @@ function Shop:sell(player)
 	if self.m_OwnerType == SHOP_OWNER_TYPES.Group then
 		if player:getGroup() and player:getGroup() == self.m_Owner then
 			local group = player:getGroup()
-			if group:getPlayerRank(player) >= GroupRank.Manager then
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "group", "sellBIZ") then
 				local money = math.floor((self.m_Price*0.75))
 				self.m_BankAccountServer:transferMoney(group, money, "Shop-Verkauf", "Shop", "Sell")
-				group:sendMessage(_("[FIRMA] %s hat den Shop '%s' für %d$ verkauft!", player, player:getName(), self.m_Name, money), 255, 0, 0)
+				group:sendMessage(_("[GRUPPE] %s hat den Shop '%s' für %d$ verkauft!", player, player:getName(), self.m_Name, money), 255, 0, 0)
 				group:addLog(player, "Immobilien", _("hat den Shop '%s' für %d$ verkauft!", player, self.m_Name, money))
 				self.m_OwnerId = 0
 				self:loadOwner()
 				self:save()
 			else
-				player:sendError(_("Nur Leader und Co-Leader deiner Firma können den Shop verkaufen!", player))
+				player:sendError(_("Du bist nicht berechtigt einen Shop zu verkaufen!", player))
 			end
 		else
-			player:sendError(_("Dieser Shop gehört nicht deiner Firma!", player))
+			player:sendError(_("Dieser Shop gehört nicht deiner Gruppe!", player))
 		end
 	end
 end
@@ -256,6 +261,8 @@ function Shop:addBlip(blip)
 	if blip == "Bar.png" then
 		b:setDisplayText("Bar / Club", BLIP_CATEGORY.Leisure)
 		b:setOptionalColor({245, 160, 199})
+	elseif self.m_TypeDataName == "Ammu-Nation Downtown" then
+		b:setDisplayText("Ammu-Nation", BLIP_CATEGORY.Shop)
 	else
 		b:setDisplayText(self.m_TypeDataName, BLIP_CATEGORY.Shop)
 	end
@@ -280,5 +287,11 @@ function Shop:save()
 	if sql:queryExec("UPDATE ??_shops SET LastRob = ?, Owner = ? WHERE Id = ?", sql:getPrefix(), self.m_LastRob, self.m_OwnerId, self.m_Id) then
 	else
 		outputDebug(("Failed to save Shop '%s' (Id: %d)"):format(self.m_Name, self.m_Id))
+	end
+end
+
+function Shop:onAnimationColShapeHit(hitElement, dim)
+	if hitElement:getType() == "player" and dim then
+		self.m_Ped:setAnimation(self.m_PedAnimationBlock, self.m_PedAnimation)
 	end
 end

@@ -1,5 +1,5 @@
 <meta>
     <script src="S_attach.lua" type="server" />
     <script src="C_attach.lua" type="client" />
-    <min_mta_version client="1.3.0-9.04134"></min_mta_version>
+    <min_mta_version server="1.5.8-9.20837" client="1.5.8-9.20837"/>
 </meta>

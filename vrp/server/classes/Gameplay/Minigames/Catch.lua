@@ -66,7 +66,7 @@ function CatchGame:onColShapeHit(hitElement, matchDimension)
 	if hitElement == self.m_CatchingPlayer then
 		self.m_LastHit = getTickCount()
 
-		hitElement:giveAchievement(100)
+		hitElement:giveAchievement(108)
 		hitElement:sendInfo(("Du hast %s gefangen!"):format(self.m_PlayerEnemy[hitElement].name))
 		self.m_PlayerEnemy[hitElement]:sendInfo(("Du wurdest von %s gefangen!"):format(hitElement.name))
 
@@ -87,7 +87,7 @@ addEventHandler("catchQuestionAccept", root,
 		host.catchRequestSend = false
 
 		if CatchGame.Map[host] or CatchGame.Map[client] then
-			host:sendError("Du oder dein Gegner ist noch in einem Spiel!")
+			host:sendError(_("Du oder dein Gegner ist noch in einem Spiel!", host))
 			return
 		end
 

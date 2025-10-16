@@ -129,7 +129,9 @@ SHOP_TYPES = {
 	},
 	[18] = {
 		["Name"] = "CJ-Tattoo-Studio",
-		["Marker"] = Vector3(-202.21, -6.92, 1001.6),
+		["ClothesMarker"] = {
+			["Tattoos"] = Vector3(-202.21, -6.92, 1001.6)
+		},
 		["Ped"] = {29, Vector3(-201.49, -4.85, 1002.27), 158},
 		["Interior"] = {17, Vector3(-204.40, -9.08, 1002.27)},
 		["Class"] = CJClothes
@@ -147,17 +149,17 @@ SHOP_TYPES = {
 		["Class"] = GasStationShop
 	},
 	[21] = {
-		["Name"] = "Ammunation Central",
+		["Name"] = "Ammu-Nation Downtown",
 		["Marker"] = Vector3(1380.34, -1278, 12.6),
-		["Ped"] = {158, Vector3(1380.34, -1280.79, 13.54), 0},
+		["Ped"] = {179, Vector3(1380.34, -1280.3, 13.54), 0},
 		["Interior"] = {0, Vector3(0, 0, 0)},
 		["Class"] = Ammunation
 	},
 	[22] = {
-		["Name"] = "Ammunation South",
-		["Marker"] = Vector3(2379.96, -1986.57, 12.6),
-		["Ped"] = {158, Vector3(2379.84, -1984.17, 13.56), 180},
-		["Interior"] = {0, Vector3(0, 0, 0)},
+		["Name"] = "Ammu-Nation",
+		["Marker"] = Vector3(290.12, -109.78, 1001.52),
+		["Ped"] = {179, Vector3(290.29, -111.51, 1001.52), 0},
+		["Interior"] = {6, Vector3(296.91, -111.32, 1001.52)},
 		["Class"] = Ammunation
 	},
 	[23] = {
@@ -171,7 +173,8 @@ SHOP_TYPES = {
 	[24] = {
 		["Name"] = "Weihnachtsmarkt",
 		["Marker"] = Vector3(1473.05, -1676.86, 13.1),
-		["Ped"] = {205, Vector3(1472.5, -1675, 14.75), 200},
+		["Ped"] = {205, Vector3(1470.76, -1677.19, 14.05), 246.48},
+		["PedAnimation"] = {"MISC", "Plyrlean_loop"},
 		["Interior"] = {0, Vector3(0, 0, 0)},
 		["Class"] = ItemShop,
 		["disabled"] = not (EVENT_CHRISTMAS and EVENT_CHRISTMAS_MARKET)
@@ -183,19 +186,25 @@ SHOP_TYPES = {
 		["Interior"] = {0, Vector3(0, 0, 0)},
 		["Class"] = ItemShop,
 		["disabled"] = not FIREWORK_SHOP_ACTIVE
+	},
+	[26] = {
+		["Name"] = "Suspekter Typ",
+		["Ped"] = {32, Vector3(511.70, -1703.02, 800.72), 180},
+		["Interior"] = {18, Vector3(0, 0, 0)},
+		["Class"] = ItemShop,
 	}
 }
 
 SHOP_ITEMS = {
 	["Gärtnerei"] = {
-		["Weed-Samen"] = 20,
+		["Weed-Samen"] = 40,
 		["Kanne"] = 500,
-		["Apfelbaum-Samen"] = 40,
-		["Blumen-Samen"] = 80,
+		["Apfelbaum-Samen"] = 60,
+		["Blumen-Samen"] = 20,
 	};
 	["24/7"] = {
 		["Radio"] = 2000,
-		["Zigarette"] = 10,
+		["Zigarettenpackung"] = 150,
 		["Wuerfel"] = 10,
 		["Kanne"] = 500,
 		["Mautpass"] = 250,
@@ -203,9 +212,11 @@ SHOP_ITEMS = {
 		["Motorcross-Helm"] = 2500,
 		["Pot-Helm"] = 3000,
 		["Tragetasche"] = 1000,
+		["Medikit"] = 250,
+		["Bandage"] = 50,
 	};
 	["Tankstelle"] = {
-		["Zigarette"] = 10,
+		["Zigarettenpackung"] = 150,
 		["Mautpass"] = 250,
 		["Benzinkanister"] = 250,
 		["Reparaturkit"] = 1000,
@@ -213,6 +224,8 @@ SHOP_ITEMS = {
 		["Motorcross-Helm"] = 2500,
 		["Pot-Helm"] = 3000,
 		["Tragetasche"] = 1000,
+		["Medikit"] = 250,
+		["Bandage"] = 50,
 	};
 	["Stadthalle"] = {
 		["Ausweis"] = 400,
@@ -231,21 +244,21 @@ SHOP_ITEMS = {
 		["Cuba-Libre"] = 12
 	};
 	["Angel- / Outdoor-Shop"] = {
-		["Fischlexikon"] = 12500,
-		["Bambusstange"] = 150,
-		["Angelrute"] = 15000,
-		["Profi Angelrute"] = 40000,
-		["Legendäre Angelrute"] = 120000,
-		["Kleine Kühltasche"] = 50,
-		["Kühltasche"] = 100,
-		["Kühlbox"] = 250,
+		["Fischlexikon"] = 500,
+		["Bambusstange"] = 1500,
+		["Angelrute"] = 10000,
+		["Profi Angelrute"] = 30000,
+		["Legendäre Angelrute"] = 60000,
+		["Kleine Kühltasche"] = 500,
+		["Kühltasche"] = 1500,
+		["Kühlbox"] = 4000,
 		["Motorcross-Helm"] = 2000,
 		["Radio"] = 1700,
 		["Köder"] = 5,
 		["Leuchtköder"] = 40,
 		["Pilkerköder"] = 40,
-		["Schwimmer"] = 2500,
-		["Spinner"] = 5000,
+		["Schwimmer"] = 500,
+		["Spinner"] = 3500,
 	};
 	["Halloween Shop"] = {
 		["Kuheuter mit Pommes"] = 25,
@@ -265,6 +278,9 @@ SHOP_ITEMS = {
 		["Römische Kerzen Batterie"] = 250,
 		["Kugelbombe"] = 100,
 		["Böller"] = 50,
+	},
+	["Suspekter Typ"] = {
+		["Hacking-Kit"] = 1000,
 	}
 }
 
@@ -312,6 +328,16 @@ SHOP_OWNER_TYPES = {
 for i, k in pairs(SHOP_OWNER_TYPES) do
 	SHOP_OWNER_TYPES[k] = i
 end
+
+SHOP_ITEM_STRIPPER_PRICE = 10 -- price will be multiplied with the stripper count
+
+SHOP_ITEM_STRIPPER_COUNT = {
+	["Alhambra"] = 3,
+	["The Pig Pen"] = 6,
+	["Green Bottle"] = 3,
+	["Lil probe inn"] = 2,
+	["Pleasure domes"] = 10
+}
 
 SHOP_BAR_STRIP = {
 	["Alhambra"] = {
@@ -386,6 +412,57 @@ ROBABLE_SHOP_EVIL_TARGETS = {
 	Vector3(2497.33, 2320.85, 9.82), -- roca escalante
 	Vector3(-1664.56, 2486.70, 86.14), -- tierra robada
 	Vector3(-796.35, 1557.02, 26.12), -- las barrancas
+}
+
+ROBABLE_VEHICLE_SHOP_EVIL_TARGETS = {
+	[1] = { -- Auto Bahn LV
+		Vector3(1337.61, 1735.79, 9.82),
+		Vector3(-2479.06, -708.42, 137.17),
+		Vector3(1413.46, 2785.82, 9.82),
+	},
+	[2] = { -- Auto Bahn LV
+		Vector3(-2245.34, -2310.53, 28.90),
+		Vector3(-2861.89, 900.43, 42.51),
+		Vector3(29.61, -2678.44, 39.24),
+	},
+	[3] = { -- Grotti LS
+		Vector3(2059.39, 2431.28, 39.92),
+		Vector3(-1578.64, 2708.96, 54.82),
+		Vector3(-2335.56, -1594.93, 482.68),
+	},
+	[6] = { -- Blueberry Cars
+		Vector3(-1578.64, 2708.96, 54.82),
+		Vector3(2887.56, 2317.29, 9.82),
+		Vector3(-2479.06, -708.42, 137.17),
+	},
+	[8] = { -- LS Slow & Used
+		Vector3(1413.46, 2785.82, 9.82),
+		Vector3(-742.66, 1638.84, 26.22),
+		Vector3(-2861.89, 900.43, 42.51),
+	},
+	[9] = { -- LS Bikes & More
+		Vector3(-1434.69, 1009.27, 6.19),
+		Vector3(461.34, 966.91, 4.12),
+		Vector3(1337.61, 1735.79, 9.82),
+	},
+	[10] = { -- Coutt and Schutz Tuning
+		Vector3(29.61, -2678.44, 39.24),
+		Vector3(-1341.26, 40.16, 5.00),
+		Vector3(-249.49, 1132.42, 18.74),
+	},
+	[11] = { -- Ottos Autos
+		Vector3(2859.93, -399.24, 6.5),
+		Vector3(1270.39, 2652.09, 9.82),
+		Vector3(1343.40, 482.87, 19.21),
+	},
+}
+
+ROBABLE_VEHICLE_SHOP_MECHANIC_POSITION = {
+	{Vector3(-1858.15, -1613.90, 20.76), {309, Vector3(-1861.55, -1610.55, 21.76), 225}},
+	{Vector3(2320.44, 324.66, 25.72), {50, Vector3(2316.70, 327.09, 26.78), 233.81}},
+	{Vector3(-1234.77, 1841.24, 39.23), {182, Vector3(-1231.95, 1836.87, 41.44), 50}},
+	{Vector3(1785.30, -2350.97, 12.18), {182, Vector3(1782.32, -2346.71, 13.45), 232}},
+	{Vector3(2462.55, 2490.02, 9.52), {309, Vector3(2459.54, 2483.51, 10.82), 317}},
 }
 
 CJ_CLOTHE_TYPES = {
@@ -662,7 +739,7 @@ CJ_CLOTHES = {
 	},
 	["TattoosST"] = {
 		[-1] = {["Name"] = "Kein Tattoo", ["Price"] = 0},
-		[0] = {["Name"] = "Grove (1)", ["Preis"] = 90},
+		[0] = {["Name"] = "Grove (1)", ["Price"] = 90},
 		[1] = {["Name"] = "Grove (2)", ["Price"] = 100},
 		[2] = {["Name"] = "Grove (3)", ["Price"] = 90},
 		[3] = {["Name"] = "Dice (1)", ["Price"] = 80},

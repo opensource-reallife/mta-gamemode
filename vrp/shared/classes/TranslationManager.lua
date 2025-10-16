@@ -8,9 +8,14 @@
 TranslationManager = inherit(Singleton)
 SERVER = triggerServerEvent == nil
 
+TranslationManager.ms_AvailableTranslations = {
+	["en"] = true
+}
+
 function TranslationManager:constructor()
 	self.m_Translations = {}
 	self.m_AddonTranslations = {}
+	self.m_DefaultLocale = "en"
 
 	-- Load standard translations
 	self:loadTranslation("en")
@@ -56,15 +61,20 @@ function TranslationManager:translate(message, locale)
 	if self.m_Translations[locale] then
 		local translatedMsg = self.m_Translations[locale]:translate(message)
 		if not translatedMsg then
-			outputDebugString("There's a missing translation. Please update the .po files")
-			outputDebugString("Missing string: "..message)
+			if DEBUG then
+				outputDebugString("There's a missing translation. Please update the .po files")
+				outputDebugString("Missing string: "..message)
+				
+				outputConsole("There's a missing translation. Please update the .po files")
+				outputConsole("Missing string: "..message)
+			end
 			return message
 		end
 		return translatedMsg
 	else
 		-- Look up in loaded addon translations
 		for k, poParser in ipairs(self.m_AddonTranslations[locale] or {}) do
-			translatedMsg = poParser:translate(message)
+			local translatedMsg = poParser:translate(message)
 			if translatedMsg then
 				return translatedMsg
 			end
@@ -83,27 +93,26 @@ if SERVER then
 					outputDebug(errOrReturn)
 					outputDebug(debug.traceback())
 				end
-				return errOrReturn 
+				return errOrReturn
 			else
 				if player.getLocale then
 					return TranslationManager:getSingleton():translate(message, player:getLocale()):format(...)
-				else 
+				else
 					outputDebug(debug.traceback())
 				end
 			end
+		else
+			return TranslationManager:getSingleton():translate(message, TranslationManager:getSingleton().m_DefaultLocale):format(...)
 		end
 	end
 else
 	function _(message, ...)
-		if DEBUG then
-			local status, errOrReturn = pcall(function(...) return TranslationManager:getSingleton():translate(message, localPlayer:getLocale()):format(...) end, ...)
-			if not status then
-				outputDebug(errOrReturn)
-				outputDebug(debug.traceback())
-			end
-			return errOrReturn
-		else
-			return TranslationManager:getSingleton():translate(message, localPlayer:getLocale()):format(...)
+		local status, errOrReturn = pcall(function(...) return TranslationManager:getSingleton():translate(message, localPlayer:getLocale()):format(...) end, ...)
+		if not status then
+			outputDebug(errOrReturn)
+			outputDebug(debug.traceback())
+			return message
 		end
+		return errOrReturn
 	end
 end

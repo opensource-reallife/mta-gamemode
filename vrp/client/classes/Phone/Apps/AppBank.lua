@@ -17,14 +17,14 @@ function AppBank:onOpen(form)
 	self.m_TabPanel = GUIPhoneTabPanel:new(0, 0, form.m_Width, form.m_Height, form)
 	self.m_Tabs = {}
 	self.m_Tabs["Info"] = self.m_TabPanel:addTab(_"Information", FontAwesomeSymbols.Info)
-	GUILabel:new(10, 10, 240, 50, _"eXo-Bank", self.m_Tabs["Info"])
+	GUILabel:new(10, 10, 240, 50, _"Bank", self.m_Tabs["Info"])
 	GUILabel:new(10, 70, 240, 30, _"Kontostand:", self.m_Tabs["Info"])
 	self.m_AccountBalanceLabel = GUILabel:new(10, 100, 240, 30, "", self.m_Tabs["Info"])
 	self.m_LocateATMsButton = GUIButton:new(10, self.m_Tabs["Info"].m_Height-50, 240, 30, _"Bankautomat finden", self.m_Tabs["Info"]):setBarEnabled(false)
 	self.m_LocateATMsButton.onLeftClick = bind(self.LocateATMsClick, self)
 
 	self.m_Tabs["Transfer"] = self.m_TabPanel:addTab(_"Überweisen", FontAwesomeSymbols.Money)
-	GUILabel:new(10, 10, 240, 50, _"eXo-Bank", self.m_Tabs["Transfer"])
+	GUILabel:new(10, 10, 240, 50, _"Bank", self.m_Tabs["Transfer"])
 	GUILabel:new(10, 70, 240, 30, _"Überweisen:", self.m_Tabs["Transfer"])
 
 	GUILabel:new(10, 100, 240, 20, _"Empfänger:", self.m_Tabs["Transfer"])
@@ -32,6 +32,7 @@ function AppBank:onOpen(form)
 
 	GUILabel:new(10, 155, 240, 20, _"Grund:", self.m_Tabs["Transfer"])
 	self.m_TransferPurposeEdit = GUIEdit:new(10, 175, 240, 30, self.m_Tabs["Transfer"])
+	self.m_TransferPurposeEdit:setMaxLength(20)
 
 	GUILabel:new(10, 210, 240, 20, _"Betrag:", self.m_Tabs["Transfer"])
 	self.m_TransferAmountEdit = GUIEdit:new(10, 230, 240, 30, self.m_Tabs["Transfer"])
@@ -43,7 +44,7 @@ function AppBank:onOpen(form)
 	GUILabel:new(10, 320, 120, 30, _"Spenden:", self.m_Tabs["Transfer"])
 	local donate = {}
 	donate["San News"] = GUIButton:new(10, 350, 117, 30, _"San News", self.m_Tabs["Transfer"]):setBackgroundColor(Color.Orange):setFontSize(.9)
-	donate["eXo Event-Team"] = GUIButton:new(135, 350, 117, 30, _"eXo Event-Team", self.m_Tabs["Transfer"]):setBackgroundColor(Color.Green):setFontSize(.9)
+	donate["Event-Team"] = GUIButton:new(135, 350, 117, 30, _"Event-Team", self.m_Tabs["Transfer"]):setBackgroundColor(Color.Green):setFontSize(.9)
 
 	for index, btn in pairs(donate) do
 		btn.onLeftClick = function() self.m_TransferToEdit:setText(index) end
@@ -92,9 +93,11 @@ function AppBank:LocateATMsClick()
 
 		for i = 1, 3 do
 			local obj = AppBank.ATMs[i]
-			local blip = Blip:new("Bank.png", obj.position.x, obj.position.y, 9999, BLIP_COLOR_CONSTANTS.Green)
-			blip:setDisplayText("Bankautomat")
-			table.insert(self.m_ATMBlips, blip)
+			if obj:getInterior() == 0 and obj:getDimension() == 0 then 
+				local blip = Blip:new("Bank.png", obj.position.x, obj.position.y, 9999, BLIP_COLOR_CONSTANTS.Green)
+				blip:setDisplayText(_"Bankautomat")
+				table.insert(self.m_ATMBlips, blip)
+			end
 		end
 		InfoBox:new(_"Bankautomaten in der Nähe von dir wurden auf der Karte markiert.")
 	end

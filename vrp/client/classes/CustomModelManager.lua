@@ -20,6 +20,14 @@ function CustomModelManager:constructor()
 	self:loadImportCOL("files/models/buildings/mech.col", 7520)
 	self:loadImportDFF("files/models/buildings/mech.dff", 7520)
 
+	--Race
+	self:loadImportTXD("files/models/pickups/vehiclechange.txd", 2838)
+	self:loadImportDFF("files/models/pickups/vehiclechange.dff", 2838)
+	self:loadImportTXD("files/models/pickups/repair.txd", 2837)
+	self:loadImportDFF("files/models/pickups/repair.dff", 2837)
+	self:loadImportTXD("files/models/pickups/nitro.txd", 2839)
+	self:loadImportDFF("files/models/pickups/nitro.dff", 2839)
+
 	--Kart-Track
 	self:loadImportCOL("files/models/buildings/kart.col", 13083)
 	self:loadImportTXD("files/models/buildings/kart.txd", 13083)
@@ -39,24 +47,47 @@ function CustomModelManager:constructor()
 	self:loadImportCOL("files/models/objects/hedge01_law.col", 6046)
 	self:loadImportDFF("files/models/objects/hedge01_law.dff", 6046)
 	self:setLODDistance(6046, 500)
+	--Ammunation Street hedge gap
+	self:loadImportCOL("files/models/objects/lawroads_law21.col", 6127)
+	self:loadImportDFF("files/models/objects/lawroads_law21.dff", 6127)
 
 	--bank
 	self:loadImportTXD("files/models/buildings/casino_heist/bank_fence.txd", 8481)
 	self:loadImportCOL("files/models/buildings/casino_heist/bank_fence.col", 8481)
+	self:loadImportCOL("files/models/buildings/bank.col", 4600)
+	self:loadImportTXD("files/models/buildings/bank.txd", 4600)
+	self:loadImportDFF("files/models/buildings/bank.dff", 4600)
+	self:loadImportCOL("files/models/objects/bankDoor.col", 1930)
+	self:loadImportTXD("files/models/objects/bankDoor.txd", 1930)
+	self:loadImportDFF("files/models/objects/bankDoor.dff", 1930)
+	self:loadImportCOL("files/models/objects/bankServer.col", 1880)
+	self:loadImportTXD("files/models/objects/bankServer.txd", 1880)
+	self:loadImportDFF("files/models/objects/bankServer.dff", 1880)
 
 	--fishing shop
 	self:loadImportCOL("files/models/buildings/fishshop.col", 6289)
 	self:loadImportTXD("files/models/buildings/fishshop.txd", 6289)
 	self:loadImportDFF("files/models/buildings/fishshop.dff", 6289)
+
 	--ammunation
 	self:loadImportCOL("files/models/buildings/ammunation.col", 4552)
 	self:loadImportDFF("files/models/buildings/ammunation.dff", 4552)
 	self:loadImportCOL("files/models/buildings/ammunation_int.col", 18049)
 	self:loadImportDFF("files/models/buildings/ammunation_int.dff", 18049)
-	self:loadImportCOL("files/models/buildings/ammunation2.col", 5106)
+	--[[self:loadImportCOL("files/models/buildings/ammunation2.col", 5106)
 	self:loadImportDFF("files/models/buildings/ammunation2.dff", 5106)
 	self:loadImportCOL("files/models/buildings/ammunation2_int.col", 18033)
-	self:loadImportDFF("files/models/buildings/ammunation2_int.dff", 18033)
+	self:loadImportDFF("files/models/buildings/ammunation2_int.dff", 18033)]]
+
+	--lspd
+	self:loadImportDFF("files/models/buildings/PD_garage.dff", 4232)
+	self:loadImportCOL("files/models/buildings/PD_garage.col", 4232)
+
+	self:loadImportDFF("files/models/buildings/PD_int.dff", 14846)
+	self:loadImportCOL("files/models/buildings/PD_int.col", 14846)
+
+	self:loadImportDFF("files/models/buildings/PD_main.dff", 3976)
+	self:loadImportCOL("files/models/buildings/PD_main.col", 3976)
 
 	--ferris wheel
 	self:loadImportCOL("files/models/objects/ferrisWheel/ferrisBase.col", FERRIS_IDS.Base)
@@ -160,6 +191,11 @@ function CustomModelManager:constructor()
 	self:loadImportCOL("files/models/vehicles/extensions/fire_main.col", 1932)
 	self:loadImportTXD("files/models/vehicles/extensions/fire_main.txd", 1932)
 	self:loadImportDFF("files/models/vehicles/extensions/fire_main.dff", 1932)
+	self:loadImportTXD("files/models/vehicles/extensions/taxi_sign.txd", 1853)
+	self:loadImportDFF("files/models/vehicles/extensions/taxi_sign.dff", 1853)
+	self:loadImportCOL("files/models/vehicles/extensions/dft_ramp.col", 1874)
+	self:loadImportTXD("files/models/vehicles/extensions/dft_ramp.txd", 1874)
+	self:loadImportDFF("files/models/vehicles/extensions/dft_ramp.dff", 1874)
 
 	self:loadImportDFF("files/models/vehicles/dozer.dff", 486)
 	self:loadImportDFF("files/models/vehicles/dumper.dff", 406)
@@ -180,6 +216,11 @@ function CustomModelManager:constructor()
 	self:loadImportDFF("files/models/skins/zombie.dff", 310)
 	self:loadImportTXD("files/models/skins/santaclaus.txd", 244)
 	self:loadImportDFF("files/models/skins/santaclaus.dff", 244)
+
+	-- drill
+	self:loadImportTXD("files/models/skins/drill.txd", 257)
+	self:loadImportDFF("files/models/skins/drill.dff", 257)
+
 	-- Halloween Smode
 	if EVENT_HALLOWEEN then
 		self:loadImportTXD("files/models/skins/ghost.txd", 260)
@@ -194,9 +235,9 @@ function CustomModelManager:constructor()
 		self:loadImportTXD("files/models/objects/XmasTree1.txd", 6972)
 		self:loadImportDFF("files/models/objects/XmasTree1.dff", 6972)
 
-		self:loadImportCOL("files/models/objects/XmasBox.col", 3878)
-		self:loadImportTXD("files/models/objects/XmasBox.txd", 3878)
-		self:loadImportDFF("files/models/objects/XmasBox.dff", 3878)
+		--[[self:loadImportCOL("files/models/objects/XmasTree2.col", 2077)
+		self:loadImportTXD("files/models/objects/XmasTree2.txd", 2077)
+		self:loadImportDFF("files/models/objects/XmasTree2.dff", 2077)]]
 
 		self:loadImportCOL("files/models/objects/fortuneWheel.col", 1895)
 		self:loadImportTXD("files/models/objects/fortuneWheel.txd", 1895)
@@ -209,6 +250,11 @@ function CustomModelManager:constructor()
 		self:loadImportDFF("files/models/vehicles/reindeerSledge.dff", 609)
 	end
 
+	-- SCHUH ZUM WERFEN
+	self:loadImportTXD("files/models/objects/worldItems/boot.txd", 1901)
+	self:loadImportDFF("files/models/objects/worldItems/boot.dff", 1901)
+
+
 	--Easter Event:
 	self:loadImportCOL("files/models/objects/worldItems/easter_egg.col", 1933)
 	self:loadImportTXD("files/models/objects/worldItems/easter_egg.txd", 1933)
@@ -220,8 +266,18 @@ function CustomModelManager:constructor()
 	self:loadImportTXD("files/models/objects/worldItems/pumpkin.txd", 1935)
 	self:loadImportDFF("files/models/objects/worldItems/pumpkin.dff", 1935)
 
+	self:loadImportCOL("files/models/objects/XmasBox.col", 2070)
+	self:loadImportTXD("files/models/objects/XmasBox.txd", 2070)
+	self:loadImportDFF("files/models/objects/XmasBox.dff", 2070)
+
 	self:loadImportTXD("files/models/wearables/ChristmasHat.txd", 1936)
 	self:loadImportDFF("files/models/wearables/ChristmasHat.dff", 1936)
+
+	self:loadImportTXD("files/models/objects/GingerbreadMask.txd", 2107)
+	self:loadImportDFF("files/models/objects/GingerbreadMask.dff", 2107)
+
+	self:loadImportTXD("files/models/property_red.txd", 1875)
+	self:loadImportDFF("files/models/property_red.dff", 1875)
 
 	--shader
 	self:loadShader("RoadSigns/parking1.png", "noparking2_128")
@@ -309,7 +365,6 @@ end
 function CustomModelManager:createObjectsForMods()
 	local objs = {
 		--objid, radius, x, y, z, lodid
-		{4027, 48.207302, 1783.1016, -1702.3047, 14.35156, 4076}, --rescue
 		{4552, 75.657227, 1391.125, -1318.0937, 24.66406, 4632}, --ammu nation central
 	}
 	for i,v in pairs(objs) do

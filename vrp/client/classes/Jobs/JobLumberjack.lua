@@ -9,7 +9,7 @@ JobLumberjack = inherit(Job)
 addEvent("lumberjackTreesLoadUp", true)
 
 function JobLumberjack:constructor()
-	Job.constructor(self, 16, 1104.27, -298.06, 73.99, 90, "Lumberjack.png", {80, 140, 30}, "files/images/Jobs/HeaderLumberjack.png", _(HelpTextTitles.Jobs.Lumberjack):gsub("Job: ", ""), _(HelpTexts.Jobs.Lumberjack))
+	Job.constructor(self, 16, 1104.27, -298.06, 73.99, 90, "Lumberjack.png", {80, 140, 30}, "files/images/Jobs/HeaderLumberjack.png", (HelpTextTitles.Jobs.Lumberjack):gsub("Job: ", ""), _(HelpTexts.Jobs.Lumberjack), LexiconPages.JobLumberjack)
 	self:setJobLevel(JOB_LEVEL_LUMBERJACK)
 
 	self.m_Trees = {}
@@ -19,8 +19,6 @@ function JobLumberjack:constructor()
 
 	addEventHandler("lumberjackTreesLoadUp", root, bind(JobLumberjack.Event_lumberjackTreesLoadUp, self))
 
-	-- add job to help menu
-	HelpTextManager:getSingleton():addText("Jobs", _(HelpTextTitles.Jobs.Lumberjack):gsub("Job: ", ""), "jobs.lumberjack")
 end
 
 function JobLumberjack:start()
@@ -33,7 +31,7 @@ function JobLumberjack:start()
 		object.Blip = Blip:new("Marker.png", x, y)
 		object.Blip:setColor(BLIP_COLOR_CONSTANTS.Yellow)
 		object.Blip:setSize(Blip.getDefaultSize()/2)
-		object.Blip:setDisplayText("Baum")
+		object.Blip:setDisplayText(_"Baum")
 		table.insert(self.m_Trees, object)
 		addEventHandler("onClientObjectDamage", object, func)
 	end
@@ -45,10 +43,10 @@ function JobLumberjack:start()
 	end
 
 	self.m_SawMillBlip = Blip:new("Marker.png", -1969.8, -2432.6, 9999, BLIP_COLOR_CONSTANTS.Red)
-	self.m_SawMillBlip:setDisplayText("Sägewerk")
+	self.m_SawMillBlip:setDisplayText(_"Sägewerk")
 	ShortMessage:new(_"Säge die auf der Karte markierten Bäume mit der Motorsäge um.")
 	-- Show text in help menu
-	HelpBar:getSingleton():addText(_(HelpTextTitles.Jobs.Lumberjack), _(HelpTexts.Jobs.Lumberjack))
+	HelpBar:getSingleton():setLexiconPage(LexiconPages.JobLumberjack)
 end
 
 function JobLumberjack:stop()
@@ -80,7 +78,7 @@ function JobLumberjack:stop()
 	self.m_NumTrees = 0
 
 	-- Reset text in help menu
-	HelpBar:getSingleton():addText(_(HelpTextTitles.General.Main), _(HelpTexts.General.Main), false)
+	HelpBar:getSingleton():setLexiconPage(nil)
 end
 
 function JobLumberjack:processTreeDamage(loss, attacker)

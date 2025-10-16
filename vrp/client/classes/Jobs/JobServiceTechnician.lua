@@ -8,16 +8,16 @@
 JobServiceTechnician = inherit(Job)
 
 function JobServiceTechnician:constructor()
-    --Job.constructor(self, 260, 900.80, -1447.34, 14.09, 270, "ServiceTechnician.png", "files/images/Jobs/HeaderServiceTechnician.png", _(HelpTextTitles.Jobs.ServiceTechnician):gsub("Job: ", ""), _(HelpTexts.Jobs.ServiceTechnician))
-
+    Job.constructor(self, 156, 940.95, -1717.69, 13.96, 90, "ServiceTechnician.png", {173, 216, 230}, "files/images/Jobs/HeaderServiceTechnician.png", (HelpTextTitles.Jobs.ServiceTechnician):gsub("Job: ", ""), _(HelpTexts.Jobs.ServiceTechnician), LexiconPages.JobServiceTechnician)
+    self:setJobLevel(JOB_LEVEL_SERVICETECHNICIAN)
 end
 
 function JobServiceTechnician:start()
-  -- Show text in help menu
-	HelpBar:getSingleton():addText(_(HelpTextTitles.Jobs.ServiceTechnician), _(HelpTexts.Jobs.ServiceTechnician))
+    -- Show text in help menu
+	HelpBar:getSingleton():setLexiconPage(LexiconPages.JobServiceTechnician)
 end
 
 function JobServiceTechnician:stop()
-  -- Reset text in help menu
-  HelpBar:getSingleton():addText(_(HelpTextTitles.General.Main), _(HelpTexts.General.Main), false)
+    -- Reset text in help menu
+    HelpBar:getSingleton():setLexiconPage(nil)
 end

@@ -53,6 +53,7 @@ function Zombie.Damage(attacker, weapon, bodypart)
 				end
 			end
 		end
+		cancelEvent()
 	end
 end
 

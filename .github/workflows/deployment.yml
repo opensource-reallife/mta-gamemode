@@ -1,0 +1,24 @@
+name: Deployment
+
+on: [workflow_call, workflow_dispatch]
+
+jobs:  
+  deploy-development:
+    runs-on: ubuntu-latest
+    environment: development
+    if: github.ref == 'refs/heads/master'
+    steps:
+      -
+        name: Deploy to development
+        run: |
+          curl http://${{ secrets.DEPLOYRON_IP }}:6000/deploy/mta_development?APISecret=${{ secrets.DEPLOY_API_SECRET_DEVELOPMENT }}
+          
+  deploy-production:
+    runs-on: ubuntu-latest
+    environment: production
+    if: github.ref == 'refs/heads/release/production'
+    steps:
+      -
+        name: Deploy to production
+        run: |
+          curl http://${{ secrets.DEPLOYRON_IP }}:6000/deploy/mta_production?APISecret=${{ secrets.DEPLOY_API_SECRET_PRODUCTION }}

@@ -8,31 +8,24 @@
 POParser = inherit(Object)
 
 function POParser:constructor(poPath)
-	self.m_Strings = {}
+    self.m_Strings = {}
 
-	local file = File.Open(poPath, true)
-	local lines = split(assert(file:getContent(), "Reading the translation file failed"), "\n")
-	
-	local lastKey
-	for i, line in ipairs(lines) do
-		local pos = line:find(' ')
-		if pos then
-			local instruction = line:sub(1, pos-1)
-			local argument = line:sub(pos+1)
-			
-			if instruction == "msgid" then
-				-- Remove ""
-				argument = argument:sub(2, #argument-2)
-				
-				self.m_Strings[argument] = false
-				lastKey = argument
-			elseif instruction == "msgstr" then
-				-- Remove ""
-				argument = argument:sub(2, #argument-2)
-				self.m_Strings[lastKey] = argument
-			end
-		end
-	end
+    local file = fileOpen(poPath)
+    if not file then
+        outputDebug("File could not be opened: " .. poPath)
+        return false
+    end
+
+    local fileContent = fileRead(file, fileGetSize(file))
+
+    for msgid, msgstr in fileContent:gmatch('msgid "(.-)"%s+msgstr "(.-)"') do
+        msgid = msgid:gsub("\\n", "\n")
+        msgstr = msgstr:gsub("\\n", "\n")
+
+        self.m_Strings[msgid] = msgstr
+    end
+
+    fileClose(file)
 end
 
 function POParser:translate(str)

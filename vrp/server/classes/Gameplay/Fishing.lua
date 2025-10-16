@@ -72,7 +72,7 @@ function Fishing:updateStatistics()
 	end
 end
 
-function Fishing:getFish(location, timeOfDay, weather, season, playerLevel, fishingRodEquipments)
+function Fishing:getFish(location, timeOfDay, raining, season, playerLevel, fishingRodEquipments)
 	local tmp = {}
 
 	for _, v in pairs(Fishing.Fish) do
@@ -121,11 +121,11 @@ function Fishing:getFish(location, timeOfDay, weather, season, playerLevel, fish
 		if v.Weather == 0 then			-- Any
 			checkWeather = true
 		elseif v.Weather == 1 then		-- Sunny
-			if weather ~= 8 then
+			if not raining then
 				checkWeather = true
 			end
 		elseif v.Weather == 2 then		-- Rainy
-			if weather == 8 then
+			if raining then
 				checkWeather = true
 			end
 		end
@@ -212,7 +212,7 @@ function Fishing:FishHit(location, castPower)
 	if not self.m_Players[client] then return end
 
 	local time = tonumber(("%s%.2d"):format(getRealTime().hour, getRealTime().minute))
-	local weather = getWeather()
+	local raining = (getRainLevel() or 0) == 0 and false or true
 	local season = getCurrentSeason()
 	local playerLevel = client:getPrivateSync("FishingLevel")
 	local fishingRodName = self.m_Players[client].fishingRodName
@@ -225,11 +225,26 @@ function Fishing:FishHit(location, castPower)
 		self.m_Players[client].lastBait = nil
 	end
 
-	local fish = self:getFish(location, time, weather, season, playerLevel, {baitName, accessorieName})
+	local fish = self:getFish(location, time, raining, season, playerLevel, {baitName, accessorieName})
 	if not fish then
 		client:triggerEvent("onFishingBadCatch")
-		local randomMessage = FISHING_BAD_CATCH_MESSAGES[self.Random:get(1, #FISHING_BAD_CATCH_MESSAGES)]
-		client:meChat(true, ("zieht %s aus dem Wasser!"):format(randomMessage))
+		local randomMessage 
+		if not client:isInSewer() then 
+			randomMessage = FISHING_BAD_CATCH_MESSAGES[self.Random:get(1, #FISHING_BAD_CATCH_MESSAGES)]
+		else 
+			local index = self.Random:get(1, #FISHING_BAD_CATCH_MESSAGES_SEWERS)
+			randomMessage = FISHING_BAD_CATCH_MESSAGES_SEWERS[index]
+			if randomMessage ~= "nichts" then 
+				if math.random(1, 10) < 3 then 
+					if FISHING_BAD_CATCH_ITEMS_SEWERS[index] then 
+						client:getInventory():giveItem(FISHING_BAD_CATCH_ITEMS_SEWERS[index], 1)
+					end
+				else
+					randomMessage = "nichts"
+				end
+			end
+		end
+		client:meChat(true, "zieht %s aus dem Wasser!", randomMessage, true)
 		client:increaseStatistics("FishBadCatch")
 		return
 	end
@@ -293,17 +308,19 @@ function Fishing:FishCaught()
 			local fishId = tbl.lastFish.Id
 			local fishName = tbl.lastFish.Name_DE
 			local currentValue = playerInventory:getItemValueByBag(FISHING_INVENTORY_BAG, place)
+			local quality = self:getFishQuality(fishId, size)
 			currentValue = fromJSON(currentValue) or {}
 
 			if #currentValue < bagProperties.max then
-				table.insert(currentValue, {Id = fishId, size = size, quality = self:getFishQuality(fishId, size), timestamp = getRealTime().timestamp})
+				table.insert(currentValue, {Id = fishId, size = size, quality = quality, timestamp = getRealTime().timestamp})
 				playerInventory:setItemValueByBag(FISHING_INVENTORY_BAG, place, toJSON(currentValue))
 
 				self:increaseFishCaughtCount(fishId)
 
 				StatisticsLogger:getSingleton():addfishCaughtLogs(client, fishName, size, tbl.location, fishId)
-				client:sendInfo(("Du hast ein %s gefangen.\nGröße: %scm"):format(fishName, size, newFishRecord and "(Rekord!)" or ""))
-				client:meChat(true, ("hat ein %s gefangen. Größe: %scm %s"):format(fishName, size, newFishRecord and "(Rekord!)" or ""))
+				client:sendInfo(("Du hast eine(n) %s gefangen.\nGröße: %scm"):format(fishName, size, newFishRecord and "(Rekord!)" or ""))
+				client:meChat(true, "hat eine(n) %s gefangen.", fishName, true)
+				client:givePoints(Randomizer:get(0, quality + 1))
 				return
 			end
 
@@ -312,11 +329,11 @@ function Fishing:FishCaught()
 	end
 
 	if allBagsFull then
-		client:sendError("Deine Kühltaschen sind voll!")
+		client:sendError(_("Deine Kühltaschen sind voll!", client))
 		return
 	end
 
-	client:sendError("Du besitzt keine Kühltaschen, in der du deine Fische lagern kannst!")
+	client:sendError(_("Du besitzt keine Kühltaschen, in der du deine Fische lagern kannst!", client))
 end
 
 function Fishing:FishEscape()
@@ -398,7 +415,7 @@ end
 
 function Fishing:clientSendFishTrading(list)
 	local fishingLevel = client:getPrivateSync("FishingLevel")
-	local fishingLevelMultiplicator = fishingLevel >= 10 and 1.5 or (fishingLevel >= 5 and 1.25 or 1)
+	local fishingLevelMultiplicator = ((math.floor(fishingLevel / 3) * 10) / 100) + 1
 	local totalPrice = 0
 
 	for _, item in pairs(list) do
@@ -408,7 +425,7 @@ function Fishing:clientSendFishTrading(list)
 			local qualityMultiplicator = fish.quality == 3 and 2 or (fish.quality == 2 and 1.5 or (fish.quality == 1 and 1.25 or 1))
 			local rareBonusMultiplicator = Fishing.Fish[fish.Id].RareBonus + 1
 
-			local fishIncome = default*fishingLevelMultiplicator*qualityMultiplicator*rareBonusMultiplicator
+			local fishIncome = default * (fishingLevelMultiplicator + qualityMultiplicator + rareBonusMultiplicator - 2)
 			totalPrice = totalPrice + fishIncome
 
 			self:removeFrishFromCoolingBag(fish.Id, fish.size)
@@ -418,7 +435,7 @@ function Fishing:clientSendFishTrading(list)
 	end
 
 	if totalPrice > 0 then
-		self.m_BankAccountServer:transferMoney(client, totalPrice, "Fischhandel", "Gampelay", "Fishing")
+		self.m_BankAccountServer:transferMoney(client, totalPrice, "Fischhandel", "Gameplay", "Fishing")
 	end
 end
 
@@ -490,12 +507,13 @@ function Fishing:updatePricing()
 	local averageSoldFish = sortTable[math.floor(#sortTable/3)]
 
 	for _, fish in pairs(Fishing.Fish) do
-		for i = 1, 5000000 do end -- otherwise the script is too fast to create random numbers
-		fish.RareBonus = self.Random:nextDouble() --math.max(1 - (Fishing.Statistics[fish.Id].SoldCount)/(averageSoldFish + 1), 0)
+		-- for i = 1, 5000000 do end -- otherwise the script is too fast to create random numbers
+		fish.RareBonus = math.random(0, 10^6)/10^6 --math.max(1 - (Fishing.Statistics[fish.Id].SoldCount)/(averageSoldFish + 1), 0)
 	end
 end
 
 function Fishing:inventoryUse(player, fishingRodName)
+	if player.isTasered then return end
 	if self.m_Players[player] then
 		local fishingRod = self.m_Players[player].fishingRod
 		if fishingRod then fishingRod:destroy() end
@@ -593,6 +611,8 @@ function Fishing:getFishingRodEquipments(player, fishingRodName)
 	return equipements
 end
 
+function Fishing:isPlayerFishing(player) return self.m_Players[player] end
+
 function Fishing:addFishingRodEquipment(player, fishingRodName, equipment)
 	local playerInventory = player:getInventory()
 	if playerInventory:getItemAmount(fishingRodName) > 0 and playerInventory:getItemAmount(equipment) > 0 then
@@ -657,13 +677,13 @@ end
 
 --[[
 addCommandHandler("testFish",
-	function(player, cmd, location, weather, season, level, bait, accessorie)
+	function(player, cmd, location, raining, season, level, bait, accessorie)
 		local fish = Fishing:getSingleton()
-		outputConsole(("Location: %s\nWeather: %s\nSeason: %s\nLevel: %s\nBait: %s\nAccessorie: %s"):format(location, weather, season, level, tostring(bait and bait or "keine"), tostring(accessorie and accessorie or "keine")))
+		outputConsole(("Location: %s\nRaining: %s\nSeason: %s\nLevel: %s\nBait: %s\nAccessorie: %s"):format(location, raining, season, level, tostring(bait and bait or "keine"), tostring(accessorie and accessorie or "keine")))
 		outputConsole("Uhrzeit, Anzahl")
 		for i = 1, 24 do
 			local time = tonumber(("%s%.2d"):format(i, 0))
-			local count = fish:getFish(location, time, weather, tonumber(season), tonumber(level), {bait and bait or false, accessorie and accessorie or false})
+			local count = fish:getFish(location, time, raining, tonumber(season), tonumber(level), {bait and bait or false, accessorie and accessorie or false})
 			outputConsole(("%s, %s"):format(time, count))
 		end
 	end

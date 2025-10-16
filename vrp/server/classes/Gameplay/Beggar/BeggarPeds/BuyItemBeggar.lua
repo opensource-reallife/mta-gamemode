@@ -9,12 +9,11 @@ function BuyItemBeggar:giveItem(player, item)
 		if self.m_Robber == player:getId() then return self:sendMessage(player, BeggarPhraseTypes.NoTrust) end
 		if player:getInventory():getItemAmount(item) >= 1 then
 			player:getInventory():removeItem(item, 1)
-			player:giveCombinedReward("Bettler-Handel", {
-				karma = 5,
+			player:giveCombinedReward(_("Bettler-Handel", player), {
 				points = 5,
 			})
 			self:sendMessage(player, BeggarPhraseTypes.Thanks)
-			player:meChat(true, ("übergibt %s eine Tüte"):format(self.m_Name))
+			player:meChat(true, "übergibt %s eine Tüte!", self.m_Name, false)
 			setTimer(
 				function ()
 					self:despawn()

@@ -5,6 +5,16 @@ function AdminEvent:constructor()
     self.m_Vehicles = {}
     self.m_AuctionsPerEvent = {}
     self.m_VehiclesAmount = 0
+    --[[self.m_WastedBind = bind(self.Event_WastedHandler, self)
+    addEventHandler("onPlayerWasted", root, self.m_WastedBind)]]
+end
+
+function AdminEvent:destructor()
+    for i, player in pairs(self.m_Players) do
+        self:leaveEvent(player, true)
+    end
+    self.m_Players = {}
+    self:deleteEventVehicles()
 end
 
 function AdminEvent:setTeleportPoint(eventManager)
@@ -17,11 +27,20 @@ function AdminEvent:sendGUIData(player)
 end
 
 function AdminEvent:joinEvent(player)
+    if self:isPlayerInEvent(player) then player:sendError(_("Du nimmst bereits am Admin-Event teil! Bitte warte auf weitere Anweisungen!", player)) return end
 	table.insert(self.m_Players, player)
     player:sendInfo(_("Du nimmst am Admin-Event teil! Bitte warte auf weitere Anweisungen!", player))
     player:triggerEvent("adminEventPrepareClient")
     if self.m_CurrentAuction then
         triggerClientEvent(player, "adminEventSendAuctionData", resourceRoot, self.m_CurrentAuction)
+    end
+end
+
+function AdminEvent:leaveEvent(player, dontModifyTable)
+    if not dontModifyTable then table.removevalue(self.m_Players, player) end -- hack-fix if we remove every player in the table
+    if isElement(player) then
+        player:sendInfo(_("Du nimmst nicht mehr am Admin-Event teil!", player))
+        player:triggerEvent("adminEventRemoveClient")
     end
 end
 
@@ -38,14 +57,11 @@ function AdminEvent:teleportPlayers(eventManager)
 	local count = 0
 
 	for index, player in pairs(self.m_Players) do
-		if not player.adminEventPortet then
-			if player.vehicle then removePedFromVehicle(player)	end
-			player:setDimension(dim)
-			player:setInterior(dim)
-			player:setPosition(pos.x + math.random(1,3), pos.y + math.random(1,3), pos.z)
-			count = count + 1
-			player.adminEventPortet = true
-		end
+        if player.vehicle then removePedFromVehicle(player)	end
+        player:setDimension(dim)
+        player:setInterior(int)
+        player:setPosition(pos.x + math.random(1,3), pos.y + math.random(1,3), pos.z)
+        count = count + 1
 	end
 	eventManager:sendInfo(_("Es wurden %d Spieler teleportiert!", eventManager, count))
 end
@@ -76,13 +92,13 @@ function AdminEvent:createVehiclesInRow(player, amount, direction)
     amount = tonumber(amount)
 
     for i=0, amount do
-            if direction == "V" then pos = pos + matrix.forward*3
-        elseif direction == "H" then pos = pos - matrix.forward*3
-        elseif direction == "R" then pos = pos + matrix.right*3
-        elseif direction == "L" then pos = pos - matrix.right*3
+            if direction == "V" then pos = pos + matrix.forward*7
+        elseif direction == "H" then pos = pos - matrix.forward*7
+        elseif direction == "R" then pos = pos + matrix.right*4
+        elseif direction == "L" then pos = pos - matrix.right*4
         end
 
-        veh = TemporaryVehicle.create(model, pos, rot)
+        veh = TemporaryVehicle.create(model, pos, rot.z)
         veh:setFrozen(true)
         veh.m_DisableToggleHandbrake = true
         self.m_Vehicles[self.m_VehiclesAmount] = veh
@@ -122,13 +138,11 @@ function AdminEvent:deleteEventVehicles(player)
         if veh and isElement(veh) then
             veh:destroy()
             count = count+1
-        else
-            self.m_Vehicles[index] = nil
         end
     end
 	self.m_Vehicles = {}
 	self.m_VehiclesAmount = 0
-    player:sendInfo(_("Du hast %d Event-Fahrzege gelöscht!", player, count))
+    if player and isElement(player) then player:sendInfo(_("Du hast %d Event-Fahrzege gelöscht!", player, count)) end
 end
 
 function AdminEvent:startAuction(player, name)
@@ -139,7 +153,8 @@ function AdminEvent:startAuction(player, name)
         }
         triggerClientEvent(self.m_Players, "adminEventSendAuctionData", resourceRoot, self.m_CurrentAuction)
         triggerClientEvent(self.m_Players, "infoBox", resourceRoot, "Eine neue Auktions-Runde wurde gestartet.")
-        Admin:getSingleton():sendShortMessage(_("%s hat eine Auktions-Runde für %s gestartet!", player, player:getName(), name))
+        local format = {player:getName(), name}
+        Admin:getSingleton():sendShortMessage("%s hat eine Auktions-Runde für %s gestartet!", format)
     else
         player:sendError(_("Es läuft bereits eine Auktion!", player))
     end
@@ -148,7 +163,7 @@ end
 function AdminEvent:registerBid(player, bid)
     if self.m_CurrentAuction then
         if not self.m_CurrentAuction.bids[1] or bid > self.m_CurrentAuction.bids[1][2] then
-            QuestionBox:new(player, player, ("Achtung bindend! Willst du wirklich %s auf %s bieten? (Es folgen administrative Strafen, wenn du nach der Auktion nicht bezahlen kannst)"):format(toMoneyString(bid), self.m_CurrentAuction.name), function(player, bid)
+            QuestionBox:new(player, ("Achtung bindend! Willst du wirklich %s auf %s bieten? (Es folgen administrative Strafen, wenn du nach der Auktion nicht bezahlen kannst)"):format(toMoneyString(bid), self.m_CurrentAuction.name), function(player, bid)
                 if self.m_CurrentAuction then
                     if not self.m_CurrentAuction.bids[1] or bid > self.m_CurrentAuction.bids[1][2] then
                         local updated = false
@@ -175,7 +190,7 @@ function AdminEvent:registerBid(player, bid)
                 else
                     player:sendError(_("Es läuft keine Auktion!", player))
                 end
-            end, false, player, bid)
+            end, false, false, false, player, bid)
         else
             player:sendError(_("Dein Gebot ist zu tief, das Höchstgebot für %s liegt bei %s!", player, self.m_CurrentAuction.name, toMoneyString(bid)))
         end
@@ -189,7 +204,8 @@ function AdminEvent:removeHighestBid(admin)
         if self.m_CurrentAuction.bids[1] then
             table.remove(self.m_CurrentAuction.bids, 1)
             triggerClientEvent(self.m_Players, "adminEventSendAuctionData", resourceRoot, self.m_CurrentAuction)
-            Admin:getSingleton():sendShortMessage(_("%s hat das höchste Gebot entfernt!", admin, admin:getName()))
+            local format = {admin:getName()}
+            Admin:getSingleton():sendShortMessage("%s hat das höchste Gebot entfernt!", format)
         else
             admin:sendError(_("Es gibt noch keine Gebote!", admin))
         end
@@ -211,7 +227,8 @@ function AdminEvent:stopAuction(admin)
         for index, player in pairs(self.m_Players) do
 			player:sendInfo(msg)
 		end
-        Admin:getSingleton():sendShortMessage(_("%s hat den Aufruf für %s beendet!", admin, admin:getName(), self.m_CurrentAuction.name))
+        local format = {admin:getName(), self.m_CurrentAuction.name}
+        Admin:getSingleton():sendShortMessage("%s hat den Aufruf für %s beendet!", format)
         table.insert(self.m_AuctionsPerEvent, {self.m_CurrentAuction.name, name, bid})
         self.m_CurrentAuction = nil
         triggerClientEvent(self.m_Players, "adminEventSendAuctionData", resourceRoot, self.m_CurrentAuction)
@@ -229,3 +246,33 @@ function AdminEvent:outputAuctionDataToPlayer(player)
     end
 
 end
+
+--EASTER EVENT: BATTLE ROYALE--
+--[[
+function AdminEvent:activateBattleRoyaleTextures()
+    for key, player in ipairs(self.m_Players) do
+        if player and isElement(player) then
+            player:triggerEvent("adminEventCreateBattleRoyaleTextures", player)
+        end
+    end
+end
+
+function AdminEvent:deactivateBattleRoyaleTextures()
+    for key, player in ipairs(self.m_Players) do
+        if player and isElement(player) then
+            player:triggerEvent("adminEventDeleteBattleRoyaleTextures", player)
+        end
+    end
+end
+
+function AdminEvent:Event_WastedHandler(ammo, killer, killerWeapon, bodypart)
+    if self:isPlayerInEvent(source) then
+        for key, player in ipairs(self.m_Players) do
+            if player and isElement(player) then
+                outputChatBox("[EVENT]: #EE2222"..source:getName().." #FFFFFFist gefallen!", player, 255, 255, 255, true)
+                player:triggerEvent("adminEventBattleRoyaleDeath", player, source)
+            end
+        end
+    end
+end
+]]

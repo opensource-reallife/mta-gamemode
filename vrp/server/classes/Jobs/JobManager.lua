@@ -15,7 +15,7 @@ function JobManager:constructor()
 		JobRoadSweeper:new();
 		JobLumberjack:new();
 		JobFarmer:new();
-		--JobServiceTechnician:new();
+		JobServiceTechnician:new();
 		JobPizza:new();
 		JobHeliTransport:new();
 		JobLogistician:new();
@@ -47,6 +47,10 @@ function JobManager:constructor()
 			player:setJob(nil)
 		end
 	)
+
+	nextframe(bind(self.refreshJobMultiplicators, self))
+	self.m_TimedPulse = TimedPulse:new(JOBMULT_REFRESH_TIME*1000*60)
+	self.m_TimedPulse:registerHandler(bind(self.refreshJobMultiplicators, self))
 end
 
 function JobManager:getFromId(jobId)
@@ -127,4 +131,15 @@ function JobManager:Event_jobQuit()
 	if not job then return end
 
 	client:setJob(nil)
+end
+
+function JobManager:refreshJobMultiplicators()
+	self.m_JobMultiplicators = { }
+	for k, v in ipairs(self.m_Jobs) do
+		local random = Randomizer:get(0, 10 * Randomizer:get(0, 2)) * 10
+		v:setMultiplicator(random)
+		self.m_JobMultiplicators[v:getId()] = random
+	end
+	triggerClientEvent(root, "receiveJobMultiplicators", root, self.m_JobMultiplicators)
+	CompanyManager:getSingleton():getFromId(CompanyStaticId.SANNEWS):sendShortMessage("Die Job-Multiplikatoren haben sich geändert!")
 end

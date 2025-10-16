@@ -6,7 +6,7 @@
 -- *
 -- ****************************************************************************
 JobTrashman = inherit(Job)
-local MONEY_PER_CAN = 29*2 --// 15 default
+local MONEY_PER_CAN = 5
 
 function JobTrashman:constructor()
 	Job.constructor(self)
@@ -86,7 +86,7 @@ function JobTrashman:Event_trashcanCollect(containerNum)
 		-- Note: It's bad to create the huge amount of trashcans on the server - but...we should do it probably?
 		local lastTime = client:getData("Trashman:LastCan") or -math.huge
 		if getTickCount() - lastTime < 2500 then
-			AntiCheat:getSingleton():report("Trashman:TooMuchTrash", CheatSeverity.Low)
+			AntiCheat:getSingleton():report(client, "Trashman:TooMuchTrash", CheatSeverity.Low)
 			return
 		end
 		client:setData("Trashman:LastCan", getTickCount())
@@ -104,18 +104,18 @@ function JobTrashman:dumpCans(hitElement, matchingDimension)
 			local numCans = hitElement:getData("Trashman:Cans")
 
 			if numCans and numCans > 0 then
-				local moneyAmount = numCans * MONEY_PER_CAN
+				local moneyAmount = numCans * MONEY_PER_CAN * JOB_PAY_MULTIPLICATOR * self:getMultiplicator()
 				local duration = getRealTime().timestamp - hitElement.m_LastJobAction
-				local points = math.floor(math.ceil(numCans/3)*JOB_EXTRA_POINT_FACTOR)
+				local points = math.round(moneyAmount / 50 * JOB_EXTRA_POINT_FACTOR)
 				hitElement.m_LastJobAction = getRealTime().timestamp
 				StatisticsLogger:getSingleton():addJobLog(hitElement, "jobTrashman", duration, moneyAmount, nil, nil, points, numCans)
-				
+
 				self.m_BankAccount:transferMoney({hitElement, true}, moneyAmount, "Müll-Job", "Job", "Trashman")
 				hitElement:givePoints(points)
 
 				hitElement:setData("Trashman:Cans", 0)
 				hitElement:triggerEvent("trashcanReset")
-				QuestionBox:new(hitElement, hitElement, _("Möchtest du weiter arbeiten?", hitElement), "JobTrashmanAgain", "JobTrashmanStop", hitElement)
+				QuestionBox:new(hitElement, _("Möchtest du weiter arbeiten?", hitElement), "JobTrashmanAgain", "JobTrashmanStop", false, false, hitElement)
 
 			else
 				hitElement:sendInfo(_("Du hast keinen Müll aufgeladen!", hitElement, moneyAmount))

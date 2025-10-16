@@ -23,16 +23,19 @@ TextureReplacer.load   = pure_virtual
 TextureReplacer.unload = pure_virtual
 
 -- normal methods
-function TextureReplacer:constructor(element, textureName, options, force)
+function TextureReplacer:constructor(element, textureName, options, force, forceMaximum)
 	assert(textureName and textureName:len() > 0, "Bad Argument @ TextureReplacer:constructor #2")
 	self.m_Element     = element
 	self.m_TextureName = textureName
 	self.m_Force = force
-
+	self.m_ForceMaximum = forceMaximum
 	if self.m_Force then
 		self.m_LoadingMode = TEXTURE_LOADING_MODE.PERMANENT
 	else
 		self.m_LoadingMode = core:get("Other", "TextureMode", TEXTURE_LOADING_MODE.DEFAULT)
+	end
+	if self.m_ForceMaximum then 
+		self.m_LoadingMode = TEXTURE_LOADING_MODE.STREAM
 	end
 
 	self.m_Active      = true
@@ -80,7 +83,7 @@ end
 function TextureReplacer:onStreamIn()
 	if not self.m_Active then return false end
 	if self.m_LoadingMode == TEXTURE_LOADING_MODE.STREAM then
-		self:addToLoadingQeue()
+		self:addToLoadingQueue()
 	end
 end
 
@@ -111,19 +114,21 @@ function TextureReplacer:attach()
 	end
 end
 
-function TextureReplacer:detach()
+function TextureReplacer:detach(bDeleteCache)
 	if not self.m_Active then return TextureReplacer.Status.DENIED end
 	if not self.m_Shader or not isElement(self.m_Shader) then return TextureReplacer.Status.FAILURE end
 
 	self.m_Shader:destroy()
-	if self.m_Texture and isElement(self.m_Texture) then self.m_Texture:destroy() end
+	if bDeleteCache then
+		if self.m_Texture and isElement(self.m_Texture) then self.m_Texture:destroy() end
+	end
 	if self.m_Shader then self.m_Shader = nil end
 	if self.m_Texture then self.m_Texture = nil end
 	return TextureReplacer.Status.SUCCESS
 end
 
 function TextureReplacer:setLoadingMode(loadingMode)
-	if not self.m_Force then
+	if not self.m_Force and not self.m_ForceMaximum then
 		if loadingMode == self.m_LoadingMode then return false end
 		self.m_Active = true
 		self:unload()
@@ -141,7 +146,7 @@ function TextureReplacer:setLoadingMode(loadingMode)
 					self:onStreamIn()
 				end
 			elseif loadingMode == TEXTURE_LOADING_MODE.PERMANENT then
-				self:addToLoadingQeue()
+				self:addToLoadingQueue()
 			elseif loadingMode == TEXTURE_LOADING_MODE.NONE then
 				self.m_Active = false
 			end
@@ -188,8 +193,8 @@ function TextureReplacer.deleteFromElement(element)
 end
 
 --// Queue
-function TextureReplacer:addToLoadingQeue()
-	if not self.m_Force then
+function TextureReplacer:addToLoadingQueue()
+	if not self.m_Force and not self.m_ForceMaximum then
 		if instanceof(self, FileTextureReplacer) and not core:get("Other", "FileTexturesEnabled", FILE_TEXTURE_DEFAULT_STATE) then
 			self:unload()
 			return false
@@ -261,12 +266,19 @@ function TextureReplacer.forceReload()
 			if instanceof(instance, TextureReplacer, false) then
 				if instance.m_Element then
 					instance:unload()
-					if instance.m_LoadingMode == TEXTURE_LOADING_MODE.STREAM then
+					if not instance.m_ForceMaximum then
+						if instance.m_LoadingMode == TEXTURE_LOADING_MODE.STREAM then
+							if isElementStreamedIn(instance.m_Element) then
+								instance:onStreamIn()
+							end
+						elseif instance.m_LoadingMode == TEXTURE_LOADING_MODE.PERMANENT then
+							instance:addToLoadingQueue()
+						end
+					else 
+						instance:unload() 
 						if isElementStreamedIn(instance.m_Element) then
 							instance:onStreamIn()
 						end
-					elseif instance.m_LoadingMode == TEXTURE_LOADING_MODE.PERMANENT then
-						instance:addToLoadingQeue()
 					end
 				end
 			end
@@ -276,7 +288,7 @@ end
 
 function TextureReplacer.loadBacklog()
 	for i, instance in pairs(TextureReplacer.Backlog) do
-		instance:addToLoadingQeue()
+		instance:addToLoadingQueue()
 	end
 	TextureReplacer.Backlog = {}
 end
@@ -284,20 +296,20 @@ end
 -- Events
 addEvent("changeElementTexture", true)
 addEventHandler("changeElementTexture", root,
-	function(vehicles)
-		for i, vehData in pairs(vehicles) do
-			if not TextureReplacer.Map.SERVER_ELEMENTS[vehData.vehicle] then
-				TextureReplacer.Map.SERVER_ELEMENTS[vehData.vehicle] = {}
+	function(elements)
+		for i, data in pairs(elements) do
+			if not TextureReplacer.Map.SERVER_ELEMENTS[data.element] then
+				TextureReplacer.Map.SERVER_ELEMENTS[data.element] = {}
 			end
 
-			if TextureReplacer.Map.SERVER_ELEMENTS[vehData.vehicle][vehData.textureName] then
-				delete(TextureReplacer.Map.SERVER_ELEMENTS[vehData.vehicle][vehData.textureName])
+			if TextureReplacer.Map.SERVER_ELEMENTS[data.element][data.textureName] then
+				delete(TextureReplacer.Map.SERVER_ELEMENTS[data.element][data.textureName])
 			end
 			--outputDebug("new texture for "..inspect(vehData.vehicle).." optional: "..inspect(vehData.optional))
-			if string.find(vehData.texturePath, "https://") or string.find(vehData.texturePath, "http://") then
-				TextureReplacer.Map.SERVER_ELEMENTS[vehData.vehicle][vehData.textureName] = HTTPTextureReplacer:new(vehData.vehicle, vehData.texturePath, vehData.textureName, {}, vehData.forceTexture)
+			if string.find(data.texturePath, "https://") or string.find(data.texturePath, "http://") then
+				TextureReplacer.Map.SERVER_ELEMENTS[data.element][data.textureName] = HTTPTextureReplacer:new(data.element, data.texturePath, data.textureName, {}, data.forceTexture,  data.forceMaximumTexture)
 			else
-				TextureReplacer.Map.SERVER_ELEMENTS[vehData.vehicle][vehData.textureName] = FileTextureReplacer:new(vehData.vehicle, vehData.texturePath, vehData.textureName, {}, vehData.forceTexture)
+				TextureReplacer.Map.SERVER_ELEMENTS[data.element][data.textureName] = FileTextureReplacer:new(data.element, data.texturePath, data.textureName, {}, data.forceTexture,  data.forceMaximumTexture)
 			end
 		end
 

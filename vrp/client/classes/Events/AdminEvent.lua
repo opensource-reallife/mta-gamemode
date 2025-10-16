@@ -1,8 +1,12 @@
 AdminEvent = inherit(Singleton)
-addRemoteEvents{"adminEventPrepareClient", "adminEventSendAuctionData"}
+addRemoteEvents{"adminEventPrepareClient", "adminEventRemoveClient", "adminEventSendAuctionData", "adminEventCreateBattleRoyaleTextures", "adminEventDeleteBattleRoyaleTextures", "adminEventBattleRoyaleDeath"}
 
 function AdminEvent:constructor()
-    addEventHandler("adminEventSendAuctionData", resourceRoot, bind(AdminEvent.sendAuctionData, self))
+    self.m_SendAuctionDataFunc = bind(AdminEvent.sendAuctionData, self)
+    addEventHandler("adminEventSendAuctionData", resourceRoot, self.m_SendAuctionDataFunc)
+    --[[addEventHandler("adminEventCreateBattleRoyaleTextures", root, bind(self.createTexturesForBattleRoyale, self))
+    addEventHandler("adminEventDeleteBattleRoyaleTextures", root, bind(self.deleteTexturesFromBattleRoyale, self))
+    addEventHandler("adminEventBattleRoyaleDeath", root, bind(self.createDeathSign, self))]]
 end
 
 function AdminEvent:sendAuctionData(data)
@@ -29,7 +33,14 @@ function AdminEvent:sendAuctionData(data)
             self.m_AuctionMessage = nil
         end
     end
+end
 
+function AdminEvent:destructor()
+    removeEventHandler("adminEventSendAuctionData", resourceRoot, self.m_SendAuctionDataFunc)
+    if self.m_AuctionMessage then
+        self.m_AuctionMessage:delete()
+        self.m_AuctionMessage = nil
+    end
 end
 
 function AdminEvent.start()
@@ -37,4 +48,36 @@ function AdminEvent.start()
 end
 addEventHandler("adminEventPrepareClient", root, AdminEvent.start)
 
+function AdminEvent.stop()
+    delete(AdminEvent:getSingleton())
+end
+addEventHandler("adminEventRemoveClient", root, AdminEvent.stop)
 
+--EASTEREVENT: BATTLE ROYALE--
+--[[
+function AdminEvent:createTexturesForBattleRoyale()
+    local texture = dxCreateTexture("files/images/Events/BattleRoyaleBorder.png")
+    local shader = dxCreateShader("files/shader/texreplace.fx")
+    dxSetShaderValue(shader, "gTexture", texture)
+
+    engineApplyShaderToWorldTexture(shader, "sl_plazatile01")
+    engineApplyShaderToWorldTexture(shader, "man_cellarfloor128")
+    engineApplyShaderToWorldTexture(shader, "concretemanky")
+    engineApplyShaderToWorldTexture(shader, "sl_labedingsoil")
+    engineApplyShaderToWorldTexture(shader, "citywall1")
+    engineSetModelLODDistance(3997, 170)
+end
+
+function AdminEvent:deleteTexturesFromBattleRoyale()
+    engineRemoveShaderFromWorldTexture(shader, "sl_plazatile01")
+    engineRemoveShaderFromWorldTexture(shader, "man_cellarfloor128")
+    engineRemoveShaderFromWorldTexture(shader, "concretemanky")
+    engineRemoveShaderFromWorldTexture(shader, "sl_labedingsoil")
+    engineRemoveShaderFromWorldTexture(shader, "citywall1")
+end
+
+function AdminEvent:createDeathSign(player)
+    playSound("files/audio/battleroyaledeath.ogg")
+    ItemFireworkRocket:new(player:getPosition())
+end
+]]--

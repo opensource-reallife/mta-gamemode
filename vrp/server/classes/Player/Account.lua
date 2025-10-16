@@ -24,10 +24,22 @@ local MULTIACCOUNT_CHECK = GIT_BRANCH == "release/production" and true or false
 
 Account = inherit(Object)
 Account.REGISTRATION_ACTIVATED = true
+Account.PendingRequests = {
+	Logins = {},
+	Registrations = {}
+}
 
 function Account.login(player, username, password, pwhash, enableAutologin)
 	if player:getAccount() then return false end
 	if (not username or not password) and not pwhash then return false end
+
+	if not player or not player.loadCharacter or not player.getSerial  then
+		if player then
+			kickPlayer(player)
+		end
+		player:triggerEvent("loginfailed", "Interner Fehler")
+		return false
+	end
 
 	if not username:match("^[a-zA-Z0-9_.%[%]]*$") then
 		player:triggerEvent("loginfailed", "Ungültiger Nickname. Dein Name darf nur alphanumerische Zeichen verwenden.")
@@ -46,6 +58,34 @@ function Account.login(player, username, password, pwhash, enableAutologin)
 				return
 			end
 		end
+	end
+
+	if not FORUM_LOGIN then
+		local row = sql:queryFetchSingle("SELECT Id, ForumId, Name, Password, Salt, RegisterDate, TeamspeakId, AutologinToken FROM ??_account WHERE LCASE(Name) = ?", sql:getPrefix(), username)
+		if not row then
+			player:triggerEvent("loginfailed", _("Dieser Account existiert nicht", player))
+			return
+		end
+
+		local passwordHash = sha256(row.Salt..password)
+		if passwordHash ~= row.Password then
+			player:triggerEvent("loginfailed", _("Falsches Passwort", player))
+			return
+		end
+
+		local loginToken = nil
+
+		if enableAutologin then
+			loginToken = string.random(32) .. "." .. player:getSerial()
+			sql:queryExec("UPDATE ??_account SET AutologinToken = ? WHERE Id = ?", sql:getPrefix(), loginToken, row.Id)
+		else
+			if row.AutologinToken then
+				sql:queryExec("UPDATE ??_account SET AutologinToken = ? WHERE Id = ?", sql:getPrefix(), "", row.Id)
+			end
+		end
+
+		Account.loginSuccess(player, row.Id, row.Name, row.ForumId, row.RegisterDate, row.TeamspeakId, loginToken)
+		return
 	end
 
 	Forum:getSingleton():userLogin(username, password, Async.waitFor(self))
@@ -76,9 +116,11 @@ function Account.login(player, username, password, pwhash, enableAutologin)
 			Account.loginSuccess(player, row.Id, row.Name, row.ForumId, row.RegisterDate, row.TeamspeakId, loginToken)
 			return
 		end
-
-	else
+	elseif resData and resData.status and (resData.status == 400 or resData.status == 412) then
 		player:triggerEvent("loginfailed", "Falscher Name oder Passwort") -- Error: Invalid username or password2
+		return false
+	else
+		player:triggerEvent("loginInformationUpdate", nil, true)
 		return false
 	end
 end
@@ -97,7 +139,7 @@ function Account.loginSuccess(player, Id, Username, ForumId, RegisterDate, Teams
 		if #MultiAccount.getAccountsBySerial(player:getSerial()) > 1 then
 			if not MultiAccount.isAccountLinkedToSerial(Id, player:getSerial()) then
 				if not MultiAccount.allowedToCreateAnMultiAccount(player:getSerial()) then
-					player:triggerEvent("loginfailed", "Deine Serial wird für mehrere Accounts benutzt. Dies kann passieren, wenn sich jemand auf deinem PC mit anderen Accountdaten einloggt. Bitte melde dich im Forum (forum.exo-reallife.de) unter 'administrative Anfragen', um das Problem zu beseitigen.")
+					player:triggerEvent("loginfailed", "Deine Serial wird für mehrere Accounts benutzt. Dies kann passieren, wenn sich jemand auf deinem PC mit anderen Accountdaten einloggt. Bitte melde dich im Forum (forum.openreallife.net) unter 'administrative Anfragen', um das Problem zu beseitigen.")
 					return false
 				else
 					MultiAccount.linkAccountToSerial(Id, player:getSerial())
@@ -136,20 +178,32 @@ function Account.loginSuccess(player, Id, Username, ForumId, RegisterDate, Teams
 	StatisticsLogger:addLogin( player, Username, "Login")
 	ClientStatistics:getSingleton():handle(player)
 
-	ServiceSync:getSingleton():syncPlayer(Id)
+	if not DEBUG and SERVICE_SYNC then
+		ServiceSync:getSingleton():syncPlayer(Id)
+	end
+
+	if not player.loadCharacter then
+		outputDebugString( ("Account.loginSuccess: Player-Element %s, inherited by Player-class: %s"):format(inspect(player), tostring(instanceof(player, Player))) )
+		player:kick("Fehler beim Einloggen, melde Dich bitte im Support!")
+		return
+	end
 
 	player:loadCharacter()
-	player:spawn()
+	nextframe(function() player:spawn() end)
 	player:triggerEvent("loginsuccess", pwhash)
 
-	if player:isActive() then
-		local header = toJSON({["alg"] = "HS256", ["typ"] = "JWT"}, true):sub(2, -2)
-		local payload = toJSON({["sub"] = player:getId(), ["name"] = player:getName(), ["exp"] = getRealTime().timestamp + 60 * 60 * 24}, true):sub(2, -2)
-
-		local jwtBase = base64Encode(header) .. "." .. base64Encode(payload)
-
-		fetchRemote(INGAME_WEB_PATH .. "/ingame/hmac.php?value=" .. jwtBase, function(responseData) player:setSessionId(jwtBase.."."..responseData)	end)
+	if not FORUM_LOGIN then
+		player:setSessionId("none")
+		return
 	end
+
+	if player:isActive() then
+		jwtSign(function(result)
+			player:setSessionId(result)
+		end, {["sub"] = player:getId(), ["name"] = player:getName(), ["exp"] = getRealTime().timestamp + 60 * 60 * 24, ["forumId"] = player:getAccount().m_ForumId}, JWT_ALGORITHM_HS256, Config.get("INGAME_WEB_SECRET"))
+	end
+
+	ServiceSync:getSingleton():syncPlayer(Id)
 end
 
 function Account.checkCharacter(Id)
@@ -186,6 +240,11 @@ function Account.register(player, username, password, email)
 		return false
 	end
 
+	if NameManager:getSingleton():isNameBlocked(username) then
+		player:triggerEvent("registerfailed", _("Ungültiger Nickname. Dein Name oder Teile von diesem, dürfen nicht verwendet werden.", player))
+		return false
+	end
+
 	if #password < 5 then
 		player:triggerEvent("registerfailed", _("Passwort zu kurz! Min. 5 Zeichen!", player))
 		return false
@@ -207,8 +266,24 @@ function Account.register(player, username, password, email)
 		end
 	end
 
+	-- Login via Database
+	if not FORUM_LOGIN then
+		if sql:queryFetchSingle("SELECT Name FROM ??_account WHERE Name = ?", sql:getPrefix(), username) then
+			player:triggerEvent("registerfailed", _("Benutzername wird bereits verwendet!", player))
+			return false
+		end
+
+		if sql:queryFetchSingle("SELECT Name FROM ??_account WHERE EMail = ?", sql:getPrefix(), email) then
+			player:triggerEvent("registerfailed", _("E-Mail wird bereits verwendet!", player))
+			return false
+		end
+
+		Account.createAccount(player, 0, username, email, password)
+		return
+	end
+
 	-- Check if someone uses this username already
-	Forum:getSingleton():userCreate(username, password, email, Async.waitFor(self))
+	Account.createForum(username, password, email, player, Async.waitFor(self))
 	local result = Async.wait()
 	local data = fromJSON(result)
 
@@ -235,8 +310,14 @@ end
 addEvent("accountregister", true)
 addEventHandler("accountregister", root, function(...) Async.create(Account.register)(client, ...) end)
 
-function Account.createAccount(player, boardId, username, email)
+function Account.createAccount(player, boardId, username, email, password)
 	local result, _, Id = sql:queryFetch("INSERT INTO ??_account (ForumId, Name, EMail, Rank, LastSerial, LastIP, LastLogin, RegisterDate) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW());", sql:getPrefix(), boardId, username, email, 0, player:getSerial(), player:getIP())
+	if password then
+		local salt = md5(math.random())
+		local passwordHash = sha256(salt..password)
+		sql:queryExec("UPDATE ??_account SET Password = ?, Salt = ? WHERE Name = ? ", sql:getPrefix(), passwordHash, salt, username)
+	end
+	
 	if result then
 		Account.loginSuccess(player, Id, username, boardId, RegisterDate, 0, nil, false)
 	else
@@ -368,3 +449,66 @@ function Account.getBoardIdFromName(name)
 	local row = sql:queryFetchSingle("SELECT ForumId FROM ??_account WHERE Name = ?", sql:getPrefix(), name)
 	return row.ForumId or 0
 end
+
+function Account.createForum(username, password, email, player, callback)
+	local onFinish = function(...)
+		Account.createForumEnd(player)
+		callback(...)
+	end
+
+	local request = Forum:getSingleton():userCreate(username, password, email, onFinish)
+
+	table.insert(Account.PendingRequests.Registrations, {player = player, currentAttempt = 1, currentQueuePosition = 1, request = request})
+end
+
+function Account.createForumEnd(player)
+	for k, login in pairs(Account.PendingRequests.Registrations) do
+		if login.player == player then
+			table.remove(Account.PendingRequests.Registrations, k)
+		end
+	end
+end
+
+function Account.loginForum(username, password, player, callback)
+	local onFinish = function(...)
+		Account.loginForumEnd(player)
+		callback(...)
+	end
+
+	local request = Forum:getSingleton():userLogin(username, password, onFinish)
+
+	table.insert(Account.PendingRequests.Logins, {player = player, currentAttempt = 1, currentQueuePosition = 1, request = request})
+end
+
+function Account.loginForumEnd(player)
+	for k, login in pairs(Account.PendingRequests.Logins) do
+		if login.player == player then
+			table.remove(Account.PendingRequests.Logins, k)
+		end
+	end
+end
+
+function Account.updatePendingLogins()
+	for k, pendingTable in pairs(Account.PendingRequests) do
+
+		for i = #pendingTable, 1, -1 do --check if maybe a player disconnected and abort his request
+			if not isElement(pendingTable[i].player) then
+				abortRemoteRequest(pendingTable[i])
+				table.remove(pendingTable, i)
+			end
+		end
+
+		for pos, login in pairs(pendingTable) do
+			local info = getRemoteRequestInfo(login.request)
+
+			if info and (info.currentAttempt ~= login.currentAttempt or pos ~= currentQueuePosition) then
+				login.currentAttempt = info.currentAttempt
+				login.currentQueuePosition = pos
+
+				login.player:triggerEvent("loginInformationUpdate", login.currentAttempt, pos)
+			end
+		end
+		
+	end
+end
+Account.LoginUpdateTimer = setTimer(Account.updatePendingLogins, 1000, 0)

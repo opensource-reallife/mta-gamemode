@@ -1,5 +1,5 @@
 
-ROULETTE_MAX_BET = 50000
+ROULETTE_MAX_BET = 5000
 
 ROULETTE_NUMBERS = {0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26}
 
@@ -19,13 +19,13 @@ ROULETTE_WINNUMBERS = {
 }
 
 ROULETTE_TOKENS = {
-    ["blue"] = 10,    
-    ["green"] = 100,
-    ["pink"] = 500,
-    ["red"] = 1000,
+    ["blue"] = 250,
+    ["green"] = 500,
+    ["pink"] = 1000,
+    ["red"] = 2500,
     ["yellow"] = 5000,
     ["gray"] = 10000,
-    ["black"] = 50000
+    ["black"] = 25000
 }
 
 ROULETTE_WIN_MULTIPLIKATOR = {

@@ -30,6 +30,8 @@ function ItemManager:constructor()
 		["Burger"] = ItemFood,
 		["Lebkuchen"] = ItemFood,
 		["Wuerstchen"] = ItemFood,
+		["Frittiertes Hähnchen"] = ItemFood,
+		["Pommes"] = ItemFood,
 
 		["Kuheuter mit Pommes"] = ItemFood,
 		["Zombie-Burger"] = ItemFood,
@@ -38,6 +40,7 @@ function ItemManager:constructor()
 		["Pizza"] = ItemFood,
 		["Pilz"] = ItemFood,
 		["Zigarette"] = ItemFood,
+		["Zigarettenpackung"] = ItemCigarettePack,
 		["Donut"] = ItemFood,
 		["Keks"] = ItemFood,
 		["Apfel"] = ItemFood,
@@ -49,6 +52,7 @@ function ItemManager:constructor()
 		["SLAM"] = ItemSlam;
 		["Rauchgranate"] = ItemSmokeGrenade;
 		["DefuseKit"] = ItemDefuseKit;
+		["Päckchen"] = ItemPresent;
 
 		["Bambusstange"] = ItemFishing,
 		["Angelrute"] = ItemFishing,
@@ -73,16 +77,20 @@ function ItemManager:constructor()
 		["Ausweis"] = ItemIDCard,
 		["Benzinkanister"] = ItemFuelcan,
 		["Reparaturkit"] = ItemRepairKit,
-		["Medikit"] = ItemHealpack,
+
+		--Medical
+		["Medikit"] = ItemFood,
+		["Bandage"] = ItemFood,
+		
 		--Alcohol
-		["Bier"] = ItemAlcohol,
-		["Whiskey"] = ItemAlcohol,
-		["Sex on the Beach"] = ItemAlcohol,
-		["Pina Colada"] = ItemAlcohol,
-		["Monster"] = ItemAlcohol,
-		["Shot"] = ItemAlcohol,
-		["Cuba-Libre"] = ItemAlcohol,
-		["Gluehwein"] = ItemAlcohol,
+		["Bier"] = ItemFood,
+		["Whiskey"] = ItemFood,
+		["Sex on the Beach"] = ItemFood,
+		["Pina Colada"] = ItemFood,
+		["Monster"] = ItemFood,
+		["Shot"] = ItemFood,
+		["Cuba-Libre"] = ItemFood,
+		["Gluehwein"] = ItemFood,
 
 		--Firework
 		["Rakete"] = ItemFirework,
@@ -102,11 +110,17 @@ function ItemManager:constructor()
 		["Einsatzhelm"] = WearableHelmet,
 		["Hasenohren"] = WearableHelmet,
 		["Weihnachtsmütze"] = WearableHelmet,
+		["Lebkuchen-Maske"] = WearableHelmet,
 		["Kevlar"] = WearableShirt,
 		["Tragetasche"] = WearableShirt,
 		["Swatschild"] = WearablePortables,
 		["Kleidung"] = WearableClothes,
 
+		["Clubkarte"] = ItemPlayHouseCard,
+
+		["Schuh"] = ItemThrowShoe, 
+		["Abfall"] = ItemThrowTrash,
+		["Flasche"] = ItemThrowBottle,  
 	}
 
 	self.m_Properties = {

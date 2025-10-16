@@ -24,7 +24,7 @@ inherit(Singleton, TattooSelectionGUI)
 addRemoteEvents{"showTattooSelectionGUI"}
 
 function TattooSelectionGUI:constructor(shopId)
-	GUIButtonMenu.constructor(self, _("Tattoo-Auswahl"), 300, 450)
+	GUIButtonMenu.constructor(self, _("Tattoo-Auswahl"), 300, 450, false, false, localPlayer.position)
 
 	self.m_ShopId = shopId
 

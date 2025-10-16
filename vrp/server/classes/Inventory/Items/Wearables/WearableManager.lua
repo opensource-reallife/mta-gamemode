@@ -47,7 +47,7 @@ function WearableManager:checkReference( sData )
 
 end
 
-function WearableManager:Event_onElementInteriorChange( int )
+function WearableManager:Event_onElementInteriorChange( old, int )
 	local obj = false
 	if source.m_Helmet then
 		setElementInterior(source.m_Helmet, int)
@@ -67,7 +67,7 @@ function WearableManager:Event_onElementInteriorChange( int )
 	end
 end
 
-function WearableManager:Event_onElementDimensionChange( dim )
+function WearableManager:Event_onElementDimensionChange( old, dim )
 	local obj = false
 	if source.m_Helmet then
 		setElementDimension(source.m_Helmet, dim)
@@ -111,6 +111,8 @@ function WearableManager:removeAllWearables( player )
 		destroyElement(player.m_Shirt)
 		player.m_IsWearingShirt = false
 		player.m_Shirt = false
+		setElementData(player,"CanWeaponBeConcealed",false)
+		triggerEvent("WeaponAttach:unconcealWeapons", player)
 	end
 	if player.m_Portables then
 		destroyElement(player.m_Portables)
@@ -140,9 +142,11 @@ function WearableManager:removeWearable( player, itemName, value )
 						if isElement(player.m_Shirt) then destroyElement(player.m_Shirt) end
 						player.m_IsWearingShirt = false
 						player.m_Shirt = false
+						setElementData(player,"CanWeaponBeConcealed",false)
+						triggerEvent("WeaponAttach:unconcealWeapons", player)
 					elseif wearableClass == WearableClothes then
 						if getElementModel(player) == tonumber(value) then
-							player:setSkin(252)
+							player:setSkin(252, true)
 							player:meChat(true, "zieht seine Kleidung aus!")
 							setPedAnimation(player,"on_lookers","lkaround_in",1000,true,true,true)
 							setTimer(setPedAnimation,1000,1,player,false)

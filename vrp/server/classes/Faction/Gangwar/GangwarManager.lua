@@ -10,7 +10,7 @@ Gangwar = inherit(Singleton)
 
 
 --// RESET VARIABLE //
-GANGWAR_RESET_AREAS = true --// NUR IM FALLE VON GEBIET-RESET
+GANGWAR_RESET_AREAS = false --// NUR IM FALLE VON GEBIET-RESET
 
 
 --// Gangwar - Constants //--
@@ -27,9 +27,10 @@ GANGWAR_ATTACK_PICKUPMODEL =  1313
 GANGWAR_PAYOUT_PER_PLAYER = 400
 GANGWAR_PAYOUT_PER_AREA = 800
 UNIX_TIMESTAMP_24HRS = 86400 --//86400
-GANGWAR_PAY_PER_DAMAGE = 5
-GANGWAR_PAY_PER_KILL = 1000
+GANGWAR_PAY_PER_DAMAGE = 10
+GANGWAR_PAY_PER_KILL = 1500
 PAYDAY_ACTION_BONUS = 2500
+GANGWAR_COOLDOWN_PER_FACTION = 20 --// in minutes
 --//
 addRemoteEvents{ "onLoadCharacter", "onDeloadCharacter", "Gangwar:onClientRequestAttack", "GangwarQuestion:disqualify", "gangwarGetAreas" }
 
@@ -52,8 +53,12 @@ function Gangwar:constructor( )
 	local rows = sql:queryFetch(sql_query, sql:getPrefix())
 	if rows then
 		for i, row in ipairs( rows ) do
-			self.m_Areas[#self.m_Areas+1] = Area:new(row, self)
-			addEventHandler("onPickupHit", self.m_Areas[#self.m_Areas].m_Pickup, bind(Gangwar.Event_OnPickupHit, self))
+			if row["active"] == 1 then
+				self.m_Areas[#self.m_Areas+1] = Area:new(row, self)
+				addEventHandler("onPickupHit", self.m_Areas[#self.m_Areas].m_Pickup, bind(Gangwar.Event_OnPickupHit, self))
+			else
+				self.m_Areas[#self.m_Areas+1] = false
+			end
 		end
 	end
 	self.m_BindLoadCharacter = bind(self.onPlayerJoin, self)
@@ -97,23 +102,27 @@ function Gangwar:onAreaPayday()
 	local m_Owner
 	local areasInTotal = 0
 	for index, area in pairs( self.m_Areas ) do
-		m_Owner = area.m_Owner
-		if not payouts[m_Owner] then payouts[m_Owner] = 0 end
-		payouts[m_Owner] = payouts[m_Owner] + 1
-		areasInTotal = areasInTotal + 1
+		if area ~= false then
+			m_Owner = area.m_Owner
+			if not payouts[m_Owner] then payouts[m_Owner] = 0 end
+			payouts[m_Owner] = payouts[m_Owner] + 1
+			areasInTotal = areasInTotal + 1
+		end
 	end
 	if areasInTotal == 0 then return end
-	local amount = 0;
-	local amount2 = 0;
+	local amount = 0
+	local amount2 = 0
 	local facObj, playersOnline
 	for faction, count in pairs( payouts ) do
 		facObj = FactionManager:getSingleton():getFromId(faction)
 		if facObj then
 			playersOnline = facObj:getOnlinePlayers()
-			if #playersOnline > 2 then
+			if #playersOnline > 1 then
 				areaCounts[facObj] = count
-				amount = (count * (GANGWAR_PAYOUT_PER_PLAYER * #playersOnline)) + (GANGWAR_PAYOUT_PER_AREA * count)
-				self.m_BankAccountServer:transferMoney(facObj, amount+amount2, "Gangwar-Payday", "Faction", "Gangwar")
+				amount = (GANGWAR_PAYOUT_PER_PLAYER * #playersOnline) + (GANGWAR_PAYOUT_PER_AREA * count)
+				amount2 = PAYDAY_ACTION_BONUS
+				self.m_BankAccountServer:transferMoney(facObj, amount, "Gangwar-Payday", "Faction", "Gangwar")
+				self.m_BankAccountServer:transferMoney(facObj, amount2, "Grundeinkommen", "Faction", "Grundeinkommen")
 				facObj:sendMessage("Gangwar-Payday: #FFFFFFEure Fraktion erhält: "..amount.." $ (Pro Online-Member:"..GANGWAR_PAYOUT_PER_PLAYER.." und Pro Gebiet: "..GANGWAR_PAYOUT_PER_AREA.."$)" , 0, 200, 0, true)
 			else
 				facObj:sendMessage("Gangwar Payday: Es sind nicht genügend Spieler online für den Gangwar-Payday!" , 200, 0, 0, true)
@@ -122,13 +131,14 @@ function Gangwar:onAreaPayday()
 	end
 	local count = 0
 	for k, faction in pairs(FactionManager:getSingleton().Map) do
-		if not faction:isStateFaction() and faction.m_Id ~= 4 then
+		if faction:isEvilFaction() or faction.m_Id == 1 then
 			if areaCounts[faction] then
 				count = areaCounts[faction]
 			else
 				count = 0
 			end
-			amount2 = math.floor((1 - ( count/areasInTotal)) * PAYDAY_ACTION_BONUS )
+			--amount2 = math.floor((1 - ( count/areasInTotal)) * PAYDAY_ACTION_BONUS )
+			amount2 = PAYDAY_ACTION_BONUS
 			faction:sendMessage("Fraktions Payday: Grundeinkommen der Fraktion: "..amount2.."$ !" , 0, 200, 0, true)
 		end
 	end
@@ -140,13 +150,15 @@ function Gangwar:Event_OnPickupHit( player )
 	local mArea = player.m_InsideArea
 	if dim == pDim then
 		if mArea then
-			player:triggerEvent("Gangwar_shortMessageAttack" , mArea)
+			if source:getModel() == 2993 then
+				player:triggerEvent("Gangwar_shortMessageAttack" , mArea)
+			end
 		end
 	end
 end
 
 function Gangwar:RESET()
-	local sql_query = "UPDATE ??_gangwar SET Besitzer='5', lastAttack='0'"
+	local sql_query = "UPDATE ??_gangwar SET Besitzer='8', lastAttack='0'"
 	sql:queryFetch(sql_query,  sql:getPrefix())
 	outputDebugString("Gangwar-areas were reseted!")
 end
@@ -167,11 +179,6 @@ function Gangwar:isPlayerInGangwar(player)
 	local active, disq = self:getCurrentGangwarPlayers()
 	for index, gwPlayer in pairs(active) do
 		if gwPlayer and player and player == gwPlayer then
-			return true
-		end
-	end
-	for index, gwPlayerName in pairs(disq) do
-		if gwPlayerName and player and player.name == gwPlayerName then
 			return true
 		end
 	end
@@ -199,7 +206,9 @@ function Gangwar:getAreas()
 	local sendTable = {}
 	local nowTimestamp = getRealTime().timestamp
 	for index, area in pairs(self.m_Areas) do
-		client:triggerEvent("gangwarLoadArea", area:getName(), area:getPosition(), area:getOwnerId(), area:getLastAttack(), nowTimestamp >= area:getLastAttack()+( GANGWAR_ATTACK_PAUSE*UNIX_TIMESTAMP_24HRS), area:getId())
+		if area ~= false then
+			client:triggerEvent("gangwarLoadArea", area:getName(), area:getPosition(), area:getOwnerId(), area:getLastAttack(), nowTimestamp >= area:getLastAttack()+( GANGWAR_ATTACK_PAUSE*UNIX_TIMESTAMP_24HRS), area:getId())
+		end
 	end
 	client:triggerEvent("gangwarLoadAttackLog", GangwarStatistics:getSingleton():getAttackLog())
 	client:triggerEvent("gangwarLoadTopList", GangwarStatistics.TopStats["Damage"], GangwarStatistics.TopStats["Kill"], GangwarStatistics.TopStats["MVP"], GangwarStatistics:getSingleton():getPlayerStats(client))
@@ -276,10 +285,11 @@ end
 function Gangwar:attackArea( player )
 	local faction = player.m_Faction
 	if faction then
-		if faction:isStateFaction() == true or faction.m_Id == 4 then
+		local id = faction.m_Id
+		if id == 2 or id == 3 or id == 4 then
 			return player:sendError(_("Du bist nicht berechtigt am Gangwar teilzunehmen!",  player))
 		end
-		local id = player.m_Faction.m_Id
+
 		local mArea = player.m_InsideArea
 		if mArea then
 			local bWithin = isElementWithinColShape(player,  mArea.m_CenterSphere)
@@ -290,20 +300,27 @@ function Gangwar:attackArea( player )
 					local factionCount = #faction:getOnlinePlayers()
 					local factionCount2 = #faction2:getOnlinePlayers()
 					local gametime = tonumber(("%02d"):format( getRealTime().hour )..""..("%02d"):format( getRealTime().minute ))
+					local currentTimestamp = getRealTime().timestamp
+					if faction.m_GangwarAttackCheck[faction2.m_Id] ~= nil then
+						if faction.m_GangwarAttackCheck[faction2.m_Id] >= currentTimestamp - GANGWAR_COOLDOWN_PER_FACTION then
+							player:sendError(_("Du kannst die selbe Fraktion noch nicht erneut attacken!",  player))
+							return
+						end
+					end
 					if factionCount >= GANGWAR_MIN_PLAYERS or DEBUG or (gametime >= GANGWAR_ATTACK_HOUR_START and gametime <= GANGWAR_ATTACK_HOUR_END) then
-						if factionCount2 >= GANGWAR_MIN_PLAYERS or DEBUG or (gametime >= GANGWAR_ATTACK_HOUR_START and gametime <= GANGWAR_ATTACK_HOUR_END)  then
+						if factionCount2 >= GANGWAR_MIN_PLAYERS or DEBUG or (gametime >= GANGWAR_ATTACK_HOUR_START and gametime <= GANGWAR_ATTACK_HOUR_END * 60)  then
 							local activeGangwar = self:getCurrentGangwar()
 							local isGangwarLocked, remainingTime = self.m_GangwarGuard:isGangwarLocked( player:getFaction() )
 							local acFaction1,  acFaction2
 							if not activeGangwar then
 								if not isGangwarLocked then
 									local lastAttack = mArea.m_LastAttack
-									local currentTimestamp = getRealTime().timestamp
 									local nextAttack = lastAttack + ( GANGWAR_ATTACK_PAUSE*UNIX_TIMESTAMP_24HRS)
 									if nextAttack <= currentTimestamp then
 										mArea:attack(faction, faction2, player)
 										self.m_LastFaction1 = faction 
 										self.m_LastFaction2 = faction2
+										faction.m_GangwarAttackCheck[faction2.m_Id] = currentTimestamp
 									else
 										player:sendError(_("Dieses Gebiet ist noch nicht attackierbar!",  player))
 									end

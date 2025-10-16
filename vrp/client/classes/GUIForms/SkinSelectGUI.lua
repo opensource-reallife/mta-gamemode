@@ -15,7 +15,7 @@ addRemoteEvents{"openSkinSelectGUI"}
 ]]
 
 local images_per_row = 5
-function SkinSelectGUI:constructor(skinTable, groupId, groupType, editable, allSkins)
+function SkinSelectGUI:constructor(skinTable, groupId, groupType, editable, allSkins, skinType)
 
 	local skin_count = skinTable and type(skinTable) == "table" and table.size(skinTable) or 0
 	local areaHeight = math.min(math.ceil(skin_count/5)*5, 10)
@@ -25,9 +25,11 @@ function SkinSelectGUI:constructor(skinTable, groupId, groupType, editable, allS
 	for i, v in pairs(skinTable) do
 		if allSkins[v] ~= -1 then table.insert(self.m_SkinTable, v) end
 	end
+
 	self.m_AllSkins = allSkins
-	self.m_SkinsEditable = editable -- boolean
+	self.m_SkinsEditable = editable -- boolean	
 	self.m_GroupId = groupId
+	self.m_SkinType = skinType
 	self.m_GroupType = groupType
 	GUIWindow.updateGrid()
 	self.m_Width = grid("x", 16)
@@ -45,9 +47,6 @@ function SkinSelectGUI:constructor(skinTable, groupId, groupType, editable, allS
 end
 
 function SkinSelectGUI:virtual_destructor()
-	if isTimer(self.m_SkinUpdateTimer) then
-		killTimer(self.m_SkinUpdateTimer)
-	end
 	if self.m_Edit then
 		ErrorBox:new(_"Einstellungen wurden nicht gespeichert (Bitte zuerst Edit-Modus beenden)!")
 	end
@@ -55,39 +54,38 @@ end
 
 function SkinSelectGUI:loadSkins()
 	local row = 0
-	local i = 1
 	local skin_count = table.size(self.m_Edit and self.m_SkinTableEdit or self.m_SkinTable)
 
 	self.m_ScrollableArea:clear()
 	self.m_ScrollableArea:resize(15, math.ceil(skin_count/5)*5)
 	self.m_ScrollableArea:updateGrid()
-	self.m_SkinUpdateTimer = setTimer(function()
+
+	for i = 1, skin_count, 1 do
 		local skinId = self.m_Edit and self.m_SkinTableEdit[i] or self.m_SkinTable[i]
 		local x, y, w, h = (i-1)*3 + 1 - row*images_per_row*3, row*images_per_row + 1, 3, 5
 
-		local image = GUIGridWebView:new(x, y, w, h, INGAME_WEB_PATH .. "/ingame/skinPreview/skinPreview.php?skin="..skinId, true, self.m_ScrollableArea)
-		image.onDocumentReady = function()
-			nextframe(function()
-				image:setRenderingEnabled(false)
-				image:setControlsEnabled(false)
-			end)
-		end
+		local image = GUIGridImage:new(x, y, w, h, string.format("files/images/Skins/full/%s.jpg", skinId), self.m_ScrollableArea)
+		image:fitBySize(104, 270)
 		image.onLeftClick = function()
 			if self.m_Edit then return false end
 			if self.m_GroupType == "faction" then
 				triggerServerEvent("factionPlayerSelectSkin", localPlayer, skinId)
-				core:set("Cache", "LastFactionSkin", skinId)
+				if localPlayer:getFaction() and localPlayer:getFaction():isRescueFaction() and localPlayer:getPublicSync("Rescue:Type") == "fire" then
+					core:set("Cache", "AlternativeLastFactionSkin", skinId)
+				else	
+					core:set("Cache", "LastFactionSkin", skinId)
+				end
 			elseif self.m_GroupType == "company" then
 				triggerServerEvent("companyPlayerSelectSkin", localPlayer, skinId)
 				core:set("Cache", "LastCompanySkin", skinId)
 			end
 		end
-		if self.m_Edit then
+		if self.m_Edit and self.m_SkinType ~= "special" then
 			local changer = GUIGridChanger:new(x, y + h - 1, w, 1, self.m_ScrollableArea)
 			for i = 0, (self.m_GroupType == "company" and 5 or 6) do
 				changer:addItem("Rang "..i)
 			end
-			if self.m_GroupType == "faction" then
+			if self.m_GroupType == "faction" and not (self.m_GroupId == 1 or self.m_GroupId == 2 or self.m_GroupId == 3) then
 				changer:addItem("Spezial")
 			end
 			if self.m_AllSkins[skinId] == -1 then --special skin
@@ -96,22 +94,18 @@ function SkinSelectGUI:loadSkins()
 				changer:setIndex(self.m_AllSkins[skinId] + 1, true)
 			end
 			changer.onChange = function(item, index)
-				if index == #changer.m_Items and self.m_GroupType == "faction" then  --special skin
+				if index == #changer.m_Items and self.m_GroupType == "faction" and not (self.m_GroupId == 1 or self.m_GroupId == 2 or self.m_GroupId == 3) then  --special skin
 					self.m_AllSkins[skinId] = -1
 				else
 					self.m_AllSkins[skinId] = index - 1
 				end
 			end
-		--else
-			--GUIGridLabel:new(x, y + h - 1, w, 1, "Skin "..skinId, self.m_ScrollableArea):setAlignX("center")
 		end
 		if i % images_per_row == 0 then row = row + 1 end
-		i = i + 1
-	end, 50, skin_count)
+	end
 end
 
 function SkinSelectGUI:setEditable()
-	if isTimer(self.m_SkinUpdateTimer) then return end
 	if self.m_Edit then -- perform checks if changes are valid
 		local specials = 0
 		local rank0s = 0
@@ -137,10 +131,10 @@ function SkinSelectGUI:setEditable()
 
 end
 
-function SkinSelectGUI.open(skinTable, groupId, groupType, editable, allSkins)
+function SkinSelectGUI.open(skinTable, groupId, groupType, editable, allSkins, skinType)
 	if SkinSelectGUI:isInstantiated() then
 		delete(SkinSelectGUI:getSingleton())
 	end
-	SkinSelectGUI:new(skinTable, groupId, groupType, editable, allSkins)
+	SkinSelectGUI:new(skinTable, groupId, groupType, editable, allSkins, skinType)
 end
 addEventHandler("openSkinSelectGUI", root, SkinSelectGUI.open)

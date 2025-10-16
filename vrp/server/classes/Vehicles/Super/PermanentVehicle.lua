@@ -9,8 +9,13 @@ PermanentVehicle = inherit(Vehicle)
 
 -- This function converts a GroupVehicle into a normal vehicle (User/PermanentVehicle)
 function PermanentVehicle.convertVehicle(vehicle, player, group)
-	if #player:getVehicles() >= math.floor(MAX_VEHICLES_PER_LEVEL*player:getVehicleLevel()) then
+	if player:getVehicleCountWithoutPrem() >= player:getMaxVehicles() and not vehicle:isPremiumVehicle() then
 		return false -- Apply vehilce limit
+	end
+
+	-- don't convert them if they have occupants or are currently towed 
+	if (vehicle:getOccupants() and table.size(vehicle:getOccupants()) > 0) or vehicle.towingVehicle or vehicle:getData("towedByVehicle") or (vehicle.m_SeatExtensionPassengers and #vehicle.m_SeatExtensionPassengers ~= 0) then
+		return false
 	end
 
 	if vehicle:isPermanent() then
@@ -18,7 +23,7 @@ function PermanentVehicle.convertVehicle(vehicle, player, group)
 			local id = vehicle:getId()
 			local premium = vehicle.m_Premium and 1 or 0
 
-			sql:queryExec("UPDATE ??_vehicles SET SalePrice = 0, Premium = ? WHERE Id = ?", sql:getPrefix(), premium, id)
+			sql:queryExec("UPDATE ??_vehicles SET SalePrice = 0, RentPrice = 0, Premium = ? WHERE Id = ?", sql:getPrefix(), premium, id)
 
 			VehicleManager:getSingleton():removeRef(vehicle)
 			vehicle.m_Owner = player:getId()
@@ -154,14 +159,22 @@ function PermanentVehicle:virtual_constructor(data)
 		self.m_ShopIndex = data.ShopIndex
 		self.m_BuyPrice = data.BuyPrice
 		self.m_Template = data.TemplateId
+		self:setDimension(data.Dimension or 0)
+		self:setInterior(data.Interior or 0)
 		self:setCurrentPositionAsSpawn(data.PositionType)
-
+		
+		if data.LastDriver ~= 0 then
+			table.insert(self.m_LastDrivers, Account.getNameFromId(data.LastDriver))
+			setElementData(self, "lastDrivers", self.m_LastDrivers)
+		end
+		
 		setElementData(self, "OwnerName", Account.getNameFromId(data.OwnerId) or "None") -- Todo: *hide*
 		setElementData(self, "OwnerID", data.OwnerId) -- Todo: *hide*
 		setElementData(self, "OwnerType", VehicleTypeName[self.m_OwnerType])
 		setElementData(self, "ID", self.m_Id or -1)
 
-		self.m_Keys = data.Keys and fromJSON(data.Keys) or {} -- TODO: check if this works?
+		self.m_Keys = data.Keys and fromJSON(data.Keys) or {}
+		setElementData(self, "VehicleKeys", self.m_Keys)
 		self.m_PositionType = data.PositionType or VehiclePositionType.World
 
 		if data.TrunkId == 0 or data.TrunkId == nil and (self.m_OwnerType == VehicleTypes.Player or self.m_OwnerType == VehicleTypes.Group) then
@@ -177,10 +190,6 @@ function PermanentVehicle:virtual_constructor(data)
 			self.m_Trunk = Trunk.load(data.TrunkId)
 			self.m_TrunkId = data.TrunkId
 			self.m_Trunk:setVehicle(self)
-		end
-
-		if health and health <= 300 then
-			health = 300
 		end
 
 		if data.ELSPreset and ELS_PRESET[data.ELSPreset] then
@@ -213,26 +222,37 @@ function PermanentVehicle:virtual_constructor(data)
 		--self:tuneVehicle(color, color2, tunings, texture, horn, neon, special)
 
 		self.m_HasBeenUsed = 0
-		self:setPlateText(("SA " .. ("000000" .. tostring(self.m_Id)):sub(-5)):sub(0,8))
-		self.m_SpawnDim = data.Dimension
-		self.m_SpawnIn = data.Interior
+		self:setPlateText(("SA " .. ("000000" .. tostring(self.m_Id)):sub(-5, -1)):sub(0,8))
+
+		if VEHICLE_MAX_PASSENGER[data.Model] then
+			self:initVehicleSeatExtension()
+		end
+		if data.Model == 459 then
+			self:initRcVanExtension()
+		end
+
+		self.m_Unregistered = data.Unregistered
 	end
 end
 
 function PermanentVehicle:purge()
-  if sql:queryExec("UPDATE ??_vehicles SET Deleted = NOW() WHERE Id = ?", sql:getPrefix(), self.m_Id) then
-    VehicleManager:getSingleton():removeRef(self)
-    destroyElement(self)
-    return true
-  end
-  return false
+  	if sql:queryExec("UPDATE ??_vehicles SET Deleted = NOW() WHERE Id = ?", sql:getPrefix(), self.m_Id) then
+    	VehicleManager:getSingleton():removeRef(self)
+    	destroyElement(self)
+    	return true
+  	end
+  	return false
 end
 
 function PermanentVehicle:save()
-  local health = getElementHealth(self)
-  if self.m_Trunk then self.m_Trunk:save() end
-  return sql:queryExec("UPDATE ??_vehicles SET OwnerId = ?, OwnerType = ?, PosX = ?, PosY = ?, PosZ = ?, RotX = ?, RotY = ?, RotZ = ?, Interior=?, Dimension=?, Health = ?, `Keys` = ?, PositionType = ?, Tunings = ?, Mileage = ?, Fuel = ?, TrunkId = ?, SalePrice = ?, TemplateId =? WHERE Id = ?", sql:getPrefix(),
-    self.m_Owner, self.m_OwnerType, self.m_SpawnPos.x, self.m_SpawnPos.y, self.m_SpawnPos.z, self.m_SpawnRot.x, self.m_SpawnRot.y, self.m_SpawnRot.z, self.m_SpawnInt, self.m_SpawnDim, health, toJSON(self.m_Keys, true), self.m_PositionType, self.m_Tunings:getJSON(), self:getMileage(), self:getFuel(), self.m_TrunkId, self.m_SalePrice or 0, self.m_Template or 0, self.m_Id)
+  	local health = getElementHealth(self)
+ 	local lastDriver = 0
+  	if self.m_Trunk then self.m_Trunk:save() end
+  	if self.m_LastDrivers[#self.m_LastDrivers] and Account.getIdFromName(self.m_LastDrivers[#self.m_LastDrivers]) then
+		lastDriver = Account.getIdFromName(self.m_LastDrivers[#self.m_LastDrivers])
+	end
+	return sql:queryExec("UPDATE ??_vehicles SET OwnerId = ?, OwnerType = ?, PosX = ?, PosY = ?, PosZ = ?, RotX = ?, RotY = ?, RotZ = ?, Interior=?, Dimension=?, Health = ?, `Keys` = ?, PositionType = ?, Tunings = ?, LastDriver = ?, Mileage = ?, Fuel = ?, TrunkId = ?, SalePrice = ?, RentPrice = ?, TemplateId = ?, Unregistered = ? WHERE Id = ?", sql:getPrefix(),
+    self.m_Owner, self.m_OwnerType, self.m_SpawnPos.x, self.m_SpawnPos.y, self.m_SpawnPos.z, self.m_SpawnRot.x, self.m_SpawnRot.y, self.m_SpawnRot.z, self.m_SpawnInt, self.m_SpawnDim, health, toJSON(self.m_Keys, true), self.m_PositionType, self.m_Tunings:getJSON(),  lastDriver, self:getMileage(), self:getFuel(), self.m_TrunkId, self.m_SalePrice or 0, self.m_RentRate or 0, self.m_Template or 0, self.m_Unregistered or 0, self.m_Id)
 end
 
 function PermanentVehicle:saveAdminChanges() -- add changes to this query for everything that got changed by admins (and isn't saved anywhere else)
@@ -247,8 +267,6 @@ end
 function PermanentVehicle:isPremiumVehicle()
 	return self.m_Premium
 end
-
-
 
 function PermanentVehicle:isPermanent()
   return true
@@ -286,6 +304,7 @@ function PermanentVehicle:addKey(player)
     player = player:getId()
   end
   table.insert(self.m_Keys, player)
+  setElementData(self, "VehicleKeys", self.m_Keys)
 end
 
 function PermanentVehicle:removeKey(player)
@@ -297,6 +316,7 @@ function PermanentVehicle:removeKey(player)
     return false
   end
   table.remove(self.m_Keys, index)
+  setElementData(self, "VehicleKeys", self.m_Keys)
   return true
 end
 
@@ -329,6 +349,10 @@ function PermanentVehicle:respawn(garageOnly)
   self.m_LastUseTime = math.huge
   local vehicleType = self:getVehicleType()
 
+  if self.m_RespawnHook:call(self) then
+	return false
+  end
+
   -- Add to active garage session if there is one
   local owner = Player.getFromId(self.m_Owner)
   if owner and isElement(owner) then
@@ -345,6 +369,14 @@ function PermanentVehicle:respawn(garageOnly)
         end
 
         if maxSlots > numVehiclesInGarage then
+
+			if self.m_RcVehicleUser then
+				for i, player in pairs(self.m_RcVehicleUser) do
+					self:toggleRC(player, player:getData("RcVehicle"), false, true)
+					player:removeFromVehicle()
+				end
+			end
+
 			self:setInGarage(true)
 			self:setDimension(PRIVATE_DIMENSION_SERVER)
 			self:fix()
@@ -406,4 +438,48 @@ function PermanentVehicle:sendOwnerMessage(msg)
 			delTarget:sendInfo(_(msg, client))
 		end
 	end
+end
+
+function PermanentVehicle:isUnregistered()
+	return self.m_Unregistered ~= 0
+end
+
+function PermanentVehicle:toggleRegister(player)
+	if self:isUnregistered() then
+		self.m_Unregistered = 0
+		self:setPositionType(VehiclePositionType.World)
+		self:setDimension(0)
+		local x, y, z, rotation = unpack(Randomizer:getRandomTableValue(VehicleSpawnPositionAfterRegister))
+		local pickUpText = "Du kannst es hinter der Stadthalle abholen."
+		if self:isAirVehicle() and self:getModel() ~= 460 then
+			pickUpText = "Du kannst es am Flughafen in Los Santos abholen."
+			x, y, z, rotation = 2008.82, -2453.75, 13, 120 -- ls airport east
+		elseif self:isWaterVehicle() or self:getModel() == 460 then
+			pickUpText = "Du kannst es an den Ocean Docks abholen"
+			x, y, z, rotation = 2350.26, -2523.06, 0, 180 -- ls docks
+		else
+			rotation = 0
+		end
+		self:setPosition(x, y, z + self:getBaseHeight())
+		self:setRotation(0, 0, rotation)
+		player:sendInfo(_("Dein Fahrzeug ist nun wieder angemeldet! \n%s", player, pickUpText))
+	else
+		self:removeAttachedPlayers()
+		self:setPositionType(VehiclePositionType.Unregistered)
+		self:setDimension(PRIVATE_DIMENSION_SERVER)
+		self:fix()
+		self.m_Unregistered = getRealTime().timestamp
+	end
+end
+
+function PermanentVehicle:hasRadarDetector()
+	if self:getTunings().m_Tuning["RadarDetector"] == 1 or self:getTunings().m_Tuning["RadarDetector"] == true then
+		return true
+	else
+		return false
+	end
+end
+
+function PermanentVehicle:onEnter()
+	return true -- otherwise last driver will not added
 end

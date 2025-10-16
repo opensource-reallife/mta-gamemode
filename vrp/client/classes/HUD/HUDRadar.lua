@@ -12,6 +12,7 @@ function HUDRadar:constructor()
 	self.m_ImageSize = 1536, 1536 --3072, 3072
 	self.m_Width, self.m_Height = 340*screenWidth/1600, 200*screenHeight/900
 	self.m_PosX, self.m_PosY = 20*screenWidth/1600, screenHeight - self.m_Height - 20*screenWidth/1600
+	self.m_RenderTargetAll = dxCreateRenderTarget(screenWidth, screenHeight, true)
 	self.m_Diagonal = math.sqrt(self.m_Width^2+self.m_Height^2)
 	self.m_DesignSet = tonumber(core:getConfig():get("HUD", "RadarDesign")) or RadarDesign.Monochrome
 	self.m_StatusBarsEnabled = false
@@ -138,7 +139,7 @@ function HUDRadar:updateMapTexture(checkForDesign)
 		end
 	end
 
-	dxSetRenderTarget(nil)
+	dxSetRenderTarget()
 end
 
 function HUDRadar:getImagePath(file, isMap)
@@ -219,6 +220,8 @@ function HUDRadar:draw()
 	if not self.m_Enabled or not self.m_Visible or self.m_DesignSet == RadarDesign.Default then
 		return
 	end
+	dxSetRenderTarget(self.m_RenderTargetAll, true)
+	dxSetBlendMode("modulate_add")
 
 	local vehicle = getPedOccupiedVehicle(localPlayer)
 	if vehicle and getVehicleType(vehicle) ~= VehicleType.Plane and getVehicleType(vehicle) ~= VehicleType.Helicopter
@@ -235,14 +238,17 @@ function HUDRadar:draw()
 	end
 
 	if self.m_NorthBlip then
-		self.m_NorthBlip:setPosition(localPlayer.position.x, localPlayer.position.y + 10000, 0) -- update north blip position so it always stays north
+		local x, y = getElementPosition(localPlayer)
+		self.m_NorthBlip:setPosition(x, y + 10000, 0) -- update north blip position so it always stays north
 	end
 
-	local isNotInInterior = getElementInterior(localPlayer) == 0
+	local isNotInInterior = getElementInterior(localPlayer) == 0 and getElementDimension(localPlayer) <= 60000
 	local isInWater = isElementInWater(localPlayer)
 	if not isNotInInterior or localPlayer:getPrivateSync("isInGarage") then
 		MessageBoxManager.onRadarPositionChange()
 		self.m_UpdateMessageBoxes = true
+		dxSetRenderTarget()
+		dxSetBlendMode("blend")
 		return
 	elseif self.m_UpdateMessageBoxes == true then -- Todo: find better way to do this
 		self.m_UpdateMessageBoxes = false
@@ -278,7 +284,7 @@ function HUDRadar:draw()
 				self.m_RouteRenderTarget, self.m_Rotation)
 		end
 
-		dxSetRenderTarget(nil)
+		dxSetRenderTarget(self.m_RenderTargetAll)
 	end
 
 	-- Draw renderTarget
@@ -307,7 +313,7 @@ function HUDRadar:draw()
 		-- Draw oxygen bar
 		if isInWater then
 			dxDrawRectangle(self.m_PosX+self.m_Width*3/4+6, self.m_PosY+self.m_Height, self.m_Width/4-9, self.m_Height/20, tocolor(65, 56, 15))
-			dxDrawRectangle(self.m_PosX+self.m_Width*3/4+6, self.m_PosY+self.m_Height, (self.m_Width/4-9) * (getPedOxygenLevel(localPlayer)/1000), self.m_Height/20, tocolor(91, 79, 21))
+			dxDrawRectangle(self.m_PosX+self.m_Width*3/4+6, self.m_PosY+self.m_Height, (self.m_Width/4-9) * (getPedOxygenLevel(localPlayer)/ (1000 + getPedStat(localPlayer, 22)*1.5 + getPedStat(localPlayer, 225)*1.5) ), self.m_Height/20, tocolor(91, 79, 21))
 		end
 	end
 
@@ -318,7 +324,7 @@ function HUDRadar:draw()
 	-- Draw region name (above health bar)
 	if core:get("HUD", "drawZone", false) then
 		dxDrawRectangle(self.m_PosX, self.m_PosY+self.m_Height-self.m_Height/10, self.m_Width, self.m_Height/10, tocolor(0, 0, 0, 150))
-		dxDrawText(getZoneName(localPlayer.position), self.m_PosX + self.m_Width/2, self.m_PosY+self.m_Height-self.m_Height/20, nil, nil,
+		dxDrawText(getZoneName(getElementPosition(localPlayer)), self.m_PosX + self.m_Width/2, self.m_PosY+self.m_Height-self.m_Height/20, nil, nil,
 			Color.White, 1, getVRPFont(VRPFont(self.m_Height/10)), "center", "center")
 	end
 
@@ -326,6 +332,10 @@ function HUDRadar:draw()
 	local rotX, rotY, rotZ = getElementRotation(localPlayer)
 	local size = Blip.getDefaultSize() * Blip.getScaleMultiplier()
 	dxDrawImage(self.m_PosX+self.m_Width/2 - size/2, self.m_PosY+self.m_Height/2 - size/2, size, size, self:getImagePath("LocalPlayer.png"), self.m_Rotation - rotZ) -- dunno where the 6 comes from but it matches better
+
+	dxSetRenderTarget()
+	dxSetBlendMode("blend")
+	dxDrawImage(0, 0, screenWidth, screenHeight, self.m_RenderTargetAll)
 	if DEBUG then ExecTimeRecorder:getSingleton():endRecording("UI/HUD/Radar") end
 end
 
@@ -431,7 +441,8 @@ function HUDRadar:getVisibleBlipsForRadar()
 			end
 
 			if blipX and display then
-				if getDistanceBetweenPoints2D(localPlayer.position.x, localPlayer.position.y, blipX, blipY) < blip:getStreamDistance() then
+				local x, y = getElementPosition(localPlayer)
+				if getDistanceBetweenPoints2D(x, y, blipX, blipY) < blip:getStreamDistance() then
 					table.insert(self.ms_CachedRadarBlips, blip)
 				end
 			end
@@ -453,7 +464,7 @@ function HUDRadar:drawRoute()
 		dxDrawLine(x, y, prevX, prevY, tocolor(10, 149, 240), 5, false)
 	end
 
-	dxSetRenderTarget(nil)
+	dxSetRenderTarget(self.m_RenderTargetAll)
 end
 
 function HUDRadar:setGPSRoute(nodes)

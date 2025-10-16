@@ -23,16 +23,19 @@ function PremiumPlayer:refresh()
 	else
 		self.m_PremiumUntil = 0
 	end
-
-	if self.m_PremiumUntil > getRealTime().timestamp then
+	local freeVIP = self.m_Player:getRank() >= ADMIN_RANK_PERMISSION["freeVip"]
+	if self.m_PremiumUntil > getRealTime().timestamp or freeVIP  then
 		self.m_Premium = true
 		self.m_Player:setPublicSync("DeathTime", DEATH_TIME_PREMIUM)
-		setTimer(function()
-			self.m_Player:sendShortMessage(_([[
-			Dein Premiumaccount ist gültig
-			bis %s
-			]], self.m_Player, getOpticalTimestamp(self.m_PremiumUntil)), _("Premium", self.m_Player), {50, 200, 255})
-		end, 1500, 1)
+		if not freeVIP then
+			setTimer(function()
+				self.m_Player:sendShortMessage(_("Dein Premiumaccount ist gültig\nbis %s", self.m_Player, getOpticalTimestamp(self.m_PremiumUntil)), "Premium", {50, 200, 255})
+			end, 1500, 1)
+		else 
+			setTimer(function()
+				self.m_Player:sendShortMessage(_("Du erhälst kostenlos Premium aufgrund deiner Stellung im Team.", self.m_Player), "Premium", {50, 200, 255})
+			end, 1500, 1)
+		end
 	end
 
 	self.m_Player:setPublicSync("Premium", self.m_Premium)
@@ -51,14 +54,14 @@ function PremiumPlayer:openVehicleList()
 		end
 		client:triggerEvent("vehicleTakeMarkerGUI", vehicles, "premiumTakeVehicle", "abholen")
 	else
-		self.m_Player:sendError("Keine Fahrzeuge zum Abholen bereit!")
+		self.m_Player:sendError(_("Keine Fahrzeuge zum Abholen bereit!", self.m_Player))
 	end
 end
 
 function PremiumPlayer:takeVehicle(model)
 	local row = sqlPremium:queryFetchSingle("SELECT * FROM premium_veh WHERE UserId = ? AND Model = ? AND abgeholt = 0", self.m_Player:getId(), model)
 	if row and row.ID then
-		if #self.m_Player:getVehicles() < math.floor(MAX_VEHICLES_PER_LEVEL*self.m_Player:getVehicleLevel()) then
+		--if self.m_Player:getVehicleCountWithoutPrem() < self.m_Player:getMaxVehicles() then
 			sqlPremium:queryExec("UPDATE premium_veh SET abgeholt = 1, Timestamp_abgeholt = ? WHERE ID = ?;", getRealTime().timestamp, row.ID)
 			local vehicle = VehicleManager:getSingleton():createNewVehicle(self.m_Player, VehicleTypes.Player, model, 1268.63, -2069.85, 59.49, 0, 0, 0, 1)
 			if vehicle then
@@ -71,11 +74,11 @@ function PremiumPlayer:takeVehicle(model)
 			else
 				self.m_Player:sendMessage(_("Fehler beim Erstellen des Fahrzeugs. Bitte benachrichtige einen Admin!", self.m_Player), 255, 0, 0)
 			end
-		else
-			self.m_Player:sendError(_("Maximaler Fahrzeug-Slot erreicht!", self.m_Player))
-		end
+		--else
+		--	self.m_Player:sendError(_("Maximaler Fahrzeug-Slot erreicht!", self.m_Player))
+		--end
 	else
-		self.m_Player:sendError("Ungültiges Fahrzeug!")
+		self.m_Player:sendError(_("Ungültiges Fahrzeug!", self.m_Player))
 	end
 end
 

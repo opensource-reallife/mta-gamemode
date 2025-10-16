@@ -17,6 +17,7 @@ WearableHelmet.objectTable =
 	["Hasenohren"] = {1934, 0, 0, 1, 0, 180, "Hasenohren", true},
 	["Weihnachtsmütze"] = {1936, 0.14, 0, 1, 0, 90, "Weihnachtsmütze", true},
 	["Stern"] = {902, 0.1, 0, 0.2, 0, 90, "Stern", true},
+	["Lebkuchen-Maske"] = {2107, -0.6, -0.003, 1, 0, 90, "Lebkuchen-Maske", true},
 }
 
 
@@ -31,6 +32,8 @@ end
 function WearableHelmet:use(player, itemId, bag, place, itemName)
 	local inventory = player:getInventory()
 	local value = inventory:getItemValueByBag( bag, place)
+	if player.m_PrisonTime > 0 then player:sendError(_("Im Prison nicht erlaubt!", player)) return end
+	if player.m_JailTime > 0 then player:sendError(_("Im Gefängnis nicht erlaubt!", player)) return end
 	if value then --// for texture usage later
 
 	end
@@ -60,7 +63,7 @@ function WearableHelmet:use(player, itemId, bag, place, itemName)
 		player.m_HelmetPutOnTimer = setTimer(function() if player and isElement(player) and obj and isElement(obj) then exports.bone_attach:attachElementToBone(obj, player, 1, 0, yOffset, zOffset, rotX, 0, rotZ); setPedAnimation(player, nil) end end, 500, 1)
 		player.m_Helmet = obj
 		player.m_IsWearingHelmet = itemName
-		player:meChat(true, "zieht "..objName.." an!")
+		player:meChat(true, "zieht %s an!", objName, true)
 		player:setData("isFaceConcealed", isFaceConcealed)
 		if itemName == "Einsatzhelm" then
 			obj:setData("isProtectingHeadshot", true)
@@ -76,7 +79,7 @@ function WearableHelmet:use(player, itemId, bag, place, itemName)
 		player.m_Helmet = false
 		player:setData("isFaceConcealed", false)
 		if player.m_HelmetPutOnTimer then if isTimer(player.m_HelmetPutOnTimer) then killTimer(player.m_HelmetPutOnTimer) end end
-		player:meChat(true, "setzt "..WearableHelmet.objectTable[itemName][7].." ab!")
+		player:meChat(true, "setzt %s ab!", WearableHelmet.objectTable[itemName][7], true)
 		player:triggerEvent("onClientToggleHelmet", false, itemName)
 		player:setPublicSync("HelmetItem", false)
 	else --// else the player must have clicked on another helmet otherwise this instance of the class would have not been called
@@ -105,7 +108,7 @@ function WearableHelmet:use(player, itemId, bag, place, itemName)
 		player.m_HelmetPutOnTimer = setTimer(function() if player and isElement(player) and obj and isElement(obj) then exports.bone_attach:attachElementToBone(obj, player, 1, 0, yOffset, zOffset, rotX, 0, rotZ); setPedAnimation(player, nil) end end, 500, 1)
 		player.m_Helmet = obj
 		player.m_IsWearingHelmet = itemName
-		player:meChat(true, "zieht "..objName.." an!")
+		player:meChat(true, "zieht %s an!", objName, true)
 		player:setData("isFaceConcealed", isFaceConcealed)
 		if itemName == "Einsatzhelm" then
 			obj:setData("isProtectingHeadshot", true)

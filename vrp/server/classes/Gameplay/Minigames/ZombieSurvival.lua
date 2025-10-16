@@ -10,19 +10,29 @@ ZombieSurvival = inherit(Object)
 ZombieSurvival.PickupWeapons = {25, 24, 22, 33}
 
 function ZombieSurvival.initalize()
+	local b = Blip:new("Evil.png", -31.64, 1377.67)
+	b:setDisplayText("Zombie Survival", BLIP_CATEGORY.Leisure)
+
 	local zombiePed = createPed(162, -31.64, 1377.67, 9.17, 90)
 	zombiePed:setFrozen(true)
-	local zombieMarker = createMarker(-34.24, 1377.80, 8.8, "cylinder", 1, 255, 0, 0, 125)
+	local zombieMarker = createMarker(-34.6, 1377.80, 8.4, "cylinder", 1, 255, 0, 0, 125)
+
+	--[[ Cutscene
 	local zombieColShape = createColSphere(-31.64, 1377.67, 9.17, 25)
 	addEventHandler("onColShapeHit", zombieColShape, function(hitElement, dim)
 		if hitElement:getType() == "player" and dim then
 			hitElement:triggerEvent("playZombieCutscene")
 		end
 	end)
+	]]
 
 	addEventHandler("onMarkerHit", zombieMarker, function(hitElement, dim)
 		if hitElement:getType() == "player" and dim and not hitElement.vehicle then
-			hitElement:triggerEvent("showMinigameGUI", "ZombieSurvival")
+			if HalloweenQuestManager:getSingleton():getQuestState(hitElement) <= 0 then
+				hitElement:sendError(_("Beende zuerst die Halloween-Quest vom Friedhof!", hitElement))
+			else
+				hitElement:triggerEvent("showMinigameGUI", "ZombieSurvival")
+			end
 		end
 	end)
 
@@ -38,19 +48,17 @@ function ZombieSurvival.initalize()
 end
 
 function ZombieSurvival:constructor()
-
-	self.m_Dimension = math.random(1, 999) -- Testing
+	self.m_Dimension = DimensionManager:getSingleton():getFreeDimension()
 	self.m_Zombies = {}
 	self.m_ZombieKills = {}
 	self.m_ZombieTimers = {}
 	self.m_ZombieTime = 10000
 	self.m_IncreaseTimer = setTimer(bind(self.increaseZombies, self), 20000, 0)
-
 	self.m_CreatePickupTimer = setTimer(bind(self.createPickup, self), 20000, 0)
 
 	self:addZombie()
 	self:loadMap()
-	outputDebugString("ZombieSurvival: Lobby erstellt - Dimension"..self.m_Dimension)
+	outputDebug("Lobby erstellt - Dimension"..self.m_Dimension)
 	addEventHandler("onZombieWasted", root, bind(self.zombieWasted, self))
 end
 
@@ -73,7 +81,9 @@ function ZombieSurvival:destructor()
 	if isTimer(self.m_CreatePickupTimer) then killTimer(self.m_CreatePickupTimer) end
 	if isTimer(self.m_IncreaseTimer) then killTimer(self.m_IncreaseTimer) end
 	if isElement(self.m_Pickup) then self.m_Pickup:destroy() end
-	outputDebugString("ZombieSurvival: Lobby zerstört - Dimension"..self.m_Dimension)
+
+	outputDebug("Lobby zerstört - Dimension"..self.m_Dimension)
+	DimensionManager:getSingleton():freeDimension(self.m_Dimension)
 end
 
 function ZombieSurvival:zombieWasted(ped, player)
@@ -84,6 +94,12 @@ function ZombieSurvival:zombieWasted(ped, player)
 		self.m_ZombieKills[player] = self.m_ZombieKills[player]+1
 		player:triggerEvent("setScore", self.m_ZombieKills[player])
 	end
+	
+	for i, zombie in pairs(self.m_Zombies) do
+		if zombie.m_Ped:isDead() then
+			self.m_Zombies[i] = nil
+		end
+	end
 end
 
 function ZombieSurvival:getRandomPosition()
@@ -91,15 +107,18 @@ function ZombieSurvival:getRandomPosition()
 end
 
 function ZombieSurvival:addPlayer(player)
-	player:giveAchievement(54)
+	player:createStorage(true)
+	for _, stat in ipairs({69, 70, 71, 72, 74, 76, 77, 78}) do
+		setPedStat(player, stat, stat == 69 and 900 or 1000)
+	end
 
+	player:giveAchievement(54)
 	self.m_ZombieKills[player] = 0
 	setElementDimension(player,self.m_Dimension)
 	player:setPosition(self:getRandomPosition())
 	setElementInterior(player,0)
 	player:setArmor(0)
 	player:setHealth(100)
-	takeAllWeapons(player)
 	player:giveWeapon(24, 15, true)
 	player:triggerEvent("showScore")
 
@@ -113,45 +132,45 @@ function ZombieSurvival:addPlayer(player)
 			source:setHealth(source:getHealth()-loss*15)
 		end
 	end)
-	outputDebugString("ZombieSurvival: Spieler "..player:getName().." hinzugefügt - Dimension"..self.m_Dimension)
+	outputDebug("Spieler "..player:getName().." hinzugefügt - Dimension"..self.m_Dimension)
 end
 
 function ZombieSurvival:removePlayer(player)
-	player:triggerEvent("deathmatchStartDeathScreen", "Zombie", false)
-	fadeCamera(player, false, 2)
-	player:triggerEvent("Countdown", 10, "Respawn in")
-	takeAllWeapons(player)
 	player:triggerEvent("hideScore")
 
-	setTimer(function(score)
-		if player and isElement(player) then
-			local skin = player:getModel()
-			spawnPlayer(player, -35.72, 1380.00, 9.42, 0, skin, 0, 0)
-			player:setHealth(100)
-			player:setArmor(0)
-			player:setHeadless(false)
-			player:setCameraTarget(player)
-			player:fadeCamera(true, 1)
-			player:setAlpha(255)
-			player:triggerEvent("CountdownStop", "Respawn in")
-			player:sendInfo(_("Du bist gestorben! Das Zombie Survival wurde beendet! Score: %d", player, score))
-			MinigameManager:getSingleton().m_ZombieSurvivalHighscore:addHighscore(player:getId(), score)
-		end
-	end, 10000, 1, self.m_ZombieKills[player])
-	
+	local score = self.m_ZombieKills[player]
+	local skin = player:getModel()
+	spawnPlayer(player, -35.72, 1380.00, 9.42, 0, skin, 0, 0)
+	player:restoreStorage()
+	player:setHeadless(false)
+	player:setCameraTarget(player)
+	player:fadeCamera(true, 1)
+	player:setAlpha(255)
+	player:sendInfo(_("Du bist gestorben! Das Zombie Survival wurde beendet! Score: %d", player, score))
+	MinigameManager:getSingleton().m_ZombieSurvivalHighscore:addHighscore(player:getId(), score)
 	self.m_ZombieKills[player] = nil
-	
-	--if #self:getPlayers() == 0 then
-	--	delete(self)
-	--end
 
 	-- Check for Freaks Achievement
 	if MinigameManager:getSingleton():checkForFreaks(player) then
 		player:giveAchievement(22)
 	end
 
-	outputDebugString("ZombieSurvival: Spieler "..player:getName().." entfernt - Dimension"..self.m_Dimension)
-	delete(player.Minigame) -- SP only
+	-- Reward pumpkins and candy based on score
+	if EVENT_HALLOWEEN and not player:isDisconnecting() then
+		local pumpkinAmount = math.floor(score / Randomizer:get(30, 100))
+		local candyAmount = math.floor(score / Randomizer:get(3, 10))
+
+		if pumpkinAmount + candyAmount > 0 then
+			player:getInventory():giveItem("Kürbis", pumpkinAmount)
+			player:getInventory():giveItem("Suessigkeiten", candyAmount)
+			player:sendSuccess(_("Du hast %s Kürbisse und und %s Süßigkeiten erhalten!", player, pumpkinAmount, candyAmount))
+		end
+	end
+
+	outputDebug("Spieler "..player:getName().." entfernt - Dimension"..self.m_Dimension)
+
+	player.Minigame = nil
+	self:delete()
 end
 
 function ZombieSurvival:getRandomPlayer()
@@ -183,15 +202,17 @@ function ZombieSurvival:increaseZombies()
 end
 
 function ZombieSurvival:createPickup()
+	if isElement(self.m_Pickup) then self.m_Pickup:destroy() end
 	self.m_Pickup = createPickup(self:getRandomPosition(), 2, ZombieSurvival.PickupWeapons[math.random(1, #ZombieSurvival.PickupWeapons)], 5000000, 30)
 	self.m_Pickup:setDimension(self.m_Dimension)
 end
 
 function ZombieSurvival:addZombie()
-	local pos = self:getRandomPosition()
-	self:createSmoke(pos)
-	self.m_ZombieTimers[#self.m_ZombieTimers+1] = setTimer(bind(self.spawnZombie, self), 2500, 1, pos)
-
+	if table.size(self.m_Zombies) < 20 then
+		local pos = self:getRandomPosition()
+		self:createSmoke(pos)
+		self.m_ZombieTimers[#self.m_ZombieTimers+1] = setTimer(bind(self.spawnZombie, self), 2500, 1, pos)
+	end
 	self.m_ZombieTimers[#self.m_ZombieTimers+1] = setTimer(bind(self.addZombie, self), self.m_ZombieTime, 1)
 end
 

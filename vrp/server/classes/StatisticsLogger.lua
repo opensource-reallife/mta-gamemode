@@ -22,7 +22,7 @@ function StatisticsLogger:destructor()
 end
 
 function StatisticsLogger:getZone(player)
-	if player then
+	if player and isElement(player) then
 		return 	("%s - %s"):format(player:getZoneName(), player:getZoneName(true))
 	end
 	return "unknown"
@@ -65,6 +65,7 @@ end
 function StatisticsLogger:addGroupLog(player, groupType, group, category, desc)
     local userId = 0
     local groupId = 0
+	if type(player) == "number" then userId = player end
     if isElement(player) then userId = player:getId() end
     if group then groupId = group:getId() end
     sqlLogs:queryExec("INSERT INTO ??_Groups (UserId, GroupType, GroupId, Category, Description, Timestamp, Date) VALUES(?, ?, ?, ?, ?, ?, NOW())",
@@ -107,7 +108,7 @@ end
 
 function StatisticsLogger:addPunishLog(admin, player, type, reason, duration)
     local userId = player
-    local adminId = 0
+    local adminId = admin
     if isElement(admin) then adminId = admin:getId() end
     if isElement(player) then userId = player:getId() end
 
@@ -120,20 +121,29 @@ function StatisticsLogger:addChatLog(player, type, text, heared)
     if isElement(player) then userId = player:getId() end
 
 	local hearedOld = {}
-	for k, pl in ipairs(heared) do
+	for k, pl in pairs(heared) do
 		hearedOld[k] = pl:getName()
 	end
 
 	local parameters = {sqlLogs:getPrefix(), userId, type, text, toJSON(hearedOld), self:getZone(player), player.position.x, player.position.y}
 
-	for k, pl in ipairs(heared) do
-		table.insert(parameters, sqlLogs:getPrefix())
-		table.insert(parameters, pl:getId())
+	local hearedCount = 0
+
+	for k, pl in pairs(heared) do
+		if pl:getId() ~= -1 and pl:getId() ~= userId then
+			table.insert(parameters, sqlLogs:getPrefix())
+			table.insert(parameters, pl:getId())
+			hearedCount = hearedCount + 1
+		end
 	end
+
+	table.insert(parameters, sqlLogs:getPrefix())
+	table.insert(parameters, userId)
+	hearedCount = hearedCount + 1
 
 	local query = "INSERT INTO ??_Chat (UserId, Type, Text, Heared, Position, PosX, PosY, Date) VALUES (?, ?, ?, ?, ?, ?, ?, Now());"
 	query = query .. " SET @lastId = LAST_INSERT_ID();"
-	query = query .. string.rep(" INSERT INTO ??_ChatReceivers (MessageId, Receiver) VALUES (@lastId, ?);", #heared)
+	query = query .. string.rep(" INSERT INTO ??_ChatReceivers (MessageId, Receiver) VALUES (@lastId, ?);", hearedCount)
 
     sqlLogs:queryExec(query,
         unpack(parameters))
@@ -188,6 +198,11 @@ end
 
 function StatisticsLogger:addHealLog(player, heal, reason)
 	local userId = 0
+
+	if isElement(player) then
+		player:setPublicSync("LastHealTime", os.time())
+	end
+
 	if isElement(player) then userId = player:getId() else userId = player end
     sqlLogs:queryExec("INSERT INTO ??_Heal (UserId, Heal, Reason, Position, Date) VALUES (?, ?, ?, ?, NOW())",
         sqlLogs:getPrefix(), userId, heal, reason, self:getZone(player))
@@ -203,6 +218,7 @@ end
 
 function StatisticsLogger:addArrestLog(player, wanteds, duration, policeMan, bail)
     local userId = 0
+	local policeId = 0
 	if isElement(player) then userId = player:getId() else userId = player or 0 end
 	if isElement(policeMan) then policeId = policeMan:getId() else policeId = policeMan or 0 end
 	sqlLogs:queryExec("INSERT INTO ??_Arrest (UserId, Wanteds, Duration, PoliceId, Bail, Date) VALUES(?, ?, ?, ?, ?, NOW())",
@@ -321,7 +337,7 @@ function StatisticsLogger:addAdminVehicleAction(player, type, vehicle, arg)
 	if vehicle then
 		if isElement(vehicle) and getElementType(vehicle) == "vehicle" then
 			if not vehicle.m_Id then
-				error("bad vehicle specified ("..inspect(vehicle)..")")	
+				error("bad vehicle specified ("..inspect(vehicle)..")")
 			end
 			vehicle = vehicle.m_Id
 		elseif tonumber(vehicle) then
@@ -332,18 +348,24 @@ function StatisticsLogger:addAdminVehicleAction(player, type, vehicle, arg)
 	end
 
 	sqlLogs:queryExec("INSERT INTO ??_AdminActionVehicle (UserId, VehicleId, Type, Arg, Date ) VALUES(?, ?, ?, ?, NOW())",
-	sqlLogs:getPrefix(), userId, vehicle, type, arg)
+		sqlLogs:getPrefix(), userId, vehicle, type, arg)
 end
 
 function StatisticsLogger:onDebugMessageLog(message, level, file, line)
-sqlLogs:queryExec("INSERT INTO ??_Errors (Message, Level, File, Line, Date) VALUES(?, ?, ?, ?, NOW())",
-			sqlLogs:getPrefix(), message, level, file, line)
+	sqlLogs:queryExec("INSERT INTO ??_Errors (Message, Level, File, Line, Date) VALUES(?, ?, ?, ?, NOW())",
+		sqlLogs:getPrefix(), message, level, file, line)
 end
 
-function StatisticsLogger:GroupBuyImmoLog( groupId, action, immo)
+function StatisticsLogger:GroupBuyImmoLog(groupId, action, immo)
 	if not tonumber(groupId) then return end
-	sqlLogs:queryExec("INSERT INTO ??_GroupImmo (GroupId, Aktion, ImmoId,  Date ) VALUES(?, ?, ?,  NOW())",
+	sqlLogs:queryExec("INSERT INTO ??_GroupImmo (GroupId, Aktion, ImmoId, Date ) VALUES(?, ?, ?, NOW())",
         sqlLogs:getPrefix(), groupId, action, immo)
+end
+
+function StatisticsLogger:addDutyLog(userid, groupType, group, action)
+	if not tonumber(userid) then return end
+	sqlLogs:queryExec("INSERT INTO ??_Duty (UserId, GroupType, GroupId, State, Date ) VALUES(?, ?, ?, ?, NOW())",
+        sqlLogs:getPrefix(), userid, groupType, group, action)
 end
 
 
@@ -488,10 +510,10 @@ function StatisticsLogger:addGangwarLog(area, attacker, owner, starttimestamp, e
 			area, attacker, owner, starttimestamp, endtimestamp, winner)
 end
 
-function StatisticsLogger:addHalloweenLog(player, bonus, pumpkins, sweets)
+function StatisticsLogger:addEventShopLog(player, bonus, primary, secondary)
 	if isElement(player) then userId = player:getId() else userId = player or 0 end
-	sqlLogs:queryExec("INSERT INTO ??_EventHalloween (UserId, Bonus, Pumpkins, Sweets, Date) VALUES (?, ?, ?, ?, NOW())", sqlLogs:getPrefix(),
-	userId, bonus, pumpkins, sweets)
+	sqlLogs:queryExec("INSERT INTO ??_EventShop (UserId, Bonus, PrimaryItems, SecondaryItems, Date) VALUES (?, ?, ?, ?, NOW())", sqlLogs:getPrefix(),
+		userId, bonus, primary, secondary)
 end
 
 function StatisticsLogger:addGangwarDebugLog( warning, areaObj, attackSession)
@@ -500,4 +522,70 @@ function StatisticsLogger:addGangwarDebugLog( warning, areaObj, attackSession)
 		sqlLogs:queryExec("INSERT INTO ??_GangwarDebugLog ( Warning, Name, Date) VALUES (?, ?, NOW())", sqlLogs:getPrefix(),
 		warning, areaID )
 	end
+end
+
+
+--[[
+CREATE TABLE `vrpLogs_Roulette`  (
+  `Id` int(0) NOT NULL AUTO_INCREMENT,
+  `UserId` int(0) NOT NULL,
+  `Bet` int(0) NOT NULL,
+  `Bets` text NOT NULL,
+  `WinningNumber` int(0) NOT NULL,
+  `WonAmount` int(0) NOT NULL,
+  `HighStake` tinyint(1) NOT NULL DEFAULT 0,
+  `Date` datetime(0) NOT NULL,
+  PRIMARY KEY (`Id`)
+);
+]]
+function StatisticsLogger:addRouletteLog(player, bet, bets, winningNumber, wonAmount, highStake)
+	local userId = 0
+	if isElement(player) then userId = player:getId() else userId = player or 0 end
+	local betsInfo = {}
+    for field, tokens in pairs(bets) do
+        betsInfo[field] = 0
+        for color, amount in pairs(tokens) do
+            betsInfo[field] = betsInfo[field] + ROULETTE_TOKENS[color] * amount
+        end
+	end
+
+	sqlLogs:queryExec("INSERT INTO ??_Roulette (UserId, Bet, Bets, WinningNumber, WonAmount, HighStake, Date) VALUES (?, ?, ?, ?, ?, ?, NOW())",
+		sqlLogs:getPrefix(), userId, bet, toJSON(betsInfo, true):sub(2, -2), winningNumber, wonAmount, highStake and 1 or 0)
+end
+
+function StatisticsLogger:addCinemaLog(player, host, lobbyName, action, videoId)
+	local playerId = 0
+	local hostId = 0
+	if isElement(player) then playerId = player:getId() else playerId = player or 0 end
+	if isElement(host) then hostId = host:getId() else hostId = host or 0 end
+
+	sqlLogs:queryExec("INSERT INTO ??_Cinema (UserId, HostId, LobbyName, Action, VideoId, Date) VALUES (?, ?, ?, ?, ?, NOW())",
+	sqlLogs:getPrefix(), player:getId(), host:getId(), lobbyName, action, videoId)
+end
+
+function StatisticsLogger:addPricePoolLog(pricepoolId, player, entries, entryPrice, price)
+	if isElement(player) then userId = player:getId() else userId = player or 0 end
+	sqlLogs:queryExec("INSERT INTO ??_PricePool (PricePoolId, UserId, Entries, EntryPrice, Price, Date) VALUES (?, ?, ?, ?, ?, NOW())", sqlLogs:getPrefix(),
+		pricepoolId, userId, entries, entryPrice, price)
+end
+
+function StatisticsLogger:addVehicleRentLog(groupId, playerId, vehicleId, rental, duration)
+	sqlLogs:queryExec("INSERT INTO ??_RentedVehicles (GroupId, UserId, VehicleId, Rental, Duration) VALUES (?, ?, ?, ?, ?)", sqlLogs:getPrefix(),
+		groupId, playerId, vehicleId, rental, duration)
+end
+
+function StatisticsLogger:addColorCarsLog(creatorId, lobbyName, password, maxPlayers)
+    sqlLogs:queryExec("INSERT INTO ??_ColorCars (UserId, LobbyName, Password, MaxPlayers, Date) VALUES(?, ?, ?, ?, NOW())", sqlLogs:getPrefix(), 
+	creatorId, lobbyName, password, maxPlayers)
+end
+
+function StatisticsLogger:addVehicleDamageLog(player, veh, zone, wpnId, dmg, startDate, tireId)
+	local playerId = 0
+	local vehId = 0
+	if isElement(player) then playerId = player:getId() else playerId = player or 0 end
+	if isElement(veh) then vehId = veh:getId() else vehId = veh or 0 end
+	local totalLoss = math.round(dmg, 3) -- maybe this will fix the out of range warnings
+
+    sqlLogs:queryExec("INSERT INTO ??_vehicle_damage (UserId, VehicleId, Location, Weapon, TotalLoss, TireId, StartDate, Date) VALUES(?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?), NOW())", sqlLogs:getPrefix(), 
+	playerId, vehId, zone, wpnId, totalLoss, tireId, startDate)
 end

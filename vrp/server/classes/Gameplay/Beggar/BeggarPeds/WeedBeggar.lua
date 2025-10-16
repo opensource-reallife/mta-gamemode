@@ -7,21 +7,28 @@ end
 function WeedBeggar:sellWeed(player, amount)
 	if self.m_Despawning then return end
 	if not player.vehicle then
+		if player and player:getFaction():isStateFaction() and player:isFactionDuty() then 
+			player:sendError(_("Du kannst während du im Dienst bist, keine Drogen verkaufen!"), player) 
+			return 
+		end
 		if self.m_Robber == player:getId() then return self:sendMessage(player, BeggarPhraseTypes.NoTrust) end
 		if player:getInventory():removeItem("Weed", amount) then
-			player:giveCombinedReward("Bettler-Handel", {
+			player:giveCombinedReward(_("Bettler-Handel", player), {
 				money = {
 					mode = "give",
 					bank = false,
-					amount = amount*15,
+					amount = amount*math.random(4, 10),
 					toOrFrom = self.m_BankAccountServer,
 					category = "Gameplay",
 					subcategory = "BeggarWeed"
 				},
-				karma = -math.ceil(amount/50),
 				points = math.ceil(20 * amount/200),
 			})
-			player:meChat(true, ("übergibt %s %s"):format(self.m_Name, amount > 100 and "eine große Tüte" or "eine Tüte"))
+			if amount > 100 then
+				player:meChat(true, "übergibt %s eine große Tüte!", self.m_Name, false)
+			else
+				player:meChat(true, "übergibt %s eine Tüte!", self.m_Name, false)
+			end
 			self:sendMessage(player, BeggarPhraseTypes.Thanks)
 			-- Despawn the Beggar
 			setTimer(
@@ -29,6 +36,17 @@ function WeedBeggar:sellWeed(player, amount)
 					self:despawn()
 				end, 50, 1
 			)
+			-- Give Wanteds
+			local wanteds = WANTED_AMOUNT_WEEDBEGGAR
+			if chance(5) then
+				setTimer(function()
+					if player and isElement(player) then
+						player:sendWarning(_("Deine illegalen Aktivitäten wurden von einem Augenzeugen an das SAPD gemeldet!", player))
+						player:giveWanteds(wanteds)
+						player:sendMessage(_("Verbrechen begangen: %s, %d Wanted/s", player, _("Handel mit illegalen Gegenständen", player), wanteds), 255, 255, 0)
+					end
+				end, math.random(2000, 10000), 1)
+			end
 		else
 			player:sendError(_("Du hast nicht so viel Weed dabei!", player))
 		end

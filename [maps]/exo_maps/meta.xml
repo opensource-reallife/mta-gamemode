@@ -9,6 +9,9 @@
 	<script src="mapEditorScriptingExtension_s.lua" type="server"></script>
 	<script src="mapEditorScriptingExtension_c.lua" type="client"></script>
 
+	<map src="spielbunker.map" />
+	<map src="spielbunker-ext.map" />
+
 	<map src="atm.map" />
 
 	<map src="tiefgarage.map" />
@@ -22,46 +25,52 @@
 
 	<map src="aktionen/bankPalomino.map" />
 	<map src="aktionen/casinoHeist.map" />
-	<map src="fraktionen/army.map" />
+	<!--<map src="fraktionen/army.map" />-->
 	<!--<map src="fraktionen/army_lsbase.map" />-->
 	<map src="fraktionen/army_shooting_town.map" />
 	<map src="fraktionen/ballas.map" />
-	<map src="fraktionen/grove.map" />
-	<map src="fraktionen/aztecas.map" />
-	<map src="fraktionen/cartell.map" />
+	<map src="fraktionen/grove.map" /> 
+	<!--<map src="fraktionen/aztecas.map" />-->
+	<!--<map src="fraktionen/brigada.map" />-->
 
-	<!--<map src="fraktionen/biker.map" />--> <!--Outlaws base-->
-	<!--map src="fraktionen/cosanostra.map" /-->
+	<!-- <map src="fraktionen/biker.map" /> -->
+	<map src="fraktionen/cosanostra.map" />
 	<map src="fraktionen/lspd.map" />
+	<map src="fraktionen/lspd-int.map" />
+	<!--<map src="fraktionen/PD-interior.map" />-->
 	<!--<map src="fraktionen/lspd-gate-access.map" />-->
 	<!--map src="fraktionen/PD-exit.map" /-->
 	<!--map src="fraktionen/PD-garage.map" /-->
-	<map src="fraktionen/FBI.map" />
-	<map src="fraktionen/FBI_int.map" />
 	<map src="fraktionen/rescue.map" />
 	<map src="fraktionen/rescue_int.map" />
-	<map src="fraktionen/lostmc.map" />
+	<!--map src="fraktionen/lostmc.map" /-->
 	<!--<map src="fraktionen/vatos.map" />-->
-	<map src="fraktionen/triad.map" />
+	<map src="fraktionen/vatos-sevilla.map" />
+	<!-- <map src="fraktionen/triad.map" /> -->
 	<map src="fraktionen/yakuza.map"/>
 
-	<map src="fraktionen/insurgent_storage.map" />
+	<!-- <map src="fraktionen/insurgent_storage.map" />
 	<map src="fraktionen/island_airport.map" />
-	<map src="fraktionen/terroristtown.map" />
-	<map src="fraktionen/terrorist_int.map" />-->
+	<map src="fraktionen/terroristtown.map" /> -->
+	<map src="fraktionen/terrorist_int.map" />
 
 	<map src="unternehmen/fahrschule.map" />
 	<map src="unternehmen/mechanic.map" />
-	<map src="unternehmen/ltr.map" />
+	<!-- <map src="unternehmen/mechanic_miami.map" /> -->
+	<map src="unternehmen/sannews.map" />
+	<map src="unternehmen/sannews_int.map" />
 	<map src="unternehmen/public_transport.map" />
 
 	<map src="fishing/location_desert.map" />
 	<map src="fishing/location_cave.map" />
 
+	<!--<map src="events/battleroyale.map" />-->
+	<!--<map src="events/easter.map" />-->
 	<!--<map src="events/halloween.map" />-->
 	<map src="events/auction.map" /><!--auction in interior-->
 
 	<!--fixes-->
+	<map src="mapfixes/bugfixes.map" />
 	<map src="mapfixes/CrackPalace.map" />
 	<map src="mapfixes/interior_fixes.map" />
 
@@ -72,25 +81,26 @@
 
 	<!--<map src="autohaus/9_bike.map" />/-->
 	<!--<map src="autohaus/11_sport.map" />-->
-	<map src="autohaus/12_elegant.map" />
+	<!--<map src="autohaus/12_elegant.map" />-->
 	<map src="autohaus/billig_autohaus.map" />
 	<map src="autohaus/bootshop.map" />
 
 	<map src="gangwar/KLM-GW.map" />
 	<map src="gangwar/Raffi-GW.map" />
 	<map src="gangwar/gangwar.map" />
+	<map src="gangwar/drogenlabor-lv.map" />
 
 	<map src="jobs/gabelstapler.map" />
 	<map src="jobs/logistican.map" />
 	<map src="jobs/helitransport.map" />
 	<map src="jobs/dumper.map" />
 
-	<!-- <map src="noobspawn_christmas.map" /> -->
+	<!--<map src="noobspawn_christmas.map" />-->
 	<map src="noobspawn.map" />
 	<map src="prison.map" />
 
 	<map src="shop/ammunation.map" />
-	<map src="shop/ammunation2.map" />
+	<!--<map src="shop/ammunation2.map" />-->
 	<map src="shop/atrium.map" />
 	<map src="shop/gaertnerei.map" />
 	<map src="premium.map" />
@@ -101,21 +111,22 @@
 	<map src="skydive.map" />
 	<map src="pier_ls.map" />
 
-	<!--<map src="bankLS.map" />-->
+	<map src="aktionen/bankLS.map" />
 
 	<map src="shop/Tankstellen.map"/>
 	<map src="shop/tankstellen_removals.map" />
 
-	<map src="stadthalle.map" />
+	<!--<map src="stadthalle.map" />-->
 	<map src="Kartbahn.map" />
 	<map src="gasstation.map" />
 	<map src="atrium_outside.map" />
-	
+
 	<map src="stuntfix.map"/>
 
 	<map src="shop/fishshop.map"/>
 	<map src="sewer-ext.map"/>
 	<map src="minigamescafe.map" dimension="2" />
+	<map src="cinema.map"/>
 
 	<map src="factories/weedfactory.map" />
 	<map src="factories/cocainefactory.map" />

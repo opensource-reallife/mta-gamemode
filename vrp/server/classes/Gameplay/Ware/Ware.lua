@@ -79,7 +79,7 @@ function Ware:startRound()
 			if isPedDead(player) or getElementHealth(player) == 0 or z < Ware.arenaZ then
 				self:spawnWarePlayer(player)
 			end
-			setPedOnFire(player, false)
+			setElementOnFire(player, false)
 			setElementHealth(player, 100)
 		end
 	else 
@@ -174,7 +174,7 @@ function Ware:afterRound()
 			if isPedDead(player) or getElementHealth(player) == 0 or z < Ware.arenaZ then
 				self:spawnWarePlayer(player)
 			end
-			setPedOnFire(player, false)
+			setElementOnFire(player, false)
 			setElementHealth(player, 100)
 			setPedHeadless(player, false)
 			player:triggerEvent("onClientWareChangeGameSpeed", self.m_Gamespeed)
@@ -190,7 +190,7 @@ end
 function Ware:resetRound()
 	local pumpkinsEarned
 	for k, player in ipairs( self.m_Players ) do
-		pumpkinsEarned = math.ceil((player:getData("Ware:pumpkinsEarned") or 0) / 10)
+		pumpkinsEarned = math.ceil((player:getData("Ware:pumpkinsEarned") or 0) / 2)
 		if pumpkinsEarned > 0 then
 			player:getInventory():giveItem("Kürbis", pumpkinsEarned)
 			player:sendInfo(_("Du erhälst "..pumpkinsEarned.. " Kürbisse als Belohnung!", player))

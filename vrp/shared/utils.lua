@@ -54,9 +54,9 @@ function table.size(tab)
 	return i
 end
 
-function table.find(tab, value)
+function table.find(tab, value, ignoreCaseSensitivity)
 	for k, v in pairs(tab) do
-		if v == value then
+		if (ignoreCaseSensitivity and string.lower(v) or v) == (ignoreCaseSensitivity and string.lower(value) or value) then
 			return k
 		end
 	end
@@ -137,6 +137,22 @@ function table.copy(tab)
 		temp[k] = type(v) == "table" and table.copy(tab) or v
 	end
 	return temp
+end
+
+function table.merge(t1, t2)
+    local mergedTable = {}
+
+    -- Copy elements from t1 to mergedTable
+    for k, v in pairs(t1) do
+        mergedTable[k] = v
+    end
+
+    -- Copy elements from t2 to mergedTable (overwrite if keys exist)
+    for k, v in pairs(t2) do
+        mergedTable[k] = v
+    end
+
+    return mergedTable
 end
 
 function table.reverse(tab)
@@ -476,6 +492,14 @@ function calculatePointsToNextLevel(currentLevel)
 	return (currentLevel+2)^3 * 10
 end
 
+function calculateMoneyToNextVehicleSlot(currentLevel)
+	return (currentLevel + 1) * VEHICLE_SLOT_UPGRADE_PRICE
+end
+
+function calculateMoneyToNextGroupVehicleSlot(currentLevel)
+	return FIRST_GROUP_VEHICLE_SLOT_UPGRADE_PRICE + (currentLevel * GROUP_VEHICLE_SLOT_UPGRADE_PRICE)
+end
+
 function getRandomUniqueNick()
 	local randomNick
 	repeat
@@ -582,6 +606,17 @@ function convertNumber ( number )
 	return formatted
 end
 
+function convertFrequency ( number )
+	local formatted = number
+	while true do
+		formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d)", '%2.%1')
+		if ( k==0 ) then
+			break
+		end
+	end
+	return formatted
+end
+
 function toMoneyString(money)
 	if tonumber(money) then
 		return convertNumber(math.floor(money)).."$"
@@ -599,32 +634,32 @@ function linear(t, b, c, d)
   return c * t / d + b
 end
 
+function isLeapYear(year)
+	if year then year = math.floor(year)
+	else year = getRealTime().year + 1900 end
+	return ((year % 4 == 0 and year % 100 ~= 0) or year % 400 == 0)
+end
+
+function getTimestamp(year, month, day, hour, minute, second)
+	-- initiate variables
+	local monthseconds = { 2678400, 2419200, 2678400, 2592000, 2678400, 2592000, 2678400, 2678400, 2592000, 2678400, 2592000, 2678400 }
+	local timestamp = 0
+	local datetime = getRealTime()
+	year, month, day = year or datetime.year + 1900, month or datetime.month + 1, day or datetime.monthday
+	hour, minute, second = hour or datetime.hour, minute or datetime.minute, second or datetime.second
+
+	-- calculate timestamp
+	for i=1970, year-1 do timestamp = timestamp + (isLeapYear(i) and 31622400 or 31536000) end
+	for i=1, month-1 do timestamp = timestamp + ((isLeapYear(year) and i == 2) and 2505600 or monthseconds[i]) end
+	timestamp = timestamp + 86400 * (day - 1) + 3600 * hour + 60 * minute + second
+
+	timestamp = timestamp - 3600 --GMT+1 compensation
+	if datetime.isdst then timestamp = timestamp - 3600 end
+
+	return timestamp
+end
+
 function getWeekNumber()	--Maybe needs optimization
-	local function isLeapYear(year)
-		if year then year = math.floor(year)
-		else year = getRealTime().year + 1900 end
-		return ((year % 4 == 0 and year % 100 ~= 0) or year % 400 == 0)
-	end
-
-	local function getTimestamp(year, month, day, hour, minute, second)
-		-- initiate variables
-		local monthseconds = { 2678400, 2419200, 2678400, 2592000, 2678400, 2592000, 2678400, 2678400, 2592000, 2678400, 2592000, 2678400 }
-		local timestamp = 0
-		local datetime = getRealTime()
-		year, month, day = year or datetime.year + 1900, month or datetime.month + 1, day or datetime.monthday
-		hour, minute, second = hour or datetime.hour, minute or datetime.minute, second or datetime.second
-
-		-- calculate timestamp
-		for i=1970, year-1 do timestamp = timestamp + (isLeapYear(i) and 31622400 or 31536000) end
-		for i=1, month-1 do timestamp = timestamp + ((isLeapYear(year) and i == 2) and 2505600 or monthseconds[i]) end
-		timestamp = timestamp + 86400 * (day - 1) + 3600 * hour + 60 * minute + second
-
-		timestamp = timestamp - 3600 --GMT+1 compensation
-		if datetime.isdst then timestamp = timestamp - 3600 end
-
-		return timestamp
-	end
-
 	local realtime = getRealTime()
 	local firstDayOfTheYearTimestamp = getTimestamp(realtime.year + 1900, 0, 0)
 	local firstYearDayTime = getRealTime(firstDayOfTheYearTimestamp)
@@ -758,9 +793,9 @@ local vehicles = {
 local _isVehicleOnGround = isVehicleOnGround
 function isVehicleOnGround(vehicle)
 	if isElement(vehicle) then
-		if vehicle:getVehicleType() == VehicleType.Plane or vehicles[vehicle:getModel()] then
+		if (vehicle:getVehicleType() == VehicleType.Plane and not vehicle:getModel() == 460) or vehicles[vehicle:getModel()] then
 			return vehicle:getSpeed() == 0
-		elseif vehicle:getVehicleType() == VehicleType.Boat then
+		elseif vehicle:getVehicleType() == VehicleType.Boat or vehicle:getModel() == 460 then
 			return vehicle:getSpeed() < 3
 		else
 			return _isVehicleOnGround(vehicle)
@@ -920,4 +955,104 @@ end
 
 function isValidElement(data, type)
     return isElement(data) and (not type or (getElementType(data) == type))
+end
+
+function normalize(x, y, z)
+	local len = (x^2+y^2+z^2)^0.5
+	x = x / len
+	y = y / len
+	z = z / len
+	return x,y,z
+end
+
+function addComas(str)
+	return #str % 3 == 0 and str:reverse():gsub("(%d%d%d)", "%1."):reverse():sub(2, -1) or str:reverse():gsub("(%d%d%d)", "%1."):reverse()
+end
+
+URLEncoder = {
+    encode = function(str)
+            if (not str) then
+                return str
+            end
+
+            str = string.gsub (str, "\n", "\r\n")
+            str = string.gsub (str, "[^%w.%-_~]",
+                function (c) return string.format ("%%%02X", string.byte(c)) end)
+
+            return str
+        end,
+    decode = function(str)
+            str = string.gsub(str, "%%([0-9a-fA-F][0-9a-fA-F])",
+                function (c) return string.char(tonumber("0x" .. c)) end)
+            str = string.gsub (str, "\n", "\r\n")
+            return str
+        end,
+}
+
+function fisherYatesShuffle( input ) -- https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+    local output = {}
+    for i = #input, 1, -1 do
+        local j = math.random(i)
+        input[i], input[j] = input[j], input[i]
+        table.insert(output, input[i])
+    end
+    return output
+end
+
+function math.randomchoice(t) --Selects a random item from a table
+    local keys = {}
+    for key, value in pairs(t) do
+        keys[#keys+1] = key --Store keys in another table
+    end
+    index = keys[math.random(1, #keys)]
+    return t[index], index
+end
+
+function getBiggestUnitByBytes(value)
+	if value < 1048576 then
+		return "KB"
+	end
+	return "MB"
+end
+
+function convertBytesToUnit(value, unit)
+	if unit == "MB" then
+		return value / 1048576
+	elseif unit == "KB" then
+		return value / 1024
+	end
+end
+
+function isValidPedModel(model)
+	for i, skin in ipairs(getValidPedModels()) do
+		if model == skin then
+			return true
+		end
+	end
+	return false
+end
+
+function lastIndexOf(haystack, needle)
+    local i, j
+    local k = 0
+    repeat
+        i = j
+        j, k = string.find(haystack, needle, k + 1, true)
+    until j == nil
+
+    return i
+end
+
+function convertModelToName(modelId, veh)
+	if modelId == 1550 then
+		return "moneyBag"
+	elseif modelId == 2912 and ActionsCheck:getSingleton():isCurrentAction() == "Weihnachtstruck" then
+		return "christmasPresent"
+	elseif modelId == 1575 then
+		return "drugPackage"
+	elseif modelId == 2912 and (ActionsCheck:getSingleton():isCurrentAction() == "Waffentruck" or ActionsCheck:getSingleton():isCurrentAction() == "Staats-Waffentruck") then
+		return "weaponBox"
+	elseif modelId == 2358 then
+		return "weaponPackage"
+	end
 end

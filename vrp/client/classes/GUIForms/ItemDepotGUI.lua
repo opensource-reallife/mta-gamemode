@@ -10,8 +10,8 @@ inherit(Singleton, ItemDepotGUI)
 
 addRemoteEvents{"ItemDepotOpen", "ItemDepotRefresh"}
 
-function ItemDepotGUI:constructor()
-    GUIForm.constructor(self, screenWidth/2-620/2, screenHeight/2-400/2, 620, 400)
+function ItemDepotGUI:constructor(element)
+    GUIForm.constructor(self, screenWidth/2-620/2, screenHeight/2-400/2, 620, 400, true, false, element)
 
     self.ms_SlotsSettings = {
         ["item"] = {["color"] = Color.Accent, ["btnColor"] = Color.Blue, ["emptyText"] = _"Kein Item"}
@@ -27,7 +27,7 @@ function ItemDepotGUI:constructor()
     self.m_AmountLabel = GUILabel:new(10, 325, 250, 30, _"Item-Anzahl:", self.m_Window)
     self.m_Amount = GUIEdit:new(10, 355, 250, 30, self.m_Window)
     self.m_AmountLabel:setVisible(false)
-    self.m_Amount:setVisible(false)
+    self.m_Amount:setVisible(false):setNumeric(true, true)
     self.m_Amount.onChange = function()
         self:checkAmount()
     end
@@ -171,10 +171,10 @@ function ItemDepotGUI:fromDepot(id)
     end
 end
 
-addEventHandler("ItemDepotOpen", root, function()
-    if ItemDepotGUI:getSingleton():isInstantiated() then
-        ItemDepotGUI:getSingleton():open()
+addEventHandler("ItemDepotOpen", root, function(element)
+    if ItemDepotGUI:isInstantiated() then
+        delete(ItemDepotGUI:getSingleton())
     else
-        ItemDepotGUI:getSingleton():new()
+        ItemDepotGUI:new(element)
     end
 end)

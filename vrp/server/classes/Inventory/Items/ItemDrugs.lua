@@ -7,10 +7,10 @@
 -- ****************************************************************************
 ItemDrugs = inherit(Item)
 ItemDrugs.Texts = {
-	["Weed"] = "raucht Weed",
-	["Shrooms"] = "isst einen Magic Mushroom",
-	["Heroin"] = "spritzt sich Heroin",
-	["Kokain"] = "schnupft Kokain",
+	["Weed"] = "raucht Weed!",
+	["Shrooms"] = "isst einen Magic Mushroom!",
+	["Heroin"] = "spritzt sich Heroin!",
+	["Kokain"] = "schnupft Kokain!",
 
 }
 
@@ -23,7 +23,7 @@ function ItemDrugs:destructor()
 end
 
 function ItemDrugs:use( player )
-	player:meChat(true, ItemDrugs.Texts[self:getName()].."!")
+	player:meChat(true, ItemDrugs.Texts[self:getName()])
 
 	player:giveAchievement(73)
 end

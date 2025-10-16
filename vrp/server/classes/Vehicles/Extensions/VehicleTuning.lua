@@ -128,6 +128,16 @@ function VehicleTuning:applyTuning(disableTextureForce)
 	end
 	
 	self:saveTuningKits()
+
+	if not self.m_Tuning["RcVehicles"] then
+		self.m_Tuning["RcVehicles"] = {}
+	end
+	self.m_Vehicle:setData("RcVehicles", self.m_Tuning["RcVehicles"], true)
+
+	if not self.m_Tuning["RadarDetector"] then
+		self.m_Tuning["RadarDetector"] = 0
+	end
+	self.m_Vehicle:setData("RadarDetector", self.m_Tuning["RadarDetector"], true)
 end
 
 function VehicleTuning:createNew()
@@ -143,6 +153,8 @@ function VehicleTuning:createNew()
 	self.m_Tuning["Texture"] = {}
 	self.m_Tuning["Variant1"] = 255
 	self.m_Tuning["Variant2"] = 255
+	self.m_Tuning["RcVehicles"] = {}
+	self.m_Tuning["RadarDetector"] = 0
 
 	for tuning, class in pairs(VehicleManager:getSingleton().m_TuningClasses) do
 		self.m_Tuning[tuning] = {0} -- the first index in every tuning-kit field will be indicating wether the kit is installed or not
@@ -310,7 +322,7 @@ function VehicleTuning:addTexture(texturePath, textureName)
 end
 
 function VehicleTuning:getList()
-	local tuning, specialTuning = {}, {}
+	local tuning, specialTuning, rcVehicle = {}, {}, {}
 
 	if self.m_Tuning["GTATuning"] then
 		for _,v in pairs(self.m_Tuning["GTATuning"]) do
@@ -325,12 +337,20 @@ function VehicleTuning:getList()
 	local horn = (self.m_Tuning["CustomHorn"] and self.m_Tuning["CustomHorn"] > 0) and "Ja (ID: "..self.m_Tuning["CustomHorn"]..")" or nil
 	local textureName = VEHICLE_SPECIAL_TEXTURE[self.m_Vehicle:getModel()] or textureName ~= nil and textureName or "vehiclegrunge256"
 	local texture = self.m_Tuning["Texture"] and self.m_Tuning["Texture"][textureName] and self.m_Tuning["Texture"][textureName]:gsub("files/images/Textures", "")
+	local radarDetector = self.m_Tuning["RadarDetector"] == 1 and "Eingebaut" or nil
 	specialTuning["Neon"] = neon
 	specialTuning["Spezial-Hupe"] = horn
 	specialTuning["Textur"] = texture
+	specialTuning["Radarwarngerät"] = radarDetector
 	if table.size(specialTuning) == 0 then specialTuning["(keine)"] = "" end
 
-	return tuning, specialTuning
+	if self.m_Tuning["RcVehicles"] then
+		for i, veh in pairs(self.m_Tuning["RcVehicles"]) do
+			rcVehicle[veh] = true
+		end
+	end
+
+	return tuning, specialTuning, rcVehicle
 end
 
 --[[

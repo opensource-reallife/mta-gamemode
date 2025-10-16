@@ -1,8 +1,8 @@
-QuestPackageFind = inherit(Quest)
+QuestPackageFind = inherit(ChristmasQuest)
 QuestPackageFind.Target = 5
 
 function QuestPackageFind:constructor(id)
-	Quest.constructor(self, id)
+	ChristmasQuest.constructor(self, id)
 	self.m_Objects = {}
 
 	nextframe(function()
@@ -12,7 +12,7 @@ function QuestPackageFind:constructor(id)
 end
 
 function QuestPackageFind:destructor(id)
-	Quest.destructor(self)
+	ChristmasQuest.destructor(self)
 	killTimer(self.m_Timer)
 	for id, object in pairs(self.m_Objects) do
 		if isElement(object) then
@@ -25,13 +25,13 @@ function QuestPackageFind:destructor(id)
 end
 
 function QuestPackageFind:addPlayer(player)
-	Quest.addPlayer(self, player)
+	ChristmasQuest.addPlayer(self, player)
 	player.packagesFound = 0
 
 end
 
 function QuestPackageFind:removePlayer(player)
-	Quest.removePlayer(self, player)
+	ChristmasQuest.removePlayer(self, player)
 	player.packagesFound = nil
 end
 
@@ -47,7 +47,7 @@ function QuestPackageFind:reload()
 	end
 	self.m_Objects = {}
 
-   	local result = sql:queryFetch("SELECT * FROM ??_word_objects WHERE Typ = 'Osterei';", sql:getPrefix())
+   	local result = sql:queryFetch("SELECT * FROM ??_static_world_items WHERE Typ = 'Osterei';", sql:getPrefix())
 	for i, row in pairs(result) do
 		if chance(10) then
 			self:addObject(row.Id, Vector3(row.PosX, row.PosY, row.PosZ))
@@ -62,9 +62,10 @@ end
 
 function QuestPackageFind:addObject(Id, pos)
 	pos.z = pos.z+0.5
-	self.m_Objects[Id] = createObject(3878, pos)
+	self.m_Objects[Id] = createObject(2070, pos)
 	self.m_Objects[Id]:setAlpha(0)
 	self.m_Objects[Id].Id = Id
+    self.m_Objects[Id]:setData("QuestPackageFind:Package", true, true)
     self.m_Objects[Id]:setData("clickable", true, true)
     addEventHandler("onElementClicked",self.m_Objects[Id], bind(self.onPackageClick, self))
 	return self.m_Objects[Id]
@@ -81,10 +82,7 @@ function QuestPackageFind:onPackageClick(button, state, player)
 				self:success(player)
 			end
 		else
-			player:sendError("Dafür musst du erst den Quest annehmen!")
+			player:sendError("Dafür musst du erst die Quest annehmen!")
 		end
 	end
 end
-
-
-

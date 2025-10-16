@@ -12,7 +12,7 @@ function Company.onInherit(derivedClass)
   Company.DerivedClasses[#Company.DerivedClasses+1] = derivedClass
 end
 
-function Company:constructor(Id, Name, ShortName, ShorterName, Creator, players, lastNameChange, bankAccountId, Settings, rankLoans, rankSkins)
+function Company:constructor(Id, Name, ShortName, ShorterName, Creator, players, lastNameChange, bankAccountId, Settings, rankLoans, rankSkins, rankPermissions, playerLimit, maxVehicles, vehicleLimits)
 	self.m_Id = Id
 	self.m_Name = Name
 	self.m_ShortName = ShortName
@@ -20,6 +20,7 @@ function Company:constructor(Id, Name, ShortName, ShorterName, Creator, players,
 	self.m_Creator = Creator
 	self.m_Players = players[1]
 	self.m_PlayerLoans = players[2]
+	self.m_PlayerPermissions = players[3]
 	self.m_PlayerActivity = {}
 	self.m_LastActivityUpdate = 0
 	self.m_LastNameChange = lastNameChange or 0
@@ -33,9 +34,11 @@ function Company:constructor(Id, Name, ShortName, ShorterName, Creator, players,
 
 	if rankLoans == "" then rankLoans = {} for i=0,5 do rankLoans[i] = 0 end rankLoans = toJSON(rankLoans) outputDebug("Created RankLoans for company "..Id) end
 	if rankSkins == "" then rankSkins = {} for i=0,5 do rankSkins[i] = self:getRandomSkin() end rankSkins = toJSON(rankSkins) outputDebug("Created RankSkins for company "..Id) end
+	if not rankPermissions or rankPermissions == "" then rankPermissions = {} for i=0,5 do rankPermissions[i] = PermissionsManager:getSingleton():createRankPermissions("company", self.m_Id, i) end rankPermissions = toJSON(rankPermissions) outputDebug("Created RankPermissions for company "..Id) end
 
 	self.m_RankLoans = fromJSON(rankLoans)
 	self.m_RankSkins = fromJSON(rankSkins)
+	self.m_RankPermissions = fromJSON(rankPermissions)
 
 	self.m_BankAccount = BankAccount.load(bankAccountId) or BankAccount.create(BankAccountTypes.Company, self.m_Id)
 	self.m_Settings = UserGroupSettings:new(USER_GROUP_TYPES.Company, Id)
@@ -48,8 +51,24 @@ function Company:constructor(Id, Name, ShortName, ShorterName, Creator, players,
 
 	self.m_VehicleTexture = companyVehicleShaders[Id] or false
 
+	self.m_PlayerLimit = playerLimit > 0 and true or false
+	self.m_MaxPlayers = playerLimit
+
+	self.m_MaxVehicles = maxVehicles
+
+	local limits = fromJSON(vehicleLimits) or {}
+	local temp = {}
+	for k, v in pairs(limits) do
+		temp[tonumber(k)] = v
+	end
+	self.m_VehicleLimits = temp
+
 	if not DEBUG then
-		self:getActivity()
+		Async.create(
+			function(self)
+				self:getActivity()
+			end
+		)(self)
 	end
 end
 
@@ -68,7 +87,7 @@ function Company:save()
 	if self.m_Settings then
 		self.m_Settings:save()
 	end
-    sql:queryExec("UPDATE ??_companies SET RankLoans = ?, RankSkins = ?, Settings = ? WHERE Id = ?",sql:getPrefix(),toJSON(self.m_RankLoans),toJSON(self.m_RankSkins),toJSON(Settings),self.m_Id)
+    sql:queryExec("UPDATE ??_companies SET RankLoans = ?, RankSkins = ?, Settings = ?, RankPermissions = ? WHERE Id = ?",sql:getPrefix(),toJSON(self.m_RankLoans),toJSON(self.m_RankSkins),toJSON(Settings),toJSON(self.m_RankPermissions),self.m_Id)
 end
 
 function Company:virtual_constructor(...)
@@ -155,12 +174,16 @@ function Company:setSetting(category, key, value, responsiblePlayer)
 	if responsiblePlayer and isElement(responsiblePlayer) and getElementType(responsiblePlayer) == "player" then
 		if not responsiblePlayer:getCompany() then allowed = false end
 		if responsiblePlayer:getCompany() ~= self then allowed = false end
-		if self:getPlayerRank(responsiblePlayer) ~= CompanyRank.Leader then allowed = false end
+		if category == "Equipment" then
+			if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "editEquipment") then allowed = false end
+		elseif category == "Skin" then
+			if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "editRankSkins") then allowed = false end
+		end
 	end
 	if allowed then
 		self.m_Settings:setSetting(category, key, value)
 	else
-		responsiblePlayer:sendError(_("Nur Leader (Rang %s) des Unternehmens %s können deren Einstellungen ändern!", responsiblePlayer, CompanyRank.Leader, self:getShortName()))
+		responsiblePlayer:sendError(_("Du bist nicht berechtigt die %s Einstellungen zu ändern!", responsiblePlayer, category))
 	end
 end
 
@@ -180,19 +203,25 @@ function Company:addPlayer(playerId, rank)
 	rank = rank or 0
 	self.m_Players[playerId] = rank
 	self.m_PlayerLoans[playerId] = 1
+	self.m_PlayerPermissions[playerId] = {}
 	local player = Player.getFromId(playerId)
 	if player then
 		player:setCompany(self)
 		player:reloadBlips()
+		PermissionsManager:getSingleton():syncPermissions(player, "company")
 	end
 
-	sql:queryExec("UPDATE ??_character SET CompanyId = ?, CompanyRank = ?, CompanyLoanEnabled = 1 WHERE Id = ?", sql:getPrefix(), self.m_Id, rank, playerId)
+	sql:queryExec("UPDATE ??_character SET CompanyId = ?, CompanyRank = ?, CompanyLoanEnabled = 1, CompanyTraining = 0 WHERE Id = ?", sql:getPrefix(), self.m_Id, rank, playerId)
 
   if self.onPlayerJoin then -- Only for Companies with own class
     self:onPlayerJoin(playerId, rank)
   end
 
-  self:getActivity(true)
+  Async.create(
+	function(self)
+		self:getActivity(true)
+	end
+)(self)
 end
 
 function Company:removePlayer(playerId)
@@ -202,27 +231,34 @@ function Company:removePlayer(playerId)
 
 	self.m_Players[playerId] = nil
 	self.m_PlayerLoans[playerId] = nil
+	self.m_PlayerPermissions[playerId] = nil
 	local player = Player.getFromId(playerId)
 	if player then
+		player:saveAccountActivity()
+		setElementData(player, "playingTimeCompany", 0)
+		setElementData(player, "dutyTimeCompany", 0)
 		player:setCompany(nil)
 		player:reloadBlips()
 		player:sendShortMessage(_("Du wurdest aus deinem Unternehmen entlassen!", player))
 		self:sendShortMessage(_("%s hat dein Unternehmen verlassen!", player, player:getName()))
+		PermissionsManager:getSingleton():syncPermissions(player, "company", true)
 	end
 
-	sql:queryExec("UPDATE ??_character SET CompanyId = 0, CompanyRank = 0, CompanyLoanEnabled = 0 WHERE Id = ?", sql:getPrefix(), playerId)
+	sql:queryExec("UPDATE ??_character SET CompanyId = 0, CompanyRank = 0, CompanyLoanEnabled = 0, CompanyTraining = 0 WHERE Id = ?", sql:getPrefix(), playerId)
 
 	if self.onPlayerLeft then -- Only for Companies with own class
 		self:onPlayerLeft(playerId)
 	end
 end
 
-function Company:getOnlinePlayers()
+function Company:getOnlinePlayers(afkCheck, dutyCheck)
 	local players = {}
 	for playerId in pairs(self.m_Players) do
 		local player = Player.getFromId(playerId)
 		if player and isElement(player) and player:isLoggedIn() then
-			players[#players + 1] = player
+			if (not afkCheck or not player.m_isAFK) and (not dutyCheck or player:isCompanyDuty()) then
+				players[#players + 1] = player
+			end
 		end
 	end
 	return players
@@ -233,7 +269,8 @@ function Company:getRankName(rank)
 end
 
 
-function Company:sendChatMessage(sourcePlayer,message)
+function Company:sendChatMessage(sourcePlayer, message, lang)
+	if not getElementData(sourcePlayer, "CompanyChatEnabled") then return sourcePlayer:sendError(_("Du hast den Unternehmenschat deaktiviert!", sourcePlayer)) end
 	local lastMsg, msgTimeSent = sourcePlayer:getLastChatMessage()
 	if getTickCount()-msgTimeSent < (message == lastMsg and CHAT_SAME_MSG_REPEAT_COOLDOWN or CHAT_MSG_REPEAT_COOLDOWN) then -- prevent chat spam
 		cancelEvent()
@@ -248,10 +285,14 @@ function Company:sendChatMessage(sourcePlayer,message)
 	message = message:gsub("%%", "%%%%")
 	local text = ("%s %s: %s"):format(rankName, sourcePlayer:getName(), message)
 	for k, player in ipairs(self:getOnlinePlayers()) do
-		player:sendMessage(text, 100, 150, 250)
-        if player ~= sourcePlayer then
-            receivedPlayers[#receivedPlayers+1] = player
-        end
+		if getElementData(player, "CompanyChatEnabled") then
+			if not lang or player:getLocale() == lang then
+				player:sendMessage(text, 100, 150, 250)
+				if player ~= sourcePlayer then
+					receivedPlayers[#receivedPlayers+1] = player
+				end
+			end
+		end
 	end
     StatisticsLogger:getSingleton():addChatLog(sourcePlayer, "company:"..self.m_Id, message, receivedPlayers)
 end
@@ -309,22 +350,45 @@ function Company:setPlayerLoanEnabled(playerId, state)
 	sql:queryExec("UPDATE ??_character SET CompanyLoanEnabled = ? WHERE Id = ?", sql:getPrefix(), state, playerId)
 end
 
+function Company:savePlayerPermissions(playerId)
+	if type(playerId) == "userdata" then
+		playerId = playerId:getId()
+	end
+
+	sql:queryExec("UPDATE ??_character SET CompanyPermissions = ? WHERE Id = ?", sql:getPrefix(), toJSON(self.m_PlayerPermissions[tonumber(playerId)]) or toJSON({}), playerId)
+end
+
 function Company:getActivity(force)
 	if self.m_LastActivityUpdate > getRealTime().timestamp - 30 * 60 and not force then
 		return
 	end
+
 	self.m_LastActivityUpdate = getRealTime().timestamp
+	local playerIds = {}
 
 	for playerId, rank in pairs(self.m_Players) do
-		local row = sql:queryFetchSingle("SELECT FLOOR(SUM(Duration) / 60) AS Activity FROM ??_accountActivity WHERE UserID = ? AND Date BETWEEN DATE(DATE_SUB(NOW(), INTERVAL 1 WEEK)) AND DATE(NOW());", sql:getPrefix(), playerId)
+		table.insert(playerIds, playerId)
+	end
 
+	local query = "SELECT UserId, FLOOR(SUM(Duration) / 60) AS Activity FROM ??_account_activity WHERE UserId IN (?" .. string.rep(", ?", #playerIds - 1) ..  ") AND Date BETWEEN DATE(DATE_SUB(NOW(), INTERVAL 1 WEEK)) AND DATE(NOW()) GROUP BY UserId"
+
+	sql:queryFetch(Async.waitFor(), query, sql:getPrefix(), unpack(playerIds))
+
+	local rows = Async.wait()
+
+	self.m_PlayerActivity = {}
+	for playerId, rank in pairs(self.m_Players) do
+		self.m_PlayerActivity[playerId] = 0
+	end
+
+	for _, row in ipairs(rows) do
 		local activity = 0
 
 		if row and row.Activity then
 			activity = row.Activity
 		end
 
-		self.m_PlayerActivity[playerId] = activity
+		self.m_PlayerActivity[row.UserId] = activity
 	end
 end
 
@@ -333,7 +397,11 @@ function Company:getPlayers(getIDsOnly)
 		return self.m_Players
 	end
 
-	self:getActivity()
+	Async.create(
+		function(self)
+			self:getActivity()
+		end
+	)(self)
 
 	local temp = {}
 	for playerId, rank in pairs(self.m_Players) do
@@ -362,6 +430,29 @@ end
 function Company:sendShortMessage(text, ...)
 	for k, player in ipairs(self:getOnlinePlayers()) do
 		player:sendShortMessage(_(text, player), self:getName(), {0, 32, 63}, ...)
+	end
+end
+
+function Company:sendMessageWithRank(text, r, g, b, minRank, withPrefix, ...)
+	local r = r or companyColors[self.m_Id].r
+	local g = g or companyColors[self.m_Id].g
+	local b = b or companyColors[self.m_Id].b
+	local prefix = withPrefix and ("[%s] "):format(self:getName()) or ""
+
+	for k, player in pairs(self:getOnlinePlayers()) do
+		if self:getPlayerRank(player) >= (minRank or 0) then
+			player:sendMessage(prefix .. text, r, g, b, true, ...)
+		end
+	end
+end
+
+function Company:sendShortMessageWithRank(text, minRank, title, color, ...)
+	local color = {color.r or companyColors[self.m_Id].r, color.g or companyColors[self.m_Id].g, color.b or companyColors[self.m_Id].b}
+	local suffix = title and ": " .. title or ""
+	for k, player in pairs(self:getOnlinePlayers()) do
+		if self:getPlayerRank(player) >= (minRank or 0) then
+			player:sendShortMessage(text, self:getName() .. suffix, color, ...)
+		end
 	end
 end
 
@@ -455,24 +546,44 @@ function Company:createDutyMarker()
     	)
 end
 
-function Company:respawnVehicles()
+function Company:respawnVehicles(player)
+	local isAdmin = player and player:getRank() >= RANK.Supporter
+	if not self:isRespawnPossible() and not isAdmin then
+		return self:sendShortMessage("Fahrzeuge können nur alle 15 Minuten respawned werden!")
+	end
+
+	if isAdmin then
+		self:sendShortMessage("Ein Admin hat eure Fraktionsfahrzeuge respawned!")
+		player:sendShortMessage("Du hast die Fraktionsfahrzeuge respawned!")
+	end
 	local companyVehicles = VehicleManager:getSingleton():getCompanyVehicles(self.m_Id)
 	local fails = 0
 	local vehicles = 0
-	if companyVehicles then
-		for companyId, vehicle in pairs(companyVehicles) do
-			if vehicle:getCompany() == self then
-				vehicles = vehicles + 1
-				if not vehicle:respawn() then
-					fails = fails + 1
-				else
-					vehicle:setInterior(0)
-					vehicle:setDimension(0)
-				end
+	for companyId, vehicle in pairs(companyVehicles) do
+		if vehicle:getCompany() == self then
+			vehicles = vehicles + 1
+			vehicle:removeAttachedPlayers()
+			if not vehicle:respawn(true, isAdmin) then
+				fails = fails + 1
+			else
+				vehicle:setInterior(vehicle.m_SpawnInt or 0)
+				vehicle:setDimension(vehicle.m_SpawnDim or 0)
 			end
+			self.m_LastRespawn = getRealTime().timestamp
 		end
 	end
+
 	self:sendShortMessage(("%s/%s Fahrzeuge wurden respawned!"):format(vehicles-fails, vehicles))
+end
+
+function Company:isRespawnPossible()
+	local time = getRealTime().timestamp
+	if self.m_LastRespawn then
+		if time - self.m_LastRespawn <= 900 then --// 15min
+			return false
+		end
+	end
+	return true
 end
 
 function Company:phoneCall(caller)
@@ -480,7 +591,7 @@ function Company:phoneCall(caller)
 		if not player:getPhonePartner() then
 			if player ~= caller then
 				local color = {companyColors[self.m_Id].r, companyColors[self.m_Id].g, companyColors[self.m_Id].b}
-				triggerClientEvent(player, "callIncomingSM", resourceRoot, caller, false, ("%s ruft euch an."):format(caller:getName()), ("eingehender Anruf - %s"):format(self:getShortName()), color)
+				triggerClientEvent(player, "callIncomingSM", resourceRoot, caller, false, ("%s ruft euch an."):format(caller:getName()), ("eingehender Anruf - %s"):format(self:getShortName()), color, "company")
 			end
 		end
 	end
@@ -541,4 +652,37 @@ end
 
 function Company:refreshBankAccountGUI(player)
 	player:triggerEvent("bankAccountGUIRefresh", self:getMoney())
+end
+
+function Company:startRespawnAnnouncement(announcer)
+	if not self:isRespawnPossible() then
+		return self:sendShortMessage("Fahrzeuge können nur alle 15 Minuten respawned werden!")
+	end
+
+	for __, cPlayer in pairs(self:getOnlinePlayers()) do
+		cPlayer:triggerEvent("startCompanyRespawnAnnouncement", announcer)
+	end
+	self.m_RespawnTimer = setTimer(function() self:respawnVehicles() end, 15500, 1)
+end
+
+function Company:stopRespawnAnnouncement(stopper)
+	for __, fPlayer in pairs(self:getOnlinePlayers()) do
+		fPlayer:triggerEvent("stopCompanyRespawnAnnoucement", stopper)
+	end
+	killTimer(self.m_RespawnTimer)
+end
+
+function Company:hasPlayerLimit()
+	return self.m_PlayerLimit
+end
+
+function Company:getPlayerLimit()
+	return self.m_MaxPlayers
+end
+
+function Company:reloadPlayerLimit()
+	local result = sql:queryFetch("SELECT PlayerLimit from ??_companies WHERE Id = ?", sql:getPrefix(), self:getId())
+	local newLimit = result[1]["PlayerLimit"] or 0
+	self.m_PlayerLimit = newLimit > 0 and true or false
+	self.m_MaxPlayers = newLimit
 end
