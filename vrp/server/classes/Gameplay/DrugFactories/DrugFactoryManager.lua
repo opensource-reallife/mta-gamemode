@@ -68,6 +68,7 @@ function DrugFactoryManager:onFactoryPayday()
                 local maxWorkingstations = factory:getMaxWorkingStations()
                 local amount = math.floor(((workers*100/maxWorkers/2) + (workingstations*100/maxWorkingstations/2))/100*(factory.m_Type == 1 and DRUGFACTORY_MAX_PAYDAY_COCAINE or factory.m_Type == 2 and DRUGFACTORY_MAX_PAYDAY_WEED or factory.m_Type == 3 and DRUGFACTORY_MAX_PAYDAY_HEROIN))
                 local item = factory.m_Type == 1 and "Kokain" or factory.m_Type == 2 and "Weed" or factory.m_Type == 3 and "Heroin"
+                local factoryResult
                 if amount > 0 then
                     factoryResult = factoryOwners:getDepot():addItem(false, item, amount, true)
                 else
