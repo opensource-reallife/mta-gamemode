@@ -368,7 +368,7 @@ function Faction:addPlayer(playerId, rank)
 		bindKey(player, "y", "down", "chatbox", "Fraktion")
 		PermissionsManager:getSingleton():syncPermissions(player, "faction")
 	end
-	sql:queryExec("UPDATE ??_character SET FactionId = ?, FactionRank = ?, FactionLoanEnabled = 1, FactionWeaponEnabled = 1, FactionPermissions = ?, FactionWeaponPermissions = ?, FactionActionPermissions = ?, FactionTraining = 0 WHERE Id = ?", sql:getPrefix(), self.m_Id, rank, toJSON({}), toJSON({}), toJSON({}), playerId)
+	sql:queryExec("UPDATE ??_character SET FactionId = ?, FactionRank = ?, FactionLoanEnabled = 1, FactionActionMoneySplitEnabled = 1, FactionPermissions = ?, FactionWeaponPermissions = ?, FactionActionPermissions = ?, FactionTraining = 0 WHERE Id = ?", sql:getPrefix(), self.m_Id, rank, toJSON({}), toJSON({}), toJSON({}), playerId)
 
 	Async.create(
 		function(self)
@@ -426,7 +426,7 @@ function Faction:removePlayer(playerId)
 		unbindKey(player, "y", "down", "chatbox", "Fraktion")
 		PermissionsManager:getSingleton():syncPermissions(player, "faction", true)
 	end
-	sql:queryExec("UPDATE ??_character SET FactionId = 0, FactionRank = 0, FactionLoanEnabled = 0, FactionWeaponEnabled = 0, FactionPermissions = ?, FactionWeaponPermissions = ?, FactionActionPermissions = ?, FactionTraining = 0 WHERE Id = ?", sql:getPrefix(), toJSON({}), toJSON({}), toJSON({}), playerId)
+	sql:queryExec("UPDATE ??_character SET FactionId = 0, FactionRank = 0, FactionLoanEnabled = 0, FactionActionMoneySplitEnabled = 0, FactionPermissions = ?, FactionWeaponPermissions = ?, FactionActionPermissions = ?, FactionTraining = 0 WHERE Id = ?", sql:getPrefix(), toJSON({}), toJSON({}), toJSON({}), playerId)
 end
 
 function Faction:invitePlayer(player)
