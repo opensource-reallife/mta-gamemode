@@ -2417,7 +2417,7 @@ function FactionState:startAreaAlert()
 	local counter = 0
 	local wanteds = WANTED_AMOUNT_AREA69
 	for key, player in ipairs(getElementsWithinColShape(self.m_AreaColShape, "player")) do
-		if not player:getFaction() or (player:getFaction() and not player:getFaction():isStateFaction()) or (player:getFaction() and not player:getFaction():isRescueFaction()) then
+		if not player:getFaction() or (player:getFaction() and not player:getFaction():isStateFaction()) then
 			counter = counter + 1
 			if not FactionManager.Map[3] then
 				player:giveWanteds(wanteds)
