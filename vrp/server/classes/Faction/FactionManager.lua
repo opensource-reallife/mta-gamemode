@@ -419,6 +419,17 @@ function FactionManager:Event_factionAddPlayer(player)
 		return
 	end
 
+	if faction:isEvilFaction() then
+		local dateString = HistoryPlayer:getSingleton():getLeaveDateFromLastEvilFaction(player:getId())
+		local uninviteTimestamp = formatDateStringToTimeStamp(dateString)
+		local zivizeit = ServerSettings:getSingleton().m_Settings["Zivizeit"] * 60 * 60
+		if getRealTime().timestamp < uninviteTimestamp + zivizeit then
+			local time = getRealTime(uninviteTimestamp + zivizeit)
+			client:sendError(_("Du hast noch bis %s.%s.%s %s:%s Uhr Zivzeit", client, time.monthday, time.month + 1, time.year + 1900, time.hour, time.minute))
+			return
+		end
+	end
+
 	if not faction:isPlayerMember(player) then
 		if not faction:hasInvitation(player) then
 			faction:invitePlayer(player)
@@ -479,6 +490,18 @@ function FactionManager:Event_factionInvitationAccept(factionId)
 		client:sendError(_("Faction not found!", client))
 		return
 	end
+
+	if faction:isEvilFaction() then
+		local dateString = HistoryPlayer:getSingleton():getLeaveDateFromLastEvilFaction(player:getId())
+		local uninviteTimestamp = formatDateStringToTimeStamp(dateString)
+		local zivizeit = ServerSettings:getSingleton().m_Settings["Zivizeit"] * 60 * 60
+		if getRealTime().timestamp < uninviteTimestamp + zivizeit then
+			local time = getRealTime(uninviteTimestamp + zivizeit)
+			client:sendError(_("Du hast noch bis %s.%s.%s %s:%s Uhr Zivzeit", client, time.monthday, time.month + 1, time.year + 1900, time.hour, time.minute))
+			return
+		end
+	end
+
 
 	if faction:hasInvitation(client) then
 		if faction:hasPlayerLimit() and faction:getPlayerLimit() <= table.size(faction:getPlayers(true))  then

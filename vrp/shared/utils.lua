@@ -1056,3 +1056,9 @@ function convertModelToName(modelId, veh)
 		return "weaponPackage"
 	end
 end
+
+function formatDateStringToTimeStamp(dateString)
+	local year, month, day, hour, minute, second = dateString:match("(%d+)%-(%d+)%-(%d+) (%d+)%:(%d+)%:(%d+)")
+	year, month, day, hour, minute, second = tonumber(year), tonumber(month), tonumber(day), tonumber(hour), tonumber(minute), tonumber(second)
+	return getTimestamp(year, month, day, hour, minute, second)
+end
