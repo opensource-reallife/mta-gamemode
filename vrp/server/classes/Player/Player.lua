@@ -1742,7 +1742,7 @@ function Player:moveToJail(CUTSCENE, alreadySpawned)
 			end, self.m_JailTime * 60000, 1
 		)
 
-		--self:triggerEvent("playerJailed", self.m_JailTime, CUTSCENE)
+		self:triggerEvent("playerJailed", self.m_JailTime, false)
 	end
 end
 
