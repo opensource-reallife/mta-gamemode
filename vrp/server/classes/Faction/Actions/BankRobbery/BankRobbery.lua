@@ -163,7 +163,8 @@ function BankRobbery:destroyRob()
 			end
 		end
 	end
-	for faction, data in pairs(self.m_DeliveryInfos) do
+	for factionId, data in pairs(self.m_DeliveryInfos) do
+		local faction = FactionManager:getSingleton():getFromId(factionId)
 		ActionMoneySplitManager:getSingleton():splitMoney(faction, "BankRobbery", data.money)
 		faction:addLog(-1, "Aktion", ("%s: Es wurde %s %s."):format(self.m_RobName, toMoneyString(data.money), faction:isStateFaction() and "sichergestellt" or "eingenommen"))
 	end
@@ -320,7 +321,12 @@ end
 function BankRobbery:sealSafeDoor()
 	PlayerManager:getSingleton():breakingNews("Der Banküberfall ist beendet! Der Tresor wurde verriegelt!")
 	Discord:getSingleton():outputBreakingNews("Der Banküberfall ist beendet! Der Tresor wurde verriegelt!")
-	self.m_BankAccountServer:transferMoney({"faction", 1, true}, Randomizer:get(15000, 30000), "Tresor verriegelt", "Action", "BankRobbery", {silent = true})
+	local money = Randomizer:get(15000, 30000)
+	self.m_BankAccountServer:transferMoney({"faction", 1, true}, money, "Tresor verriegelt", "Action", "BankRobbery", {silent = true})
+	if (not self.m_DeliveryInfos[1]) then
+		self.m_DeliveryInfos[1] = {["bagCount"] = 0, ["money"] = 0}
+	end
+	self.m_DeliveryInfos[1].money = self.m_DeliveryInfos[1].money + money
 	self:destroyRob()
 end
 
@@ -636,12 +642,13 @@ function BankRobbery:handleBagDelivery(faction, player)
 			self.m_MoneyBagBlips[bag] = nil
 		end
 
-		if (not self.m_DeliveryInfos[faction]) then
-			self.m_DeliveryInfos[faction] = {["bagCount"] = 0, ["money"] = 0}
+		local facId = faction:isStateFaction() and 1 or faction:getId()
+		if (not self.m_DeliveryInfos[facId]) then
+			self.m_DeliveryInfos[facId] = {["bagCount"] = 0, ["money"] = 0}
 		end
-		self.m_DeliveryInfos[faction].bagCount = self.m_DeliveryInfos[faction].bagCount + 1
-		self.m_DeliveryInfos[faction].money = self.m_DeliveryInfos[faction].money + money
-
+		self.m_DeliveryInfos[facId].bagCount = self.m_DeliveryInfos[facId].bagCount + 1
+		self.m_DeliveryInfos[facId].money = self.m_DeliveryInfos[facId].money + bag.money
+		
 		bag:destroy()
 		table.removevalue(self.m_MoneyBags, bag)
 	end

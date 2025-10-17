@@ -299,7 +299,7 @@ function FactionState:Event_OnConfirmSelfArrest()
 	bailcosts = BAIL_PRICES[wantedLevel]
 	client:setJailTime(jailTime)
 	client:setWanteds(0)
-	client:moveToJail(CUTSCENE)
+	client:moveToJail()
 	self:uncuffPlayer(client)
 	client:clearCrimes()
 	bailcosts = BAIL_PRICES[wantedLevel]
@@ -719,6 +719,17 @@ function FactionState:getOnlinePlayers(afkCheck, dutyCheck)
 	local players = {}
 	for index,faction in pairs(factions) do
 		for index, value in pairs(faction:getOnlinePlayers(afkCheck, dutyCheck)) do
+			table.insert(players, value)
+		end
+	end
+	return players
+end
+
+function FactionState:getActionSplitMoneyPlayers()
+	local factions = self:getFactions()
+	local players = {}
+	for index,faction in pairs(factions) do
+		for index, value in pairs(faction:getActionSplitMoneyPlayers()) do
 			table.insert(players, value)
 		end
 	end

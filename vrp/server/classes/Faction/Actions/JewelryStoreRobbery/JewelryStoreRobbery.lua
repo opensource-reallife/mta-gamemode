@@ -119,7 +119,8 @@ function JewelryStoreRobbery:destructor()
 		end
 	end
 
-	for faction, data in pairs(self.m_DeliveryInfos) do
+	for factionId, data in pairs(self.m_DeliveryInfos) do
+		local faction = FactionManager:getSingleton():getFromId(factionId)
 		ActionMoneySplitManager:getSingleton():splitMoney(faction, "JewelryStoreRobbery", data.money)
 		faction:addLog(-1, "Aktion", ("Juwelierraub: Es wurde %s$ %s."):format(toMoneyString(data.money), faction:isStateFaction() and "sichergestellt" or "eingenommen"))
 	end
@@ -289,7 +290,7 @@ end
 function JewelryStoreRobbery:Event_EvilDeliveryFaction(button, state, player)
 	if button == "left" and state == "down" then
 		if getDistanceBetweenPoints3D(player:getPosition(), source:getPosition()) < 3 then
-			if player:getFaction():isEvilFaction() and player:isFactionDuty() then
+			if player:getFaction() and player:getFaction():isEvilFaction() and player:isFactionDuty() then
 				if player.m_PlayerAttachedObject and player.m_PlayerAttachedObject.m_Jewelry then
 					local bag = player.m_PlayerAttachedObject
 					local value = bag:getData("Value")
@@ -307,12 +308,12 @@ function JewelryStoreRobbery:Event_EvilDeliveryFaction(button, state, player)
 					self.m_PendingBags = self.m_PendingBags - value
 					self.m_BankAccountServer:transferMoney({"faction", player:getFaction():getId(), true}, money, "Juwelier-Beute abgegeben", "Action", "JewelryRobbery", {silent = true})
 
-					if (not self.m_DeliveryInfos[player:getFaction()]) then
-						self.m_DeliveryInfos[player:getFaction()] = {["bagCount"] = 0, ["money"] = 0}
+					local facId = player:getFaction():isStateFaction() and 1 or player:getFaction():getId()
+					if (not self.m_DeliveryInfos[facId]) then
+						self.m_DeliveryInfos[facId] = {["bagCount"] = 0, ["money"] = 0}
 					end
-					self.m_DeliveryInfos[player:getFaction()].bagCount = self.m_DeliveryInfos[player:getFaction()].bagCount + 1
-					self.m_DeliveryInfos[player:getFaction()].money = self.m_DeliveryInfos[player:getFaction()].money + money
-
+					self.m_DeliveryInfos[facId].bagCount = self.m_DeliveryInfos[facId].bagCount + 1
+					self.m_DeliveryInfos[facId].money = self.m_DeliveryInfos[facId].money + bag.money
 					
 					if self.m_PendingBags == 0 or self.m_MaxBags - self.m_BagsGivenOut == self.m_PendingBags then
 						self:stopRob("evil")
@@ -332,7 +333,7 @@ end
 function JewelryStoreRobbery:Event_StateDeliveryFaction(button, state, player)
 	if button == "left" and state == "down" then
 		if getDistanceBetweenPoints3D(player:getPosition(), source:getPosition()) < 3 then
-			if player:getFaction():isStateFaction() and player:isFactionDuty() then
+			if player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty() then
 				if player.m_PlayerAttachedObject and player.m_PlayerAttachedObject.m_Jewelry then
 					local bag = player.m_PlayerAttachedObject
 					local value = bag:getData("Value")
@@ -349,12 +350,13 @@ function JewelryStoreRobbery:Event_StateDeliveryFaction(button, state, player)
 
 					self.m_PendingBags = self.m_PendingBags - value
 					self.m_BankAccountServer:transferMoney({"faction", player:getFaction():getId(), true}, money, "Juwelier-Beute sichergestellt", "Action", "JewelryRobbery", {silent = true})
-
-					if (not self.m_DeliveryInfos[player:getFaction()]) then
-						self.m_DeliveryInfos[player:getFaction()] = {["bagCount"] = 0, ["money"] = 0}
+					
+					local facId = player:getFaction():isStateFaction() and 1 or player:getFaction():getId()
+					if (not self.m_DeliveryInfos[facId]) then
+						self.m_DeliveryInfos[facId] = {["bagCount"] = 0, ["money"] = 0}
 					end
-					self.m_DeliveryInfos[player:getFaction()].bagCount = self.m_DeliveryInfos[player:getFaction()].bagCount + 1
-					self.m_DeliveryInfos[player:getFaction()].money = self.m_DeliveryInfos[player:getFaction()].money + money
+					self.m_DeliveryInfos[facId].bagCount = self.m_DeliveryInfos[facId].bagCount + 1
+					self.m_DeliveryInfos[facId].money = self.m_DeliveryInfos[facId].money + bag.money
 
 					if self.m_PendingBags == 0 or self.m_MaxBags - self.m_BagsGivenOut == self.m_PendingBags then
 						self:stopRob("state")

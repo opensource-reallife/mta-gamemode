@@ -43,6 +43,10 @@ function ActionMoneySplitManager:Event_actionMoneySplitRequestSplitData()
 	if not client or not client:getFaction() then return end
 
 	local faction = client:getFaction()
+    if (faction:isStateFaction()) then
+        faction = FactionManager:getSingleton():getFromId(1)
+    end
+
 	local temp = {["currentStates"] = {}, ["maxStates"] = {}, ["maxSplitPerPlayer"] = self:getMaxPerPlayer()}
 
 	temp["currentStates"] = faction:getActionSplits()
@@ -60,6 +64,9 @@ function ActionMoneySplitManager:Event_actionMoneySplitChangeSplits(changes)
 		return
 	end
 	local faction = client:getFaction()
+    if (faction:isStateFaction()) then
+        faction = FactionManager:getSingleton():getFromId(1)
+    end
 
 	for name, percentSplit in pairs(changes) do
 		faction:setActionSplit(name, percentSplit)
@@ -77,13 +84,16 @@ function ActionMoneySplitManager:splitMoney(faction, action, earnedMoney)
     local moneyToSplit = earnedMoney / 100 * actionSplit
 
     local onlinePlayers = faction:getActionSplitMoneyPlayers()
+    if (faction:isStateFaction()) then
+        onlinePlayers = FactionState:getSingleton():getActionSplitMoneyPlayers()   
+    end
     local count = #onlinePlayers
 
     local moneyPerPersonRaw = math.floor(moneyToSplit / count)  
     local moneyPerPerson = moneyPerPersonRaw > self:getMaxPerPlayer() and self:getMaxPerPlayer() or moneyPerPersonRaw
 
     for i, v in pairs(onlinePlayers) do
-        faction:transferMoney({v, true}, moneyPerPerson, "Aktionsbeteiligung", "Action", "ActionMoneySplit")
+        faction:transferMoney({v, true}, moneyPerPerson, "Aktionsbeteiligung", "Action", "ActionMoneySplit", {silent = true})
         faction:addLog(v, "Aktion", ("es wurde %s$ an %s aufgrund der Aktionsbeteiligung ausgezahlt."):format(moneyPerPerson, v:getName()))
     end
 end

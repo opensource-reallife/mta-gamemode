@@ -97,7 +97,8 @@ function StateEvidenceTruck:destructor()
 		end
 	end
 
-	for faction, data in pairs(self.m_DeliveryInfos) do
+	for factionId, data in pairs(self.m_DeliveryInfos) do
+		local faction = FactionManager:getSingleton():getFromId(factionId)
 		ActionMoneySplitManager:getSingleton():splitMoney(faction, "StateEvidenceTruck", data.money)
 		faction:addLog(-1, "Aktion", ("Asservatentruck: Es wurden %s/%s Säcke voller Asservaten (%s) erfolgreich %s."):format(data.bagCount, table.size(StateEvidenceTruck.MoneyBagSpawns), toMoneyString(data.money), faction:isStateFaction() and "sichergestellt" or "gestohlen"))
 	end
@@ -258,11 +259,12 @@ function StateEvidenceTruck:onDestinationMarkerHit(hitElement)
 
 			hitElement:detachPlayerObject(bag)
 
-			if (not self.m_DeliveryInfos[faction]) then
-				self.m_DeliveryInfos[faction] = {["bagCount"] = 0, ["money"] = 0}
+			local facId = faction:isStateFaction() and 1 or faction:getId()
+			if (not self.m_DeliveryInfos[facId]) then
+				self.m_DeliveryInfos[facId] = {["bagCount"] = 0, ["money"] = 0}
 			end
-			self.m_DeliveryInfos[faction].bagCount = self.m_DeliveryInfos[faction].bagCount + 1
-			self.m_DeliveryInfos[faction].money = self.m_DeliveryInfos[faction].money + bag.money
+			self.m_DeliveryInfos[facId].bagCount = self.m_DeliveryInfos[facId].bagCount + 1
+			self.m_DeliveryInfos[facId].money = self.m_DeliveryInfos[facId].money + bag.money
 	end
 
 	self.m_BankAccountServer:transferMoney(faction, bag.money, "Geldsack (Geldtransport)", "Action", "EvidenceTruck")

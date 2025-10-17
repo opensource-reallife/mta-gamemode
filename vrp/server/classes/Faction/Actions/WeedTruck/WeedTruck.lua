@@ -126,7 +126,8 @@ function WeedTruck:destructor()
 		end
 	end
 
-	for faction, data in pairs(self.m_DeliveryInfos) do
+	for factionId, data in pairs(self.m_DeliveryInfos) do
+		local faction = FactionManager:getSingleton():getFromId(factionId)	
 		local temp = (faction == self.m_StartFaction and "abgegeben") or (faction:isStateFaction() and "sichergestellt") or "gestohlen" 
 		faction:addLog(-1, "Aktion", ("Drogentruck: Es wurden %s/%s Pakete (%sg) erfolgreich %s."):format(data.boxCount, #self.m_Packages, WeedTruck.WeedPerPackage * data.boxCount, temp))
 	end
@@ -374,10 +375,11 @@ function WeedTruck:onDestinationPedClick(player, ped, stateDestination)
 				end
 			end
 
-			if (not self.m_DeliveryInfos[ped.faction]) then
-				self.m_DeliveryInfos[ped.faction] = {["boxCount"] = 0}
+			local facId = ped.faction:isStateFaction() and 1 or ped.faction:getId()
+			if (not self.m_DeliveryInfos[facId]) then
+				self.m_DeliveryInfos[facId] = {["boxCount"] = 0}
 			end
-			self.m_DeliveryInfos[ped.faction].boxCount = self.m_DeliveryInfos[ped.faction].boxCount + 1
+			self.m_DeliveryInfos[facId].boxCount = self.m_DeliveryInfos[facId].boxCount + 1
 
 			package = player:getPlayerAttachedObject()
 

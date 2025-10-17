@@ -137,7 +137,8 @@ function ChristmasTruck:destructor()
 		if value then delete(value) end
 	end
 
-	for faction, data in pairs(self.m_DeliveryInfos) do
+	for factionId, data in pairs(self.m_DeliveryInfos) do
+		local faction = FactionManager:getSingleton():getFromId(factionId)
 		local temp = faction == self.m_StartFaction and "abgegeben" or "gestohlen"
 		faction:addLog(-1, "Aktion", ("Weihnachtstruck: Es wurden %s/%s Geschenke erfolgreich %s."):format(data.boxCount, self.m_PresentCount, temp))
 	end
@@ -479,11 +480,11 @@ function ChristmasTruck:onPresentDeliver(player, tree)
 			box.Present:destroy()
 			box:destroy()
 
-
-			if (not self.m_DeliveryInfos[faction]) then
-				self.m_DeliveryInfos[faction] = {["boxCount"] = 0}
+			local facId = faction:isStateFaction() and 1 or faction:getId()
+			if (not self.m_DeliveryInfos[facId]) then
+				self.m_DeliveryInfos[facId] = {["boxCount"] = 0}
 			end
-			self.m_DeliveryInfos[faction].boxCount = self.m_DeliveryInfos[faction].boxCount + 1
+			self.m_DeliveryInfos[facId].boxCount = self.m_DeliveryInfos[facId].boxCount + 1
 
 			if table.size(ChristmasTruckManager:getSingleton().m_FactionPresents[player:getFaction():getId()]) < ChristmasTruckManager.MaxPresents then
 				local presentCount = table.size(ChristmasTruckManager:getSingleton().m_FactionPresents[player:getFaction():getId()])
