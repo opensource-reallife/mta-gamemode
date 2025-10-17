@@ -43,9 +43,9 @@ function FactionGUI:constructor()
 	--self.m_FactionMoneyAmountEdit = GUIEdit:new(self.m_Width*0.02, self.m_Height*0.39, self.m_Width*0.27, self.m_Height*0.07, tabAllgemein):setCaption(_"Betrag")
 
 	GUILabel:new(self.m_Width*0.02, self.m_Height*0.5, self.m_Width*0.25, self.m_Height*0.1, _"Funktionen:", tabAllgemein)
-	self.m_FactionRespawnVehicleButton = GUIButton:new(self.m_Width*0.02, self.m_Height*0.6, self.m_Width*0.3, self.m_Height*0.07, _"Fahrzeuge respawnen", tabAllgemein):setBarEnabled(true):setTooltip("Linksklick für sofortigen Respawn \nRechtsklick für angekündigten Respawn", "button", true)
-	self.m_FactionRespawnVehicleButton.onLeftClick = bind(self.FactionRespawnVehicles, self, true)
-	self.m_FactionRespawnVehicleButton.onRightClick = bind(self.FactionRespawnVehicles, self, false)
+	self.m_FactionRespawnVehicleButton = GUIButton:new(self.m_Width*0.02, self.m_Height*0.6, self.m_Width*0.3, self.m_Height*0.07, _"Fahrzeuge respawnen", tabAllgemein):setBarEnabled(true):setTooltip("Linksklick für angekündigten Respawn \nRechtsklick für sofortigen Respawn", "button", true)
+	self.m_FactionRespawnVehicleButton.onLeftClick = bind(self.FactionRespawnVehicles, self, false) -- announced
+	self.m_FactionRespawnVehicleButton.onRightClick = bind(self.FactionRespawnVehicles, self, true) -- instant
 
 	self.m_LogButton = GUIButton:new(self.m_Width*0.02, self.m_Height*0.7, self.m_Width*0.3, self.m_Height*0.07, _"Fraktions-Logs", tabAllgemein):setBarEnabled(true)
 	self.m_LogButton.onLeftClick = bind(self.ShowLogs, self)
@@ -96,7 +96,7 @@ function FactionGUI:constructor()
 	self.m_FactionRankUpButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.25, self.m_Width*0.3, self.m_Height*0.07, _"Rang hoch", tabMitglieder):setBarEnabled(true)
 	self.m_FactionRankDownButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.35, self.m_Width*0.3, self.m_Height*0.07, _"Rang runter", tabMitglieder):setBarEnabled(true)
 	self.m_FactionToggleLoanButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.45, self.m_Width*0.3, self.m_Height*0.07, _"Gehalt deaktivieren", tabMitglieder):setBarEnabled(true)
-	self.m_FactionToggleWeaponButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.55, self.m_Width*0.3, self.m_Height*0.07, _"Waffen deaktivieren", tabMitglieder):setBarEnabled(true)
+	self.m_FactionToggleActionMoneySplit = GUIButton:new(self.m_Width*0.64, self.m_Height*0.55, self.m_Width*0.3, self.m_Height*0.07, _"Aktionsbet. deaktivieren", tabMitglieder):setBarEnabled(true)
 	self.m_FactionPlayerFileButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.65, self.m_Width*0.3, self.m_Height*0.07, _"Spielerakten", self.m_tabMitglieder)
 	self.m_FactionForumSyncButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.75, self.m_Width*0.3, self.m_Height*0.07, _"Foren-Gruppen", self.m_tabMitglieder):setBarEnabled(true)
 	self.m_FactionPlayerPermissionsButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.75, self.m_Width*0.3, self.m_Height*0.07, _"Rechte bearbeiten", self.m_tabMitglieder):setBarEnabled(true)
@@ -105,7 +105,7 @@ function FactionGUI:constructor()
 	self.m_FactionRankUpButton:setEnabled(false)
 	self.m_FactionRankDownButton:setEnabled(false)
 	self.m_FactionToggleLoanButton:setEnabled(false)
-	self.m_FactionToggleWeaponButton:setEnabled(false)
+	self.m_FactionToggleActionMoneySplit:setEnabled(false)
 	self.m_FactionPlayerFileButton:setEnabled(false)
 	self.m_FactionForumSyncButton:setVisible(false)
 	self.m_FactionPlayerPermissionsButton:setEnabled(false)
@@ -119,14 +119,14 @@ function FactionGUI:constructor()
 	self.m_FactionRankUpButton.onLeftClick = bind(self.FactionRankUpButton_Click, self)
 	self.m_FactionRankDownButton.onLeftClick = bind(self.FactionRankDownButton_Click, self)
 	self.m_FactionToggleLoanButton.onLeftClick = bind(self.FactionToggleLoanButton_Click, self)
-	self.m_FactionToggleWeaponButton.onLeftClick = bind(self.FactionToggleWeaponButton_Click, self)
+	self.m_FactionToggleActionMoneySplit.onLeftClick = bind(self.FactionToggleActionMoneySplit_Click, self)
 	self.m_FactionPlayerFileButton.onLeftClick = bind(self.FactionPlayerFileButton_Click, self)
 	self.m_FactionForumSyncButton.onLeftClick = bind(self.FactionForumSyncButton_Click, self)
 	self.m_FactionPlayerPermissionsButton.onLeftClick = bind(self.factionPlayerPermissionsButton_Click, self)
 
-	self.m_WeaponsName = {}
-	self.m_WeaponsImage = {}
-	self.m_WeaponsCheck = {}
+	-- self.m_WeaponsName = {}
+	-- self.m_WeaponsImage = {}
+	-- self.m_WeaponsCheck = {}
 
 	self.m_TabDiplomacy = self.m_TabPanel:addTab(_"Diplomatie")
 
@@ -168,8 +168,8 @@ function FactionGUI:addLeaderTab()
 		self.m_FactionRangGrid:addColumn(_"Rang", 0.2)
 		self.m_FactionRangGrid:addColumn(_"Name", 0.8)
 
-		self.m_WeaponArea = GUIScrollableArea:new(250, 200, 340, 200, 340, 0, true, false, self.m_TabLeader, 200)
-		self.m_WeaponArea:setVisible(false)
+		-- self.m_WeaponArea = GUIScrollableArea:new(250, 200, 340, 200, 340, 0, true, false, self.m_TabLeader, 200)
+		-- self.m_WeaponArea:setVisible(false)
 
 		GUILabel:new(self.m_Width*0.45, self.m_Height*0.05, self.m_Width*0.4, self.m_Height*0.06, _"Ausgewählter Rang:", self.m_TabLeader):setFont(VRPFont(30)):setColor(Color.Accent)
 		self.m_LeaderRankName = GUILabel:new(self.m_Width*0.45, self.m_Height*0.12, self.m_Width*0.4, self.m_Height*0.06, "", self.m_TabLeader)
@@ -184,13 +184,18 @@ function FactionGUI:addLeaderTab()
 
 		self.m_ChangePermissions = GUIButton:new(self.m_Width*0.02, self.m_Height*0.75, self.m_Width*0.4, self.m_Height*0.07, _"Rechteverwaltung", self.m_TabLeader):setBarEnabled(true)
 		self.m_ChangePermissions.onLeftClick = bind(self.openPermissionsGUI, self, "permission")
-		self.m_ChangePermissions:setEnabled(false)
-
-		self.m_ChangeActionPermissions = GUIButton:new(self.m_Width*0.02, self.m_Height*0.845, self.m_Width*0.4, self.m_Height*0.07, _"Aktionsstartberechtigungen", self.m_TabLeader):setBarEnabled(true)
-		self.m_ChangeActionPermissions.onLeftClick = bind(self.openPermissionsGUI, self, "action")
-		self.m_ChangeActionPermissions:setEnabled(false)
-
-		GUILabel:new(self.m_Width*0.45, self.m_Height*0.35, self.m_Width*0.4, self.m_Height*0.06, _"Waffen:", self.m_TabLeader):setFont(VRPFont(30)):setColor(Color.Accent)
+		self.m_ChangePermissions:setEnabled((PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changePermissions") or PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editActionPermissions") or PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editWeaponPermissions")) and true or false)
+		
+		-- self.m_ChangeActionPermissions = GUIButton:new(self.m_Width*0.02, self.m_Height*0.845, self.m_Width*0.4, self.m_Height*0.07, _"Aktionsstartberechtigungen", self.m_TabLeader):setBarEnabled(true)
+		-- self.m_ChangeActionPermissions.onLeftClick = bind(self.openPermissionsGUI, self, "action")
+		-- self.m_ChangeActionPermissions:setEnabled(false)
+		
+		if (localPlayer:getPublicSync("FactionId") and localPlayer:getPublicSync("FactionId") ~= 4) then
+			self.m_ChangeActionMoneySplit = GUIButton:new(self.m_Width*0.02, self.m_Height*0.84, self.m_Width*0.4, self.m_Height*0.07, _"Aktionsbeteiligung", self.m_TabLeader):setBarEnabled(true)
+			self.m_ChangeActionMoneySplit.onLeftClick = bind(self.openActionMoneySplitGUI, self)
+			self.m_ChangeActionMoneySplit:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changeActionMoneySplit"))
+		end
+		-- GUILabel:new(self.m_Width*0.45, self.m_Height*0.35, self.m_Width*0.4, self.m_Height*0.06, _"Waffen:", self.m_TabLeader):setFont(VRPFont(30)):setColor(Color.Accent)
 
 		self:refreshLeaderTab()
 
@@ -201,6 +206,15 @@ function FactionGUI:addLeaderTab()
 end
 
 function FactionGUI:refreshLeaderTab()
+	self.m_LeaderLoan:setVisible(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editLoan"))
+	self.m_FactionPlayerFileButton:setEnabled(localPlayer:getPublicSync("FactionRank") >= FactionRank.Manager)	
+
+	--[[
+	self.m_WeaponArea:setVisible(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editWeaponPermissions"))
+	--self.m_FactionForumSyncButton:setVisible(localPlayer:getPublicSync("FactionRank") >= FactionRank.Manager)
+	self.m_ChangePermissions:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changePermissions"))
+	self.m_ChangeActionPermissions:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editActionPermissions"))
+
 	for i = 0, 46 do
 		if self.m_WeaponsName[i] then delete(self.m_WeaponsName[i]) end
 		if self.m_WeaponsImage[i] then delete(self.m_WeaponsImage[i]) end
@@ -209,13 +223,6 @@ function FactionGUI:refreshLeaderTab()
 	self.m_WaffenAnzahl = 0
 	self.m_WaffenRow = 0
 	self.m_WaffenColumn = 0
-
-	self.m_LeaderLoan:setVisible(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editLoan"))
-	self.m_WeaponArea:setVisible(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editWeaponPermissions"))
-	self.m_FactionPlayerFileButton:setEnabled(localPlayer:getPublicSync("FactionRank") >= FactionRank.Manager)
-	--self.m_FactionForumSyncButton:setVisible(localPlayer:getPublicSync("FactionRank") >= FactionRank.Manager)
-	self.m_ChangePermissions:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changePermissions"))
-	self.m_ChangeActionPermissions:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editActionPermissions"))
 
 	self.m_WeaponArea:setScrollPosition(0,0)
 	self.m_WeaponArea:clear()
@@ -236,6 +243,7 @@ function FactionGUI:refreshLeaderTab()
 			self.m_WeaponArea:resize(330, 50+self.m_WaffenColumn*90)
 		end
 	end
+	--]]
 
 	self.m_FactionRangGrid:clear()
 	for rank,name in pairs(self.m_RankNames) do
@@ -255,16 +263,16 @@ end
 
 function FactionGUI:saveRank()
 	if self.m_SelectedRank then
-		local rankWeapons = self.m_RankWeapons[tostring(self.m_SelectedRank)]
-		for weaponID = 0, 46 do
-			if self.m_WeaponsCheck[weaponID] and self.m_WeaponsCheck[weaponID]:isChecked() == true then
-				rankWeapons[tostring(weaponID)] = 1
-			else
-				rankWeapons[tostring(weaponID)] = 0
-			end
-		end
+		-- local rankWeapons = self.m_RankWeapons[tostring(self.m_SelectedRank)]
+		-- for weaponID = 0, 46 do
+		-- 	if self.m_WeaponsCheck[weaponID] and self.m_WeaponsCheck[weaponID]:isChecked() == true then
+		-- 		rankWeapons[tostring(weaponID)] = 1
+		-- 	else
+		-- 		rankWeapons[tostring(weaponID)] = 0
+		-- 	end
+		-- end
 
-		triggerServerEvent("factionSaveRank",localPlayer,self.m_SelectedRank,self.m_LeaderLoan:getText(),rankWeapons)
+		triggerServerEvent("factionSaveRank",localPlayer,self.m_SelectedRank,self.m_LeaderLoan:getText())
 	end
 end
 
@@ -273,15 +281,15 @@ function FactionGUI:onSelectRank(name,rank)
 	self.m_LeaderLoan:setText(tostring(self.m_RankLoans[tostring(rank)]))
 	self.m_SaveRank:setEnabled(true)
 
-	for weaponID,v in pairs(self.m_ValidWeapons) do
-		if v == true then
-			if self.m_RankWeapons[tostring(rank)][tostring(weaponID)] == 1 then
-				self.m_WeaponsCheck[weaponID]:setChecked(true)
-			else
-				self.m_WeaponsCheck[weaponID]:setChecked(false)
-			end
-		end
-	end
+	-- for weaponID,v in pairs(self.m_ValidWeapons) do
+	-- 	if v == true then
+	-- 		if self.m_RankWeapons[tostring(rank)][tostring(weaponID)] == 1 then
+	-- 			self.m_WeaponsCheck[weaponID]:setChecked(true)
+	-- 		else
+	-- 			self.m_WeaponsCheck[weaponID]:setChecked(false)
+	-- 		end
+	-- 	end
+	-- end
 end
 
 function FactionGUI:loadGangwarTab()
@@ -641,11 +649,11 @@ function FactionGUI:Event_factionRetrieveInfo(id, name, rank, money, players, ac
 			self.m_FactionPlayersGrid:clear()
 			for playerId, info in pairs(players) do
 				local activitySymbol = info.loanEnabled == 1 and FontAwesomeSymbols.Calender_Check or FontAwesomeSymbols.Calender_Time
-				local weaponSymbol = FontAwesomeSymbols.Gun
-				local item = self.m_FactionPlayersGrid:addItem(activitySymbol, weaponSymbol, info.name, info.rank, tostring(info.activity).." h")
+				local actionMoneySplitSymbol = FontAwesomeSymbols.Money_Bag
+				local item = self.m_FactionPlayersGrid:addItem(activitySymbol, actionMoneySplitSymbol, info.name, info.rank, tostring(info.activity).." h")
 				local color = (getPlayerFromName(info.name) and getPlayerFromName(info.name):getPublicSync("Faction:Duty") and Color.Orange) or (getPlayerFromName(info.name) and Color.Accent) or Color.White
 				item:setColumnFont(1, FontAwesome(20), 1):setColumnColor(1, info.loanEnabled == 1 and Color.Green or Color.Red)
-				item:setColumnFont(2, FontAwesome(20), 1):setColumnColor(2, info.weaponEnabled == 1 and Color.Green or Color.Red)
+				item:setColumnFont(2, FontAwesome(20), 1):setColumnColor(2, info.actionMoneySplitEnabled == 1 and Color.Green or Color.Red)
 				item:setColumnColor(3, color)
 				item.Id = playerId
 				item.Rank = info.rank
@@ -653,7 +661,7 @@ function FactionGUI:Event_factionRetrieveInfo(id, name, rank, money, players, ac
 				item.onLeftClick =
 					function()
 						self.m_FactionToggleLoanButton:setText(("Gehalt %saktivieren"):format(info.loanEnabled == 1 and "de" or ""))
-						self.m_FactionToggleWeaponButton:setText(("Waffen %saktivieren"):format(info.weaponEnabled == 1 and "de" or ""))
+						self.m_FactionToggleActionMoneySplit:setText(("Aktionsbet. %saktivieren"):format(info.actionMoneySplitEnabled == 1 and "de" or ""))
 					end
 			end
 
@@ -674,7 +682,7 @@ function FactionGUI:Event_factionRetrieveInfo(id, name, rank, money, players, ac
 			self.m_FactionRankUpButton:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changeRank"))
 			self.m_FactionRankDownButton:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changeRank"))
 			self.m_FactionToggleLoanButton:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "toggleLoan"))
-			self.m_FactionToggleWeaponButton:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "toggleWeapon"))
+			self.m_FactionToggleActionMoneySplit:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "toggleActionMoneySplit"))
 			self.m_FactionPlayerPermissionsButton:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editWeaponPermissions") or PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editActionPermissions") or PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changePermissions"))
 		end
 	end
@@ -774,10 +782,10 @@ function FactionGUI:FactionToggleLoanButton_Click()
 	end
 end
 
-function FactionGUI:FactionToggleWeaponButton_Click()
+function FactionGUI:FactionToggleActionMoneySplit_Click()
 	local selectedItem = self.m_FactionPlayersGrid:getSelectedItem()
 	if selectedItem and selectedItem.Id then
-		triggerServerEvent("factionToggleWeapon", root, selectedItem.Id)
+		triggerServerEvent("factionToggleActionMoneySplit", root, selectedItem.Id)
 	end
 end
 
@@ -802,8 +810,32 @@ function FactionGUI:ShowLogs()
 	self.m_LogGUI:addBackButton(function() FactionGUI:getSingleton():show() end)
 end
 
-function FactionGUI:openPermissionsGUI(type)
-	RankPermissionsGUI:new(type, "faction")
+function FactionGUI:openPermissionsGUI()
+	self.m_PermissionsManagmentGUI = GUIButtonMenu:new(_("Rechteverwaltung"))
+	if PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changePermissions") then
+	self.m_PermissionsManagmentGUI:addItem(_"Rechte bearbeiten", Color.Accent,
+		function()
+			RankPermissionsGUI:new("permission", "faction")
+			self:close()
+			self.m_PermissionsManagmentGUI:close()
+		end)
+	end
+	if PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editActionPermissions") then
+		self.m_PermissionsManagmentGUI:addItem(_"Aktionsrechte bearbeiten", Color.Accent,
+		function()
+			RankPermissionsGUI:new("action", "faction")
+			self:close()
+			self.m_PermissionsManagmentGUI:close()
+		end)
+	end
+	if PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editWeaponPermissions") then
+		self.m_PermissionsManagmentGUI:addItem(_"Waffenrechte bearbeiten", Color.Accent,
+		function()
+			RankPermissionsGUI:new("weapon", "faction", self.m_ValidWeapons)
+			self:close()
+			self.m_PermissionsManagmentGUI:close()
+		end)
+	end
 end
 
 function FactionGUI:factionPlayerPermissionsButton_Click()
@@ -829,5 +861,12 @@ function FactionGUI:factionPlayerPermissionsButton_Click()
 				PlayerPermissionsGUI:new("weapon", selectedItem.Rank, "faction", selectedItem.Id)
 			end)
 		end
+	end
+end
+
+function FactionGUI:openActionMoneySplitGUI()
+	if PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changeActionMoneySplit") then
+		self:hide()
+		ActionMoneySplitGUI:new()
 	end
 end

@@ -222,16 +222,19 @@ function FactionRescue:Event_toggleDuty(type, wasted, prefSkin, dontChangeSkin, 
 				RadioCommunication:getSingleton():allowPlayer(client, false)
 				client:setBadge()
 				takeAllWeapons(client)
+				client:restoreStorage()
 				FactionManager:getSingleton():Event_stopNeedhelp(client)
 				if not wasted then faction:updateDutyGUI(client) end
 			else
 				if wasted then return end
+				if client:getWanteds() > 0 then return client:sendError(_("Du kannst nicht in den Dienst gehen, solange du gesucht wirst!", client)) end
 				if client:getPublicSync("Company:Duty") and client:getCompany() then
 					--client:sendWarning(_("Bitte beende zuerst deinen Dienst im Unternehmen!", client))
 					--return false
 					--client:triggerEvent("companyForceOffduty")
 					CompanyManager:getSingleton():companyForceOffduty(client)
 				end
+				client:createStorage()
 				takeAllWeapons(client)
 				if type == "fire" then giveWeapon(client, 42, 0, true) end
 				client:setFactionDuty(true)
@@ -395,8 +398,8 @@ function FactionRescue:removeStretcher(player, vehicle)
 						deadPlayer:setCameraTarget(player)
 						deadPlayer:respawn(pos)
 						deadPlayer:fadeCamera(true, 1)
-						self.m_BankAccountServer:transferMoney(self.m_Faction, 100, "Rescue Team Wiederbelebung", "Faction", "Revive")
-						self.m_BankAccountServer:transferMoney(player, 50, "Rescue Team Wiederbelebung", "Faction", "Revive")
+						self.m_BankAccountServer:transferMoney(self.m_Faction, 300, "Rescue Team Wiederbelebung", "Faction", "Revive")
+						self.m_BankAccountServer:transferMoney(player, 150, "Rescue Team Wiederbelebung", "Faction", "Revive")
 						self.m_Faction:addLog(player, "Wiederbel.", ("hat %s wiederbelebt!"):format(deadPlayer.name))
 						if deadPlayer:giveReviveWeapons() then
 							deadPlayer:sendSuccess(_("Du hast deine Waffen während des Verblutens gesichert!", deadPlayer))

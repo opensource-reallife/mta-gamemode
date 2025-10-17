@@ -4169,8 +4169,8 @@ msgstr "Vending machine rob"
 msgid "Mord"
 msgstr "Murder"
 
-msgid "Bürgergeld"
-msgstr "Unemployment benefit"
+msgid "Grundsicherung"
+msgstr "Social benefit"
 
 msgid "Lohnsteuer"
 msgstr "Income tax"
@@ -5053,3 +5053,72 @@ msgstr "+%s$ (%s$) - %s"
 
 msgid "-%s$ (%s$) - %s"
 msgstr "-%s$ (%s$) - %s"
+
+msgid "Du kannst im Dienst keinen Geldautomaten aufsprengen."
+msgstr "You cannot blow up an ATM while on duty."
+
+msgid "Du kannst im Dienst keinen Geldautomaten ausrauben."
+msgstr "You cannot rob an ATM while on duty."
+
+msgid "Du kannst im Dienst keinen Automaten ausrauben."
+msgstr "You cannot rob a vending machine while on duty."
+
+msgid "Du kannst Beamten im Dienst keine Wanteds geben."
+msgstr "You cannot assign wanteds to officers who are on duty."
+
+msgid "Du kannst nicht in den Dienst gehen, solange du gesucht wirst!"
+msgstr "You cannot go on duty while you are wanted!"
+
+msgid "benutzt ein %s!"
+msgstr "uses a %s!"
+
+msgid "benutzt eine %s!"
+msgstr "uses a %s!"
+
+msgid "Die Karte wurde zu '%s' von %s geändert."
+msgstr "The map was changed to '%s' from %s."
+
+msgid "Du hast die Lobby '%s' betreten."
+msgstr "You joined the lobby '%s'."
+
+msgid "Du hast die Lobby '%s' verlassen."
+msgstr "You left the lobby '%s'."
+
+msgid "%s gewinnt!"
+msgstr "%s wins!"
+
+msgid "Klicke auf den Namen eines Spielers, um ihn zu beobachten!"
+msgstr "Click on the name of a player to spectate them!"
+
+msgid "Die Karte wird nach dieser Runde geändert!"
+msgstr "The map will be changed after this round!"
+
+msgid "Fehler: Ungültiger Modus!"
+msgstr "Error: Invalid mode!"
+
+msgid "%s hat eine/n %s erhalten!"
+msgstr "%s got a %s!"
+
+msgid "Du musst zuerst die Handbremse lösen!"
+msgstr "You have to release the handbrake first!"
+
+msgid "Du hast keine Berechtigung den Kofferraum dieses Fahrzeuges zu benutzen!"
+msgstr "You are not authorized to use the trunk of this vehicle!"
+
+msgid "Deine Nachricht wurde an folgende gesuchte Personen übermittelt:\n%s"
+msgstr "Your message has been transmitted to the following wanted persons:\n%s"
+
+msgid "Es wurden keine gesuchten Personen erreicht."
+msgstr "No wanted persons were reached."
+
+msgid "Information"
+msgstr "Information"
+
+msgid "Du kannst während du im Dienst bist, keine Drogen verkaufen!"
+msgstr "You cannot sell drugs while you are on duty!"
+
+msgid "Du kannst während du im Dienst bist, kein Diebesgut verkaufen!"
+msgstr "You cannot sell stolen goods while you are on duty!"
+
+msgid "Du kannst dieses Fahrzeug nicht stehlen!"
+msgstr "You can't steal this vehicle!"

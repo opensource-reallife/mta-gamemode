@@ -3148,8 +3148,8 @@ msgstr "Spawn"
 msgid "Letzter Standort"
 msgstr "Last location"
 
-msgid "Usertreff"
-msgstr "User meeting"
+msgid "Stadthalle"
+msgstr "City hall"
 
 msgid "Fraktionsbase"
 msgstr "Faction base"
@@ -3161,7 +3161,7 @@ msgid "Haus"
 msgstr "House"
 
 msgid "Wohnwagen/Boot"
-msgstr "Caravan/boat"
+msgstr "Caravan/Boat"
 
 msgid "Rotpunkt aktivieren"
 msgstr "Activate red dot"
@@ -3196,8 +3196,8 @@ msgstr "Cursor mode"
 msgid "Sonstiges"
 msgstr "Other"
 
-msgid "Mit Fraktionsskin spawnen"
-msgstr "Spawn on faction duty"
+msgid "Im Fraktionsdienst spawnen (nur B-Fraktionen)"
+msgstr "Spawn on faction duty (only evil factions)"
 
 msgid "Kopf in Kamerarichtung bewegen"
 msgstr "Move head with camera angle"
@@ -4360,8 +4360,8 @@ msgstr "Status"
 msgid "Tastenzuordnungen (Funk)"
 msgstr "Bindings (radio)"
 
-msgid "Am Krankenhaus spawnen"
-msgstr "Spawn at hospital"
+msgid "Am Krankenhaus spawnen (nach Tod)"
+msgstr "Spawn at hospital (after death)"
 
 msgid "(Fahrzeugslot kaufen: %s)"
 msgstr "(Buy vehicle slot: %s)"
@@ -4612,11 +4612,11 @@ msgstr "Rank Standard"
 msgid "Trainiere dein Waffenlevel im LSPD"
 msgstr "Train your weapon level in LSPD"
 
-msgid "Spawn nach Login"
-msgstr "Spawn after login"
+msgid "Spawnposition (beim Login)"
+msgstr "Spawnposition (after login)"
 
-msgid "Spawn nach Tod (Fraktion)"
-msgstr "Spawn after death (faction)"
+msgid "Spawneinstellungen (Fraktion)"
+msgstr "Spawn settings (faction)"
 
 msgid "Nutze das Klicksystem bzw. das Hausmenü um den Spawnpunkt für ein Fahrzeug oder Haus festzulegen!"
 msgstr "Use the click system or the house menu to set the spawn point for a vehicle or house!"
@@ -6453,3 +6453,21 @@ msgstr "ELEVATOR"
 
 msgid "HAUS"
 msgstr "HOUSE"
+
+msgid "%s (%s übrig)"
+msgstr "%s (%s left)"
+
+msgid "Spieler:"
+msgstr "Player:"
+
+msgid "Platz:"
+msgstr "Place:"
+
+msgid "Lobby verlassen"
+msgstr "Leave lobby"
+
+msgid "Regen ausblenden"
+msgstr "Disable rain"
+
+msgid "In Fraktionsbasis spawnen (250$) (nach Knast)"
+msgstr "Spawn in faction base (250$) (after jail)"

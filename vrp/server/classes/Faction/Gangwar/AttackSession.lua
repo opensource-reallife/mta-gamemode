@@ -104,7 +104,7 @@ function AttackSession:synchronizeAllParticipants( )
 	local canModify = false 
 	local showPickGUI = false
 	for k,v in ipairs( self.m_Participants ) do
-		canModify = v == self.m_AttackingPlayer or v:getFaction():getPlayerRank(v) >= 3
+		canModify = v == self.m_AttackingPlayer or (v:getFaction() and v:getFaction():getPlayerRank(v)) >= 3
 		showPickGUI = v:getFaction() == self.m_Faction1 
 		v:triggerEvent("AttackClient:launchClient",self.m_Faction1,self.m_Faction2,self.m_Participants,self.m_Disqualified, GANGWAR_MATCH_TIME*60, self.m_AreaObj.m_Position, self.m_AreaObj.m_ID, false, self.m_AreaObj.m_Name, canModify, pickParticipants, showPickGUI )
 		v:triggerEvent("GangwarQuestion:new")
@@ -138,6 +138,10 @@ function AttackSession:synchronizeTime( )
 end
 
 function AttackSession:addParticipantToList( player, bLateJoin )
+	local timeLeft = getTimerDetails( self.m_BattleTime )
+	timeLeft = math.ceil(timeLeft  / 1000)
+	local minutesLeft = math.floor( timeLeft / 60 )
+	local secondsLeft = math.floor( timeLeft % 60 )
 	local bInList = self:isParticipantInList( player )
 	if not bInList then
 		local canModify =  self.m_AttackingPlayer == player or player.getFaction and player:getFaction():getPlayerRank(player) >= 3
@@ -165,8 +169,8 @@ function AttackSession:addParticipantToList( player, bLateJoin )
 		player:triggerEvent("GangwarQuestion:new")
 		player.g_damage = 0 
 		player.g_kills = 0
-		self.m_Faction1:sendMessage("[Gangwar] #FFFFFFDer Spieler "..player.name.." jointe dem Gangwar nach!",0,204,204,true)
-		self.m_Faction2:sendMessage("[Gangwar] #FFFFFFDer Spieler "..player.name.." jointe dem Gangwar nach!",0,204,204,true)
+		self.m_Faction1:sendMessage(("[Gangwar] #FFFFFFDer Spieler %s jointe dem Gangwar nach (Zeit übrig: %s:%s)!"):format(player:getName(), minutesLeft, secondsLeft), 0, 204, 204, true)
+		self.m_Faction2:sendMessage(("[Gangwar] #FFFFFFDer Spieler %s jointe dem Gangwar nach (Zeit übrig: %s:%s)!"):format(player:getName(), minutesLeft, secondsLeft), 0, 204, 204, true)
 	end
 end
 

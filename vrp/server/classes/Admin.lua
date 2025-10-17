@@ -51,6 +51,7 @@ function Admin:constructor()
     addCommandHandler("gethere", bind(self.getHerePlayer, self))
     addCommandHandler("tp", bind(self.teleportTo, self))
     addCommandHandler("getVeh", bind(self.getVehFromId, self))
+    addCommandHandler("gotoVeh", bind(self.gotoVehFromId, self))
 
     addCommandHandler("addFactionVehicle", bind(self.addFactionVehicle, self))
     addCommandHandler("addCompanyVehicle", bind(self.addCompanyVehicle, self))
@@ -83,7 +84,7 @@ function Admin:constructor()
 	addCommandHandler("drun", bind(self.runString, self))
 	addCommandHandler("dpcrun", bind(self.runPlayerString, self))
 
-    addRemoteEvents{"adminSetPlayerFaction", "adminSetPlayerCompany", "adminTriggerFunction", "adminOfflinePlayerFunction", "adminPlayerFunction", "adminGetOfflineWarns",
+    addRemoteEvents{"adminSetPlayerFaction", "adminSetPlayerCompany", "adminSetPlayerGroup","adminTriggerFunction", "adminOfflinePlayerFunction", "adminPlayerFunction", "adminGetOfflineWarns",
     "adminGetPlayerVehicles", "adminPortVehicle", "adminPortToVehicle", "adminEditVehicle", "adminSeachPlayer", "adminSeachPlayerInfo",
 	"adminRespawnFactionVehicles", "adminRespawnCompanyVehicles", "adminVehicleDespawn", "openAdminGUI","checkOverlappingVehicles","admin:acceptOverlappingCheck",
 	"onClientRunStringResult","adminObjectPlaced","adminGangwarSetAreaOwner","adminGangwarResetArea", "adminLoginFix", "adminTriggerTransaction", "adminRequestMultiAccounts",
@@ -92,6 +93,7 @@ function Admin:constructor()
 
     addEventHandler("adminSetPlayerFaction", root, bind(self.Event_adminSetPlayerFaction, self))
     addEventHandler("adminSetPlayerCompany", root, bind(self.Event_adminSetPlayerCompany, self))
+    addEventHandler("adminSetPlayerGroup", root, bind(self.Event_adminSetPlayerGroup, self))
     addEventHandler("adminTriggerFunction", root, bind(self.Event_adminTriggerFunction, self))
     addEventHandler("adminPlayerFunction", root, bind(self.Event_playerFunction, self))
     addEventHandler("adminOfflinePlayerFunction", root, bind(self.Event_offlineFunction, self))
@@ -710,8 +712,8 @@ function Admin:Event_playerFunction(func, target, reason, duration, admin)
 		admin:setPrivateSync("isSpecting", target)
 		admin.m_PreSpectInt = getElementInterior(admin)
 		admin.m_PreSpectDim = getElementDimension(admin)
-		admin.m_SpectInteriorFunc = function(int) _setElementInterior(admin, int) admin:setCameraInterior(int) end -- using overloaded methods to prevent that onElementInteriorChange will triggered
-		admin.m_SpectDimensionFunc = function(dim) _setElementDimension(admin, dim) end -- using overloaded methods to prevent that onElementDimensionChange will triggered
+		admin.m_SpectInteriorFunc = function(int) setElementInterior(admin, int) admin:setCameraInterior(int) end -- using overloaded methods to prevent that onElementInteriorChange will triggered
+		admin.m_SpectDimensionFunc = function(dim) setElementDimension(admin, dim) end -- using overloaded methods to prevent that onElementDimensionChange will triggered
 		admin.m_SpectStop =
 			function()
 				if target.spectBy then
@@ -1639,6 +1641,32 @@ function Admin:Event_adminSetPlayerCompany(targetPlayer, Id, rank, internal, ext
 	end
 end
 
+function Admin:Event_adminSetPlayerGroup(targetPlayer, input, rank)
+	if client:getRank() >= ADMIN_RANK_PERMISSION["setGroup"] then
+		local oldGroup = targetPlayer:getGroup()
+		if input then
+			local group = GroupManager:getSingleton():getByName(tostring(input))
+			if group then
+				if oldGroup then 
+					oldGroup:removePlayer(targetPlayer) 
+				end
+				group:addPlayer(targetPlayer, tonumber(rank))
+				group:spawnVehicles()
+				client:sendInfo(_("Du hast den Spieler %s in die Gruppe %s gesetzt!", client, targetPlayer:getName(), group:getName()))
+			else
+				return client:sendError(_("Die Gruppe exisitiert nicht!", client))
+			end
+		else
+			if oldGroup then 
+				oldGroup:removePlayer(targetPlayer) 
+				client:sendInfo(_("Du hast den Spieler %s aus der Gruppe %s entfernt!", client, targetPlayer:getName(), oldGroup:getName()))
+			else
+				return client:sendError(_("Der Spieler ist in keiner Gruppe!", client))
+			end
+		end
+	end
+end
+
 function Admin:Event_vehicleRequestInfo(target, isGroup)
 	local vehicleTable = {}
 
@@ -1765,6 +1793,26 @@ function Admin:getVehFromId(player, cmd, vehId)
                         veh:setPosition(player:getPosition())
                         veh:setDimension(player:getDimension())
                         veh:setInterior(player:getInterior())
+                        return
+                    end
+                end
+            end
+            player:sendError(_("Keine Fahrzeug gefunden!", player))
+        else
+            player:sendError(_("Keine ID Angegeben!", player))
+        end
+    end
+end
+
+function Admin:gotoVehFromId(player, cmd, vehId)
+    if player:getRank() >= RANK.Supporter then
+        if vehId then
+            for index, veh in ipairs(getElementsByType("vehicle")) do
+                if veh.getId then
+                    if veh:getId() == tonumber(vehId) then
+						player:setPosition(veh:getPosition())
+						player:setDimension(veh:getDimension())
+						player:setInterior(veh:getInterior())
                         return
                     end
                 end

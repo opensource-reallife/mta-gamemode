@@ -7,6 +7,10 @@ end
 function WeedBeggar:sellWeed(player, amount)
 	if self.m_Despawning then return end
 	if not player.vehicle then
+		if player and player:getFaction():isStateFaction() and player:isFactionDuty() then 
+			player:sendError(_("Du kannst während du im Dienst bist, keine Drogen verkaufen!"), player) 
+			return 
+		end
 		if self.m_Robber == player:getId() then return self:sendMessage(player, BeggarPhraseTypes.NoTrust) end
 		if player:getInventory():removeItem("Weed", amount) then
 			player:giveCombinedReward(_("Bettler-Handel", player), {

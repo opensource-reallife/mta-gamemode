@@ -29,6 +29,7 @@ function JobRoadSweeper:onVehicleSpawn(player, vehicleModel, vehicle)
 	player.m_LastJobAction = getRealTime().timestamp
 	vehicle.Garbage = 0
 	self:registerJobVehicle(player, vehicle, true, true)
+	vehicle:setHandling("maxVelocity", 40)
 end
 
 function JobRoadSweeper:start(player)

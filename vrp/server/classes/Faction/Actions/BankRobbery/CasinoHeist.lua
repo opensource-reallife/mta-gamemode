@@ -23,6 +23,9 @@ CasinoHeist.StateMembersPerTruck = 3
 local BOMB_TIME = 20*1000
 
 function CasinoHeist:constructor()
+	self.ms_VaultOpenTime = 3*(60*1000) --3 minutes
+	self.ms_BankRobGeneralTime = ACTION_TIME
+
 	self.ms_FinishMarker = {
 		Vector3(969.43, 2059.40, 10), --mafia meat factory
 		Vector3(1679.28, 688.10, 10), --boat shop
@@ -60,9 +63,6 @@ function CasinoHeist:constructor()
 
     --self.m_SecuriCarSaveColshape = createColCuboid(2252.6, 1680.01, 0, 64.6, 83, 18)
 	self.m_SecuricarsById = {}
-	
-	self.ms_VaultOpenTime = 3000 --3 secs
-	self.ms_BankRobGeneralTime = 60*1000*20
 
     self.ms_MoneyPerBag = 3000
     self.m_MaxBagsPerTruck = #VEHICLE_OBJECT_ATTACH_POSITIONS[428].positions
@@ -72,6 +72,7 @@ function CasinoHeist:constructor()
 	self.m_UpdateDifficultyPulse:registerHandler(bind(CasinoHeist.updateDifficulty, self))
 
 	self.m_Name = "Casino"
+	self.m_RobName = "Casinoraub"
 	self.m_MarkedPosition = {2282.03, 1726.15, 11.04} -- the marked position where action blips and so on will be located
 end
 

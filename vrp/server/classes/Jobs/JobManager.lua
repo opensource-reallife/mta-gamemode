@@ -49,7 +49,7 @@ function JobManager:constructor()
 	)
 
 	nextframe(bind(self.refreshJobMultiplicators, self))
-	self.m_TimedPulse = TimedPulse:new(1000*60*120)
+	self.m_TimedPulse = TimedPulse:new(JOBMULT_REFRESH_TIME*1000*60)
 	self.m_TimedPulse:registerHandler(bind(self.refreshJobMultiplicators, self))
 end
 
@@ -136,7 +136,7 @@ end
 function JobManager:refreshJobMultiplicators()
 	self.m_JobMultiplicators = { }
 	for k, v in ipairs(self.m_Jobs) do
-		local random = Randomizer:get(0, 10 * Randomizer:get(0, 2)) * 10
+		local random = Randomizer:get(0, 10 * Randomizer:get(0, 1)) * 10
 		v:setMultiplicator(random)
 		self.m_JobMultiplicators[v:getId()] = random
 	end

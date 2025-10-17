@@ -30,7 +30,7 @@ UNIX_TIMESTAMP_24HRS = 86400 --//86400
 GANGWAR_PAY_PER_DAMAGE = 10
 GANGWAR_PAY_PER_KILL = 1500
 PAYDAY_ACTION_BONUS = 2500
-GANGWAR_COOLDOWN_PER_FACTION = 60 * 25 --// in seconds
+GANGWAR_COOLDOWN_PER_FACTION = 20 --// in minutes
 --//
 addRemoteEvents{ "onLoadCharacter", "onDeloadCharacter", "Gangwar:onClientRequestAttack", "GangwarQuestion:disqualify", "gangwarGetAreas" }
 
@@ -110,8 +110,8 @@ function Gangwar:onAreaPayday()
 		end
 	end
 	if areasInTotal == 0 then return end
-	local amount = 0;
-	local amount2 = 0;
+	local amount = 0
+	local amount2 = 0
 	local facObj, playersOnline
 	for faction, count in pairs( payouts ) do
 		facObj = FactionManager:getSingleton():getFromId(faction)
@@ -120,7 +120,9 @@ function Gangwar:onAreaPayday()
 			if #playersOnline > 1 then
 				areaCounts[facObj] = count
 				amount = (GANGWAR_PAYOUT_PER_PLAYER * #playersOnline) + (GANGWAR_PAYOUT_PER_AREA * count)
-				self.m_BankAccountServer:transferMoney(facObj, amount+amount2, "Gangwar-Payday", "Faction", "Gangwar")
+				amount2 = PAYDAY_ACTION_BONUS
+				self.m_BankAccountServer:transferMoney(facObj, amount, "Gangwar-Payday", "Faction", "Gangwar")
+				self.m_BankAccountServer:transferMoney(facObj, amount2, "Grundeinkommen", "Faction", "Grundeinkommen")
 				facObj:sendMessage("Gangwar-Payday: #FFFFFFEure Fraktion erhält: "..amount.." $ (Pro Online-Member:"..GANGWAR_PAYOUT_PER_PLAYER.." und Pro Gebiet: "..GANGWAR_PAYOUT_PER_AREA.."$)" , 0, 200, 0, true)
 			else
 				facObj:sendMessage("Gangwar Payday: Es sind nicht genügend Spieler online für den Gangwar-Payday!" , 200, 0, 0, true)
@@ -306,7 +308,7 @@ function Gangwar:attackArea( player )
 						end
 					end
 					if factionCount >= GANGWAR_MIN_PLAYERS or DEBUG or (gametime >= GANGWAR_ATTACK_HOUR_START and gametime <= GANGWAR_ATTACK_HOUR_END) then
-						if factionCount2 >= GANGWAR_MIN_PLAYERS or DEBUG or (gametime >= GANGWAR_ATTACK_HOUR_START and gametime <= GANGWAR_ATTACK_HOUR_END)  then
+						if factionCount2 >= GANGWAR_MIN_PLAYERS or DEBUG or (gametime >= GANGWAR_ATTACK_HOUR_START and gametime <= GANGWAR_ATTACK_HOUR_END * 60)  then
 							local activeGangwar = self:getCurrentGangwar()
 							local isGangwarLocked, remainingTime = self.m_GangwarGuard:isGangwarLocked( player:getFaction() )
 							local acFaction1,  acFaction2

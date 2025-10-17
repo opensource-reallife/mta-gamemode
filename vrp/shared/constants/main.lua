@@ -94,9 +94,9 @@ FIREWORK_ENABLED = true -- can users use firework?
 FIREWORK_SHOP_ACTIVE = getRealTime().month == 11 and (getRealTime().monthday >= 25 and getRealTime().monthday <= 31) -- can users buy firework at the user meetup point?
 
 -- PAYDAY:
-PAYDAY_NOOB_BONUS = 500 -- dollar
-PAYDAY_NOOB_BONUS_MAX_PLAYTIME = 50 -- hours
-PAYDAY_UNEMPLOYED = 500
+PAYDAY_NOOB_BONUS = 200 -- dollar
+PAYDAY_NOOB_BONUS_MAX_PLAYTIME = 10 -- hours
+PAYDAY_UNEMPLOYED = 300
 
 --TEXTURES:
 TEXTURE_STATUS = {
@@ -251,6 +251,7 @@ ADMIN_RANK_PERMISSION = {
 	--group management
 	["setFaction"] = RANK.Administrator,
 	["setCompany"] = RANK.Administrator,
+	["setGroup"] = RANK.Administrator,
 	["resetAction"] = RANK.Moderator,
 	["playerHistory"] = RANK.Supporter,
 	["respawnFaction"] = RANK.Ticketsupporter, -- respawn whole faction

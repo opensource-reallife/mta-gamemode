@@ -62,28 +62,29 @@ end
 function ShopVehicleRobManager:Event_onVehicleSteal()
     if client:getGroup() then
 		if client:getGroup():getType() == "Gang" then
-			if not client:isFactionDuty() then
-				if not timestampCoolDown(SHOP_VEHICLE_ROB_LAST_ROB, SHOP_VEHICLE_ROB_PAUSE) then
-					client:sendError(_("Der nächste Autohaus-Überfall ist am/um möglich: %s!", client, getOpticalTimestamp(SHOP_VEHICLE_ROB_LAST_ROB+SHOP_VEHICLE_ROB_PAUSE)))
-					return false
-				end
-				if not timestampCoolDown(ShopManager.VehicleShopsMap[source:getData("ShopId")].m_LastRob, SHOP_VEHICLE_ROB_PAUSE_SAME_SHOP) then
-					client:sendError(_("Dieser Shop kann erst am/um überfallen werden: %s!", client, getOpticalTimestamp(ShopManager.VehicleShopsMap[source:getData("ShopId")].m_LastRob+SHOP_VEHICLE_ROB_PAUSE_SAME_SHOP)))
-					return false
-				end
-				if  not SHOP_VEHICLE_ROB_IS_STARTABLE then
-					client:sendError(_("Es läuft bereits ein Autohaus-Überfall!", client))
-					return false
-				end
-				if FactionState:getSingleton():countPlayers(true, false) < SHOP_VEHICLE_ROB_MIN_MEMBERS then
-					client:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!", client, SHOP_VEHICLE_ROB_MIN_MEMBERS))
-					return false
-				end
-				self.m_CurrentRob = ShopVehicleRob:new(client, source)
-				SHOP_VEHICLE_ROB_IS_STARTABLE = false
-			else
-				client:sendError(_("Du bist im Dienst, du darfst keinen Überfall machen!", client))
+			if client:isFactionDuty() or client:isCompanyDuty() then return client:sendError(_("Du bist im Dienst, du darfst keinen Überfall machen!", client)) end
+			if not timestampCoolDown(SHOP_VEHICLE_ROB_LAST_ROB, SHOP_VEHICLE_ROB_PAUSE) then
+				client:sendError(_("Der nächste Autohaus-Überfall ist am/um möglich: %s!", client, getOpticalTimestamp(SHOP_VEHICLE_ROB_LAST_ROB+SHOP_VEHICLE_ROB_PAUSE)))
+				return false
 			end
+			if not timestampCoolDown(ShopManager.VehicleShopsMap[source:getData("ShopId")].m_LastRob, SHOP_VEHICLE_ROB_PAUSE_SAME_SHOP) then
+				client:sendError(_("Dieser Shop kann erst am/um überfallen werden: %s!", client, getOpticalTimestamp(ShopManager.VehicleShopsMap[source:getData("ShopId")].m_LastRob+SHOP_VEHICLE_ROB_PAUSE_SAME_SHOP)))
+				return false
+			end
+			if not SHOP_VEHICLE_ROB_IS_STARTABLE then
+				client:sendError(_("Es läuft bereits ein Autohaus-Überfall!", client))
+				return false
+			end
+			if FactionState:getSingleton():countPlayers(true, false) < SHOP_VEHICLE_ROB_MIN_MEMBERS then
+				client:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!", client, SHOP_VEHICLE_ROB_MIN_MEMBERS))
+				return false
+			end
+			if toboolean(ShopManager.VehicleShopsMap[source:getData("ShopId")].m_RandomizeStock) then
+				client:sendError(_("Du kannst dieses Fahrzeug nicht stehlen!", client))
+				return false
+			end
+			self.m_CurrentRob = ShopVehicleRob:new(client, source)
+			SHOP_VEHICLE_ROB_IS_STARTABLE = false
 		else
 			client:sendError(_("Deine Gruppe hat dafür den falschen Typ!", client))
 		end

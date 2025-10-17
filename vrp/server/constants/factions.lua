@@ -37,6 +37,9 @@ WEAPONTRUCK_NAME_SHORT = {["evil"] = "Waffentruck", ["state"] = "Staats-WT"}
 --MIN_PLAYERS_FOR_FIRE = 2
 --MIN_PLAYERS_FOR_VEHICLE_FIRE = 1
 
+ACTION_TIME = 20 * 60 * 1000 -- minutes * seconds * ms
+MINUTE_TO_SHOWDOWN = math.ceil(ACTION_TIME / 4) -- 1/4 of ACTION_TIME
+
 STATEFACTION_EVIDENCE_MAXITEMS = 50
 
 FACTION_MAX_RANK_LOANS ={
@@ -95,7 +98,7 @@ factionSpecialWeapons[1] = {
 	["Equipment"] = {},
 }
 factionWTDestination[1] = Vector3(1588.28, -1627.34, 12.38)
-factionSWTDestination[1] = Vector3(145.95, 1917.67, 17.58)
+factionSWTDestination[1] = Vector3(2309.46, 2454.23, 10.82)
 factionSpawnpoint[1] = {Vector3(1558.31, -1684.71, 16.20), 0, 0}
 factionAirDropPoint[1] = Vector3(281.39, 2501.79, 16.48)
 factionNavigationpoint[1] = Vector3(1552.278, -1675.725, 12.6)
@@ -133,7 +136,7 @@ factionSpecialWeapons[2] = {
 	["Equipment"] = {},
 }
 factionWTDestination[2] = Vector3(1588.28, -1627.34, 12.38)
-factionSWTDestination[2] = Vector3(145.95, 1917.67, 17.58)
+factionSWTDestination[2] = Vector3(2309.46, 2454.23, 10.82)
 factionSpawnpoint[2] = {Vector3(1784.53, -1538.81, 9.82), 0, 0}
 factionAirDropPoint[2] = Vector3(281.39, 2501.79, 16.48)
 factionNavigationpoint[2] = Vector3(1805.53, -1575.35, 13)
@@ -172,7 +175,7 @@ factionSpecialWeapons[3] = {
 	["Equipment"] = {},
 }
 factionWTDestination[3] = Vector3(1588.28, -1627.34, 12.38)
-factionSWTDestination[3] = Vector3(145.95, 1917.67, 17.58)
+factionSWTDestination[3] = Vector3(2309.46, 2454.23, 10.82)
 factionSpawnpoint[3] = {Vector3(221.49, 1865.97, 13.14), 0, 0}
 factionAirDropPoint[3] = Vector3(281.39, 2501.79, 16.48)
 factionNavigationpoint[3] = Vector3(134.53, 1929.06, 12.6)
@@ -360,7 +363,7 @@ factionWTDestination[10] = Vector3(2768.62, -1944.73, 13.36-0.7)
 factionSpawnpoint[10] = {EVIL_FACTION_SPAWN_POINT, EVIL_FACTION_SPAWN_INTERIOR, 10}
 factionAirDropPoint[10] = Vector3(2770.33, -1945.15, 13.35)
 factionNavigationpoint[10] = evilFactionInteriorEnter[10]
-factionDTDestination[10] = {Vector3(2764.33, -2235.26, 5.19), 272.27, 116, "José Pendejo"} --Actecas {Vector3(1996.05, -2070.55, 13.55), 270, 116, "José Pendejo"}
+factionDTDestination[10] = {Vector3(2751.41, -2094.58, 12.25), 255.60, 116, "José Pendejo"} --Actecas {Vector3(1996.05, -2070.55, 13.55), 270, 116, "José Pendejo"}
 
 -- ID 11 = Triads
 factionRankNames[11] = {

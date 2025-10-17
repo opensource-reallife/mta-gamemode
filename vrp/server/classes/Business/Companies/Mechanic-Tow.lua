@@ -494,38 +494,43 @@ function MechanicTow:Event_mechanicAttachBike(vehicle)
 	if not client:isCompanyDuty() then return end
 	if not client.vehicle then return end
 	if client.vehicle:getData("towingBike") then return end
+	if not VEHICLES_THAT_CAN_TOW_BIKES[client.vehicle:getModel()] then return end
 
 	if vehicle and vehicle:isEmpty() then
 		if self:isValidTowableVehicle(vehicle) then
-			vehicle:toggleRespawn(false)
-			client.vehicle:setData("towingBike", vehicle, true)
-			vehicle:setData("towedByVehicle", client.vehicle, true)
+			if not vehicle.m_HandBrake then
+				vehicle:toggleRespawn(false)
+				client.vehicle:setData("towingBike", vehicle, true)
+				vehicle:setData("towedByVehicle", client.vehicle, true)
 
-			-- Following is all cause of the animation. Shit happens..
-			local object = createObject(1337, vehicle.position, vehicle.rotation)
-			local diffRotation = client.vehicle.rotation.z - vehicle.rotation.z
-			object:setAlpha(0)
-			object:setCollisionsEnabled(false)
+				-- Following is all cause of the animation. Shit happens..
+				local object = createObject(1337, vehicle.position, vehicle.rotation)
+				local diffRotation = client.vehicle.rotation.z - vehicle.rotation.z
+				object:setAlpha(0)
+				object:setCollisionsEnabled(false)
 
-			vehicle:setCollisionsEnabled(false)
-			vehicle:attach(object)
+				vehicle:setCollisionsEnabled(false)
+				vehicle:attach(object)
 
-			client.vehicle:setFrozen(true)
-			client.vehicle.m_DisableToggleHandbrake = true
+				client.vehicle:setFrozen(true)
+				client.vehicle.m_DisableToggleHandbrake = true
 
-			object:move(2500, client.vehicle.matrix:transformPosition(Vector3(0, -1.1, .8)), 0, 0, diffRotation + 90, "InOutQuad")
+				object:move(2500, client.vehicle.matrix:transformPosition(Vector3(0, -1.1, .8)), 0, 0, diffRotation + 90, "InOutQuad")
 
-			client.vehicle.towTimer = setTimer(
-				function(towTruck, bike, object)
-					object:destroy()
-					towTruck:setFrozen(false)
-					towTruck.m_DisableToggleHandbrake = false
-					bike:attach(towTruck, 0, -1.1, .8, 0, 0, 90)
-					bike.m_HasBeenUsed = 1 --disable despawn on logout
-				end, 2500, 1, client.vehicle, vehicle, object
-			)
+				client.vehicle.towTimer = setTimer(
+					function(towTruck, bike, object)
+						object:destroy()
+						towTruck:setFrozen(false)
+						towTruck.m_DisableToggleHandbrake = false
+						bike:attach(towTruck, 0, -1.1, .8, 0, 0, 90)
+						bike.m_HasBeenUsed = 1 --disable despawn on logout
+					end, 2500, 1, client.vehicle, vehicle, object
+				)
+			else
+				client:sendError(_("Du musst zuerst die Handbremse lösen!", client))
+			end
 		else
-			client:sendWarning(_("Dieses %s kann nicht abgeschleppt werden!", client, vehicle:getVehicleType() == VehicleType.Bike and "Motorrad" or "Fahrrad"))
+			client:sendError(_("Dieses %s kann nicht abgeschleppt werden!", client, vehicle:getVehicleType() == VehicleType.Bike and "Motorrad" or "Fahrrad"))
 		end
 	end
 end

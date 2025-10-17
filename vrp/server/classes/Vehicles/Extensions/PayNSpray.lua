@@ -137,7 +137,6 @@ function PayNSpray:destructor()
 end
 
 function PayNSpray.initializeAll()
-	-- Todo
 	PayNSpray:new(2063.2, -1831.3, 13.5, 8) -- LS Idlewood
 	PayNSpray:new(487.4, -1742.8, 11.1, 12) -- LS Santa Maria Beach
 	PayNSpray:new(1025.1, -1022, 32.1, 11) -- LS Temple

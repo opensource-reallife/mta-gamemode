@@ -42,7 +42,11 @@ function PermissionsManager:hasPlayerPermissionsTo(type, permission)
     local rank = self:getRank(type)
 
     if rank then
-        if localPlayer.m_PlayerPermissions[type][permission] == true then
+        if not PERMISSIONS_INFO[permission][2][type] then
+		    return false
+        elseif PERMISSIONS_INFO[permission][2][type] > rank then
+		    return false
+        elseif localPlayer.m_PlayerPermissions[type][permission] == true then
             return true
         elseif localPlayer.m_PlayerPermissions[type][permission] == false then
             return false

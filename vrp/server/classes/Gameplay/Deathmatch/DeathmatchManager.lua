@@ -168,7 +168,6 @@ function DeathmatchManager:constructor()
 			if player.deathmatchLobby then
 				player:triggerEvent("abortDeathGUI", true)
 				player.deathmatchLobby:onWasted(player, killer, weapon)
-				return true
 			end
 			if killer and killer.deathmatchLobby then
 				killer:givePoints(1)

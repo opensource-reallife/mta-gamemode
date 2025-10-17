@@ -31,7 +31,7 @@ function VehicleTuningShop:constructor()
         {
             Vector3(1041.4, -1017.5, 31), -- LS Temple
             {Vector3(1041.9, -1031.5, 31.2), 180},
-            Vector3(953.59998, -983.09998, 2454.8999) -- TODO: Add Toxsi's garage here
+            Vector3(953.59998, -983.09998, 2454.8999)
         },
 		{
             Vector3(1483.14, -2438.56, 13), -- LS Airport

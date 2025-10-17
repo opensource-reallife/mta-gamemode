@@ -8,13 +8,13 @@
 
 AdminGUI = inherit(GUIForm)
 inherit(Singleton, AdminGUI)
-AdminGUI.playerFunctions = {"gethere", "goto", "rkick", "prison", "unprison", "freeze", "warn", "timeban", "permaban", "setCompany", "setFaction", "showVehicles", "showGroupVehicles", "unban", "spect", "nickchange", "modsBan", "removeModsBan"}
+AdminGUI.playerFunctions = {"gethere", "goto", "rkick", "prison", "unprison", "freeze", "warn", "timeban", "permaban", "setCompany", "setFaction", "setGroup", "showVehicles", "showGroupVehicles", "unban", "spect", "nickchange", "modsBan", "removeModsBan"}
 
 for i, v in pairs(AdminGUI.playerFunctions) do
 	AdminGUI.playerFunctions[v] = i
 end
 
-addRemoteEvents{"showAdminMenu", "adminReceiveSeachedPlayers", "adminReceiveSeachedPlayerInfo", "adminRefreshEventMoney", "adminReceiveOfflineWarns"}
+addRemoteEvents{"showAdminMenu", "adminReceiveSeachedPlayers", "adminReceiveSeachedPlayerInfo", "adminRefreshEventMoney", "adminReceiveOfflineWarns", "adminGetGroups"}
 
 function AdminGUI:constructor(money)
 	GUIForm.constructor(self, screenWidth/2-400, screenHeight/2-540/2, 800, 580)
@@ -140,6 +140,7 @@ function AdminGUI:constructor(money)
 	self:addAdminButton("warn", "Warns verwalten", self.onPlayerButtonClick, 610, 250, 160, 30, Color.Orange, tabSpieler)
 	self:addAdminButton("setFaction", "in Fraktion setzen", self.onPlayerButtonClick, 610, 290, 160, 30, Color.Accent, tabSpieler)
 	self:addAdminButton("setCompany", "in Unternehmen setzen", self.onPlayerButtonClick, 610, 330, 160, 30, Color.Accent, tabSpieler)
+	self:addAdminButton("setGroup", "in Gruppe setzen", self.onPlayerButtonClick, 610, 370, 160, 30, Color.Accent, tabSpieler)
 
 	local tabOffline = self.m_TabPanel:addTab(_"Offline")
 	GUILabel:new(10, 10, 200, 20, "Suche:", tabOffline)
@@ -526,9 +527,15 @@ function AdminGUI:onPlayerButtonClick(func)
 				_"Bitte wähle das gewünschte Unternehmen aus:",companyTable, {0, 1, 2, 3, 4, 5}, _"In Fraktionsverlauf vermerken?",
 				function (companyId, rank, state)
 					if state then
-						HistoryUninviteGUI:new(function(internal, external)
+						if self.m_SelectedPlayer:getCompanyId() == 0 then
+							local internal = "Intern: In Unternehmen gesetzt"
+							local external = "Extern: In Unternehmen gesetzt"
 							triggerServerEvent("adminSetPlayerCompany", root, self.m_SelectedPlayer, companyId, rank, internal, external)
-						end)
+						else
+							HistoryUninviteGUI:new(function(internal, external)
+								triggerServerEvent("adminSetPlayerCompany", root, self.m_SelectedPlayer, companyId, rank, internal, external)
+							end)
+						end
 					else
 						triggerServerEvent("adminSetPlayerCompany", root, self.m_SelectedPlayer, companyId, rank)
 					end
@@ -540,11 +547,35 @@ function AdminGUI:onPlayerButtonClick(func)
 				_"Bitte wähle die gewünschte Fraktion aus:",factionTable, {0, 1, 2, 3, 4, 5, 6}, _"In Fraktionsverlauf vermerken?",
 				function (factionId, rank, state)
 					if state then
-						HistoryUninviteGUI:new(function(internal, external)
+						if self.m_SelectedPlayer:getFactionId() == 0 then
+							local internal = "Intern: In Fraktion gesetzt"
+							local external = "Extern: In Fraktion gesetzt"
 							triggerServerEvent("adminSetPlayerFaction", root, self.m_SelectedPlayer, factionId, rank, internal, external)
-						end)
+						else
+							HistoryUninviteGUI:new(function(internal, external)
+								triggerServerEvent("adminSetPlayerFaction", root, self.m_SelectedPlayer, factionId, rank, internal, external)
+							end)
+						end
 					else
 						triggerServerEvent("adminSetPlayerFaction", root, self.m_SelectedPlayer, factionId, rank)
+					end
+				end)
+	elseif func == "setGroup" then
+		InputBoxWithChanger:new(_"Gruppe setzen",
+				_"Gebe den Namen der gewünschten Gruppe ein:", input, {0, 1, 2, 3, 4, 5, 6},
+				function (input, rank)
+					if input ~= "" then
+						triggerServerEvent("adminSetPlayerGroup", root, self.m_SelectedPlayer, input, rank)
+					else
+						QuestionBox:new(
+							_"Möchtest du den Spieler aus der aktuellen Gruppe entlassen?",
+							function ()
+								triggerServerEvent("adminSetPlayerGroup", root, self.m_SelectedPlayer)
+							end,
+							function ()
+								ErrorBox:new("Dann gib bitte den Namen einer Gruppe an!")
+							end
+						)
 					end
 				end)
 	elseif func == "nickchange" then

@@ -86,7 +86,7 @@ function BeggarPedManager:spawnPeds()
 				Timer(function(ped)
 					local playerCount = FactionRescue:getSingleton():countPlayers(true, true, "medic", 1) + FactionRescue:getSingleton():countPlayers(true, true, "medic", 2)
 					if playerCount >= 1 then -- only when a rescue member is not afk, medic duty and has radio status 1 or 2
-						if ped and isElement(ped) and not ped:isDead() then
+						if isElement(ped) and not ped.m_Dead then
 							ped:kill()
 						end
 					end

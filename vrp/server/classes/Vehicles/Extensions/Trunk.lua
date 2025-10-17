@@ -281,6 +281,13 @@ function Trunk:open(player)
 			player:sendError(_("Dieses Fahrzeug hat keinen Kofferraum!", player))
 			return
 		end
+
+		if self.m_Vehicle:getOwnerType() == VehicleTypes.Group then
+			if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "group", "useTrunk") then
+				player:sendError(_("Du hast keine Berechtigung den Kofferraum dieses Fahrzeuges zu benutzen!", player))
+				return
+			end
+		end
 	end
 
 	player:triggerEvent("openTrunk", self.m_Vehicle)

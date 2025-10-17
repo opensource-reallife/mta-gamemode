@@ -187,6 +187,7 @@ FontAwesomeSymbols = {
 	Plane_Slash = "",
 	Map_Location_Dot = "",
 	Location_Dot = "",
+	Money_Bag = "",
 
 }
 

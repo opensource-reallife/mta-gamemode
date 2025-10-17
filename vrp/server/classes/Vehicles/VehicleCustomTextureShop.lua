@@ -217,7 +217,6 @@ end
 function VehicleCustomTextureShop:Event_vehicleTextureBuy(id, url, color1, color2)
 	local price = (source.m_TextureCount == 0 and 120000) or 40000
 	if client:getMoney() >= price then
-		--Todo Add Money Funcs/Checks
 		client:transferMoney(self.m_BankAccountServer, price, "Custom-Texture", "Vehicle", "Texture")
 		local textureName = VEHICLE_SPECIAL_TEXTURE[source:getModel()] or "vehiclegrunge256"
 		source.OldTexture = {[textureName] = url}

@@ -7,8 +7,7 @@
 -- ****************************************************************************
 
 WeedTruck = inherit(Object)
-WeedTruck.LoadTime = 30*1000 -- in ms
-WeedTruck.Time = 15*60*1000 -- in ms
+WeedTruck.Time = ACTION_TIME
 WeedTruck.spawnPos = Vector3(-1105.76, -1621.55, 76.54)
 WeedTruck.spawnRot = Vector3(0, 0, 270)
 WeedTruck.Destination = Vector3(2181.59, -2626.35, 11.5)
@@ -47,8 +46,11 @@ function WeedTruck:constructor(driver)
 	self.m_Truck:initObjectLoading()
 	self.m_Truck.m_DisableToggleHandbrake = true
 	self.m_Packages = {}
+	self.m_PackageBlips = {}
 	self.m_DestinationPeds = {}
 	self.m_DestinationBlips = {}
+
+	self.m_DeliveryInfos = {}
 
 	self.m_StartTime = getTickCount()
 	--warpPedIntoVehicle(driver, self.m_Truck)
@@ -63,6 +65,9 @@ function WeedTruck:constructor(driver)
 	self.m_WaterCheckTimer = setTimer(bind(self.isWeedTruckInWater, self), 10000, 0)
 	self.m_IsSubmerged = false
 	
+	self.m_ShowDown = false
+	self.m_TimerUntilShowdown = setTimer(bind(self.showdown, self), WeedTruck.Time - MINUTE_TO_SHOWDOWN, 1)
+
 	PlayerManager:getSingleton():breakingNews("Ein Weed-Transport wurde soeben gestartet!")
 	Discord:getSingleton():outputBreakingNews("Ein Weed-Transport wurde soeben gestartet!")
 	FactionState:getSingleton():sendWarning("Ein Weed-Transport wurde gestartet!", "Neuer Einsatz", true, serialiseVector(WeedTruck.spawnPos))
@@ -121,6 +126,19 @@ function WeedTruck:destructor()
 		end
 	end
 
+	for faction, data in pairs(self.m_DeliveryInfos) do
+		local temp = (faction == self.m_StartFaction and "abgegeben") or (faction:isStateFaction() and "sichergestellt") or "gestohlen" 
+		faction:addLog(-1, "Aktion", ("Drogentruck: Es wurden %s/%s Pakete (%sg) erfolgreich %s."):format(data.boxCount, #self.m_Packages, WeedTruck.WeedPerPackage * data.boxCount, temp))
+	end
+
+	for index, blip in pairs(self.m_PackageBlips) do
+		blip:delete()
+	end
+
+	if isTimer(self.m_TimerUntilShowdown) then
+		killTimer(self.m_TimerUntilShowdown)
+	end
+
 	StatisticsLogger:getSingleton():addActionLog("Weed-Truck", "stop", self.m_StartPlayer, self.m_StartFaction, "faction")
 	TollStation.closeAll()
 	MWeedTruck:getSingleton().m_BlipWeedTruck:setOptionalColor({27, 125, 47})
@@ -172,6 +190,43 @@ function WeedTruck:spawnPackage(i, position)
 		self.m_Packages[i].id = i
 		self.m_Packages[i]:setData("drugPackage", true, true)
 		setElementData(self.m_Packages[i], "clickable", true)
+
+		self.m_Packages[i].LoadHook = function(player, veh, box)
+			if self.m_ShowDown then
+				if (self.m_PackageBlips[box]) then
+					delete(self.m_PackageBlips[box])
+					self.m_PackageBlips[box] = nil
+				end
+
+				if (not self.m_PackageBlips[veh]) then
+					self.m_PackageBlips[veh] = self:createBlip(veh, "Transportfahrzeug", veh, "Logistician.png")
+				end
+			end
+		end	
+
+		self.m_Packages[i].DeloadHook = function(player, veh, box)
+			if (self.m_ShowDown) then
+				local hasAnotherObject = false
+				if (self.m_PackageBlips[veh]) then
+					for i, v in pairs(veh:getAttachedElements()) do
+						if (v:getModel() == 1575 and v:getData("drugPackage")) then
+							hasAnotherObject = true
+							break
+						end
+					end
+
+					if (not hasAnotherObject and self.m_Truck ~= veh) then
+						delete(self.m_PackageBlips[veh])
+						self.m_PackageBlips[veh] = nil
+					end
+				end
+
+				if ( not self.m_PackageBlips[box]) then
+					self.m_PackageBlips[box] = self:createBlip(box, "Drogenpaket", box)
+				end
+			end
+		end	
+
 		return self.m_Packages[i]
 	else
 		outputDebugString("Weedtruck Error: Spawning Drugpackage "..i.."! Position missing!")
@@ -318,7 +373,19 @@ function WeedTruck:onDestinationPedClick(player, ped, stateDestination)
 					outputDebug("giveAchievement 111")
 				end
 			end
+
+			if (not self.m_DeliveryInfos[ped.faction]) then
+				self.m_DeliveryInfos[ped.faction] = {["boxCount"] = 0}
+			end
+			self.m_DeliveryInfos[ped.faction].boxCount = self.m_DeliveryInfos[ped.faction].boxCount + 1
+
 			package = player:getPlayerAttachedObject()
+
+			if (self.m_PackageBlips[package]) then
+				self.m_PackageBlips[package]:delete()
+				self.m_PackageBlips[package] = nil
+			end
+
 			player:detachPlayerObject(package)
 			package:destroy()
 		end
@@ -340,4 +407,37 @@ function WeedTruck:isWeedTruckInWater()
 			self.m_IsSubmerged = true
 		end
 	end
+end
+
+function WeedTruck:showdown() 
+	self.m_PackageBlips[self.m_Truck] = self:createBlip(self.m_Truck, "Waffentruck", self.m_Truck, "Logistician.png")
+	self.m_ShowDown = true
+	
+	for i, v in pairs(self.m_Packages) do
+		local attachedTo = v:getAttachedTo()
+		if v and isElement(v) and attachedTo ~= self.m_Truck then
+			if (attachedTo and attachedTo:getType() == "vehicle") then
+				if (not self.m_PackageBlips[attachedTo]) then
+					self.m_PackageBlips[attachedTo] = self:createBlip(attachedTo, "Transportfahrzeug", attachedTo, "Logistician.png")
+				end
+			else
+				if not self.m_PackageBlips[v] then
+					self.m_PackageBlips[v] = self:createBlip(v, "Drogenpaket", v)
+				end
+			end
+		end
+	end
+end
+
+function WeedTruck:createBlip(ele, text, attachedTo, marker, color)
+	color = color and color or BLIP_COLOR_CONSTANTS.Red
+	marker = marker == nil and "Marker.png" or marker
+	local blip = Blip:new(marker, ele.position.x, ele.position.y, {factionType = {"State", "Evil"}, duty = true}, 9999, color)
+	if (attachedTo) then
+		blip:attachTo(attachedTo)
+	end
+	if (text) then
+		blip:setDisplayText(text)
+	end
+	return blip
 end

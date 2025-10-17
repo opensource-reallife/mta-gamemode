@@ -10,7 +10,7 @@ Faction = inherit(Object)
 
 -- implement by children
 
-function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, players, rankLoans, rankSkins, rankWeapons, depotId, factionType, diplomacy, rankPermissions, rankActions, playerLimit, maxVehicles, vehicleLimits, discordRole)
+function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, players, rankLoans, rankSkins, rankWeapons, depotId, factionType, diplomacy, rankPermissions, rankActions, playerLimit, maxVehicles, vehicleLimits, discordRole, actionSplits)
 	self.m_Id = Id
 	self.m_Name_Short = name_short
 	self.m_ShorterName = name_shorter
@@ -18,7 +18,7 @@ function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, 
 	self.m_DiscordRole = discordRole
 	self.m_Players = players[1]
 	self.m_PlayerLoans = players[2]
-	self.m_PlayerWeapons = players[3]
+	self.m_PlayerActionMoneySplit = players[3]
 	self.m_PlayerPermissions = players[4]
 	self.m_PlayerWeaponPermissions = players[5]
 	self.m_PlayerActionPermissions = players[6]
@@ -47,6 +47,7 @@ function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, 
 	
 	self.m_GangwarAttackCheck = {}
 
+	if actionSplits == "" or not actionSplits then	actionSplits = {} end
 	if rankLoans == "" then	rankLoans = {} for i=0,6 do rankLoans[i] = 0 end rankLoans = toJSON(rankLoans) outputDebug("Created RankLoans for faction "..Id) end
 	if rankSkins == "" then	rankSkins = {} for i=0,6 do rankSkins[i] = self:getRandomSkin() end rankSkins = toJSON(rankSkins) outputDebug("Created RankSkins for faction "..Id) end
 	if rankWeapons == "" then rankWeapons = {} for i=0,6 do rankWeapons[i] = {} for wi=0,46 do rankWeapons[i][wi] = 0 end end rankWeapons = toJSON(rankWeapons) outputDebug("Created RankWeapons for faction "..Id) end
@@ -59,6 +60,7 @@ function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, 
 	self.m_RankPermissions = fromJSON(rankPermissions)
 	self.m_RankActions = fromJSON(rankActions)
 	self.m_Type = factionType
+	self.m_ActionSplits = fromJSON(actionSplits)
 
 	self.m_Depot = Depot.load(depotId, self, "faction")
 
@@ -170,7 +172,7 @@ function Faction:save()
 	if self.m_Settings then
 		self.m_Settings:save()
 	end
-	if sql:queryExec("UPDATE ??_factions SET RankLoans = ?, RankSkins = ?, RankWeapons = ?, RankPermissions = ?, RankActions = ?, BankAccount = ?, Depot = ?, Diplomacy = ? WHERE Id = ?", sql:getPrefix(), toJSON(self.m_RankLoans), toJSON(self.m_RankSkins), toJSON(self.m_RankWeapons), toJSON(self.m_RankPermissions), toJSON(self.m_RankActions), self.m_BankAccount:getId(), self.m_Depot:getId(), diplomacy, self.m_Id) then
+	if sql:queryExec("UPDATE ??_factions SET RankLoans = ?, RankSkins = ?, RankWeapons = ?, RankPermissions = ?, RankActions = ?, BankAccount = ?, Depot = ?, Diplomacy = ?, ActionSplits = ? WHERE Id = ?", sql:getPrefix(), toJSON(self.m_RankLoans), toJSON(self.m_RankSkins), toJSON(self.m_RankWeapons), toJSON(self.m_RankPermissions), toJSON(self.m_RankActions), self.m_BankAccount:getId(), self.m_Depot:getId(), diplomacy, toJSON(self.m_ActionSplits or {}), self.m_Id) then
 	else
 		outputDebug(("Failed to save Faction '%s' (Id: %d)"):format(self:getName(), self:getId()))
 	end
@@ -324,8 +326,9 @@ function Faction:changeSkin(player, skinId)
 				player:setData("Faction:InSpecialDuty", nil, true)
 			end
 
-			if player:getWeapon(3) == 27 then
+			if player:getWeapon(3) == 27 or player:getWeapon(6) == 34 then
 				self:storageWeapons(player, {[27] = true})
+				self:storageWeapons(player, {[34] = true})
 			end
 		end
 	else
@@ -347,7 +350,7 @@ function Faction:addPlayer(playerId, rank)
 	rank = rank or 0
 	self.m_Players[playerId] = rank
 	self.m_PlayerLoans[playerId] = 1
-	self.m_PlayerWeapons[playerId] = 1
+	self.m_PlayerActionMoneySplit[playerId] = 1
 	self.m_PlayerPermissions[playerId] = {}
 	self.m_PlayerActionPermissions[playerId] = {}
 	self.m_PlayerWeaponPermissions[playerId] = {}
@@ -365,7 +368,7 @@ function Faction:addPlayer(playerId, rank)
 		bindKey(player, "y", "down", "chatbox", "Fraktion")
 		PermissionsManager:getSingleton():syncPermissions(player, "faction")
 	end
-	sql:queryExec("UPDATE ??_character SET FactionId = ?, FactionRank = ?, FactionLoanEnabled = 1, FactionWeaponEnabled = 1, FactionPermissions = ?, FactionWeaponPermissions = ?, FactionActionPermissions = ?, FactionTraining = 0 WHERE Id = ?", sql:getPrefix(), self.m_Id, rank, toJSON({}), toJSON({}), toJSON({}), playerId)
+	sql:queryExec("UPDATE ??_character SET FactionId = ?, FactionRank = ?, FactionLoanEnabled = 1, FactionActionMoneySplitEnabled = 1, FactionPermissions = ?, FactionWeaponPermissions = ?, FactionActionPermissions = ?, FactionTraining = 0 WHERE Id = ?", sql:getPrefix(), self.m_Id, rank, toJSON({}), toJSON({}), toJSON({}), playerId)
 
 	Async.create(
 		function(self)
@@ -381,7 +384,7 @@ function Faction:removePlayer(playerId)
 
 	self.m_Players[playerId] = nil
 	self.m_PlayerLoans[playerId] = nil
-	self.m_PlayerWeapons[playerId] = nil
+	self.m_PlayerActionMoneySplit[playerId] = nil
 	self.m_PlayerPermissions[playerId] = nil
 	self.m_PlayerActionPermissions[playerId] = nil
 	self.m_PlayerWeaponPermissions[playerId] = nil
@@ -395,15 +398,26 @@ function Faction:removePlayer(playerId)
 				player:setPublicSync("RadioStatus", nil)
 			end
 		end
+		if (Gangwar:getSingleton():getCurrentGangwar() and Gangwar:getSingleton():getCurrentGangwar():isParticipantInList(player)) then
+			Gangwar:getSingleton():getCurrentGangwar():removeParticipant(player)
+		end
+
 		player:saveAccountActivity()
 		setElementData(player, "playingTimeFaction", 0)
 		setElementData(player, "dutyTimeFaction", 0)
+		player:setFactionDuty(false)
 		player:setFaction(nil)
 		player:giveAchievement(67)
 		player:setCorrectSkin()
-		player:setFactionDuty(false)
-		player:getInventory():removeItem("Kevlar", 1)
+		player:getInventory():removeAllItem("Taser")
+		player:getInventory():removeAllItem("Warnkegel")
+		player:getInventory():removeAllItem("Barrikade")
+		player:getInventory():removeAllItem("Nagel-Band")
+		player:getInventory():removeAllItem("Blitzer")
+		player:getInventory():removeAllItem("Einsatzhelm")
+		player:getInventory():removeAllItem("Kevlar")
 		WearableManager:getSingleton():removeWearable(player, "Kevlar")
+		WearableManager:getSingleton():removeWearable(player, "Einsatzhelm")
 		player.m_KevlarShotsCount = nil
 		player:setData("Faction:InSpecialDuty", nil, true)
 		player:sendShortMessage(_("Du wurdest aus deiner Fraktion entlassen!", player))
@@ -412,7 +426,7 @@ function Faction:removePlayer(playerId)
 		unbindKey(player, "y", "down", "chatbox", "Fraktion")
 		PermissionsManager:getSingleton():syncPermissions(player, "faction", true)
 	end
-	sql:queryExec("UPDATE ??_character SET FactionId = 0, FactionRank = 0, FactionLoanEnabled = 0, FactionWeaponEnabled = 0, FactionPermissions = ?, FactionWeaponPermissions = ?, FactionActionPermissions = ?, FactionTraining = 0 WHERE Id = ?", sql:getPrefix(), toJSON({}), toJSON({}), toJSON({}), playerId)
+	sql:queryExec("UPDATE ??_character SET FactionId = 0, FactionRank = 0, FactionLoanEnabled = 0, FactionActionMoneySplitEnabled = 0, FactionPermissions = ?, FactionWeaponPermissions = ?, FactionActionPermissions = ?, FactionTraining = 0 WHERE Id = ?", sql:getPrefix(), toJSON({}), toJSON({}), toJSON({}), playerId)
 end
 
 function Faction:invitePlayer(player)
@@ -468,6 +482,10 @@ function Faction:setPlayerRank(playerId, rank)
 end
 
 function Faction:isPlayerLoanEnabled(playerId)
+	if type(playerId) == "userdata" then
+		playerId = playerId:getId()
+	end
+
 	return self.m_PlayerLoans[playerId] == 1
 end
 
@@ -480,17 +498,21 @@ function Faction:setPlayerLoanEnabled(playerId, state)
 	sql:queryExec("UPDATE ??_character SET FactionLoanEnabled = ? WHERE Id = ?", sql:getPrefix(), state, playerId)
 end
 
-function Faction:isPlayerWeaponEnabled(playerId)
-	return self.m_PlayerWeapons[playerId] == 1
-end
-
-function Faction:setPlayerWeaponEnabled(playerId, state)
+function Faction:isPlayerActionMoneySplitEnabled(playerId)
 	if type(playerId) == "userdata" then
 		playerId = playerId:getId()
 	end
 
-	self.m_PlayerWeapons[playerId] = state
-	sql:queryExec("UPDATE ??_character SET FactionWeaponEnabled = ? WHERE Id = ?", sql:getPrefix(), state, playerId)
+	return self.m_PlayerActionMoneySplit[playerId] == 1
+end
+
+function Faction:setPlayerActionMoneySplitEnabled(playerId, state)
+	if type(playerId) == "userdata" then
+		playerId = playerId:getId()
+	end
+
+	self.m_PlayerActionMoneySplit[playerId] = state
+	sql:queryExec("UPDATE ??_character SET FactionActionMoneySplitEnabled = ? WHERE Id = ?", sql:getPrefix(), state, playerId)
 end
 
 function Faction:savePlayerPermissions(playerId)
@@ -593,10 +615,10 @@ function Faction:getPlayers(getIDsOnly)
 
 	for playerId, rank in pairs(self.m_Players) do
 		local loanEnabled = self.m_PlayerLoans[playerId]
-		local weaponEnabled = self.m_PlayerWeapons[playerId]
+		local actionMoneySplitEnabled = self.m_PlayerActionMoneySplit[playerId]
 		local activity = self.m_PlayerActivity[playerId] or 0
 
-		temp[playerId] = {name = Account.getNameFromId(playerId), rank = rank, loanEnabled = loanEnabled, weaponEnabled = weaponEnabled, activity = activity}
+		temp[playerId] = {name = Account.getNameFromId(playerId), rank = rank, loanEnabled = loanEnabled, actionMoneySplitEnabled = actionMoneySplitEnabled, activity = activity}
 	end
 	return temp
 end
@@ -612,6 +634,17 @@ function Faction:getOnlinePlayers(afkCheck, dutyCheck)
 		end
 	end
 	return players
+end
+
+function Faction:getActionSplitMoneyPlayers()
+	local temp = {}
+	local players = self:getOnlinePlayers(true, true)
+	for i, v in pairs(players) do
+		if (self:isPlayerActionMoneySplitEnabled(v)) then
+			temp[#temp + 1] = v
+		end
+	end
+	return temp
 end
 
 function Faction:sendMessage(text, r, g, b, ...)
@@ -1161,4 +1194,21 @@ function Faction:getAllSpecialSkins(first)
 	end
 
 	return tab
+end
+
+function Faction:getActionSplits()
+	return self.m_ActionSplits
+end
+
+function Faction:getActionSplit(type)
+	return self.m_ActionSplits[type]
+end
+
+function Faction:setActionSplits(splits)
+	self.m_ActionSplits = splits
+end
+
+function Faction:setActionSplit(name, split)
+	if not name or not split then return end
+	self.m_ActionSplits[name] = split
 end

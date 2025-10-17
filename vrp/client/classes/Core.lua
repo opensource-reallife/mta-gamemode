@@ -225,6 +225,7 @@ function Core:ready() --onClientResourceStart
 	VehicleGuns:new()
 	HelicopterDrivebyManager:new()
 	RcVanExtension:new()
+	Weather:new()
 end
 
 function Core:afterLogin()
@@ -295,6 +296,7 @@ function Core:afterLogin()
 	end
 
 	setElementData(localPlayer, "isEquipmentGUIOpen", false, true)
+	setElementData(localPlayer, "SpawnAfterJail", core:get("Other", "SpawnAfterJail", false), true)
 
 	setTimer(
 		function()

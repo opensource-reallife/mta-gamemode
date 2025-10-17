@@ -11,6 +11,7 @@ local slotChecks =
 	"W_A:w3",
 	"W_A:w5",
 	"W_A:w6",
+	"W_A:w7",
 	[10] = "W_A:w0"
 }
 
@@ -35,6 +36,8 @@ local weaponTable = {
 	[32] = {3, 0.19, -0.08, -0.12, 0, 60, 180, 372, 4},
 	[33] = {3, 0, -0.18, -0.33, -3, 270, 0, 357, 6},
 	[34] = {3, 0, -0.13, -0.245, -3, 270, 0, 358, 6},
+	[35] = {3, .1, -0.2, 0, -3, 290, 0, 359, 7},
+	[36] = {3, .1, -0.2, 0, -3, 290, 0, 0, 360, 7},
 }
 
 local alternativeTable =
@@ -83,7 +86,7 @@ function createModel(player, weapon, state, slot)
 			elseif prevWeapon == 32 or prevWeapon == 28 then
 				bIsEnabled = getElementData(player,"W_A:w4")
 			end
-			if weapon == 34 then bIsEnabled = true end
+			if weapon == 34 or weapon == 35 or weapon == 36 then bIsEnabled = true end
 			if not bIsEnabled then
 				return
 			end
@@ -109,7 +112,7 @@ function createModel(player, weapon, state, slot)
 				if theVehicle then
 					setElementAlpha(object, 0)
 				end
-				if slot >= 3 and (weapon ~= 32 and weapon ~= 28) then
+				if slot >= 3 and (weapon ~= 32 and weapon ~= 28 and weapon ~= 35 and weapon ~= 36) then
 					if getElementData(player, "a:weaponIsConcealed") then
 						setElementAlpha(object, 0)
 						setObjectScale(object,0)
@@ -259,7 +262,7 @@ addEventHandler("WeaponAttach:concealWeapons", root , function()
 				wObj =  getElementData(source, "a:weapon:slot"..i.."")
 				if isElement(wObj) then
 					weapon = getElementData(wObj, "a:weapon:id")
-					if weapon ~= 32 and weapon ~= 28 then
+					if weapon ~= 32 and weapon ~= 35 and weapon ~= 36 and weapon ~= 28 then
 						createModel(source, getPedWeapon(source, i ), 0, i)
 						setElementData(source, "a:weapon:slot"..i.."", nil)
 					end

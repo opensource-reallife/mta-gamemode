@@ -13,13 +13,13 @@ function VendingMouseMenu:constructor(posX, posY, element)
 	local snackString = ""
 	if element:getModel() == 1775 then
 		self:addItem(_"Sprunk-Automat"):setTextColor(Color.Red)
-		snackString = "Getränk kaufen (20$)"
+		snackString = "Getränk kaufen (5$)"
 	elseif element:getModel() == 1776 then
 		self:addItem(_"Süßigkeiten-Automat"):setTextColor(Color.Red)
-		snackString = "Snack kaufen (20$)"
+		snackString = "Snack kaufen (5$)"
 	elseif element:getModel() == 1209 then
 		self:addItem(_"Soda-Automat"):setTextColor(Color.Red)
-		snackString = "Getränk kaufen (20$)"
+		snackString = "Getränk kaufen (5$)"
 	end
 
 	self:addItem(_(snackString),

@@ -18,7 +18,7 @@ function FactionManager:constructor()
 	"factionAddPlayer", "factionDeleteMember", "factionInvitationAccept", "factionInvitationDecline",	
 	"factionRankUp", "factionRankDown","factionReceiveWeaponShopInfos","factionWeaponShopBuy","factionSaveRank",
 	"factionRespawnVehicles", "factionRequestDiplomacy", "factionChangeDiplomacy", "factionToggleLoan", 
-	"factionToggleWeapon", "factionDiplomacyAnswer", "factionChangePermission", "factionRequestSkinSelection", 
+	"factionToggleActionMoneySplit", "factionDiplomacyAnswer", "factionChangePermission", "factionRequestSkinSelection", 
 	"factionPlayerSelectSkin", "factionUpdateSkinPermissions", "factionRequestSkinSelectionSpecial" , 
 	"factionEquipmentOptionRequest", "factionEquipmentOptionSubmit", "factionPlayerNeedhelp", "factionStorageSelectedWeapons",
 	"stopFactionRespawnAnnouncement", "factionReceiveWeaponTruckShopInfos", "factionReceiveArmsDealerShopInfos", "factionStopNeedhelp"}
@@ -44,7 +44,7 @@ function FactionManager:constructor()
 	addEventHandler("factionDiplomacyAnswer", root, bind(self.Event_answerDiplomacyRequest, self))
 	addEventHandler("factionChangePermission", root, bind(self.Event_changePermission, self))
 	addEventHandler("factionToggleLoan", root, bind(self.Event_ToggleLoan, self))
-	addEventHandler("factionToggleWeapon", root, bind(self.Event_ToggleWeapon, self))
+	addEventHandler("factionToggleActionMoneySplit", root, bind(self.Event_ToggleActionMoneySplit, self))
 	addEventHandler("factionRequestSkinSelection", root, bind(self.Event_requestSkins, self))
 	addEventHandler("factionPlayerSelectSkin", root, bind(self.Event_setPlayerDutySkin, self))
 	addEventHandler("factionUpdateSkinPermissions", root, bind(self.Event_UpdateSkinPermissions, self))
@@ -88,18 +88,18 @@ function FactionManager:loadFactions()
   	local st, count = getTickCount(), 0
   	local result = sql:queryFetch("SELECT * FROM ??_factions WHERE active = 1", sql:getPrefix())
   	for k, row in pairs(result) do
-		local result2 = sql:queryFetch("SELECT Id, FactionRank, FactionLoanEnabled, FactionWeaponEnabled, FactionPermissions, FactionWeaponPermissions, FactionActionPermissions FROM ??_character WHERE FactionID = ?", sql:getPrefix(), row.Id)
-		local players, playerLoans, playerWeapons, playerPermissions, playerWeaponPermissions, playerActionPermissions = {}, {}, {}, {}, {}, {}
+		local result2 = sql:queryFetch("SELECT Id, FactionRank, FactionLoanEnabled, FactionActionMoneySplitEnabled, FactionPermissions, FactionWeaponPermissions, FactionActionPermissions FROM ??_character WHERE FactionID = ?", sql:getPrefix(), row.Id)
+		local players, playerLoans, playerActionMoneySplits, playerPermissions, playerWeaponPermissions, playerActionPermissions = {}, {}, {}, {}, {}, {}
 		for i, factionRow in ipairs(result2) do
 			players[factionRow.Id] = factionRow.FactionRank
 			playerLoans[factionRow.Id] = factionRow.FactionLoanEnabled
-			playerWeapons[factionRow.Id] = factionRow.FactionWeaponEnabled
+			playerActionMoneySplits[factionRow.Id] = factionRow.FactionActionMoneySplitEnabled
 			playerPermissions[factionRow.Id] = fromJSON(factionRow.FactionPermissions)
 			playerWeaponPermissions[factionRow.Id] = fromJSON(factionRow.FactionWeaponPermissions)
 			playerActionPermissions[factionRow.Id] = fromJSON(factionRow.FactionActionPermissions)
 		end
 
-		local instance = Faction:new(row.Id, row.Name_Short, row.Name_Shorter, row.Name, row.BankAccount, {players, playerLoans, playerWeapons, playerPermissions, playerWeaponPermissions, playerActionPermissions}, row.RankLoans, row.RankSkins, row.RankWeapons, row.Depot, row.Type, row.Diplomacy, row.RankPermissions, row.RankActions, row.PlayerLimit, row.MaxVehicles, row.VehicleLimits, row.DiscordRole)
+		local instance = Faction:new(row.Id, row.Name_Short, row.Name_Shorter, row.Name, row.BankAccount, {players, playerLoans, playerActionMoneySplits, playerPermissions, playerWeaponPermissions, playerActionPermissions}, row.RankLoans, row.RankSkins, row.RankWeapons, row.Depot, row.Type, row.Diplomacy, row.RankPermissions, row.RankActions, row.PlayerLimit, row.MaxVehicles, row.VehicleLimits, row.DiscordRole, row.ActionSplits)
 		FactionManager.Map[row.Id] = instance
 		count = count + 1
 	end
@@ -123,7 +123,7 @@ function FactionManager:getFromName(name)
 	end
 end
 
-function FactionManager:Event_factionSaveRank(rank,loan,rankWeapons)
+function FactionManager:Event_factionSaveRank(rank,loan)
 	local success = false
 	local faction = client:getFaction()
 	local wpn = {}
@@ -145,30 +145,30 @@ function FactionManager:Event_factionSaveRank(rank,loan,rankWeapons)
 			end
 		end
 
-		local newWeapons = false
-		for i, v in pairs(faction.m_RankWeapons[tostring(rank)]) do
-			if tonumber(rankWeapons[i]) ~= tonumber(v) then
-				newWeapons = true
-				break
-			end
-		end
-		if newWeapons then
-			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "editWeaponPermissions") then
-				if faction:getPlayerRank(client) > rank or (PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "changePermissions") and faction:getPlayerRank(client) >= rank) then
-					for id, state in pairs(rankWeapons) do
-						if not PermissionsManager:getSingleton():isPlayerAllowedToTake(client, "faction", id) then
-							rankWeapons[id] = faction.m_RankWeapons[tostring(rank)][id]
-						end
-					end
-					faction:setRankWeapons(rank,rankWeapons)
-					success = true
-				else
-					client:sendError(_("Du kannst die Waffenrechte von dem Rang nicht verändern!", client))
-				end
-			else
-				client:sendError(_("Du bist nicht berechtigt die Rangwaffen zu ändern", client))
-			end
-		end
+		-- local newWeapons = false
+		-- for i, v in pairs(faction.m_RankWeapons[tostring(rank)]) do
+		-- 	if tonumber(rankWeapons[i]) ~= tonumber(v) then
+		-- 		newWeapons = true
+		-- 		break
+		-- 	end
+		-- end
+		-- if newWeapons then
+		-- 	if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "editWeaponPermissions") then
+		-- 		if faction:getPlayerRank(client) > rank or (PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "changePermissions") and faction:getPlayerRank(client) >= rank) then
+		-- 			for id, state in pairs(rankWeapons) do
+		-- 				if not PermissionsManager:getSingleton():isPlayerAllowedToTake(client, "faction", id) then
+		-- 					rankWeapons[id] = faction.m_RankWeapons[tostring(rank)][id]
+		-- 				end
+		-- 			end
+		-- 			faction:setRankWeapons(rank,rankWeapons)
+		-- 			success = true
+		-- 		else
+		-- 			client:sendError(_("Du kannst die Waffenrechte von dem Rang nicht verändern!", client))
+		-- 		end
+		-- 	else
+		-- 		client:sendError(_("Du bist nicht berechtigt die Rangwaffen zu ändern", client))
+		-- 	end
+		-- end
 		
 		if success then
 			faction:save()
@@ -208,6 +208,18 @@ function FactionManager:Command_needhelp(player)
 	
 	if faction then
 		if player:isFactionDuty() then
+			if player.m_ActiveNeedHelp and not player.m_ActiveNeedHelpSpam then 
+				-- timer 3 seconds to avoid spam
+				player.m_ActiveNeedHelpSpam = true
+				if isTimer(player.m_ActiveNeedHelpSpam) then
+					killTimer(player.m_ActiveNeedHelpSpam)
+				end
+				player.m_ActiveNeedHelpSpam = setTimer(function()
+					player.m_ActiveNeedHelpSpam = false 
+				end, 3000, 1)
+
+				return self:Event_stopNeedhelp(player) 
+			end
 			if not player.m_ActiveNeedHelpRepeat and player.m_ActiveNeedHelpRepeat ~= nil then return end
 			if player:getInterior() == 0 and player:getDimension() == 0 then
 				local rankName = faction:getRankName(faction:getPlayerRank(player))
@@ -687,7 +699,7 @@ end
 
 function FactionManager:Event_factionWeaponShopBuy(weaponTable)
 	if not client.m_WeaponStoragePosition then return outputDebug("no weapon storage position for this faction implemented") end
-	if client:getFaction().m_PlayerWeapons[client:getId()] == 0 then return client:sendError(_("Du darfst keine Waffen entnehmen!", client)) end
+	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "useWeapons") then return client:sendError(_("Du darfst keine Waffen entnehmen!", client)) end
 	if getDistanceBetweenPoints3D(client.position, client.m_WeaponStoragePosition) <= 10 then
 		local faction = client:getFaction()
 		local depot = faction.m_Depot
@@ -705,18 +717,19 @@ function FactionManager:Event_factionRespawnVehicles(instant)
 	if client:getFaction() then
 		local faction = client:getFaction()
 
-		if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "vehicleRespawnAll") then
-			if not client:getFaction().m_RespawnTimer or not isTimer(client:getFaction().m_RespawnTimer) then
-				if instant then
-					faction:respawnVehicles()
-				else
-					faction:startRespawnAnnouncement(client)
-				end
+		if instant then
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "vehicleRespawnInstant") then
+				faction:respawnVehicles()
 			else
-				client:sendError(_("Es wurde bereits eine Respawn Ankündigung erstellt.", client))
+				client:sendError(_("Dazu bist du nicht berechtigt!", client))
 			end
 		else
-			client:sendError(_("Dazu bist du nicht berechtigt.", client))
+			if client:getFaction().m_RespawnTimer or isTimer(client:getFaction().m_RespawnTimer) then return client:sendError(_("Es wurde bereits eine Respawn Ankündigung erstellt.", client)) end
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "vehicleRespawnAll") then
+				faction:startRespawnAnnouncement(client)
+			else
+				client:sendError(_("Dazu bist du nicht berechtigt!", client))
+			end
 		end
 	end
 end
@@ -874,32 +887,32 @@ function FactionManager:Event_ToggleLoan(playerId)
 	faction:addLog(client, "Fraktion", ("hat das Gehalt von Spieler %s %saktiviert!"):format(Account.getNameFromId(playerId), current and "de" or ""))
 end
 
-function FactionManager:Event_ToggleWeapon(playerId)
+function FactionManager:Event_ToggleActionMoneySplit(playerId)
 	if not playerId then return end
 	local faction = client:getFaction()
 	if not faction then return end
 
 	if not faction:isPlayerMember(client) or not faction:isPlayerMember(playerId) then
-		client:sendError(_("Du oder das Ziel sind nicht mehr im Unternehmen!", client))
+		client:sendError(_("Du oder das Ziel sind nicht mehr in der Fraktion!", client))
 		return
 	end
 
-	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "toggleWeapon") then
+	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "toggleActionMoneySplit") then
 		client:sendError(_("Dazu bist du nicht berechtigt!", client))
 		return
 	end
 
-	local current = faction:isPlayerWeaponEnabled(playerId)
+	local current = faction:isPlayerActionMoneySplitEnabled(playerId)
 
 	if faction:getPlayerRank(client) <= faction:getPlayerRank(playerId) and faction:getPlayerRank(client) ~= FactionRank.Leader then
-		client:sendError(_("Du kannst die Waffenentnahme vom dem Spieler nicht %saktivieren", client, current and "de" or ""))
+		client:sendError(_("Du kannst die Aktionsbeteiligung vom dem Spieler nicht %saktivieren", client, current and "de" or ""))
 		return
 	end
 
-	faction:setPlayerWeaponEnabled(playerId, current and 0 or 1)
+	faction:setPlayerActionMoneySplitEnabled(playerId, current and 0 or 1)
 	self:sendInfosToClient(client)
 
-	faction:addLog(client, "Fraktion", ("hat die Waffenentnahme von Spieler %s %saktiviert!"):format(Account.getNameFromId(playerId), current and "de" or ""))
+	faction:addLog(client, "Fraktion", ("hat die Aktionsbeteiligung von Spieler %s %saktiviert!"):format(Account.getNameFromId(playerId), current and "de" or ""))
 end
 
 function FactionManager:Event_requestSkins()

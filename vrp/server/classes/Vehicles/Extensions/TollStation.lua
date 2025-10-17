@@ -142,6 +142,7 @@ function TollStation:onPedWasted(totalAmmo, killer)
 		end
 
 		if killer:getType() == "player" then
+			if killer and killer:getFaction():isStateFaction() and killer:isFactionDuty() then return end
 			outputDebug(("%s killed a Ped at %s"):format(killer:getName(), self.m_Name))
 
 			-- Give Wanteds

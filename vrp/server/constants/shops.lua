@@ -212,6 +212,8 @@ SHOP_ITEMS = {
 		["Motorcross-Helm"] = 2500,
 		["Pot-Helm"] = 3000,
 		["Tragetasche"] = 1000,
+		["Medikit"] = 250,
+		["Bandage"] = 50,
 	};
 	["Tankstelle"] = {
 		["Zigarettenpackung"] = 150,
@@ -222,6 +224,8 @@ SHOP_ITEMS = {
 		["Motorcross-Helm"] = 2500,
 		["Pot-Helm"] = 3000,
 		["Tragetasche"] = 1000,
+		["Medikit"] = 250,
+		["Bandage"] = 50,
 	};
 	["Stadthalle"] = {
 		["Ausweis"] = 400,
