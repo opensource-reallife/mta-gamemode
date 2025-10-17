@@ -10,6 +10,7 @@ WeedFactory = inherit(DrugFactory)
 function WeedFactory:constructor(id, type, owner, progress, managerPos, workingstations, workers, lastattack, x, y, z, rot, dim, int, intX, intY, intZ, intRot, color)
     self.WeedGrowStations = {}
     self:create(id, type, owner, progress, managerPos, workingstations, workers, lastattack, x, y, z, rot, dim, int, intX, intY, intZ, intRot, color)
+    self:startWorking()
 end
 
 function WeedFactory:destructor()

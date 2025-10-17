@@ -35,6 +35,7 @@ function FactoryWarManager:prepareAttack(id, faction, attacker)
                                 self.m_Attackers = FactionManager:getSingleton():getFromId(faction)
                                 self.m_Defenders = FactionManager:getSingleton():getFromId(factory:getOwner())
                                 self.m_ColShape = createColSphere(factory:getManager():getPosition(), 5)
+                                self.m_ColShape:setDimension(factory.m_Dimension)
 
                                 addEventHandler("onColShapeHit", self.m_ColShape, self.m_ColShapeHitBind)
 

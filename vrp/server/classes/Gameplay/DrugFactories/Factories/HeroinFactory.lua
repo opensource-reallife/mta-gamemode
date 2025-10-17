@@ -13,6 +13,7 @@ function HeroinFactory:constructor(id, type, owner, progress, managerPos, workin
 
     self.m_ClickBind = bind(self.onVentClick, self)
     self:createVentEntries()
+    self:startWorking()
 end
 
 function HeroinFactory:destructor()
@@ -20,6 +21,7 @@ function HeroinFactory:destructor()
 end
 
 function HeroinFactory:startWorking()
+    outputChatBox("startWorking")
     local amount = self:getWorkingStationCount()
     if amount > #HEROIN_GROW_STATIONS then amount = #HEROIN_GROW_STATIONS end
     for i = 1, amount do

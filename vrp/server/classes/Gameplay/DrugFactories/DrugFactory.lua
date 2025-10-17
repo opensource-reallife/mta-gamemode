@@ -39,7 +39,7 @@ function DrugFactory:create(id, type, owner, progress, managerPos, workingstatio
 end
 
 function DrugFactory:spawnNPC()
-    self.m_Manager = ShopNPC:new(276, self.m_ManagerPos.x, self.m_ManagerPos.y, self.m_ManagerPos.z, self.m_ManagerPos.rot)
+    self.m_Manager = TargetableNPC:new(276, self.m_ManagerPos.x, self.m_ManagerPos.y, self.m_ManagerPos.z, self.m_ManagerPos.rot)
     self.m_Manager:setInterior(self.m_Interior)
     self.m_Manager:setDimension(self.m_Dimension)
     self.m_Manager:setImmortal(true)

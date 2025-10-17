@@ -10,6 +10,7 @@ CocaineFactory = inherit(DrugFactory)
 function CocaineFactory:constructor(id, type, owner, progress, managerPos, workingstations, workers, lastattack, x, y, z, rot, dim, int, intX, intY, intZ, intRot, color)
     self.CocaineStations = {}
     self:create(id, type, owner, progress, managerPos, workingstations, workers, lastattack, x, y, z, rot, dim, int, intX, intY, intZ, intRot, color)
+    self:startWorking()
 end
 
 function CocaineFactory:destructor()

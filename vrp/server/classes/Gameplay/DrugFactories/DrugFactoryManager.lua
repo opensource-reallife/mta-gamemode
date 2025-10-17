@@ -36,6 +36,7 @@ function DrugFactoryManager:constructor()
 end
 
 function DrugFactoryManager:destructor()
+    self:saveFactories()
     FactoryWarManager:delete()
     for key, factory in ipairs(DrugFactoryManager.Map) do
         factory:delete()
@@ -45,15 +46,15 @@ end
 function DrugFactoryManager:loadFactories()
 	local result = sql:queryFetch("SELECT * FROM ??_drug_factories", sql:getPrefix())
     for k, row in ipairs(result) do
-        if self.m_FactoryTypes[row.type] then
-            DrugFactoryManager.Map[row.id] = self.m_FactoryTypes[row.type][1]:new(row.id, row.type, row.owner, row.progress, {x=tonumber(row.managerX), y=tonumber(row.managerY), z=tonumber(row.managerZ), rot=tonumber(row.managerRot)}, row.workingstations, row.lastattack, row.workers, tonumber(row.x), tonumber(row.y), tonumber(row.z), tonumber(row.rot), row.dimension, self.m_FactoryTypes[row.type][3], self.m_FactoryTypes[row.type][4], self.m_FactoryTypes[row.type][5], self.m_FactoryTypes[row.type][6], self.m_FactoryTypes[row.type][7], self.m_FactoryColors[row.type])
+        if self.m_FactoryTypes[row.Type] then
+            DrugFactoryManager.Map[row.Id] = self.m_FactoryTypes[row.Type][1]:new(row.Id, row.Type, row.Owner, row.Progress, {x=tonumber(row.ManagerX), y=tonumber(row.ManagerY), z=tonumber(row.ManagerZ), rot=tonumber(row.ManagerRot)}, row.Workingstations, row.Workers, row.LastAttack, tonumber(row.PosX), tonumber(row.PosY), tonumber(row.PosZ), tonumber(row.Rot), row.Dimension, self.m_FactoryTypes[row.Type][3], self.m_FactoryTypes[row.Type][4], self.m_FactoryTypes[row.Type][5], self.m_FactoryTypes[row.Type][6], self.m_FactoryTypes[row.Type][7], self.m_FactoryColors[row.Type])
         end
 	end
 end
 
 function DrugFactoryManager:saveFactories()
     for key, factory in ipairs(DrugFactoryManager.Map) do
-        sql:queryFetch("UPDATE ??_drug_factories SET owner = ?, lastattack = ?, workingstations = ?, workers = ?", sql:getPrefix(), factory:getOwner(), factory:getLastAttack(), factory:getWorkingStationCount(), factory:getWorkerCount())
+        sql:queryFetch("UPDATE ??_drug_factories SET Owner = ?, LastAttack = ?, Workingstations = ?, Workers = ?", sql:getPrefix(), factory:getOwner(), factory:getLastAttack(), factory:getWorkingStationCount(), factory:getWorkerCount())
     end
 end
 
@@ -108,7 +109,7 @@ end
 function DrugFactoryManager:requestFactoryRecruitWorker(id)
     if DrugFactoryManager.Map[id] and DrugFactoryManager.Map[id]:getOwner() == client:getFaction():getId() then
         if client:getFaction():getPlayerRank(client) > 4 then
-            QuestionBox:new(client, client, "Willst du Arbeiter für die Fabrik anwerben?", "onFactoryRecruitWorker", false, client, id)
+            QuestionBox:new(client, "Willst du Arbeiter für die Fabrik anwerben?", "onFactoryRecruitWorker", false, nil, nil, client, id)
         else
             client:sendError("Dazu bist nicht berechtigt!")
         end
@@ -120,7 +121,7 @@ end
 function DrugFactoryManager:requestFactoryBuildWorkingStation(id)
     if DrugFactoryManager.Map[id] and DrugFactoryManager.Map[id]:getOwner() == client:getFaction():getId() then
         if client:getFaction():getPlayerRank(client) > 4 then
-            QuestionBox:new(client, client, "Willst du Verarbeitungsstellen für die Fabrik bauen?", "onFactoryBuildWorkingStation", false, client, id)
+            QuestionBox:new(client, "Willst du Verarbeitungsstellen für die Fabrik bauen?", "onFactoryBuildWorkingStation", false, nil, nil, client, id)
         else
             client:sendError("Dazu bist nicht berechtigt!")
         end
