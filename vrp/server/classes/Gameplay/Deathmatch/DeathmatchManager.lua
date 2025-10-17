@@ -172,6 +172,7 @@ function DeathmatchManager:constructor()
 			if killer and killer.deathmatchLobby then
 				killer:givePoints(1)
 			end
+			return true
 		end
 	)
 
