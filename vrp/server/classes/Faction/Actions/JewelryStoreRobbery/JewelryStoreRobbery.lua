@@ -122,7 +122,7 @@ function JewelryStoreRobbery:destructor()
 	for factionId, data in pairs(self.m_DeliveryInfos) do
 		local faction = FactionManager:getSingleton():getFromId(factionId)
 		ActionMoneySplitManager:getSingleton():splitMoney(faction, "JewelryStoreRobbery", data.money)
-		faction:addLog(-1, "Aktion", ("Juwelierraub: Es wurde %s$ %s."):format(toMoneyString(data.money), faction:isStateFaction() and "sichergestellt" or "eingenommen"))
+		faction:addLog(-1, "Aktion", ("Juwelierraub: Es wurde %s %s."):format(toMoneyString(data.money), faction:isStateFaction() and "sichergestellt" or "eingenommen"))
 	end
 
 	for index, blip in pairs(self.m_BagBlips) do

@@ -94,6 +94,6 @@ function ActionMoneySplitManager:splitMoney(faction, action, earnedMoney)
 
     for i, v in pairs(onlinePlayers) do
         faction:transferMoney({v, true}, moneyPerPerson, "Aktionsbeteiligung", "Action", "ActionMoneySplit", {silent = true})
-        faction:addLog(v, "Aktion", ("es wurde %s$ an %s aufgrund der Aktionsbeteiligung ausgezahlt."):format(moneyPerPerson, v:getName()))
+        faction:addLog(v, "Aktion", ("hat %s aufgrund der Aktionsbeteiligung ausgezahlt bekommen."):format(toMoneyString(moneyPerPerson), v:getName()))
     end
 end
