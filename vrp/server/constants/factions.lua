@@ -102,7 +102,7 @@ factionSWTDestination[1] = Vector3(2309.46, 2454.23, 10.82)
 factionSpawnpoint[1] = {Vector3(1558.31, -1684.71, 16.20), 0, 0}
 factionAirDropPoint[1] = Vector3(281.39, 2501.79, 16.48)
 factionNavigationpoint[1] = Vector3(1552.278, -1675.725, 12.6)
-factionDTDestination[1] = {Vector3(1209.12, -1752.04, 13.59), 55.41, 155, 166, "Agent K."}
+factionDTDestination[1] = {Vector3(1710.90, -1531.97, 13.45), 109.64, 155, 166, "Agent K."}
 
 -- ID 2 = FBI:
 factionRankNames[2] = {
@@ -140,7 +140,7 @@ factionSWTDestination[2] = Vector3(2309.46, 2454.23, 10.82)
 factionSpawnpoint[2] = {Vector3(1784.53, -1538.81, 9.82), 0, 0}
 factionAirDropPoint[2] = Vector3(281.39, 2501.79, 16.48)
 factionNavigationpoint[2] = Vector3(1805.53, -1575.35, 13)
-factionDTDestination[2] = {Vector3(1209.12, -1752.04, 13.59), 55.41, 166, "Agent K."}
+factionDTDestination[2] = {Vector3(1710.90, -1531.97, 13.45), 109.64, 166, "Agent K."}
 
 -- ID 3 = Army:
 factionRankNames[3] = {
@@ -179,7 +179,7 @@ factionSWTDestination[3] = Vector3(2309.46, 2454.23, 10.82)
 factionSpawnpoint[3] = {Vector3(221.49, 1865.97, 13.14), 0, 0}
 factionAirDropPoint[3] = Vector3(281.39, 2501.79, 16.48)
 factionNavigationpoint[3] = Vector3(134.53, 1929.06, 12.6)
-factionDTDestination[3] = {Vector3(1209.12, -1752.04, 13.59), 55.41, 166, "Agent K."}
+factionDTDestination[3] = {Vector3(1710.90, -1531.97, 13.45), 109.64, 166, "Agent K."}
 
 -- ID 4 = Rescue Team:
 factionRankNames[4] = {
