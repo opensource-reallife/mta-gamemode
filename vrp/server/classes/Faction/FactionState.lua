@@ -1208,12 +1208,12 @@ function FactionState:Command_suspect(player,cmd,target,amount,...)
 							target.m_LastWantedsByReason = {}
 						end
 						if target:getWanteds() >= MAX_WANTED_LEVEL then
-							return client:sendError(_("%s hat bereits die maximale Anzahl an Wanteds", client, target:getName()))
+							return player:sendError(_("%s hat bereits die maximale Anzahl an Wanteds", player, target:getName()))
 						end
 
 						local currentWanteds = target:getWanteds()
 						outputChatBox(_("Verbrechen begangen: %s, %s Wanted/s, Gemeldet von: %s", target, reason,amount,player:getName()), target, 255, 255, 0 )
-						local msg = ("%s hat die Wanted/s von %s von %d auf %d erhöht! Grund: %s"):format(client:getName(), target:getName(), currentWanteds, target:getWanteds()+amount, reason)
+						local msg = ("%s hat die Wanted/s von %s von %d auf %d erhöht! Grund: %s"):format(player:getName(), target:getName(), currentWanteds, target:getWanteds()+amount, reason)
 						target:giveWanteds(amount)
 						player:getFaction():addLog(player, "Wanteds", "hat "..target:getName().." "..amount.." Wanteds wegen "..reason.." gegeben!")
 						self:sendMessage(msg, 255,0,0)
