@@ -132,8 +132,11 @@ function HistoryPlayer:Event_PlayerHistory(userId)
 end
 
 function HistoryPlayer:getLeaveDateFromLastEvilFaction(userId)
-    local result = sql:queryFetchSingle("SELECT * FROM vrp_player_history WHERE ElementType = 'faction' AND ElementId > 4 AND LeaveDate IS NOT NULL AND UserId = ?   ORDER BY LeaveDate DESC", sql:getPrefix(), userId)
-    local uninviteTimeStamp = formatDateStringToTimeStamp(result["LeaveDate"])
+    local result = sql:queryFetchSingle("SELECT * FROM ??_player_history WHERE ElementType = 'faction' AND ElementId > 4 AND LeaveDate IS NOT NULL AND UserId = ? ORDER BY LeaveDate DESC", sql:getPrefix(), userId)
+    local uninviteTimeStamp = 0
+    if result then
+        uninviteTimeStamp = formatDateStringToTimeStamp(result["LeaveDate"])
+    end
 
     return uninviteTimeStamp
 end
