@@ -7,7 +7,7 @@ end
 function WeedBeggar:sellWeed(player, amount)
 	if self.m_Despawning then return end
 	if not player.vehicle then
-		if player and player:getFaction():isStateFaction() and player:isFactionDuty() then 
+		if player and player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty() then 
 			player:sendError(_("Du kannst während du im Dienst bist, keine Drogen verkaufen!"), player) 
 			return 
 		end

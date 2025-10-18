@@ -76,6 +76,7 @@ function ShopVehicleRob:destructor()
 	if self.m_StateBlip then delete(self.m_StateBlip) end
 	if self.m_EvilBlip then delete(self.m_EvilBlip) end
 	if isTimer(self.m_Timer) then self.m_Timer:destroy() end
+	if isTimer(self.m_TimerUntilShowdown) then self.m_TimerUntilShowdown:destroy() end
 	self.m_Gang:removePlayerMarkers()
 	
 	self.m_Shop.m_Ped:setDimension(0)

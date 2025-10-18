@@ -299,7 +299,7 @@ function FactionState:Event_OnConfirmSelfArrest()
 	bailcosts = BAIL_PRICES[wantedLevel]
 	client:setJailTime(jailTime)
 	client:setWanteds(0)
-	client:moveToJail(CUTSCENE)
+	client:moveToJail()
 	self:uncuffPlayer(client)
 	client:clearCrimes()
 	bailcosts = BAIL_PRICES[wantedLevel]
@@ -719,6 +719,17 @@ function FactionState:getOnlinePlayers(afkCheck, dutyCheck)
 	local players = {}
 	for index,faction in pairs(factions) do
 		for index, value in pairs(faction:getOnlinePlayers(afkCheck, dutyCheck)) do
+			table.insert(players, value)
+		end
+	end
+	return players
+end
+
+function FactionState:getActionSplitMoneyPlayers()
+	local factions = self:getFactions()
+	local players = {}
+	for index,faction in pairs(factions) do
+		for index, value in pairs(faction:getActionSplitMoneyPlayers()) do
 			table.insert(players, value)
 		end
 	end
@@ -1196,9 +1207,14 @@ function FactionState:Command_suspect(player,cmd,target,amount,...)
 						else
 							target.m_LastWantedsByReason = {}
 						end
-						target:giveWanteds(amount)
+						if target:getWanteds() >= MAX_WANTED_LEVEL then
+							return client:sendError(_("%s hat bereits die maximale Anzahl an Wanteds", client, target:getName()))
+						end
+
+						local currentWanteds = target:getWanteds()
 						outputChatBox(_("Verbrechen begangen: %s, %s Wanted/s, Gemeldet von: %s", target, reason,amount,player:getName()), target, 255, 255, 0 )
-						local msg = ("%s hat %s %d Wanted/s wegen %s gegeben!"):format(player:getName(),target:getName(),amount, reason)
+						local msg = ("%s hat die Wanted/s von %s von %d auf %d erhöht! Grund: %s"):format(client:getName(), target:getName(), currentWanteds, target:getWanteds()+amount, reason)
+						target:giveWanteds(amount)
 						player:getFaction():addLog(player, "Wanteds", "hat "..target:getName().." "..amount.." Wanteds wegen "..reason.." gegeben!")
 						self:sendMessage(msg, 255,0,0)
 						PoliceAnnouncements:getSingleton():triggerWantedSound(target, reason)
@@ -1948,9 +1964,14 @@ function FactionState:Event_giveWanteds(target, amount, reason)
 			if target:getFaction() and target:getFaction():isStateFaction() and target:isFactionDuty() then
 				return client:sendError(_("Du kannst Beamten im Dienst keine Wanteds geben.", client))
 			end
-			target:giveWanteds(amount)
+			if target:getWanteds() >= MAX_WANTED_LEVEL then
+				return client:sendError(_("%s hat bereits die maximale Anzahl an Wanteds", client, target:getName()))
+			end
+
+			local currentWanteds = target:getWanteds()
 			outputChatBox(_("Verbrechen begangen: %s, %s Wanted/s, Gemeldet von: %s", client, reason, amount, client:getName()), target, 255, 255, 0 )
-			local msg = ("%s hat %s %d Wanted/s wegen %s gegeben!"):format(client:getName(), target:getName(), amount, reason)
+			local msg = ("%s hat die Wanted/s von %s von %d auf %d erhöht! Grund: %s"):format(client:getName(), target:getName(), currentWanteds, target:getWanteds()+amount, reason)
+			target:giveWanteds(amount)
 			faction:addLog(client, "Wanteds", "hat "..target:getName().." "..amount.." Wanted/s gegeben! Grund: "..reason)
 			PoliceAnnouncements:getSingleton():triggerWantedSound(target, reason)
 			self:sendMessage(msg, 255,0,0)

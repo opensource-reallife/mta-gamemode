@@ -398,7 +398,7 @@ function Faction:removePlayer(playerId)
 				player:setPublicSync("RadioStatus", nil)
 			end
 		end
-		if (Gangwar:getSingleton():getCurrentGangwar() and Gangwar:getSingleton():getCurrentGangwar():isParticipantInList(player)) then
+		if (Gangwar:getSingleton():getCurrentGangwar() and Gangwar:getSingleton():getCurrentGangwar().m_AttackSession and  Gangwar:getSingleton():getCurrentGangwar().m_AttackSession:isParticipantInList(player)) then
 			Gangwar:getSingleton():getCurrentGangwar():removeParticipant(player)
 		end
 
@@ -638,7 +638,7 @@ end
 
 function Faction:getActionSplitMoneyPlayers()
 	local temp = {}
-	local players = self:getOnlinePlayers(true, true)
+	local players = self:getOnlinePlayers(true, false)
 	for i, v in pairs(players) do
 		if (self:isPlayerActionMoneySplitEnabled(v)) then
 			temp[#temp + 1] = v

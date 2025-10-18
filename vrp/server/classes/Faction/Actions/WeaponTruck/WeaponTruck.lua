@@ -180,7 +180,8 @@ function WeaponTruck:destructor()
 		end
 	end
 
-	for faction, data in pairs(self.m_DeliveryInfos) do
+	for factionId, data in pairs(self.m_DeliveryInfos) do
+		local faction = FactionManager:getSingleton():getFromId(factionId)
 		ActionMoneySplitManager:getSingleton():splitMoney(faction, "WeaponTruck", data.money)
 		local wtName = self.m_StartFaction:isStateFaction() and "Staatswaffentruck" or "Waffentruck"
 		local temp = faction == self.m_StartFaction and "abgegeben" or "gestohlen"
@@ -612,11 +613,12 @@ function WeaponTruck:onDestinationMarkerHit(hitElement)
 
 			box:destroy()
 
-			if (not self.m_DeliveryInfos[faction]) then
-				self.m_DeliveryInfos[faction] = {["boxCount"] = 0, ["money"] = 0}
+			local facId = faction:isStateFaction() and 1 or faction:getId()
+			if (not self.m_DeliveryInfos[facId]) then
+				self.m_DeliveryInfos[facId] = {["boxCount"] = 0, ["money"] = 0}
 			end
-			self.m_DeliveryInfos[faction].boxCount = self.m_DeliveryInfos[faction].boxCount + 1
-			self.m_DeliveryInfos[faction].money = self.m_DeliveryInfos[faction].money + money
+			self.m_DeliveryInfos[facId].boxCount = self.m_DeliveryInfos[facId].boxCount + 1
+			self.m_DeliveryInfos[facId].money = self.m_DeliveryInfos[facId].money + money
 		end
 	elseif hitElement:getOccupiedVehicle() then
 		hitElement:sendInfo(_("Du musst die Kisten per Hand abladen!", hitElement))

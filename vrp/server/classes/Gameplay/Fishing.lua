@@ -282,7 +282,7 @@ function Fishing:FishCaught()
 		client:giveAchievement(104) -- Mutantenfisch
 	end
 
-	local playerSpeciesCaughtCount = #client:getFishSpeciesCaught()
+	local playerSpeciesCaughtCount = table.size(client:getFishSpeciesCaught())
 	if playerSpeciesCaughtCount >= #Fishing.Fish then
 		client:giveAchievement(95) -- Legendärer Angler
 	elseif playerSpeciesCaughtCount >= 50 then
