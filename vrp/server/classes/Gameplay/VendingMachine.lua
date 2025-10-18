@@ -42,7 +42,7 @@ function VendingMachine.Event_vendingRob()
 
 	if not vendingMachine then return end
 	if client:getFaction() and client:getFaction():isStateFaction() and client:isFactionDuty() then
-		return client:sendError(_("Du kannst im Dienst keinen Automaten ausrauben.", client))
+		return client:sendError(_("Du kannst das nicht tun, während du im Dienst bist!", client))
 	end
 	if not client.vehicle then
 		if getTickCount() - vendingMachine.m_LastRobTime < 5*60*1000 then

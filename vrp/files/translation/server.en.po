@@ -2950,9 +2950,6 @@ msgstr "You cannot change your clothes while you are in a DM lobby!"
 msgid "Du musst die Farben deiner Fraktion tragen!"
 msgstr "You must wear the colors of your faction!"
 
-msgid "Du kannst im Dienst nicht deine Kleidung wechseln!"
-msgstr "You can't change your clothes on duty!"
-
 msgid "Du bist nicht im Dienst! Das Item wurde abgenommen."
 msgstr "You're off duty! The item has been removed."
 
@@ -3577,9 +3574,6 @@ msgstr "You have no weapon in this slot!"
 
 msgid "Du hast bereits das maximale Waffenlevel!"
 msgstr "You already have the maximum weapon level!"
-
-msgid "Du kannst im Dienst nicht mit Zivilisten tauschen!"
-msgstr "You can't trade with civilians on duty!"
 
 msgid "Du kannst mit Beamten nicht tauschen!"
 msgstr "You can't trade with officials!"
@@ -5054,15 +5048,6 @@ msgstr "+%s$ (%s$) - %s"
 msgid "-%s$ (%s$) - %s"
 msgstr "-%s$ (%s$) - %s"
 
-msgid "Du kannst im Dienst keinen Geldautomaten aufsprengen."
-msgstr "You cannot blow up an ATM while on duty."
-
-msgid "Du kannst im Dienst keinen Geldautomaten ausrauben."
-msgstr "You cannot rob an ATM while on duty."
-
-msgid "Du kannst im Dienst keinen Automaten ausrauben."
-msgstr "You cannot rob a vending machine while on duty."
-
 msgid "Du kannst Beamten im Dienst keine Wanteds geben."
 msgstr "You cannot assign wanteds to officers who are on duty."
 
@@ -5114,11 +5099,8 @@ msgstr "No wanted persons were reached."
 msgid "Information"
 msgstr "Information"
 
-msgid "Du kannst während du im Dienst bist, keine Drogen verkaufen!"
-msgstr "You cannot sell drugs while you are on duty!"
-
-msgid "Du kannst während du im Dienst bist, kein Diebesgut verkaufen!"
-msgstr "You cannot sell stolen goods while you are on duty!"
+msgid "Du kannst das nicht tun, während du im Dienst bist!"
+msgstr "You can't do this while on duty!"
 
 msgid "Du kannst dieses Fahrzeug nicht stehlen!"
 msgstr "You can't steal this vehicle!"

@@ -32,7 +32,7 @@ function WearableClothes:use(player, itemId, bag, place, itemName)
 				if player:getFaction():isEvilFaction() then
 					player:sendError(_("Du musst die Farben deiner Fraktion tragen!", player))
 				else
-					player:sendError(_("Du kannst im Dienst nicht deine Kleidung wechseln!", player))
+					player:sendError(_("Du kannst das nicht tun, während du im Dienst bist!", player))
 				end
 			end
 		end

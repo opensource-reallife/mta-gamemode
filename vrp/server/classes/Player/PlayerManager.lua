@@ -1162,12 +1162,12 @@ function PlayerManager:Event_RequestQuickTrade(bArmor, target, value)
 	if target.deathmatchLobby then return end
 	if client.getFaction and client:getFaction() and client:getFaction():isStateFaction() and client:isFactionDuty() then
 		if not target.getFaction or not target:getFaction() then
-			client:sendError(_("Du kannst im Dienst nicht mit Zivilisten tauschen!", client))
+			client:sendError(_("Du kannst das nicht tun, während du im Dienst bist!", client))
 			target:sendError(_("Du kannst mit Beamten nicht tauschen!", target))
 			return
 		end
 		if target:getFaction():isStateFaction() and not target:isFactionDuty() then
-			client:sendError(_("Du kannst im Dienst nicht mit Zivilisten tauschen!", client))
+			client:sendError(_("Du kannst das nicht tun, während du im Dienst bist!", client))
 			target:sendError(_("Du kannst mit Beamten nicht tauschen!", target))
 			return
 		end
@@ -1201,12 +1201,12 @@ function PlayerManager:Event_OnStartQuickTrade(client, target, bArmor, value)
 	end
 	if client.getFaction and client:getFaction() and client:getFaction():isStateFaction() and client:isFactionDuty() then
 		if not target.getFaction or not target:getFaction() then
-			client:sendError(_("Du kannst im Dienst nicht mit Zivilisten tauschen!", client))
+			client:sendError(_("Du kannst das nicht tun, während du im Dienst bist!", client))
 			target:sendError(_("Du kannst mit Beamten nicht tauschen!", target))
 			return
 		end
 		if target:getFaction():isStateFaction() and not target:isFactionDuty() then
-			client:sendError(_("Du kannst im Dienst nicht mit Zivilisten tauschen!", client))
+			client:sendError(_("Du kannst das nicht tun, während du im Dienst bist!", client))
 			target:sendError(_("Du kannst mit Beamten nicht tauschen!", target))
 			return
 		end
