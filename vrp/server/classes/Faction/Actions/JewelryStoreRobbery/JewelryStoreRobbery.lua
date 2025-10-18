@@ -313,7 +313,7 @@ function JewelryStoreRobbery:Event_EvilDeliveryFaction(button, state, player)
 						self.m_DeliveryInfos[facId] = {["bagCount"] = 0, ["money"] = 0}
 					end
 					self.m_DeliveryInfos[facId].bagCount = self.m_DeliveryInfos[facId].bagCount + 1
-					self.m_DeliveryInfos[facId].money = self.m_DeliveryInfos[facId].money + bag.money
+					self.m_DeliveryInfos[facId].money = self.m_DeliveryInfos[facId].money + money
 					
 					if self.m_PendingBags == 0 or self.m_MaxBags - self.m_BagsGivenOut == self.m_PendingBags then
 						self:stopRob("evil")
