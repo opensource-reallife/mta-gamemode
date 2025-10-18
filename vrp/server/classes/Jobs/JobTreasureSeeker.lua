@@ -48,7 +48,7 @@ end
 function JobTreasureSeeker:start(player)
 	self:generateRandomTreasures(player)
 	bindKey(player, "space", "down", self.m_TakeUpBind)
-	bindKey(player, "backspace", "down", self.m_DropBind)
+	--bindKey(player, "backspace", "down", self.m_DropBind)
 	setElementVisibleTo(self.m_DeliverMarker, player, true)
 	self.m_VehicleSpawner:toggleForPlayer(player, true)
 end
@@ -79,7 +79,7 @@ function JobTreasureSeeker:stop(player)
 	nextframe(function() self:destroyJobVehicle(player) end)
 	self:removeTreasures(player)
 	unbindKey(player, "space", "down", self.m_TakeUpBind)
-	unbindKey(player, "backspace", "down", self.m_DropBind)
+	--unbindKey(player, "backspace", "down", self.m_DropBind)
 	setElementVisibleTo(self.m_DeliverMarker, player, false)
 	self.m_VehicleSpawner:toggleForPlayer(player, false)
 	self.m_IsTakingUp[player] = false 
@@ -184,7 +184,7 @@ function JobTreasureSeeker:takeUp(player, key, keyState)
 					setTimer(function()
 						if isElement(veh) then
 							veh.Magnet:attach(veh, 0, -6.2, 2)
-							player:sendShortMessage(_("Du hast %s gefunden!\nBringe das Fundstück zum Startpunkt oder werfe es mit der Rücktaste zurück ins Meer!", player, _(self.m_TreasureTypes[objectModel]["Name"], player)), _("Schatzsucher-Job", player))
+							player:sendShortMessage(_("Du hast %s gefunden!\nBringe das Fundstück zum Startpunkt!", player, _(self.m_TreasureTypes[objectModel]["Name"], player)), _("Schatzsucher-Job", player))
 							veh:setFrozen(false)
 							self.m_IsTakingUp[player] = false
 						end

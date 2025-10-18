@@ -3260,8 +3260,8 @@ msgstr "You already have an object on the ship!\nUnload it at the starting point
 msgid "Das gefundene Objekt wird angehoben! Bitte warten!"
 msgstr "The found object is lifted! Please wait!"
 
-msgid "Du hast %s gefunden!\nBringe das Fundstück zum Startpunkt oder werfe es mit der Rücktaste zurück ins Meer!"
-msgstr "You've found %s!\nTake the found item to the starting point or use backspace to throw it back into the sea!"
+msgid "Du hast %s gefunden!\nBringe das Fundstück zum Startpunkt!"
+msgstr "You've found %s!\nTake the found item to the starting point!"
 
 msgid "Schatzsucher-Job"
 msgstr "Treasure hunting job"
