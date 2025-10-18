@@ -184,13 +184,13 @@ function AttackSession:isParticipantInList( player )
 end
 
 function AttackSession:removeParticipant( player )
+	player:setPublicSync("gangwarParticipant", false)
 	nextframe(function()
 		for index = 1,#self.m_Participants do
 			if self.m_Participants[index] == player then
 				table.remove( self.m_Participants, index )
 			end
 		end
-		player:setPublicSync("gangwarParticipant", false)
 		self:synchronizeLists( )
 		self:sessionCheck()
 	end)
