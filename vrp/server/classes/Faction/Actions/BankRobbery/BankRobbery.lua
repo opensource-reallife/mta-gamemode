@@ -108,7 +108,7 @@ function BankRobbery:destroyRob()
 	end
 	if self.m_TruckBlips then
 		for i, v in pairs(self.m_TruckBlips) do
-			delete(self.m_TruckBlip)
+			delete(v)
 		end
 	end
 	self.m_ShowDown = false
