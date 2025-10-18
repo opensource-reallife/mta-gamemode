@@ -745,7 +745,7 @@ function FactionManager:Event_factionRespawnVehicles(instant)
 				client:sendError(_("Dazu bist du nicht berechtigt!", client))
 			end
 		else
-			if client:getFaction().m_RespawnTimer or isTimer(client:getFaction().m_RespawnTimer) then return client:sendError(_("Es wurde bereits eine Respawn Ankündigung erstellt.", client)) end
+			if client:getFaction().m_RespawnTimer and isTimer(client:getFaction().m_RespawnTimer) then return client:sendError(_("Es wurde bereits eine Respawn Ankündigung erstellt.", client)) end
 			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "vehicleRespawnAll") then
 				faction:startRespawnAnnouncement(client)
 			else

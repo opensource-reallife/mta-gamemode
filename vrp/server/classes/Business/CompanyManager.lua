@@ -407,7 +407,7 @@ function CompanyManager:Event_companyRespawnVehicles(instant)
 				client:sendError(_("Dazu bist du nicht berechtigt!", client))
 			end
 		else
-			if client:getCompany().m_RespawnTimer or isTimer(client:getCompany().m_RespawnTimer) then return client:sendError(_("Es wurde bereits eine Respawn Ankündigung erstellt.", client)) end
+			if client:getCompany().m_RespawnTimer and isTimer(client:getCompany().m_RespawnTimer) then return client:sendError(_("Es wurde bereits eine Respawn Ankündigung erstellt.", client)) end
 			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "company", "vehicleRespawnAll") then
 				company:startRespawnAnnouncement(client)
 			else
