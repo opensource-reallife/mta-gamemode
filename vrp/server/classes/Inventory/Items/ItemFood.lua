@@ -118,7 +118,7 @@ function ItemFood:use(player)
 
 		if ItemSettings["Health"] and ItemSettings["Health"] > 0 then
 			player:setHealth(player:getHealth()+ItemSettings["Health"])
-			StatisticsLogger:getSingleton():addHealLog(client, ItemSettings["Health"], "Item "..self:getName())
+			StatisticsLogger:getSingleton():addHealLog(player, ItemSettings["Health"], "Item "..self:getName())
 			player:checkLastDamaged() 
 			DamageManager:getSingleton():clearPlayer(player)
 		end
