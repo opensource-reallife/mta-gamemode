@@ -647,7 +647,7 @@ function BankRobbery:handleBagDelivery(faction, player)
 			self.m_DeliveryInfos[facId] = {["bagCount"] = 0, ["money"] = 0}
 		end
 		self.m_DeliveryInfos[facId].bagCount = self.m_DeliveryInfos[facId].bagCount + 1
-		self.m_DeliveryInfos[facId].money = self.m_DeliveryInfos[facId].money + bag.money
+		self.m_DeliveryInfos[facId].money = self.m_DeliveryInfos[facId].money + money
 		
 		bag:destroy()
 		table.removevalue(self.m_MoneyBags, bag)
