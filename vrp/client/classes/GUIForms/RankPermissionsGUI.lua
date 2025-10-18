@@ -12,7 +12,7 @@ inherit(Singleton, RankPermissionsGUI)
 addRemoteEvents{"showRankPermissionsList"}
 function RankPermissionsGUI:constructor(permissionsType, type, wpn)
 	self.ms_GUISizeX = type == "company" and 21 or 23
-	self.ms_GUISizeY = 14
+	self.ms_GUISizeY = 13
 
 	GUIWindow.updateGrid()
 	self.m_Width = grid("x", self.ms_GUISizeX) 
@@ -44,15 +44,12 @@ function RankPermissionsGUI:constructor(permissionsType, type, wpn)
 		end
 	end)
 	
-	self.m_PermissionScrollArea = GUIGridScrollableArea:new(1, 2.5, self.ms_GUISizeX - 1, self.ms_GUISizeY - 3.5, 1, 60, true, false, self.m_Window, 2.5)
+	self.m_PermissionScrollArea = GUIGridScrollableArea:new(1, 2.5, self.ms_GUISizeX - 1, self.ms_GUISizeY - 2.5, 1, 60, true, false, self.m_Window, 2.5)
 	self.m_PermissionScrollArea:updateGrid()
 	
 	self.m_PermissionLabel = {}
 	self.m_PermissionRectangle = {}
 	self.m_PermissionCheckbox = {}
-	
-	-- self.m_SaveButton = GUIGridButton:new(self.ms_GUISizeX - 4, self.ms_GUISizeY, 4, 1, _"Speichern", self.m_Window):setBackgroundColor(Color.Green)
-	-- self.m_SaveButton.onLeftClick = bind(self.saveButton_Click, self)
 
 	GUIGridRectangle:new(1.25, 2, self.ms_GUISizeX - 1, 1.5, Color.Background, self.m_Window)
 
@@ -151,11 +148,6 @@ function RankPermissionsGUI:updateList(rankTbl, type, refresh)
 			end
 		end
 	end
-end
-
-function RankPermissionsGUI:saveButton_Click()
-	triggerServerEvent("changeRankPermissions", localPlayer, self.m_PermissionsType, self.m_Changes, self.m_Type)
-	self.m_Changes = {}
 end
 
 function RankPermissionsGUI:onCheckBoxChange(rank, perm, state)
