@@ -219,23 +219,23 @@ function JewelryStoreRobbery:Event_BreakGlass(player)
 					table.insert(self.m_Bags, bag)
 					addEventHandler("onElementClicked", bag, self.m_BagClick)
 
-					self.m_Bags[bag].LoadHook = function(player, veh, bag)
+					self.m_Bags[table.size(self.m_Bags)].LoadHook = function(player, veh, bag)
 						if self.m_ShowDown then
-							if (self.m_BoxesBlips[bag]) then
-								delete(self.m_BoxesBlips[bag])
-								self.m_BoxesBlips[bag] = nil
+							if (self.m_BagBlips[bag]) then
+								delete(self.m_BagBlips[bag])
+								self.m_BagBlips[bag] = nil
 							end
 
-							if (not self.m_BoxesBlips[veh]) then
-								self.m_BoxesBlips[veh] = self:createBlip(veh, "Transportfahrzeug", veh, "Logistician.png")
+							if (not self.m_BagBlips[veh]) then
+								self.m_BagBlips[veh] = self:createBlip(veh, "Transportfahrzeug", veh, "Logistician.png")
 							end
 						end
 					end	
 
-					self.m_Bags[bag].DeloadHook = function(player, veh, bag)
+					self.m_Bags[table.size(self.m_Bags)].DeloadHook = function(player, veh, bag)
 						if (self.m_ShowDown) then
 							local hasAnotherObject = false
-							if (self.m_BoxesBlips[veh]) then
+							if (self.m_BagBlips[veh]) then
 								for i, v in pairs(veh:getAttachedElements()) do
 									if (v:getModel() == 1550 and v:getData("JewelryStoreRobbery:MoneyBag")) then
 										hasAnotherObject = true
@@ -244,13 +244,13 @@ function JewelryStoreRobbery:Event_BreakGlass(player)
 								end
 
 								if (not hasAnotherObject) then
-									delete(self.m_BoxesBlips[veh])
-									self.m_BoxesBlips[veh] = nil
+									delete(self.m_BagBlips[veh])
+									self.m_BagBlips[veh] = nil
 								end
 							end
 
-							if ( not self.m_BoxesBlips[bag]) then
-								self.m_BoxesBlips[bag] = self:createBlip(bag, "Geldsack", bag)
+							if ( not self.m_BagBlips[bag]) then
+								self.m_BagBlips[bag] = self:createBlip(bag, "Geldsack", bag)
 							end
 						end
 					end	
@@ -356,7 +356,7 @@ function JewelryStoreRobbery:Event_StateDeliveryFaction(button, state, player)
 						self.m_DeliveryInfos[facId] = {["bagCount"] = 0, ["money"] = 0}
 					end
 					self.m_DeliveryInfos[facId].bagCount = self.m_DeliveryInfos[facId].bagCount + 1
-					self.m_DeliveryInfos[facId].money = self.m_DeliveryInfos[facId].money + bag.money
+					self.m_DeliveryInfos[facId].money = self.m_DeliveryInfos[facId].money + money
 
 					if self.m_PendingBags == 0 or self.m_MaxBags - self.m_BagsGivenOut == self.m_PendingBags then
 						self:stopRob("state")

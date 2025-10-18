@@ -423,7 +423,8 @@ function FactionManager:Event_factionAddPlayer(player)
 		local uninviteTimestamp = HistoryPlayer:getSingleton():getLeaveDateFromLastEvilFaction(player:getId())
 		local zivizeit = ServerSettings:getSingleton().m_Settings["Zivizeit"] * 60 * 60
 		if getRealTime().timestamp < uninviteTimestamp + zivizeit then
-			client:sendError(_("Der Spieler hat noch Zivizeit", client))
+			local time = getRealTime(uninviteTimestamp + zivizeit)
+			client:sendError(_("Der Spieler hat noch bis %s.%s.%s %s:%s Uhr Zivzeit", client, time.monthday, time.month + 1, time.year + 1900, time.hour, time.minute))
 			return
 		end
 	end
