@@ -66,14 +66,15 @@ function PolicePanel:constructor()
 	self.m_GPS:setChecked(GPSEnabled)
 	self.m_GPS.onChange = function() GPSEnabled = self.m_GPS:isChecked() end
 
-	self.m_AddWantedsBtn = GUIGridButton:new(10, 9, 4, 1, _"Wanteds geben", self.m_Tabs[1])
-	self.m_AddWantedsBtn.onLeftClick = function() self:giveWanteds() end
-
-	self.m_DeleteWantedsBtn = GUIGridButton:new(14, 9, 2, 1, _"Löschen", self.m_Tabs[1]):setBackgroundColor(Color.Red)
-	self.m_DeleteWantedsBtn.onLeftClick = function() QuestionBox:new(
+	self.m_AddWantedsBtn = GUIGridButton:new(10, 9, 4, 1, _"Wanteds ändern", self.m_Tabs[1]):setBackgroundColor(Color.Orange):setTooltip("Linksklick zum Wanteds geben \nRechtsklick zum Wanteds löschen", "button", true)
+	self.m_AddWantedsBtn.onLeftClick = function() self:giveWanteds("give") end -- Geben
+	self.m_AddWantedsBtn.onRightClick = function() QuestionBox:new(
 		_("Möchtest du wirklich alle Wanteds von %s löschen?", self.m_SelectedPlayer:getName()),
 		function() triggerServerEvent("factionStateClearWanteds", localPlayer, self.m_SelectedPlayer) end)
-	end
+	end -- Entfernen
+
+	self.m_SetWantedsBtn = GUIGridButton:new(14, 9, 2, 1, _"Setzen", self.m_Tabs[1])
+	self.m_SetWantedsBtn.onLeftClick = function() self:giveWanteds("set") end
 
 
 	self.m_AddSTVOBtn = GUIGridButton:new(10, 10, 4, 1, _"STVO-Punkte geben", self.m_Tabs[1])
@@ -83,7 +84,7 @@ function PolicePanel:constructor()
 	self.m_SetSTVOBtn.onLeftClick = function() self:giveSTVO("set") end
 
 	self.m_PlayerFuncElements = { -- locate is in a different function
-		self.m_GPS, self.m_AddWantedsBtn, self.m_DeleteWantedsBtn, self.m_AddSTVOBtn, self.m_SetSTVOBtn
+		self.m_GPS, self.m_AddWantedsBtn, self.m_SetWantedsBtn, self.m_AddSTVOBtn, self.m_SetSTVOBtn
 	}
 	--
 	-- Knast
@@ -523,11 +524,15 @@ function PolicePanel:stopLocating()
 	return true
 end
 
-function PolicePanel:giveWanteds()
+function PolicePanel:giveWanteds(action)
 	local item = self.m_PlayersGrid:getSelectedItem()
 	if item then
 		local player = item.player
-		GiveWantedBox:new(player, 1, MAX_WANTED_LEVEL, "Wanteds geben", function(player, amount, reason) self:updateCurrentView() triggerServerEvent("factionStateGiveWanteds", localPlayer, player, amount, reason) end)
+		if action == "set" then
+			GiveWantedBox:new(player, 0, MAX_WANTED_LEVEL, "Wanteds setzen", function(player, amount, reason) self:updateCurrentView() triggerServerEvent("factionStateSetWanteds", localPlayer, player, amount, reason) end)
+		elseif action == "give" then
+			GiveWantedBox:new(player, 1, MAX_WANTED_LEVEL, "Wanteds geben", function(player, amount, reason) self:updateCurrentView() triggerServerEvent("factionStateGiveWanteds", localPlayer, player, amount, reason) end)
+		end
 	else
 		ErrorBox:new(_"Kein Spieler ausgewählt!")
 	end
