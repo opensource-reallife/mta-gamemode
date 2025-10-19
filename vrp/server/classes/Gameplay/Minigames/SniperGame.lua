@@ -124,6 +124,7 @@ function SniperGame:addPlayer(player)
 	player:setInterior(0)
 	player:setArmor(0)
 	player:setHealth(100)
+	player:createStorage()
 	takeAllWeapons(player)
 	player:giveWeapon(34, 15, true)
 	player:triggerEvent("showScore")
@@ -140,6 +141,7 @@ function SniperGame:removePlayer(player)
 	MinigameManager:getSingleton().m_SniperGameHighscore:addHighscore(player:getId(), self.m_PedKills[player])
 	self.m_PedKills[player] = nil
 	takeAllWeapons(player)
+	player:restoreStorage()
 	player:triggerEvent("hideScore")
 
 	-- Check for Freaks Achievement
