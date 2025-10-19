@@ -203,45 +203,40 @@ SHOP_ITEMS = {
 		["Blumen-Samen"] = 20,
 	};
 	["24/7"] = {
-		["Radio"] = 2000,
+		["Radio"] = 1000,
 		["Zigarettenpackung"] = 150,
-		["Wuerfel"] = 10,
-		["Kanne"] = 500,
-		["Mautpass"] = 250,
-		["Reparaturkit"] = 1000,
-		["Motorcross-Helm"] = 2500,
-		["Pot-Helm"] = 3000,
+		["Wuerfel"] = 50,
+		["Helm"] = 2500,
+		["Motorcross-Helm"] = 1250,
+		["Pot-Helm"] = 1500,
+		["Reparaturkit"] = 750,
 		["Tragetasche"] = 1000,
 		["Medikit"] = 250,
 		["Bandage"] = 50,
 	};
 	["Tankstelle"] = {
-		["Zigarettenpackung"] = 150,
-		["Mautpass"] = 250,
-		["Benzinkanister"] = 250,
+		["Zigarettenpackung"] = 250,
+		["Mautpass"] = 2000,
+		["Benzinkanister"] = 500,
 		["Reparaturkit"] = 1000,
-		["Helm"] = 5000,
-		["Motorcross-Helm"] = 2500,
-		["Pot-Helm"] = 3000,
-		["Tragetasche"] = 1000,
-		["Medikit"] = 250,
-		["Bandage"] = 50,
+		["Medikit"] = 350,
+		["Bandage"] = 75,
 	};
 	["Stadthalle"] = {
-		["Ausweis"] = 400,
-		["Handelsvertrag"] = 200
+		["Ausweis"] = 250,
+		["Handelsvertrag"] = 500
 	};
 	["Bank"] = {
-		["Handelsvertrag"] = 200
+		["Handelsvertrag"] = 500
 	};
 	["Bar"] = {
-		["Bier"] = 7,
-		["Whiskey"] = 9,
-		["Sex on the Beach"] = 15,
-		["Pina Colada"] = 15,
-		["Monster"] = 25,
-		["Shot"] = 8,
-		["Cuba-Libre"] = 12
+		["Bier"] = 10,
+		["Whiskey"] = 20,
+		["Sex on the Beach"] = 30,
+		["Pina Colada"] = 30,
+		["Monster"] = 50,
+		["Shot"] = 15,
+		["Cuba-Libre"] = 25
 	};
 	["Angel- / Outdoor-Shop"] = {
 		["Fischlexikon"] = 500,
@@ -252,8 +247,6 @@ SHOP_ITEMS = {
 		["Kleine Kühltasche"] = 500,
 		["Kühltasche"] = 1500,
 		["Kühlbox"] = 4000,
-		["Motorcross-Helm"] = 2000,
-		["Radio"] = 1700,
 		["Köder"] = 5,
 		["Leuchtköder"] = 40,
 		["Pilkerköder"] = 40,
@@ -261,14 +254,14 @@ SHOP_ITEMS = {
 		["Spinner"] = 3500,
 	};
 	["Halloween Shop"] = {
-		["Kuheuter mit Pommes"] = 25,
-		["Zombie-Burger"] = 15,
+		["Kuheuter mit Pommes"] = 50,
+		["Zombie-Burger"] = 50,
 	},
 	["Weihnachtsmarkt"] = {
-		["Gluehwein"] = 15,
-		["Shot"] = 20,
-		["Lebkuchen"] = 15,
-		["Wuerstchen"] = 25,
+		["Gluehwein"] = 30,
+		["Shot"] = 15,
+		["Lebkuchen"] = 30,
+		["Wuerstchen"] = 50,
 	},
 	["Feuerwerks-Shop"] = {
 		["Rakete"] = 100,
@@ -285,14 +278,12 @@ SHOP_ITEMS = {
 }
 
 SHOP_ITEM_WEAPONS = {
-	["Angel- / Outdoor-Shop"] = {
+	["24/7"] = {
 		--[weapon id] = price
 		[2] = 500, -- Golfschläger
 		[46] = 750, -- Fallschirm
-	};
-	["24/7"] = {
 		[43] = 250, -- Kamera mit einem Film
-	};
+	}
 }
 
 SHOP_ITEM_SORT = {
@@ -314,9 +305,6 @@ SHOP_ITEM_SORT = {
 		{true, "Zubehör"}, --GridListItemNoClick
 		{"Schwimmer"},
 		{"Spinner"},
-		{true, "Outdoor"}, --GridListItemNoClick
-		{"Motorcross-Helm"},
-		{"Radio"},
 	}
 }
 
