@@ -14,6 +14,7 @@ function MTAFixes:constructor()
 	bindKey("horn", "down", bind(self.fixHydraulicsOxygenBug, self))
 	bindKey("forwards", "down", bind(self.fixRunSpeedBug, self))
 	bindKey("backwards", "down", bind(self.fixRunSpeedBug, self))
+	bindKey("jump", "down", bind(self.fixRunSpeedBug, self))
 end
 
 function MTAFixes:fixRunSpeedBug()
