@@ -176,7 +176,7 @@ function ShopManager:buyItem(shopId, item, amount)
 			if item == "Kanne" then
 				value = 10
 			elseif item == "Mautpass" then
-				value = getRealTime().timestamp + 7*24*60*60
+				value = getRealTime().timestamp + 30*24*60*60
 			end
 
 			if client:getInventory():giveItem(item, amount, value) then
