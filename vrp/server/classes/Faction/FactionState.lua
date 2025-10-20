@@ -310,8 +310,14 @@ function FactionState:Event_OnConfirmSelfArrest()
 end
 
 function FactionState:loadLSPD(factionId)
-	self:createDutyPickup(1562.30, -1683.30, 16.20) -- PD Interior
-	self:createDutyPickup(1530.21, -1671.66, 6.22, 0, 5) -- PD Garage
+	self:createDutyPickup(1562.30, -1683.30, 16.20) -- LSPD Interior
+	self:createDutyPickup(1530.21, -1671.66, 6.22, 0, 5) -- LSPD Garage
+
+	self:createDutyPickup(-1614.20, 676.42, -4.91) -- SFPD Garage
+
+	self:createDutyPickup(2282.19, 2423.66, 3.48) -- LVPD Garage
+
+	self:createDutyPickup(2744.09, -2453.82, 13.86) -- SWT Destination
 
 	self:createTakeItemsPickup(Vector3(1543.96, -1707.26, 5.59), 0, 5)
 
