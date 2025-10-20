@@ -267,13 +267,13 @@ factionDTDestination[6] = {Vector3(1546.82, -1384.42, 14.02), 180, 294, "Leis Bu
 
 -- ID 7 = Grove
 factionRankNames[7] = {
-[0] = "Newbie",
-[1] = "Hoody",
-[2] = "Crackhead",
-[3] = "Dealer",
-[4] = "Pimp",
-[5] = "Cuzz",
-[6] = "Junkie"
+[0] = "Runner",
+[1] = "Homie",
+[2] = "Thug",
+[3] = "Gangster",
+[4] = "Shot Caller",
+[5] = "Hood Boss",
+[6] = "OG"
 }
 factionColors[7] = {["r"] = 18,["g"] = 140,["b"] = 52}
 factionCarColors[7] = {["r"] = 20,["g"] = 90,["b"] = 10, ["r1"] = 20,["g1"] = 90,["b1"] = 10}
