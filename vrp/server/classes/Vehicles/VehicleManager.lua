@@ -1534,6 +1534,7 @@ end
 
 function VehicleManager:Event_vehicleEmpty()
 	if source:hasKey(client) or client:getRank() >= RANK.Moderator then
+		if getDistanceBetweenPoints3D(client:getPosition(), source:getPosition()) > 8 and not (client:getRank() >= RANK.Moderator and client:getPublicSync("supportMode")) then return end
 		for seat, occupant in pairs(getVehicleOccupants(source) or {}) do
 			if seat ~= 0 then
 				removePedFromVehicle(occupant)

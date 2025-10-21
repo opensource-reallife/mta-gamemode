@@ -2363,6 +2363,7 @@ end
 function FactionState:Event_attachBug()
 	self:refreshBugs()
 	local id = self:getFreeBug()
+	if getDistanceBetweenPoints3D(client:getPosition(), source:getPosition()) > 8 then return client:sendError(_("Du bist zu weit entfernt!")) end
 	if id then
 		local typeName = source:getType() == "vehicle" and "Fahrzeug" or "Spieler"
 
