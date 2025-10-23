@@ -80,24 +80,31 @@ function ItemSpeedCam:onColShapeHit(element, dim)
 			if element:getSpeed() > ALLOWED_SPEED + 5 then
 				if element:getOccupant() then
 					local player = element:getOccupant()
-
 					if player:getFaction() and (player:getFaction():isStateFaction() or player:getFaction():isRescueFaction()) and player:isFactionDuty() then return end
-					
 					local speed = math.floor(element:getSpeed())
 					local costs = (speed-ALLOWED_SPEED)*COST_FACTOR
 
+					local vehType = nil
+
+					if element:getVehicleType() == VehicleType.Automobile then
+						vehType = "Driving"
+					elseif element:getVehicleType() == VehicleType.Bike then
+						vehType = "Bike"
+					end
+
 					--give stvo points
-					local oldSTVO = player:getSTVO("Driving")
+					local stvoPoints = 0
+					local oldSTVO = player:getSTVO(vehType)
 					local newSTVO = 0
-					if player:hasDrivingLicense() then
+					if (vehType == "Driving" and player:hasDrivingLicense()) or (vehType == "Bike" and player:hasBikeLicense()) then
 						if element:getSpeed() >= 90 and element:getSpeed() < 120 then
 							stvoPoints = 3
 							newSTVO = oldSTVO + stvoPoints
-							player:setSTVO("Driving", newSTVO)
+							player:setSTVO(vehType, newSTVO)
 						elseif element:getSpeed() >= 120 then
 							stvoPoints = 6
 							newSTVO = oldSTVO + stvoPoints
-							player:setSTVO("Driving", newSTVO)
+							player:setSTVO(vehType, newSTVO)
 						end
 
 						if newSTVO > 0 then
