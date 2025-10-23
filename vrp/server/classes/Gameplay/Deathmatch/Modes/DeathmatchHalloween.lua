@@ -256,8 +256,8 @@ function DeathmatchHalloween:removePlayer(player, isServerStop)
 	end
 
 	if kills > 0 then
-		local sweets = kills*15
-		local pumpkins = kills * 5
+		local sweets = kills * 5
+		local pumpkins = kills * 1
 		player:getInventory():giveItem("Suessigkeiten", sweets)
 		player:getInventory():giveItem("Kürbis", pumpkins)
 		player:sendShortMessage(_("Du hast für deine %d Kills %d Süßigkeiten und %d Kürbisse erhalten!", player, kills, sweets, pumpkins))

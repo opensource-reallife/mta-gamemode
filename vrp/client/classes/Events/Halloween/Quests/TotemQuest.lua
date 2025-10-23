@@ -84,7 +84,7 @@ end
 function TotemQuest:onMessageColShapeHit(hitElement, matchingDimension)
     if matchingDimension then
         if hitElement == localPlayer then
-            self:createDialog(bind(self.startTotemHunt, self), 
+            self:createDialog(bind(self.onTotemFind, self), 
                 "Ein riesiges Totem spuckt Geister aus...",
                 "Du spürst eine merkwürdige Präsenz...",
                 "Du solltest dich dem Totem nicht weiter nähern..."
@@ -132,32 +132,16 @@ function TotemQuest:spawnGhost()
     , 200, 1)
 end
 
-function TotemQuest:startTotemHunt()
-    self.m_Totems = {
-        HalloweenTotem:new(Vector3(-431.931, 2241.015, 42.983), Vector3(0, 0, 222.860), bind(self.onTotemBreak, self)),
-        HalloweenTotem:new(Vector3(-399.996, 2203.404, 42.426), Vector3(0, 0, 102.825), bind(self.onTotemBreak, self)),
-        HalloweenTotem:new(Vector3(-367.764, 2266.393, 42.484), Vector3(0, 0, 6.5), bind(self.onTotemBreak, self)),
-        HalloweenTotem:new(Vector3(-480.409, 2179.008, 41.860), Vector3(0, 0, 357.321), bind(self.onTotemBreak, self)),
-        HalloweenTotem:new(Vector3(-455.336, 2227.886, 42.760), Vector3(0, 0, 88.2), bind(self.onTotemBreak, self)),
-        HalloweenTotem:new(Vector3(-417.650, 2246.380, 42.430), Vector3(0, 0, 300.80), bind(self.onTotemBreak, self))
-    }
-    self.m_TotemsBroken = 0
-end
-
-function TotemQuest:onTotemBreak()
-    self.m_TotemsBroken = self.m_TotemsBroken + 1
-    if self.m_TotemsBroken == #self.m_Totems then
-        delete(self.m_QuestMessage)
-        self.m_QuestMessage = ShortMessage:new("Kehre nun zum Friedhof zurück!", "Halloween: Quest", Color.Orange, -1, false, false, false, false, true)
-        self:setSucceeded()
-    end
+function TotemQuest:onTotemFind()
+    delete(self.m_QuestMessage)
+    self.m_QuestMessage = ShortMessage:new("Kehre nun zum Friedhof zurück!", "Halloween: Quest", Color.Orange, -1, false, false, false, false, true)
+    self:setSucceeded()
 end
 
 function TotemQuest:endQuest()
     self:createDialog(false, 
         "Ein riesiges Totem aus dem Geister erscheinen?",
-        "Und viele weitere kleine Totems drum herum?",
-        "Und das große Totem hat eine merkwürdige Präsenz umgeben?",
-        "Das wird ja immer gruseliger..."
+        "Das wird ja immer gruseliger...",
+        "Trotzdem, hier eine kleine Belohnung!"
     )
 end

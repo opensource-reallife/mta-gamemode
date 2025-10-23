@@ -143,7 +143,7 @@ end
 
 function HalloweenGhost:onDamage(attacker, weapon)
     if attacker == localPlayer then
-        if self.m_AlwaysDamagable or weapon == 27 then
+        if self.m_AlwaysDamagable or weapon == 38 then
             self.m_Health = self.m_Health - 1
             if self.m_Health == 0 then
                 self:kill()

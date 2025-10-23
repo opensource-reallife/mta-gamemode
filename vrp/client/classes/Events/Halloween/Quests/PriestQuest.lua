@@ -36,13 +36,14 @@ end
 
 function PriestQuest:startQuest()
     self:createDialog(bind(self.onStart, self),
-        "Geh und zerstör das Totem!"
+        "Du solltest dich dem riesigen Totem jetzt nähern können.",
+        "Beeile dich und zerstöre es!"
     )
 end
 
 function PriestQuest:onStart()
     triggerServerEvent("Halloween:giveGhostCleaner", localPlayer)
-    self.m_QuestMessage = ShortMessage:new("Zerstöre das Totem!", "Halloween: Quest", Color.Orange, -1, false, false, false, false, true)
+    self.m_QuestMessage = ShortMessage:new("Zerstöre das riesige Totem!", "Halloween: Quest", Color.Orange, -1, false, false, false, false, true)
 end
 
 function PriestQuest:onClientColShapeHit(hitElement, matchingDimension)
@@ -142,7 +143,7 @@ end
 function PriestQuest:onGhostKill()
     self.m_InvisibleStartTime = getTickCount()
     self.m_InvisibleEndTime = self.m_InvisibleStartTime + 3000
-    self.m_QuestMessage:setText("Zerstöre das letzte Totem!")
+    self.m_QuestMessage:setText("Zerstöre das riesige Totem!")
     setElementData(self.m_Totem, "clickable", true)
     self.m_Totem:setData("onClickEvent", 
         function()
@@ -152,6 +153,7 @@ function PriestQuest:onGhostKill()
             self.m_QuestMessage:setText("Kehre nun zum Friedhof zurück!")
         end
     )
+    InfoBox:new("Du kannst das riesige Totem zerstören, indem du darauf klickst!")
 end
 
 function PriestQuest:endQuest()

@@ -21,6 +21,14 @@ Halloween.ms_Phrases = {
 
 Halloween.ms_Bonus = {
 	{
+		["Text"] = "250 Punkte",
+		["Image"] = "Bonus_Points.png",
+		["Pumpkin"] = 20,
+		["Sweets"] = 200,
+		["Type"] = "Points",
+		["PointsAmount"] = 250
+	},
+	{
 		["Text"] = "Payday Bonus",
 		["Image"] = "Bonus_Payday.png",
 		["Pumpkin"] = 20,
@@ -28,17 +36,17 @@ Halloween.ms_Bonus = {
 		["Type"] = "Special"
 	},
 	{
-		["Text"] = "Nick Change",
-		["Image"] = "Bonus_NickChange.png",
-		["Pumpkin"] = 75,
-		["Sweets"] = 500,
+		["Text"] = "30 Tage VIP",
+		["Image"] = "Bonus_VIP.png",
+		["Pumpkin"] = 150,
+		["Sweets"] = 1000,
 		["Type"] = "Special"
 	},
 	{
 		["Text"] = "Zombie Skin",
 		["Image"] = "Bonus_Zombie.png",
 		["Pumpkin"] = 100,
-		["Sweets"] = 2000,
+		["Sweets"] = 1500,
 		["Type"] = "Special"
 	},
 	{
@@ -50,28 +58,38 @@ Halloween.ms_Bonus = {
 		["MoneyAmount"] = 10000
 	},
 	{
-		["Text"] = "50.000$",
-		["Image"] = "Bonus_Money.png",
-		["Pumpkin"] = 120,
-		["Sweets"] = 600,
-		["Type"] = "Money",
-		["MoneyAmount"] = 50000
-	},
-	{
 		["Text"] = "Romero",
 		["Image"] = "Bonus_Romero.png",
-		["Pumpkin"] = 500,
-		["Sweets"] = 5000,
+		["Pumpkin"] = 400,
+		["Sweets"] = 3000,
 		["Type"] = "Vehicle",
 		["VehicleModel"] = 442
 	},
 	{
-		["Text"] = "Bloodring Banger",
-		["Image"] = "Bonus_Bloodring.png",
-		["Pumpkin"] = 1000,
-		["Sweets"] = 7500,
+		["Text"] = "Hustler",
+		["Image"] = "Bonus_Hustler.png",
+		["Pumpkin"] = 600,
+		["Sweets"] = 5000,
 		["Type"] = "Vehicle",
-		["VehicleModel"] = 504
+		["VehicleModel"] = 545
+	},
+	{
+		["Text"] = "5 Kürbisse",
+		["Image"] = "Bonus_Pumpkin.png",
+		["Pumpkin"] = 0,
+		["Sweets"] = 50,
+		["Type"] = "Item",
+		["ItemName"] = "Kürbis",
+		["ItemAmount"] = 5
+	},
+	{
+		["Text"] = "50 Süßigkeiten",
+		["Image"] = "Bonus_Sweets.png",
+		["Pumpkin"] = 10,
+		["Sweets"] = 0,
+		["Type"] = "Item",
+		["ItemName"] = "Suessigkeiten",
+		["ItemAmount"] = 50
 	},
 }
 
@@ -130,7 +148,7 @@ function Halloween:constructor()
 		end
 	)
 
-	local romero = TemporaryVehicle.create(442, 937.79999, -1120.6, 23.8, 24)
+	local romero = TemporaryVehicle.create(442, 937, -1121, 23.8, 24)
 	romero:setColor(0, 0, 0)
 	romero:setFrozen(true)
     romero:setLocked(true)
@@ -141,6 +159,18 @@ function Halloween:constructor()
 	romero:toggleRespawn(false)
 	romero:setAlwaysDamageable(true)
 	romero.m_DisableToggleHandbrake = true
+
+	local hustler = TemporaryVehicle.create(545, 934, -1122.8, 23.81, 24)
+	hustler:setColor(72, 60, 50)
+	hustler:setFrozen(true)
+    hustler:setLocked(true)
+	hustler:setVariant(255, 255)
+	hustler:setMaxHealth(2000, true)
+	hustler:setBulletArmorLevel(2)
+	hustler:setRepairAllowed(false)
+	hustler:toggleRespawn(false)
+	hustler:setAlwaysDamageable(true)
+	hustler.m_DisableToggleHandbrake = true
 
 	addRemoteEvents{"eventRequestBonusData", "eventBuyBonus"}
 	addEventHandler("eventRequestBonusData", root, bind(self.Event_requestBonusData, self))
@@ -222,7 +252,7 @@ function Halloween:finishTrickOrTreat(pId, houseId)
 	if self.m_TrickOrTreatPIDs[pId] and self.m_TrickOrTreatPIDs[pId].playersNearby then
 		local pCount = table.size(self.m_TrickOrTreatPIDs[pId].playersNearby)
 		local ownerId = HouseManager:getSingleton().m_Houses[houseId]:getOwner()
-		local ownerAtHome = (ownerId and ownerId ~= 0) and chance(75) or chance(50) -- chance that somebody is there to give sweets
+		local ownerAtHome = (ownerId and ownerId ~= 0) and chance(75) or chance(25) -- chance that somebody is there to give sweets
 		local rndPhrase = Halloween.ms_Phrases[pCount > 1 and "multi" or "single"]
 			rndPhrase = rndPhrase[math.random(1, #rndPhrase)]
 
@@ -300,9 +330,12 @@ function Halloween:Event_buyBonus(bonusId)
 		else
 			client:sendMessage(_("Fehler beim Erstellen des Fahrzeugs. Bitte benachrichtige einen Admin!", client), 255, 0, 0)
 		end
-
+	elseif bonus["Type"] == "Item" then
+		client:getInventory():giveItem(bonus["ItemName"], bonus["ItemAmount"])
 	elseif bonus["Type"] == "Money" then
 		self.m_BankServerAccount:transferMoney(client, bonus["MoneyAmount"], "Halloween-Event", "Event", "Halloween")
+	elseif bonus["Type"] == "Points" then
+		client:givePoints(bonus["PointsAmount"])
 	elseif bonus["Type"] == "Special" then
 		if bonus["Text"] == "Schutzweste" then
 			client:setArmor(100)

@@ -171,7 +171,7 @@ function Guns:Event_onClientPlayerDamage(attacker, weapon, bodypart, loss)
 			return cancelEvent()
 		end
 	end
-	if weapon == 9 then -- Chainsaw
+	if weapon == 9 or weapon == 38 then -- Minigun/Chainsaw
 		cancelEvent()
 	elseif weapon == 42 then --Fire Extinguisher
 		cancelEvent()

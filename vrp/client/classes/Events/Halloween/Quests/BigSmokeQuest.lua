@@ -9,8 +9,9 @@
 BigSmokeQuest = inherit(HalloweenQuest)
 
 function BigSmokeQuest:constructor()
-    self.m_Ghost = HalloweenGhost:new(Vector3(2260.347, -1224.271, 1049.023), 180, 10, 13, false, false)
-    self.m_ColShape = createColRectangle(2259.034, -1221.085, 3, 1)
+    self.m_Ghost = HalloweenGhost:new(Vector3(368.68, -6.34, 1001.85), 0, 9, 4, false, false)
+    self.m_Ghost:setHealth(0) -- makes ghost basically invincible
+    self.m_ColShape = createColRectangle(363.74, -8.95, 10, 10)
     addEventHandler("onClientColShapeHit", self.m_ColShape, bind(self.onClientColShapeHit, self))
 end
 
@@ -23,24 +24,26 @@ end
 function BigSmokeQuest:startQuest()
     self:createDialog(bind(self.onStart, self),
         "Du kommst wie gerufen!",
-        "Ich habe Informationen zu einem Geist der in einem Haus in Idlewood sein Unwesen treibt!",
+        "Ich habe Informationen zu einem Geist in Willowfield!",
         "Nimm den Geistvertreiber und vertreibe ihn!"
     )
 end
 
 function BigSmokeQuest:onStart()
     triggerServerEvent("Halloween:giveGhostCleaner", localPlayer)
-    self.m_QuestMessage = ShortMessage:new("Vertreibe den Geist aus dem Haus in Idlewood!", "Halloween: Quest", Color.Orange, -1, false, false, Vector2(2058.01, -1697.27), {{path="Marker.png", pos=Vector2(2058.01, -1697.27)}}, true)
+    self.m_QuestMessage = ShortMessage:new("Vertreibe den Geist im Cluckin Bell Willowfield!", "Halloween: Quest", Color.Orange, -1, false, false, Vector2(2397.83, -1898.65), {{path="Marker.png", pos=Vector2(2397.83, -1898.65)}}, true)
 end
 
 function BigSmokeQuest:onClientColShapeHit(hitElement)
     if hitElement == localPlayer then
-        toggleAllControls(false)
-        self:createDialog(bind(self.removeDisguise, self), 
-            "Ich wusste, dass du kommen wirst.",
-            "Du wirst uns nicht an unserem Plan hindern."
-        )
-        self.m_ColShape:destroy()
+        if hitElement:getDimension() == 4 then
+            toggleAllControls(false)
+            self:createDialog(bind(self.removeDisguise, self), 
+                "Ich wusste, dass du kommen wirst.",
+                "Du wirst uns nicht an unserem Plan hindern."
+            )
+            self.m_ColShape:destroy()
+        end
     end
 end
 
@@ -67,7 +70,7 @@ function BigSmokeQuest:removeDisguise()
 end
 
 function BigSmokeQuest:moveGhost()
-    self.m_Ghost.m_MoveObject:move(4000, 2260.347, -1226.271, 1049.023)
+    self.m_Ghost.m_MoveObject:move(4000, 368.68, -6.34, 1010)
     
     toggleAllControls(true)
     delete(self.m_QuestMessage)

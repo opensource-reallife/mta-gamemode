@@ -21,7 +21,7 @@ end
 
 function GhostFinderQuest:startQuest()
     self:createDialog(bind(self.onStart, self), 
-        "Du! Ich brauche deine Hilfe!",
+        "Okay, jetzt gibt es wirklich ein Problem!",
         "In meinem Haus spukt es und Ich bin zu alt, um den Geist zu vertreiben!",
         "Hier, nimm diesen Geistvertreiber und treib den Geist aus!"
     )
@@ -29,7 +29,7 @@ end
 
 function GhostFinderQuest:onStart()
     triggerServerEvent("Halloween:giveGhostCleaner", localPlayer)
-    self.m_QuestMessage = ShortMessage:new("Vertreibe den Geist aus dem Haus des Fremden!", "Halloween: Quest", Color.Orange, -1, false, false, Vector2(2751.914, -1962.834), {{path="Marker.png", pos=Vector2(2751.914, -1962.834)}}, true)
+    self.m_QuestMessage = ShortMessage:new("Vertreibe den Geist aus dem Haus des Fremden!", "Halloween: Quest", Color.Orange, -1, false, false, Vector2(1851.825, -2135.402), {{path="Marker.png", pos=Vector2(1851.825, -2135.402)}}, true)
 end
 
 function GhostFinderQuest:onGhostKill()

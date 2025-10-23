@@ -70,6 +70,12 @@ function Casino:constructor()
 		EasterSlotmachine:new(1499.53, -1749.9, 16, 0, 0, 180, 0, 0)
 		EasterSlotmachine:new(1462.7, -1749.8, 16, 0, 0, 179.995, 0, 0)
 	end
+
+	if EVENT_HALLOWEEN then --x, y, z, rx, ry, rz, int, dim
+		HalloweenSlotmachine:new(928.3, -1127.65, 24.2, 0, 0, 180, 0, 0)
+		HalloweenSlotmachine:new(925.45, -1127.65, 24.2, 0, 0, 180, 0, 0)
+		HalloweenSlotmachine:new(922.6, -1127.65, 24.2, 0, 0, 180, 0, 0)
+	end
 end
 
 function Casino:onChessMarkerHit(hitElement, dim)

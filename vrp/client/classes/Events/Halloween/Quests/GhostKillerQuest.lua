@@ -10,10 +10,10 @@ GhostKillerQuest = inherit(HalloweenQuest)
 
 function GhostKillerQuest:constructor()
     self.m_Ghosts = {
-        HalloweenGhost:new(Vector3(-59.19, 1362.08, 1080.21), 66, 6, 13, false, bind(self.onGhostKill, self)), --Aztecas
-        HalloweenGhost:new(Vector3(2371.15, -1132.86, 1051.69), 70, 8, 13, false, bind(self.onGhostKill, self)), --Strand
-        HalloweenGhost:new(Vector3(-267.28, 1448.41, 1084.37), 74, 4, 13, false, bind(self.onGhostKill, self)), --San News
-        HalloweenGhost:new(Vector3(323.84, 1129.22, 1083.88), 180, 5, 13, false, bind(self.onGhostKill, self)) --Glen Park
+        HalloweenGhost:new(Vector3(-59.19, 1362.08, 1080.21), 66, 6, 13, false, bind(self.onGhostKill, self)),
+        HalloweenGhost:new(Vector3(2371.15, -1132.86, 1051.69), 70, 8, 13, false, bind(self.onGhostKill, self)),
+        HalloweenGhost:new(Vector3(-267.28, 1448.41, 1084.37), 74, 4, 13, false, bind(self.onGhostKill, self)),
+        HalloweenGhost:new(Vector3(323.84, 1129.22, 1083.88), 180, 5, 13, false, bind(self.onGhostKill, self))
     }
     self.m_KilledGhosts = 0
     for key, ghost in pairs(self.m_Ghosts) do 

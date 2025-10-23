@@ -196,3 +196,29 @@ function Halloween:createGhost()
 		, 500, 1)
 	end
 end
+
+function Halloween.updateTextures() 
+	Halloween.Textures = {}
+	function Halloween.updateTexture(texname, file, object)
+		if not Halloween.Textures[file] then
+			Halloween.Textures[file] = {}
+			Halloween.Textures[file].shader = dxCreateShader("files/shader/texreplace.fx")
+			Halloween.Textures[file].tex = dxCreateTexture(file)
+			dxSetShaderValue(Halloween.Textures[file].shader, "gTexture", Halloween.Textures[file].tex)
+		end
+		engineApplyShaderToWorldTexture(Halloween.Textures[file].shader, texname, object)
+	end
+
+	for index, object in pairs(getElementsByType("object")) do
+		if object:getModel() == 2347 and getElementData(object, "HalloweenSlotmachine") then
+			Halloween.updateTexture("cj_wheel_69256", "files/images/Events/Halloween/slot_1.png", object) -- 69
+			Halloween.updateTexture("cj_wheel_B1256", "files/images/Events/Halloween/slot_2.png", object) -- Gold 1
+			Halloween.updateTexture("cj_wheel_B2256", "files/images/Events/Halloween/slot_3.png", object) -- Gold 2
+			Halloween.updateTexture("cj_wheel_Bell256", "files/images/Events/Halloween/slot_4.png", object) -- Glocke
+			Halloween.updateTexture("cj_wheel_Cherry256", "files/images/Events/Halloween/slot_5.png", object) -- Kirsche
+			Halloween.updateTexture("cj_wheel_Grape256", "files/images/Events/Halloween/slot_6.png", object) -- Traube
+		elseif object:getModel() == 2325 and object:getData("Halloween") then
+			Halloween.updateTexture("slot5_ind", "files/images/Events/Halloween/slotmachine1.jpg", object)
+		end
+	end
+end

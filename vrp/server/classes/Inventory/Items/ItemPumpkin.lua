@@ -43,10 +43,10 @@ function ItemPumpkin:onPumpkinClick(button, state, player)
                 player:getInventory():giveItem("Kürbis", 1)
                 player:sendInfo(_("Du hast einen Kürbis gesammelt!", player))
 
-				player:giveAchievement(88) -- Finde dein erstes Kürbis
+				player:giveAchievement(109) -- Finde deinen ersten Kürbis
 
 				if player:getInventory():getItemAmount("Kürbis") >= 50 then
-					player:giveAchievement(89) -- Kürbissammler
+					player:giveAchievement(110) -- Kürbissammler
 				end
             else
                 player:sendError(_("Du kannst nicht soviele Kürbisse tragen! Maximal %d Stk.!", player, player:getInventory():getMaxItemAmount("Kürbis")))

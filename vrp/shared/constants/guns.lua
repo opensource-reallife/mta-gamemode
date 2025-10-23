@@ -20,6 +20,8 @@ WEAPON_DAMAGE = {
 	[33] = 15,
 	[34] = 50,
 
+	[38] = 0,
+
 	[51] = 40
 }
 
@@ -233,6 +235,7 @@ EXPLOSIVE_DAMAGE_MULTIPLIER = {
 
 WEAPON_RELOAD_TIME = -- how much time a weapon should need to reload 
 {
+	[38] = 700,
 	[35] = 5000,
 	[34] = 4000,
 }

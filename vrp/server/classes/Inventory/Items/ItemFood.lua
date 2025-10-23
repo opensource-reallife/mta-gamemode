@@ -17,7 +17,7 @@ ItemFood.Settings = {
 	["Keks"] = {["Hunger"] = 100, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
 	["Apfel"] = {["Hunger"] = 20, ["Model"] = 3105, ["ModelScale"] = {1.4}, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, 0, 0.05, 0.08, 0, -90, 90}},
 	["Zombie-Burger"] = {["Hunger"] = 60, ["Model"] = 2880, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["CustomEvent"] = "bloodFx"},
-	["Kuheuter mit Pommes"] = {["Hunger"] = 60, ["Model"] = 2806, ["ModelScale"] = {0.2, 0.1, 0.55}, ["Text"] = "isst %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, 0, 0.05, 0.1, 0, -90, 0}, ["CustomEvent"] = "bloodFx"},
+	["Kuheuter mit Pommes"] = {["Hunger"] = 60, ["Text"] = "isst %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, 0, 0.05, 0.1, 0, -90, 0}, ["CustomEvent"] = "bloodFx"},
 	["Suessigkeiten"] = {["Hunger"] = 5, ["Text"] = "nascht leckere %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
 	["Zuckerstange"] = {["Hunger"] = 5, ["Text"] = "nascht eine %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
 	["Wuerstchen"] = {["Hunger"] = 60, ["Model"] = 3103, ["ModelScale"] = {2.5, 0.5, 0.5}, ["Text"] = "isst heiße %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, -0.015, 0.03, 0.1, 0, 0, 0}},
@@ -90,7 +90,7 @@ function ItemFood:use(player)
 			player:setAnimation(block, animation, time, true, false, false)
 			player.m_IsEating = true
 			player:setData("isEating", true, true)
-			if item then
+			if isElement(item) then
 				item:setPosition(player:getPosition())
 				item:setModel(ItemSettings["Model"])
 				if ItemSettings["ModelScale"] then item:setScale(unpack(ItemSettings["ModelScale"])) end

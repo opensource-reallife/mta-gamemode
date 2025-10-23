@@ -157,8 +157,8 @@ function ZombieSurvival:removePlayer(player)
 
 	-- Reward pumpkins and candy based on score
 	if EVENT_HALLOWEEN and not player:isDisconnecting() then
-		local pumpkinAmount = math.floor(score / Randomizer:get(30, 100))
-		local candyAmount = math.floor(score / Randomizer:get(3, 10))
+		local pumpkinAmount = math.round(score / 50)
+		local candyAmount = math.round(score / 5)
 
 		if pumpkinAmount + candyAmount > 0 then
 			player:getInventory():giveItem("Kürbis", pumpkinAmount)

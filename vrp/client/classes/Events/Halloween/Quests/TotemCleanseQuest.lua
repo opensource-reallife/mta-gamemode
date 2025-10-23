@@ -42,30 +42,35 @@ end
 
 function TotemCleanseQuest:startQuest()
     self:createDialog(bind(self.onStart, self),
-        "Sieh dich nach weiteren Totems um!",
-        "Ich vermute, dass sie in Verbindung zu dem riesigen Totem stehen!",
-        "Vielleicht kannst Du dich dem Totem nähern, wenn Du die kleinen Totems zerstörst?"
+        "Also, Ich habe etwas nachgeforscht...",
+        "Scheinbar sind überall in Los Santos kleine Totems aufgetaucht!",
+        "Ich vermute, dass sie in Verbindung zu dem riesigen Totem stehen...",
+        "Vielleicht hilft es uns, wenn Du genügend davon zerstörst?"
     )
 end
 
 function TotemCleanseQuest:onStart()
     triggerServerEvent("Halloween:giveGhostCleaner", localPlayer)
-    self.m_QuestMessage = ShortMessage:new("Zerstöre die Totems! (20 verbleibend)", "Halloween: Quest", Color.Orange, -1, false, false, false, false, true)
+    self.m_QuestMessage = ShortMessage:new("Zerstöre Totems! (10 verbleibend)", "Halloween: Quest", Color.Orange, -1, false, false, false, false, true)
+    InfoBox:new("Du kannst Totems zerstören, indem du auf sie klickst!")
 end
 
 function TotemCleanseQuest:onTotemBreak()
-    self.m_TotemsBroken = self.m_TotemsBroken + 1
-    self.m_QuestMessage:setText(("Zerstöre die Totems! (%s verbleibend)"):format(#self.m_Totems-self.m_TotemsBroken))
-    if self.m_TotemsBroken == #self.m_Totems then
-        delete(self.m_QuestMessage)
-        self.m_QuestMessage = ShortMessage:new("Kehre nun zum Friedhof zurück!", "Halloween: Quest", Color.Orange, -1, false, false, false, false, true)
-        self:setSucceeded()
+    if not self:isSucceeded() then
+        local requiredTotems = #self.m_Totems / 2
+        self.m_TotemsBroken = self.m_TotemsBroken + 1
+        self.m_QuestMessage:setText(("Zerstöre Totems! (%s verbleibend)"):format(requiredTotems-self.m_TotemsBroken))
+        if self.m_TotemsBroken == requiredTotems then
+            delete(self.m_QuestMessage)
+            self.m_QuestMessage = ShortMessage:new("Kehre nun zum Friedhof zurück!", "Halloween: Quest", Color.Orange, -1, false, false, false, false, true)
+            self:setSucceeded()
+        end
     end
 end
 
 function TotemCleanseQuest:endQuest()
     self:createDialog(false, 
-        "Hast Du weitere Totems gefunden?",
-        "Vielleicht kannst Du dich dem Totem jetzt nähern?"
+        "Du hast einige Totems gefunden und zerstört?",
+        "Sehr gut! Hier eine kleine Belohnung!"
     )
 end

@@ -200,6 +200,7 @@ function Core:ready() --onClientResourceStart
 
 	if EVENT_HALLOWEEN then
 		Halloween:new()
+		Halloween.updateTextures()
 	end
 	if EVENT_CHRISTMAS then
 		Christmas:new()

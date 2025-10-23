@@ -302,6 +302,7 @@
 	<script src="server/classes/Gameplay/Jail.lua" type="server"/>
 	<script src="server/classes/Gameplay/Slotmachine.lua" type="server"/>
 	<script src="server/classes/Gameplay/EasterSlotmachine.lua" type="server"/>
+	<script src="server/classes/Gameplay/HalloweenSlotmachine.lua" type="server"/>
 	<script src="server/classes/Gameplay/Fishing.lua" type="server"/>
 	<script src="server/classes/Gameplay/Deathmatch/DeathmatchManager.lua" type="server"/>
 	<script src="server/classes/Gameplay/Deathmatch/DeathmatchLobby.lua" type="server"/>
@@ -1502,6 +1503,14 @@
 	<vrpfile src="files/images/Events/Halloween/ButtonSplatter3.png" />
 	<vrpfile src="files/images/Events/Halloween/ButtonSplatter4.png" />
 
+	<vrpfile src="files/images/Events/Halloween/slotmachine1.jpg" />
+	<vrpfile src="files/images/Events/Halloween/slot_1.png" />
+	<vrpfile src="files/images/Events/Halloween/slot_2.png" />
+	<vrpfile src="files/images/Events/Halloween/slot_3.png" />
+	<vrpfile src="files/images/Events/Halloween/slot_4.png" />
+	<vrpfile src="files/images/Events/Halloween/slot_5.png" />
+	<vrpfile src="files/images/Events/Halloween/slot_6.png" />
+
 	<vrpfile src="files/images/Events/Halloween/Bonus_BG.png" />
 
 	<vrpfile src="files/images/Events/Bonus/Bonus_Bravura.png" />
@@ -1514,6 +1523,9 @@
 	<vrpfile src="files/images/Events/Bonus/Bonus_Money.png" />
 	<vrpfile src="files/images/Events/Bonus/Bonus_Payday.png" />
 	<vrpfile src="files/images/Events/Bonus/Bonus_Romero.png" />
+	<vrpfile src="files/images/Events/Bonus/Bonus_Hustler.png" />
+	<vrpfile src="files/images/Events/Bonus/Bonus_Pumpkin.png" />
+	<vrpfile src="files/images/Events/Bonus/Bonus_Sweets.png" />
 	<vrpfile src="files/images/Events/Bonus/Bonus_Vest.png" />
 	<vrpfile src="files/images/Events/Bonus/Bonus_VIP.png" />
 	<vrpfile src="files/images/Events/Bonus/Bonus_Weed.png" />

@@ -1,14 +1,15 @@
 HalloweenQuestManager = inherit(Singleton)
 
 HalloweenQuestManager.ms_QuestRewards = {
-	--{pumpkins=2, sweets=5},
-	--{pumpkins=5, sweets=15},
-	--{pumpkins=2, sweets=10},
 	{pumpkins=10, sweets=25},
-	--{pumpkins=2, sweets=10},
-	--{pumpkins=2, sweets=10},
-	--{pumpkins=10, sweets=25},
-	--{pumpkins=25, sweets=50},
+	{pumpkins=2, sweets=5},
+	{pumpkins=5, sweets=15},
+	{pumpkins=2, sweets=10},
+	{pumpkins=10, sweets=25},
+	{pumpkins=2, sweets=10},
+	{pumpkins=2, sweets=10},
+	{pumpkins=10, sweets=25},
+	{pumpkins=25, sweets=50},
 }
 
 function HalloweenQuestManager:constructor()
@@ -17,45 +18,45 @@ function HalloweenQuestManager:constructor()
 	addEventHandler("Halloween:requestQuestState", root, bind(self.requestQuestState, self))
 	addEventHandler("Halloween:requestQuestUpdate", root, bind(self.requestQuestUpdate, self))
 
-	--[[ Ghost Cleaner Questline
+	-- Ghost Cleaner Questline
 	addEventHandler("onPlayerQuit", root, bind(self.onPlayerQuit, self))
 	addEventHandler("Halloween:giveGhostCleaner", root, bind(self.Event_giveGhostCleaner, self))
 	addEventHandler("Halloween:takeGhostCleaner", root, bind(self.Event_takeGhostCleaner, self))
 
+	setWeaponProperty(38, "poor", "maximum_clip_ammo", 1)
+	setWeaponProperty(38, "std", "maximum_clip_ammo", 1)
+	setWeaponProperty(38, "pro", "maximum_clip_ammo", 1)
+
 	self:createQuestMarkers()
-	]]
 end
 
 function HalloweenQuestManager:Event_giveGhostCleaner()
-	giveWeapon(client, 27, 9999, true)
+	giveWeapon(client, 38, 9999, true)
 end
 
 function HalloweenQuestManager:Event_takeGhostCleaner()
-	takeWeapon(client, 27)
+	takeWeapon(client, 38)
 end
 
 function HalloweenQuestManager:onPlayerQuit()
-	takeWeapon(source, 27)
+	takeWeapon(source, 38)
 end
 
 function HalloweenQuestManager:createQuestMarkers()
 	self.m_QuestEnterExits = {
-		[1] = {
-			InteriorEnterExit:new(Vector3(2751.914, -1962.834, 13.548), Vector3(-42.56, 1405.99, 1084.43), 270, 0, 8, 13, 0, 0)
-		},
 		[2] = {
-			InteriorEnterExit:new(Vector3(1851.825, -2135.402, 15.388), Vector3(-68.89, 1351.71, 1080.21), 0, 180, 6, 13, 0, 0),
-			InteriorEnterExit:new(Vector3(986.370, -1624.505, 14.930), Vector3(2365.25, -1135.06, 1050.88), 0, 90, 8, 13, 0, 0),
-			InteriorEnterExit:new(Vector3(824.521, -1423.724, 14.496), Vector3(-261.17, 1456.69, 1084.37), 90, 0, 4, 13, 0, 0),
-			InteriorEnterExit:new(Vector3(2092.063, -1166.489, 26.586), Vector3(318.55, 1114.98, 1083.88), 0, 90, 5, 13, 0, 0)
+			InteriorEnterExit:new(Vector3(1851.825, -2135.402, 15.388), Vector3(-42.56, 1405.99, 1084.43), 0, 180, 8, 13, 0, 0)
 		},
 		[3] = {
-			InteriorEnterExit:new(Vector3(2058.01, -1697.27, 13.55), Vector3(2270.01, -1210.48, 1047.56), 90, 0, 10, 13, 0, 0)
+			InteriorEnterExit:new(Vector3(2636.31, -2012.34, 13.81), Vector3(-68.89, 1351.71, 1080.21), 0, 300, 6, 13, 0, 0),
+			InteriorEnterExit:new(Vector3(672.58, -1019.83, 55.76), Vector3(2365.25, -1135.06, 1050.88), 0, 60, 8, 13, 0, 0),
+			InteriorEnterExit:new(Vector3(2514.57, -1241.51, 39.02), Vector3(-261.17, 1456.69, 1084.37), 90, 180, 4, 13, 0, 0),
+			InteriorEnterExit:new(Vector3(797.85, -1729.27, 13.55), Vector3(318.55, 1114.98, 1083.88), 0, 270, 5, 13, 0, 0)
 		},
-		[4] = {
+		[5] = {
 			InteriorEnterExit:new(Vector3(2539.86, -1303.96, 34.95), Vector3(2542.45, -1304.00, 1025.07), 90, 270, 2, 13, 0, 0)
 		},
-		[7] = {
+		[8] = {
 			InteriorEnterExit:new(Vector3(1412.666,-1304.790, 8.561), Vector3(1426.313, -1938.632, -38.160), 180, 90, 0, 3, 0, 0)
 		}
 	}

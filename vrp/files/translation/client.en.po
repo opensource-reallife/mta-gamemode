@@ -6397,11 +6397,11 @@ msgstr "Could you look into that for me?"
 msgid "Wie? Da verkauft nur ein Irrer eine neue Droge?"
 msgstr "What? Just some nutjob selling a new drug?"
 
-msgid "Schade, ich hatte auf etwas Spannenderes gehofft..."
-msgstr "Too bad, I was hoping for something more exciting..."
+msgid "Puh, da bin ich aber erleichtert."
+msgstr "Phew, what a relief."
 
-msgid "Naja, wie dem auch sei. Hier, eine kleine Belohnung für deine Arbeit!"
-msgstr "Well, anyway. Here, a little reward for your work!"
+msgid "Hier, eine Belohnung für deine Arbeit!"
+msgstr "Here, a reward for your work!"
 
 msgid "Untersuche die Zombie-Sichtungen!"
 msgstr "Investigate the zombie sightings!"

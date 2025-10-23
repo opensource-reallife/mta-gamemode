@@ -9,6 +9,7 @@
 ZombieSurvivalQuest = inherit(HalloweenQuest)
 
 function ZombieSurvivalQuest:constructor()
+    self.m_IgnoreWasted = true
 	self.m_ColShape = createColSphere(-34.6, 1377.80, 8.4, 2)
     self.m_ColShapeHitFunc = bind(self.Event_onClientColShapeHit, self)
 	addEventHandler("onClientColShapeHit", self.m_ColShape, self.m_ColShapeHitFunc)
@@ -22,7 +23,7 @@ function ZombieSurvivalQuest:virtual_destructor()
 end
 
 function ZombieSurvivalQuest:startQuest()
-    self:createDialog(bind(self.onStart, self), 
+    self:createDialog(bind(self.onStart, self),
         "Oh, hallo! Ich bräuchte jemanden, der mir mit etwas behilflich ist.",
         "Es gibt Gerüchte, dass in Bone County Zombies gesichtet wurden.",
         "Könntest du das für mich mal untersuchen?"
@@ -54,7 +55,7 @@ end
 function ZombieSurvivalQuest:endQuest()
     self:createDialog(false, 
         "Wie? Da verkauft nur ein Irrer eine neue Droge?",
-        "Schade, ich hatte auf etwas Spannenderes gehofft...",
-        "Naja, wie dem auch sei. Hier, eine kleine Belohnung für deine Arbeit!"
+        "Puh, da bin ich aber erleichtert.",
+        "Hier, eine Belohnung für deine Arbeit!"
     )
 end
