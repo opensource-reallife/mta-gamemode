@@ -283,7 +283,7 @@ function Trunk:open(player)
 		end
 
 		if self.m_Vehicle:getOwnerType() == VehicleTypes.Group then
-			if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "group", "useTrunk") then
+			if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "group", "useTrunk") and not (player:getRank() >= RANK.Moderator and player:getPublicSync("supportMode")) then
 				player:sendError(_("Du hast keine Berechtigung den Kofferraum dieses Fahrzeuges zu benutzen!", player))
 				return
 			end
