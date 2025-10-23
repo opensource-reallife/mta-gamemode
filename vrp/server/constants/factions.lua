@@ -470,8 +470,8 @@ factionWeaponDepotInfo = {
 	[32] = {["Waffe"] = 40, ["Magazine"] = 120, ["WaffenPreis"] = 200, ["MagazinPreis"] = 70}, -- Tec9
 	[33] = {["Waffe"] = 20, ["Magazine"] = 120, ["WaffenPreis"] = 400, ["MagazinPreis"] = 5}, -- County Rifle
 	[34] = {["Waffe"] = 5, ["Magazine"] = 15, ["WaffenPreis"] = 7500, ["MagazinPreis"] = 250}, -- Sniper
-	[35] = {["Waffe"] = 3, ["Magazine"] = 6, ["WaffenPreis"] = 13500, ["MagazinPreis"] = 2100}, -- Rocket Launcher
-	[36] = {["Waffe"] = 2, ["Magazine"] = 4, ["WaffenPreis"] = 12500, ["MagazinPreis"] = 2000}, -- Heat-Seeking RPG
+	[35] = {["Waffe"] = 2, ["Magazine"] = 4, ["WaffenPreis"] = 35000, ["MagazinPreis"] = 7500}, -- Rocket Launcher
+	[36] = {["Waffe"] = 3, ["Magazine"] = 6, ["WaffenPreis"] = 35000, ["MagazinPreis"] = 7000}, -- Heat-Seeking RPG
 	[37] = {["Waffe"] = 0, ["Magazine"] = 0, ["WaffenPreis"] = 0, ["MagazinPreis"] = 0}, -- Flamethrower
 	[38] = {["Waffe"] = 0, ["Magazine"] = 0, ["WaffenPreis"] = 0, ["MagazinPreis"] = 0}, -- Minigun
 	[39] = {["Waffe"] = 0, ["Magazine"] = 0, ["WaffenPreis"] = 0, ["MagazinPreis"] = 0}, -- Satchel Charges
