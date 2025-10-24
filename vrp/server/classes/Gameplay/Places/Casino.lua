@@ -75,6 +75,10 @@ function Casino:constructor()
 		HalloweenSlotmachine:new(928.3, -1127.65, 24.2, 0, 0, 180, 0, 0)
 		HalloweenSlotmachine:new(925.45, -1127.65, 24.2, 0, 0, 180, 0, 0)
 		HalloweenSlotmachine:new(922.6, -1127.65, 24.2, 0, 0, 180, 0, 0)
+		HalloweenSlotmachine:new(815.5, -1109.5, 26.2, 0, 0, 180, 0, 0)
+		HalloweenSlotmachine:new(820.8, -1096.3, 26.2, 0, 0, 270, 0, 0)
+		HalloweenSlotmachine:new(820.8, -1099.2, 26.2, 0, 0, 270, 0, 0)
+		HalloweenSlotmachine:new(815.5, -1091.65, 26.2, 0, 0, 0, 0, 0)
 	end
 end
 
