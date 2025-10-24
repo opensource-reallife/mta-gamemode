@@ -135,9 +135,9 @@ end
 
 -- Premium
 -- Vehicle
--- 5 Pumpkins
+-- Pumpkins
 -- Money
--- 1 Pumpkin
+-- Pumpkin
 -- Sweets
 
 function HalloweenSlotmachine:calculateSpin()
@@ -145,13 +145,13 @@ function HalloweenSlotmachine:calculateSpin()
 		1100, -- Premium -- "increased"
 		1800, -- Vehicle
 		1800, -- Vehicle
-		2140, -- 5 Pumpkins
-		2140, -- 5 Pumpkins
-		2140, -- 5 Pumpkins
-		2140, -- 5 Pumpkins
-		2140, -- 5 Pumpkins
-		2140, -- 5 Pumpkins
-		2140, -- 5 Pumpkins
+		2140, -- Pumpkins
+		2140, -- Pumpkins
+		2140, -- Pumpkins
+		2140, -- Pumpkins
+		2140, -- Pumpkins
+		2140, -- Pumpkins
+		2140, -- Pumpkins
 		1500, -- Money
 		1600, -- Money
 		2000, -- Money
@@ -159,14 +159,14 @@ function HalloweenSlotmachine:calculateSpin()
 		1400, -- Money
 		1500, -- Money
 		1500, -- Money
-		1300, -- 1 Pumpkin
-		1300, -- 1 Pumpkin
-		1300, -- 1 Pumpkin
-		1300, -- 1 Pumpkin
-		1300, -- 1 Pumpkin
-		1300, -- 1 Pumpkin
-		1300, -- 1 Pumpkin
-		1300, -- 1 Pumpkin
+		1300, -- Pumpkin
+		1300, -- Pumpkin
+		1300, -- Pumpkin
+		1300, -- Pumpkin
+		1300, -- Pumpkin
+		1300, -- Pumpkin
+		1300, -- Pumpkin
+		1300, -- Pumpkin
 		1700, -- Sweets
 		1900, -- Sweets
 		2100, -- Sweets
@@ -290,8 +290,8 @@ function HalloweenSlotmachine:giveWin(player, name, x, y, z)
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_jackpot")
 		StatisticsLogger:addCasino(player, name, 1)
 	elseif name == "Sweets" then
-        local amount = 35
-		player:sendInfo(_("Du hast 35 Süßigkeiten gewonnen!", player))
+        local amount = 50
+		player:sendInfo(_("Du hast 50 Süßigkeiten gewonnen!", player))
 		player:getInventory():giveItem("Suessigkeiten", amount)
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
