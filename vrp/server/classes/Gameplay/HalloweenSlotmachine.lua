@@ -135,9 +135,9 @@ end
 
 -- Premium
 -- Vehicle
--- 5 Pumpkins
+-- Pumpkins
 -- Money
--- 1 Pumpkin
+-- Pumpkin
 -- Sweets
 
 function HalloweenSlotmachine:calculateSpin()
@@ -145,13 +145,13 @@ function HalloweenSlotmachine:calculateSpin()
 		1100, -- Premium -- "increased"
 		1800, -- Vehicle
 		1800, -- Vehicle
-		2140, -- 5 Pumpkins
-		2140, -- 5 Pumpkins
-		2140, -- 5 Pumpkins
-		2140, -- 5 Pumpkins
-		2140, -- 5 Pumpkins
-		2140, -- 5 Pumpkins
-		2140, -- 5 Pumpkins
+		2140, -- Pumpkins
+		2140, -- Pumpkins
+		2140, -- Pumpkins
+		2140, -- Pumpkins
+		2140, -- Pumpkins
+		2140, -- Pumpkins
+		2140, -- Pumpkins
 		1500, -- Money
 		1600, -- Money
 		2000, -- Money
@@ -159,14 +159,14 @@ function HalloweenSlotmachine:calculateSpin()
 		1400, -- Money
 		1500, -- Money
 		1500, -- Money
-		1300, -- 1 Pumpkin
-		1300, -- 1 Pumpkin
-		1300, -- 1 Pumpkin
-		1300, -- 1 Pumpkin
-		1300, -- 1 Pumpkin
-		1300, -- 1 Pumpkin
-		1300, -- 1 Pumpkin
-		1300, -- 1 Pumpkin
+		1300, -- Pumpkin
+		1300, -- Pumpkin
+		1300, -- Pumpkin
+		1300, -- Pumpkin
+		1300, -- Pumpkin
+		1300, -- Pumpkin
+		1300, -- Pumpkin
+		1300, -- Pumpkin
 		1700, -- Sweets
 		1900, -- Sweets
 		2100, -- Sweets
@@ -255,22 +255,29 @@ function HalloweenSlotmachine:start(player)
 end
 
 function HalloweenSlotmachine:giveWin(player, name, x, y, z)
-	if name == "Trostpreis" then
-		local rnd = Randomizer:get(50, 100)
-		player:sendInfo(_("Du hast %d$ gewonnen!", player, rnd))
-		self.m_BankAccountServer:transferMoney(player, rnd, "HalloweenSlotmachine", "Event", "Halloween")
-
-		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
-		StatisticsLogger:addCasino(player, "Money", rnd)
-	elseif name == "Money" then
+	if name == "Money" then
 		local rnd = Randomizer:get(2500, 7500)
 		player:sendInfo(_("Du hast %d$ gewonnen!", player, rnd))
 		self.m_BankAccountServer:transferMoney(player, rnd, "HalloweenSlotmachine", "Event", "Halloween")
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
 		StatisticsLogger:addCasino(player, name, rnd)
+	elseif name == "MoneyBad" then
+		local rnd = Randomizer:get(250, 750)
+		player:sendInfo(_("Du hast %d$ gewonnen!", player, rnd))
+		self.m_BankAccountServer:transferMoney(player, rnd, "HalloweenSlotmachine", "Event", "Halloween")
+
+		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
+		StatisticsLogger:addCasino(player, name, rnd)
 	elseif name == "Pumpkin" then
-		local amount = 5
+		local amount = 10
+		player:sendInfo(_("Du hast %d Kürbisse gewonnen!", player, amount))
+		player:getInventory():giveItem("Kürbis", amount)
+
+		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
+		StatisticsLogger:addCasino(player, "Pumpkins", amount)
+	elseif name == "PumpkinBad" then
+		local amount = 2
 		player:sendInfo(_("Du hast %d Kürbisse gewonnen!", player, amount))
 		player:getInventory():giveItem("Kürbis", amount)
 
@@ -283,6 +290,13 @@ function HalloweenSlotmachine:giveWin(player, name, x, y, z)
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
 		StatisticsLogger:addCasino(player, name, amount)
+	elseif name == "PumpkinsBad" then
+		local amount = 5
+		player:sendInfo(_("Du hast %d Kürbisse gewonnen!", player, amount))
+		player:getInventory():giveItem("Kürbis", amount)
+
+		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
+		StatisticsLogger:addCasino(player, name, amount)
 	elseif name == "Premium" then
 		player:sendInfo(_("Du hast einen Monat Premium gewonnen! Gratulation!", player))
 		player.m_Premium:giveEventMonth()
@@ -290,8 +304,15 @@ function HalloweenSlotmachine:giveWin(player, name, x, y, z)
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_jackpot")
 		StatisticsLogger:addCasino(player, name, 1)
 	elseif name == "Sweets" then
-        local amount = 35
-		player:sendInfo(_("Du hast 35 Süßigkeiten gewonnen!", player))
+        local amount = 50
+		player:sendInfo(_("Du hast %d Süßigkeiten gewonnen!", player, amount))
+		player:getInventory():giveItem("Suessigkeiten", amount)
+
+		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
+		StatisticsLogger:addCasino(player, name, amount)
+	elseif name == "SweetsBad" then
+        local amount = 10
+		player:sendInfo(_("Du hast %d Süßigkeiten gewonnen!", player, amount))
 		player:getInventory():giveItem("Suessigkeiten", amount)
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
@@ -339,8 +360,14 @@ function HalloweenSlotmachine:doResult(ergebnis, player)
 		self:giveWin(player, "Pumpkins", x, y, z)
 	elseif result["Sweets"] == 3 then
 		self:giveWin(player, "Sweets", x, y, z)
-	elseif result["VIP"] == 2 or result["Pumpkin"] == 2 or result["Vehicle"] == 2 or result["Money"] == 2 or result["Pumpkins"] == 2 or result["Sweets"] == 2 then
-		self:giveWin(player, "Trostpreis", x, y, z)
+	elseif result["Pumpkin"] == 2 then
+		self:giveWin(player, "PumpkinBad", x, y, z)
+	elseif result["Pumpkins"] == 2 then
+		self:giveWin(player, "PumpkinsBad", x, y, z)
+	elseif result["Sweets"] == 2 then
+		self:giveWin(player, "SweetsBad", x, y, z)
+	elseif result["VIP"] == 2 or result["Vehicle"] == 2 or result["Money"] == 2 then
+		self:giveWin(player, "MoneyBad", x, y, z)
 	else
 		player:sendInfo(_("Du hast leider nichts gewonnen!", player))
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_nothing")
@@ -356,6 +383,6 @@ function HalloweenSlotmachine:startPlayer(player)
 	if player:getInventory():removeItem("Kürbis", amount) then
 		self:start(player)
 	else
-		player:sendWarning(_("Du brauchst %s Kürbisse, um spielen zu können", player, amount))
+		player:sendWarning(_("Du brauchst %s Kürbisse, um spielen zu können!", player, amount))
 	end
 end

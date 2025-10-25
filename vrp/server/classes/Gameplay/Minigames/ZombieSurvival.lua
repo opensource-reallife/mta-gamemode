@@ -38,7 +38,6 @@ function ZombieSurvival.initalize()
 
 	addRemoteEvents{"startZombieSurvival"}
 	addEventHandler("startZombieSurvival", root, function()
-
 		local index = #MinigameManager.Current+1
 		MinigameManager.Current[index] = ZombieSurvival:new()
 		MinigameManager.Current[index]:addPlayer(client)
@@ -55,11 +54,12 @@ function ZombieSurvival:constructor()
 	self.m_ZombieTime = 10000
 	self.m_IncreaseTimer = setTimer(bind(self.increaseZombies, self), 20000, 0)
 	self.m_CreatePickupTimer = setTimer(bind(self.createPickup, self), 20000, 0)
+	self.m_ZombieWastedBind = bind(self.zombieWasted, self)
 
 	self:addZombie()
 	self:loadMap()
 	outputDebug("Lobby erstellt - Dimension"..self.m_Dimension)
-	addEventHandler("onZombieWasted", root, bind(self.zombieWasted, self))
+	addEventHandler("onZombieWasted", resourceRoot, self.m_ZombieWastedBind)
 end
 
 function ZombieSurvival:destructor()
@@ -87,18 +87,10 @@ function ZombieSurvival:destructor()
 end
 
 function ZombieSurvival:zombieWasted(ped, player)
+	if not self.m_ZombieKills[player] then return end
 	if isElement(player) then
-		if not self.m_ZombieKills[player] then
-			self.m_ZombieKills[player] = 0
-		end
 		self.m_ZombieKills[player] = self.m_ZombieKills[player]+1
 		player:triggerEvent("setScore", self.m_ZombieKills[player])
-	end
-	
-	for i, zombie in pairs(self.m_Zombies) do
-		if zombie.m_Ped:isDead() then
-			self.m_Zombies[i] = nil
-		end
 	end
 end
 
@@ -167,6 +159,7 @@ function ZombieSurvival:removePlayer(player)
 		end
 	end
 
+	removeEventHandler("onZombieWasted", resourceRoot, self.m_ZombieWastedBind)
 	outputDebug("Spieler "..player:getName().." entfernt - Dimension"..self.m_Dimension)
 
 	player.Minigame = nil
@@ -208,6 +201,11 @@ function ZombieSurvival:createPickup()
 end
 
 function ZombieSurvival:addZombie()
+	for i, zombie in pairs(self.m_Zombies) do
+		if not zombie or (zombie and not isElement(zombie.m_Ped)) then
+			self.m_Zombies[i] = nil
+		end
+	end
 	if table.size(self.m_Zombies) < 20 then
 		local pos = self:getRandomPosition()
 		self:createSmoke(pos)

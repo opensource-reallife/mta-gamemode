@@ -1177,8 +1177,8 @@ function Player:payDay()
 	end
 
 	if EVENT_HALLOWEEN then
-		self:addPaydayText("info", _("Du hast 5 Süßigkeiten bekommen!", self))
-		self:getInventory():giveItem("Suessigkeiten", 5)
+		self:addPaydayText("info", _("Du hast 5 Kürbisse bekommen!", self))
+		self:getInventory():giveItem("Kürbis", 5)
 	end
 
 	triggerClientEvent ( self, "paydayBox", self, self.m_paydayTexts)

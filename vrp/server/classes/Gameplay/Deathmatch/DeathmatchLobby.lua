@@ -175,20 +175,20 @@ function DeathmatchLobby:respawnPlayer(player, dead, pos)
 				player:fadeCamera(true, 1)
 				player:setAlpha(255)
 				player:triggerEvent("CountdownStop", "Respawn in")
-				--giveWeapon(player, Randomizer:getRandomTableValue(self.m_Weapons), 9999, true) -- Todo Add Weapon-Select GUI
-				
-				if table.size(self.m_Weapons) > 1 then
-					toggleAllControls(player, false)
-					player:setGhostMode(true)
-					player:triggerEvent("DeathmatchWeaponSelectGUI:open", self.m_Weapons, self.m_LastSelectedWeapons[player:getId()] or {}, player)
-					setTimer(function()
-						player:triggerEvent("DeathmatchWeaponSelectGUI:close")
-					end, 10000, 1)
-				else
-					giveWeapon(player, self.m_Weapons[1], 9999, true)
+				if type(self.m_Weapons) == "table" then
+					if table.size(self.m_Weapons) > 1 then
+						toggleAllControls(player, false)
+						player:setGhostMode(true)
+						player:triggerEvent("DeathmatchWeaponSelectGUI:open", self.m_Weapons, self.m_LastSelectedWeapons[player:getId()] or {}, player)
+						setTimer(function()
+							player:triggerEvent("DeathmatchWeaponSelectGUI:close")
+						end, 10000, 1)
+					elseif self.m_Weapons[1] then 
+						giveWeapon(player, self.m_Weapons[1], 9999, true)
+					end
 				end
 			end
-		end,10000,1)
+		end, 10000, 1)
 	else
 		setElementDimension(player,self.m_MapData["dim"])
 		setElementInterior(player, self.m_MapData["int"])
@@ -197,15 +197,17 @@ function DeathmatchLobby:respawnPlayer(player, dead, pos)
 		player:setHeadless(false)
 		player:setArmor(100)
 		player:setAlpha(255)
-		if table.size(self.m_Weapons) > 1 then
-			toggleAllControls(player, false)
-			player:setGhostMode(true)
-			player:triggerEvent("DeathmatchWeaponSelectGUI:open", self.m_Weapons, self.m_LastSelectedWeapons[player:getId()] or {}, player)
-			setTimer(function()
-				player:triggerEvent("DeathmatchWeaponSelectGUI:close")
-			end, 10000, 1)
-		else
-			giveWeapon(player, self.m_Weapons[1], 9999, true)
+		if type(self.m_Weapons) == "table" then
+			if table.size(self.m_Weapons) > 1 then
+				toggleAllControls(player, false)
+				player:setGhostMode(true)
+				player:triggerEvent("DeathmatchWeaponSelectGUI:open", self.m_Weapons, self.m_LastSelectedWeapons[player:getId()] or {}, player)
+				setTimer(function()
+					player:triggerEvent("DeathmatchWeaponSelectGUI:close")
+				end, 10000, 1)
+			elseif self.m_Weapons[1] then 
+				giveWeapon(player, self.m_Weapons[1], 9999, true)
+			end
 		end
 	end
 end

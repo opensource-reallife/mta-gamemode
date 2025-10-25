@@ -10,7 +10,7 @@ WareMurder.modeDesc = "Ein Killer ist unterwegs!"
 WareMurder.time = 1.4
 local allowedWeapons =
 {
-	24, 25, 31, 34, 35, 38, 18, 16
+	24, 25, 31, 34, 35, 18, 16
 }
 
 function WareMurder:constructor( super )

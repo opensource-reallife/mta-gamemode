@@ -10,7 +10,7 @@ WareSurvive.modeDesc = "Bleib am Leben!"
 WareSurvive.time = 1
 local allowedWeapons = 
 {
-	24,25,31,34,35,38,18,16
+	24,25,31,34,35,18,16
 }
 
 function WareSurvive:constructor( super )
