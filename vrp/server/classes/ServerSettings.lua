@@ -144,6 +144,10 @@ function ServerSettings:constructor()
 			VEHICLE_IMPORT_PAY_FACTOR_DRIVER = tonumber(row.Value)
 		end
 
+		if row.Index == "RegistrationActivated" then
+			Account.REGISTRATION_ACTIVATED = toboolean(row.Value)
+		end
+
 		self.m_Settings[row.Index] = row.Value
 	end
 end

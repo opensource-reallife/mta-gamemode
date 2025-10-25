@@ -23,7 +23,7 @@
 local MULTIACCOUNT_CHECK = GIT_BRANCH == "release/production" and true or false
 
 Account = inherit(Object)
-Account.REGISTRATION_ACTIVATED = true
+Account.REGISTRATION_ACTIVATED = false
 Account.PendingRequests = {
 	Logins = {},
 	Registrations = {}
