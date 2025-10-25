@@ -20,20 +20,28 @@ function PremiumPlayer:refresh()
 	if row then
 		self.m_PremiumUntil = row.premium_bis
 		self.m_PremiumEvent = row.premium_easter
+		if row.premium_bis == -1 then --permanent
+			self.m_Premium = true
+			self.m_PremiumUntil = -1
+		end
 	else
 		self.m_PremiumUntil = 0
 	end
 	local freeVIP = self.m_Player:getRank() >= ADMIN_RANK_PERMISSION["freeVip"]
-	if self.m_PremiumUntil > getRealTime().timestamp or freeVIP  then
+	if self.m_PremiumUntil > getRealTime().timestamp or freeVIP or self.m_PremiumUntil == -1 then
 		self.m_Premium = true
 		self.m_Player:setPublicSync("DeathTime", DEATH_TIME_PREMIUM)
-		if not freeVIP then
-			setTimer(function()
-				self.m_Player:sendShortMessage(_("Dein Premiumaccount ist gültig\nbis %s", self.m_Player, getOpticalTimestamp(self.m_PremiumUntil)), "Premium", {50, 200, 255})
-			end, 1500, 1)
-		else 
+		if freeVIP then
 			setTimer(function()
 				self.m_Player:sendShortMessage(_("Du erhälst kostenlos Premium aufgrund deiner Stellung im Team.", self.m_Player), "Premium", {50, 200, 255})
+			end, 1500, 1)
+		elseif self.m_PremiumUntil == -1 then
+			setTimer(function()
+				self.m_Player:sendShortMessage(_("Dein Premiumaccount ist dauerhaft gültig.", self.m_Player), "Premium", {50, 200, 255})
+			end, 1500, 1)
+		else
+			setTimer(function()
+				self.m_Player:sendShortMessage(_("Dein Premiumaccount ist gültig\nbis: %s", self.m_Player, getOpticalTimestamp(self.m_PremiumUntil)), "Premium", {50, 200, 255})
 			end, 1500, 1)
 		end
 	end

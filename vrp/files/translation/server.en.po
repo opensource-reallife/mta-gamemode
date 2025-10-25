@@ -256,6 +256,9 @@ msgstr "Warning! performance-heavy"
 msgid "Syntax: /placeObject [Model-ID]"
 msgstr "Syntax: /placeObject [Model ID]"
 
+msgid "Syntax: /givevip [Spielername] [Tage]"
+msgstr "Syntax: /givevip [Playername] [Days]"
+
 msgid "Der Spieler, der Geld abgezogen bekommen soll, existiert nicht!"
 msgstr "The player from whom money is to be withdrawn does not exist!"
 
@@ -3601,6 +3604,39 @@ msgstr "You don't have a weapon in your hand!"
 
 msgid "Dein Premiumaccount ist gültig\nbis %s"
 msgstr "Your premium account is valid\nuntil %s"
+
+msgid "Dein Premiumaccount ist dauerhaft gültig."
+msgstr "Your premium account is permanently valid."
+
+msgid "Du hast dauerhaftes Premium erhalten!\nBitte reconnecte, damit der Premiumstatus gültig wird."
+msgstr "You have received permanent premium status!\nPlease reconnect for your Premium status to become valid."
+
+msgid "Du hast %d Tage Premium erhalten! Dein Premium endet am %s.\nBitte reconnecte, damit der Premiumstatus gültig wird."
+msgstr "You have received %d days of Premium! Your Premium ends on %s.\nPlease reconnect for your Premium status to become valid."
+
+msgid "Du hast %s %d Tage Premium gegeben!"
+msgstr "You have given %s %d days of Premium!"
+
+msgid "Du hast %s dauerhaft Premium gegeben!"
+msgstr "You have permanently upgraded %s to Premium!"
+
+msgid "Der Spieler muss online sein oder wurde nicht gefunden!"
+msgstr "The player must be online or could not be found!"
+
+msgid "Das Fahrzeugmodell existiert nicht!"
+msgstr "The vehicle model does not exist!"
+
+msgid "Soundvans können nur das Modell 535 (Slamvan) haben!"
+msgstr "Soundvans can only use model 535 (Slamvan)!"
+
+msgid "Du hast ein Premiumfahrzeug erhalten!"
+msgstr "You have received a premium vehicle!"
+
+msgid "Du hast %s ein Premiumfahrzeug gegeben!"
+msgstr "You have given %s a premium vehicle!"
+
+msgid "Syntax: /givepremveh [Spielername] [Modell] [Soundvan: 0/1]"
+msgstr "Syntax: /givepremveh [Playername] [Model] [Soundvan: 0/1]"
 
 msgid "Du erhälst kostenlos Premium aufgrund deiner Stellung im Team."
 msgstr "You will receive premium free of charge due to your position in the team."

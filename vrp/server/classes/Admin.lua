@@ -59,6 +59,9 @@ function Admin:constructor()
 	addCommandHandler("addVehicleToFCShop", bind(self.addVehicleToFCShop, self))
 	addCommandHandler("reloadFCVehicleShop", bind(self.reloadFCVehicleShop, self))
 
+	addCommandHandler("givevip", bind(self.addPremium, self))
+	addCommandHandler("givepremveh", bind(self.addPremiumVehicle, self))
+
     local adminCommandBind = bind(self.command, self)
 	self.m_ToggleJetPackBind = bind(self.toggleJetPack, self)
 	self.m_DeleteArrowBind = bind(self.deleteArrow, self)
@@ -2320,4 +2323,69 @@ function Admin:reloadFCVehicleShop(player, cmd, shopId)
 
 	ShopManager.FCVehicleShopsMap[shopId]:reload()
 	player:sendSuccess(_("Shop #%d neugeladen!", player, shopId))
+end
+
+function Admin:addPremium(player, cmd, target, days)
+	if not (player:getRank() >= ADMIN_RANK_PERMISSION["givePremium"]) then return end
+
+	local seconds = 60*60*24 -- 1 day
+	if not target or target == "" then 
+		return player:sendError(_("Syntax: /givevip [Spielername] [Tage]", player))
+	end
+
+	local daysNum = tonumber(days)
+	if not daysNum or (daysNum <= 0 and daysNum ~= -1) then 
+		return player:sendError(_("Syntax: /givevip [Spielername] [Tage]", player))
+	end
+
+	local targetPlayer = getPlayerFromName(target)
+	if not targetPlayer then return player:sendError(_("Der Spieler muss online sein oder wurde nicht gefunden!", player)) end
+
+	if sqlPremium:queryFetchSingle("SELECT UserId FROM user WHERE UserId = ?", targetPlayer:getId()) == nil then
+		sqlPremium:queryFetch("INSERT INTO user (game_id, UserId, Name, premium_easter, premium, premium_bis) VALUES (?, ?, ?, 0, 0, 0); ", targetPlayer:getId(), targetPlayer:getId(), targetPlayer:getName())
+	end
+
+	if daysNum == -1 then
+		sqlPremium:queryExec("UPDATE user SET Name = ?, premium_bis = ?, premium = 1 WHERE UserId = ?;", targetPlayer:getName(), -1, targetPlayer:getId())
+		targetPlayer.m_Premium.m_PremiumUntil = -1
+		targetPlayer:sendSuccess(_("Du hast dauerhaftes Premium erhalten!\nBitte reconnecte, damit der Premiumstatus gültig wird.", targetPlayer))
+		player:sendSuccess(_("Du hast %s dauerhaft Premium gegeben!", player, targetPlayer:getName()))
+		return
+	end
+
+	local newPremiumTime = daysNum * seconds
+
+	local oldPremiumTime = targetPlayer.m_Premium.m_PremiumUntil
+	local premiumTime = 0
+	if targetPlayer:isPremium() and oldPremiumTime and oldPremiumTime > 0 then
+		premiumTime = oldPremiumTime + newPremiumTime
+	else
+		premiumTime = getRealTime().timestamp + newPremiumTime
+	end
+
+	sqlPremium:queryExec("UPDATE user SET Name = ?, premium_bis = ?, premium = 1 WHERE UserId = ?;", targetPlayer:getName(), premiumTime, targetPlayer:getId())
+	targetPlayer.m_Premium.m_PremiumUntil = premiumTime
+	targetPlayer:sendSuccess(_("Du hast %d Tage Premium erhalten! Dein Premium endet am %s.\nBitte reconnecte, damit der Premiumstatus gültig wird.", targetPlayer, tonumber(daysNum), getOpticalTimestamp(premiumTime)))
+	player:sendSuccess(_("Du hast %s %d Tage Premium gegeben!", player, targetPlayer:getName(), tonumber(daysNum)))
+end
+
+function Admin:addPremiumVehicle(player, cmd, target, model, soundvan)
+	if not (player:getRank() >= ADMIN_RANK_PERMISSION["givePremiumVehicle"]) then return end
+	if not target or target == "" then return player:sendError(_("Syntax: /givepremveh [Spielername] [Modell] [Soundvan: 0/1]", player)) end
+	if not model or model == "" then return player:sendError(_("Syntax: /givepremveh [Spielername] [Modell] [Soundvan: 0/1]", player)) end
+	local soundvanValue = tonumber(soundvan)
+	if not soundvanValue or soundvanValue > 1 or soundvanValue < 0 then return player:sendError(_("Syntax: /givepremveh [Spielername] [Modell] [Soundvan: 0/1]", player)) end
+	soundvan = soundvanValue
+
+	local targetPlayer = getPlayerFromName(target)
+	if not targetPlayer then return player:sendError(_("Der Spieler muss online sein oder wurde nicht gefunden!", player)) end
+	if getVehicleNameFromModel(model) == false then return player:sendError(_("Das Fahrzeugmodell existiert nicht!", player)) end
+	if tonumber(soundvan) == 1 and tonumber(model) ~= 535 then
+		return player:sendError(_("Soundvans können nur das Modell 535 (Slamvan) haben!", player))
+	end
+
+	targetPlayer:sendSuccess(_("Du hast ein Premiumfahrzeug erhalten!", targetPlayer))
+	player:sendSuccess(_("Du hast %s ein Premiumfahrzeug gegeben!", player, targetPlayer:getName()))
+
+	sqlPremium:queryFetch("INSERT INTO premium_veh (Model, abgeholt, Timestamp_buy, Timestamp_abgeholt, Preis, Soundvan, UserId) VALUES (?, ?, ?, ?, ?, ?, ?);", model, 0, getRealTime().timestamp, 0, 0, soundvan, targetPlayer:getId())
 end

@@ -247,6 +247,8 @@ ADMIN_RANK_PERMISSION = {
 	["cinemaRemoveLobby"] = RANK.Supporter,
 	["openAdminMenu"] = RANK.Ticketsupporter,
 	["disablereg"] = RANK.Servermanager, --disablereg, enablereg
+	["givePremium"] = RANK.Administrator,
+	["givePremiumVehicle"] = RANK.Administrator,
 
 	--group management
 	["setFaction"] = RANK.Administrator,
