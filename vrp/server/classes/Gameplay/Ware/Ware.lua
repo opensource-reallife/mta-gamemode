@@ -236,7 +236,7 @@ function Ware:joinPlayer( player )
 		player:triggerEvent("PlatformEnv:generate", 0, 0, Ware.arenaZ, Ware.arenaSize, Ware.arenaSize, self.m_Dimension, false, "files/images/Textures/Ware/waretex.jpg", "sam_camo", 3095)
 		self:spawnWarePlayer(player)
 		player.bInWare = self
-		player:setData("inWare", true)
+		player:setData("inWare", true, true)
 		player:triggerEvent("onClientWareJoin", self.m_Gamespeed)
 		player:triggerEvent("Ware:closeGUI")
 
@@ -264,7 +264,7 @@ function Ware:leavePlayer(player)
 
 		player:triggerEvent("onClientWareLeave", self.m_Gamespeed)
 		player:triggerEvent("Ware:closeGUI")
-		player:setData("inWare", nil)
+		player:setData("inWare", false, true)
 		player:setData("Ware:roundsWon",  nil)
 		player:setData("Ware:pumpkinsEarned",  nil)
 
