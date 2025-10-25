@@ -10,7 +10,10 @@ end
 
 function PickupWeaponManager:Event_onPlayerPickupWeaponUse( pickup )
 	if client then
-		if not isPedDead(client) and getElementHealth(client) ~= 0 and ( client.getExecutionPed and not client:getExecutionPed()) then
+		if client.Minigame then return end
+		if client:getData("isInDeathMatch") then return end
+		if client:getData("inWare") then return end
+		if not isPedDead(client) and getElementHealth(client) ~= 0 and (client.getExecutionPed and not client:getExecutionPed()) then
 			if PickupWeaponManager.Map[pickup] then
 				PickupWeaponManager.Map[pickup]:pickup( client )
 			end
@@ -19,8 +22,15 @@ function PickupWeaponManager:Event_onPlayerPickupWeaponUse( pickup )
 end
 
 function PickupWeaponManager:Event_onPlayerDropWeapon(data)
-	takeWeapon(client, data[6])
-	PickupWeapon:new(data[1], data[2], data[3], data[4], data[5], data[6], data[7], client, false)
+	if client then
+		if client.Minigame then return end
+		if client:getData("isInDeathMatch") then return end
+		if client:getData("inWare") then return end
+		if not isPedDead(client) and getElementHealth(client) ~= 0 and (client.getExecutionPed and not client:getExecutionPed()) then
+			takeWeapon(client, data[6])
+			PickupWeapon:new(data[1], data[2], data[3], data[4], data[5], data[6], data[7], client, false)
+		end
+	end
 end
 
 function PickupWeaponManager:destructor()
