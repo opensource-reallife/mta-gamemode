@@ -89,9 +89,9 @@ function AppSettings:onOpen(form)
 		core:set("Sounds", "RingTone", state)
 	end
 
-	self.m_OtherRingToneCheckbox = GUICheckbox:new(10, 325, 300, 20, _"Sonstige Klingeltöne an", form):setFont(VRPFont(25)):setFontSize(1)
-	self.m_OtherRingToneCheckbox:setChecked(core:get("Sounds", "OtherRingTones", true))
-	self.m_OtherRingToneCheckbox.onChange = function (state)
+	self.m_OtherRingTonesCheckbox = GUICheckbox:new(10, 325, 300, 20, _"Sonstige Klingeltöne an", form):setFont(VRPFont(25)):setFontSize(1)
+	self.m_OtherRingTonesCheckbox:setChecked(core:get("Sounds", "OtherRingTones", true))
+	self.m_OtherRingTonesCheckbox.onChange = function (state)
 		core:set("Sounds", "OtherRingTones", state)
 	end
 

@@ -275,7 +275,7 @@ function AppCall:openIncoming(caller, voiceEnabled, showSkin)
 end
 
 function AppCall:showIncomingCallShortMessage(caller, voiceEnabled, message, title, tblColor, type)
-	if core:get("Sounds", "OtherRingTone", true) then
+	if core:get("Sounds", "OtherRingTones", true) then
 		self:playRingSound(true, true, type)
 	end
 	local shortMessage = ShortMessage:new(message.._"\nKlicke hier, um abzuheben.", title, tocolor(unpack(tblColor)), -1)
