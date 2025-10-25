@@ -53,7 +53,7 @@ function SniperGame.initalize()
 end
 
 function SniperGame:constructor()
-	self.m_Dimension = math.random(1, 999) -- Testing
+	self.m_Dimension = DimensionManager:getSingleton():getFreeDimension()
 	self.m_Peds = {}
 	self.m_PedKills = {}
 	self.m_PedTimers = {}
@@ -75,6 +75,8 @@ function SniperGame:constructor()
 
 	self:addPed()
 	self:loadMap()
+
+	outputDebug("Lobby erstellt - Dimension"..self.m_Dimension)
 end
 
 function SniperGame:destructor()
@@ -98,6 +100,9 @@ function SniperGame:destructor()
 	if isTimer(self.m_IncreaseTimer) then killTimer(self.m_IncreaseTimer) end
 	if isElement(self.m_TargetSphere) then self.m_TargetSphere:destroy() end
 	if isElement(self.m_PlayerSphere) then self.m_PlayerSphere:destroy() end
+
+	outputDebug("Lobby zerstört - Dimension"..self.m_Dimension)
+	DimensionManager:getSingleton():freeDimension(self.m_Dimension)
 end
 
 function SniperGame:onColshapeHit(hitElement, dim)
