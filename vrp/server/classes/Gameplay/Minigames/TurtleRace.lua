@@ -239,6 +239,7 @@ end
 
 function TurtleRace:addBet(turtleId, money)
 	if not turtleId or not money then return end
+	if money > TURTLE_RACE_MAX_BET then return end
 	if self.m_State ~= "None" and self.m_State ~= "Preparing" then client:sendWarning("Du kannst zum aktuellen Zeitpunkt keine Wette setzen!") return end
 	if client:getMoney() < money then client:sendError(_("Du hast nicht genug Geld dabei!", client)) return end
 

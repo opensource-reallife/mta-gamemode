@@ -1867,11 +1867,14 @@ msgstr "Your bet:"
 msgid "%d$"
 msgstr "%d$"
 
-msgid "Möglicher Gewinn: 3-facher Einsatz!"
-msgstr "Possible win: triple bet!"
+msgid "Möglicher Gewinn: 4-facher Einsatz!"
+msgstr "Possible win: 4x bet!"
+
+msgid "Möglicher Gewinn: 6-facher Einsatz!"
+msgstr "Possible win: 6x bet!"
 
 msgid "Wette platzieren"
-msgstr "Place a bet"
+msgstr "Place bet"
 
 msgid "Möchtest du wirklich %d$ auf Pferd %d setzen?"
 msgstr "Do you really want to bet %d$ on horse %d?"

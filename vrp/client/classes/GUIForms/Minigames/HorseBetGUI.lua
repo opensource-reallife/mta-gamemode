@@ -10,7 +10,6 @@ inherit(Singleton, HorseBetGUI)
 
 addRemoteEvents{"showHorseBetGUI", "receiveKartDatas"}
 
-HorseBetGUI.Bets = {10, 100, 1000, 5000, 10000, 50000, 100000}
 function HorseBetGUI:constructor()
 	GUIForm.constructor(self, screenWidth/2-270, screenHeight/2-230, 540, 460, true, false, Vector3(822.84, 2.07, 1003.3))
 
@@ -35,12 +34,9 @@ function HorseBetGUI:constructor()
 
 
 	GUILabel:new(self.m_Width*0.02, self.m_Height*0.7, self.m_Width*0.28, self.m_Height*0.07, _"Dein Einsatz:", self.m_Window)
-	self.m_Bet = GUIChanger:new(self.m_Width*0.3, self.m_Height*0.7, self.m_Width*0.4, self.m_Height*0.07, self.m_Window)
-	for index, betAmount in ipairs(HorseBetGUI.Bets) do
-		self.m_Bet:addItem(_("%d$", betAmount))
-	end
+	self.m_Bet = GUIEdit:new(self.m_Width*0.3, self.m_Height*0.7, self.m_Width*0.4, self.m_Height*0.07, self.m_Window):setNumeric(true, true)
 
-	GUILabel:new(self.m_Width*0.02, self.m_Height*0.8, self.m_Width*0.8, self.m_Height*0.06, _"Möglicher Gewinn: 3-facher Einsatz!", self.m_Window)
+	GUILabel:new(self.m_Width*0.02, self.m_Height*0.8, self.m_Width*0.8, self.m_Height*0.06, _"Möglicher Gewinn: 4-facher Einsatz!", self.m_Window)
 
 	self.m_BetButton = GUIButton:new(self.m_Width-self.m_Width*0.32, self.m_Height-self.m_Height*0.078, self.m_Width*0.3, self.m_Height*0.07, _"Wette platzieren", self.m_Window):setBarEnabled(true)
 	self.m_BetButton.onLeftClick = bind(self.PlaceBet, self)
@@ -54,18 +50,19 @@ function HorseBetGUI:PlaceBet()
 		end
 	end
 
-	local betText, betId = self.m_Bet:getSelectedItem()
-	local bet = HorseBetGUI.Bets[betId]
-
+	local bet = self.m_Bet:getText(true)
 	if horse > 0 and bet > 0 then
-		QuestionBox:new(_("Möchtest du wirklich %d$ auf Pferd %d setzen?", bet, horse),
-			function() 	triggerServerEvent("horseRaceAddBet", root, horse, bet) end
-			)
-		delete(self)
+		if bet > HORSE_RACE_MAX_BET then
+			ErrorBox:new(_("Der maximale Einsatz beträgt $%s!", HORSE_RACE_MAX_BET))
+		else
+			QuestionBox:new(_("Möchtest du wirklich %d$ auf Pferd %d setzen?", bet, horse),
+				function() 	triggerServerEvent("horseRaceAddBet", root, horse, bet) end
+				)
+			delete(self)
+		end
 	else
 		ErrorBox:new(_"Ungültige Auswahl!")
 	end
-
 end
 
 addEventHandler("showHorseBetGUI", root,

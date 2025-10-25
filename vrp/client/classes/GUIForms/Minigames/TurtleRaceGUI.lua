@@ -36,7 +36,7 @@ function TurtleRaceGUI:constructor(ped)
 	self.m_SelectedTurtleLabel = GUILabel:new(235, 300, 50, 30, "-", self.m_Window)
 
 	GUILabel:new(5, 330, 230, 30, _"Dein Einsatz:", self.m_Window)
-	self.m_Bet = GUIEdit:new(235, 330, 100, 25, self.m_Window):setNumeric(true, true):setMaxValue(100000)
+	self.m_Bet = GUIEdit:new(235, 330, 100, 25, self.m_Window):setNumeric(true, true)
 
 	for id, turtle in pairs(self.m_Turtles) do
 		turtle.onLeftClick =
@@ -46,8 +46,8 @@ function TurtleRaceGUI:constructor(ped)
 			end
 	end
 
-	GUILabel:new(5, 360, 400, 30, "Möglicher Gewinn: 6-facher Einsatz!", self.m_Window)
-	self.m_BetButton = GUIButton:new(self.m_Width - 155, 360, 150, 30, "Wette platzieren", self.m_Window):setFontSize(1)
+	GUILabel:new(5, 360, 400, 30, _"Möglicher Gewinn: 6-facher Einsatz!", self.m_Window)
+	self.m_BetButton = GUIButton:new(self.m_Width - 155, 360, 150, 30, _"Wette platzieren", self.m_Window):setFontSize(1)
 	self.m_BetButton.onLeftClick = bind(self.placeBet, self)
 end
 
@@ -57,6 +57,7 @@ function TurtleRaceGUI:placeBet()
 
 	if not betMoney then WarningBox:new("Ungültige Eingabe!") return end
 	if not selectedTurtle then WarningBox:new("Du hast keine Schildkröte ausgewählt!") return end
+	if betMoney > TURTLE_RACE_MAX_BET then ErrorBox:new(_("Der maximale Einsatz beträgt $%s!", TURTLE_RACE_MAX_BET)) return end
 
 	QuestionBox:new(("Möchtest du wirklich %s$ auf die Schildkröte %d setzen?"):format(betMoney, selectedTurtle),
 		function()

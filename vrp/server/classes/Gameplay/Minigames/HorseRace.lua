@@ -68,12 +68,12 @@ end
 
 
 function HorseRace:showShortMessage()
-	self:sendShortmessageToPlayers("Das Pferderennen startet in wenigen Sekunden! Klicke hier um die Liveübertragung mit zu verfolgen!")
+	self:sendShortmessageToPlayers("Das Pferderennen startet in wenigen Minuten! Klicke hier, um die Liveübertragung mitzuverfolgen!", 30000, "horseRaceAddPlayer")
 end
 
-function HorseRace:sendShortmessageToPlayers(text)
+function HorseRace:sendShortmessageToPlayers(text, time, event)
 	for index, playeritem in pairs(PlayerManager:getSingleton():getReadyPlayers()) do
-		playeritem:sendShortMessage(_(text, playeritem), _("Pferde-Wetten", playeritem), {255, 150, 255})
+		playeritem:sendShortMessage(_(text, playeritem), _("Pferde-Wetten", playeritem), {255, 150, 255}, time, event)
 	end
 end
 
@@ -214,7 +214,7 @@ function HorseRace:checkWinner(winningHorse)
 			if player then
 				if isOffline then player:load() end
 
-				local win = tonumber(row["Bet"])*3
+				local win = tonumber(row["Bet"]) * 4
 				self.m_BankAccountServer:transferMoney({player, true}, win, "Pferde-Wetten", "Event", "HorseRace")
 				self.m_Stats["Outgoing"] = self.m_Stats["Outgoing"] + win
 
@@ -241,15 +241,17 @@ function HorseRace:addBet(horse, bet)
 	if bet and horse then
 		if not self.m_IsRunning == true then
 			if client:getMoney() >= bet then
-				local row = sql:queryFetchSingle("SELECT * FROM ??_horse_bets WHERE UserId = ?;", sql:getPrefix(), client:getId())
-				if not row then
-					client:transferMoney(self.m_BankAccountServer, bet, "Horse-Race", "Event", "HorseRace")
-					sql:queryExec("INSERT INTO ??_horse_bets (UserId, Bet, Horse) VALUES (?, ?, ?)", sql:getPrefix(), client:getId(), bet, horse)
-					client:sendShortMessage(_("Du hast %d$ auf Pferd %d gesetzt!", client, bet, horse), _("Pferde-Wetten", client), {255, 150, 255})
-					self.m_Stats["Incoming"] = self.m_Stats["Incoming"]+bet
-					self.m_Stats["Played"] = self.m_Stats["Played"]+1
-				else
-					client:sendError(_("Du hast bereits eine Wette am laufen!", client))
+				if not (bet > HORSE_RACE_MAX_BET) then
+					local row = sql:queryFetchSingle("SELECT * FROM ??_horse_bets WHERE UserId = ?;", sql:getPrefix(), client:getId())
+					if not row then
+						client:transferMoney(self.m_BankAccountServer, bet, "Pferde-Wetten", "Event", "HorseRace")
+						sql:queryExec("INSERT INTO ??_horse_bets (UserId, Bet, Horse) VALUES (?, ?, ?)", sql:getPrefix(), client:getId(), bet, horse)
+						client:sendShortMessage(_("Du hast %d$ auf Pferd %d gesetzt!", client, bet, horse), _("Pferde-Wetten", client), {255, 150, 255})
+						self.m_Stats["Incoming"] = self.m_Stats["Incoming"]+bet
+						self.m_Stats["Played"] = self.m_Stats["Played"]+1
+					else
+						client:sendError(_("Du hast bereits eine Wette am laufen!", client))
+					end
 				end
 			else
 				client:sendError(_("Du hast nicht genug Geld! (%d$)", client, bet))
