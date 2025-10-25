@@ -86,7 +86,9 @@ function SniperGame:destructor()
 		end
 	end
 	for index, ped in pairs(self.m_Peds) do
-		delete(ped)
+		if isElement(ped) then
+			ped:destroy()
+		end
 	end
 	for player, score in pairs(self.m_PedKills) do
 		if score then
