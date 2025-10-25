@@ -420,12 +420,16 @@ function Admin:command(admin, cmd, targetName, ...)
 			local format = {admin:getName()}
 			self:sendShortMessage("%s hat die Registration deaktiviert!", format)
 			StatisticsLogger:getSingleton():addAdminAction(admin, "register", "Register disabled")
+			Account.REGISTRATION_ACTIVATED = false
+			sql:queryExec("UPDATE ??_settings SET Value = ? WHERE Index = ?;", sql:getPrefix(), Account.REGISTRATION_ACTIVATED, "RegistrationActivated")
 		end
 	elseif cmd == "enablereg" then
 		if admin:getRank() >= ADMIN_RANK_PERMISSION["disablereg"] then
 			local format = {admin:getName()}
 			self:sendShortMessage("%s hat die Registration aktiviert!", format)
 			StatisticsLogger:getSingleton():addAdminAction(admin, "register", "Register enabled")
+			Account.REGISTRATION_ACTIVATED = true
+			sql:queryExec("UPDATE ??_settings SET Value = ? WHERE Index = ?;", sql:getPrefix(), Account.REGISTRATION_ACTIVATED, "RegistrationActivated")
 		end
 	elseif cmd == "reloadplayerlimit" then
 		for i, faction in pairs(FactionManager.Map) do
