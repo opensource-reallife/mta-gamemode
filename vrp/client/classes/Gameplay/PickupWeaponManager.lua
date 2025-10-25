@@ -29,8 +29,6 @@ end
 
 function PickupWeaponManager:checkKey(key)
 	if ( key == "m" and getKeyState("lalt")) or (key == "lalt" and getKeyState("m"))  then
-		if localPlayer:getData("isInSniperGame") then return end
-		if localPlayer:getData("inWare") then return end
 		if self.m_HitWeaponPickup and isElement(self.m_HitWeaponPickup ) and not getPedOccupiedVehicle(localPlayer) then 
 			self:Event_onTryPickupWeapon()
 		end
@@ -38,11 +36,8 @@ function PickupWeaponManager:checkKey(key)
 		if localPlayer:getFaction() and (localPlayer:getFaction():isStateFaction() or localPlayer:getFaction():isRescueFaction()) and localPlayer:getPublicSync("Faction:Duty") then return ErrorBox:new(_"Du darfst im Dienst keine Waffen wegwerfen.") end
 		if localPlayer:isDead() then return end
 		if localPlayer:getData("isInDeathMatch") then return end
-		if localPlayer:getData("isInSniperGame") then return end
-		if localPlayer:getData("inWare") then return end
 		local weapon = getPedWeapon(localPlayer)
-		if weapon == 0 then return end
-		if not RESTRICTED_WEAPONS[weaponId] then
+		if weapon ~= 0 and weapon ~= 23 and weapon ~= 38 and weapon ~= 37 and weapon ~= 39 and weapon ~= 42 and weapon ~= 9 then
 			self:Event_onDropWeapon()
 		else
 			ErrorBox:new(_"Du kannst diese Waffe nicht wegwerfen!")

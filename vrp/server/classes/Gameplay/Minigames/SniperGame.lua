@@ -128,7 +128,6 @@ function SniperGame:addPlayer(player)
 	takeAllWeapons(player)
 	player:giveWeapon(34, 15, true)
 	player:triggerEvent("showScore")
-	player:setData("isInSniperGame", true, true)
 end
 
 function SniperGame:removePlayer(player)
@@ -144,7 +143,6 @@ function SniperGame:removePlayer(player)
 	takeAllWeapons(player)
 	player:restoreStorage()
 	player:triggerEvent("hideScore")
-	player:setData("isInSniperGame", false, true)
 
 	-- Check for Freaks Achievement
 	if MinigameManager:getSingleton():checkForFreaks(player) then
