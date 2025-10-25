@@ -103,7 +103,7 @@ function TradeGUI:loadWeapons()
     for i = 0, 12 do
 		local weaponId = getPedWeapon(localPlayer, i)
 		if weaponId and weaponId ~= 0 then
-			if not TRADE_DISABLED_WEAPONS[weaponId] then
+			if not RESTRICTED_WEAPONS[weaponId] then
 				local item = self.m_MyWeaponsGrid:addItem(WEAPON_NAMES[weaponId], getPedTotalAmmo(localPlayer, i))
 				item.onLeftClick =
 					function()

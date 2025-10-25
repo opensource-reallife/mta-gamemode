@@ -132,10 +132,6 @@ WEAPON_NAMES = {
 	["Gasmaske"] = "Gasmaske",
 }
 
-TRADE_DISABLED_WEAPONS = { --weapons that should not be traded with
-	[9] = true, --Chainsaw
-}
-
 NO_MUNITION_WEAPONS = { 
 	[0] = true;
 	[1] = true;
@@ -156,6 +152,15 @@ NO_MUNITION_WEAPONS = {
 	[44] = true;
 	[45] = true;
 	[46] = true;
+}
+
+RESTRICTED_WEAPONS = {
+	[9]  = true, --Chainsaw
+	[23] = true, --Silenced Pistol
+	[37] = true, --Flamethrower
+	[38] = true, --Minigun
+	[39] = true, --Satchel
+	[42] = true, --Fire Extinguisher
 }
 
 THROWABLE_WEAPONS = --throwable weapons

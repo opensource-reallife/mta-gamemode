@@ -970,6 +970,10 @@ function PlayerManager:Event_requestGunBoxData(gunBoxX, gunBoxY, gunBoxZ)
 end
 
 function PlayerManager:Event_gunBoxAddWeapon(weaponId, muni)
+	if RESTRICTED_WEAPONS[weaponId] then
+		client:sendError("Diese Waffe kannst Du nicht einlagern!")
+		return
+	end
 	if client:getFaction() and client:getFaction():isStateFaction() and client:isFactionDuty() then
 		client:sendError(_("Du darfst im Dienst keine Waffen einlagern!", client))
 		return
