@@ -252,7 +252,7 @@ function Halloween:finishTrickOrTreat(pId, houseId)
 	if self.m_TrickOrTreatPIDs[pId] and self.m_TrickOrTreatPIDs[pId].playersNearby then
 		local pCount = table.size(self.m_TrickOrTreatPIDs[pId].playersNearby)
 		local ownerId = HouseManager:getSingleton().m_Houses[houseId]:getOwner()
-		local ownerAtHome = (ownerId and ownerId ~= 0) and chance(75) or chance(25) -- chance that somebody is there to give sweets
+		local ownerAtHome = (ownerId and ownerId ~= 0) and chance(75) or chance(50) -- chance that somebody is there to give sweets
 		local rndPhrase = Halloween.ms_Phrases[pCount > 1 and "multi" or "single"]
 			rndPhrase = rndPhrase[math.random(1, #rndPhrase)]
 
@@ -264,11 +264,12 @@ function Halloween:finishTrickOrTreat(pId, houseId)
 					if HouseManager:getSingleton().m_Houses[houseId]:isPlayerNearby(pl) then
 						if d.lastMessage and d.lastMessage >= d.trickStarted and (getTickCount() - d.lastVisited) > 20000 then
 							if ownerAtHome then
-								local rnd = math.random(1, math.min(5, pCount))
+								local rnd = math.random(1, math.min(5, pCount)) + (chance(50) and 1 or 0)
 								if pl.m_IsWearingHelmet == "Kürbis" then --pumpkin head bonus
-									rnd = rnd + (chance(5) and 1 or 0)
-								elseif pl:getModel() == 310 then --zombie skin bonus
-									rnd = rnd + (chance(15) and 1 or 0)
+									rnd = rnd + (chance(50) and 1 or 0)
+								end
+								if pl:getModel() == 310 then --zombie skin bonus
+									rnd = rnd + 1
 								end
 								pl:getInventory():giveItem("Suessigkeiten", rnd)
 								pl:sendSuccess(_("Du hast %d %s bekommen!", pl, rnd, rnd > 1 and _("Süßigkeiten", pl) or _("Süßigkeit", pl)))
