@@ -2372,7 +2372,7 @@ function Admin:addPremium(player, cmd, target, days)
 	targetPlayer:sendSuccess(_("Du hast %d Tage Premium erhalten! Dein Premium endet am %s.\nBitte reconnecte, damit der Premiumstatus gültig wird.", targetPlayer, tonumber(daysNum), getOpticalTimestamp(premiumTime)))
 	player:sendSuccess(_("Du hast %s %d Tage Premium gegeben!", player, targetPlayer:getName(), tonumber(daysNum)))
 
-	PremiumPlayer:refresh()
+	targetPlayer.m_Premium:refresh()
 end
 
 function Admin:addPremiumVehicle(player, cmd, target, model, soundvan)
