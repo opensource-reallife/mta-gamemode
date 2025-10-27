@@ -1880,7 +1880,7 @@ msgid "Du wurdest ins Team der %s gesetzt!"
 msgstr "You were put on the %s team!"
 
 msgid "Du hast für deine %d Kills %d Süßigkeiten und %d Kürbisse erhalten!"
-msgstr "You got %d sweets and %d pumpkins for your %d kills!"
+msgstr "For your %d kills, you received %d candies and %d pumpkins!"
 
 msgid "Du wurdest getötet, du hast noch %d Leben"
 msgstr "You were killed, you still have %d lifes left"
