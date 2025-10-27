@@ -676,7 +676,7 @@ function DrivingSchool:Event_reduceSTVO(category, amount)
 		return false
 	end
 
-	local stvoPricing = 250 * amount
+	local stvoPricing = 100 * amount
 
 	if not client:transferMoney(self.m_BankAccountServer, stvoPricing, "STVO-Punkte abbauen", "Driving School", "ReduceSTVO") then
 		client:sendError(_("Du hast nicht genügend Geld! ("..tostring(stvoPricing).."$)", client))
