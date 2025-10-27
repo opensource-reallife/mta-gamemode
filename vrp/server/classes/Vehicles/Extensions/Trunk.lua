@@ -269,6 +269,8 @@ function Trunk:open(player)
 		[494] = false, --Hotring Racer 1
 		[503] = false, --Hotring Racer 2
 		[502] = false, --Hotring Racer 3
+		[568] = false, --Bandito
+		[424] = false, --BF Injection
 	}
 
 	if not self:checkDistance(player) then return end
