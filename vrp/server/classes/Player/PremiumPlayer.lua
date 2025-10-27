@@ -99,8 +99,13 @@ function PremiumPlayer:giveEventMonth()
 		self.m_PremiumUntil = getRealTime().timestamp + seconds
 	end
 
-	if sqlPremium:queryFetchSingle("SELECT UserId FROM user WHERE UserId = ?", targetPlayer:getId()) == nil then
+	if sqlPremium:queryFetchSingle("SELECT UserId FROM user WHERE UserId = ?", self.m_Player:getId()) == nil then
 		sqlPremium:queryFetch("INSERT INTO user (game_id, UserId, Name, premium_easter, premium, premium_bis) VALUES (?, ?, ?, 0, 0, 0); ", self.m_Player:getId(), self.m_Player:getId(), self.m_Player:getName())
+	end
+
+	local row = sqlPremium:queryFetchSingle("SELECT premium_bis FROM user WHERE UserId = ?", self.m_Player:getId())
+	if row and row.premium_bis == -1 then
+		return
 	end
 
 	sqlPremium:queryExec("UPDATE user SET Name = ?, premium_easter = ?, premium_bis = ?, premium = 1 WHERE UserId = ?;", self.m_Player:getName(), self.m_PremiumEvent+1, self.m_PremiumUntil, self.m_Player:getId())
