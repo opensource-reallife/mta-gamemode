@@ -415,13 +415,13 @@ function Admin:command(admin, cmd, targetName, ...)
 		else
 			admin:sendError("Radius ungültig: /crespawn [radius]")
 		end
-	elseif cmd == "disablereg" then
+	elseif cmd == "disablereg" then 
 		if admin:getRank() >= ADMIN_RANK_PERMISSION["disablereg"] then
 			local format = {admin:getName()}
 			self:sendShortMessage("%s hat die Registration deaktiviert!", format)
 			StatisticsLogger:getSingleton():addAdminAction(admin, "register", "Register disabled")
 			Account.REGISTRATION_ACTIVATED = false
-			sql:queryExec("UPDATE ??_settings SET Value = ? WHERE Index = ?;", sql:getPrefix(), Account.REGISTRATION_ACTIVATED, "RegistrationActivated")
+			sql:queryExec("UPDATE ??_settings SET Value = ? WHERE `Index` = ?;", sql:getPrefix(), 0, "RegistrationActivated")
 		end
 	elseif cmd == "enablereg" then
 		if admin:getRank() >= ADMIN_RANK_PERMISSION["disablereg"] then
@@ -429,7 +429,7 @@ function Admin:command(admin, cmd, targetName, ...)
 			self:sendShortMessage("%s hat die Registration aktiviert!", format)
 			StatisticsLogger:getSingleton():addAdminAction(admin, "register", "Register enabled")
 			Account.REGISTRATION_ACTIVATED = true
-			sql:queryExec("UPDATE ??_settings SET Value = ? WHERE Index = ?;", sql:getPrefix(), Account.REGISTRATION_ACTIVATED, "RegistrationActivated")
+			sql:queryExec("UPDATE ??_settings SET Value = ? WHERE `Index` = ?;", sql:getPrefix(), 1, "RegistrationActivated")
 		end
 	elseif cmd == "reloadplayerlimit" then
 		for i, faction in pairs(FactionManager.Map) do
@@ -2371,6 +2371,8 @@ function Admin:addPremium(player, cmd, target, days)
 	targetPlayer.m_Premium.m_PremiumUntil = premiumTime
 	targetPlayer:sendSuccess(_("Du hast %d Tage Premium erhalten! Dein Premium endet am %s.\nBitte reconnecte, damit der Premiumstatus gültig wird.", targetPlayer, tonumber(daysNum), getOpticalTimestamp(premiumTime)))
 	player:sendSuccess(_("Du hast %s %d Tage Premium gegeben!", player, targetPlayer:getName(), tonumber(daysNum)))
+
+	PremiumPlayer:refresh()
 end
 
 function Admin:addPremiumVehicle(player, cmd, target, model, soundvan)

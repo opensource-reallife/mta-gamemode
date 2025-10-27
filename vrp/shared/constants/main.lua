@@ -246,7 +246,7 @@ ADMIN_RANK_PERMISSION = {
 	["freeVip"] = RANK.Moderator,
 	["cinemaRemoveLobby"] = RANK.Supporter,
 	["openAdminMenu"] = RANK.Ticketsupporter,
-	["disablereg"] = RANK.Servermanager, --disablereg, enablereg
+	["disablereg"] = RANK.Administrator, --disablereg, enablereg
 	["givePremium"] = RANK.Administrator,
 	["givePremiumVehicle"] = RANK.Administrator,
 
@@ -717,7 +717,7 @@ GARAGE_UPGRADES_TEXTS = {[0] = "Garage: keine Garage", [1] = "Garage: Standard G
 HANGAR_UPGRADES_TEXTS = {[0] = "Hangar: kein Hangar", [1] = "Hangar: Unkown Hangar", [2] = "Hangar: Unkown Hangar", [3] = "Hangar: Unkown Hangar"}
 
 WEAPONTRUCK_MAX_LOAD = 60000 -- Dollars
-EVIDENCETRUCK_MAX_LOAD = 60000 -- Dollars
+EVIDENCETRUCK_MAX_LOAD = 90000 -- Dollars
 STATE_EVIDENCE_MAX_OBJECTS = 100000 -- dollars
 STATE_EVIDENCE_MAX_CLIPS = 50
 STATE_EVIDENCE_OBJECT_PRICE = {
