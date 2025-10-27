@@ -215,7 +215,7 @@ function VehicleCustomTextureShop:Event_texturePreview(url, color1, color2, play
 end
 
 function VehicleCustomTextureShop:Event_vehicleTextureBuy(id, url, color1, color2)
-	local price = (source.m_TextureCount == 0 and 120000) or 40000
+	local price = (source.m_TextureCount == 0 and NEW_CUSTOM_TEXTURE_PRICE) or CHANGE_CUSTOM_TEXTURE_PRICE
 	if client:getMoney() >= price then
 		client:transferMoney(self.m_BankAccountServer, price, "Custom-Texture", "Vehicle", "Texture")
 		local textureName = VEHICLE_SPECIAL_TEXTURE[source:getModel()] or "vehiclegrunge256"
