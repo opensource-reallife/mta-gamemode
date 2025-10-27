@@ -62,13 +62,13 @@ function Player:destructor()
 
 	WorldItem.collectAllFromOwner(self)
 
-	if self.m_Inventory then
-		delete(self.m_Inventory)
-	end
-
 	-- Call the quit hook (to clean up various things before saving)
 
 	Player.ms_QuitHook:call(self)
+
+	if self.m_Inventory then
+		delete(self.m_Inventory)
+	end
 
 	if self:getRank() > 0 then
 		Admin:getSingleton():removeAdmin(self,self:getRank())

@@ -76,9 +76,9 @@ function WareClient:OnLeaveWare(gamespeed)
 	setPedWalkingStyle(localPlayer, 0)
 	setGameSpeed(1)
 	removeEventHandler("onClientRender", root, self.m_RendBind)
-	setPlayerHudComponentVisible("area_name", true)
+	setPlayerHudComponentVisible("area_name", false)
 	CustomModelManager:getSingleton():restoreModel(18)
-	setPlayerHudComponentVisible("vehicle_name", true)
+	setPlayerHudComponentVisible("vehicle_name", false)
 	HUDUI:getSingleton():setEnabled(true)
 end
 
