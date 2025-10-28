@@ -38,8 +38,7 @@ ADD build/ml_redis.so /var/lib/mtasa/x64/modules/ml_redis.so
 # Add entrypoint script
 ADD build/docker-entrypoint.sh /docker-entrypoint.sh
 
-# Add MTA configs and modules
-ADD build/config/* /var/lib/mtasa/mods/deathmatch/
+# Add MTA modules
 ADD build/modules/* /var/lib/mtasa/x64/modules/
 
 # Add MTA resources

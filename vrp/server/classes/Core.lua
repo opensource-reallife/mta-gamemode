@@ -93,9 +93,6 @@ function Core:constructor()
 		aclGroup:addObject(("user.%s"):format(Config.get("WEB_ACCOUNT_USERNAME")))
 	end
 
-	ACLGroup.get("Admin"):addObject("resource.admin_exo")
-	ACLGroup.get("Admin"):addObject("resource.orl_anticheat")
-
 	if GIT_BRANCH == "release/production" then
 		setServerPassword()
 	end
