@@ -13,6 +13,35 @@ local COST_FACTOR = 5 -- 1km/h = 5$
 local MIN_RANK = 2
 local ALLOWED_SPEED = 80
 
+local TRUCKS = {
+        [403] = true, -- Linerunner
+        [406] = true, -- Dumper
+        [407] = true, -- Firetruck
+        [408] = true, -- Trashmaster
+        [414] = true, -- Mule
+        [416] = true, -- Ambulance
+        [427] = true, -- Enforcer
+        [428] = true, -- Securicar
+        [431] = true, -- Bus
+        [433] = true, -- Barrack
+        [437] = true, -- Coach
+        [443] = true, -- Packer
+        [455] = true, -- Flatbed
+        [456] = true, -- Yankee
+        [499] = true, -- Benson
+        [498] = true, -- Boxville
+        [508] = true, -- Journey
+        [514] = true, -- Tanker
+        [515] = true, -- Roadtrain
+        [524] = true, -- Cement Truck
+        [528] = true, -- FBI Truck
+        [544] = true, -- Firetruckla
+        [573] = true, -- Dune
+        [578] = true, -- DFT-30
+        [599] = true, -- SWAT
+        [609] = true, -- Boxville Black    
+}
+
 function ItemSpeedCam:constructor()
 
 end
@@ -86,7 +115,10 @@ function ItemSpeedCam:onColShapeHit(element, dim)
 
 					local vehType = nil
 
-					if element:getVehicleType() == VehicleType.Automobile then
+					if element:getVehicleType() == VehicleType.Automobile and TRUCKS[element:getModel()] then
+						vehType = "Truck"
+						outputChatbox("Truck detected")
+					elseif element:getVehicleType() == VehicleType.Automobile then
 						vehType = "Driving"
 					elseif element:getVehicleType() == VehicleType.Bike then
 						vehType = "Bike"
@@ -96,7 +128,7 @@ function ItemSpeedCam:onColShapeHit(element, dim)
 					local stvoPoints = 0
 					local oldSTVO = player:getSTVO(vehType)
 					local newSTVO = 0
-					if (vehType == "Driving" and player:hasDrivingLicense()) or (vehType == "Bike" and player:hasBikeLicense()) then
+					if (vehType == "Driving" and player:hasDrivingLicense()) or (vehType == "Bike" and player:hasBikeLicense()) or (vehType == "Truck" and player:hasTruckLicense()) then
 						if element:getSpeed() >= 90 and element:getSpeed() < 120 then
 							stvoPoints = 3
 							newSTVO = oldSTVO + stvoPoints
