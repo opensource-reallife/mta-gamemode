@@ -117,7 +117,6 @@ function ItemSpeedCam:onColShapeHit(element, dim)
 
 					if element:getVehicleType() == VehicleType.Automobile and TRUCKS[element:getModel()] then
 						vehType = "Truck"
-						outputChatbox("Truck detected")
 					elseif element:getVehicleType() == VehicleType.Automobile then
 						vehType = "Driving"
 					elseif element:getVehicleType() == VehicleType.Bike then
