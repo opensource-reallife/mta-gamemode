@@ -158,7 +158,7 @@ function VehicleShop:addVehicle(Id, Model, Name, Category, Price, Level, Pos, Ro
 	if self.m_RandomizeStock then
 		if MaxStock >= 2 then
 			if chance(5) then
-				CurrentStock = Randomizer:get(1, MaxStock)
+				CurrentStock = Randomizer:get(0, MaxStock)
 			else
 				CurrentStock = 0
 			end
