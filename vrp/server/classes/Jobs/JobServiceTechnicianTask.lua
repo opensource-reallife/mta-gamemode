@@ -12,6 +12,7 @@ addEvent("serviceTechnicianQuestionsRetrieve", true)
 function JobServiceTechnicianTask:constructor(player)
     local position = self:getRandomCoordinates()
     self.m_Marker = createMarker(position, "cylinder", 2, 255, 255, 0, 200, player)
+    self.m_MarkerHit = false
     self.m_Blip = Blip:new("Marker.png", position.x, position.y, player, 9999)
     self.m_Blip:setColor(BLIP_COLOR_CONSTANTS.Red)
 	self.m_Blip:setDisplayText(_"Kunde")
@@ -21,6 +22,7 @@ function JobServiceTechnicianTask:constructor(player)
         if player == hitElement and matchingDimension then
             local vehicle = hitElement:getOccupiedVehicle()
             if vehicle and vehicle == hitElement.jobVehicle then
+                self.m_MarkerHit = true
                 hitElement:triggerEvent("openServiceTechnicianQuestionGraphicUserInterface", self:getQuestionSet(hitElement))
                 vehicle:setFrozen(true)
                 vehicle:setFrozen(false)
@@ -51,6 +53,7 @@ end
 function JobServiceTechnicianTask:onQuestionsAnswered(result)
     if source ~= client then return end
     if client ~= self.m_Player then return end
+    if not self.m_MarkerHit then return end
     if not result then return end
 
     local player = source
