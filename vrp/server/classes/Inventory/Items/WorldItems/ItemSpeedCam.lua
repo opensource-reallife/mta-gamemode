@@ -12,7 +12,7 @@ local MAX_SPEEDCAMS = 5
 local COST_FACTOR = 5 -- 1km/h = 5$
 local MIN_RANK = 2
 local ALLOWED_SPEED = 80
-local SCAN_RADIUS = 50
+local SCAN_RADIUS = 35
 
 local TRUCKS = {
         [403] = true, -- Linerunner
@@ -114,13 +114,12 @@ function ItemSpeedCam:onColShapeHit(element, dim)
 					local speed = math.floor(element:getSpeed())
 					local costs = (speed-ALLOWED_SPEED)*COST_FACTOR
 					local objectRot = source.object.rotation.z - 90
-					local elementNeededRot = math.abs(element.rotation.z - 180)
+					local elementRot = element.rotation.z
+					local elementNeededRot = elementRot + 180 > 360 and 0 + (elementRot + 180) - 360 or elementRot + 180
 					local positivRot = objectRot + SCAN_RADIUS > 360 and 0 + (objectRot + SCAN_RADIUS) - 360 or objectRot + SCAN_RADIUS
-					local positivRot2 = objectRot - SCAN_RADIUS < 0 and 360 - (objectRot - math.abs(SCAN_RADIUS)) or objectRot - SCAN_RADIUS
+					local positivRot2 = objectRot - SCAN_RADIUS < 0 and 360 - (objectRot - SCAN_RADIUS) or objectRot - SCAN_RADIUS
 
-					if (positivRot < elementNeededRot  and positivRot2 > elementNeededRot) then return end
-
-
+					if (positivRot < elementNeededRot  or positivRot2 > elementNeededRot  ) then return end
 
 					local vehType = nil
 
