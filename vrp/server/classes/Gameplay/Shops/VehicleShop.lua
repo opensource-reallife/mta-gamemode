@@ -156,20 +156,12 @@ function VehicleShop:addVehicle(Id, Model, Name, Category, Price, Level, Pos, Ro
 	self.m_VehicleList[Model][index].template =  TuningTemplateManager:getSingleton():getNameFromId( TemplateId ) or ""
 	self.m_VehicleList[Model][index].level = Level
 	if self.m_RandomizeStock then
-		if MaxStock >= 2 then
-			if chance(5) then
-				CurrentStock = Randomizer:get(0, MaxStock)
-			else
-				CurrentStock = 0
-			end
-			MaxStock = 0
-		elseif MaxStock == 1 then
-			if chance(1) then
-				CurrentStock = Randomizer:get(1, MaxStock)
-			else
-				CurrentStock = 0
-			end
+		if chance(3) then
+			CurrentStock = Randomizer:get(0, MaxStock)
+		else
+			CurrentStock = 0
 		end
+		MaxStock = 0
 	end
 	self.m_VehicleList[Model][index].currentStock = CurrentStock
 	self.m_VehicleList[Model][index].maxStock = MaxStock
