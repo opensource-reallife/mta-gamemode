@@ -142,7 +142,7 @@ function VehicleCustomTextureGUI:initTextures(textures)
 		item.Id = row["Id"]
         item.onLeftClick = bind(self.Texture_Click, self)
 		item.onLeftDoubleClick = function()
-			QuestionBox:new(_("Möchtest du die Textur wirklich für $%s kaufen?", (self.m_Vehicle:getData("TextureCount") and self.m_Vehicle:getData("TextureCount") > 0 and convertNumber(40000)) or convertNumber(120000)),
+			QuestionBox:new(_("Möchtest du die Textur wirklich für $%s kaufen?", (self.m_Vehicle:getData("TextureCount") and self.m_Vehicle:getData("TextureCount") > 0 and convertNumber(CHANGE_CUSTOM_TEXTURE_PRICE)) or convertNumber(NEW_CUSTOM_TEXTURE_PRICE)),
 				function()
 					triggerServerEvent("vehicleCustomTextureBuy", self.m_Vehicle, item.Id, item.Url, self.m_Tuning:getTuning("Color1"), self.m_Tuning:getTuning("Color2"))
 				end
