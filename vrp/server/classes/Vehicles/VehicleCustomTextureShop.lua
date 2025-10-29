@@ -228,7 +228,7 @@ function VehicleCustomTextureShop:Event_vehicleTextureBuy(id, url, color1, color
 		self:setTexture(source, url, nil, true,false)
 		source.m_TextureCount = 1
 		source:setData("TextureCount", 1, true)
-		if price == 120000 then
+		if price == NEW_CUSTOM_TEXTURE_PRICE then
 			client:sendInfo(_("Textur erstmalig gekauft!", client))
 		else
 			client:sendInfo(_("Textur gekauft!", client))
