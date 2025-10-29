@@ -90,8 +90,8 @@ function ColorCarsManager:createLobby(lobbyOwner, lobbyName, password, maxPlayer
 end
 
 function ColorCarsManager:createPlayerLobby(lobbyOwner, lobbyName, password, maxPlayers)
-    if lobbyOwner:isFactionDuty() and lobbyOwner:getFaction():isStateFaction() then
-		lobbyOwner:sendError(_("Du darfst im Dienst nicht in eine ColorCars Lobby!", lobbyOwner))
+    if lobbyOwner:isFactionDuty() or lobbyOwner:isCompanyDuty() then
+		lobbyOwner:sendError(_("Du darfst nicht im Dienst sein!", lobbyOwner))
 		return
 	end
 
@@ -110,8 +110,8 @@ function ColorCarsManager:deleteLobby(lobby)
 end
 
 function ColorCarsManager:addPlayerToLobby(lobby, player)
-	if player:isFactionDuty() and player:getFaction():isStateFaction() then
-		player:sendError(_("Du darfst im Dienst nicht in eine ColorCars Lobby!", player))
+	if player:isFactionDuty() or player:isCompanyDuty() then
+		player:sendError(_("Du darfst nicht im Dienst sein!", player))
 		return
 	end
 

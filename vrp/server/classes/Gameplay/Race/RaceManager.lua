@@ -114,17 +114,22 @@ function RaceManager:constructor()
     addEventHandler("onMarkerHit", self.m_RaceMarker, bind(self.Event_onMarkerHit, self))
 
 	addEventHandler("raceJoinLobby", root, function(lobbyOwner, password)
+		if client:isFactionDuty() or client:isCompanyDuty() then
+			client:sendError(_("Du darfst nicht im Dienst sein!", client))
+			return
+		end
+
 		local lobby = RaceManager.Lobbys[lobbyOwner]
 		if not lobby then 
-			client:sendError(_"Diese Lobby existiert nicht!")
+			client:sendError(_("Diese Lobby existiert nicht!", client))
 			return
 		end
 		if #lobby.m_Players >= lobby.m_MaxPlayers then
-			client:sendError(_"Diese Lobby ist voll!")
+			client:sendError(_("Diese Lobby ist voll!", client))
 			return
 		end
 		if lobby.m_LobbyPassword and lobby.m_LobbyPassword ~= password then
-			client:sendError(_"Falsches Passwort!")
+			client:sendError(_("Falsches Passwort!", client))
 			return
 		end
 		lobby:addPlayer(client)
@@ -139,6 +144,11 @@ function RaceManager:constructor()
 	addEventHandler("raceCreateLobby", root, function(password, maxPlayers, mapFileName)
 		if source ~= client then return end
 		if RaceManager.Lobbys[client] then return end
+
+		if client:isFactionDuty() or client:isCompanyDuty() then
+			client:sendError(_("Du darfst nicht im Dienst sein!", client))
+			return
+		end
 
 		local requiredMoney = 500
 		if client:getMoney() >= requiredMoney then 

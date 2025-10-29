@@ -38,6 +38,11 @@ function ZombieSurvival.initalize()
 
 	addRemoteEvents{"startZombieSurvival"}
 	addEventHandler("startZombieSurvival", root, function()
+		if client:isFactionDuty() or client:isCompanyDuty() then
+			client:sendError(_("Du darfst nicht im Dienst sein!", client))
+			return
+		end
+
 		local index = #MinigameManager.Current+1
 		MinigameManager.Current[index] = ZombieSurvival:new()
 		MinigameManager.Current[index]:addPlayer(client)

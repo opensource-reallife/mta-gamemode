@@ -33,6 +33,11 @@ function SniperGame.initalize()
 
 	addRemoteEvents{"startSniperGame", "SniperGame:onPedDamage"}
 	addEventHandler("startSniperGame", root, function()
+		if client:isFactionDuty() or client:isCompanyDuty() then
+			client:sendError(_("Du darfst nicht im Dienst sein!", client))
+			return
+		end
+
 		local instance = SniperGame:new()
 		instance:addPlayer(client)
 		local index = #MinigameManager.Current+1
