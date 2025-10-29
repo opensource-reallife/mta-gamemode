@@ -145,7 +145,7 @@ function PayNSpray.initializeAll()
 	PayNSpray:new(-1904.47, 289.47, 40, 19) -- SF Wang Cars{ x = -1904.900, y = 286.494, z = 40.456 }
 	PayNSpray:new(-2425.84, 1020.08, 50.4, 27) -- SF Juniper Hill
 	PayNSpray:new(-1420.49, 2582.37, 55.41, 40) -- El Quebrados
-	--PayNSpray:new(720.26, -455.14, 16.34, 47) -- Dillimore
+	PayNSpray:new(720.26, -455.14, 16.34, 47) -- Dillimore
 
 	local userMeetup = PayNSpray:new(1722.08, -1772.67, 13.62, nil, true)
 	userMeetup:createCustomDoor(13028, Vector3(1722.19, -1763.90, 16.1), Vector3(180, -90, 90))
