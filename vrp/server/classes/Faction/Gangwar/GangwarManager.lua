@@ -308,7 +308,7 @@ function Gangwar:attackArea( player )
 						end
 					end
 					if factionCount >= GANGWAR_MIN_PLAYERS or DEBUG or (gametime >= GANGWAR_ATTACK_HOUR_START and gametime <= GANGWAR_ATTACK_HOUR_END) then
-						if factionCount2 >= GANGWAR_MIN_PLAYERS or DEBUG or (gametime >= GANGWAR_ATTACK_HOUR_START and gametime <= GANGWAR_ATTACK_HOUR_END * 60)  then
+						if factionCount2 >= GANGWAR_MIN_PLAYERS or DEBUG or (gametime >= GANGWAR_ATTACK_HOUR_START and gametime <= GANGWAR_ATTACK_HOUR_END)  then
 							local activeGangwar = self:getCurrentGangwar()
 							local isGangwarLocked, remainingTime = self.m_GangwarGuard:isGangwarLocked( player:getFaction() )
 							local acFaction1,  acFaction2
