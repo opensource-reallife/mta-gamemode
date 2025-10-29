@@ -5,7 +5,7 @@ VEHICLE_BOX_LOAD[427] = {["count"]= 2,	[1] = Vector3(0, -1.5, -0.2), [2] = Vecto
 FACTION_TRUNK_MAX_ITEMS = {
 	["Barrikade"] = 10,
 	["Nagel-Band"] = 3,
-	["Blitzer"] = 3,
+	["Blitzer"] = 5,
 	["Warnkegel"] = 10,
 	["SLAM"] = 2,
 	["Gasmaske"] = 10,
