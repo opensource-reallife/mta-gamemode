@@ -75,17 +75,10 @@ function MapLoader:loadFromDatabase(id)
                 self:addRef(self.m_Maps[id][index])
             elseif oRow.Type == 0 then
                 local index = #self.m_MapRemovals[id]+1
-
-                local insertId = oRow.Id
-                local worldModelId = oRow.Model
-                local wX, wY, wZ = oRow.PosX, oRow.PosY, oRow.PosZ
-                local wrX, wrY, wrZ = oRow.RotX, oRow.RotY, oRow.RotZ
-                local interior = oRow.Interior
                 local radius = tonumber(oRow.Radius) or 0
-                local creator = oRow.Creator
 
-                self.m_MapRemovals[id][index] = {insertId, worldModelId, wX, wY, wZ, wrX, wrY, wrZ, interior, radius, creator}
-                removeWorldModel(worldModelId, radius, wX, wY, wZ, interior)
+                self.m_MapRemovals[id][index] = {insertId=oRow.Id, worldModelId=oRow.Model, wX=oRow.PosX, wY=oRow.PosY, wZ=oRow.PosZ, wrX=oRow.RotX, wrY=oRow.RotY, wrZ=oRow.RotZ, interior=oRow.Interior, radius=radius, creator=oRow.Creator}
+                removeWorldModel(oRow.Model, radius, oRow.PosX, oRow.PosY, oRow.PosZ, oRow.Interior)
             end
         end
         triggerClientEvent(PlayerManager:getSingleton():getReadyPlayers(), "applyBreakableState", resourceRoot)
