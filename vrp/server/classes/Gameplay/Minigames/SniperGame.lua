@@ -19,8 +19,9 @@ SniperGame.Positions = {
 }
 
 function SniperGame.initalize()
-	local sniperPed = createPed(162 ,-531.40, 1972.36, 60.56, 333.32)
+	local sniperPed = NPC:new(162, -531.40, 1972.36, 60.56, 333.32)
 	sniperPed:setFrozen(true)
+	sniperPed:setImmortal(true)
 	local sniperMarker = createMarker(-530.19, 1974.61, 59.5, "cylinder", 1, 255, 0, 0, 125)
 	local b = Blip:new("SniperGame.png", -530.19, 1974.61)
 	b:setDisplayText("Sniper Game", BLIP_CATEGORY.Leisure)

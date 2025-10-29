@@ -13,8 +13,9 @@ function ZombieSurvival.initalize()
 	local b = Blip:new("Evil.png", -31.64, 1377.67)
 	b:setDisplayText("Zombie Survival", BLIP_CATEGORY.Leisure)
 
-	local zombiePed = createPed(162, -31.64, 1377.67, 9.17, 90)
+	local zombiePed = NPC:new(162, -31.64, 1377.67, 9.17, 90)
 	zombiePed:setFrozen(true)
+	zombiePed:setImmortal(true)
 	local zombieMarker = createMarker(-34.6, 1377.80, 8.4, "cylinder", 1, 255, 0, 0, 125)
 
 	--[[ Cutscene
