@@ -212,7 +212,12 @@ function ZombieSurvival:addZombie()
 			self.m_Zombies[i] = nil
 		end
 	end
-	if table.size(self.m_Zombies) < 20 then
+	for i, timer in pairs(self.m_ZombieTimers) do
+		if not isTimer(timer) then
+			self.m_ZombieTimers[i] = nil
+		end
+	end
+	if table.size(self.m_Zombies) + table.size(self.m_ZombieTimers) <= 10 then
 		local pos = self:getRandomPosition()
 		self:createSmoke(pos)
 		self.m_ZombieTimers[#self.m_ZombieTimers+1] = setTimer(bind(self.spawnZombie, self), 2500, 1, pos)
@@ -222,6 +227,9 @@ end
 
 function ZombieSurvival:spawnZombie(pos)
 	local zombie = Zombie:new(pos, 310, self.m_Dimension)
+	if chance(25) then
+		zombie:enableHardMode()
+	end
 	zombie:disableSeeCheck()
 	zombie:SprintToPlayer(self:getRandomPlayer())
 	table.insert(self.m_Zombies, zombie)

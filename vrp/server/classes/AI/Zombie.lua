@@ -11,46 +11,56 @@ function Zombie:constructor(pos, model, dim, int)
 	setElementData(self.m_Ped, "zombie", true)
 
 	self.m_SeeCheck = true
+	self.m_HardMode = false
+
 	-- Variablen
-	do
-		self.m_target = nil
-		self.m_attacking = false
-		self.m_state = "waiting"
+	self.m_target = nil
+	self.m_attacking = false
+	self.m_state = "waiting"
 	--	self.object = self
 
-		-- Col Shapes
-		-- Um dem Zombie werden 2 Colshapes erstellt, ein mit kleinem Radius und ein mit Grossem.
-		-- Dies dient zum Sprinten/Erkennen.
+	-- Col Shapes
+	-- Um dem Zombie werden 2 Colshapes erstellt, ein mit kleinem Radius und ein mit Grossem.
+	-- Dies dient zum Sprinten/Erkennen.
 
-		self.m_bigcol = createColSphere(pos, 100)
-		self.m_smallcol = createColSphere(pos, 5)
-		setElementDimension(self.m_bigcol, dim or 0)
-		setElementInterior(self.m_bigcol, int or 0)
-		setElementDimension(self.m_smallcol, dim or 0)
-		setElementInterior(self.m_smallcol, int or 0)
+	self.m_bigcol = createColSphere(pos, 100)
+	self.m_smallcol = createColSphere(pos, 5)
+	setElementDimension(self.m_bigcol, dim or 0)
+	setElementInterior(self.m_bigcol, int or 0)
+	setElementDimension(self.m_smallcol, dim or 0)
+	setElementInterior(self.m_smallcol, int or 0)
 
-		attachElements(self.m_bigcol, self.m_Ped)
-		attachElements(self.m_smallcol, self.m_Ped)
+	attachElements(self.m_bigcol, self.m_Ped)
+	attachElements(self.m_smallcol, self.m_Ped)
 
-		-- Event handler -
+	-- Event handler -
+	addEventHandler("onColShapeHit", self.m_bigcol, function(target, matchingDim)
+		if not matchingDim then return end
+		self:CheckIfZombieCanSee(target)
+	end)
+	addEventHandler("onColShapeHit", self.m_smallcol, function(target, matchingDim)
+		if not matchingDim then return end
+		self:RunToPlayer(target)
+	end)
 
+	addEventHandler("onColShapeLeave", self.m_bigcol, function(target, matchingDim)
+		if not matchingDim then return end
+		self:CancelSprint(target)
+	end)
+	addEventHandler("onColShapeLeave", self.m_smallcol, function(target, matchingDim)
+		if not matchingDim then return end
+		self:SprintToPlayer(target)
+	end)
 
-		addEventHandler("onColShapeHit", self.m_bigcol, function(target) self:CheckIfZombieCanSee(target) end) -- self:SprintToPlayer(target)
-		addEventHandler("onColShapeHit", self.m_smallcol, function(target) self:RunToPlayer(target) end)
+	addEventHandler("onPedWasted", self.m_Ped, function(ammo, killer) self:onWasted(killer) end)
 
-		addEventHandler("onColShapeLeave", self.m_bigcol, function(target) self:CancelSprint(target) end)
-		addEventHandler("onColShapeLeave", self.m_smallcol, function(target) self:SprintToPlayer(target) end)
+	addEventHandler("onZombieHit", self.m_Ped, function(who)
+		if self.m_HardMode then return end
+		self.m_target = who;
+		self:RunToPlayer(who)
+	end)
 
-		addEventHandler("onPedWasted", self.m_Ped, function(ammo, killer) self:onWasted(killer) end)
-
-
-		addEventHandler("onZombieHit", self.m_Ped, function(who)
-			self.m_target = who;
-			self:RunToPlayer(who)
-		end)
-
-		addEventHandler("onZombieBigColHit", self.m_Ped, function(who, bool) self:ReplyZombieCanSee(who, bool) end) -- Ob er den sehen kann
-	end
+	addEventHandler("onZombieBigColHit", self.m_Ped, function(who, bool) self:ReplyZombieCanSee(who, bool) end) -- Ob er den sehen kann
 
 	self:SetZombieIdle(true)
 
@@ -82,12 +92,16 @@ function Zombie:onWasted(killer)
 			function()
 				delete(self)
 			end,
-		30*1000, 1)
+		5*1000, 1)
 	else
 		delete(self)
 	end
 end
 
+function Zombie:enableHardMode()
+	self.m_HardMode = true
+	self.m_smallcol:setRadius(3)
+end
 
 function Zombie:disableSeeCheck()
 	self.m_SeeCheck = false
@@ -100,11 +114,9 @@ function Zombie:NewIdlePos()
 		setPedAnimation(ped, "ped", "WALK_fatold", 2500, true, true, true)
 
 		for index, player in pairs(getElementsWithinColShape(self.m_bigcol, "player")) do
-			self:CheckIfZombieCanSee(player)
-		end
-
-		if(math.random(0, 2) == 1) then
-
+			if player:getDimension() == ped:getDimension() then
+				self:CheckIfZombieCanSee(player)
+			end
 		end
 	end
 end
@@ -135,40 +147,36 @@ function Zombie:UpdateSprint()
 		self.m_state = "waiting"
 	end
 
-		if(self.m_state == "sprinting") and (getElementData(self.m_Ped, "jumping") ~= true) then
-			local x1, y1, z1 = getElementPosition(self.m_Ped)
-			local x2, y2, z2 = getElementPosition(self.m_target)
-			local rot = math.atan2(y2 - y1, x2 - x1) * 180 / math.pi
-			rot = rot-90
-			setPedRotation(self.m_Ped, rot)
-			setPedAnimation(self.m_Ped, "ped", "sprint_panic", 0, true, true, true)
-		elseif(self.m_state == "running")and (getElementData(self.m_Ped, "jumping") ~= true) then
-			local x1, y1, z1 = getElementPosition(self.m_Ped)
-			local x2, y2, z2 = getElementPosition(self.m_target)
-			local rot = math.atan2(y2 - y1, x2 - x1) * 180 / math.pi
-			rot = rot-90
-			setPedRotation(self.m_Ped, rot)
-			setPedAnimation(self.m_Ped, "ped", "JOG_maleA", 0, true, true, true)
-
-			local dis = getDistanceBetweenPoints3D(x1, y1, z1, x2, y2, z2)
-			if(dis < 2) then
-				-- attack
-				setPedAnimation(self.m_Ped)
-				self.m_attacking = true
-				triggerClientEvent(getRootElement(), "onZombieAttack", getRootElement(), self.m_Ped, true, self.m_target)
-			else
-				if(self.m_attacking == true) then
-					self.m_attacking = false
-					triggerClientEvent(getRootElement(), "onZombieAttack", getRootElement(), self.m_Ped, false, self.m_target)
-				end
-			end
-		end
-		-- // Jump Digens // --
+	if(self.m_state == "sprinting") and (getElementData(self.m_Ped, "jumping") ~= true) then
 		local x1, y1, z1 = getElementPosition(self.m_Ped)
 		local x2, y2, z2 = getElementPosition(self.m_target)
+		local rot = math.atan2(y2 - y1, x2 - x1) * 180 / math.pi
+		rot = rot-90
+		setPedRotation(self.m_Ped, rot)
+		setPedAnimation(self.m_Ped, "ped", "sprint_panic", 0, true, true, true)
+	elseif(self.m_state == "running")and (getElementData(self.m_Ped, "jumping") ~= true) then
+		local x1, y1, z1 = getElementPosition(self.m_Ped)
+		local x2, y2, z2 = getElementPosition(self.m_target)
+		local rot = math.atan2(y2 - y1, x2 - x1) * 180 / math.pi
+		rot = rot-90
+		setPedRotation(self.m_Ped, rot)
+		setPedAnimation(self.m_Ped, "ped", "JOG_maleA", 0, true, true, true)
 
+		local dis = getDistanceBetweenPoints3D(x1, y1, z1, x2, y2, z2)
+		if(dis < 2) then
+			-- attack
+			setPedAnimation(self.m_Ped)
+			self.m_attacking = true
+			triggerClientEvent(getRootElement(), "onZombieAttack", getRootElement(), self.m_Ped, true, self.m_target)
+		else
+			if(self.m_attacking == true) then
+				self.m_attacking = false
+				triggerClientEvent(getRootElement(), "onZombieAttack", getRootElement(), self.m_Ped, false, self.m_target)
+			end
+		end
+	end
 
-		triggerClientEvent(getRootElement(), "onZombieWall", getRootElement(), self.m_Ped, self.m_target)
+	--triggerClientEvent(getRootElement(), "onZombieWall", getRootElement(), self.m_Ped, self.m_target)
 end
 
 function Zombie:RunToPlayer(target2)
