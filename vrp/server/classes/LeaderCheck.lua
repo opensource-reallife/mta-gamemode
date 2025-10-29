@@ -28,7 +28,7 @@ function LeaderCheck:loadLeaderBans()
 end
 
 function LeaderCheck:hasPlayerLeaderBan(player)
-	playerId = false
+	local playerId = false
 	if type(player) == "number" then playerId = player end
 	if isElement(player) then playerId = player:getId() end
 	if not playerId then return end

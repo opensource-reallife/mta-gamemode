@@ -36,6 +36,11 @@ function VehicleCustomTextureShop:constructor()
 		blip:setDisplayText("Speziallackierungs-Shop", BLIP_CATEGORY.VehicleMaintenance)
 		blip:setOptionalColor({255,235,59})
     end
+	
+	self.m_Textures = {} 
+	for i, v in pairs(self:getTextures(nil, nil, true)) do
+		self.m_Textures[v["Id"]] = v
+	end
 
 	Player.getQuitHook():register(
         function(player)
@@ -178,9 +183,13 @@ function VehicleCustomTextureShop:closeFor(player, vehicle, doNotCallEvent)
     end
 end
 
-function VehicleCustomTextureShop:getTextures(player, vehicle)
-	--local result = sql:queryFetch("SELECT * FROM ??_textureshop", sql:getPrefix()) --DEVELOP
-	local result = sql:queryFetch("SELECT * FROM ??_textureshop WHERE Status = ? AND (Model = ? or Model = 0) AND (UserId = ? OR Public = 1) ORDER BY Date DESC", sql:getPrefix(), TEXTURE_STATUS.Active, vehicle:getModel(), player:getId())
+function VehicleCustomTextureShop:getTextures(player, vehicle, admin)
+	local result
+	if admin then
+		result = sql:queryFetch("SELECT * FROM ??_textureshop", sql:getPrefix())
+	else
+		result = sql:queryFetch("SELECT * FROM ??_textureshop WHERE Status = ? AND (Model = ? or Model = 0) AND (UserId = ? OR Public = 1) ORDER BY Date DESC", sql:getPrefix(), TEXTURE_STATUS.Active, vehicle:getModel(), player:getId())
+	end
 	return result
 end
 
@@ -217,7 +226,13 @@ end
 function VehicleCustomTextureShop:Event_vehicleTextureBuy(id, url, color1, color2)
 	local price = (source.m_TextureCount == 0 and NEW_CUSTOM_TEXTURE_PRICE) or CHANGE_CUSTOM_TEXTURE_PRICE
 	if client:getMoney() >= price then
+		local textureData = self.m_Textures[tonumber(id)]
+		local creator = textureData.UserId
 		client:transferMoney(self.m_BankAccountServer, price, "Custom-Texture", "Vehicle", "Texture")
+
+		if (creator and creator > 0) then
+			self.m_BankAccountServer:transferMoney({"player", creator}, MONEY_FOR_CUSTOM_TEXTURE_OWNER, "Custom-Texture Provision", "Vehicle", "Texture-Commission")
+		end
 		local textureName = VEHICLE_SPECIAL_TEXTURE[source:getModel()] or "vehiclegrunge256"
 		source.OldTexture = {[textureName] = url}
 		source.OldColor1 = color1
