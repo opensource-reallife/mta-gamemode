@@ -268,9 +268,8 @@ function MechanicTow:onEnterTowLot(hitElement)
 			towingBike:destroy()
 			hitElement.vehicle:setData("towingBike", nil, true)
 			hitElement:sendInfo(_("Du hast erfolgreich ein Fahrzeug-Wrack abgeschleppt!", hitElement))
-			self.m_BankAccountServer:transferMoney(hitElement, 200, "Fahrzeug-Wrack", "Company", "Towed")
+			self.m_BankAccountServer:transferMoney(hitElement, 250, "Fahrzeug-Wrack", "Company", "Towed")
 		else
-
 			towingBike:toggleRespawn(true)
 			towingBike:setCollisionsEnabled(true)
 			towingBike:detach()
@@ -281,6 +280,7 @@ function MechanicTow:onEnterTowLot(hitElement)
 
 			StatisticsLogger:getSingleton():vehicleTowLogs(hitElement, towingBike)
 			self:addLog(hitElement, "Abschlepp-Logs", ("hat ein Fahrzeug (%s) von %s abgeschleppt!"):format(towingBike:getName(), getElementData(towingBike, "OwnerName") or "Unbekannt"))
+			self.m_BankAccountServer:transferMoney(hitElement, 150, "Fahrzeug abgeschleppt", "Company", "Towed")
 		end
 	else
 		hitElement.vehicle:setData("towingBike", nil, true)
@@ -342,6 +342,7 @@ function MechanicTow:onDetachVehicleFromTow(towTruck, vehicle)
 						driver:sendInfo(_("Das Fahrzeug ist nun abgeschleppt!", driver))
 						StatisticsLogger:getSingleton():vehicleTowLogs(driver, source)
 						self:addLog(driver, "Abschlepp-Logs", ("hat ein Fahrzeug (%s) von %s abgeschleppt!"):format(source:getName(), getElementData(source, "OwnerName") or "Unbekannt"))
+						self.m_BankAccountServer:transferMoney(driver, 150, "Fahrzeug abgeschleppt", "Company", "Towed")
 					else
 						if source.Blip then
 							source.Blip:delete()
@@ -349,7 +350,7 @@ function MechanicTow:onDetachVehicleFromTow(towTruck, vehicle)
 						self:addLog(driver, "Abschlepp-Logs", ("hat ein Fahrzeug-Wrack (%s) abgeschleppt!"):format(source:getName()))
 						source:destroy()
 						driver:sendInfo(_("Du hast erfolgreich ein Fahrzeug-Wrack abgeschleppt!", driver))
-						self.m_BankAccountServer:transferMoney(driver, 200, "Fahrzeug-Wrack", "Company", "Towed")
+						self.m_BankAccountServer:transferMoney(driver, 250, "Fahrzeug-Wrack", "Company", "Towed")
 					end
 				else
 					driver:sendWarning(_("Dieses Fahrzeug kann nicht abgeschleppt werden!", driver))
