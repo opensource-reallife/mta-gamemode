@@ -74,6 +74,10 @@ function FactionWeaponShopGUI:Event_updateFactionWeaponShopGUI(validWeapons, dep
 				if localPlayer:getData("Faction:InSpecialDuty") or localPlayer:getFaction():isEvilFaction() then
 					self:addWeaponToGUI(k, depotWeapons[k]["Waffe"], depotWeapons[k]["Munition"])	
 				end
+			elseif k == 36 then
+				if (not localPlayer:getData("Faction:InSpecialDuty") and localPlayer:getFaction():getId() == 3) or (localPlayer:getFaction():isEvilFaction()) then
+					self:addWeaponToGUI(k, depotWeapons[k]["Waffe"], depotWeapons[k]["Munition"])	
+				end
 			else
 				self:addWeaponToGUI(k, depotWeapons[k]["Waffe"], depotWeapons[k]["Munition"])
 			end 
