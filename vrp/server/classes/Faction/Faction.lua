@@ -317,6 +317,9 @@ function Faction:changeSkin(player, skinId)
 		
 		if self:isStateFaction() then
 			if self.m_SpecialSkin[skinId] then
+				if player:getWeapon(7) == 36 then
+					self:storageWeapons(player, {[36] = true})
+				end
 				player:getInventory():giveItem("Kevlar", 1)
 				player:setData("Faction:InSpecialDuty", true, true)
 			else
