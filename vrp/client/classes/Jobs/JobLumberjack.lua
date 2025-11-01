@@ -9,7 +9,7 @@ JobLumberjack = inherit(Job)
 addEvent("lumberjackTreesLoadUp", true)
 
 function JobLumberjack:constructor()
-	Job.constructor(self, 16, 1104.27, -298.06, 73.99, 90, "Lumberjack.png", {80, 140, 30}, "files/images/Jobs/HeaderLumberjack.png", (HelpTextTitles.Jobs.Lumberjack):gsub("Job: ", ""), _(HelpTexts.Jobs.Lumberjack), LexiconPages.JobLumberjack)
+	Job.constructor(self, 16, 1072.39, -291.79, 73.98, 176.75, "Lumberjack.png", {80, 140, 30}, "files/images/Jobs/HeaderLumberjack.png", (HelpTextTitles.Jobs.Lumberjack):gsub("Job: ", ""), _(HelpTexts.Jobs.Lumberjack), LexiconPages.JobLumberjack)
 	self:setJobLevel(JOB_LEVEL_LUMBERJACK)
 
 	self.m_Trees = {}
