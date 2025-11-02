@@ -208,6 +208,7 @@ function PlaneAccident:createTrashData()
                     if hitElement.controller then
                         BankServer.get("company.mechanic"):transferMoney(hitElement.controller, 1500, "Flugzeug-Wrack Abgabe", "Company", "Plane accident removal")
                     end
+			        CompanyManager:getSingleton():getFromId(CompanyStaticId.MECHANIC):addLog(hitElement, "Abschlepp-Logs", ("hat ein Flugzeug-Wrack abgeschleppt!"))
                     BankServer.get("company.mechanic"):transferMoney(CompanyManager:getSingleton():getFromId(CompanyStaticId.MECHANIC), 3000, "Flugzeug-Wrack Abgabe", "Company", "Plane accident removal")
                     self.m_Flatbed:setVariant(3, 4)
                     self.m_TrashDeliveryMarker:destroy()
