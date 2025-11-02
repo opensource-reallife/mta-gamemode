@@ -9,12 +9,16 @@
 HappyHourManager = inherit(Singleton)
 
 function HappyHourManager:constructor()
-    GlobalTimer:getSingleton():registerEvent(bind(self.startHappyHour, self), "HappyHourBegin", nil, 10, 30)
-    GlobalTimer:getSingleton():registerEvent(bind(self.endHappyHour, self), "HappyHourEnd", nil, 12, 00)
+    GlobalTimer:getSingleton():registerEvent(bind(self.startHappyHour, self), "HappyHourBegin", nil, 12, 00)
+    GlobalTimer:getSingleton():registerEvent(bind(self.endHappyHour, self), "HappyHourEnd", nil, 13, 30)
 
-	GlobalTimer:getSingleton():registerEvent(bind(self.startHappyHour, self), "HappyHourBegin", nil, 15, 30)
-    GlobalTimer:getSingleton():registerEvent(bind(self.endHappyHour, self), "HappyHourEnd", nil, 16, 30)
+    GlobalTimer:getSingleton():registerEvent(bind(self.startHappyHour, self), "HappyHourBegin", nil, 16, 30)
+    GlobalTimer:getSingleton():registerEvent(bind(self.endHappyHour, self), "HappyHourEnd", nil, 18, 00)
 
+	GlobalTimer:getSingleton():registerEvent(bind(self.startHappyHour, self), "HappyHourBegin", nil, 21, 30)
+    GlobalTimer:getSingleton():registerEvent(bind(self.endHappyHour, self), "HappyHourEnd", nil, 22, 30)
+	
+	self.m_isHappyHour = false
     self.m_MinMembers = {
 		["MinMembersWeapontruck"] = WEAPONTRUCK_MIN_MEMBERS,
 		["MinMembersBankrob"] = BANKROB_MIN_MEMBERS,
@@ -34,6 +38,7 @@ function HappyHourManager:constructor()
 end
 
 function HappyHourManager:startHappyHour()
+	self.m_isHappyHour = true
 	WEEDTRUCK_MIN_MEMBERS = 0
 	EVIDENCETRUCK_MIN_MEMBERS = 0
 	SHOPROB_MIN_MEMBERS = math.ceil(self.m_MinMembers["MinMembersShoprob"] / 2)
@@ -58,6 +63,7 @@ function HappyHourManager:startHappyHour()
 end
 
 function HappyHourManager:endHappyHour()
+	self.m_isHappyHour = false
 	WEAPONTRUCK_MIN_MEMBERS = self.m_MinMembers["MinMembersWeapontruck"]
 	BANKROB_MIN_MEMBERS = self.m_MinMembers["MinMembersBankrob"]
 	CASINOHEIST_MIN_MEMBERS = self.m_MinMembers["MinMembersCasinoHeist"]
