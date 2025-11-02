@@ -9,6 +9,7 @@ function SanNews:constructor()
 	self.m_onPlayerChatFunc = bind(self.Event_onPlayerChat, self)
 	self.m_SanNewsMessageEnabled = false
 	self.m_RunningEvent = false
+	self.m_AppUnlocked = {}
 
 	local safe = createObject(2332, 294.43, -22.6, 1031.7)
 	safe:setInterior(10)
@@ -37,7 +38,7 @@ function SanNews:constructor()
 	Player.getQuitHook():register(bind(self.Event_onPlayerQuit, self))
 	Player.getChatHook():register(bind(self.Event_onPlayerChat, self))
 
-	addRemoteEvents{"sanNewsStartInterview", "sanNewsStopInterview", "sanNewsAdvertisement", "sanNewsToggleMessage", "sanNewsStartStreetrace", "sanNewsAddBlip", "sanNewsDeleteBlips"}
+	addRemoteEvents{"sanNewsStartInterview", "sanNewsStopInterview", "sanNewsAdvertisement", "sanNewsToggleMessage", "sanNewsStartStreetrace", "sanNewsAddBlip", "sanNewsDeleteBlips", "requestNewsAppUnlock"}
 	addEventHandler("sanNewsStartInterview", root, bind(self.Event_startInterview, self))
 	addEventHandler("sanNewsStopInterview", root, bind(self.Event_stopInterview, self))
 	addEventHandler("sanNewsAdvertisement", root, bind(self.Event_advertisement, self))
@@ -45,6 +46,7 @@ function SanNews:constructor()
 	addEventHandler("sanNewsStartStreetrace", root, bind(self.Event_startStreetrace, self))
 	addEventHandler("sanNewsAddBlip", root, bind(self.Event_addBlip, self))
 	addEventHandler("sanNewsDeleteBlips", root, bind(self.Event_deleteBlips, self))
+	addEventHandler("requestNewsAppUnlock", root, bind(self.Event_requestNewsAppUnlock, self))
 
 	addCommandHandler("news", bind(self.Event_news, self))
 	addCommandHandler("sannews", bind(self.Event_sanNewsMessage, self), false, false)
@@ -279,4 +281,22 @@ function SanNews:Event_sanNewsMessage(player, cmd, ...)
 	else
 		player:sendError(_("Die SanNews hat /sannews derzeit deaktiviert!", player))
 	end
+end
+
+function SanNews:Event_requestNewsAppUnlock(pay)
+	if pay then
+		local costs = 1000
+		if client:getBankMoney() >= costs then
+			client:transferBankMoney({self, nil, true}, costs, "San News App", "Company", "App")
+			client:sendShortMessage(_("Die Funktion steht dir nun bis zum Server-Neustart zur Verfügung!", client))
+			self.m_AppUnlocked[client:getId()] = true
+		else
+			client:sendError(_("Du hast zu wenig Geld auf deinem Bankkonto! (%s$)", client, costs))
+		end
+	end
+	local minutes = math.ceil(JobManager:getSingleton().m_TimedPulse.m_Timer:getDetails() / 1000 / 60)
+	local realTime = getRealTime()
+	local changeTime = (realTime.hour*60 + realTime.minute + minutes) % 1440
+	local timeFormatted = ("%02d:%02d"):format(changeTime/60, changeTime%60)
+	client:triggerEvent("receiveNewsAppUnlock", self.m_AppUnlocked[client:getId()], timeFormatted)
 end

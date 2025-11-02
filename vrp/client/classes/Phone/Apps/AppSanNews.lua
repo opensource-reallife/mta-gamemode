@@ -17,18 +17,17 @@ local ColorTable = {
 function AppSanNews:constructor()
 	PhoneApp.constructor(self, "SanNews", "IconSanNews.png")
 	
-	addRemoteEvents{"receiveFuelPrices"}
+	addRemoteEvents{"receiveFuelPrices", "receiveNewsAppUnlock"}
 	addEventHandler("receiveFuelPrices", localPlayer, bind(self.Event_receiveFuelPrices, self))
+	addEventHandler("receiveNewsAppUnlock", localPlayer, bind(self.Event_receiveNewsAppUnlock, self))
 end
 
 function AppSanNews:onOpen(form)
-
 	self.m_TabPanel = GUIPhoneTabPanel:new(0, 0, form.m_Width, form.m_Height, form)
 	self.m_Tabs = {}
 	self.m_Tabs["News"] = self.m_TabPanel:addTab(_"Nachrichten", FontAwesomeSymbols.Newspaper)
 	local tab = self.m_Tabs["News"]
 	self.m_NewsBrowser = GUIWebView:new(0, 0, tab.m_Width, tab.m_Height-10, (INGAME_WEB_PATH .. "/ingame/vRPphone/apps/sannews/index.php?player=%s&sessionID=%s"):format(localPlayer:getName(), localPlayer:getSessionId()), true, self.m_Tabs["News"])
-
 
 	self.m_Tabs["Advertisment"] = self.m_TabPanel:addTab(_"Werbung", FontAwesomeSymbols.Advertisement)
 	tab = self.m_Tabs["Advertisment"]
@@ -68,8 +67,6 @@ function AppSanNews:onOpen(form)
 	self.m_InfoLabel = GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.65, tab.m_Width*0.96, tab.m_Height*0.07, "Kosten: 0$", self.m_Tabs["Advertisment"]):setFontSize(0.8):setAlignX("center")
 
 	self.m_SubmitButton = GUIButton:new(tab.m_Width*0.02, tab.m_Height*0.85, tab.m_Width*0.96, tab.m_Height*0.09, _"Werbung schalten", self.m_Tabs["Advertisment"]):setBackgroundColor(Color.Green)
-
-
 	self.m_SubmitButton.onLeftClick =
 		function()
 			if localPlayer:isInPrison() or localPlayer:isInJail() then return ErrorBox:new(_"Du kannst im Knast / Prison keine Werbung schalten!") end
@@ -84,17 +81,35 @@ function AppSanNews:onOpen(form)
 		end
 	self:calcCosts()
 
-	self.m_Tabs["FuelPrices"] = self.m_TabPanel:addTab(_"Tankpreise", FontAwesomeSymbols.Newspaper)
+	self.m_Tabs["FuelPrices"] = self.m_TabPanel:addTab(_"Tankpreise", FontAwesomeSymbols.Gas_Pump)
 	tab = self.m_Tabs["FuelPrices"]
 
-	GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.01, tab.m_Width*0.98, tab.m_Height*0.06, _"Doppelklick zum Route berechnen", self.m_Tabs["FuelPrices"]):setAlignX("center")
+	GUILabel:new(tab.m_Width*0.04, tab.m_Height*0.02, tab.m_Width*0.96, tab.m_Height*0.06, _"Doppelklick zum Route berechnen", self.m_Tabs["FuelPrices"])
 	self.m_FuelPriceGrid = GUIGridList:new(10, 40, form.m_Width-20, form.m_Height-90, tab)
 	self.m_FuelPriceGrid:addColumn(_"Aktuelle Tankpreise", 0.4)
 	self.m_FuelPriceGrid:addColumn("", 0.6)
+
+	self.m_Tabs["Jobs"] = self.m_TabPanel:addTab(_"Jobs", FontAwesomeSymbols.Suitcase)
+	tab = self.m_Tabs["Jobs"]
+
+	self.m_JobLabel = GUILabel:new(tab.m_Width*0.04, tab.m_Height*0.02, tab.m_Width*0.96, tab.m_Height*0.06, "", self.m_Tabs["Jobs"]):setFont(VRPFont(35))
+	self.m_JobGrid = GUIGridList:new(10, 50, form.m_Width-20, form.m_Height-190, tab)
+	self.m_JobGrid:addColumn(_"Jobs", 0.675)
+	self.m_JobGrid:addColumn("", 0.325)
+	self.m_JobChanger = GUIChanger:new(tab.m_Width*0.04, tab.m_Height*0.785, tab.m_Width*0.925, tab.m_Height*0.07, self.m_Tabs["Jobs"])
+	self.m_JobChanger:addItem("Min. Level")
+	self.m_JobChanger:addItem("Multiplikatoren")
+	self.m_JobChanger.onChange = function() self:refreshJobGrid() end
+	self.m_UnlockButton = GUIButton:new(tab.m_Width*0.04, tab.m_Height*0.87, tab.m_Width*0.925, tab.m_Height*0.08, "", self.m_Tabs["Jobs"]):setBackgroundColor(Color.Green)
+	self.m_UnlockButton.onLeftClick = function() triggerServerEvent("requestNewsAppUnlock", localPlayer, true) end
+	self.m_UnlockButton:setEnabled(false)
 	
 	self.m_TabPanel.onTabChanged = function(tabId)
 		if tabId == self.m_Tabs["FuelPrices"].TabIndex then
 			triggerServerEvent("requestFuelPrices", localPlayer)
+		end
+		if tabId == self.m_Tabs["Jobs"].TabIndex then
+			triggerServerEvent("requestNewsAppUnlock", localPlayer)
 		end
 	end
 end
@@ -134,7 +149,39 @@ function AppSanNews:calcCosts()
 	end
 end
 
+function AppSanNews:Event_receiveNewsAppUnlock(unlocked, time)
+	self.m_AppUnlocked = unlocked
+	self.m_JobChangeTime = time
+	if unlocked then
+		self.m_UnlockButton:setText(_"Freigeschaltet")
+		self.m_UnlockButton:setEnabled(false)
+		self:refreshJobGrid()
+	else
+		self.m_JobLabel:setText(_"Funktion gesperrt")
+		self.m_UnlockButton:setText(_("Freischalten (%d$)", 1000))
+		self.m_UnlockButton:setEnabled(true)
+		self:refreshJobGrid()
+	end
+end
 
+function AppSanNews:refreshJobGrid()
+	local item = self.m_JobChanger:getSelectedItem()
+	self.m_JobGrid:clear()
+	if self.m_AppUnlocked then
+		if item == "Min. Level" then
+			self.m_JobLabel:setText(_"Benötigtes Joblevel")
+			for index, job in pairs(JobManager:getSingleton().m_Jobs) do
+				self.m_JobGrid:addItem(job.m_Name, (" %d "):format(job.m_Level))
+			end
+		else
+			self.m_JobLabel:setText(_("Änderung: %s Uhr", self.m_JobChangeTime))
+			for index, job in pairs(JobManager:getSingleton().m_Jobs) do
+				local mult = job.m_Multiplicator and ("+" .. math.round(job.m_Multiplicator * 100) .. "%") or " - "
+				self.m_JobGrid:addItem(job.m_Name, mult)
+			end
+		end
+	end
+end
 
 local currentAd
 addEvent("showAd", true)
