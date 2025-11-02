@@ -79,7 +79,7 @@ function JobServiceTechnicianTask:onQuestionsAnswered(result)
     end
 
     if correctAnswers > 0 then
-        local pay = math.floor((50 * JOB_PAY_MULTIPLICATOR * JobServiceTechnician:getSingleton():getMultiplicator()) * (Randomizer:get(90, 110) / 100) / answerCount * correctAnswers)
+        local pay = math.floor((50 * JOB_PAY_MULTIPLICATOR * JobServiceTechnician:getSingleton():getMultiplicator(player)) * (Randomizer:get(90, 110) / 100) / answerCount * correctAnswers)
 		local points = math.round(pay / 50 * JOB_EXTRA_POINT_FACTOR)
 		player:givePoints(points)
 		StatisticsLogger:getSingleton():addJobLog(player, "jobServiceTechnician", nil, pay, nil, nil, points)

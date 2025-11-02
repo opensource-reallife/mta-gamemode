@@ -22,8 +22,7 @@ function JobHelpGUI:constructor()
 
 	local pos
 	for index, job in pairs(JobManager:getSingleton().m_Jobs) do
-		local mult = job.m_Multiplicator and ("+"..job.m_Multiplicator.."%") or " - "
-		if job.m_Name == "Boxer" or job.m_Name == "Schatzsucher" then mult = " - " end
+		local mult = job.m_Multiplicator and ("+" .. math.round(job.m_Multiplicator * 100) .. "%") or " - "
 		item = self.m_JobList:addItem(job.m_Name, job.m_Level, mult)
 		item.onLeftDoubleClick = function () self:showJob(job.m_Ped:getPosition()) end
 	end

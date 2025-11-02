@@ -33,7 +33,6 @@ function JobManager:constructor()
 	addRemoteEvents{"jobDecline", "jobAccepted", "jobQuit"}
 	addEventHandler("jobAccepted", root, bind(self.Event_jobAccepted, self))
 	addEventHandler("jobDecline", root, bind(self.Event_jobDecline, self))
-
 	addEventHandler("jobQuit", root, bind(self.Event_jobQuit, self))
 
 	PlayerManager:getSingleton():getQuitHook():register(
@@ -136,7 +135,10 @@ end
 function JobManager:refreshJobMultiplicators()
 	self.m_JobMultiplicators = { }
 	for k, v in ipairs(self.m_Jobs) do
-		local random = Randomizer:get(0, 10 * Randomizer:get(0, 1)) * 10
+		local random = false
+		if v:getId() ~= 10 and v:getId() ~= 12 then -- Treasure Seeker, Boxer
+			random = Randomizer:get(0, 10 * Randomizer:get(0, 1)) * 10 / 100
+		end
 		v:setMultiplicator(random)
 		self.m_JobMultiplicators[v:getId()] = random
 	end

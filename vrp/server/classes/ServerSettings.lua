@@ -128,6 +128,10 @@ function ServerSettings:constructor()
 			JOBMULT_REFRESH_TIME = tonumber(row.Value)
 		end
 
+		if row.Index == "JobMultPerLevel" then
+			JOBMULT_PER_LEVEL = tonumber(row.Value)
+		end
+
 		if row.Index == "MaxMoneyPerPlayerFromSplit" then
 			MAX_MONEY_PER_PLAYER_FROM_SPLIT = tonumber(row.Value)
 		end

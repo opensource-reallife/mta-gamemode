@@ -21,8 +21,9 @@ function Job:setId(Id)
 	self.m_Id = Id
 end
 
-function Job:getMultiplicator()
-	return self.m_Multiplicator / 100 + 1
+function Job:getMultiplicator(player)
+	local jobLevel = (player and player:getJobLevel()) or 0
+	return (self.m_Multiplicator or 0) + (jobLevel * JOBMULT_PER_LEVEL) + 1
 end
 
 function Job:setMultiplicator(mult)

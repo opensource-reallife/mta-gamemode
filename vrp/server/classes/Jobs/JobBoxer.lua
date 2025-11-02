@@ -99,7 +99,7 @@ end
 
 function JobBoxer:endJob()
     local level = client:getPublicSync("JobBoxer:activeLevel")
-    local income = Randomizer:get(JobBoxerMoney[1], JobBoxerMoney[level]) * JOB_PAY_MULTIPLICATOR * (Randomizer:get(90, 110) / 100)
+    local income = Randomizer:get(JobBoxerMoney[1], JobBoxerMoney[level]) * JOB_PAY_MULTIPLICATOR * self:getMultiplicator(client) * (Randomizer:get(90, 110) / 100)
     local points = math.round(income / 50 * JOB_EXTRA_POINT_FACTOR)
     self.m_BankAccountServer:transferMoney({client, true}, income, "Boxer-Job", "Job", "Boxer")
     local duration = getRealTime().timestamp - client.m_LastJobAction

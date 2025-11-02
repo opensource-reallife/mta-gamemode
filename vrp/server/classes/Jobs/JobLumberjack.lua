@@ -169,7 +169,7 @@ function JobLumberjack:dumpHit(hitElement, matchingDimension)
 
 		local duration = getRealTime().timestamp - hitElement.m_LastJobAction
 		hitElement.m_LastJobAction = getRealTime().timestamp
-		local money = numTrees * TREE_MONEY * JOB_PAY_MULTIPLICATOR * self:getMultiplicator()
+		local money = numTrees * TREE_MONEY * JOB_PAY_MULTIPLICATOR * self:getMultiplicator(hitElement)
 		local points = math.round(money / 50 * JOB_EXTRA_POINT_FACTOR)
 		StatisticsLogger:getSingleton():addJobLog(hitElement, "jobLumberjack", duration, money, nil, nil, points, numTrees)
 		self.m_BankAccount:transferMoney({hitElement, true}, money, "Holzfäller-Job", "Job", "Lumberjack")
