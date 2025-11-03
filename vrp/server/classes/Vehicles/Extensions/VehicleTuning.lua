@@ -138,6 +138,12 @@ function VehicleTuning:applyTuning(disableTextureForce)
 		self.m_Tuning["RadarDetector"] = 0
 	end
 	self.m_Vehicle:setData("RadarDetector", self.m_Tuning["RadarDetector"], true)
+
+	if not self.m_Tuning["Paintjob"] then
+		self.m_Tuning["Paintjob"] = 3
+	end
+	self.m_Vehicle:setData("Paintjob", self.m_Tuning["Paintjob"], true)
+	self.m_Vehicle:setPaintjob(self.m_Tuning["Paintjob"])
 end
 
 function VehicleTuning:createNew()
@@ -155,6 +161,7 @@ function VehicleTuning:createNew()
 	self.m_Tuning["Variant2"] = 255
 	self.m_Tuning["RcVehicles"] = {}
 	self.m_Tuning["RadarDetector"] = 0
+	self.m_Tuning["Paintjob"] = 3
 
 	for tuning, class in pairs(VehicleManager:getSingleton().m_TuningClasses) do
 		self.m_Tuning[tuning] = {0} -- the first index in every tuning-kit field will be indicating wether the kit is installed or not
