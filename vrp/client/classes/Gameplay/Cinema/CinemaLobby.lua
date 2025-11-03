@@ -123,7 +123,7 @@ function CinemaLobby:playVideo(URL)
 end   
 
 function CinemaLobby:syncVideo(URL)
-    local URL = ("https://www.youtube.com/embed/%s?autoplay=1&controls=0&showinfo=0"):format(self:getVideoIdFromURL(URL))
+    local URL = (INGAME_WEB_PATH .. "/ingame/other/youtube.html?watch=%s"):format(self:getVideoIdFromURL(URL))
     self.m_Browser:loadURL(URL)
 end   
 
@@ -149,7 +149,7 @@ function CinemaLobby:syncVideoOnEnter()
     if #self.m_CurrentlyPlaying > 0 then 
         videoId = self:getVideoIdFromURL(self.m_CurrentlyPlaying[1]) 
         time = math.ceil(self.m_CurrentlyPlaying[2])
-        URL = ("https://www.youtube.com/embed/%s?autoplay=1&controls=0&showinfo=0&start=%s"):format(videoId, time)
+        URL = (INGAME_WEB_PATH .. "/ingame/other/youtube.html?watch=%s&t=%s"):format(videoId, time)
         self.m_Browser:loadURL(URL)
     else
         self:defaultScreen()
