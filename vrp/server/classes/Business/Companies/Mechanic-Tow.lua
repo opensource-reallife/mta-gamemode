@@ -259,7 +259,7 @@ function MechanicTow:onEnterTowLot(hitElement)
 
 	local towingBike = hitElement.vehicle:getData("towingBike")
 	if isElement(towingBike) then
-
+		if towingBike:getOwnerType() == 3 and towingBike:getOwner() == 2 then return hitElement:sendError(_("Du kannst keine Fahrzeuge deines Unternehmens abschleppen!", hitElement)) end
 		if towingBike.burned then
 			if towingBike.Blip then
 				towingBike.Blip:delete()
@@ -337,6 +337,7 @@ function MechanicTow:onDetachVehicleFromTow(towTruck, vehicle)
 		if driver:getCompany() == self and driver:isCompanyDuty() then
 			if towTruck:getModel() == 525 then --towTruck.getCompany and towTruck:getCompany() == self then
 				if self:isValidTowableVehicle(source) then
+					if source:getOwnerType() == 3 and source:getOwner() == 2 then return driver:sendError(_("Du kannst keine Fahrzeuge deines Unternehmens abschleppen!", driver)) end
 					if not source.burned then
 						self:respawnVehicle(source)
 						driver:sendInfo(_("Das Fahrzeug ist nun abgeschleppt!", driver))

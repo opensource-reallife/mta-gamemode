@@ -5140,3 +5140,6 @@ msgstr "You can't do this while on duty!"
 
 msgid "Du kannst dieses Fahrzeug nicht stehlen!"
 msgstr "You can't steal this vehicle!"
+
+msgid "Du kannst keine Fahrzeuge deines Unternehmens abschleppen!"
+msgstr "You can't tow your company vehicles!"
