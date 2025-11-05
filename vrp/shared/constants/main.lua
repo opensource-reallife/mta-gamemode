@@ -660,17 +660,18 @@ SkinInfo = {
 	[254] = {"Biker Drug Dealer", math.huge, -1},
 	[290] = {"Rose", math.huge, -1},
 	[304] = {"Kendl Johnson", math.huge, -1},
-	[305] = {"Jethro", math.huge, -1},
 
-	--unused special skins
+	--used special skins
 	[3] = {"Country Police Officer", math.huge, -1},
 	[4] = {"SFPD Bike Cop", math.huge, -1},
+	[119] = {"LVPD Bike Cop", math.huge, -1},
+
+	--unused special skins
 	[5] = {"Barry 'Big Bear' Thorne", math.huge, -1},
 	[6] = {"Female Valet", math.huge, -1},
 	[8] = {"Cab Driver", math.huge, -1},
 	[65] = {"Airport Worker", math.huge, -1},
 	[86] = {"Hispanic Girl", math.huge, -1},
-	[119] = {"LVPD Bike Cop", math.huge, -1},
 	[273] = {"Chinese Claude", math.huge, -1},
 	[289] = {"Airport Worker", math.huge, -1},
 }
