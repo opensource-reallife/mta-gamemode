@@ -357,6 +357,10 @@ function VehicleCustomTextureShop:Event_texPreviewUpdateStatus(id, status)
 	end
 
 	sql:queryExec("UPDATE ??_textureshop SET Status = ?, Admin = ? WHERE Id = ?;", sql:getPrefix(), status, client:getId(), id)
+	self.m_Textures = {} 
+	for i, v in pairs(self:getTextures(nil, nil, true)) do
+		self.m_Textures[v["Id"]] = v
+	end
 end
 
 function VehicleCustomTextureShop:Event_texPreviewClose()
