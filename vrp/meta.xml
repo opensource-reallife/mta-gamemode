@@ -2524,7 +2524,10 @@
 	<vrpfile src="files/images/Skins/full/2.jpg" />
 	<vrpfile src="files/images/Skins/full/3.jpg" />
 	<vrpfile src="files/images/Skins/full/4.jpg" />
+	<vrpfile src="files/images/Skins/full/5.jpg" />
+	<vrpfile src="files/images/Skins/full/6.jpg" />
 	<vrpfile src="files/images/Skins/full/7.jpg" />
+	<vrpfile src="files/images/Skins/full/8.jpg" />
 	<vrpfile src="files/images/Skins/full/9.jpg" />
 	<vrpfile src="files/images/Skins/full/10.jpg" />
 	<vrpfile src="files/images/Skins/full/11.jpg" />
@@ -2558,6 +2561,7 @@
 	<vrpfile src="files/images/Skins/full/39.jpg" />
 	<vrpfile src="files/images/Skins/full/40.jpg" />
 	<vrpfile src="files/images/Skins/full/41.jpg" />
+	<vrpfile src="files/images/Skins/full/42.jpg" />
 	<vrpfile src="files/images/Skins/full/43.jpg" />
 	<vrpfile src="files/images/Skins/full/44.jpg" />
 	<vrpfile src="files/images/Skins/full/45.jpg" />
@@ -2580,6 +2584,7 @@
 	<vrpfile src="files/images/Skins/full/62.jpg" />
 	<vrpfile src="files/images/Skins/full/63.jpg" />
 	<vrpfile src="files/images/Skins/full/64.jpg" />
+	<vrpfile src="files/images/Skins/full/65.jpg" />
 	<vrpfile src="files/images/Skins/full/66.jpg" />
 	<vrpfile src="files/images/Skins/full/67.jpg" />
 	<vrpfile src="files/images/Skins/full/68.jpg" />
@@ -2599,6 +2604,7 @@
 	<vrpfile src="files/images/Skins/full/83.jpg" />
 	<vrpfile src="files/images/Skins/full/84.jpg" />
 	<vrpfile src="files/images/Skins/full/85.jpg" />
+	<vrpfile src="files/images/Skins/full/86.jpg" />
 	<vrpfile src="files/images/Skins/full/87.jpg" />
 	<vrpfile src="files/images/Skins/full/88.jpg" />
 	<vrpfile src="files/images/Skins/full/89.jpg" />
@@ -2783,6 +2789,7 @@
 	<vrpfile src="files/images/Skins/full/270.jpg" />
 	<vrpfile src="files/images/Skins/full/271.jpg" />
 	<vrpfile src="files/images/Skins/full/272.jpg" />
+	<vrpfile src="files/images/Skins/full/273.jpg" />
 	<vrpfile src="files/images/Skins/full/274.jpg" />
 	<vrpfile src="files/images/Skins/full/275.jpg" />
 	<vrpfile src="files/images/Skins/full/276.jpg" />
@@ -2798,6 +2805,7 @@
 	<vrpfile src="files/images/Skins/full/286.jpg" />
 	<vrpfile src="files/images/Skins/full/287.jpg" />
 	<vrpfile src="files/images/Skins/full/288.jpg" />
+	<vrpfile src="files/images/Skins/full/289.jpg" />
 	<vrpfile src="files/images/Skins/full/290.jpg" />
 	<vrpfile src="files/images/Skins/full/291.jpg" />
 	<vrpfile src="files/images/Skins/full/292.jpg" />
@@ -2826,7 +2834,12 @@
 	<vrpfile src="files/images/Skins/head/0.png" />
 	<vrpfile src="files/images/Skins/head/1.png" />
 	<vrpfile src="files/images/Skins/head/2.png" />
+	<vrpfile src="files/images/Skins/head/3.png" />
+	<vrpfile src="files/images/Skins/head/4.png" />
+	<vrpfile src="files/images/Skins/head/5.png" />
+	<vrpfile src="files/images/Skins/head/6.png" />
 	<vrpfile src="files/images/Skins/head/7.png" />
+	<vrpfile src="files/images/Skins/head/8.png" />
 	<vrpfile src="files/images/Skins/head/9.png" />
 	<vrpfile src="files/images/Skins/head/10.png" />
 	<vrpfile src="files/images/Skins/head/11.png" />
@@ -2860,6 +2873,7 @@
 	<vrpfile src="files/images/Skins/head/39.png" />
 	<vrpfile src="files/images/Skins/head/40.png" />
 	<vrpfile src="files/images/Skins/head/41.png" />
+	<vrpfile src="files/images/Skins/head/42.png" />
 	<vrpfile src="files/images/Skins/head/43.png" />
 	<vrpfile src="files/images/Skins/head/44.png" />
 	<vrpfile src="files/images/Skins/head/45.png" />
@@ -2882,6 +2896,7 @@
 	<vrpfile src="files/images/Skins/head/62.png" />
 	<vrpfile src="files/images/Skins/head/63.png" />
 	<vrpfile src="files/images/Skins/head/64.png" />
+	<vrpfile src="files/images/Skins/head/65.png" />
 	<vrpfile src="files/images/Skins/head/66.png" />
 	<vrpfile src="files/images/Skins/head/67.png" />
 	<vrpfile src="files/images/Skins/head/68.png" />
@@ -2901,6 +2916,7 @@
 	<vrpfile src="files/images/Skins/head/83.png" />
 	<vrpfile src="files/images/Skins/head/84.png" />
 	<vrpfile src="files/images/Skins/head/85.png" />
+	<vrpfile src="files/images/Skins/head/86.png" />
 	<vrpfile src="files/images/Skins/head/87.png" />
 	<vrpfile src="files/images/Skins/head/88.png" />
 	<vrpfile src="files/images/Skins/head/89.png" />
@@ -2933,6 +2949,7 @@
 	<vrpfile src="files/images/Skins/head/116.png" />
 	<vrpfile src="files/images/Skins/head/117.png" />
 	<vrpfile src="files/images/Skins/head/118.png" />
+	<vrpfile src="files/images/Skins/head/119.png" />
 	<vrpfile src="files/images/Skins/head/120.png" />
 	<vrpfile src="files/images/Skins/head/121.png" />
 	<vrpfile src="files/images/Skins/head/122.png" />
@@ -3084,6 +3101,7 @@
 	<vrpfile src="files/images/Skins/head/270.png" />
 	<vrpfile src="files/images/Skins/head/271.png" />
 	<vrpfile src="files/images/Skins/head/272.png" />
+	<vrpfile src="files/images/Skins/head/273.png" />
 	<vrpfile src="files/images/Skins/head/274.png" />
 	<vrpfile src="files/images/Skins/head/275.png" />
 	<vrpfile src="files/images/Skins/head/276.png" />
@@ -3099,6 +3117,7 @@
 	<vrpfile src="files/images/Skins/head/286.png" />
 	<vrpfile src="files/images/Skins/head/287.png" />
 	<vrpfile src="files/images/Skins/head/288.png" />
+	<vrpfile src="files/images/Skins/head/289.png" />
 	<vrpfile src="files/images/Skins/head/290.png" />
 	<vrpfile src="files/images/Skins/head/291.png" />
 	<vrpfile src="files/images/Skins/head/292.png" />
