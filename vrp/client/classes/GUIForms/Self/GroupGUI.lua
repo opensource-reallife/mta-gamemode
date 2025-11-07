@@ -124,9 +124,9 @@ function GroupGUI:constructor()
 	self.m_TabBusiness = tabBusiness
 	GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.25, self.m_Height*0.06, _"Geschäfte:", tabBusiness)
 	self.m_ShopsGrid = GUIGridList:new(self.m_Width*0.02, self.m_Height*0.09, self.m_Width*0.65, self.m_Height*0.78, tabBusiness)
-	self.m_ShopsGrid:addColumn(_"Name", 0.4)
-	self.m_ShopsGrid:addColumn(_"Standort", 0.4)
-	self.m_ShopsGrid:addColumn(_"Kasse", 0.2)
+	self.m_ShopsGrid:addColumn(_"Name", 0.5)
+	self.m_ShopsGrid:addColumn(_"Lager", 0.25)
+	self.m_ShopsGrid:addColumn(_"Kasse", 0.25)
 	tabBusiness:setEnabled(false)
 
 	GUIRectangle:new(self.m_Width*0.02, self.m_Height*0.87, self.m_Width*0.65, self.m_Height*0.005, Color.Accent, tabBusiness)
@@ -137,12 +137,12 @@ function GroupGUI:constructor()
 	self.m_ShopsLocate.onLeftClick = bind(self.ShopLocateButton_Click, self)
 
 	GUILabel:new(self.m_Width*0.695, self.m_Height*0.3, self.m_Width*0.28, self.m_Height*0.06, _"Informationen:", tabBusiness):setColor(Color.Accent)
-	GUILabel:new(self.m_Width*0.695, self.m_Height*0.36, self.m_Width*0.28, self.m_Height*0.06, _"Name:", tabBusiness)
-	self.m_ShopsNameLabel = GUILabel:new(self.m_Width*0.715, self.m_Height*0.42, self.m_Width*0.28, self.m_Height*0.06, "-", tabBusiness)
-	GUILabel:new(self.m_Width*0.695, self.m_Height*0.49, self.m_Width*0.28, self.m_Height*0.06, _"Standort:", tabBusiness)
-	self.m_ShopsPositionLabel = GUILabel:new(self.m_Width*0.715, self.m_Height*0.55, self.m_Width*0.28, self.m_Height*0.06, "-", tabBusiness)
-	GUILabel:new(self.m_Width*0.695, self.m_Height*0.61, self.m_Width*0.28, self.m_Height*0.06, _"Letzter Raub:", tabBusiness)
-	self.m_ShopsRobLabel = GUILabel:new(self.m_Width*0.715, self.m_Height*0.67, self.m_Width*0.28, self.m_Height*0.06, "-", tabBusiness)
+	GUILabel:new(self.m_Width*0.695, self.m_Height*0.37, self.m_Width*0.28, self.m_Height*0.06, _"Standort:", tabBusiness):setColor(Color.Accent)
+	self.m_ShopsPositionLabel = GUILabel:new(self.m_Width*0.695, self.m_Height*0.43, self.m_Width*0.28, self.m_Height*0.06, "-", tabBusiness)
+	GUILabel:new(self.m_Width*0.695, self.m_Height*0.50, self.m_Width*0.28, self.m_Height*0.06, _"Letzter Raub:", tabBusiness):setColor(Color.Accent)
+	self.m_ShopsRobLabel = GUILabel:new(self.m_Width*0.695, self.m_Height*0.56, self.m_Width*0.28, self.m_Height*0.06, "-", tabBusiness)
+	GUILabel:new(self.m_Width*0.695, self.m_Height*0.63, self.m_Width*0.28, self.m_Height*0.06, _"Letzte Lieferung:", tabBusiness):setColor(Color.Accent)
+	self.m_ShopsRestockLabel = GUILabel:new(self.m_Width*0.695, self.m_Height*0.69, self.m_Width*0.28, self.m_Height*0.06, "-", tabBusiness)
 
 	--self.m_TabLogs = self.m_TabPanel:addTab(_"Logs")
 	self.m_LeaderTab = false
@@ -604,21 +604,23 @@ end
 
 function GroupGUI:Event_retriveBusinessInfo(info)
 	self.m_ShopsGrid:clear()
-	self.m_ShopsNameLabel:setText("-")
 	self.m_ShopsPositionLabel:setText("-")
 	self.m_ShopsRobLabel:setText("-")
+	self.m_ShopsRestockLabel:setText("-")
 
 	local compMoney = 0
 	for i, shop in pairs(info) do
-		local item = self.m_ShopsGrid:addItem(shop.name, getZoneName(Vector3(shop.position)), toMoneyString(shop.money))
+		local item = self.m_ShopsGrid:addItem(shop.name, (shop.stock .. " / 100"), toMoneyString(shop.money))
 		item.ShopId = shop.id
 		item.ShopName = shop.name
 		item.LastRob = shop.lastRob
+		item.Stock = shop.stock
+		item.LastRestock = shop.lastRestock
 		item.Position = Vector3(shop.position)
 		item.onLeftClick = function(item)
-			self.m_ShopsNameLabel:setText(_(item.ShopName))
 			self.m_ShopsPositionLabel:setText(_(getZoneName(item.Position)))
 			self.m_ShopsRobLabel:setText(item.LastRob > 0 and getOpticalTimestamp(item.LastRob) or "-")
+			self.m_ShopsRestockLabel:setText(item.LastRestock > 0 and getOpticalTimestamp(item.LastRestock) or "-")
 		end
 
 		compMoney = compMoney + shop.money

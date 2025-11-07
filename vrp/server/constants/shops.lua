@@ -372,6 +372,8 @@ SHOP_BAR_STRIP = {
 
 SHOP_BAR_STRIP_ANIMATIONS = {"STR_Loop_A", "STR_Loop_A", "STR_Loop_C"}
 
+SHOP_RESTOCK_COST = 1000
+
 ROBABLE_SHOP_STATE_TARGETS = {
 	Vector3(1579, -1629.14, 12.4), -- Los Santos
 	Vector3(2303.26, 2426.27, 9.32), --Las venturas

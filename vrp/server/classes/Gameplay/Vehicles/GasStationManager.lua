@@ -123,13 +123,17 @@ function GasStationManager:confirmTransaction(vehicle, fuel, station, opticalFue
 					return
 				end
 
-				if station:getShop() then
+				local shop = station:getShop()
+				if shop then
 					local shopMoney = price * GAS_STATION_SHOP_PLAYER_PAYMENT / 100
 					if not playedPayed then
 						shopMoney = price * GAS_STATION_SHOP_FCT_CMP_PAYMENT / 100
 					end
 					client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, station:getName()))
-					self.m_BankAccountServer:transferMoney(station:getShop().m_BankAccount, shopMoney, "Betankung", "Vehicle", "Refill")
+					if shop.m_Stock > 0 then
+						self.m_BankAccountServer:transferMoney(shop.m_BankAccount, shopMoney, "Betankung", "Vehicle", "Refill")
+						shop.m_Stock = math.max(0, shop.m_Stock - 1)
+					end
 				end
 			elseif station:isFactionFuelStation() then
 				if not instanceof(vehicle, FactionVehicle, true) then client:sendWarning("Dieses Fahrzeug darf hier nicht getankt werden!") return end

@@ -72,8 +72,12 @@ function Blip:isVisibleForPlayer(player)
 	if not isElement(player) then return false end -- blips who were visible to a player which does no longer exist
 
 	local group = player:getGroup()
-	if group and self.m_VisibleTo["group"] and self.m_VisibleTo["group"][group:getId()] then
-		return true
+	if group then
+		if self.m_VisibleTo["group"] and self.m_VisibleTo["group"][group:getId()] then
+			return true
+		elseif self.m_VisibleTo["groupType"] and self.m_VisibleTo["groupType"][group:getType()] then
+			return true
+		end
 	end
 
 	local fac = player:getFaction()

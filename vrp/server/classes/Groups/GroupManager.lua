@@ -322,7 +322,7 @@ function GroupManager:Event_Withdraw(amount)
 	end
 
 	if group:getMoney() < amount then
-		client:sendError(_("In der Gruppekasse befindet sich nicht genügend Geld!", client))
+		client:sendError(_("In der Gruppenkasse befindet sich nicht genügend Geld!", client))
 		return
 	end
 
@@ -688,7 +688,7 @@ function GroupManager:Event_GetShopInfo()
 	if group then
 		local info = {}
 		for i, shop in pairs(group:getShops()) do
-			table.insert(info, {id = shop:getId(), name = shop:getName(), money = shop:getMoney(), position = {shop.m_Position.x, shop.m_Position.y, shop.m_Position.z}, lastRob = shop.m_LastRob})
+			table.insert(info, {id = shop:getId(), name = shop:getName(), money = shop:getMoney(), position = {shop.m_Position.x, shop.m_Position.y, shop.m_Position.z}, lastRob = shop.m_LastRob, stock = shop.m_Stock, lastRestock = shop.m_LastRestock})
 		end
 
 		client:triggerEvent("groupRetriveBusinessInfo", info)

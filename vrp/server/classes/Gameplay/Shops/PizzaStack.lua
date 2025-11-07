@@ -7,8 +7,8 @@
 -- ****************************************************************************
 PizzaStack = inherit(Shop)
 
-function PizzaStack:constructor(id, name, position, rotation, typeData, dimension, robable, money, lastRob, owner, price, ownerType)
-	self:create(id, name, position, rotation, typeData, dimension, robable, money, lastRob, owner, price, ownerType)
+function PizzaStack:constructor(id, name, position, rotation, typeData, dimension, robable, money, lastRob, owner, price, ownerType, stock, lastRestock)
+	self:create(id, name, position, rotation, typeData, dimension, robable, money, lastRob, owner, price, ownerType, stock, lastRestock)
 
 	self.m_Type = "PizzaStack"
 	self.m_Menues = {

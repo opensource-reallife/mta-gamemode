@@ -970,3 +970,23 @@ function Group:getVehicleCountWithoutPrem()
 	end
 	return nonPremVehCount
 end
+
+function Group:getShopsByType(shopType)
+    local foodShops = {
+        ["BurgerShot"] = true,
+        ["CluckinBell"] = true,
+        ["RustyBrown"] = true,
+        ["PizzaStack"] = true
+    }
+    shopType = foodShops[shopType] and "FoodShop" or shopType
+
+    local result = {}
+    for _, shop in pairs(self:getShops()) do
+        local currentType = foodShops[shop.m_Type] and "FoodShop" or shop.m_Type
+        if currentType == shopType then
+            table.insert(result, shop)
+        end
+    end
+
+    return result
+end

@@ -11,7 +11,7 @@ function Shop:constructor()
 	self.m_BankAccountServer = BankServer.get("server.shop")
 end
 
-function Shop:create(id, name, position, rotation, typeData, dimension, robable, money, lastRob, owner, price, ownerType)
+function Shop:create(id, name, position, rotation, typeData, dimension, robable, money, lastRob, owner, price, ownerType, stock, lastRestock)
 	self.m_Id = id
 	self.m_Name = name
 	self.m_BuyAble = price > 0 and true or false
@@ -21,9 +21,12 @@ function Shop:create(id, name, position, rotation, typeData, dimension, robable,
 	self.m_OwnerType = ownerType or 0
 	self.m_Money = money
 	self.m_Position = position or nil
+	self.m_Stock = stock
+	self.m_LastRestock = lastRestock
 	self.m_TypeName = "Shop"
 	self.m_TypeDataName = typeData["Name"]
 	self.m_BankAccountServer = BankServer.get("shop")
+	self.m_RestockFunc = bind(self.Event_restockVehicleExit, self)
 
 	self.m_BankAccount = BankAccount.loadByOwner(self.m_Id, BankAccountTypes.Shop)
 
@@ -99,6 +102,30 @@ function Shop:create(id, name, position, rotation, typeData, dimension, robable,
 		self.m_Marker:setInterior(interior)
 		self.m_Marker:setDimension(dimension)
 	end
+
+	self.m_ColshapeRestock = createColSphere(self.m_Position, 10)
+	addEventHandler("onColShapeHit", self.m_ColshapeRestock, function(hitElement, dim)
+		if dim and hitElement:getType() == "vehicle" and hitElement.m_RestockVehicle then
+			local controller = hitElement.controller
+			if self.m_OwnerType == 2 and controller:getGroup() and controller:getGroup():getId() == self.m_OwnerId then
+				if self.m_Stock < 100 then
+					controller:sendInfo(_("Verlasse das Fahrzeug, um die Lieferung abzuschließen!", controller))
+					addEventHandler("onVehicleExit", hitElement, self.m_RestockFunc)
+					hitElement:removeCountdownDestroy()
+				else
+					controller:sendError(_("Das Lager dieses Geschäfts ist voll!", controller))
+				end
+			end
+		end
+	end)
+	addEventHandler("onColShapeLeave", self.m_ColshapeRestock, function(hitElement, dim)
+		if hitElement:getType() == "vehicle" and hitElement.m_RestockVehicle then
+			removeEventHandler("onVehicleExit", hitElement, self.m_RestockFunc)
+			if not hitElement.m_CountdownDestroy then
+				hitElement:addCountdownDestroy(10)
+			end
+		end
+	end)
 end
 
 function Shop:loadOwner()
@@ -106,9 +133,10 @@ function Shop:loadOwner()
 		local group = GroupManager:getSingleton():getFromId(self.m_OwnerId)
 		if group then
 			self.m_Owner = group
-
-			-- Add ref to group
 			group:addShop(self)
+		else
+			self.m_Owner:removeShop(self)
+			self.m_Owner = nil
 		end
 	else
 		self.m_Owner:removeShop(self)
@@ -203,15 +231,19 @@ function Shop:buy(player)
 			if player:getGroup() and player:getGroup():getType() == "Firma" then
 				local group = player:getGroup()
 				if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "group", "buyBIZ") then
-					if group:getMoney() >= self.m_Price then
-						group:transferMoney(self.m_BankAccountServer, self.m_Price, "Shop-Kauf", "Shop", "Buy")
-						group:sendMessage(_("[GRUPPE] %s hat den Shop '%s' für %d$ gekauft!", player, player:getName(), self.m_Name, self.m_Price), 0, 255, 0)
-						group:addLog(player, "Immobilien", _("hat den Shop '%s' für %d$ gekauft!", player, self.m_Name, self.m_Price))
-						self.m_OwnerId = group:getId()
-						self:loadOwner()
-						self:save()
+					if #group:getShopsByType(self.m_Type) < 1 then
+						if group:getMoney() >= self.m_Price then
+							group:transferMoney(self.m_BankAccountServer, self.m_Price, "Shop-Kauf", "Shop", "Buy")
+							group:sendMessage(_("[GRUPPE] %s hat den Shop '%s' für %d$ gekauft!", player, player:getName(), self.m_Name, self.m_Price), 0, 255, 0)
+							group:addLog(player, "Immobilien", _("hat den Shop '%s' für %d$ gekauft!", player, self.m_Name, self.m_Price))
+							self.m_OwnerId = group:getId()
+							self:loadOwner()
+							self:save()
+						else
+							player:sendError(_("In der Gruppenkasse ist nicht genug Geld! (%d$)", player, self.m_Price))
+						end
 					else
-						player:sendError(_("In der Firmenkasse ist nicht genug Geld! (%d$)", player, self.m_Price))
+						player:sendError(_("Deine Gruppe kann nur ein Geschäft dieses Typs besitzen!", player))
 					end
 				else
 					player:sendError(_("Du bist nicht berechtigt einen Shop zu kaufen!", player))
@@ -284,7 +316,7 @@ end
 
 function Shop:save()
 	self.m_BankAccount:save()
-	if sql:queryExec("UPDATE ??_shops SET LastRob = ?, Owner = ? WHERE Id = ?", sql:getPrefix(), self.m_LastRob, self.m_OwnerId, self.m_Id) then
+	if sql:queryExec("UPDATE ??_shops SET LastRob = ?, Owner = ?, Stock = ?, LastRestock = ? WHERE Id = ?", sql:getPrefix(), self.m_LastRob, self.m_OwnerId, self.m_Stock, self.m_LastRestock, self.m_Id) then
 	else
 		outputDebug(("Failed to save Shop '%s' (Id: %d)"):format(self.m_Name, self.m_Id))
 	end
@@ -293,5 +325,18 @@ end
 function Shop:onAnimationColShapeHit(hitElement, dim)
 	if hitElement:getType() == "player" and dim then
 		self.m_Ped:setAnimation(self.m_PedAnimationBlock, self.m_PedAnimation)
+	end
+end
+
+function Shop:Event_restockVehicleExit(player)
+	if not source.m_RestockVehicle then return end
+	local group = player:getGroup()
+	if group and self.m_Stock < 100 then
+		self.m_Stock = 100
+		self.m_LastRestock = getRealTime().timestamp
+		player:sendSuccess(_("Das Geschäft wurde erfolgreich beliefert!", player))
+		group:sendShortMessage(("%s hat den Shop '%s' beliefert!"):format(player:getName(), self.m_Name))
+		group:addLog(player, "Immobilien", ("hat den Shop '%s' beliefert!"):format(self.m_Name))
+		source:destroy()
 	end
 end

@@ -17,10 +17,9 @@ function ShopManager:constructor()
 	self:loadFCVehicleShops()
 
 	addRemoteEvents{"foodShopBuyMenu", "shopBuyItem", "shopBuyWeapon", "shopBuyClothes", "vehicleBuy", "shopOpenGUI", "shopBuy", "shopSell",
-	"barBuyDrink", "barShopMusicChange", "barShopMusicStop", "barShopStartStripper", "barShopStopStripper",
+	"barBuyDrink", "barShopMusicChange", "barShopMusicStop", "barShopStartStripper", "barShopStopStripper", "shopRestockStart",
 	"shopOpenBankGUI", "shopBankDeposit", "shopBankWithdraw", "shopOnTattooSelection", "ammunationBuyItem", "onAmmunationAppOrder", 
-	"requestVehicleShops", "editVehicleShop", "onVehicleShopOpen","barRequestShopItems", "barRentStrippers", "buyFCVehicle"
-	}
+	"requestVehicleShops", "editVehicleShop", "onVehicleShopOpen","barRequestShopItems", "barRentStrippers", "buyFCVehicle"}
 
 	addEventHandler("foodShopBuyMenu", root, bind(self.foodShopBuyMenu, self))
 	addEventHandler("shopBuyItem", root, bind(self.buyItem, self))
@@ -34,6 +33,8 @@ function ShopManager:constructor()
 	addEventHandler("shopBankDeposit", root, bind(self.deposit, self))
 	addEventHandler("shopBankWithdraw", root, bind(self.withdraw, self))
 	addEventHandler("shopBuyClothes", root, bind(self.buyClothes, self))
+
+	addEventHandler("shopRestockStart", root, bind(self.restockStart, self))
 
 	addEventHandler("ammunationBuyItem", root, bind(self.buyWeapon, self))
 	addEventHandler("onAmmunationAppOrder",root, bind(self.onAmmunationAppOrder, self))
@@ -80,7 +81,7 @@ function ShopManager:loadShops()
 		if not SHOP_TYPES[row.Type]["disabled"] then
 			--local newName = SHOP_TYPES[row.Type]["Name"].." "..getZoneName(row.PosX, row.PosY, row.PosZ)
 			--sql:queryExec("UPDATE ??_shops SET Name = ? WHERE Id = ?", sql:getPrefix(), newName ,row.Id)
-			local instance = SHOP_TYPES[row.Type]["Class"]:new(row.Id, row.Name, Vector3(row.PosX, row.PosY, row.PosZ), row.Rot, SHOP_TYPES[row.Type], row.Dimension, row.RobAble, row.Money, row.LastRob, row.Owner, row.Price, row.OwnerType)
+			local instance = SHOP_TYPES[row.Type]["Class"]:new(row.Id, row.Name, Vector3(row.PosX, row.PosY, row.PosZ), row.Rot, SHOP_TYPES[row.Type], row.Dimension, row.RobAble, row.Money, row.LastRob, row.Owner, row.Price, row.OwnerType, row.Stock, row.LastRestock)
 			ShopManager.Map[row.Id] = instance
 			if row.Blip and row.Blip ~= "" then
 				local b = instance:addBlip(row.Blip)
@@ -91,6 +92,35 @@ function ShopManager:loadShops()
 			end
 		end
 	end
+
+	self.m_RestockPed = NPC:new(17, 260.78, 10.45, 2.44, 100)
+	ElementInfo:new(self.m_RestockPed, "Shop-Lieferant", 1.3)
+	self.m_RestockPed:setImmortal(true)
+	self.m_RestockPed:setFrozen(true)
+	self.m_RestockPed:setData("clickable",true,true)
+	addEventHandler("onElementClicked", self.m_RestockPed, function(button, state, player)
+		if button == "left" and state == "down" then
+			if getDistanceBetweenPoints3D(self.m_RestockPed:getPosition(), player:getPosition()) >= 10 then
+				return
+			end
+			local group = player:getGroup()
+			if not group then
+				player:sendError(_("Du bist in keiner Gruppe!", player))
+				return
+			end
+			if group:getType() ~= "Firma" then
+				player:sendError(_("Du bist in keiner Gruppe mit dem Typ Firma!", player))
+				return
+			end
+			QuestionBox:new(player, _("Möchtest du eine Shop-Lieferung für %d$ starten?", player, SHOP_RESTOCK_COST), "shopRestockStart", nil, false, false, source)
+		end
+	end)
+
+	self.m_RestockNonCollisionCol = createColSphere(260.78, 10.45, 2.44, 15)
+	self.m_RestockNonCollisionCol:setData("NonCollisionArea", {players = true}, true)
+
+	self.m_RestockBlip = Blip:new("RcShop.png", 260.78, 10.45, {groupType = "Firma"})
+	self.m_RestockBlip:setDisplayText("Shop-Lieferant")
 end
 
 function ShopManager:loadVehicleShops()
@@ -147,7 +177,12 @@ function ShopManager:foodShopBuyMenu(shopId, menu)
 			client:setHunger(client:getHunger() + shop.m_Menues[menu]["Hunger"])
 			StatisticsLogger:getSingleton():addHealLog(client, shop.m_Menues[menu]["Health"], "Shop "..shop.m_Menues[menu]["Name"])
 			client:checkLastDamaged() 
-			client:transferMoney(shop.m_BankAccount, shop.m_Menues[menu]["Price"], "Essen", "Gameplay", "Food")
+			local bankServer = BankServer.get("shop.food")
+			client:transferMoney(bankServer, shop.m_Menues[menu]["Price"], "Essen", "Gameplay", "Food")
+			if shop.m_Stock > 0 then
+				bankServer:transferMoney(shop.m_BankAccount, shop.m_Menues[menu]["Price"]*0.8, "Essen", "Gameplay", "Food")
+				shop.m_Stock = math.max(0, shop.m_Stock - 1)
+			end
 			client:sendInfo(_("%s wünscht guten Appetit!", client, _(shop.m_Name, client)))
 		else
 			client:sendError(_("Du hast nicht genug Geld dabei!", client))
@@ -180,7 +215,12 @@ function ShopManager:buyItem(shopId, item, amount)
 			end
 
 			if client:getInventory():giveItem(item, amount, value) then
-				client:transferMoney(shop.m_BankAccount, shop.m_Items[item]*amount, "Item-Einkauf", "Gameplay", "Item")
+				local bankServer = BankServer.get("shop.item")
+				client:transferMoney(bankServer, shop.m_Items[item]*amount, "Item-Einkauf", "Gameplay", "Item")
+				if shop.m_Stock > 0 then
+					bankServer:transferMoney(shop.m_BankAccount, shop.m_Items[item]*amount*0.8, "Item-Einkauf", "Gameplay", "Item")
+					shop.m_Stock = math.max(0, shop.m_Stock - amount)
+				end
 				client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, _(shop.m_Name, client)))
 			else
 				--client:sendError(_("Die maximale Anzahl dieses Items beträgt %d!", client, client:getInventory():getMaxItemAmount(item)))
@@ -245,7 +285,12 @@ function ShopManager:buyWeaponFromItemShop(shopId, weaponId)
 					reloadPedWeapon(client)
 
 					StatisticsLogger:addAmmunationLog(client, "Shop", toJSON({[weaponId] = ammo}), price)
-					client:transferMoney(shop.m_BankAccount, price, "Shop-Einkauf", "Gameplay", "Weapon")
+					local bankServer = BankServer.get("shop.item")
+					client:transferMoney(bankServer, price, "Shop-Einkauf", "Gameplay", "Weapon")
+					if shop.m_Stock > 0 then
+						bankServer:transferMoney(shop.m_BankAccount, price*0.8, "Shop-Einkauf", "Gameplay", "Weapon")
+						shop.m_Stock = math.max(0, shop.m_Stock - 1)
+					end
 					client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, _(shop.m_Name, client)))
 				else
 					client:sendError(_("Du hast bereits ein/e(n) %s auf dem Platz der/des %s!", client, WEAPON_NAMES[client:getWeapon(getSlotFromWeapon(weaponId))], WEAPON_NAMES[weaponId]))
@@ -318,8 +363,6 @@ function ShopManager:onTattooSelection(shopId, typeId)
 	end
 end
 
-
-
 function ShopManager:barBuyDrink(shopId, item, amount)
 	if client:isDead() then return false end
 	if not item then return end
@@ -327,7 +370,12 @@ function ShopManager:barBuyDrink(shopId, item, amount)
 	local shop = self:getFromId(shopId)
 	if shop.m_Items[item] then
 		if client:getMoney() >= shop.m_Items[item]*amount then
-			client:transferMoney(shop.m_BankAccount, shop.m_Items[item]*amount, "Item-Einkauf", "Gameplay", "Item")
+			local bankServer = BankServer.get("shop.bar")
+			client:transferMoney(bankServer, shop.m_Items[item]*amount, "Item-Einkauf", "Gameplay", "Item")
+			if shop.m_Stock > 0 then
+				bankServer:transferMoney(shop.m_BankAccount, shop.m_Items[item]*amount*0.8, "Item-Einkauf", "Gameplay", "Item")
+				shop.m_Stock = math.max(0, shop.m_Stock - amount)
+			end
 			client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, _(shop.m_Name, client)))
 
 			local instance = ItemManager.Map[item]
@@ -336,7 +384,6 @@ function ShopManager:barBuyDrink(shopId, item, amount)
 					return false
 				end
 			end
-
 		else
 			client:sendError(_("Du hast nicht genug Geld dabei!", client))
 			return
@@ -511,7 +558,6 @@ function ShopManager:onAmmunationAppOrder(weaponTable)
 		totalAmount = totalAmount * AMMUNATION_APP_MULTIPLICATOR
 		if client:getBankMoney() >= totalAmount then
 			if totalAmount > 0 then
-
 				client:transferBankMoney(BankServer.get("shop.ammunation"), totalAmount, "Ammu-Nation Bestellung", "Shop", "Ammunation")
 				StatisticsLogger:getSingleton():addAmmunationLog(client, "Bestellung", toJSON(weaponTable), totalAmount)
 				self:createOrder(client, weaponTable)
@@ -547,7 +593,6 @@ function ShopManager:createOrder(player, weaponTable)
 			end
 		end)
 	end, 10000, 1, x, y, z, weaponTable)
-
 end
 
 function ShopManager:giveWeaponsFromOrder(player, weaponTable)
@@ -590,4 +635,61 @@ end
 
 function ShopManager:buyFCVehicle(shop, vehicleId)
 	ShopManager.FCVehicleShopsMap[shop]:buyVehicle(client, vehicleId)
+end
+
+function ShopManager:restockStart()
+	local player = source
+	if getDistanceBetweenPoints3D(self.m_RestockPed:getPosition(), player:getPosition()) >= 10 then
+		player:sendError(_("Du bist zu weit entfernt!", player))
+		return
+	end
+	local group = player:getGroup()
+	if not group then
+		player:sendError(_("Du bist in keiner Gruppe!", player))
+		return
+	end
+	if group:getType() ~= "Firma" then
+		player:sendError(_("Du bist in keiner Gruppe mit dem Typ Firma!", player))
+		return
+	end
+	if isElement(player.m_RestockVehicle) then
+		player:sendError(_("Du belieferst aktuell schon ein Geschäft!", player))
+		return
+	end
+	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "group", "restockBIZ") then
+		player:sendError(_("Dazu bist du nicht berechtigt!", player))
+		return
+	end
+	if player:isFactionDuty() or player:isCompanyDuty() then
+		player:sendError(_("Du darfst nicht im Dienst sein!", client))
+		return
+	end
+	if player:isInVehicle() then
+		player:sendError(_("Steige zuerst aus deinem Fahrzeug aus!", player))
+		return
+	end
+	for i, shop in pairs(group:getShops()) do
+		if shop.m_Stock < 100 then
+			if group:getMoney() >= SHOP_RESTOCK_COST then
+				local vehicle = TemporaryVehicle.create(440, 264.06, 15.09, 2.56, 100)
+				player.m_RestockVehicle = vehicle
+				vehicle.m_RestockVehicle = true
+				player:warpIntoVehicle(vehicle)
+				vehicle:addCountdownDestroy(10)
+				addEventHandler("onVehicleStartEnter", vehicle, function(vehPlayer, seat)
+					if seat == 0 and vehPlayer ~= player then
+						vehPlayer:sendError(_("Du kannst nicht in dieses Fahrzeug einsteigen!", vehPlayer))
+						cancelEvent()
+					end
+				end)
+				group:transferMoney(BankServer.get("gameplay.shop_restock"), SHOP_RESTOCK_COST, "Shop-Lieferung", "Shop", "Restock")
+				group:sendShortMessage(("%s hat eine Shop-Lieferung für %s gestartet!"):format(player:getName(), toMoneyString(SHOP_RESTOCK_COST)))
+				group:addLog(player, "Immobilien", ("hat eine Shop-Lieferung für %s gestartet!"):format(toMoneyString(SHOP_RESTOCK_COST)))
+				return
+			else
+				client:sendError(_("In der Gruppenkasse befindet sich nicht genügend Geld!", client))
+			end
+		end
+	end
+	player:sendError(_("Es gibt aktuell kein Geschäft, welches beliefert werden kann!", player))
 end

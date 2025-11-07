@@ -2299,8 +2299,8 @@ msgstr "[GROUP] %s bought the shop '%s' for %d$!"
 msgid "hat den Shop '%s' für %d$ gekauft!"
 msgstr "bought the shop '%s' for %d$!"
 
-msgid "In der Firmenkasse ist nicht genug Geld! (%d$)"
-msgstr "There's not enough money in the company's cash box! (%d$)"
+msgid "In der Gruppenkasse ist nicht genug Geld! (%d$)"
+msgstr "Your group doesn't have enough money! (%d$)"
 
 msgid "Nur Leader und Co-Leader deiner Gruppe können den Shop kaufen!"
 msgstr "Only leaders and co-leaders of your firm can buy the shop!"
@@ -2512,7 +2512,7 @@ msgstr "You are not authorized to delete the group!"
 msgid "Deine "
 msgstr "Your "
 
-msgid "In der Gruppekasse befindet sich nicht genügend Geld!"
+msgid "In der Gruppenkasse befindet sich nicht genügend Geld!"
 msgstr "There is not enough money on the groups bank account!"
 
 msgid "Du bist nicht berechtigt Gruppen Mitglieder hinzuzufügen!"

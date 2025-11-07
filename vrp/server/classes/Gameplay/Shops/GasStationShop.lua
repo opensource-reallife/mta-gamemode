@@ -7,10 +7,10 @@
 -- ****************************************************************************
 GasStationShop = inherit(Shop)
 
-function GasStationShop:constructor(id, name, position, rotation, typeData, dimension, robable, money, lastRob, owner, price, ownerType)
-	self:create(id, name, position, rotation, typeData, dimension, robable, money, lastRob, owner, price, ownerType)
+function GasStationShop:constructor(id, name, position, rotation, typeData, dimension, robable, money, lastRob, owner, price, ownerType, stock, lastRestock)
+	self:create(id, name, position, rotation, typeData, dimension, robable, money, lastRob, owner, price, ownerType, stock, lastRestock)
 
-	self.m_Type = "ItemShop"
+	self.m_Type = "GasStationShop"
 	self.m_Items = SHOP_ITEMS[typeData["Name"]]
 
 	if self.m_Ped then

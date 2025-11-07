@@ -7,8 +7,8 @@
 -- ****************************************************************************
 CluckinBell = inherit(Shop)
 
-function CluckinBell:constructor(id, name, position, rotation, typeData, dimension, robable, money, lastRob, owner, price, ownerType)
-	self:create(id, name, position, rotation, typeData, dimension, robable, money, lastRob, owner, price, ownerType)
+function CluckinBell:constructor(id, name, position, rotation, typeData, dimension, robable, money, lastRob, owner, price, ownerType, stock, lastRestock)
+	self:create(id, name, position, rotation, typeData, dimension, robable, money, lastRob, owner, price, ownerType, stock, lastRestock)
 
 	self.m_Type = "CluckinBell"
 	self.m_Menues = {
