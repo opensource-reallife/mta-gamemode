@@ -54,7 +54,11 @@ function AdminGUI:constructor(money)
 	self.m_EditPosX = GUIEdit:new(10, 400, 80, 25, tabAllgemein):setNumeric(true, false)
 	self.m_EditPosY = GUIEdit:new(95, 400, 80, 25, tabAllgemein):setNumeric(true, false)
 	self.m_EditPosZ = GUIEdit:new(180, 400, 80, 25, tabAllgemein):setNumeric(true, false)
-	self:addAdminButton("gotocords", "zu Koordinaten porten", self.onGeneralButtonClick, 10, 430, 250, 30, Color.Orange, tabAllgemein)
+	GUILabel:new(10, 430, 260, 30, _"Rotationen (Optional): (rX,rY,rZ)", tabAllgemein):setColor(Color.Accent)
+	self.m_EditRotX = GUIEdit:new(10, 460, 80, 25, tabAllgemein):setNumeric(true, false)
+	self.m_EditRotY = GUIEdit:new(95, 460, 80, 25, tabAllgemein):setNumeric(true, false)
+	self.m_EditRotZ = GUIEdit:new(180, 460, 80, 25, tabAllgemein):setNumeric(true, false)
+	self:addAdminButton("gotocords", "zur Position teleportieren", self.onGeneralButtonClick, 10, 490, 250, 30, Color.Orange, tabAllgemein)
 
 	--Column 2
 	GUILabel:new(340, 50, 200, 40, _"Eventkasse:", tabAllgemein):setColor(Color.Accent)
@@ -693,8 +697,15 @@ function AdminGUI:onGeneralButtonClick(func)
 		triggerServerEvent("checkOverlappingVehicles", localPlayer)
 	elseif func == "gotocords" then
 		local x, y, z = self.m_EditPosX:getText(), self.m_EditPosY:getText(), self.m_EditPosZ:getText()
+		local rx, ry, rz = self.m_EditRotX:getText(), self.m_EditRotY:getText(), self.m_EditRotZ:getText()
 		if x and y and z and tonumber(x) and tonumber(y) and tonumber(z) then
-			local pos = {x, y, z}
+			local pos = {}
+			if rx and ry and rz and tonumber(rx) and tonumber(ry) and tonumber(rz) then
+				pos = {x, y, z, rx, ry, rz}
+			else
+				local sourceRot = source:getRotation()
+				pos = {x, y, z, sourceRot.x, sourceRot.y, sourceRot.z}
+			end
 			triggerServerEvent("adminTriggerFunction", root, func, pos)
 		else
 			ErrorBox:new("Ungültige Koordinaten-Angabe")

@@ -387,7 +387,7 @@ end
 
 function Admin:command(admin, cmd, targetName, ...)
 	local argTable = {...}
-	local arg1, arg2 = argTable[1], argTable[2]
+	local arg1, arg2, arg3, arg4, arg5 = argTable[1], argTable[2], argTable[3], argTable[4], argTable[5]
 
 	if cmd == "aduty" or cmd == "smode" or cmd == "clearchat" then
         self:Event_adminTriggerFunction(cmd, nil, nil, nil, admin)
@@ -403,8 +403,20 @@ function Admin:command(admin, cmd, targetName, ...)
 		end
 	elseif cmd == "gotocords" then
 		local x, y, z = targetName, arg1, arg2
+		local rot = {}
 		if x and y and z and tonumber(x) and tonumber(y) and tonumber(z) then
-			local pos = {x, y, z}
+			if arg3 and arg4 and arg5 then
+				rx, ry, rz = arg3, arg4, arg5
+			else
+				if admin.vehicle then
+					rot = admin.vehicle:getRotation()
+					rx, ry, rz = rot.x, rot.y, rot.z
+				else
+					rot = admin:getRotation()
+					rx, ry, rz = rot.x, rot.y, rot.z
+				end
+			end
+			local pos = {x, y, z, rx, ry, rz}
 			self:Event_adminTriggerFunction(cmd, pos, nil, nil, admin)
 		else
 			admin:sendError("Ungültige Koordinaten: /gotocords [x] [y] [z]")
@@ -576,16 +588,24 @@ function Admin:Event_adminTriggerFunction(func, target, reason, duration, admin)
 			admin:sendError(_("Betrag oder Grund ungültig!", admin))
 		end
 	elseif func == "gotocords" then
-		local x, y, z = unpack(target)
-		admin:setInterior(0)
-		admin:setDimension(0)
-		admin:setPosition(x, y, z)
+		local x, y, z, rx, ry, rz = unpack(target)
+		if not (rx and ry and rz) then
+			if admin.vehicle then
+				rx, ry, rz = admin.vehicle:getRotation()
+			else
+				rx, ry, rz = admin:getRotation()
+			end
+		end
 		if admin.vehicle then
 			admin.vehicle:setInterior(0)
 			admin.vehicle:setDimension(0)
 			admin.vehicle:setPosition(x, y, z)
+			admin.vehicle:setRotation(rx, ry, rz)
 		else
+			admin:setInterior(0)
+			admin:setDimension(0)
 			admin:setPosition(x, y, z)
+			admin:setRotation(rx, ry, rz)
 		end
 		local format = {admin:getName(), getZoneName(x, y, z)}
 		self:sendShortMessage("%s hat sich nach %s geportet!", format)
