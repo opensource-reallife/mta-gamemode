@@ -140,7 +140,7 @@ function JewelryStoreRobberyManager:constructor()
 
 	self.m_BlipJR = Blip:new("Jewel.png", 561.292, -1506.786, root, 400)
 	self.m_BlipJR:setOptionalColor({27, 125, 47})
-	self.m_BlipJR:setDisplayText("Juwelier")
+	self.m_BlipJR:setDisplayText("Juwelier", BLIP_CATEGORY.Actions)
 end
 
 function JewelryStoreRobberyManager:spawnShelves()

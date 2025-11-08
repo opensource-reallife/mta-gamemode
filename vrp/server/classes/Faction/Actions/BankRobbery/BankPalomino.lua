@@ -51,7 +51,7 @@ function BankPalomino:constructor()
 
 	self.m_BlipPC = Blip:new("Bank.png", 2310.46, -13.25, root, 400)
 	self.m_BlipPC:setOptionalColor({27, 125, 47})
-	self.m_BlipPC:setDisplayText("Bank")
+	self.m_BlipPC:setDisplayText("Bank", BLIP_CATEGORY.Actions)
 
 	self.m_Name = "Bank"
 	self.m_RobName = "Bankraub"
