@@ -225,13 +225,13 @@ end
 
 function VehicleCustomTextureShop:Event_vehicleTextureBuy(id, url, color1, color2)
 	local price = (source.m_TextureCount == 0 and NEW_CUSTOM_TEXTURE_PRICE) or CHANGE_CUSTOM_TEXTURE_PRICE
-	if client:getMoney() >= price then
+	if client:getBankMoney() >= price then
 		local textureData = self.m_Textures[tonumber(id)]
 		local creatorId = textureData.UserId
-		client:transferMoney(self.m_BankAccountServer, price, "Custom-Texture", "Vehicle", "Texture")
+		client:transferBankMoney(self.m_BankAccountServer, price, "Custom-Texture", "Vehicle", "Texture")
 
 		if creatorId and creatorId > 0 and creatorId ~= client:getId() then
-			self.m_BankAccountServer:transferMoney({"player", creatorId}, MONEY_FOR_CUSTOM_TEXTURE_OWNER, "Custom-Texture Provision", "Vehicle", "Texture-Commission")
+			self.m_BankAccountServer:transferMoney({"player", creatorId, true}, MONEY_FOR_CUSTOM_TEXTURE_OWNER, "Custom-Texture Provision", "Vehicle", "Texture-Commission")
 		end
 		local textureName = VEHICLE_SPECIAL_TEXTURE[source:getModel()] or "vehiclegrunge256"
 		source.OldTexture = {[textureName] = url}
