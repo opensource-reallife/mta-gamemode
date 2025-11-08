@@ -128,7 +128,7 @@ factionBadgeId[2] = {
 
 factionColors[2] = {["r"] = 50,["g"] = 100,["b"] = 150}
 factionCarColors[2] = {["r"] = 0,["g"] = 0,["b"] = 0, ["r1"] = 0,["g1"] = 0,["b1"] = 0}
-factionSkins[2] = {[44]=true, [163]=true, [164]=true, [165]=true, [166]=true, [286]=true, [211]=true, [295]=true}
+factionSkins[2] = {[163]=true, [164]=true, [165]=true, [166]=true, [286]=true, [211]=true, [295]=true}
 factionSpecialSkins[2] = {[285] = true}
 factionWeapons[2] = {[3]=true, [22]=true, [24]=true, [25]=true, [29]=true, [31]=true}
 factionSpecialWeapons[2] = {
@@ -327,7 +327,7 @@ factionRankNames[9] = {
 }
 factionColors[9] = {["r"] = 150,["g"] = 100,["b"] = 100}
 factionCarColors[9] = {["r"] = 150,["g"] = 100,["b"] = 100, ["r1"] = 150,["g1"] = 100,["b1"] = 100}
-factionSkins[9] = {[100]=true, [181]=true, [242]=true, [247]=true, [248]=true, [291]=true, [298]=true, [299]=true}
+factionSkins[9] = {[44]=true, [100]=true, [181]=true, [242]=true, [247]=true, [248]=true, [291]=true, [298]=true, [299]=true}
 factionWeapons[9] = {[22]=true, [24]=true, [25]=true, [29]=true, [30]=true, [31]=true, [33]=true}
 factionSpecialWeapons[9] = {
 	["Weapons"] = {[16]=true, [18]=true, [26]=true, [34]=true, [35]=true, [44]=true, [45]=true},
