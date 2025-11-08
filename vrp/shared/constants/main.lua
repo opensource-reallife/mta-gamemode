@@ -86,7 +86,7 @@ end
 EVENT_EASTER = isEasterEventActive()
 EVENT_EASTER_SLOTMACHINES_ACTIVE = EVENT_EASTER
 EVENT_HALLOWEEN_START_DAY = tonumber(os.date("%j", os.time({year=os.date("*t").year, month=10, day=24}))) - 1
-EVENT_HALLOWEEN = getRealTime().yearday >= EVENT_HALLOWEEN_START_DAY - (DEBUG and 3 or 0) and getRealTime().yearday <= EVENT_HALLOWEEN_START_DAY + 15
+EVENT_HALLOWEEN = getRealTime().yearday >= EVENT_HALLOWEEN_START_DAY - (DEBUG and 3 or 0) and getRealTime().yearday <= EVENT_HALLOWEEN_START_DAY + 14
 EVENT_CHRISTMAS = getRealTime().month == 11 -- quests, mostly REMEMBER TO ADD/REMOVE <vrpfile src="files/models/skins/kobold.txd" /> AND <vrpfile src="files/models/skins/kobold.dff" /> TO META.XML DUE TO BIG FILE SIZE
 EVENT_CHRISTMAS_MARKET = EVENT_CHRISTMAS and (getRealTime().monthday >= 6 and getRealTime().monthday <= 26) -- determines whether the christmas market is enabled at pershing square (shops, ferris wheel, wheels of fortune)
 SNOW_SHADERS_ENABLED = getRealTime().month == 11 or getRealTime().month == 0 -- disable them during summer time
