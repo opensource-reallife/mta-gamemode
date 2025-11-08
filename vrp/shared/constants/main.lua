@@ -133,6 +133,7 @@ JOB_LEVEL_BOXER = 10
 
 BLIP_CATEGORY = {
 	Default = "Allgemein",
+	Actions = "Aktionen",
 	Shop = "Shops",
 	Job = "Arbeitsstellen",
 	Faction = "Fraktions-Basen",
@@ -151,7 +152,7 @@ BLIP_COLOR_CONSTANTS = {
 }
 
 BLIP_CATEGORY_ORDER = {
-	BLIP_CATEGORY.Default, BLIP_CATEGORY.Job, BLIP_CATEGORY.Faction, BLIP_CATEGORY.Company, BLIP_CATEGORY.VehicleMaintenance, BLIP_CATEGORY.Shop, BLIP_CATEGORY.Leisure, BLIP_CATEGORY.Other
+	BLIP_CATEGORY.Default, BLIP_CATEGORY.Actions, BLIP_CATEGORY.Job, BLIP_CATEGORY.Faction, BLIP_CATEGORY.Company, BLIP_CATEGORY.VehicleMaintenance, BLIP_CATEGORY.Shop, BLIP_CATEGORY.Leisure, BLIP_CATEGORY.Other
 }
 
 --USER RANKS:
