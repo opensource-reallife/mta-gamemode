@@ -21,11 +21,4 @@ function GasStationShop:constructor(id, name, position, rotation, typeData, dime
 			end
 		end)
 	end
-
-	if GasStationManager.Shops[self.m_Name] then
-		GasStationManager.Shops[self.m_Name]:addShopRef(self)
-		self.m_GasBlip = Blip:new("Fuelstation.png", position.x, position.y, root, 300):setDisplayText("Tankstelle", BLIP_CATEGORY.VehicleMaintenance):setOptionalColor({0, 150, 136})
-	else
-		outputConsole(("Shop: Gas-Station Data for %s: %s not found!"):format(tostring(self.m_Id), tostring(self.m_Name)))
-	end
 end

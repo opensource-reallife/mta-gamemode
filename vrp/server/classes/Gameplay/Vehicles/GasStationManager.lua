@@ -16,10 +16,18 @@ function GasStationManager:constructor()
 	self.m_PendingTransaction = {}
 
 	for _, station in pairs(GAS_STATIONS) do
-		local instance = GasStation:new(station.stations, station.accessible, station.name, station.nonInterior, station.serviceStation, station.evilStation, station.fuelTypes, station.blipPosition)
+		local shop = ShopManager.Map[station.id]
+		local instance = GasStation:new(station.stations, station.accessible, shop and shop:getName() or station.name, station.nonInterior, station.serviceStation, station.evilStation, station.fuelTypes, station.blipPosition)
+		GasStationManager.Shops[station.id or station.name] = instance
 
-		if station.name then
-			GasStationManager.Shops[station.name] = instance
+		if station.id then
+			if shop then
+				GasStationManager.Shops[station.id]:addShopRef(shop)
+				local position = shop.m_Position
+				shop.m_GasBlip = Blip:new("Fuelstation.png", position.x, position.y, root, 300):setDisplayText("Tankstelle", BLIP_CATEGORY.VehicleMaintenance):setOptionalColor({0, 150, 136})
+			else
+				outputConsole(("Shop: Gas-Station Data for %s: %s not found!"):format(tostring(self.m_Id), tostring(self.m_Name)))
+			end
 		end
 	end
 
@@ -186,7 +194,7 @@ function GasStationManager:serviceStationRepairVehicle(element)
 end
 
 function GasStationManager:changeFuelPrice()
-	for name, shop in pairs(GasStationManager.Shops) do
+	for k, shop in pairs(GasStationManager.Shops) do
 		for	type, bool  in pairs(shop.m_FuelTypes) do
 			if FUEL_PRICE_RANGE[type][2] > 0 then
 				shop.m_FuelTypePrices[type] = math.round(math.random(FUEL_PRICE_RANGE[type][1], FUEL_PRICE_RANGE[type][2]) + math.random(), 1)
@@ -202,7 +210,7 @@ end
 
 function GasStationManager:Event_requestFuelPrices()
 	local temp = {}
-	for name, station in pairs(GasStationManager.Shops) do
+	for k, station in pairs(GasStationManager.Shops) do
 		if station:hasPlayerAccess(client) then
 			local pos = {station.m_Position.x, station.m_Position.y, station.m_Position.z}  -- dont ask why, it doesnt work otherwise
 			temp[station.m_Name] = {station.m_FuelTypePrices, pos, station:isServiceStation(), station:isEvilStation()}
@@ -214,7 +222,7 @@ end
 -- accessible: {type, id} || type: 0 = all, 1 = faction, 2 = company || id = faction or company id (0 == state faction)
 GAS_STATIONS = {
 	{
-		name = "Tankstelle Temple",
+		id = 67, -- Temple
 		stations = {
 			{Vector3(1000.23, -937.42, 42.86), 8, 2},
 			{Vector3(1006.91, -936.43, 42.86), 8, 2},
@@ -223,7 +231,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "San Fierro Downtown",
+		id = 57, -- SF Downtown
 		stations = {
 			{Vector3(-1676.68, 419.11, 7.90), 223, 2},
 			{Vector3(-1681.68, 413.94, 7.90), 223, 2},
@@ -234,7 +242,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "San Fierro Juniper Hill",
+		id = 58, -- Juniper Hollow
 		stations = {
 			{Vector3(-2410.8994, 972, 46), 90, 2},
 			{Vector3(-2410.8994, 979, 46), 90, 2},
@@ -243,7 +251,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "Angle Pine",
+		id = 59, -- Angle Pine
 		stations = {
 			{Vector3(-2246.67, -2559.59, 32.6), 243, 1},
 			{Vector3(-2241.68, -2562.21, 32.6), 243, 1},
@@ -252,7 +260,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "Tankstelle Dillimore",
+		id = 60, -- Dillimore
 		stations = {
 			{Vector3(655.68, -569.92, 16.6), 90, 2},
 			{Vector3(655.68, -559.91, 16.6), 90, 2},
@@ -261,7 +269,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "Tankstelle Flint County",
+		id = 61, -- Flint County
 		stations = {
 			{Vector3(-85.41, -1165.00, 2.9), 65, 2},
 			{Vector3(-90.01, -1175.99, 2.81), 65, 2},
@@ -272,7 +280,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "The Emerald Isle",
+		id = 71, -- Emerald Isle
 		stations = {
 			{Vector3(2196.89, 2480, 11.5), 90, 2},
 			{Vector3(2196.89, 2475, 11.5), 90, 2},
@@ -285,7 +293,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "Red Sands West",
+		id = 62, -- Red Sands West
 		stations = {
 			{Vector3(1596.2, 2193.7, 11.5), 0, 2},
 			{Vector3(1596.1, 2204.5, 11.5), 0, 2},
@@ -294,7 +302,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "Spinybed",
+		id = 63, -- Spinybed
 		stations = {
 			{Vector3(2147.64, 2753.28, 11.4), 0, 2},
 			{Vector3(2147.63, 2742.5, 11.4), 0, 2},
@@ -303,7 +311,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "Las Venturas 2",
+		id = 64, -- Las Venturas 2
 		stations = {
 			{Vector3(2114.80, 925.53, 11.45), 0, 2},
 			{Vector3(2114.8999, 914.72, 11.45), 0, 2},
@@ -312,7 +320,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "Valle Ocultado",
+		id = 65, -- Valle Ocultado
 		stations = {
 			{Vector3(-740.41, 2753.35, 47.7), 90, 1},
 		},
@@ -320,7 +328,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "Tierra Roboda 2",
+		id = 66, -- Tierra Robada 2
 		stations = {
 			{Vector3(-1328.1, 2680.2, 51), 354, 1},
 			{Vector3(-1328.84, 2674.84, 51), 354, 1},
@@ -331,7 +339,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "Idlewood",
+		id = 67, -- Idlewood
 		stations = {
 			{Vector3(1941.7, -1776.6, 14.17), 90, 2},
 			{Vector3(1941.7, -1769.4, 14.17), 90, 2},
@@ -340,7 +348,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "Fort Carson",
+		id = 68, -- Fort Carson
 		stations = {
 			{Vector3(68.1, 1221.3, 19.6), 252, 1},
 			{Vector3(73.80, 1219.45, 19.6), 252, 1},
@@ -349,7 +357,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "Whetstone",
+		id = 69, -- Whetstone
 		stations = {
 			{Vector3(-1611.35, -2720.47, 49.4), 324, 1},
 			{Vector3(-1607.80, -2716.16, 49.4), 324, 1},
@@ -360,7 +368,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "Last Venturas East",
+		id = 70, -- LV East
 		stations = {
 			{Vector3(2639.9, 1100.9, 11.5), 0, 2},
 			{Vector3(2639.9, 1111.83, 11.5), 0, 2},
@@ -369,7 +377,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "Montgomery",
+		id = 72, -- Montgomery
 		stations = {
 			{Vector3(1379.81, 460.5, 20.8), 155.5, 2},
 			{Vector3(1384.36, 458.6, 20.8), 155.5, 2},
@@ -378,7 +386,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "Bone County",
+		id = 73, -- Bone County
 		stations = {
 			{Vector3(624.06, 1677.63, 7.7), 35.5, 1},
 			{Vector3(620.85, 1682.64, 7.7), 35.5, 1},
@@ -392,7 +400,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "Tierra Roboda 1",
+		id = 74, -- Tierra Robada
 		stations = {
 			{Vector3(-1465.5, 1868.2, 33.3), 3.24, 1},
 			{Vector3(-1464.78, 1860.43, 33.3), 3.24, 1},
@@ -403,7 +411,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus"},
 	},
 	{
-		name = "LS-Airport Tankstelle",
+		id = 81, -- LS-Airport
 		stations = {
 			{Vector3(1606.10, -2445.5, 14.1), 0, 1}
 		},
@@ -411,7 +419,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol_plus", "jetfuel"},
 	},
 	{
-		name = "LV-Dock Tankstelle",
+		name = "Tankstelle LV-Dock",
 		stations = {
 			{Vector3(2288.69, 522.70, 2.30), 180, 1}
 		},
@@ -421,7 +429,7 @@ GAS_STATIONS = {
 		blipPosition = Vector2(2288.69, 522.70)
 	},
 	{
-		name = "LV-Airport Tankstelle",
+		name = "Tankstelle LV-Airport",
 		stations = {
 			{Vector3(1597.314, 1448.198, 11.42), 270, 1}
 		},
@@ -431,7 +439,7 @@ GAS_STATIONS = {
 		blipPosition = Vector2(1597.314, 1448.198)
 	},
 	{
-		name = "Tankstelle Ocean Docks",
+		id = 85, -- Ocean Docks
 		stations = {
 			{Vector3(2370.29, -2557.2, 2.5), 90, 1}
 		},
@@ -441,7 +449,7 @@ GAS_STATIONS = {
 
 	},
 	{
-		name = "SF-Airport Tankstelle",
+		name = "Tankstelle SF-Airport",
 		stations = {
 			{Vector3(-1131.73, -167.53, 14.650), 45, 1}
 		},
@@ -452,7 +460,7 @@ GAS_STATIONS = {
 	},
 	-- Company fuelstations
 	{
-		name = "M&T",
+		name = "Mech & Tow",
 		stations = {
 			{Vector3(877, -1184.6, 17.8), 90, 1},
 		},
@@ -462,7 +470,7 @@ GAS_STATIONS = {
 	},
 	-- Faction fuelstations
 	{
-		name = "Staat Service Station",
+		name = "Staat",
 		stations = {
 			{Vector3(1573.6995, -1620.3545, 14.05274), 0, 1}, -- LSPD #1
 			{Vector3(1553.4237 ,-1620.3545, 14.10274), 0, 1}, -- LSPD #2
@@ -478,7 +486,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "petrol_plus", "jetfuel"},
 	},
 	{
-		name = "Rescue Service Station",
+		name = "Rescue Team",
 		stations = {
 			{Vector3(1134.9, -1369.9, 14.1), 180, 1}
 		},
@@ -488,7 +496,7 @@ GAS_STATIONS = {
 		fuelTypes = {"petrol", "diesel", "jetfuel"},
 	},
 	{
-		name = "LCN",
+		name = "La Cosa Nostra",
 		stations = {
 			{Vector3(715.71051, -1199.40308, 19.44590), 239, 1},
 		},

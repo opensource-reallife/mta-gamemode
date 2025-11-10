@@ -221,7 +221,7 @@ function ShopManager:buyItem(shopId, item, amount)
 					bankServer:transferMoney(shop.m_BankAccount, shop.m_Items[item]*amount*0.8, "Item-Einkauf", "Gameplay", "Item")
 					shop.m_Stock = math.max(0, shop.m_Stock - amount)
 				end
-				client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, _(shop.m_Name, client)))
+				client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, shop.m_Name))
 			else
 				--client:sendError(_("Die maximale Anzahl dieses Items beträgt %d!", client, client:getInventory():getMaxItemAmount(item)))
 				return
@@ -661,7 +661,7 @@ function ShopManager:restockStart()
 		return
 	end
 	if player:isFactionDuty() or player:isCompanyDuty() then
-		player:sendError(_("Du darfst nicht im Dienst sein!", client))
+		player:sendError(_("Du darfst nicht im Dienst sein!", player))
 		return
 	end
 	if player:isInVehicle() then
@@ -687,7 +687,7 @@ function ShopManager:restockStart()
 				group:addLog(player, "Immobilien", ("hat eine Shop-Lieferung für %s gestartet!"):format(toMoneyString(SHOP_RESTOCK_COST)))
 				return
 			else
-				client:sendError(_("In der Gruppenkasse befindet sich nicht genügend Geld!", client))
+				player:sendError(_("In der Gruppenkasse befindet sich nicht genügend Geld!", player))
 			end
 		end
 	end

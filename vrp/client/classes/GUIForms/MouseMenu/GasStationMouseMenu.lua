@@ -11,9 +11,7 @@ function GasStationMouseMenu:constructor(posX, posY, element)
 	GUIMouseMenu.constructor(self, posX, posY, 300, 1)
 
 	local name = element:getData("Name")
-
-	--self:addItem(_("Besitzer: %s", name))
-	self:addItem(_("Tankstelle: %s", name)):setTextColor(Color.Accent)
+	self:addItem(_("Tankstelle: %s", name:gsub("Tankstelle ", ""))):setTextColor(Color.Accent)
 
 	if localPlayer:getPrivateSync("hasGasStationFuelNozzle") then
 		self:addItem(_"Zapfpistole einhängen",

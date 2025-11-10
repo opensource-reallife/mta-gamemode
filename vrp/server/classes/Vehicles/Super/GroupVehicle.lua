@@ -412,7 +412,7 @@ function GroupVehicle:rentEnd()
 			local currentFuel = self:getFuel()
 			if currentFuel < self.m_RentedFuel then
 				local needFuel = self.m_RentedFuel - currentFuel
-				local price = (GasStationManager.Shops["Idlewood"].m_FuelTypePrices[self:getFuelType()] or 1)
+				local price = (GasStationManager.Shops[67].m_FuelTypePrices[self:getFuelType()] or 1)
 				local tankSize = self:getFuelTankSize()
 				local opticalFuelRequired = tankSize * needFuel
 				local maxFuelWithMoney = deposit / price

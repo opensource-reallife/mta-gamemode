@@ -26,7 +26,7 @@ function GasStationShopGUI:constructor(callback, name, ped)
 	GUILabel:new(5, 35, 200, 30, _"Liter:", tabFuelStation)
 	GUILabel:new(5, 65, 200, 30, _"Preis:", tabFuelStation)
 
-	GUILabel:new(150, 5, 200, 30, name, tabFuelStation)
+	GUILabel:new(150, 5, 200, 30, name:gsub("Tankstelle ", ""), tabFuelStation)
 	self.m_Fuel = GUILabel:new(150, 35, 200, 30, "-", tabFuelStation)
 	self.m_Price = GUILabel:new(150, 65, 200, 30, "-", tabFuelStation)
 
