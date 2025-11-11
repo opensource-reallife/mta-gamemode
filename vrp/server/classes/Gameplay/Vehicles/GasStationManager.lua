@@ -222,7 +222,7 @@ end
 -- accessible: {type, id} || type: 0 = all, 1 = faction, 2 = company || id = faction or company id (0 == state faction)
 GAS_STATIONS = {
 	{
-		id = 67, -- Temple
+		id = 56, -- Temple
 		stations = {
 			{Vector3(1000.23, -937.42, 42.86), 8, 2},
 			{Vector3(1006.91, -936.43, 42.86), 8, 2},
