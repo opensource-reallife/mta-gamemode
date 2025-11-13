@@ -48,7 +48,7 @@ function ItemFood:destructor()
 end
 
 function ItemFood:use(player)
-	if player.isTasered or player.m_IsEating or JobBoxer:getSingleton():isPlayerBoxing(player) then
+	if player.isTasered or player.m_IsEating or JobBoxer:getSingleton():isPlayerBoxing(player) or player:isFrozen() then
 		player:sendError(_("Du kannst das gerade nicht tun!", player))
 		return false
 	end
