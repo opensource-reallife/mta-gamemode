@@ -15,32 +15,67 @@ function FactionEvil:constructor()
 	self.m_ItemDepot = {}
 	self.m_EquipmentDepot = {}
 	self.m_Raids = {}
+	self.m_MapParser = {}
 
 	nextframe(function()
-		if FactionManager.Map[5] then
-			self:loadLCNGates(5)
+		local factionId = FactionStaticId.LCN
+		if FactionManager.Map[factionId] then
+			self.m_MapParser[factionId] = MapParser:new(":exo_maps/fraktionen/cosanostra.map")
+			self:loadLCNGates(factionId)
 		end
-		if FactionManager.Map[6] then
-			self:loadYakGates(6)
+
+		factionId = FactionStaticId.YAKUZA
+		if FactionManager.Map[factionId] then
+			self.m_MapParser[factionId] = MapParser:new(":exo_maps/fraktionen/yakuza.map")
+			self:loadYakGates(factionId)
 		end
-		if FactionManager.Map[11] then
-			--self:loadCartelGates(11)
-			self:loadTriadGates(11)
+
+		factionId = FactionStaticId.GROVE
+		if FactionManager.Map[factionId] then
+			self.m_MapParser[factionId] = MapParser:new(":exo_maps/fraktionen/grove.map")
+			setGarageOpen(9, true)
 		end
+
+		factionId = FactionStaticId.BALLAS
+		if FactionManager.Map[factionId] then
+			self.m_MapParser[factionId] = MapParser:new(":exo_maps/fraktionen/ballas.map")
+		end
+
+		factionId = FactionStaticId.OUTLAWS
+		if FactionManager.Map[factionId] then
+			self.m_MapParser[factionId] = MapParser:new(":exo_maps/fraktionen/biker.map")
+		end
+
+		factionId = FactionStaticId.VATOS
+		if FactionManager.Map[factionId] then
+			self.m_MapParser[factionId] = MapParser:new(":exo_maps/fraktionen/vatos-sevilla.map")
+		end
+
+		factionId = FactionStaticId.TRIAD
+		if FactionManager.Map[factionId] then
+			self.m_MapParser[factionId] = MapParser:new(":exo_maps/fraktionen/triad.map")
+			self:loadTriadGates(factionId)
+		end
+
+		factionId = FactionStaticId.BRIGADA
+		if FactionManager.Map[factionId] then
+			self.m_MapParser[factionId] = MapParser:new(":exo_maps/fraktionen/brigada.map")
+		end
+
+		for k, map in pairs(self.m_MapParser) do
+			map:create()
+		end
+
+		self:loadDiplomacy()
 	end)
 
 	for Id, faction in pairs(FactionManager:getAllFactions()) do
 		if faction:isEvilFaction() then
 			self:createInterior(Id, faction)
 			local blip = Blip:new("Evil.png", evilFactionInteriorEnter[Id].x, evilFactionInteriorEnter[Id].y, {faction = Id}, 400, {factionColors[Id].r, factionColors[Id].g, factionColors[Id].b})
-				blip:setDisplayText(faction:getName(), BLIP_CATEGORY.Faction)
+			blip:setDisplayText(faction:getName(), BLIP_CATEGORY.Faction)
 		end
 	end
-	nextframe(function()
-		self:loadDiplomacy()
-	end)
-
-	setGarageOpen(9, true) -- Grove Street Garage
 
 	addRemoteEvents{"factionEvilStartRaid", "factionEvilSuccessRaid", "factionEvilFailedRaid", "factionEvilToggleDuty", "factionEvilRearm", "factionEvilStorageWeapons"}
 	addEventHandler("factionEvilStartRaid", root, bind(self.Event_StartRaid, self))
