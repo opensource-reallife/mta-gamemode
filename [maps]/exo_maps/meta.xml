@@ -34,7 +34,7 @@
 	<!--<map src="fraktionen/brigada.map" />-->
 
 	<map src="fraktionen/biker.map" />
-	<map src="fraktionen/cosanostra.map" />
+	<!--<map src="fraktionen/cosanostra.map" />-->
 	<map src="fraktionen/lspd.map" />
 	<map src="fraktionen/lspd-int.map" />
 	<!--<map src="fraktionen/PD-interior.map" />-->

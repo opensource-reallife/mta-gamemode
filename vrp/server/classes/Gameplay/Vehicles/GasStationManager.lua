@@ -495,16 +495,16 @@ GAS_STATIONS = {
 		serviceStation = true,
 		fuelTypes = {"petrol", "diesel", "jetfuel"},
 	},
-	{
-		name = "La Cosa Nostra",
-		stations = {
-			{Vector3(715.71051, -1199.40308, 19.44590), 239, 1},
-		},
-		accessible =  {1, FactionStaticId.LCN},
-		nonInterior = true,
-		evilStation = true,
-		fuelTypes = {"petrol", "diesel", "jetfuel"},
-	},
+	-- {
+	-- 	name = "La Cosa Nostra",
+	-- 	stations = {
+	-- 		{Vector3(715.71051, -1199.40308, 19.44590), 239, 1},
+	-- 	},
+	-- 	accessible =  {1, FactionStaticId.LCN},
+	-- 	nonInterior = true,
+	-- 	evilStation = true,
+	-- 	fuelTypes = {"petrol", "diesel", "jetfuel"},
+	-- },
 	{
 		name = "Yakuza",
 		stations = {
