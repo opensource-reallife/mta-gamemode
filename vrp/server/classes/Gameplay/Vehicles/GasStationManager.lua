@@ -16,17 +16,15 @@ function GasStationManager:constructor()
 	self.m_PendingTransaction = {}
 
 	for _, station in pairs(GAS_STATIONS) do
-		local shop = ShopManager.Map[station.id]
-		local instance = GasStation:new(station.stations, station.accessible, shop and shop:getName() or station.name, station.nonInterior, station.serviceStation, station.evilStation, station.fuelTypes, station.blipPosition)
-		GasStationManager.Shops[station.id or station.name] = instance
+		if station.accessible[1] ~= 1 or station.accessible[2] == 0 or FactionManager.Map[station.accessible[2]] then
+			local shop = ShopManager.Map[station.id]
+			local instance = GasStation:new(station.stations, station.accessible, shop and shop:getName() or station.name, station.nonInterior, station.serviceStation, station.evilStation, station.fuelTypes, station.blipPosition)
+			GasStationManager.Shops[station.id or station.name] = instance
 
-		if station.id then
 			if shop then
 				GasStationManager.Shops[station.id]:addShopRef(shop)
 				local position = shop.m_Position
 				shop.m_GasBlip = Blip:new("Fuelstation.png", position.x, position.y, root, 300):setDisplayText("Tankstelle", BLIP_CATEGORY.VehicleMaintenance):setOptionalColor({0, 150, 136})
-			else
-				outputConsole(("Shop: Gas-Station Data for %s: %s not found!"):format(tostring(self.m_Id), tostring(self.m_Name)))
 			end
 		end
 	end
@@ -495,16 +493,16 @@ GAS_STATIONS = {
 		serviceStation = true,
 		fuelTypes = {"petrol", "diesel", "jetfuel"},
 	},
-	-- {
-	-- 	name = "La Cosa Nostra",
-	-- 	stations = {
-	-- 		{Vector3(715.71051, -1199.40308, 19.44590), 239, 1},
-	-- 	},
-	-- 	accessible =  {1, FactionStaticId.LCN},
-	-- 	nonInterior = true,
-	-- 	evilStation = true,
-	-- 	fuelTypes = {"petrol", "diesel", "jetfuel"},
-	-- },
+	{
+		name = "La Cosa Nostra",
+		stations = {
+			{Vector3(715.71051, -1199.40308, 19.44590), 239, 1},
+		},
+		accessible =  {1, FactionStaticId.LCN},
+		nonInterior = true,
+		evilStation = true,
+		fuelTypes = {"petrol", "diesel", "jetfuel"},
+	},
 	{
 		name = "Yakuza",
 		stations = {
@@ -536,27 +534,27 @@ GAS_STATIONS = {
 		evilStation = true,
 		fuelTypes = {"petrol", "diesel", "jetfuel"},
 	},
-	-- {
-	-- 	name = "Triaden",
-	-- 	stations = {
-	-- 		{Vector3(1894.66, 966.42, 11.22), 180, 1},
-	-- 		{Vector3(1941.09, 1004.75, 53.20), 180, 1},
-	-- 	},
-	-- 	accessible =  {1, FactionStaticId.TRIAD},
-	-- 	nonInterior = true,
-	-- 	evilStation = true,
-	-- 	fuelTypes = {"petrol", "diesel", "jetfuel"},
-	-- },
-	-- {
-	-- 	name = "Grove Street",
-	-- 	stations = {
-	-- 		{Vector3(2509.69, -1692.47, 14.09), 90, 1},
-	-- 	},
-	-- 	accessible =  {1, FactionStaticId.GROVE},
-	-- 	nonInterior = true,
-	-- 	evilStation = true,
-	-- 	fuelTypes = {"petrol", "diesel", "jetfuel"},
-	-- },
+	{
+		name = "Triaden",
+		stations = {
+			{Vector3(1894.66, 966.42, 11.22), 180, 1},
+			{Vector3(1941.09, 1004.75, 53.20), 180, 1},
+		},
+		accessible =  {1, FactionStaticId.TRIAD},
+		nonInterior = true,
+		evilStation = true,
+		fuelTypes = {"petrol", "diesel", "jetfuel"},
+	},
+	{
+		name = "Grove Street",
+		stations = {
+			{Vector3(2509.69, -1692.47, 14.09), 90, 1},
+		},
+		accessible =  {1, FactionStaticId.GROVE},
+		nonInterior = true,
+		evilStation = true,
+		fuelTypes = {"petrol", "diesel", "jetfuel"},
+	},
 	{
 		name = "Ballas",
 		stations = {
@@ -576,7 +574,7 @@ GAS_STATIONS = {
 		nonInterior = true,
 		evilStation = true,
 		fuelTypes = {"petrol", "diesel"},
-	},
+	},]]
 	{
 		name = "Brigada",
 		stations = {
@@ -587,5 +585,4 @@ GAS_STATIONS = {
 		evilStation = true,
 		fuelTypes = {"petrol", "diesel"},
 	},
-	]]
 }
