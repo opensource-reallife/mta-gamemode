@@ -288,7 +288,7 @@ ADMIN_RANK_PERMISSION = {
 	["editVehicleOwnerID"] = RANK.Administrator,
 	["editVehicleTunings"] = RANK.Administrator,
 	["editVehicleHandling"] = RANK.Administrator, -- handling editor
-	["editVehicleTexture"] = RANK.Developer, --override textures without visiting the texture shop
+	["editVehicleTexture"] = RANK.Administrator, --override textures without visiting the texture shop
 
 
 	--development
