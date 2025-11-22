@@ -20,7 +20,19 @@ function VehicleCustomTextureShop:constructor()
             Vector3(1851, -1856.4, 12.4), -- LS El Corona
             {Vector3(1839.3, -1856.7, 13.2), 90},
             Vector3(1010.9, -982.59998, 2436.1001)
-        }
+        },
+		{
+			Vector3(2113.13, -2426.34, 13.25), -- LS Airport
+			{Vector3(2073.41, -2394.91, 14.6), 180},
+			Vector3(2113.13, -2426.34, 14.6),
+			"AirportPainter"
+		},
+		{
+			Vector3(2478.81, -2258.11, 1), -- LS Ocean Docs
+			{Vector3(2546.12, -2257.58, 1), 180},
+			Vector3(2478.81, -2258.11, 1),
+			"BoatsPainter"
+		}
     }
 
 	self.m_Info = createPickup(1844.30, -1861.05, 13.38, 3, 1239, 0)
@@ -33,8 +45,21 @@ function VehicleCustomTextureShop:constructor()
         addEventHandler("onColShapeHit", colshape, bind(self.EntryColShape_Hit, self, garageId))
 
         local blip = Blip:new("VehicleTexture.png", position.x, position.y,root,600)
-		blip:setDisplayText("Speziallackierungs-Shop", BLIP_CATEGORY.VehicleMaintenance)
-		blip:setOptionalColor({255,235,59})
+		local blipText = "Speziallackierungs-Shop"
+
+		if info[4] == "AirportPainter" then
+			blipText = blipText.." (Flugzeuge)"
+		elseif info[4] == "BoatsPainter" then
+			blipText = blipText.." (Boote)"
+		end
+
+		blip:setDisplayText(blipText, BLIP_CATEGORY.VehicleMaintenance)
+		blip:setOptionalColor({255, 235, 59})
+
+		if info[4] and (info[4] == "AirportPainter" or info[4] == "BoatsPainter") then
+			createMarker(position.x, position.y, position.z-1.2, "cylinder", 6, 255, 235, 59)
+			colshape:setRadius(6)
+		end
     end
 	
 	self.m_Textures = {} 
@@ -113,13 +138,9 @@ function VehicleCustomTextureShop:EntryColShape_Hit(garageId, hitElement, matchi
             return
         end
 
-        if vehicle:isLandVehicle() then
-            self:openFor(hitElement, vehicle, garageId)
-			vehicle.m_TextureCount = table.size(vehicle.m_Texture or {})
-			vehicle:setData("TextureCount", vehicle.m_TextureCount, true)
-        else
-            hitElement:sendError(_("Mit diesem Fahrzeugtyp kannst du die Tuningwerkstatt nicht betreten!", hitElement))
-        end
+		self:openFor(hitElement, vehicle, garageId)
+		vehicle.m_TextureCount = table.size(vehicle.m_Texture or {})
+		vehicle:setData("TextureCount", vehicle.m_TextureCount, true)
     end
 end
 
