@@ -82,7 +82,7 @@ function VehicleCustomTextureGUI:constructor(vehicle, path, textures)
 
 	setTimer(function()
 		local pos = self.m_Vehicle:getPosition()
-		setCameraMatrix(pos.x-5, pos.y-7, pos.z+1, pos)
+		setCameraMatrix(pos.x-5, pos.y-17, pos.z+1, pos)
 	end, 100, 1)
 
     showChat(false)
