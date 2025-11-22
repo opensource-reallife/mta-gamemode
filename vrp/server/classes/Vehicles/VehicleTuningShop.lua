@@ -31,7 +31,7 @@ function VehicleTuningShop:constructor()
         {
             Vector3(1041.4, -1017.5, 31), -- LS Temple
             {Vector3(1041.9, -1031.5, 31.2), 180},
-            Vector3(953.59998, -983.09998, 2454.8999)
+            Vector3(990.69, -1032.16, 2432.6)
         },
 		{
             Vector3(1483.14, -2438.56, 13), -- LS Airport
@@ -51,6 +51,7 @@ function VehicleTuningShop:constructor()
         local position = info[1]
         local colshape = createColSphere(position, 3)
         addEventHandler("onColShapeHit", colshape, bind(self.EntryColShape_Hit, self, garageId))
+        
         local blip = Blip:new("TuningGarage.png", position.x, position.y,root,600)
 		local blipText = "Tuninggarage"
 
