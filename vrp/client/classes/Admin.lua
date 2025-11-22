@@ -6,11 +6,12 @@
 -- *
 -- ****************************************************************************
 Admin = inherit(Singleton)
--- addRemoteEvents{"retrieveInfo"}
+ADMIN_RANK_PERMISSION = {}
 
 function Admin:constructor()
 	addEventHandler("onClientWorldSound", root, bind(self.Event_worldSound, self))
 	-- addEventHandler("onClientRender", root, bind(self.Event_worldSound, self))
+
 	StaticFileTextureReplacer:new("Other/trans.png", "shad_ped")
 end
 
@@ -19,3 +20,13 @@ function Admin:Event_worldSound(group, index, x, y, z)
         cancelEvent()
     end
 end
+
+addEvent("adminPermissionsSync", true)
+
+addEventHandler("adminPermissionsSync", root, function(tbl) 
+    ADMIN_RANK_PERMISSION = tbl or {}
+end)
+
+addEventHandler("onClientResourceStart", resourceRoot, function()
+    triggerServerEvent("requestAdminPermissions", localPlayer)
+end)

@@ -7,6 +7,7 @@
 -- ****************************************************************************
 Admin = inherit(Singleton)
 ADMIN_OVERLAP_THRESHOLD = 5
+ADMIN_RANK_PERMISSION = {}
 
 function Admin:constructor()
     self.m_OnlineAdmins = {}
@@ -94,6 +95,8 @@ function Admin:constructor()
 	"adminDelteMultiAccount", "adminCreateMultiAccount", "adminRequestSerialAccounts", "adminDeleteAccountFromSerial", "adminDealSmodeReflectionDamage", "adminStopVehicleForSale",
 	"adminStopVehicleForRent", "adminTeleportPlayer", "adminCreateTeleportPoint", "adminEditTeleportPoint", "adminDeleteTeleportPoint", "adminCreateTeleportCategory", "adminEditTeleportCategory", "adminDeleteTeleportCategory"}
 
+	--addEventHandler("onResourceStart", root, bind(self.loadPermissionsFromDatabase, self))
+
     addEventHandler("adminSetPlayerFaction", root, bind(self.Event_adminSetPlayerFaction, self))
     addEventHandler("adminSetPlayerCompany", root, bind(self.Event_adminSetPlayerCompany, self))
     addEventHandler("adminSetPlayerGroup", root, bind(self.Event_adminSetPlayerGroup, self))
@@ -139,6 +142,7 @@ function Admin:constructor()
 	addEventHandler("adminDeleteTeleportCategory", root, bind(self.Event_adminDeleteTeleportCategory, self))
 
 	self:loadTpPoints()
+	self:loadPermissionsFromDatabase()
 
 	setTimer(function()
 		for player, marker in pairs(self.m_SupportArrow) do
@@ -169,6 +173,28 @@ function Admin:constructor()
 	end
 
 end
+
+function Admin:loadPermissionsFromDatabase()
+    ADMIN_RANK_PERMISSION = {}
+
+    local rows = sql:queryFetch("SELECT Permission, Rank FROM ??_admin_permissions", sql:getPrefix())
+
+	if not rows or type(rows) ~= "table" then
+        return
+    end
+
+    for _, row in ipairs(rows) do
+        local perm     = row.Permission
+        local rankName = tostring(row.Rank)
+
+        if RANK[rankName] then
+            ADMIN_RANK_PERMISSION[perm] = RANK[rankName]
+        end
+    end
+
+    triggerClientEvent(root, "adminPermissionsSync", resourceRoot, ADMIN_RANK_PERMISSION)
+end
+
 
 function Admin:Event_OnAdminGangwarReset( id, ts )
 	if client and client:getRank() >= ADMIN_RANK_PERMISSION["eventGangwarMenu"] then
@@ -2415,3 +2441,8 @@ function Admin:addPremiumVehicle(player, cmd, target, model, soundvan)
 
 	sqlPremium:queryFetch("INSERT INTO premium_veh (Model, abgeholt, Timestamp_buy, Timestamp_abgeholt, Preis, Soundvan, UserId) VALUES (?, ?, ?, ?, ?, ?, ?);", model, 0, getRealTime().timestamp, 0, 0, soundvan, targetPlayer:getId())
 end
+
+addEvent("requestAdminPermissions", true)
+addEventHandler("requestAdminPermissions", root, function() 
+	triggerClientEvent(client, "adminPermissionsSync", resourceRoot, ADMIN_RANK_PERMISSION)	
+end)
