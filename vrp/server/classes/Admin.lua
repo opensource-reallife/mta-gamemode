@@ -181,7 +181,7 @@ function Admin:loadPermissionsFromDatabase()
         return
     end
 
-    for _, row in ipairs(rows) do
+    for _, row in pairs(rows) do
         local perm     = row.Permission
         local rankName = tostring(row.Rank)
 
