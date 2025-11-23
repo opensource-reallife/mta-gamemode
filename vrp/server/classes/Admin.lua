@@ -95,8 +95,6 @@ function Admin:constructor()
 	"adminDelteMultiAccount", "adminCreateMultiAccount", "adminRequestSerialAccounts", "adminDeleteAccountFromSerial", "adminDealSmodeReflectionDamage", "adminStopVehicleForSale",
 	"adminStopVehicleForRent", "adminTeleportPlayer", "adminCreateTeleportPoint", "adminEditTeleportPoint", "adminDeleteTeleportPoint", "adminCreateTeleportCategory", "adminEditTeleportCategory", "adminDeleteTeleportCategory"}
 
-	--addEventHandler("onResourceStart", root, bind(self.loadPermissionsFromDatabase, self))
-
     addEventHandler("adminSetPlayerFaction", root, bind(self.Event_adminSetPlayerFaction, self))
     addEventHandler("adminSetPlayerCompany", root, bind(self.Event_adminSetPlayerCompany, self))
     addEventHandler("adminSetPlayerGroup", root, bind(self.Event_adminSetPlayerGroup, self))
