@@ -9,6 +9,8 @@ Admin = inherit(Singleton)
 ADMIN_RANK_PERMISSION = {}
 
 function Admin:constructor()
+    triggerServerEvent("requestAdminPermissions", localPlayer)
+
 	addEventHandler("onClientWorldSound", root, bind(self.Event_worldSound, self))
 	-- addEventHandler("onClientRender", root, bind(self.Event_worldSound, self))
 
@@ -25,8 +27,4 @@ addEvent("adminPermissionsSync", true)
 
 addEventHandler("adminPermissionsSync", root, function(tbl) 
     ADMIN_RANK_PERMISSION = tbl or {}
-end)
-
-addEventHandler("onClientResourceStart", resourceRoot, function()
-    triggerServerEvent("requestAdminPermissions", localPlayer)
 end)
