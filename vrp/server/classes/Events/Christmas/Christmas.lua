@@ -55,8 +55,8 @@ Christmas.ms_Bonus = {
 		["VehicleModel"] = 423
 	},
 	{
-		["Text"] = "Nebula",
-		["Image"] = "Bonus_Nebula.png",
+		["Text"] = "Savanna",
+		["Image"] = "Bonus_Savanna.png",
 		["Packages"] = 350, --700
 		["CandyCane"] = 800, --1600
 		["Type"] = "Vehicle",
