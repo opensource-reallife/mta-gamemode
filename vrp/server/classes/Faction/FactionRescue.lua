@@ -16,8 +16,19 @@ addRemoteEvents{
 
 function FactionRescue:constructor()
 	-- Duty Pickup
-	self:createDutyPickup(1076.30, -1374.01, 13.65, 0) -- Garage
-	self:createDutyPickup(132.562, 163.525, 1186.05, 3) -- Interior
+	self:createDutyPickup(1076.30, -1374.01, 13.65, 0) -- LS Garage
+	self:createDutyPickup(132.562, 163.525, 1186.05, 3) -- LS Interior
+	
+	self:createDutyPickup(-2026.94, 67.16, 28.69, 0) -- San Fierro Fire Station
+	self:createDutyPickup(-2558.16, 662.63, 14.45, 0) -- San Fierre Medical Center
+
+	self:createDutyPickup(-320.16, 1048.88, 20.34, 0) -- Fort Carson Medical Center
+
+	self:createDutyPickup(1607.41, 1816.56, 10.82, 0) -- Las Venturas Medical Center#
+
+	self:createDutyPickup(1227.00, 311.65, 19.76, 0) -- Montgomery Medical Center
+
+	self:createDutyPickup(-2223.05, -2293.69, 31.67, 0) -- Angel Pine
 
 	self.m_VehicleFires = {}
 
