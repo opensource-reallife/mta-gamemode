@@ -181,6 +181,22 @@ function FactionRescue:sendWarning(text, header, withOffDuty, pos, ...)
 	end
 end
 
+function FactionRescue:sendSound(text, withOffDuty, tts, ...)
+	for k, player in pairs(self:getOnlinePlayers(false, not withOffDuty)) do
+		if tts then
+			local lang
+			if player:getLocale() == "de" then
+				lang = "de-De"
+			else
+				lang = "en-Us"
+			end
+			player:playSound(("http://translate.google.com/translate_tts?ie=UTF-8&tl=%s&q=%s&client=tw-ob"):format(lang, _(text, player, ...)))
+		else
+			player:playSound(text)
+		end
+	end
+end
+
 function FactionRescue:onBarrierHit(player)
     if not player:getFaction() or not player:getFaction():isRescueFaction() then
         return false
