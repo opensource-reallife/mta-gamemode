@@ -60,7 +60,7 @@ Christmas.ms_Bonus = {
 		["Packages"] = 350, --700
 		["CandyCane"] = 800, --1600
 		["Type"] = "Vehicle",
-		["VehicleModel"] = 516
+		["VehicleModel"] = 567
 	}
 }
 
