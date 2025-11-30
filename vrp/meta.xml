@@ -3190,6 +3190,7 @@
 	<vrpfile src="files/audio/Ambient/serpent_dance.ogg" />
 	<vrpfile src="files/audio/Ambient/BENITRATOR.mp3" />
 	<vrpfile src="files/audio/Ambient/helicopter_internal.ogg" />
+	<vrpfile src="files/audio/Ambient/fire_alarm.mp3" />
 
 	<vrpfile src="files/audio/arcade-sfx/lufia.ogg" />
 	<vrpfile src="files/audio/arcade-sfx/gameboy_start.ogg" />
