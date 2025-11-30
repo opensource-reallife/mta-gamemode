@@ -161,17 +161,33 @@ function FactionRescue:getOnlinePlayers(afkCheck, dutyCheck, dutyType, radioStat
 end
 
 function FactionRescue:sendWarning(text, header, withOffDuty, pos, ...)
+	local headerNew
 	for k, player in pairs(self:getOnlinePlayers(false, not withOffDuty)) do
-		local textNew = text
-		if player:getLocale() ~= "de" and header == "Brand-Meldung" then
-			textNew = "Ein Feuer ist ausgebrochen!\nPosition: %s"
+
+		player:playSound('files/audio/fire-alarm-short.mp3')
+
+		local tts, textNew
+
+		if player:getLocale() == "de" then
+			textNew = _("Ein Feuer ist ausgebrochen!\nPosition: %s", player, ...)  -- translation manager sucks
+			headerNew = "Brand-Meldung"
+			tts = "http://translate.google.com/translate_tts?ie=UTF-8&tl=de-De&q=".. textNew .."&client=tw-ob"
+		else
+			textNew = _("An unknown caller has reported a fire!\nPosition: %s", player, ...)  -- translation manager sucks
+			headerNew = "Fire alert"
+			tts = "http://translate.google.com/translate_tts?ie=UTF-8&tl=en-Us&q=".. textNew .."&client=tw-ob"
 		end
-		player:sendWarning(_(textNew, player, ...), 30000, _(header, player))
+
+		player:sendWarning(textNew, 30000, _(headerNew, player))
+
+		setTimer(function()
+			player:playSound(tts)
+		end, 2000, 1)
 	end
 	if pos and pos.x then pos = {pos.x, pos.y, pos.z} end -- serialiseVector conversion
 	if pos and pos[1] and pos[2] then
 		local blip = Blip:new("Fire.png", pos[1], pos[2], {factionType = "Rescue"}, 4000, BLIP_COLOR_CONSTANTS.Orange)
-			blip:setDisplayText(header)
+			blip:setDisplayText(headerNew)
 		if pos[3] then
 			blip:setZ(pos[3])
 		end
