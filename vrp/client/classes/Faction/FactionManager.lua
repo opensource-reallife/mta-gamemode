@@ -46,6 +46,8 @@ function FactionManager:constructor()
 			end
 		end
 	end
+
+	FactionRescue:new()
 end
 
 function FactionManager:loadFaction(Id, name, name_short, rankNames, factionType, color, navigationPosition, diplomacy)
