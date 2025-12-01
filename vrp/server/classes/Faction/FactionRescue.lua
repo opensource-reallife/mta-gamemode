@@ -24,7 +24,8 @@ function FactionRescue:constructor()
 
 	self:createDutyPickup(-320.16, 1048.88, 20.34, 0) -- Fort Carson Medical Center
 
-	self:createDutyPickup(1607.41, 1816.56, 10.82, 0) -- Las Venturas Medical Center#
+	self:createDutyPickup(1607.41, 1816.56, 10.82, 0) -- Las Venturas Medical Center
+	self:createDutyPickup(1774.701, 2086.516, 10.820, 0) -- Las Venturas Fire Station
 
 	self:createDutyPickup(1227.00, 311.65, 19.76, 0) -- Montgomery Medical Center
 
