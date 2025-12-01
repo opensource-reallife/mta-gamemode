@@ -334,6 +334,12 @@ msgstr "Job list"
 msgid "Klicke hier für Informationen!"
 msgstr "Click here for information!"
 
+msgid "Information"
+msgstr "Information"
+
+msgid "Feueralarm (Nur Rescue)"
+msgstr "Fire alarm (only rescue)"
+
 msgid "Button %d"
 msgstr "Button %d"
 
@@ -471,6 +477,12 @@ msgstr "Admin say:"
 
 msgid "Zu Koordinaten porten: (x,y,z)"
 msgstr "Port to coordinates: (x,y,z)"
+
+msgid "zur Position teleportieren"
+msgstr "Teleport to position"
+
+msgid "Eventkasse:"
+msgstr "Event cashbox:"
 
 msgid "Eventkasse:"
 msgstr "Event cashbox:"
@@ -4600,6 +4612,9 @@ msgstr "set in faction"
 msgid "in Unternehmen setzen"
 msgstr "set in company"
 
+msgid "in Gruppe setzen"
+msgstr "set in group"
+
 msgid "Modbann: -"
 msgstr "Mod ban: -"
 
@@ -6474,3 +6489,9 @@ msgstr "Disable rain"
 
 msgid "In Fraktionsbasis spawnen (250$) (nach Knast)"
 msgstr "Spawn in faction base (250$) (after jail)"
+
+msgid "Ein Feuer ist ausgebrochen! Position: %s"
+msgstr "An unknown caller has reported a fire! Position: %s"
+
+msgid "Alarmanlage von Geschäften & Banken"
+msgstr "Alarm systems for shops and banks"

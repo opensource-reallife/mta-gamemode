@@ -4931,6 +4931,9 @@ msgstr "Fire alert"
 msgid "Ein Feuer ist ausgebrochen!\nPosition: %s"
 msgstr "An unknown caller has reported a fire!\nPosition: %s"
 
+msgid "Ein Feuer ist ausgebrochen! Position: %s"
+msgstr "An unknown caller has reported a fire! Position: %s"
+
 msgid "Fahrzeug-Brand"
 msgstr "Vehicle fire"
 
