@@ -100,6 +100,8 @@ function FireManager:startFire(id)
 
 	FactionRescue:getSingleton():sendWarning(fireTable["message"], header or "Brand-Meldung", true, fireTable.position + Vector3(fireTable.width/2, fireTable.height/2, 0), zone)
 	--FactionState:getSingleton():sendWarning(fireTable["message"], "Absperrung erforderlich", false, fireTable.position + Vector3(fireTable.width/2, fireTable.height/2, 0))
+	
+	triggerClientEvent(root, "fireStartAlarm", resourceRoot, zone)
 end
 
 function FireManager:onUpdateHandler(stats)

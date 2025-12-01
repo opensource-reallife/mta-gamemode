@@ -19,13 +19,14 @@ function FireManager:constructor()
 	self.m_FiresWaitingForColUpdate = {}
 	self.m_StatisticShortMessage = {}
 
-	addRemoteEvents{"fireElements:onClientRecieveFires", "fireElements:onFireCreate", "fireElements:onFireDestroy", "fireElements:onFireChangeSize", "refreshFireStatistics"}
+	addRemoteEvents{"fireElements:onClientRecieveFires", "fireElements:onFireCreate", "fireElements:onFireDestroy", "fireElements:onFireChangeSize", "refreshFireStatistics", "fireStartAlarm"}
 
 	addEventHandler("fireElements:onFireCreate", resourceRoot, bind(self.createFireElement, self))
 	addEventHandler("fireElements:onFireDestroy", resourceRoot, bind(self.destroyFireElement, self))
 	addEventHandler("fireElements:onFireChangeSize", resourceRoot, bind(self.changeFireSize, self))
 	addEventHandler("onClientPedHitByWaterCannon", root, bind(self.handlePedWaterCannon, self))
 	addEventHandler("refreshFireStatistics", root, bind(self.updateStatistics, self))
+	addEventHandler("fireStartAlarm", root, bind(self.Event_startFireAlarm, self))
 	addCommandHandler("reloadFires", bind(self.reloadFiresIfBugged, self), false, false)
 
 
@@ -272,4 +273,13 @@ function FireManager:reloadFiresIfBugged()
 		count[r] = count[r] + 1
 	end
 	ShortMessage:new(inspect(count), _"aktualisierte Feuer")
+end
+
+function FireManager:Event_startFireAlarm(zone)
+	if core:get("Sounds", "PlayFireAlarm", true) and localPlayer:getFaction() and localPlayer:getFaction():isRescueFaction() then
+		playSound("files/audio/Ambient/fire_alarm.mp3")
+		setTimer( function() 
+			FactionRescue:getSingleton():sendSound("Ein Feuer ist ausgebrochen! Position: %s", true, true, zone)
+		end, 2000, 1)
+	end
 end
