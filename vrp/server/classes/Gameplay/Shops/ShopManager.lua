@@ -144,10 +144,47 @@ function ShopManager:loadVehicleShops()
 end
 
 function ShopManager:loadFCVehicleShops()
-	local result = sql:queryFetch("SELECT * FROM ??_fc_vehicle_shops", sql:getPrefix())
-    for k, row in ipairs(result) do
-		ShopManager.FCVehicleShopsMap[row.Id] = FCVehicleShop:new(row.Id, row.Name, row.NPC, row.VehicleSpawn, row.AircraftSpawn, row.BoatSpawn, row.Factions, row.Companies)
-	end
+    local result = sql:queryFetch("SELECT * FROM ??_fc_vehicle_shops", sql:getPrefix())
+    for _, row in ipairs(result) do
+        local active = false
+
+        if row.Factions and row.Factions ~= "" then
+            local factions = fromJSON(row.Factions)
+            if factions then
+                for _, fid in ipairs(factions) do
+                    if FactionManager:getSingleton():getFromId(fid) then
+                        active = true
+                        break
+                    end
+                end
+            end
+        end
+
+        if not active and row.Companies and row.Companies ~= "" then
+            local companies = fromJSON(row.Companies)
+            if companies then
+                for _, cid in ipairs(companies) do
+                    if CompanyManager:getSingleton():getFromId(cid) then
+                        active = true
+                        break
+                    end
+                end
+            end
+        end
+
+        if active then
+            ShopManager.FCVehicleShopsMap[row.Id] = FCVehicleShop:new(
+                row.Id,
+                row.Name,
+                row.NPC,
+                row.VehicleSpawn,
+                row.AircraftSpawn,
+                row.BoatSpawn,
+                row.Factions,
+                row.Companies
+            )
+        end
+    end
 end
 
 function ShopManager:getFromId(id, vehicle)

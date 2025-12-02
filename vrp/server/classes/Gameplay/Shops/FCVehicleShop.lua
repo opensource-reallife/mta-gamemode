@@ -78,12 +78,24 @@ function FCVehicleShop:Event_onShopOpen(player)
 	if not player or not player.m_VehicleShopMarker or Vector3(player.position - player.m_VehicleShopMarker.position):getLength() > 5 then
 		return 
 	end
-	if player:getFaction() and player:isFactionDuty() and table.find(self.m_Factions, player:getFaction():getId()) then
-		player:triggerEvent("showFCVehicleShopGUI", self.m_Id, self.m_Name, player:getFaction().m_VehicleLimits, player:getFaction().m_Vehicles, player:getFaction().m_MaxVehicles, self.m_VehicleList[VehicleTypes.Faction][player:getFaction():getId()], self.m_Ped)
-	elseif player:getCompany() and player:isCompanyDuty() and table.find(self.m_Companies, player:getCompany():getId()) then
-		player:triggerEvent("showFCVehicleShopGUI", self.m_Id, self.m_Name, player:getCompany().m_VehicleLimits, player:getCompany().m_Vehicles, player:getCompany().m_MaxVehicles, self.m_VehicleList[VehicleTypes.Company][player:getCompany():getId()], self.m_Ped)
+
+	local factionPeds = self.m_Factions and #self.m_Factions > 0
+	local companyPeds = self.m_Companies and #self.m_Companies > 0
+
+	if factionPeds and not companyPeds then
+		if player:getFaction() and player:isFactionDuty() and table.find(self.m_Factions, player:getFaction():getId()) then
+			player:triggerEvent("showFCVehicleShopGUI", self.m_Id, self.m_Name, player:getFaction().m_VehicleLimits, player:getFaction().m_Vehicles, player:getFaction().m_MaxVehicles, self.m_VehicleList[VehicleTypes.Faction][player:getFaction():getId()], self.m_Ped)
+		else
+			player:sendError(_("Du bist nicht im Dienst oder deine Fraktion wird hier nicht beliefert!", player))
+		end
+	elseif companyPeds and not factionPeds then
+		if player:getCompany() and player:isCompanyDuty() and table.find(self.m_Companies, player:getCompany():getId()) then
+			player:triggerEvent("showFCVehicleShopGUI", self.m_Id, self.m_Name, player:getCompany().m_VehicleLimits, player:getCompany().m_Vehicles, player:getCompany().m_MaxVehicles, self.m_VehicleList[VehicleTypes.Company][player:getCompany():getId()], self.m_Ped)
+		else
+	 		player:sendError(_("Du bist nicht im Dienst oder dein Unternehmen wird hier nicht beliefert!", player))
+		end
 	else
-		player:sendError(_("Du bist nicht OnDuty oder der Händler liefert nicht an deine Fraktion/dein Unternehmen!", player))
+		outputDebug("FCVehicleShop: Händler - noch nicht implementiert / fehlende Fraktion oder Unternehmen!")
 	end
 end
 
