@@ -98,7 +98,7 @@ function AdminEvent:createVehiclesInRow(player, amount, direction)
         elseif direction == "L" then pos = pos - matrix.right*4
         end
 
-        veh = TemporaryVehicle.create(model, pos, rot.z)
+        veh = TemporaryVehicle.create(model, pos.x, pos.y, pos.z, rot.z)
         veh:setFrozen(true)
         veh.m_DisableToggleHandbrake = true
         self.m_Vehicles[self.m_VehiclesAmount] = veh
