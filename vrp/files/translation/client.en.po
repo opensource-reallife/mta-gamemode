@@ -478,6 +478,9 @@ msgstr "Admin say:"
 msgid "Zu Koordinaten porten: (x,y,z)"
 msgstr "Port to coordinates: (x,y,z)"
 
+msgid "Rotationen (Optional): (rX,rY,rZ)"
+msgstr "Rotation (optional): (rX,rY,rZ)"
+
 msgid "zur Position teleportieren"
 msgstr "Teleport to position"
 

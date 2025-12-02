@@ -1652,7 +1652,7 @@ function Admin:Event_adminSetPlayerFaction(targetPlayer, Id, rank, internal, ext
 
 				faction:addPlayer(targetPlayer, tonumber(rank))
 				Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(targetPlayer.m_Id)
-    			client:sendInfo(_("Du hast den Spieler in die Fraktion "..faction:getName().." gesetzt!", client))
+    			client:sendInfo(_("Du hast den Spieler in die Fraktion % gesetzt!", client, faction:getName()))
     		else
     			client:sendError(_("Fraktion nicht gefunden!", client))
     		end
@@ -1684,7 +1684,7 @@ function Admin:Event_adminSetPlayerCompany(targetPlayer, Id, rank, internal, ext
 				end
     			company:addPlayer(targetPlayer, tonumber(rank))
 				Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(targetPlayer.m_Id)
-    			client:sendInfo(_("Du hast den Spieler in das Unternehmen "..company:getName().." gesetzt!", client))
+    			client:sendInfo(_("Du hast den Spieler in das Unternehmen %s gesetzt!", client, company:getName()))
     		else
     			client:sendError(_("Unternehmen nicht gefunden!", client))
     		end

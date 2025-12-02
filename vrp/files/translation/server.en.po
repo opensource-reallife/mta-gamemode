@@ -190,8 +190,8 @@ msgstr "Invalid location! Type /tp to see all locations!"
 msgid "Du hast den Spieler aus seiner Fraktion entfernt!"
 msgstr "You have removed the player from his faction!"
 
-msgid "Du hast den Spieler in die Fraktion "
-msgstr "You have the player into the faction "
+msgid "Du hast den Spieler in die Fraktion % gesetzt!"
+msgstr "You have placed the player in the faction %!"
 
 msgid "Fraktion nicht gefunden!"
 msgstr "Faction not found!"
@@ -199,8 +199,8 @@ msgstr "Faction not found!"
 msgid "Du hast den Spieler aus seinem Unternehmen entfernt!"
 msgstr "You have removed the player from his company!"
 
-msgid "Du hast den Spieler in das Unternehmen "
-msgstr "You put the player in the company "
+msgid "Du hast den Spieler in das Unternehmen %s gesetzt!"
+msgstr "You have placed the player in the company %s!"
 
 msgid "Unternehmen nicht gefunden!"
 msgstr "Company not found!"
@@ -5146,3 +5146,9 @@ msgstr "You can't steal this vehicle!"
 
 msgid "Du kannst keine Fahrzeuge deines Unternehmens abschleppen!"
 msgstr "You can't tow your company vehicles!"
+
+msgid "Du bist nicht im Dienst oder dein Unternehmen wird hier nicht beliefert!"
+msgstr "You are not on duty, or your company is not supplied here!"
+
+msgid "Du bist nicht im Dienst oder deine Fraktion wird hier nicht beliefert!"
+msgstr "You are not on duty, or your faction is not supplied here!"
