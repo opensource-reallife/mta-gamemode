@@ -15,22 +15,28 @@ ChristmasTruckManager.ExpireTime = 24*60*60
 
 function ChristmasTruckManager:constructor()
     self.m_FactionPresents = {}
-    self.m_ChristmasTrees = { -- factionId, object
-        [1] = createObject(6972, 2764.90, -2383.23, 12.6625),
-        [2] = createObject(6972, 2765.54, -2508.25, 12.6625),
-        [3] = createObject(6972, 2744.84, -2421.651, 12.6625),
-        [5] = createObject(6972, 683.15, -1255.801, 12.5837),
-        [7] = createObject(6972, 2492.44, -1668.54, 12.36312),
-        --[8] = createObject(6972, 2225.167, -1431.90, 22.9),
-        [10] = createObject(6972, 2782.35, -2019.28, 12.55),
-        [11] = createObject(6972, 1958.56, 949.42, 9.62),
+    self.m_ChristmasTrees = {}
+
+     local treePositions = {
+        [1] = {2764.90, -2383.23, 12.6625},
+        [2] = {2765.54, -2508.25, 12.6625},
+        [3] = {2744.84, -2421.651, 12.6625},
+        [5] = {683.15, -1255.801, 12.5837},
+        [6] = {1422.10, -1299.89, 12.55},
+        [7] = {2492.44, -1668.54, 12.36312},
+        [8] = {2225.167, -1431.90, 22.9},
+        [9] = {667.443, -452.688, 15.336},
+        [10] = {2782.35, -2019.28, 12.55},
+        [11] = {1958.56, 949.42, 9.62},
     }
-    for id, object in pairs(self.m_ChristmasTrees) do
+    
+    for id, pos in pairs(treePositions) do
         if FactionManager:getSingleton():getFromId(id) then
-            object.FactionId = id
-            object:setDoubleSided(true)
-            object:setData("clickable", true, true)
-            addEventHandler("onElementClicked", object, bind(self.onTreeClick, self))
+            self.m_ChristmasTrees[id] = createObject(6972, pos[1], pos[2], pos[3])
+            self.m_ChristmasTrees[id].FactionId = id
+            self.m_ChristmasTrees[id]:setDoubleSided(true)
+            self.m_ChristmasTrees[id]:setData("clickable", true, true)
+            addEventHandler("onElementClicked", self.m_ChristmasTrees[id], bind(self.onTreeClick, self))
         end
     end
     
