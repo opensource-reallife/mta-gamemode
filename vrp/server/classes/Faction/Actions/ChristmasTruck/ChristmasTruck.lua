@@ -75,20 +75,17 @@ function ChristmasTruck:constructor(driver)
 	local dest
 	for i, faction in pairs(FactionManager:getSingleton():getAllFactions()) do
 		if not faction:isRescueFaction() then
-			local factionFromId = FactionManager:getSingleton():getFromId(faction:getId())
-			if factionFromId then
-				local pos = ChristmasTruck.blipPos[factionFromId:getId()]
-				local color
-				if faction:isEvilFaction() then
-					color = BLIP_COLOR_CONSTANTS.Red
-				elseif faction:isStateFaction() then
-					color = BLIP_COLOR_CONSTANTS.Blue
-				end
-
-				self.m_DestinationBlips[faction:getId()] = Blip:new("Marker.png", pos.x, pos.y, {factionType = {"State", "Evil", duty = true}}, 9999, color)
-				self.m_DestinationBlips[faction:getId()]:setDisplayText(("Weihnachtsbaum (%s)"):format(faction:getShortName()))
-				self.m_DestinationBlips[faction:getId()]:setZ(pos.z)
+			local pos = ChristmasTruck.blipPos[factionFromId:getId()]
+			local color
+			if faction:isEvilFaction() then
+				color = BLIP_COLOR_CONSTANTS.Red
+			elseif faction:isStateFaction() then
+				color = BLIP_COLOR_CONSTANTS.Blue
 			end
+
+			self.m_DestinationBlips[faction:getId()] = Blip:new("Marker.png", pos.x, pos.y, {factionType = {"State", "Evil", duty = true}}, 9999, color)
+			self.m_DestinationBlips[faction:getId()]:setDisplayText(("Weihnachtsbaum (%s)"):format(faction:getShortName()))
+			self.m_DestinationBlips[faction:getId()]:setZ(pos.z)
 		end
 	end
 
