@@ -29,7 +29,7 @@ function FactionRescue:constructor()
 
 	self:createDutyPickup(1227.00, 311.65, 19.76, 0) -- Montgomery Medical Center
 
-	self:createDutyPickup(-2223.05, -2293.69, 31.67, 0) -- Angel Pine
+	self:createDutyPickup(-2203.64, -2309.79, 31.38, 0) -- Angel Pine
 
 	self.m_VehicleFires = {}
 
