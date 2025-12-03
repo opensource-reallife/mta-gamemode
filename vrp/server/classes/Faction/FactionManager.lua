@@ -495,8 +495,8 @@ function FactionManager:Event_factionInvitationAccept(factionId)
 	end
 
 	if faction:isEvilFaction() then
-		local uninviteTimestamp = HistoryPlayer:getSingleton():getLeaveDateFromLastEvilFaction(player:getId())
-		local inviteTimestamp = HistoryPlayer:getSingleton():getJoinDateFromLastEvilFaction(player:getId())
+		local uninviteTimestamp = HistoryPlayer:getSingleton():getLeaveDateFromLastEvilFaction(client:getId())
+		local inviteTimestamp = HistoryPlayer:getSingleton():getJoinDateFromLastEvilFaction(client:getId())
 		local zivizeit = ServerSettings:getSingleton().m_Settings["Zivizeit"] * 60 * 60
 		local skipZivizeit = ServerSettings:getSingleton().m_Settings["SkipZivizeit"] * 24 * 60 * 60 -- in Tagen
 		if uninviteTimestamp - inviteTimestamp < skipZivizeit then
