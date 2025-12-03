@@ -421,11 +421,15 @@ function FactionManager:Event_factionAddPlayer(player)
 
 	if faction:isEvilFaction() then
 		local uninviteTimestamp = HistoryPlayer:getSingleton():getLeaveDateFromLastEvilFaction(player:getId())
+		local inviteTimestamp = HistoryPlayer:getSingleton():getJoinDateFromLastEvilFaction(player:getId())
 		local zivizeit = ServerSettings:getSingleton().m_Settings["Zivizeit"] * 60 * 60
-		if getRealTime().timestamp < uninviteTimestamp + zivizeit then
-			local time = getRealTime(uninviteTimestamp + zivizeit)
-			client:sendError(_("Der Spieler hat noch bis %s.%s.%s %s:%s Uhr Zivzeit", client, time.monthday, time.month + 1, time.year + 1900, time.hour, time.minute))
-			return
+		local skipZivizeit = ServerSettings:getSingleton().m_Settings["SkipZivizeit"] * 24 * 60 * 60 -- in Tagen
+		if uninviteTimestamp - inviteTimestamp < skipZivizeit then
+			if getRealTime().timestamp < uninviteTimestamp + zivizeit then
+				local time = getRealTime(uninviteTimestamp + zivizeit)
+				client:sendError(_("Der Spieler hat noch bis %s.%s.%s %s:%s Uhr Zivizeit", client, time.monthday, time.month + 1, time.year + 1900, time.hour, time.minute))
+				return
+			end
 		end
 	end
 
