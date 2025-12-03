@@ -141,6 +141,16 @@ function HistoryPlayer:getLeaveDateFromLastEvilFaction(userId)
     return uninviteTimeStamp
 end
 
+function HistoryPlayer:getJoinDateFromLastEvilFaction(userId)
+    local result = sql:queryFetchSingle("SELECT * FROM ??_player_history WHERE ElementType = 'faction' AND ElementId > 4 AND JoinDate IS NOT NULL AND UserId = ? ORDER BY JoinDate DESC", sql:getPrefix(), userId)
+    local inviteTimeStamp = 0
+    if result then
+        inviteTimeStamp = formatDateStringToTimeStamp(result["JoinDate"])
+    end
+
+    return inviteTimeStamp
+end
+
 
 --[[
 DROP TABLE vrp_player_history;
