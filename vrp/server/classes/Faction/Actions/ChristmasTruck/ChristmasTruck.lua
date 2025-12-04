@@ -75,7 +75,7 @@ function ChristmasTruck:constructor(driver)
 	local dest
 	for i, faction in pairs(FactionManager:getSingleton():getAllFactions()) do
 		if not faction:isRescueFaction() then
-			local pos = ChristmasTruck.blipPos[factionFromId:getId()]
+			local pos = ChristmasTruck.blipPos[faction:getId()]
 			local color
 			if faction:isEvilFaction() then
 				color = BLIP_COLOR_CONSTANTS.Red
@@ -132,6 +132,8 @@ function ChristmasTruck:destructor()
 	StatisticsLogger:getSingleton():addActionLog("ChristmasTruck", "stop", self.m_StartPlayer, self.m_StartFaction, "faction")
 	self.m_Truck:destroy()
 	TollStation.closeAll()
+
+	ChristmasTruckManager:getSingleton().m_BlipChrismasWT:setOptionalColor({27, 125, 47})
 
 	if isElement(self.m_LoadMarker) then self.m_LoadMarker:destroy() end
 	if isTimer(self.m_Timer) then self.m_Timer:destroy() end

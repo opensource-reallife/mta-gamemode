@@ -49,6 +49,10 @@ function ChristmasTruckManager:constructor()
     self.m_Marker = createMarker(-1568.19, 2702.68, 54.84, "cylinder", 1, 255, 255, 255 )
     self.m_ColShape = createColSphere(-1568.19, 2702.68, 54.84, 2)
 
+	self.m_BlipChrismasWT = Blip:new("Logistician.png", -1563.24, 2693.13, {factionType = {"Evil", "State"}}, 400)
+	self.m_BlipChrismasWT:setDisplayText("Weihnachtstruck", BLIP_CATEGORY.Actions)
+	self.m_BlipChrismasWT:setOptionalColor({27, 125, 47})
+
     self:checkPresents()
     setTimer(bind(self.checkPresents, self), 5*60*1000, 0)
 
@@ -155,6 +159,7 @@ function ChristmasTruckManager:startChristmasTruck(player)
                     ActionsCheck:getSingleton():setAction("Weihnachtstruck")
                     if self.m_Current then delete(self.m_Current) end
                     self.m_Current = ChristmasTruck:new(player)
+                    self.m_BlipChrismasWT:setOptionalColor({122, 22, 22})
                     PlayerManager:getSingleton():breakingNews("Ein Truck mit Geschenken ist unterwegs")
                     Discord:getSingleton():outputBreakingNews("Ein Weihnachtstruck wurde gestartet")
                     FactionState:getSingleton():sendWarning("Ein Weihnachtstruck wurde gestartet", "Neuer Einsatz", true, ChristmasTruck.spawnPos)
