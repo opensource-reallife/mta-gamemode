@@ -1,5 +1,9 @@
 MechanicTow = inherit(Company)
-addRemoteEvents{"mechanicRepair", "mechanicRepairConfirm", "mechanicRepairCancel", "mechanicDetachFuelTank", "mechanicTakeFuelNozzle", "mechanicRejectFuelNozzle", "mechanicTakeVehicle", "mechanicOpenTakeGUI", "mechanicVehicleRequestFill", "mechanicAttachBike", "mechanicDetachBike"}
+addRemoteEvents{
+	"mechanicRepair", "mechanicRepairConfirm", "mechanicRepairCancel", "mechanicDetachFuelTank", "mechanicTakeFuelNozzle", 
+	"mechanicRejectFuelNozzle", "mechanicTakeVehicle", "mechanicOpenTakeGUI", "mechanicVehicleRequestFill", "mechanicAttachBike", 
+	"mechanicDetachBike", "mechanicScrapRouteStart"
+}
 
 function MechanicTow:constructor()
 	self.m_PendingQuestions = {}
@@ -47,6 +51,21 @@ end
 function MechanicTow:onPlayerQuit(player)
 	if isElement(player.mechanic_fuelNozzle) then
 		player.mechanic_fuelNozzle:destroy()
+	end
+end
+
+function MechanicTow:onVehicleEnter(veh, player, seat)
+	if seat == 0 then
+		if player:getCompany() == self and player:isCompanyDuty() then
+			if veh:getModel() == 443 then
+				veh:setData("Mechanic_Packer", true, true)
+				outputChatBox("kek")
+
+
+				--TODO: Move to triggerMarker_Event & Trigger Client Event to change VehicleAdjustableProperty
+				--triggerClientEvent(player, "onMechanicPackerEnter", player, veh)
+			end
+		end
 	end
 end
 

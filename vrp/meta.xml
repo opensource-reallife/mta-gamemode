@@ -424,6 +424,7 @@
 	<script src="server/classes/Business/Companies/PublicTransport.lua" type="server"/>
 	<script src="server/classes/Business/CompanyManager.lua" type="server"/>
 	<script src="server/classes/Business/VehicleImportManager.lua" type="server"/>
+	<script src="server/classes/Business/VehicleScrapManager.lua" type="server"/>
 
 	<!-- Factions -->
 	<script src="server/classes/Faction/PreparationMissions/MStealWeaponTruck.lua" type="server"/>
@@ -1134,6 +1135,7 @@
 	<!-- Companies -->
 	<script src="client/classes/Business/Company.lua" type="client"/>
 	<script src="client/classes/Business/VehicleImportManager.lua" type="client"/>
+	<script src="client/classes/Business/VehicleScrapManager.lua" type="client"/>
 	<script src="client/classes/Business/Companies/PublicTransport.lua" type="client"/>
 	<script src="client/classes/Business/Companies/MechanicTow.lua" type="client"/>
 	<script src="client/classes/Business/Companies/DrivingSchool.lua" type="client"/>
