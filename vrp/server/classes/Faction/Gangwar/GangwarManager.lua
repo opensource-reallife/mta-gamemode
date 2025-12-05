@@ -23,14 +23,13 @@ GANGWAR_ATTACK_PAUSE = 1 --// DAY Default 2
 GANGWAR_CENTER_TIMEOUT = 20 --// SEKUNDEN NACH DEM DIE FLAGGE NICHT GEHALTEN IST
 GANGWAR_DUMP_COLOR = setBytesInInt32(240, 0, 200, 200)
 GANGWAR_ATTACK_PICKUPMODEL =  1313
---GANGWAR_PAYOUT_PER_AREA = 1250 || not used anymore due to the money beeing paid out depending on the amount of members inside the faction rather than the constant payout per area
 GANGWAR_PAYOUT_PER_PLAYER = 400
 GANGWAR_PAYOUT_PER_AREA = 800
 UNIX_TIMESTAMP_24HRS = 86400 --//86400
 GANGWAR_PAY_PER_DAMAGE = 10
 GANGWAR_PAY_PER_KILL = 1500
 PAYDAY_ACTION_BONUS = 2500
-GANGWAR_COOLDOWN_PER_FACTION = 20 --// in minutes
+GANGWAR_COOLDOWN_PER_FACTION = 20 * 60 --// in minutes
 --//
 addRemoteEvents{ "onLoadCharacter", "onDeloadCharacter", "Gangwar:onClientRequestAttack", "GangwarQuestion:disqualify", "gangwarGetAreas" }
 
@@ -302,8 +301,10 @@ function Gangwar:attackArea( player )
 					local gametime = tonumber(("%02d"):format( getRealTime().hour )..""..("%02d"):format( getRealTime().minute ))
 					local currentTimestamp = getRealTime().timestamp
 					if faction.m_GangwarAttackCheck[faction2.m_Id] ~= nil then
-						if faction.m_GangwarAttackCheck[faction2.m_Id] >= currentTimestamp - GANGWAR_COOLDOWN_PER_FACTION then
-							player:sendError(_("Du kannst die selbe Fraktion noch nicht erneut attacken!",  player))
+						local lastAttack = faction.m_GangwarAttackCheck[faction2.m_Id]
+
+						if lastAttack and currentTimestamp < lastAttack + GANGWAR_COOLDOWN_PER_FACTION then
+							player:sendError(_("Du kannst die selbe Fraktion noch nicht erneut attacken!", player))
 							return
 						end
 					end
