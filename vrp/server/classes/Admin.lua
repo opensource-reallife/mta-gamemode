@@ -1652,7 +1652,7 @@ function Admin:Event_adminSetPlayerFaction(targetPlayer, Id, rank, internal, ext
 
 				faction:addPlayer(targetPlayer, tonumber(rank))
 				Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(targetPlayer.m_Id)
-    			client:sendInfo(_("Du hast den Spieler in die Fraktion % gesetzt!", client, faction:getName()))
+    			client:sendInfo(_("Du hast den Spieler in die Fraktion %s gesetzt!", client, faction:getName()))
     		else
     			client:sendError(_("Fraktion nicht gefunden!", client))
     		end

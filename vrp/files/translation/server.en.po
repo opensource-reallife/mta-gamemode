@@ -190,8 +190,8 @@ msgstr "Invalid location! Type /tp to see all locations!"
 msgid "Du hast den Spieler aus seiner Fraktion entfernt!"
 msgstr "You have removed the player from his faction!"
 
-msgid "Du hast den Spieler in die Fraktion % gesetzt!"
-msgstr "You have placed the player in the faction %!"
+msgid "Du hast den Spieler in die Fraktion %s gesetzt!"
+msgstr "You have placed the player in the faction %s!"
 
 msgid "Fraktion nicht gefunden!"
 msgstr "Faction not found!"
