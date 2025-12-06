@@ -60,13 +60,19 @@ function RobableShop:Ped_Targetted(ped, attacker)
 				return false
 			end
 
-			if not HappyHourManager:getSingleton().m_isHappyHour and FactionState:getSingleton():countPlayers(true, true) < SHOPROB_MIN_MEMBERS then
+			if FactionState:getSingleton():countPlayers(true, false) < SHOPROB_MIN_MEMBERS then
 				attacker:sendError(_("Es müssen mindestens %d Staatsfraktionisten im Dienst sein!", attacker, SHOPROB_MIN_MEMBERS))
 				return false
-			elseif HappyHourManager:getSingleton().m_isHappyHour and FactionState:getSingleton():countPlayers(true, false) < SHOPROB_MIN_MEMBERS then
-				attacker:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!", attacker, SHOPROB_MIN_MEMBERS))
-				return false
 			end
+
+			-- if not HappyHourManager:getSingleton().m_isHappyHour and FactionState:getSingleton():countPlayers(true, true) < SHOPROB_MIN_MEMBERS then
+			-- 	attacker:sendError(_("Es müssen mindestens %d Staatsfraktionisten im Dienst sein!", attacker, SHOPROB_MIN_MEMBERS))
+			-- 	return false
+			-- elseif HappyHourManager:getSingleton().m_isHappyHour and FactionState:getSingleton():countPlayers(true, false) < SHOPROB_MIN_MEMBERS then
+			-- 	attacker:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!", attacker, SHOPROB_MIN_MEMBERS))
+			-- 	return false
+			-- end
+			
 			local shop = ped.Shop
 			self.m_Shop = shop
 			if shop:getMoney() >= 250 then
