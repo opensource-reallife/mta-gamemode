@@ -159,6 +159,11 @@ function GroupHouseRob:startNewRob( house, player )
 					if player:getGroup() == group then activeState = activeState - 1 end
 				end
 
+				if activeState < HOUSEROB_MIN_MEMBERS then
+					player:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!", player, HOUSEROB_MIN_MEMBERS))
+					return false
+				end
+
 				-- if HappyHourManager:getSingleton().m_isHappyHour then
 				-- 	activeState = FactionState:getSingleton():countPlayers(true, false)
 				-- 	for _, player in pairs(FactionState:getSingleton():getOnlinePlayers(true, false)) do
@@ -171,14 +176,14 @@ function GroupHouseRob:startNewRob( house, player )
 				-- 	end
 				-- end
 
-				if activeState < HOUSEROB_MIN_MEMBERS then
-					if not HappyHourManager:getSingleton().m_isHappyHour then
-						player:sendError(_("Es müssen mindestens %d Staatsfraktionisten im Dienst sein!", player, HOUSEROB_MIN_MEMBERS))
-					else
-						player:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!", player, HOUSEROB_MIN_MEMBERS))
-					end
-					return false
-				end
+				-- if activeState < HOUSEROB_MIN_MEMBERS then
+				-- 	if not HappyHourManager:getSingleton().m_isHappyHour then
+				-- 		player:sendError(_("Es müssen mindestens %d Staatsfraktionisten im Dienst sein!", player, HOUSEROB_MIN_MEMBERS))
+				-- 	else
+				-- 		player:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!", player, HOUSEROB_MIN_MEMBERS))
+				-- 	end
+				-- 	return false
+				-- end
 
 				if not self.m_HousesRobbed[house] then
 					if not self.m_GroupsRobCooldown[group] then
