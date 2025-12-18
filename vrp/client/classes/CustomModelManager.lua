@@ -221,6 +221,10 @@ function CustomModelManager:constructor()
 	self:loadImportTXD("files/models/skins/drill.txd", 257)
 	self:loadImportDFF("files/models/skins/drill.dff", 257)
 
+	-- fem rescue
+	self:loadImportTXD("files/models/skins/femresc.txd", 6)
+	self:loadImportDFF("files/models/skins/femresc.dff", 6)
+
 	-- Halloween Smode
 	if EVENT_HALLOWEEN then
 		self:loadImportTXD("files/models/skins/ghost.txd", 260)

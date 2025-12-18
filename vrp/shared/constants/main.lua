@@ -494,6 +494,10 @@ SkinInfo = {
 	[244] = {"Weihnachtsmann", math.huge, -1},
 	[310] = {"Zombie", math.huge, -1},
 
+	-- custom skins
+	[6] = {"Female Valet", math.huge, -1}, -- fem Rescue
+	[257] = {"Stripper", math.huge, -1}, -- drill sergeant
+
 	-- other skins
 	[260] = {"Construction Worker", math.huge, -1}, --Adminskin
 	[155] = {"Pizzalieferant", math.huge, -1},
@@ -537,7 +541,6 @@ SkinInfo = {
 
 	--unused special skins
 	[5] = {"Barry 'Big Bear' Thorne", math.huge, -1},
-	[6] = {"Female Valet", math.huge, -1},
 	[8] = {"Cab Driver", math.huge, -1},
 	[65] = {"Airport Worker", math.huge, -1},
 	[86] = {"Hispanic Girl", math.huge, -1},
