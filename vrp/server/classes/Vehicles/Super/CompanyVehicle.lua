@@ -137,6 +137,7 @@ end
 function CompanyVehicle:purge()
 	if sql:queryExec("UPDATE ??_vehicles SET Deleted = NOW() WHERE Id = ?", sql:getPrefix(), self.m_Id) then
 		VehicleManager:getSingleton():removeRef(self)
+		table.remove(self.m_Company.m_Vehicles, table.find(self.m_Company.m_Vehicles, self))
 		destroyElement(self)
 		return true
 	end
