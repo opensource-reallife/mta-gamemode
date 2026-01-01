@@ -594,6 +594,7 @@ end
 function LocalPlayer:checkAFK()
 	if not self:isLoggedIn() then return end
 	if DEBUG then return end
+	if DEBUG_AFK then return end
 
 	if not self:getPublicSync("AFK") == true then
 		if self:getPublicSync("gangwarParticipant") then return end

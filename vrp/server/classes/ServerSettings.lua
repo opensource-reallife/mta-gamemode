@@ -30,10 +30,16 @@ function ServerSettings:constructor()
 
 		if row.Index == "JobPayMultiplicator" then
 			JOB_PAY_MULTIPLICATOR = tonumber(row.Value)
+			if (EVENT_EASTER) or (EVENT_HALLOWEEN) or (EVENT_CHRISTMAS) then
+				JOB_PAY_MULTIPLICATOR = JOB_PAY_MULTIPLICATOR * 1.5
+			end
 		end
 
 		if row.Index == "JobExtraPointFactor" then
 			JOB_EXTRA_POINT_FACTOR = tonumber(row.Value)
+			if (EVENT_EASTER) or (EVENT_HALLOWEEN) or (EVENT_CHRISTMAS) then
+				JOB_EXTRA_POINT_FACTOR = JOB_EXTRA_POINT_FACTOR * 2
+			end
 		end
 
 		if row.Index == "ForumLogin" then

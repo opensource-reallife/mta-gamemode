@@ -75,13 +75,19 @@ function ShopVehicleRobManager:Event_onVehicleSteal()
 				client:sendError(_("Es läuft bereits ein Autohaus-Überfall!", client))
 				return false
 			end
-			if not HappyHourManager:getSingleton().m_isHappyHour and FactionState:getSingleton():countPlayers(true, true) < SHOP_VEHICLE_ROB_MIN_MEMBERS then
+
+			if FactionState:getSingleton():countPlayers(true, false) < SHOP_VEHICLE_ROB_MIN_MEMBERS then
 				client:sendError(_("Es müssen mindestens %d Staatsfraktionisten im Dienst sein!", client, SHOP_VEHICLE_ROB_MIN_MEMBERS))
 				return false
-			elseif HappyHourManager:getSingleton().m_isHappyHour and FactionState:getSingleton():countPlayers(true, false) < SHOP_VEHICLE_ROB_MIN_MEMBERS then
-				client:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!", client, SHOP_VEHICLE_ROB_MIN_MEMBERS))
-				return false
 			end
+
+			-- if not HappyHourManager:getSingleton().m_isHappyHour and FactionState:getSingleton():countPlayers(true, true) < SHOP_VEHICLE_ROB_MIN_MEMBERS then
+			-- 	client:sendError(_("Es müssen mindestens %d Staatsfraktionisten im Dienst sein!", client, SHOP_VEHICLE_ROB_MIN_MEMBERS))
+			-- 	return false
+			-- elseif HappyHourManager:getSingleton().m_isHappyHour and FactionState:getSingleton():countPlayers(true, false) < SHOP_VEHICLE_ROB_MIN_MEMBERS then
+			-- 	client:sendError(_("Es müssen mindestens %d Staatsfraktionisten aktiv sein!", client, SHOP_VEHICLE_ROB_MIN_MEMBERS))
+			-- 	return false
+			-- end
 			if toboolean(ShopManager.VehicleShopsMap[source:getData("ShopId")].m_RandomizeStock) then
 				client:sendError(_("Du kannst dieses Fahrzeug nicht stehlen!", client))
 				return false

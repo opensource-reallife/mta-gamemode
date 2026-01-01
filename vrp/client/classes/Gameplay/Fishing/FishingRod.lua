@@ -134,7 +134,12 @@ function FishingRod:fishBite()
 	self.m_isFishing = false
 	self.m_isNibbling = true
 	self.m_nibblingTime = getTickCount()
-	self.Sound:play("bit")
+	
+	if fileExists("_custom/files/audio/fishing/bit.mp3") and "_custom/files/audio/fishing/bit.mp3" then
+		playSound("_custom/files/audio/fishing/bit.mp3")
+	else
+		self.Sound:play("bit")
+	end
 
 	local fishingHookPosition = self:getFishingHookPosition()
 	createEffect("water_swim", fishingHookPosition)
@@ -148,7 +153,7 @@ function FishingRod:fishBite()
 			self.Sound:play("dwop")
 		end, self.m_maxTimeToNibble, 1
 	)
-end
+	end
 
 function FishingRod:cast()
 	if localPlayer:isInWater() then

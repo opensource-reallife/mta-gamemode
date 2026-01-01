@@ -46,9 +46,8 @@ function PayNSpray:constructor(x, y, z, garageId, blipHidden)
 				end
 				setElementFrozen(vehicle, true)
 
-				-- Give money to the Owner (TODO: Improve this -> complete Repair ~4.58$ (310% Vehicle Health) -> is it okay?)
-				if math.floor(costs*0.5) > 0 then
-					self.m_BankAccountServer:transferMoney({self.m_Company, nil, true}, math.floor(costs*0.5), "Pay N Spray", "Vehicle", "Repair")
+				if math.floor(costs) > 0 then
+					self.m_BankAccountServer:transferMoney({self.m_Company, nil, true}, math.floor(costs), "Pay N Spray", "Vehicle", "Repair")
 				end
 				vehicle.m_DisableToggleHandbrake = true
 				setTimer(

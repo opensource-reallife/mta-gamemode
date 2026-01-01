@@ -120,7 +120,7 @@ function NoDm:renderNoDmImage()
 
 	local px = screenWidth-self.m_currentImagePosition
 	local py = screenHeight / 2
-	if not Phone:getSingleton():isOpen() then
+	if not Phone:isInstantiated() or not Phone:getSingleton():isOpen() then
 		dxDrawImage(px,py,screenWidth*0.15,screenWidth*0.075,"files/images/Other/nodm.png")
 	end
 	if localPlayer:getFactionId() == 1 and localPlayer:getPublicSync("Faction:Duty") then return end
