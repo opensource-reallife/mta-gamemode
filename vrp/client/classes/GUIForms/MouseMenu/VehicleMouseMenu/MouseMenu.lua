@@ -535,12 +535,11 @@ function VehicleMouseMenu:constructor(posX, posY, element)
 					end
 				):setIcon(FontAwesomeSymbols.Cogs)
 			end
-			if element:getData("Mechanic_Packer") then
+			if element:getData("Mechanic_DFT") then
 				if localPlayer.vehicle == element and localPlayer.vehicleSeat == 0 then
 					self:addItem(_"Mechaniker: Fahrzeugverschrottung",
 						function()
 							if self:getElement() then
-								outputChatBox("Fahrzeugverschrottung gestartet. Fahre zu einem Schrottplatz, um die Verschrottung abzuschließen.")
 								triggerServerEvent("mechanicScrapRouteStart", localPlayer)
 							end
 						end

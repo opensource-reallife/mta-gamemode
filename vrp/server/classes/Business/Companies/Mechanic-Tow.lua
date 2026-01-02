@@ -57,13 +57,8 @@ end
 function MechanicTow:onVehicleEnter(veh, player, seat)
 	if seat == 0 then
 		if player:getCompany() == self and player:isCompanyDuty() then
-			if veh:getModel() == 443 then
-				veh:setData("Mechanic_Packer", true, true)
-				outputChatBox("kek")
-
-
-				--TODO: Move to triggerMarker_Event & Trigger Client Event to change VehicleAdjustableProperty
-				--triggerClientEvent(player, "onMechanicPackerEnter", player, veh)
+			if veh:getModel() == 578 then
+				veh:setData("Mechanic_DFT", true, true)
 			end
 		end
 	end
