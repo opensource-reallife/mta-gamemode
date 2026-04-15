@@ -96,6 +96,10 @@ function PhoneInteraction:callAnswer(caller, voiceCall, showSkin)
 	caller.IncomingCall = false
 	client.IncomingCall = false
 
+	if (client:getId() == 27) then
+		caller:giveAchievement(24)
+	end
+
 	-- Start voice broadcasting
 	if voiceCall and isVoiceEnabled() then
 		setPlayerVoiceBroadcastTo(caller, client)
