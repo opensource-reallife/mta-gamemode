@@ -33,7 +33,7 @@ function SARManager:checkSAR()
     if FactionRescue:getSingleton():countPlayers(true, false) >= SAR_MIN_PLAYERS and table.size(self.m_CurrentSAR) < SAR_MAX_CONCURRENT then
         self:startSAR()
     else
-        outputDebug("Could not start SAR because not enough players or max concurrent already running")
+        -- outputDebug("Could not start SAR because not enough players or max concurrent already running")
     end
 
     if self.m_SARTimer:isValid() then self.m_SARTimer:destroy() end
