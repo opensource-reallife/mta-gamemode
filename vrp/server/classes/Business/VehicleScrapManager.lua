@@ -30,6 +30,17 @@ function VehicleScrapManager:constructor()
 	addEventHandler("mechanicScrapRouteStart", root, bind(self.startCarScrapRoute_Event, self))
 end
 
+function VehicleScrapManager:destructor()
+	for _, marker in pairs(self.m_ScrapMarkers) do
+		marker:destroy()
+	end
+	for _, obj in pairs(self.m_VehicleObjectsToScrap) do
+		obj:destroy()
+	end
+	self.m_ScrapMarkers = nil
+	self.m_VehicleObjectsToScrap = nil
+end
+
 function VehicleScrapManager:startCarScrapRoute_Event(player)
 	if self.m_ScrapMarkers[client.vehicle:getId()] or self.m_VehicleObjectsToScrap[client.vehicle:getId()] then return client:sendError("Du hast bereits eine Verschrottungsroute gestartet!") end
 	if client:getCompany() and client:getCompany():getId() ~= CompanyStaticId.MECHANIC then client:sendError("Wie zum Teufel hast du das geschafft?") return end
@@ -51,8 +62,6 @@ function VehicleScrapManager:startCarScrapRoute_Event(player)
 end
 
 function VehicleScrapManager:stopPlayerCarScrapRoute(player, vehicle)
-	outputChatBox(player)
-	outputChatBox(tostring(vehicle).. "" ..tostring(vehicle:getId()))
 	if self.m_ScrapMarkers[vehicle:getId()] then
 		self.m_ScrapMarkers[vehicle:getId()]:destroy()
 		self.m_ScrapMarkers[vehicle:getId()] = nil
@@ -63,10 +72,7 @@ function VehicleScrapManager:stopPlayerCarScrapRoute(player, vehicle)
 	end
 	vehicle:setData("Mechanic_ScrapObject", nil, true)
 
-	if isElement(self.m_StartBlip) then
-		self.m_StartBlip:destroy()
-		self.m_StartBlip = nil
-	end
+	self.m_StartBlip:delete()
 
 	self.m_StartMarker:setVisibleTo(player, false)
 
@@ -90,6 +96,10 @@ function VehicleScrapManager:Event_onStartMarkerHit(hitElement, matchingDimensio
 
 	local pos = hitElement.vehicle:getPosition()
 	local rot = hitElement.vehicle:getRotation()
+
+	-- To do:
+	-- Finish Marker erstellen
+	self.m_StartBlip:delete()
 
 	self.m_ScrapMarkers[hitElement.vehicle:getId()] = createMarker(VehicleScrapManager.UnloadMarker, "cylinder", 3, 0, 255, 0, 150)
 
@@ -117,9 +127,11 @@ function VehicleScrapManager:Event_onFinishMarkerHit(hitElement, matchingDimensi
 	-- local startPoint = getDistanceBetweenPoints3D(VehicleScrapManager.LoadUpMarker, TODO:Anfahrtspunkt)
 	-- local finishPoint = getDistanceBetweenPoints3D(TODO:Anfahrtspunkt, VehicleScrapManager.UnloadMarker)
 	local distance = getDistanceBetweenPoints3D(VehicleScrapManager.LoadUpMarker, VehicleScrapManager.UnloadMarker)
-	outputChatBox("Distance: "..distance)
+	outputChatBox("Distance: "..math.round(distance))
 	local reward = distance * VehicleScrapManager.ScrapPricePerKm
-	outputChatBox("Reward: "..reward)
+	outputChatBox("Reward: "..math.round(reward))
+	outputChatBox("Player reward: "..math.round(reward * 0.3))
+	outputChatBox("Company reward: "..math.round(reward * 0.7))
 
 	hitElement:sendSuccess(_("Du hast die Fahrzeuge erfolgreich verschrottet und Geld dafür erhalten!"), hitElement)
 
@@ -138,6 +150,9 @@ function VehicleScrapManager:Event_onFinishMarkerHit(hitElement, matchingDimensi
 		points = math.round(5 * (distance/1000)),--5 / km
 	})
 	self.m_BankAccountServer:transferMoney({mechanicInstance, nil, true}, math.round(reward * 0.7), ("Fahrzeugverschrottung von %s"):format(hitElement:getName()), "Company", "Scrap")
+	
+	-- Marker entfernen + Route beenden (muss vorher beendet werden?!)
+	-- self.m_StartBlip:delete()
 
 	self.m_ScrapMarkers[hitElement.vehicle:getId()]:destroy()
 	self.m_ScrapMarkers[hitElement.vehicle:getId()] = nil
@@ -165,15 +180,4 @@ end
 
 function VehicleScrapManager:Event_onVehicleDestroy(vehicle)
 	outputDebug("VehicleScrapManager:Event_onVehicleDestroy - triggered")
-end
-
-function VehicleScrapManager:destructor()
-	for _, marker in pairs(self.m_ScrapMarkers) do
-		marker:destroy()
-	end
-	for _, obj in pairs(self.m_VehicleObjectsToScrap) do
-		obj:destroy()
-	end
-	self.m_ScrapMarkers = nil
-	self.m_VehicleObjectsToScrap = nil
 end
