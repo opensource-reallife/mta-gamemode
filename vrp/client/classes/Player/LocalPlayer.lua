@@ -811,14 +811,14 @@ function LocalPlayer:Event_setAdmin(player, rank)
 			end
 		)
 
-		if rank >= ADMIN_RANK_PERMISSION["runString"] then
-			addCommandHandler("dcrun", function(cmd, ...)
-				if self:getRank() >= ADMIN_RANK_PERMISSION["runString"] then
-					local codeString = table.concat({...}, " ")
-					runString(codeString, localPlayer)
-				end
-			end)
-		end
+		-- if rank >= ADMIN_RANK_PERMISSION["runString"] then
+		-- 	addCommandHandler("dcrun", function(cmd, ...)
+		-- 		if self:getRank() >= ADMIN_RANK_PERMISSION["runString"] then
+		-- 			local codeString = table.concat({...}, " ")
+		-- 			runString(codeString, localPlayer)
+		-- 		end
+		-- 	end)
+		-- end
 	else
 		ErrorBox:new(_"Clientside Admin konnte nicht verifiziert werden!")
 	end

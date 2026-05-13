@@ -87,6 +87,7 @@ function Admin:constructor()
 
 	addCommandHandler("drun", bind(self.runString, self))
 	addCommandHandler("dpcrun", bind(self.runPlayerString, self))
+	addCommandHandler("dcrun", bind(self.runClientString, self))
 
     addRemoteEvents{"adminSetPlayerFaction", "adminSetPlayerCompany", "adminSetPlayerGroup","adminTriggerFunction", "adminOfflinePlayerFunction", "adminPlayerFunction", "adminGetOfflineWarns",
     "adminGetPlayerVehicles", "adminPortVehicle", "adminPortToVehicle", "adminEditVehicle", "adminSeachPlayer", "adminSeachPlayerInfo",
@@ -1974,12 +1975,17 @@ function Admin:runPlayerString(player, cmd, target, ...)
 			local codeString = table.concat({...}, " ")
 			StatisticsLogger:getSingleton():addDrunLog(player, codeString, tPlayer)
 			triggerClientEvent(tPlayer, "onServerRunString", player, codeString, sendResponse)
-
-			--local format = {player:getName(), codeString}
-			--self:sendShortMessage(%s hat /dpcrun benutzt!\n %s", format)
 	  	else
 			player:sendError(_("Kein Ziel gefunden!", player))
 		end
+	end
+end
+
+function Admin:runClientString(player, cmd, ...)
+	if DEBUG or getPlayerName(player) == "Console" or player:getRank() >= ADMIN_RANK_PERMISSION["runString"] then
+		local codeString = table.concat({...}, " ")
+		StatisticsLogger:getSingleton():addDrunLog(player, codeString, player)
+		triggerClientEvent(player, "onServerRunString", player, codeString)
 	end
 end
 
