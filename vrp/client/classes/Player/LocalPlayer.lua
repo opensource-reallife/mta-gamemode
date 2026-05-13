@@ -813,11 +813,11 @@ function LocalPlayer:Event_setAdmin(player, rank)
 
 		if rank >= ADMIN_RANK_PERMISSION["runString"] then
 			addCommandHandler("dcrun", function(cmd, ...)
-				WarningBox:new(_"/dcrun ist aufgrund einer AC Violation seitens MTA deaktiviert! Nutze stattdessen /dpcrun")
-				-- if self:getRank() >= ADMIN_RANK_PERMISSION["runString"] then
+				if self:getRank() >= ADMIN_RANK_PERMISSION["runString"] then
+					WarningBox:new(_"/dcrun ist aufgrund einer AC Violation seitens MTA deaktiviert! Nutze stattdessen /dpcrun")
 				-- 	local codeString = table.concat({...}, " ")
 				-- 	runString(codeString, localPlayer)
-				-- end
+				end
 			end)
 		end
 	else
