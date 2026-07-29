@@ -5152,3 +5152,30 @@ msgstr "You are not on duty, or your company is not supplied here!"
 
 msgid "Du bist nicht im Dienst oder deine Fraktion wird hier nicht beliefert!"
 msgstr "You are not on duty, or your faction is not supplied here!"
+
+msgid "Es sind neue Wetterdaten verfügbar!"
+msgstr "New weather data is available!"
+
+msgid "Frequenz erfolgreich geändert!"
+msgstr "Changed frequency successfully!"
+
+msgid "Wartung"
+msgstr "Maintenance"
+
+msgid "Wartung Wetterstation"
+msgstr "Weather station maintenance"
+
+msgid "Falsche Frequenz!"
+msgstr "Wrong frequency!"
+
+msgid "Wetterstation"
+msgstr "Weather station"
+
+msgid "Gib die korrekte Frequenz ein, um die Verbindung wiederherzustellen!"
+msgstr "Enter the correct frequency to re-establish the connection!"
+
+msgid "Diese Station ist bereits korrekt eingestellt!"
+msgstr "This station is already set up correctly!"
+
+msgid "Du bist kein San News-Mitglied oder nicht im Dienst!"
+msgstr "You're not a member of the San News or not on duty!"

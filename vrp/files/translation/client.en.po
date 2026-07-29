@@ -6498,3 +6498,90 @@ msgstr "An unknown caller has reported a fire! Position: %s"
 
 msgid "Alarmanlage von Geschäften & Banken"
 msgstr "Alarm systems for shops and banks"
+
+msgid "Wetter"
+msgstr "Weather"
+
+msgid "Wetterbericht"
+msgstr "Weather report"
+
+msgid "Wechselt zu"
+msgstr "Changing to"
+
+msgid "Hinweis: Das Wechseln des Wetters dauert etwa ein bis zwei Stunden!"
+msgstr "Note: The weather changes over the course of one to two hours!"
+
+msgid "Stand: %02d:%02d Uhr"
+msgstr "Updated: %02d:%02d o'clock"
+
+msgid "Fehlende Daten! Kontaktiere einen San News-Mitarbeiter!"
+msgstr "Missing data! Contact\na San News employee!"
+
+msgid "Niederschlag"
+msgstr "Rainfall"
+
+msgid "Kein Niederschlag"
+msgstr "No rainfall"
+
+msgid "Sehr sonnig, warm"
+msgstr "Very sunny, warm"
+
+msgid "Sonnig, warm"
+msgstr "Sunny, warm"
+
+msgid "Sehr sonnig, Smog"
+msgstr "Very sunny, smoggy"
+
+msgid "Sonnig, Smog"
+msgstr "Sunny, smoggy"
+
+msgid "Bewölkt, warm"
+msgstr "Cloudy, warm"
+
+msgid "Sonnig, kühl"
+msgstr "Sunny, cool"
+
+msgid "Sehr sonnig, kühl"
+msgstr "Very sunny, cool"
+
+msgid "Bewölkt, kühl"
+msgstr "Cloudy, cool"
+
+msgid "Sonnig, heiß"
+msgstr "Sunny, hot"
+
+msgid "Sehr sonnig, heiß"
+msgstr "Very sunny, hot"
+
+msgid "Bewölkt, heiß"
+msgstr "Cloudy, hot"
+
+msgid "Sehr sonnig, mild"
+msgstr "Very sunny, mild"
+
+msgid "Sonnig, mild"
+msgstr "Sunny, mild"
+
+msgid "Bewölkt, mild"
+msgstr "Cloudy, mild"
+
+msgid "Sehr sonnig, trocken"
+msgstr "Very sunny, dry"
+
+msgid "Sonnig, trocken"
+msgstr "Sunny, dry"
+
+msgid "Station:\nStatus:\nFrequenz:"
+msgstr "Station:\nStatus:\nFrequency:"
+
+msgid "Verbunden"
+msgstr "Connected"
+
+msgid "Außer Betrieb"
+msgstr "Out of order"
+
+msgid "Wetterstationen"
+msgstr "Weather stations"
+
+msgid "Wetterstation"
+msgstr "Weather station"

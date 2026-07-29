@@ -10,6 +10,7 @@ function SanNews:constructor()
 	self.m_SanNewsMessageEnabled = false
 	self.m_RunningEvent = false
 	self.m_AppUnlocked = {}
+	self.m_BankAccountServer = BankServer.get("company.sannews")
 
 	local safe = createObject(2332, 294.43, -22.6, 1031.7)
 	safe:setInterior(10)

@@ -80,6 +80,7 @@
 	<script src="server/classes/MTAFixes.lua" type="server"/>
 	<script src="server/classes/AntiCheat.lua" type="server"/>
 	<script src="server/classes/Weather.lua" type="server"/>
+	<script src="server/classes/WeatherStation.lua" type="server"/>
 	<script src="server/classes/StatisticsLogger.lua" type="server"/>
 	<script src="server/classes/Admin.lua" type="server"/>
 	<script src="server/classes/GlobalTimer.lua" type="server"/>
@@ -1081,6 +1082,7 @@
     <script src="client/classes/GUIForms/TrainingGUI.lua" type="client" />
     <script src="client/classes/GUIForms/WeaponLevelGUI.lua" type="client" />
     <script src="client/classes/GUIForms/WorldItemOverviewGUI.lua" type="client" />
+	<script src="client/classes/GUIForms/WeatherStationGUI.lua" type="client" />
     <script src="client/classes/GUIForms/ActionMoneySplitGUI.lua" type="client" />
 
 	<!-- Web forms -->
@@ -1807,6 +1809,8 @@
 	<vrpfile src="files/images/Other/Bullet.png"/>
 	<vrpfile src="files/images/Other/LockPick.png"/>
 	<vrpfile src="files/images/Other/UserClicker.png"/>
+	<vrpfile src="files/images/Other/antenna_c.png"/>
+	<vrpfile src="files/images/Other/antenna_nc.png"/>
 
 	<vrpfile src="files/images/Other/PewPew/head.png"/>
 	<vrpfile src="files/images/Other/PewPew/body.png"/>
@@ -1992,6 +1996,7 @@
 	<vrpfile src="files/images/Radar/Blips/RcShop.png"/>
 	<vrpfile src="files/images/Radar/Blips/ServiceTechnician.png"/>
 	<vrpfile src="files/images/Radar/Blips/Jewel.png"/>
+	<vrpfile src="files/images/Radar/Blips/SatelliteDish.png"/>
 
 	<vrpfile src="files/images/Jobs/HeaderLogistician.png"/>
 	<vrpfile src="files/images/Jobs/HeaderTrashman.png"/>

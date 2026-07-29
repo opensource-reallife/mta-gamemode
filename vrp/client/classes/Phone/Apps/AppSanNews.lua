@@ -5,6 +5,7 @@
 -- *  PURPOSE:     San News app class
 -- *
 -- ****************************************************************************
+
 AppSanNews = inherit(PhoneApp)
 
 local ColorTable = {
@@ -17,20 +18,23 @@ local ColorTable = {
 function AppSanNews:constructor()
 	PhoneApp.constructor(self, "SanNews", "IconSanNews.png")
 	
-	addRemoteEvents{"receiveFuelPrices", "receiveNewsAppUnlock"}
+	addRemoteEvents{"receiveFuelPrices", "receiveNewsAppUnlock", "receiveWeatherData"}
 	addEventHandler("receiveFuelPrices", localPlayer, bind(self.Event_receiveFuelPrices, self))
 	addEventHandler("receiveNewsAppUnlock", localPlayer, bind(self.Event_receiveNewsAppUnlock, self))
+	addEventHandler("receiveWeatherData", localPlayer, bind(self.Event_receiveWeatherData, self))
 end
 
 function AppSanNews:onOpen(form)
 	self.m_TabPanel = GUIPhoneTabPanel:new(0, 0, form.m_Width, form.m_Height, form)
 	self.m_Tabs = {}
-	self.m_Tabs["News"] = self.m_TabPanel:addTab(_"Nachrichten", FontAwesomeSymbols.Newspaper)
-	local tab = self.m_Tabs["News"]
-	self.m_NewsBrowser = GUIWebView:new(0, 0, tab.m_Width, tab.m_Height-10, (INGAME_WEB_PATH .. "/ingame/vRPphone/apps/sannews/index.php?player=%s&sessionID=%s"):format(localPlayer:getName(), localPlayer:getSessionId()), true, self.m_Tabs["News"])
 
+	--self.m_Tabs["News"] = self.m_TabPanel:addTab(_"Nachrichten", FontAwesomeSymbols.Newspaper)
+	--local tab = self.m_Tabs["News"]
+	--self.m_NewsBrowser = GUIWebView:new(0, 0, tab.m_Width, tab.m_Height-10, (INGAME_WEB_PATH .. "/ingame/vRPphone/apps/sannews/index.php?player=%s&sessionID=%s"):format(localPlayer:getName(), localPlayer:getSessionId()), true, self.m_Tabs["News"])
+
+	-- Ads
 	self.m_Tabs["Advertisment"] = self.m_TabPanel:addTab(_"Werbung", FontAwesomeSymbols.Advertisement)
-	tab = self.m_Tabs["Advertisment"]
+	local tab = self.m_Tabs["Advertisment"]
 	GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.01, tab.m_Width*0.98, tab.m_Height*0.12, _"Werbung", self.m_Tabs["Advertisment"]):setMultiline(true)
 	GUILabel:new(tab.m_Width*0.02, tab.m_Height*0.15, tab.m_Width*0.98, tab.m_Height*0.07, _"Werbe-Text:", self.m_Tabs["Advertisment"]):setMultiline(true)
 	self.m_EditBox = GUIEdit:new(tab.m_Width*0.02, tab.m_Height*0.22, tab.m_Width*0.96, tab.m_Height*0.07, self.m_Tabs["Advertisment"])
@@ -81,6 +85,7 @@ function AppSanNews:onOpen(form)
 		end
 	self:calcCosts()
 
+	-- Fuel
 	self.m_Tabs["FuelPrices"] = self.m_TabPanel:addTab(_"Tankpreise", FontAwesomeSymbols.Gas_Pump)
 	tab = self.m_Tabs["FuelPrices"]
 
@@ -89,6 +94,7 @@ function AppSanNews:onOpen(form)
 	self.m_FuelPriceGrid:addColumn(_"Aktuelle Tankpreise", 0.4)
 	self.m_FuelPriceGrid:addColumn("", 0.6)
 
+	-- Jobs
 	self.m_Tabs["Jobs"] = self.m_TabPanel:addTab(_"Jobs", FontAwesomeSymbols.Suitcase)
 	tab = self.m_Tabs["Jobs"]
 
@@ -103,6 +109,20 @@ function AppSanNews:onOpen(form)
 	self.m_UnlockButton = GUIButton:new(tab.m_Width*0.04, tab.m_Height*0.87, tab.m_Width*0.925, tab.m_Height*0.08, "", self.m_Tabs["Jobs"]):setBackgroundColor(Color.Green)
 	self.m_UnlockButton.onLeftClick = function() triggerServerEvent("requestNewsAppUnlock", localPlayer, true) end
 	self.m_UnlockButton:setEnabled(false)
+
+	-- Weather
+	self.m_Tabs["Weather"] = self.m_TabPanel:addTab(_"Wetter", FontAwesomeSymbols.Cloud_Sun)
+	tab = self.m_Tabs["Weather"]
+	GUILabel:new(tab.m_Width*0.04, tab.m_Height*0.01, tab.m_Width*0.925, tab.m_Height*0.12, _"Wetterbericht", self.m_Tabs["Weather"])
+	self.m_WeatherLastChange = GUILabel:new(tab.m_Width*0.04, tab.m_Height*0.11, tab.m_Width*0.925, tab.m_Height*0.06, "", self.m_Tabs["Weather"])
+
+	GUILabel:new(tab.m_Width*0.04, tab.m_Height*0.24, tab.m_Width*0.925, tab.m_Height*0.09, _"Aktuell", self.m_Tabs["Weather"]):setAlignX("center")
+	self.m_WeatherCurrent = GUILabel:new(tab.m_Width*0.04, tab.m_Height*0.34, tab.m_Width*0.925, tab.m_Height*0.065, "", self.m_Tabs["Weather"]):setMultiline(true):setAlignX("center")
+
+	GUILabel:new(tab.m_Width*0.04, tab.m_Height*0.54, tab.m_Width*0.925, tab.m_Height*0.09, _"Wechselt zu", self.m_Tabs["Weather"]):setAlignX("center")
+	self.m_WeatherNext = GUILabel:new(tab.m_Width*0.04, tab.m_Height*0.64, tab.m_Width*0.925, tab.m_Height*0.065, "", self.m_Tabs["Weather"]):setMultiline(true):setAlignX("center")
+
+	GUILabel:new(tab.m_Width*0.04, tab.m_Height*0.84, tab.m_Width*0.925, tab.m_Height*0.06, _"Hinweis: Das Wechseln des Wetters dauert etwa ein bis zwei Stunden!", self.m_Tabs["Weather"]):setMultiline(true):setAlignX("center")
 	
 	self.m_TabPanel.onTabChanged = function(tabId)
 		if tabId == self.m_Tabs["FuelPrices"].TabIndex then
@@ -110,6 +130,9 @@ function AppSanNews:onOpen(form)
 		end
 		if tabId == self.m_Tabs["Jobs"].TabIndex then
 			triggerServerEvent("requestNewsAppUnlock", localPlayer)
+		end
+		if tabId == self.m_Tabs["Weather"].TabIndex then
+			triggerServerEvent("requestWeatherData", resourceRoot)
 		end
 	end
 end
@@ -146,6 +169,38 @@ function AppSanNews:calcCosts()
 		self.m_InfoLabel:setText(_("Zeichenanzahl: %d Kosten: %d$", length, costs))
 		self.m_InfoRect:setColor(Color.Green)
 		self.m_SubmitButton:setEnabled(true)
+	end
+end
+
+function AppSanNews:Event_receiveWeatherData(weatherStations, weather, nextWeather, lastChange)
+	self.m_WeatherLastChange:setText(_("Stand: %02d:%02d Uhr", lastChange.hour, lastChange.minute))
+
+	local stations, activeStations = 0, 0
+	for _, weatherStation in pairs(weatherStations) do
+		if not weatherStation.m_MainStation then
+			stations = stations + 1
+			if weatherStation.m_Connected then
+				activeStations = activeStations + 1
+			end
+		end
+	end
+
+	local rain = false
+	local errorText = _"Fehlende Daten! Kontaktiere einen San News-Mitarbeiter!"
+	if activeStations >= stations / 2 then
+		if weather[3] > 0 then rain = true end
+		self.m_WeatherCurrent:setText(("%s\n%s"):format(_(weather[2]), rain and _"Niederschlag" or _"Kein Niederschlag"))
+	else
+		self.m_WeatherCurrent:setText(errorText)
+	end
+
+	rain = false
+	if activeStations >= stations then
+		rain = false
+		if nextWeather[3] > 0 then rain = true end
+		self.m_WeatherNext:setText(("%s\n%s"):format(_(nextWeather[2]), rain and _"Niederschlag" or _"Kein Niederschlag"))
+	else
+		self.m_WeatherNext:setText(errorText)
 	end
 end
 

@@ -189,6 +189,7 @@ FontAwesomeSymbols = {
 	Location_Dot = "",
 	Money_Bag = "",
 	Gas_Pump = "",
+	Cloud_Sun = "",
 }
 
 -- uncomment this to render a list of all loaded fonts
