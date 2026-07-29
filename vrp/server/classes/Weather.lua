@@ -89,7 +89,7 @@ function Weather:setWeatherBlended(nextWeather)
 	setWeatherBlended(nextWeather[1])
 	self.m_NextWeather = nextWeather
 	self.m_LastChange = getRealTime()
-	CompanyManager:getSingleton():getFromId(CompanyStaticId.SANNEWS):sendShortMessage(("Es sind neue Wetterdaten verfügbar!"):format(self.m_CurrentWeather[2], nextWeather[2]))
+	CompanyManager:getSingleton():getFromId(CompanyStaticId.SANNEWS):sendShortMessage("Es sind neue Wetterdaten verfügbar!")
 end
 
 function Weather:checkWeatherBlended()
