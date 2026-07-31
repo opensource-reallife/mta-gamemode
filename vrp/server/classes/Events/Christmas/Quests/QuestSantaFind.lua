@@ -1,4 +1,4 @@
-QuestSantaFind = inherit(ChristmasQuest)
+QuestSantaFind = inherit(Quest)
 
 QuestSantaFind.Targets = {
 	[2] = {
@@ -13,7 +13,7 @@ QuestSantaFind.Targets = {
 }
 
 function QuestSantaFind:constructor(id)
-	ChristmasQuest.constructor(self, id)
+	Quest.constructor(self, id)
 
 	self.m_Target = QuestSantaFind.Targets[id]
 
@@ -24,12 +24,12 @@ function QuestSantaFind:constructor(id)
 end
 
 function QuestSantaFind:destructor(id)
-	ChristmasQuest.destructor(self)
+	Quest.destructor(self)
 	removeEventHandler("questPhotograpyTakePhoto", root, self.m_TakePhotoBind)
 end
 
 function QuestSantaFind:addPlayer(player)
-	ChristmasQuest.addPlayer(self, player)
+	Quest.addPlayer(self, player)
 	player:giveWeapon(43, 50)
 end
 

@@ -1,8 +1,8 @@
-QuestPackageFind = inherit(ChristmasQuest)
+QuestPackageFind = inherit(Quest)
 QuestPackageFind.Target = 5
 
 function QuestPackageFind:constructor(id)
-	ChristmasQuest.constructor(self, id)
+	Quest.constructor(self, id)
 	self.m_Objects = {}
 
 	nextframe(function()
@@ -12,7 +12,7 @@ function QuestPackageFind:constructor(id)
 end
 
 function QuestPackageFind:destructor(id)
-	ChristmasQuest.destructor(self)
+	Quest.destructor(self)
 	killTimer(self.m_Timer)
 	for id, object in pairs(self.m_Objects) do
 		if isElement(object) then
@@ -25,13 +25,13 @@ function QuestPackageFind:destructor(id)
 end
 
 function QuestPackageFind:addPlayer(player)
-	ChristmasQuest.addPlayer(self, player)
+	Quest.addPlayer(self, player)
 	player.packagesFound = 0
 
 end
 
 function QuestPackageFind:removePlayer(player)
-	ChristmasQuest.removePlayer(self, player)
+	Quest.removePlayer(self, player)
 	player.packagesFound = nil
 end
 

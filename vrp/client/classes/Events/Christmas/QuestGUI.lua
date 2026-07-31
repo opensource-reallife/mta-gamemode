@@ -1,7 +1,7 @@
-ChristmasQuestGUI = inherit(GUIForm)
-inherit(Singleton, ChristmasQuestGUI)
+QuestGUI = inherit(GUIForm)
+inherit(Singleton, QuestGUI)
 
-function ChristmasQuestGUI:constructor(Id, Name, Description, Packages)
+function QuestGUI:constructor(Id, Name, Description, Packages)
 	GUIWindow.updateGrid()
 	self.m_Width = grid("x", 25)
 	self.m_Height = grid("y", 10)
@@ -31,7 +31,7 @@ function ChristmasQuestGUI:constructor(Id, Name, Description, Packages)
 
 end
 
-function ChristmasQuestGUI:addDay(i)
+function QuestGUI:addDay(i)
 	local x, y, img, statusColor, statusText, click
 	if i > 12 then
 		y = 4

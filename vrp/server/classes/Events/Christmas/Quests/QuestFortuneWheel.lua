@@ -1,10 +1,10 @@
-QuestFortuneWheel = inherit(ChristmasQuest)
+QuestFortuneWheel = inherit(Quest)
 QuestFortuneWheel.Target = 3
 
 addEvent("onFortuneWheelPlay")
 
 function QuestFortuneWheel:constructor(id)
-	ChristmasQuest.constructor(self, id)
+	Quest.constructor(self, id)
 	self.m_FortuneBind = bind(self.onFortuneWheelPlay, self)
 	self.m_WheelPlayed = {}
 
@@ -12,16 +12,16 @@ function QuestFortuneWheel:constructor(id)
 end
 
 function QuestFortuneWheel:destructor(id)
-	ChristmasQuest.destructor(self)
+	Quest.destructor(self)
 	removeEventHandler("onFortuneWheelPlay", root, self.m_FortuneBind)
 end
 
 function QuestFortuneWheel:addPlayer(player)
-	ChristmasQuest.addPlayer(self, player)
+	Quest.addPlayer(self, player)
 end
 
 function QuestFortuneWheel:removePlayer(player)
-	ChristmasQuest.removePlayer(self, player)
+	Quest.removePlayer(self, player)
 end
 
 function QuestFortuneWheel:onFortuneWheelPlay()

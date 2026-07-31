@@ -1,4 +1,4 @@
-QuestPhotography = inherit(ChristmasQuest)
+QuestPhotography = inherit(Quest)
 
 QuestPhotography.Targets = {
 	[2] = {
@@ -16,7 +16,7 @@ QuestPhotography.Targets = {
 }
 
 function QuestPhotography:constructor(id)
-	ChristmasQuest.constructor(self, id)
+	Quest.constructor(self, id)
 
 	self.m_Target = QuestPhotography.Targets[id]
 
@@ -34,7 +34,7 @@ function QuestPhotography:constructor(id)
 end
 
 function QuestPhotography:destructor(id)
-	ChristmasQuest.destructor(self)
+	Quest.destructor(self)
 	if self.m_NPC and isElement(self.m_NPC) then
 		setGarageOpen(9, false)
 		self.m_NPC:destroy()
@@ -43,7 +43,7 @@ function QuestPhotography:destructor(id)
 end
 
 function QuestPhotography:addPlayer(player)
-	ChristmasQuest.addPlayer(self, player)
+	Quest.addPlayer(self, player)
 	player:giveWeapon(43, 50)
 end
 

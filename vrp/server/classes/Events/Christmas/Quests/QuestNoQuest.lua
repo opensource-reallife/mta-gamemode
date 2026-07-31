@@ -1,18 +1,18 @@
-QuestNoQuest = inherit(ChristmasQuest)
+QuestNoQuest = inherit(Quest)
 
 function QuestNoQuest:constructor(id)
-	ChristmasQuest.constructor(self, id)
+	Quest.constructor(self, id)
 end
 
 function QuestNoQuest:destructor(id)
-	ChristmasQuest.destructor(self)
+	Quest.destructor(self)
 end
 
 function QuestNoQuest:addPlayer(player)
-	ChristmasQuest.addPlayer(self, player)
+	Quest.addPlayer(self, player)
 	self:success(player)
 end
 
 function QuestNoQuest:removePlayer(player)
-	ChristmasQuest.removePlayer(self, player)
+	Quest.removePlayer(self, player)
 end

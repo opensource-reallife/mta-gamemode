@@ -1,7 +1,8 @@
 Christmas = inherit(Singleton)
 
 function Christmas:constructor()
-	self.m_ChristmasQuestManager = ChristmasQuestManager:new()
+	
+	self.m_QuestManager = QuestManager:new()
 
 	QuestPackageFind.togglePackages(false)
 

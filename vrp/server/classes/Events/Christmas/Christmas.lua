@@ -105,7 +105,7 @@ end
 ]]
 
 function Christmas:constructor()
-	self.m_ChristmasQuestManager = ChristmasQuestManager:new()
+	self.m_QuestManager = QuestManager:new()
 	self.m_AdventCalender = {}
 
 	self.m_BankServerAccount = BankServer.get("event.christmas")

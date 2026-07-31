@@ -1,5 +1,5 @@
-ChristmasQuestManager = inherit(Singleton)
-ChristmasQuestManager.Quests = {
+QuestManager = inherit(Singleton)
+QuestManager.Quests = {
 	[1] = {
 		["Name"] = "Weihnachts-Bodyguard",
 		["Description"] = "Bringe den Weihnachtsmann zum markierten Ort in Montgomery!",
@@ -123,9 +123,9 @@ ChristmasQuestManager.Quests = {
 	},
 }
 
-function ChristmasQuestManager:constructor()
+function QuestManager:constructor()
 	-- Also add it client side if the quest requires a clientside script
-	-- The client side quest automatically starts on startQuestForPlayer if the class is setted on clientside ChristmasQuestManager
+	-- The client side quest automatically starts on startQuestForPlayer if the class is setted on clientside Questmanager
 	self.m_Quests = {
 		[1] = QuestNPCTransport,
 		[2] = QuestPhotography,
@@ -181,14 +181,14 @@ function ChristmasQuestManager:constructor()
 
 end
 
-function ChristmasQuestManager:startQuest(questId)
+function QuestManager:startQuest(questId)
 	if not self.m_Quests[questId] then return end
 	if self.m_CurrentQuest then self:stopQuest() end
 
 	self.m_CurrentQuest = self.m_Quests[questId]:new(questId)
 end
 
-function ChristmasQuestManager:getTodayQuest()
+function QuestManager:getTodayQuest()
 	local day = getRealTime().monthday
 	local month = getRealTime().month+1
 
@@ -198,7 +198,7 @@ function ChristmasQuestManager:getTodayQuest()
 	self:startQuest(day)
 end
 
-function ChristmasQuestManager:startQuestForPlayer(player)
+function QuestManager:startQuestForPlayer(player)
 	if not self.m_CurrentQuest then
 		return false
 	end
@@ -215,12 +215,12 @@ function ChristmasQuestManager:startQuestForPlayer(player)
 	self.m_CurrentQuest:addPlayer(player)
 end
 
-function ChristmasQuestManager:endQuestForPlayer(player)
+function QuestManager:endQuestForPlayer(player)
 	self.m_CurrentQuest:removePlayer(player)
 end
 
 
-function ChristmasQuestManager:onStartClick()
+function QuestManager:onStartClick()
 	if not self.m_CurrentQuest then
 		client:sendError(_"Aktuell läuft keine Quest!")
 		return false
@@ -228,7 +228,7 @@ function ChristmasQuestManager:onStartClick()
 	self:startQuestForPlayer(client)
 end
 
-function ChristmasQuestManager:onPedClick()
+function QuestManager:onPedClick()
 	if not self.m_CurrentQuest then
 		client:sendError(_"Aktuell läuft keine Quest!")
 		return false
@@ -236,7 +236,7 @@ function ChristmasQuestManager:onPedClick()
 	self.m_CurrentQuest:onClick(client)
 end
 
-function ChristmasQuestManager:stopQuest()
+function QuestManager:stopQuest()
 	for index, player in pairs(self.m_CurrentQuest:getPlayers()) do
 		if player and isElement(player) then
 			self:endQuestForPlayer(player)
@@ -247,7 +247,7 @@ function ChristmasQuestManager:stopQuest()
 	self.m_CurrentQuest = false
 end
 
-function ChristmasQuestManager:onShortMessageClick()
+function QuestManager:onShortMessageClick()
 	QuestionBox:new(client, "Möchtest du die Quest "..self.m_CurrentQuest.m_Name.." abbrechen? Du kannst diesen jederzeit wieder starten.",
 	function()
 		self:endQuestForPlayer(client)
@@ -259,7 +259,7 @@ function ChristmasQuestManager:onShortMessageClick()
 )
 end
 
-function ChristmasQuestManager:onPlayerQuit(player)
+function QuestManager:onPlayerQuit(player)
 	if self.m_CurrentQuest then
 		if table.find(self.m_CurrentQuest:getPlayers(), player) then
 			self:endQuestForPlayer(player)
