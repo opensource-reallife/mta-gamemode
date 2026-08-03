@@ -237,6 +237,24 @@
 	<script src="server/classes/Gameplay/ThrowObject/ThrowObjectManager.lua" type="server" />
 	<script src="server/classes/Gameplay/ThrowObject/ThrowObject.lua" type="server" />
 
+	<!-- Quest -->
+	<script src="server/classes/Gameplay/Quest/QuestManager.lua" type="server"/>
+	<script src="server/classes/Gameplay/Quest/Quest.lua" type="server"/>
+	<script src="server/classes/Gameplay/Quest/Quests/QuestPhotography.lua" type="server"/>
+	<script src="server/classes/Gameplay/Quest/Quests/QuestSantaKill.lua" type="server"/>
+	<script src="server/classes/Gameplay/Quest/Quests/QuestDraw.lua" type="server"/>
+	<script src="server/classes/Gameplay/Quest/Quests/QuestNPCTransport.lua" type="server"/>
+	<script src="server/classes/Gameplay/Quest/Quests/QuestPackageFind.lua" type="server"/>
+	<script src="server/classes/Gameplay/Quest/Quests/QuestPackageTransport.lua" type="server"/>
+	<script src="server/classes/Gameplay/Quest/Quests/QuestFortuneWheel.lua" type="server"/>
+	<script src="server/classes/Gameplay/Quest/Quests/QuestFerrisRide.lua" type="server"/>
+	<script src="server/classes/Gameplay/Quest/Quests/QuestNoQuest.lua" type="server"/>
+	<script src="server/classes/Gameplay/Quest/Quests/QuestGrowablePlant.lua" type="server"/>
+	<script src="server/classes/Gameplay/Quest/Quests/QuestSlotmachine.lua" type="server"/>
+	<script src="server/classes/Gameplay/Quest/Quests/QuestFishing.lua" type="server"/>
+	<script src="server/classes/Gameplay/Quest/Quests/QuestSightseeing.lua" type="server"/>
+	<script src="server/classes/Gameplay/Quest/Quests/QuestBeggarHelp.lua" type="server"/>
+
 	<!-- Race -->
 	<script src="server/classes/Gameplay/Race/RaceManager.lua" type="server"/>
 	<script src="server/classes/Gameplay/Race/Race.lua" type="server"/>
@@ -545,24 +563,7 @@
 	<!-- Christmas -->
 	<script src="server/classes/Events/Christmas/CookieClickerManager.lua" type="server"/>
 	<script src="server/classes/Events/Christmas/Christmas.lua" type="server"/>
-	<script src="server/classes/Events/Christmas/QuestManager.lua" type="server"/>
-	<script src="server/classes/Events/Christmas/Quest.lua" type="server"/>
 	<script src="server/classes/Events/Christmas/EasterEggs.lua" type="server"/>
-
-	<script src="server/classes/Events/Christmas/Quests/QuestPhotography.lua" type="server"/>
-	<script src="server/classes/Events/Christmas/Quests/QuestSantaKill.lua" type="server"/>
-	<script src="server/classes/Events/Christmas/Quests/QuestDraw.lua" type="server"/>
-	<script src="server/classes/Events/Christmas/Quests/QuestNPCTransport.lua" type="server"/>
-	<script src="server/classes/Events/Christmas/Quests/QuestPackageFind.lua" type="server"/>
-	<script src="server/classes/Events/Christmas/Quests/QuestPackageTransport.lua" type="server"/>
-	<script src="server/classes/Events/Christmas/Quests/QuestFortuneWheel.lua" type="server"/>
-	<script src="server/classes/Events/Christmas/Quests/QuestFerrisRide.lua" type="server"/>
-	<script src="server/classes/Events/Christmas/Quests/QuestNoQuest.lua" type="server"/>
-	<script src="server/classes/Events/Christmas/Quests/QuestGrowablePlant.lua" type="server"/>
-	<script src="server/classes/Events/Christmas/Quests/QuestSlotmachine.lua" type="server"/>
-	<script src="server/classes/Events/Christmas/Quests/QuestFishing.lua" type="server"/>
-	<script src="server/classes/Events/Christmas/Quests/QuestSightseeing.lua" type="server"/>
-	<script src="server/classes/Events/Christmas/Quests/QuestBeggarHelp.lua" type="server"/>
 
 	<!-- Jobs -->
 	<script src="server/classes/Jobs/Job.lua" type="server"/>
@@ -1089,6 +1090,7 @@
     <script src="client/classes/GUIForms/WorldItemOverviewGUI.lua" type="client" />
 	<script src="client/classes/GUIForms/WeatherStationGUI.lua" type="client" />
     <script src="client/classes/GUIForms/ActionMoneySplitGUI.lua" type="client" />
+	<script src="client/classes/GUIForms/QuestGUI.lua" type="client"/>
 
 	<!-- Web forms -->
 	<script src="client/classes/WebForms/TicketGUI.lua" type="client"/>
@@ -1238,18 +1240,10 @@
 	<script src="client/classes/Events/Halloween/DrawContestOverviewGUI.lua" type="client"/>
 	<script src="client/classes/Events/Halloween/HalloweenBonusGUI.lua" type="client"/>
 
-
 	<!-- Christmas -->
 	<script src="client/classes/Events/Christmas/Christmas.lua" type="client"/>
 	<script src="client/classes/Events/Christmas/ChristmasBonusGUI.lua" type="client"/>
-	<script src="client/classes/Events/Christmas/QuestManager.lua" type="client"/>
-	<script src="client/classes/Events/Christmas/QuestGUI.lua" type="client"/>
 	<script src="client/classes/Events/Christmas/AdventCalenderGUI.lua" type="client"/>
-	<script src="client/classes/Events/Christmas/Quests/QuestPhotography.lua" type="client"/>
-	<script src="client/classes/Events/Christmas/Quests/QuestSantaKill.lua" type="client"/>
-	<script src="client/classes/Events/Christmas/Quests/QuestDraw.lua" type="client"/>
-	<script src="client/classes/Events/Christmas/Quests/QuestPackageFind.lua" type="client"/>
-
 
 	<!-- Factions -->
 	<script src="client/classes/Faction/FactionManager.lua" type="client"/>
@@ -1342,6 +1336,13 @@
 	<script src="client/classes/Gameplay/Fishing/FishingRod.lua" type="client"/>
 	<script src="client/classes/Gameplay/Fishing/BobberBar.lua" type="client"/>
 	<script src="client/classes/Gameplay/Fishing/Fishing.lua" type="client"/>
+
+	<!-- Quest -->
+	<script src="client/classes/Gameplay/Quest/QuestManager.lua" type="client"/>
+	<script src="client/classes/Gameplay/Quest/Quests/QuestPhotography.lua" type="client"/>
+	<script src="client/classes/Gameplay/Quest/Quests/QuestSantaKill.lua" type="client"/>
+	<script src="client/classes/Gameplay/Quest/Quests/QuestDraw.lua" type="client"/>
+	<script src="client/classes/Gameplay/Quest/Quests/QuestPackageFind.lua" type="client"/>
 
 	<!-- Race -->
 	<script src="client/classes/Gameplay/Race/MovementRecorder.lua" type="client"/>
