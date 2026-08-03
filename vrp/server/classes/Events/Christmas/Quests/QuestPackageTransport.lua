@@ -1,21 +1,18 @@
 QuestPackageTransport = inherit(Quest)
 
 QuestPackageTransport.Targets = {
-	[4] = Vector3(-2558.92, 658.28, 13.95),
-	[8] = Vector3(101, -223, 0.7),
-	[11] = Vector3(2721.7, -1925.3, 12.7),
-	[16] = Vector3(2034.548, 983.261, 9.9),
-
-
+	Vector3(-2558.92, 658.28, 13.95),
+	Vector3(101, -223, 0.7),
+	Vector3(2721.7, -1925.3, 12.7),
+	Vector3(2034.548, 983.261, 9.9),
 }
 
-function QuestPackageTransport:constructor(id)
-	Quest.constructor(self, id)
+function QuestPackageTransport:constructor()
 	self.m_Boxes = {}
 	self.m_Vehicles = {}
 	self.m_Trailers = {}
 
-	self.m_Target = QuestPackageTransport.Targets[id]
+	self.m_Target = QuestPackageTransport.Targets[Randomizer:get(1, #QuestPackageTransport.Targets)]
 	self.m_Marker = createMarker(self.m_Target, "cylinder", 3, 255, 0, 0)
 	self.m_Marker:setVisibleTo(root, false)
 
@@ -30,9 +27,7 @@ function QuestPackageTransport:constructor(id)
 
 end
 
-function QuestPackageTransport:destructor(id)
-	Quest.destructor(self)
-
+function QuestPackageTransport:destructor()
 	removeEventHandler("onPlayerVehicleExit", getRootElement(), self.m_ExitBind)
 	removeEventHandler("onTrailerDetach", getRootElement(), self.m_DetachBind)
 end

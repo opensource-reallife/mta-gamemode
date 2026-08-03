@@ -1,11 +1,9 @@
 QuestNoQuest = inherit(Quest)
 
-function QuestNoQuest:constructor(id)
-	Quest.constructor(self, id)
+function QuestNoQuest:constructor()
 end
 
-function QuestNoQuest:destructor(id)
-	Quest.destructor(self)
+function QuestNoQuest:destructor()
 end
 
 function QuestNoQuest:addPlayer(player)

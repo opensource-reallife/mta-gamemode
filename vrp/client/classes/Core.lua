@@ -197,6 +197,7 @@ function Core:ready() --onClientResourceStart
 	Nametag:new()
 	VehicleMark:new()
 	PickupWeaponManager:new()
+	QuestManager:new()
 
 	if EVENT_HALLOWEEN then
 		Halloween:new()

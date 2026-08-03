@@ -1,15 +1,14 @@
 QuestNPCTransport = inherit(Quest)
 
 QuestNPCTransport.Targets = {
-	[1] = Vector3(1274.49, 294.03, 19),
-	[3] = Vector3(1364.88, 249.46, 19.07),
-	[15] = Vector3(-63.79, -1584.69, 1.6)
+	Vector3(1274.49, 294.03, 19),
+	Vector3(1364.88, 249.46, 19.07),
+	Vector3(-63.79, -1584.69, 1.6)
 }
 
-function QuestNPCTransport:constructor(id)
-	Quest.constructor(self, id)
+function QuestNPCTransport:constructor()
 	self.m_Spawn = Vector3(1476.10, -1692.99, 14.05)
-	self.m_Target = QuestNPCTransport.Targets[id]
+	self.m_Target = QuestNPCTransport.Targets[Randomizer:get(1, #QuestNPCTransport.Targets)]
 	self.m_Marker = createMarker(self.m_Target, "cylinder", 3, 255, 0, 0)
 	self.m_Marker:setVisibleTo(root, false)
 	self.m_Bots = {}
@@ -22,8 +21,7 @@ function QuestNPCTransport:constructor(id)
 	addEventHandler("onMarkerHit", self.m_Marker, bind(self.onMarkerHit, self))
 end
 
-function QuestNPCTransport:destructor(id)
-	Quest.destructor(self)
+function QuestNPCTransport:destructor()
 	for index, bot in pairs(self.m_Bots) do
 		if bot then
 			if bot then
@@ -83,6 +81,12 @@ end
 
 function QuestNPCTransport:addPlayer(player)
 	Quest.addPlayer(self, player)
+
+	player:setPosition(1474.67, -1699.43, 14.05)
+	setTimer(function()
+		player:setRotation(0, 0, 0)
+		player:setCameraTarget()
+	end, 100, 1)
 
 	self.m_Bots[player] = BotManager:getSingleton():addNPC(244, self.m_Spawn, nil, player)
 	self.m_Bots[player]:setData("NPC:Immortal", true, true)

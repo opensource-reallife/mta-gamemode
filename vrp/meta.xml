@@ -558,6 +558,11 @@
 	<script src="server/classes/Events/Christmas/Quests/QuestFortuneWheel.lua" type="server"/>
 	<script src="server/classes/Events/Christmas/Quests/QuestFerrisRide.lua" type="server"/>
 	<script src="server/classes/Events/Christmas/Quests/QuestNoQuest.lua" type="server"/>
+	<script src="server/classes/Events/Christmas/Quests/QuestGrowablePlant.lua" type="server"/>
+	<script src="server/classes/Events/Christmas/Quests/QuestSlotmachine.lua" type="server"/>
+	<script src="server/classes/Events/Christmas/Quests/QuestFishing.lua" type="server"/>
+	<script src="server/classes/Events/Christmas/Quests/QuestSightseeing.lua" type="server"/>
+	<script src="server/classes/Events/Christmas/Quests/QuestBeggarHelp.lua" type="server"/>
 
 	<!-- Jobs -->
 	<script src="server/classes/Jobs/Job.lua" type="server"/>

@@ -168,9 +168,10 @@ function GrowableManager:getClientCheck(seed, bool, z_pos, isUnderWater, isWrong
 			GrowableManager:getSingleton():addNewPlant(GrowableManager:getSingleton():getPlantNameFromSeed(seed), Vector3(pos.x, pos.y, z_pos), client)
 			toggleAllControls(client, true)
 			client.m_IsPlanting = false
+			triggerEvent("onGrowablePlanted", client) -- For Quest
 		end, 1500, 1, client, seed, z_pos)
 	else
-		client:sendError(_("Du bist gerade schon am einpflanzen!", player))
+		client:sendError(_("Du bist gerade schon am einpflanzen!", client))
 	end
 end
 

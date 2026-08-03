@@ -6,10 +6,8 @@ QuestDraw.Targets = {
 	[17] = "ChristmasTree"
 }
 
-function QuestDraw:constructor(id)
-	Quest.constructor(self, id)
-
-	self.m_Target = QuestPhotography.Targets[id]
+function QuestDraw:constructor(questId)
+	self.m_Target = QuestPhotography.Targets[questId]
 
 	self.m_RequestPlayersBind = bind(self.requestPlayers, self)
 	self.m_AcceptImageBind = bind(self.acceptImage, self)
@@ -32,15 +30,12 @@ function QuestDraw:constructor(id)
 
 end
 
-function QuestDraw:destructor(id)
-	Quest.destructor(self)
-
+function QuestDraw:destructor()
 	removeEventHandler("questDrawRequestPlayers", root, self.m_RequestPlayersBind)
 	removeEventHandler("questDrawReceiveAcceptImage", root, self.m_AcceptImageBind)
 	removeEventHandler("questDrawReceiveDeclineImage", root, self.m_DeclineImageBind)
 	removeEventHandler("questDrawPictureSaved", root, self.m_PictureSavedImageBind)
 	removeEventHandler("questDrawNoScreenshotAllowed", root, self.m_NoScreenshotAllowedBind)
-
 end
 
 function QuestDraw:requestPlayers()

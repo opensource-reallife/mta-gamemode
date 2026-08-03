@@ -1,21 +1,19 @@
 Quest = inherit(Object)
 
-function Quest:constructor(Id)
+function Quest:virtual_constructor(questId, questData)
 	self.m_Players = {}
-	self.m_QuestId = Id
+	self.m_QuestId = questId
 
-	self.m_Name = QuestManager.Quests[Id]["Name"]
-	self.m_Description = QuestManager.Quests[Id]["Description"]
-	self.m_Packages = QuestManager.Quests[Id]["Packages"]
-
+	self.m_Name = questData["Name"]
+	self.m_Description = questData["Description"]
+	self.m_Reward = questData["Reward"]
 end
 
-function Quest:destructor()
+function Quest:virtual_destructor()
 	for index, player in pairs(self:getPlayers()) do
 		self:removePlayer(player)
 	end
 end
-
 
 function Quest:addPlayer(player, ...)
 	table.insert(self.m_Players, player)
@@ -27,8 +25,12 @@ function Quest:getPlayers()
 end
 
 function Quest:isQuestDone(player)
-	local row = sql:queryFetchSingle("SELECT Id FROM ??_quest WHERE UserId = ? and QuestId = ?", sql:getPrefix(), player:getId(), self.m_QuestId)
-	return row and true or false
+	local questManager = QuestManager:getSingleton()
+	local playerId = player:getId()
+	if questManager.m_QuestProgress[playerId] and questManager.m_QuestProgress[playerId][self.m_QuestId] then
+		return true
+	end
+	return false
 end
 
 function Quest:removePlayer(player)
@@ -37,15 +39,36 @@ function Quest:removePlayer(player)
 end
 
 function Quest:onClick(player)
-	player:triggerEvent("questOpenGUI", self.m_QuestId, self.m_Name, self.m_Description, self.m_Packages)
+	player:triggerEvent("questOpenGUI", self.m_QuestId, self.m_Name, self.m_Description, self.m_Reward)
 end
 
 function Quest:success(player)
 	if table.find(self:getPlayers(), player) then
+		local questManager = QuestManager:getSingleton()
+		local playerId = player:getId()
+		if not questManager.m_QuestProgress[playerId] then
+			questManager.m_QuestProgress[playerId] = {}
+		end
+		questManager.m_QuestProgress[playerId][self.m_QuestId] = true
+		
 		outputDebug("success")
-		player:sendSuccess(_("Quest bestanden! Du erhälst %d Päckchen!", player, self.m_Packages))
-		sql:queryExec("INSERT INTO ??_quest (UserId, QuestId, Date) VALUES(?, ?, NOW())", sql:getPrefix(), player:getId(), self.m_QuestId)
-		player:getInventory():giveItem("Päckchen", self.m_Packages)
+		local rewardString = ""
+		for k, v in ipairs(self.m_Reward) do
+			if v[1] == "Dollar" then
+				local bankServer = BankServer.get("gameplay.quest")
+				bankServer:transferMoney(player, v[2], "Quest-Belohnung", "Gameplay", "Quest")
+			elseif v[1] == "Punkte" then
+				player:givePoints(v[2])
+			else
+				player:getInventory():giveItem(v[1], v[2])
+			end
+			rewardString = rewardString .. v[2] .. " " .. _(v[1], player)
+			if self.m_Reward[k+1] then
+				rewardString = rewardString .. ", "
+			end
+		end
+		player:sendSuccess(_("Quest bestanden! Belohnung: %s", player, rewardString))
+		sql:queryExec("INSERT INTO ??_quest (UserId, QuestId, Date) VALUES(?, ?, NOW())", sql:getPrefix(), playerId, self.m_QuestId)
 		self:removePlayer(player)
 		outputDebug(self.m_Players)
 	end

@@ -5,22 +5,20 @@ QuestPhotography.Targets = {
 		["SantaClaus"] = 1,
 	},
 	[5] = {
-		["Players"] = 3,
+		["Players"] = 1,
 	},
-	[14] = {
-		["PlayersWithHat"] = 3,
+	[10] = {
+		["PlayersWithHat"] = 1,
 	},
-	[20] = {
+	[11] = {
 		["Admins"] = 1,
 	}
 }
 
-function QuestPhotography:constructor(id)
-	Quest.constructor(self, id)
+function QuestPhotography:constructor(questId)
+	self.m_Target = QuestPhotography.Targets[questId]
 
-	self.m_Target = QuestPhotography.Targets[id]
-
-	if id == 2 then
+	if questId == 2 then
 		--setGarageOpen(9, true)
 		self.m_NPC = NPC:new(244, 2151.49, -1015.52, 69.04, 129)
 		self.m_NPC:setImmortal(true)
@@ -33,8 +31,7 @@ function QuestPhotography:constructor(id)
 	addEventHandler("questPhotograpyTakePhoto", root, self.m_TakePhotoBind)
 end
 
-function QuestPhotography:destructor(id)
-	Quest.destructor(self)
+function QuestPhotography:destructor()
 	if self.m_NPC and isElement(self.m_NPC) then
 		setGarageOpen(9, false)
 		self.m_NPC:destroy()

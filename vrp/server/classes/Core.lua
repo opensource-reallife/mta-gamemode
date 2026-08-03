@@ -198,6 +198,7 @@ function Core:constructor()
 		VehicleRcUpgradeShop:new()
 		HappyHourManager:new()
 		RaceManager:new()
+		QuestManager:new()
 
 		if EVENT_EASTER then
 			Easter:new()

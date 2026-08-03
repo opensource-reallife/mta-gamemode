@@ -1,18 +1,15 @@
 QuestPackageFind = inherit(Quest)
 QuestPackageFind.Target = 5
 
-function QuestPackageFind:constructor(id)
-	Quest.constructor(self, id)
+function QuestPackageFind:constructor()
 	self.m_Objects = {}
 
 	nextframe(function()
 		self:reload()
 	end)
-
 end
 
-function QuestPackageFind:destructor(id)
-	Quest.destructor(self)
+function QuestPackageFind:destructor()
 	killTimer(self.m_Timer)
 	for id, object in pairs(self.m_Objects) do
 		if isElement(object) then

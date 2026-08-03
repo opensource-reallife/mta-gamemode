@@ -1,299 +1,198 @@
 QuestManager = inherit(Singleton)
-QuestManager.Quests = {
-	[1] = {
-		["Name"] = "Weihnachts-Bodyguard",
-		["Description"] = "Bringe den Weihnachtsmann zum markierten Ort in Montgomery!",
-		["Packages"] = 5,
-	},
-	
-	[2] = {
-		["Name"] = "Weihnachtsmann-Selfie",
-		["Description"] = "Finde den Weihnachtsmann (Er ist in Los Santos) und schieße ein Foto von ihm!",
-		["Packages"] = 10,
-	},
-	[3] = {
-		["Name"] = "Weihnachts-Bodyguard",
-		["Description"] = "Bringe den Weihnachtsmann zum markierten Ort in Montgomery!",
-		["Packages"] = 5,
-	},
-	[4] = {
-		["Name"] = "Päckchen-Transport",
-		["Description"] = "Liefere die Päckchen an den angezeigten Ort! Pass gut auf den Anhänger auf!",
-		["Packages"] = 5,
-	},
-	[5] = {
-		["Name"] = "Weihnachts-Fotograf",
-		["Description"] = "Schieße ein Foto mit mindestens 3 Spielern darauf!",
-		["Packages"] = 5,
-	},
-	[6] = {
-		["Name"] = "Weihnachts-Morde",
-		["Description"] = "Suche die Einbrecher in den orange markierten Gegenden und bringe sie um!",
-		["Packages"] = 5,
-	},
-	[7] = {
-		["Name"] = "Päckchen-Finder",
-		["Description"] = "Finde 5 Päckchen und klicke diese an!",
-		["Packages"] = 5,
-	},
-	[8] = {
-		["Name"] = "Päckchen-Transport",
-		["Description"] = "Liefere die Päckchen an den angezeigten Ort! Pass gut auf den Anhänger auf!",
-		["Packages"] = 5,
-	},
-	[9] = {
-		["Name"] = "Glücksrad-Master",
-		["Description"] = "Spiele 3 mal am Glücksrad! Die Quest muss währenddessen von dir gestartet sein!",
-		["Packages"] = 5,
-	},
-	[10] = {
-		["Name"] = "Feierabend",
-		["Description"] = "Heute gibt es nichts zu erledigen! Hier deine Belohnung!",
-		["Packages"] = 5,
-	},
-	[11] = {
-		["Name"] = "Päckchen-Transport",
-		["Description"] = "Liefere die Päckchen an den angezeigten Ort! Pass gut auf den Anhänger auf!",
-		["Packages"] = 5,
-	},
-	[12] = {
-		["Name"] = "Riesenradfahrer",
-		["Description"] = "Fahre zwei Runden mit dem Riesenrad (die Gondel muss wieder an den Treppen anhalten)!",
-		["Packages"] = 5,
-	},
-	[13] = {
-		["Name"] = "Weihnachts-Morde",
-		["Description"] = "Suche die Einbrecher in den orange markierten Gegenden und bringe sie um!",
-		["Packages"] = 5,
-	},
-	[14] = {
-		["Name"] = "Mützen-Foto",
-		["Description"] = "Schieße ein Foto mit mindestens 3 Spielern die eine Weihnachtsmütze auf haben!",
-		["Packages"] = 5,
-	},
-	[15] = {
-		["Name"] = "Weihnachts-Bodyguard",
-		["Description"] = "Bringe den Weihnachtsmann zum markierten Ort in Los Santos!",
-		["Packages"] = 5,
-	},
-	[16] = {
-		["Name"] = "Päckchen-Transport",
-		["Description"] = "Liefere die Päckchen an den angezeigten Ort! Pass gut auf den Anhänger auf!",
-		["Packages"] = 5,
-	},
-	[17] = {
-		["Name"] = "Vorfreude",
-		["Description"] = "Heute gibt es nichts zu erledigen! Hier deine Belohnung!",
-		["Packages"] = 5,
-	},
-	[18] = {
-		["Name"] = "Glücksrad-Master",
-		["Description"] = "Spiele 3 mal am Glücksrad! Die Quest muss während dessen von dir gestartet sein!",
-		["Packages"] = 5,
-	},
-	[19] = {
-		["Name"] = "Päckchen-Finder",
-		["Description"] = "Finde 5 Päckchen und klicke diese an!",
-		["Packages"] = 5,
-	},
-	[20] = {
-		["Name"] = "Administriver Fotograf",
-		["Description"] = "Schieße ein Foto mit mindestens 1 Teammitgliedern!",
-		["Packages"] = 5,
-	},
-	[21] = {
-		["Name"] = "Riesenradfahrer",
-		["Description"] = "Fahre zwei Runden mit dem Riesenrad (die Gondel muss wieder an den Treppen anhalten)!",
-		["Packages"] = 5,
-	},
-	[22] = {
-		["Name"] = "Weihnachts-Morde",
-		["Description"] = "Suche die Einbrecher in den orange markierten Gegenden und bringe sie um!",
-		["Packages"] = 5,
-	},
-	[23] = {
-		["Name"] = "Glücksrad-Master",
-		["Description"] = "Spiele 3 mal am Glücksrad! Die Quest muss während dessen von dir gestartet sein!",
-		["Packages"] = 5,
-	},
-	[24] = {
-		["Name"] = "Familientag",
-		["Description"] = "Wir wollen dich heute nicht weiter aufhalten! Hier deine Belonung!",
-		["Packages"] = 5,
-	},
-}
 
 function QuestManager:constructor()
 	-- Also add it client side if the quest requires a clientside script
 	-- The client side quest automatically starts on startQuestForPlayer if the class is setted on clientside Questmanager
-	self.m_Quests = {
-		[1] = QuestNPCTransport,
-		[2] = QuestPhotography,
-		[3] = QuestNPCTransport,
-		[4] = QuestPackageTransport,
-		[5] = QuestPhotography,
-		[6] = QuestSantaKill,
-		[7] = QuestPackageFind,
-		[8] = QuestPackageTransport,
-		[9] = QuestFortuneWheel,
-		[10] = QuestNoQuest,
-		[11] = QuestPackageTransport,
-		[12] = QuestFerrisRide,
-		[13] = QuestSantaKill,
-		[14] = QuestPhotography,
-		[15] = QuestNPCTransport,
-		[16] = QuestPackageTransport,
-		[17] = QuestNoQuest,
-		[18] = QuestFortuneWheel,
-		[19] = QuestPackageFind,
-		[20] = QuestPhotography,
-		[21] = QuestFerrisRide,
-		[22] = QuestSantaKill,
-		[23] = QuestFortuneWheel,
-		[24] = QuestNoQuest,
+	self.m_QuestData = {
+		[1] = {
+			["Name"] = "Weihnachts-Bodyguard",
+			["Description"] = "Bringe den Weihnachtsmann zum markierten Ort!",
+			["Type"] = "Christmas",
+			["Class"] = QuestNPCTransport,
+			["Reward"] = { {"Päckchen", 3}, {"Zuckerstange", 5}, {"Punkte", 10} }
+		},
+		[2] = {
+			["Name"] = "Weihnachtsmann-Foto",
+			["Description"] = "Finde den Weihnachtsmann in Los Santos und schieße ein Foto von ihm!",
+			["Type"] = "Christmas",
+			["Class"] = QuestPhotography,
+			["Reward"] = { {"Päckchen", 3}, {"Zuckerstange", 5}, {"Punkte", 10} }
+		},
+		[3] = {
+			["Name"] = "Päckchen-Transport",
+			["Description"] = "Liefere die Päckchen an den angezeigten Ort! Pass gut auf den Anhänger auf!",
+			["Type"] = "Christmas",
+			["Class"] = QuestPackageTransport,
+			["Reward"] = { {"Päckchen", 3}, {"Zuckerstange", 5}, {"Punkte", 10} }
+		},
+		[4] = {
+			["Name"] = "Weihnachts-Morde",
+			["Description"] = "Suche die Einbrecher in den orange markierten Gegenden und bringe sie um!",
+			["Type"] = "Christmas",
+			["Class"] = QuestSantaKill,
+			["Reward"] = { {"Päckchen", 3}, {"Zuckerstange", 5}, {"Punkte", 10} }
+		},
+		[5] = {
+			["Name"] = "Fotograf",
+			["Description"] = "Schieße ein Foto mit mindestens einem Spieler darauf!",
+			["Class"] = QuestPhotography,
+			["Reward"] = { {"Dollar", 500}, {"Punkte", 50} }
+		},
+		[6] = {
+			["Name"] = "Päckchen-Finder",
+			["Description"] = "Finde fünf Päckchen und klicke diese an!",
+			["Type"] = "Christmas",
+			["Class"] = QuestPackageFind,
+			["Reward"] = { {"Päckchen", 3}, {"Zuckerstange", 5}, {"Punkte", 10} }
+		},
+		[7] = {
+			["Name"] = "Glücksrad-Master",
+			["Description"] = "Drehe drei mal an einem Glücksrad!",
+			["Type"] = "Christmas",
+			["Class"] = QuestFortuneWheel,
+			["Reward"] = { {"Päckchen", 3}, {"Zuckerstange", 5}, {"Punkte", 10} }
+		},
+		[8] = {
+			["Name"] = "Feierabend",
+			["Description"] = "Heute gibt es nichts zu erledigen! Hier deine Belohnung!",
+			["Class"] = QuestNoQuest,
+			["Reward"] = { {"Dollar", 500}, {"Punkte", 50} }
+		},
+		[9] = {
+			["Name"] = "Riesenradfahrer",
+			["Description"] = "Fahre mit dem Riesenrad, bis die Gondel wieder an den Treppen anhält!",
+			["Class"] = QuestFerrisRide,
+			["Reward"] = { {"Dollar", 500}, {"Punkte", 50} }
+		},
+		[10] = {
+			["Name"] = "Mützen-Fotograf",
+			["Description"] = "Schieße ein Foto mit mindestens einem Spieler, der eine Weihnachtsmütze trägt!",
+			["Type"] = "Christmas",
+			["Class"] = QuestPhotography,
+			["Reward"] = { {"Päckchen", 3}, {"Zuckerstange", 5}, {"Punkte", 10} }
+		},
+		[11] = {
+			["Name"] = "Team-Fotograf",
+			["Description"] = "Schieße ein Foto mit mindestens einem Teammitglied!",
+			["Class"] = QuestPhotography,
+			["Reward"] = { {"Dollar", 500}, {"Punkte", 50} }
+		},
+		[12] = {
+			["Name"] = "Gärtner",
+			["Description"] = "Pflanze fünf Pflanzen an!",
+			["Class"] = QuestGrowablePlant,
+			["Reward"] = { {"Dollar", 500}, {"Punkte", 50} }
+		},
+		[13] = {
+			["Name"] = "Spielsüchtig",
+			["Description"] = "Spiele drei mal an einem Spielautomaten im Casino!",
+			["Class"] = QuestSlotmachine,
+			["Reward"] = { {"Dollar", 500}, {"Punkte", 50} }
+		},
+		[14] = {
+			["Name"] = "Angler",
+			["Description"] = "Stelle deine Angelfähigkeiten unter Beweis und angle zehn Fische!",
+			["Class"] = QuestFishing,
+			["Reward"] = { {"Dollar", 500}, {"Punkte", 50} }
+		},
+		[15] = {
+			["Name"] = "Tourist",
+			["Description"] = "Besuche den markierten Ort auf der Karte!",
+			["Class"] = QuestSightseeing,
+			["Reward"] = { {"Dollar", 500}, {"Punkte", 50} }
+		},
+		[16] = {
+			["Name"] = "Guter Samariter",
+			["Description"] = "Gib einem Obdachlosen etwas zu essen!",
+			["Class"] = QuestBeggarHelp,
+			["Reward"] = { {"Dollar", 500}, {"Punkte", 50} }
+		},
 	}
-	self.m_CurrentQuest = false
 
-
-	addRemoteEvents{"questOnPedClick", "questStartClick", "questShortMessageClick"}
-	addEventHandler("questOnPedClick", root, bind(self.onPedClick, self))
+	addRemoteEvents{"questStartClick", "questShortMessageClick", "questShowDaily"}
 	addEventHandler("questStartClick", root, bind(self.onStartClick, self))
 	addEventHandler("questShortMessageClick", root, bind(self.onShortMessageClick, self))
+	addEventHandler("questShowDaily", root, bind(self.showDaily, self))
 
 	PlayerManager:getSingleton():getQuitHook():register(bind(self.onPlayerQuit, self))
 	PlayerManager:getSingleton():getWastedHook():register(bind(self.onPlayerQuit, self))
 	PlayerManager:getSingleton():getAFKHook():register(bind(self.onPlayerQuit, self))
 
-	if DEBUG then
-		addCommandHandler("quest", function(player, cmd, id)
-			local id = tonumber(id)
-			if (id and id >= 1 and id <= 24) then
-				self:startQuest(id)
-				player:sendInfo(_("Quest %s gestartet", player, id))
-			else
-				player:sendError(_("Bitte eine valide Quest-Nummer (1-24) angeben!", player))
-			end
-		end)
-	else
-		self:getTodayQuest()
+	self.m_Quests = {}
+	for questId, questData in ipairs(self.m_QuestData) do
+		if questData["Type"] == "Christmas" and not EVENT_CHRISTMAS_MARKET then
+		else
+			self.m_Quests[questId] = questData["Class"]:new(questId, questData)
+		end
 	end
-	GlobalTimer:getSingleton():registerEvent(bind(self.getTodayQuest, self), "Christmas-Quests", nil, 00, 5)
-
+	self.m_DailyQuest = Randomizer:getRandomTableValue(self.m_Quests).m_QuestId
+	self.m_QuestProgress = {}
+	self.m_LastShown = {}
 end
 
-function QuestManager:startQuest(questId)
-	if not self.m_Quests[questId] then return end
-	if self.m_CurrentQuest then self:stopQuest() end
-
-	self.m_CurrentQuest = self.m_Quests[questId]:new(questId)
-end
-
-function QuestManager:getTodayQuest()
-	local day = getRealTime().monthday
-	local month = getRealTime().month+1
-
-	if month ~= 12 then	return end
-	if not self.m_Quests[day] then return end
-
-	self:startQuest(day)
-end
-
-function QuestManager:startQuestForPlayer(player)
-	if not self.m_CurrentQuest then
+function QuestManager:startQuestForPlayer(questId, player)
+	if not self.m_Quests[questId] then
 		return false
 	end
-	if table.find(self.m_CurrentQuest:getPlayers(), player) then
+
+	if table.find(self.m_Quests[questId]:getPlayers(), player) then
 		player:sendError("Du hast die Quest bereits gestartet!")
 		return
 	end
 
-	if self.m_CurrentQuest:isQuestDone(player) then
+	if self.m_Quests[questId]:isQuestDone(player) then
 		player:sendError("Du hast die Quest bereits abgeschlossen!")
 		return
 	end
 
-	self.m_CurrentQuest:addPlayer(player)
+	local currentQuest = self.m_LastShown[player]
+	if currentQuest and currentQuest == questId then
+		self.m_Quests[questId]:addPlayer(player)
+	end
 end
 
-function QuestManager:endQuestForPlayer(player)
-	self.m_CurrentQuest:removePlayer(player)
+function QuestManager:endQuestForPlayer(questId, player)
+	self.m_Quests[questId]:removePlayer(player)
 end
 
-
-function QuestManager:onStartClick()
-	if not self.m_CurrentQuest then
-		client:sendError(_"Aktuell läuft keine Quest!")
+function QuestManager:onStartClick(questId)
+	if not self.m_Quests[questId] then
+		client:sendError("Quest nicht verfügbar!")
 		return false
 	end
-	self:startQuestForPlayer(client)
+	self:startQuestForPlayer(questId, client)
 end
 
-function QuestManager:onPedClick()
-	if not self.m_CurrentQuest then
-		client:sendError(_"Aktuell läuft keine Quest!")
+function QuestManager:showQuest(questId, player)
+	if not self.m_Quests[questId] then
+		player:sendError("Quest nicht verfügbar!")
 		return false
 	end
-	self.m_CurrentQuest:onClick(client)
+	self.m_LastShown[player] = questId
+	self.m_Quests[questId]:onClick(player)
 end
 
-function QuestManager:stopQuest()
-	for index, player in pairs(self.m_CurrentQuest:getPlayers()) do
-		if player and isElement(player) then
-			self:endQuestForPlayer(player)
-		end
-	end
-
-	delete(self.m_CurrentQuest)
-	self.m_CurrentQuest = false
+function QuestManager:showDaily(player)
+	if not player then player = client end
+	self:showQuest(self.m_DailyQuest, player)
 end
 
-function QuestManager:onShortMessageClick()
-	QuestionBox:new(client, "Möchtest du die Quest "..self.m_CurrentQuest.m_Name.." abbrechen? Du kannst diesen jederzeit wieder starten.",
+function QuestManager:onShortMessageClick(questId)
+	QuestionBox:new(client, "Möchtest du die Quest " .. self.m_Quests[questId].m_Name .. " abbrechen? Du kannst diesen jederzeit wieder starten.",
 	function()
-		self:endQuestForPlayer(client)
+		self:endQuestForPlayer(questId, client)
 	end,
 	function()
-		self:endQuestForPlayer(client)
-		self:startQuestForPlayer(client)
-	end
-)
+		self:endQuestForPlayer(questId, client)
+		self:startQuestForPlayer(questId, client)
+	end)
 end
 
 function QuestManager:onPlayerQuit(player)
-	if self.m_CurrentQuest then
-		if table.find(self.m_CurrentQuest:getPlayers(), player) then
-			self:endQuestForPlayer(player)
+	for questId, quest in pairs(self.m_Quests) do
+		if table.find(quest:getPlayers(), player) then
+			self:endQuestForPlayer(questId, player)
 		end
 	end
+	self.m_LastShown[player] = nil
 end
-
---[[
-Quest System:
-
-1.) Bringe den Weihnachtsmann an einem Punkt
-2.) Fotografiere den Weihnachtsmann (Steht irgendwo auf der Map)
-3.) Mache ein Foto mit mindestens 10 Spielern auf dem Bild
-4.) Zeichne einen schönen Weihnachtsmann (Wird von Admins bestätigt)
-5.) Bringe den Weihnachtsmann an einem Punkt
-6.) Bringe das Päckchen an einen Abgabeort
-7.) Finde 5 Päckchen (werden nur an diesem Tag verteilt)
-8.) Töte 3 Weihnachtsmänner  (Spawnen an NPC-Positionen)
-9.) Schaffe den Parcour (gemapt)
-10.) Zeichne einen Schneemann (Wird von Admins bestätigt)
-11.) Finde das Päckchen mithilfe des Radars (Radar aus Schatzsucher Job) mehrere zufällige Positionen die nach jedem Fund wechseln
-12.) Fotografiere den Weihnachtsmann (Steht irgendwo auf der Map)
-13.) Bringe ein Geschenkspapier zum Weihnachtsmann
-14.) Spiele 5x am Glücksrad
-15.) Schaffe den Parcour (gemapt)
-16.) Mache ein Foto mit mindestens 5 Spielern mit Mütze auf dem Bild
-17.) Bringe den Weihnachtsmann an einem Punkt
-18.) Bringe das Päckchen an einen Abgabeort
-19.) Töte 3 Weihnachtsmänner (Spawnen an NPC-Positionen)
-20.) Spiele 5x am Glücksrad
-21.) Bringe das Päckchen an einen Abgabeort
-22.) Bekomme eine Alkoholvergiftung vom Glühwein
-23.) Finde das Päckchen mithilfe des Radars (Radar aus Schatzsucher Job) mehrere zufällige Positionen die nach jedem Fund wechseln
-24.) Heute keine Aufgabe, verbringe den Tag mit deiner Familie - Gratis Päckchen!
-
-
-]]

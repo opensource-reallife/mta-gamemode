@@ -19,6 +19,7 @@ function ItemBeggar:giveItem(player, item)
 					self:despawn()
 				end, 50, 1
 			)
+			triggerEvent("onBeggarHelp", player) -- For Quest
 		else
 			player:sendError(_("Du hast kein/en %s dabei!", player, item))
 		end

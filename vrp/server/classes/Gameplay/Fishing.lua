@@ -317,9 +317,10 @@ function Fishing:FishCaught()
 
 				self:increaseFishCaughtCount(fishId)
 
+				triggerEvent("onFishCaught", client) -- For Quest
 				StatisticsLogger:getSingleton():addfishCaughtLogs(client, fishName, size, tbl.location, fishId)
 				client:sendInfo(("Du hast eine(n) %s gefangen.\nGröße: %scm"):format(fishName, size, newFishRecord and "(Rekord!)" or ""))
-				client:meChat(true, ("hat ein(e) %s gefangen. Größe: %scm %s"):format(fishName, size, newFishRecord and "(Rekord!)" or ""))
+				client:meChat(true, "hat eine(n) %s gefangen.", fishName, true)
 				client:givePoints(Randomizer:get(0, quality + 1))
 				return
 			end

@@ -199,7 +199,7 @@ function Slotmachine:moveLever(player)
 	local int, dim = self.m_Objects.slotmachine:getInterior(), self.m_Objects.slotmachine:getDimension()
 	setTimer(triggerClientEvent, 150, 1, getRootElement(), "onSlotmachineSoundPlay", getRootElement(), x, y, z, "start_machine", int, dim)
 
-
+	triggerEvent("onSlotmachineUse", player) -- For Quest
 	setTimer(function() self:spin(player) end, 500, 1, player)
 
 	return true;

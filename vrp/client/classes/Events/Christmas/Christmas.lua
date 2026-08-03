@@ -1,11 +1,6 @@
 Christmas = inherit(Singleton)
 
 function Christmas:constructor()
-	
-	self.m_QuestManager = QuestManager:new()
-
-	QuestPackageFind.togglePackages(false)
-
 	--Bonus Ped
 	if EVENT_CHRISTMAS_MARKET then
 		self.m_Music = playSound3D(INGAME_WEB_PATH .. "/ingame/JingleBells.mp3",1479.16, -1697.60, 14.05 , true)
@@ -75,7 +70,7 @@ function Christmas:constructor()
 
 		ped:setData("onClickEvent",
 			function()
-				triggerServerEvent("questOnPedClick", localPlayer)
+				AdventCalenderGUI:new()
 			end
 		)
 		local blip = Blip:new("Calendar.png", ped.position.x, ped.position.y, 100, nil, {244, 73, 85})

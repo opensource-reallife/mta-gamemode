@@ -20,8 +20,11 @@ function Randomizer:get(min, max)
 	return math.random(min, max)
 end
 
-function Randomizer:getRandomOf(n, opportunities)
-	self:changeSeed()
+function Randomizer:getRandomOf(n, tbl)
+    local opportunities = {}
+    for k, v in pairs(tbl) do
+        table.insert(opportunities, v)
+    end
 
 	if n > #opportunities then
 		return false
@@ -31,7 +34,7 @@ function Randomizer:getRandomOf(n, opportunities)
 	for i = 1, n do
 		local rand
 		repeat
-			rand = math.random(1, #opportunities)
+			rand = self:get(1, #opportunities)
 		until not table.find(result, opportunities[rand])
 
 		table.insert(result, opportunities[rand])
@@ -40,8 +43,8 @@ function Randomizer:getRandomOf(n, opportunities)
 	return result
 end
 
-function Randomizer:getRandomTableValue(tab)
-	return tab[self:get(1, #tab)]
+function Randomizer:getRandomTableValue(tbl)
+	return self:getRandomOf(1, tbl)[1]
 end
 
 function Randomizer:nextDouble()
