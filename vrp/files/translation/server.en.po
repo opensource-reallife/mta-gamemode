@@ -814,15 +814,6 @@ msgstr "Not available in DEBUG mode (test server)!"
 msgid "Du hast erfolgreich den Bonus %s für %d Päckchen und %d Zuckerstange/n gekauft!"
 msgstr "You have successfully bought the bonus %s for %d packs and %d candy cane/s!"
 
-msgid "Quest bestanden! Du erhälst %d Päckchen!"
-msgstr "Quest passed! You'll get %d packages!"
-
-msgid "Quest: Du hast das Glücksrad bereits %d/%dx gedreht!"
-msgstr "Quest: You have already turned the wheel of fortune %d/%dx!"
-
-msgid "Du hast %d/%d Päckchen gefunden!"
-msgstr "You have found %d/%d packages!"
-
 msgid "Glückwunsch! Du hast den Weihnachtsmann fotografiert!"
 msgstr "Congratulations! You took a picture of Santa Claus!"
 
@@ -5179,3 +5170,132 @@ msgstr "This station is already set up correctly!"
 
 msgid "Du bist kein San News-Mitglied oder nicht im Dienst!"
 msgstr "You're not a member of the San News or not on duty!"
+
+msgid "Weihnachts-Bodyguard"
+msgstr "Christmas bodyguard"
+
+msgid "Bringe den Weihnachtsmann zum markierten Ort!"
+msgstr "Bring Santa Claus to the marked location!"
+
+msgid "Weihnachtsmann-Foto"
+msgstr "Photographer (Santa)"
+
+msgid "Finde den Weihnachtsmann in Los Santos und schieße ein Foto von ihm!"
+msgstr "Find Santa Claus in Los Santos and take a photo of him!"
+
+msgid "Päckchen-Transport"
+msgstr "Package delivery"
+
+msgid "Liefere die Päckchen an den angezeigten Ort! Pass gut auf den Anhänger auf!"
+msgstr "Deliver the packages to the marked location! Take good care of the trailer!"
+
+msgid "Weihnachts-Morde"
+msgstr "Christmas murders"
+
+msgid "Suche die Einbrecher in den orange markierten Gegenden und bringe sie um!"
+msgstr "Find the burglars in the orange areas and kill them!"
+
+msgid "Fotograf"
+msgstr "Photographer"
+
+msgid "Schieße ein Foto mit mindestens einem Spieler darauf!"
+msgstr "Take a photo with at least one player on it!"
+
+msgid "Päckchen-Finder"
+msgstr "Package finder"
+
+msgid "Finde fünf Päckchen und klicke diese an!"
+msgstr "Find five packages and click on them!"
+
+msgid "Glücksrad-Master"
+msgstr "Wheel of Fortune"
+
+msgid "Drehe drei mal an einem Glücksrad!"
+msgstr "Spin the wheel of fortune three times!"
+
+msgid "Feierabend"
+msgstr "Freebie"
+
+msgid "Heute gibt es nichts zu erledigen! Hier deine Belohnung!"
+msgstr "There's nothing to do today! Here's your reward!"
+
+msgid "Riesenradfahrer"
+msgstr "Ferris Wheel"
+
+msgid "Fahre mit dem Riesenrad, bis die Gondel wieder an den Treppen anhält!"
+msgstr "Ride the Ferris wheel until the gondola stops at the stairs again!"
+
+msgid "Mützen-Fotograf"
+msgstr "Photographer (Santa hat)"
+
+msgid "Schieße ein Foto mit mindestens einem Spieler, der eine Weihnachtsmütze trägt!"
+msgstr "Take a photo with at least one player wearing a Santa hat!"
+
+msgid "Team-Fotograf"
+msgstr "Photographer (Team)"
+
+msgid "Schieße ein Foto mit mindestens einem Teammitglied!"
+msgstr "Make a photo with at least one team member on it!"
+
+msgid "Gärtner"
+msgstr "Gardener"
+
+msgid "Pflanze fünf Pflanzen an!"
+msgstr "Plant five plants!"
+
+msgid "Spielsüchtig"
+msgstr "Gambling addict"
+
+msgid "Spiele drei mal an einem Spielautomaten im Casino!"
+msgstr "Use the slot machine at the casino three times!"
+
+msgid "Angler"
+msgstr "Fisherman"
+
+msgid "Stelle deine Angelfähigkeiten unter Beweis und angle zehn Fische!"
+msgstr "Prove your fishing skills and catch ten fish!"
+
+msgid "Tourist"
+msgstr "Tourist"
+
+msgid "Besuche den markierten Ort auf der Karte!"
+msgstr "Visit the marked location on the map!"
+
+msgid "Guter Samariter"
+msgstr "Good Samaritan"
+
+msgid "Gib einem Obdachlosen etwas zu essen!"
+msgstr "Give food to a homeless person!"
+
+msgid "Möchtest du die Quest '%s' abbrechen? Du kannst sie jederzeit wieder starten."
+msgstr "Do you want to cancel the quest '%s'? You can restart it at any time."
+
+msgid "Quest: Du hast %d/%d mal am Spielautomaten gespielt!"
+msgstr "Quest: You used the slot machine %d/%d times!"
+
+msgid "Quest: Du hast %d/%d Päckchen gefunden!"
+msgstr "Quest: You found %d/%d packages!"
+
+msgid "Quest: Du hast %d/%d Pflanzen angepflanzt!"
+msgstr "Quest: You planted %d/%d plants!"
+
+msgid "Quest: Du hast das Glücksrad %d/%d mal gedreht!"
+msgstr "Quest: You used the wheel of fortune %d/%d times!"
+
+msgid "Quest: Du hast %d/%d Fische geangelt!"
+msgstr "Quest: You caught %d/%d fish!"
+
+msgid "Quest bestanden! Belohnung: %s"
+msgstr "Quest completed! Reward: %s"
+
+msgid "Punkte"
+msgstr "Points"
+
+msgid "Du hast die Quest bereits gestartet!"
+msgstr "You already started this quest!"
+
+msgid "Du hast die Quest bereits abgeschlossen!"
+msgstr "You already completed this quest!"
+
+msgid "Quest nicht verfügbar!"
+msgstr "Quest not available!"

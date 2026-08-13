@@ -15,9 +15,9 @@ function Quest:destructor()
 	end
 end
 
-function Quest:addPlayer(player, ...)
+function Quest:addPlayer(player)
 	table.insert(self.m_Players, player)
-	player:triggerEvent("questAddPlayer", self.m_QuestId, self.m_Name, self.m_Description, ...)
+	player:triggerEvent("questAddPlayer", self.m_QuestId, _(self.m_Name, player), _(self.m_Description, player))
 end
 
 function Quest:getPlayers()
@@ -39,7 +39,7 @@ function Quest:removePlayer(player)
 end
 
 function Quest:onClick(player)
-	player:triggerEvent("questOpenGUI", self.m_QuestId, self.m_Name, self.m_Description, self.m_Reward)
+	player:triggerEvent("questOpenGUI", self.m_QuestId, _(self.m_Name, player), _(self.m_Description, player), self.m_Reward, player)
 end
 
 function Quest:success(player)

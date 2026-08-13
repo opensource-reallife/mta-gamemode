@@ -74,7 +74,7 @@ function QuestPackageFind:onPackageClick(button, state, player)
 			self.m_Objects[source.Id] = nil
 			source:destroy()
 			player.packagesFound = player.packagesFound + 1
-			player:sendInfo(_("Du hast %d/%d Päckchen gefunden!", player, player.packagesFound, QuestPackageFind.Target))
+			player:sendShortMessage(_("Quest: Du hast %d/%d Päckchen gefunden!", player, player.packagesFound, QuestPackageFind.Target))
 			if player.packagesFound >= QuestPackageFind.Target then
 				self:success(player)
 			end

@@ -6585,3 +6585,18 @@ msgstr "Weather stations"
 
 msgid "Wetterstation"
 msgstr "Weather station"
+
+msgid "Quest starten"
+msgstr "Start quest"
+
+msgid "Beschreibung"
+msgstr "Description"
+
+msgid "Belohnung"
+msgstr "Reward"
+
+msgid "%s\nKlicke hier um die Quest abzubrechen!"
+msgstr "%s\nClick here to cancel the quest!"
+
+msgid "Tägliche Aufgabe"
+msgstr "Daily quest"

@@ -28,7 +28,7 @@ function QuestManager:constructor()
 end
 
 function QuestManager:addPlayer(questId, name, description, ...)
-	self.m_ShortMessage[questId] = ShortMessage:new(description.."\nKlicke hier um die Quest abzubrechen!", "Quest: "..name, {150, 0, 0}, -1, function() triggerServerEvent("questShortMessageClick", localPlayer, questId) end)
+	self.m_ShortMessage[questId] = ShortMessage:new(_("%s\nKlicke hier um die Quest abzubrechen!", description), _("Quest: %s", name), {150, 0, 0}, -1, function() triggerServerEvent("questShortMessageClick", localPlayer, questId) end)
 	if self.m_Quests[questId] then
 		self.m_Quests[questId]:new(questId, name, description, ...)
 	end

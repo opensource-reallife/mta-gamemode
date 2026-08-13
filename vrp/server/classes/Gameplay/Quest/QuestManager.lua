@@ -136,12 +136,12 @@ function QuestManager:startQuestForPlayer(questId, player)
 	end
 
 	if table.find(self.m_Quests[questId]:getPlayers(), player) then
-		player:sendError("Du hast die Quest bereits gestartet!")
+		player:sendError(_("Du hast die Quest bereits gestartet!", player))
 		return
 	end
 
 	if self.m_Quests[questId]:isQuestDone(player) then
-		player:sendError("Du hast die Quest bereits abgeschlossen!")
+		player:sendError(_("Du hast die Quest bereits abgeschlossen!", player))
 		return
 	end
 
@@ -157,7 +157,7 @@ end
 
 function QuestManager:onStartClick(questId)
 	if not self.m_Quests[questId] then
-		client:sendError("Quest nicht verfügbar!")
+		client:sendError(_("Quest nicht verfügbar!", player))
 		return false
 	end
 	self:startQuestForPlayer(questId, client)
@@ -165,7 +165,7 @@ end
 
 function QuestManager:showQuest(questId, player)
 	if not self.m_Quests[questId] then
-		player:sendError("Quest nicht verfügbar!")
+		player:sendError(_("Quest nicht verfügbar!", player))
 		return false
 	end
 	self.m_LastShown[player] = questId
@@ -178,7 +178,7 @@ function QuestManager:showDaily(player)
 end
 
 function QuestManager:onShortMessageClick(questId)
-	QuestionBox:new(client, "Möchtest du die Quest " .. self.m_Quests[questId].m_Name .. " abbrechen? Du kannst diesen jederzeit wieder starten.",
+	QuestionBox:new(client, _("Möchtest du die Quest '%s' abbrechen? Du kannst sie jederzeit wieder starten.", client, _(self.m_Quests[questId].m_Name, client)),
 	function()
 		self:endQuestForPlayer(questId, client)
 	end,
