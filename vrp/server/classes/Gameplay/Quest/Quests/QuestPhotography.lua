@@ -31,7 +31,7 @@ function QuestPhotography:constructor(questId)
 	addEventHandler("questPhotograpyTakePhoto", root, self.m_TakePhotoBind)
 end
 
-function QuestPhotography:destructor()
+function QuestPhotography:virtual_destructor()
 	if self.m_NPC and isElement(self.m_NPC) then
 		setGarageOpen(9, false)
 		self.m_NPC:destroy()

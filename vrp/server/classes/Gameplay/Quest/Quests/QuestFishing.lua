@@ -10,7 +10,7 @@ function QuestFishing:constructor()
 	addEventHandler("onFishCaught", root, self.m_FishingBind)
 end
 
-function QuestFishing:destructor()
+function QuestFishing:virtual_destructor()
 	removeEventHandler("onFishCaught", root, self.m_FishingBind)
 end
 

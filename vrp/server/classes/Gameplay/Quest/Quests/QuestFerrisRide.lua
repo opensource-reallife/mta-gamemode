@@ -7,7 +7,7 @@ function QuestFerrisRide:constructor()
 	addEventHandler("onFerrisWheelRide", root, self.m_FerrisBind)
 end
 
-function QuestFerrisRide:destructor()
+function QuestFerrisRide:virtual_destructor()
 	removeEventHandler("onFerrisWheelRide", root, self.m_FerrisBind)
 end
 

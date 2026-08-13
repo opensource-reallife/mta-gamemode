@@ -10,7 +10,7 @@ function QuestGrowablePlant:constructor()
 	addEventHandler("onGrowablePlanted", root, self.m_GrowableBind)
 end
 
-function QuestGrowablePlant:destructor()
+function QuestGrowablePlant:virtual_destructor()
 	removeEventHandler("onGrowablePlanted", root, self.m_GrowableBind)
 end
 

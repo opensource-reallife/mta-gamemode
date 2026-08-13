@@ -21,7 +21,7 @@ function QuestNPCTransport:constructor()
 	addEventHandler("onMarkerHit", self.m_Marker, bind(self.onMarkerHit, self))
 end
 
-function QuestNPCTransport:destructor()
+function QuestNPCTransport:virtual_destructor()
 	for index, bot in pairs(self.m_Bots) do
 		if bot then
 			if bot then

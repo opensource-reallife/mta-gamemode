@@ -17,7 +17,7 @@ function QuestSightseeing:constructor()
     addEventHandler("onMarkerHit", self.m_Marker, self.m_MarkerHitBind)
 end
 
-function QuestSightseeing:destructor()
+function QuestSightseeing:virtual_destructor()
 	if isElement(self.m_Marker) then self.m_Marker:destroy() end
 end
 

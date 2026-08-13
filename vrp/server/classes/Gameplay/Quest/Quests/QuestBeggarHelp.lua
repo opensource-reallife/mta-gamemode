@@ -7,7 +7,7 @@ function QuestBeggarHelp:constructor()
 	addEventHandler("onBeggarHelp", root, self.m_BeggarHelpBind)
 end
 
-function QuestBeggarHelp:destructor()
+function QuestBeggarHelp:virtual_destructor()
 	removeEventHandler("onBeggarHelp", root, self.m_BeggarHelpBind)
 end
 

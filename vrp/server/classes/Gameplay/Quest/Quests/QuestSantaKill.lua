@@ -29,7 +29,7 @@ function QuestSantaKill:constructor()
 	addEventHandler("onQuestSantaKilled", root, self.m_KillSantaBind)
 end
 
-function QuestSantaKill:destructor()
+function QuestSantaKill:virtual_destructor()
 	removeEventHandler("onQuestSantaKilled", root, self.m_KillSantaBind)
 end
 

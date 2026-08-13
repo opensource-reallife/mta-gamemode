@@ -30,7 +30,7 @@ function QuestDraw:constructor(questId)
 
 end
 
-function QuestDraw:destructor()
+function QuestDraw:virtual_destructor()
 	removeEventHandler("questDrawRequestPlayers", root, self.m_RequestPlayersBind)
 	removeEventHandler("questDrawReceiveAcceptImage", root, self.m_AcceptImageBind)
 	removeEventHandler("questDrawReceiveDeclineImage", root, self.m_DeclineImageBind)

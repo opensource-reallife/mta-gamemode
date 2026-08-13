@@ -10,7 +10,7 @@ function QuestSlotmachine:constructor()
 	addEventHandler("onSlotmachineUse", root, self.m_SlotmachineBind)
 end
 
-function QuestSlotmachine:destructor()
+function QuestSlotmachine:virtual_destructor()
 	removeEventHandler("onSlotmachineUse", root, self.m_SlotmachineBind)
 end
 

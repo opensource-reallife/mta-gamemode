@@ -9,7 +9,7 @@ function Quest:virtual_constructor(questId, questData)
 	self.m_Reward = questData["Reward"]
 end
 
-function Quest:virtual_destructor()
+function Quest:destructor()
 	for index, player in pairs(self:getPlayers()) do
 		self:removePlayer(player)
 	end

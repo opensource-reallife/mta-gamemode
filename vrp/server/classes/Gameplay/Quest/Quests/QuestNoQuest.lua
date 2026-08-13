@@ -3,7 +3,7 @@ QuestNoQuest = inherit(Quest)
 function QuestNoQuest:constructor()
 end
 
-function QuestNoQuest:destructor()
+function QuestNoQuest:virtual_destructor()
 end
 
 function QuestNoQuest:addPlayer(player)

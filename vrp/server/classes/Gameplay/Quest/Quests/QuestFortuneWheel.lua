@@ -10,7 +10,7 @@ function QuestFortuneWheel:constructor()
 	addEventHandler("onFortuneWheelPlay", root, self.m_FortuneBind)
 end
 
-function QuestFortuneWheel:destructor()
+function QuestFortuneWheel:virtual_destructor()
 	removeEventHandler("onFortuneWheelPlay", root, self.m_FortuneBind)
 end
 

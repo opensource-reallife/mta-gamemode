@@ -27,7 +27,7 @@ function QuestPackageTransport:constructor()
 
 end
 
-function QuestPackageTransport:destructor()
+function QuestPackageTransport:virtual_destructor()
 	removeEventHandler("onPlayerVehicleExit", getRootElement(), self.m_ExitBind)
 	removeEventHandler("onTrailerDetach", getRootElement(), self.m_DetachBind)
 end

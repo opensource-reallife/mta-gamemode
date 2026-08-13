@@ -9,7 +9,7 @@ function QuestPackageFind:constructor()
 	end)
 end
 
-function QuestPackageFind:destructor()
+function QuestPackageFind:virtual_destructor()
 	killTimer(self.m_Timer)
 	for id, object in pairs(self.m_Objects) do
 		if isElement(object) then
