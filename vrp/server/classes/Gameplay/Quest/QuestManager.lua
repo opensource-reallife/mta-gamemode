@@ -157,7 +157,7 @@ end
 
 function QuestManager:onStartClick(questId)
 	if not self.m_Quests[questId] then
-		client:sendError(_("Quest nicht verfügbar!", player))
+		client:sendError(_("Quest nicht verfügbar!", client))
 		return false
 	end
 	self:startQuestForPlayer(questId, client)
