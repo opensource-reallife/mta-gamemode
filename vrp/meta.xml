@@ -339,6 +339,8 @@
 	<script src="server/classes/Gameplay/GrowableManager.lua" type="server"/>
 	<script src="server/classes/Gameplay/Growable.lua" type="server"/>
 
+	<script src="server/classes/Gameplay/Market.lua" type="server"/>
+
 	<script src="server/classes/Gameplay/PickupWeaponManager.lua" type="server"/>
 	<script src="server/classes/Gameplay/PickupWeapon.lua" type="server"/>
 	<script src="server/classes/Gameplay/PickupMoney.lua" type="server"/>
@@ -2321,6 +2323,9 @@
 	<vrpfile src="files/images/Inventory/items/Essen/ItemDonut.png" />
 	<vrpfile src="files/images/Inventory/items/Essen/Zuckerstange.png" />
 	<vrpfile src="files/images/Inventory/items/Essen/Fried Chicken.png" />
+	<vrpfile src="files/images/Inventory/items/Essen/Karotte.png" />
+	<vrpfile src="files/images/Inventory/items/Essen/Birne.png" />
+	<vrpfile src="files/images/Inventory/items/Essen/Erdbeeren.png" />
 
 	<vrpfile src="files/images/Inventory/items/Objekte/helm.png" />
 	<vrpfile src="files/images/Inventory/items/Objekte/crosshelmet.png" />

@@ -200,7 +200,10 @@ SHOP_ITEMS = {
 		["Weed-Samen"] = 40,
 		["Kanne"] = 500,
 		["Apfelbaum-Samen"] = 60,
-		["Blumen-Samen"] = 20,
+		["Blumen-Samen"] = 80,
+		["Karotten-Samen"] = 20,
+		["Birnbaum-Samen"] = 60,
+		["Erdbeer-Samen"] = 40,
 	};
 	["24/7"] = {
 		["Radio"] = 1000,

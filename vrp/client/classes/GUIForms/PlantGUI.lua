@@ -10,17 +10,17 @@ inherit(Singleton, PlantGUI)
 
 addRemoteEvents{"showPlantGUI", "hidePlantGUI"}
 
-function PlantGUI:constructor(id, type, lastGrow, size, maxSize, item, itemsPerSize, owner, lastWatered, wateredTime)
+function PlantGUI:constructor(id, name, lastGrow, size, maxSize, item, itemsPerSize, owner, lastWatered, wateredTime)
 	GUIForm.constructor(self, screenWidth-270, screenHeight/2-160/2, 250, 160, false)
 
 	if not id or not size then delete(self) return end
 	self.m_Id = id
 
-	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, type, true, false, self)
+	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _(name), true, false, self)
 	local ts = getRealTime().timestamp
 
 	self.m_Progress = GUIProgressBar:new(10, 40, self.m_Width-20, 25, self)
-	self.m_Progress:setProgress(size/maxSize*100)
+	self.m_Progress:setProgress(math.min(size/maxSize*100, 100))
 	self.m_Progress:setForegroundColor(tocolor(50,200,255))
 	self.m_Progress:setBackgroundColor(tocolor(180,240,255))
 	GUILabel:new(10, 40, self.m_Width-20, 25, _("Größe: %d/%d", size, maxSize), self):setAlignX("center")
@@ -55,8 +55,8 @@ function PlantGUI:harvest(key, state)
 end
 
 addEventHandler("showPlantGUI", root,
-	function(id, type, lastGrow, size, maxSize, item, itemsPerSize, owner, lastWatered, wateredTime)
-		PlantGUI:new(id, type, lastGrow, size, maxSize, item, itemsPerSize, owner, lastWatered, wateredTime)
+	function(id, name, lastGrow, size, maxSize, item, itemsPerSize, owner, lastWatered, wateredTime)
+		PlantGUI:new(id, name, lastGrow, size, maxSize, item, itemsPerSize, owner, lastWatered, wateredTime)
 	end
 )
 

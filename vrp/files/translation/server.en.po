@@ -5299,3 +5299,54 @@ msgstr "You already completed this quest!"
 
 msgid "Quest nicht verfügbar!"
 msgstr "Quest not available!"
+
+msgid "Möchtest du Erdbeeren verkaufen?"
+msgstr "Would you like to sell strawberries?"
+
+msgid "Verkaufst du Äpfel?"
+msgstr "Are you selling apples?"
+
+msgid "Hast du Karotten? Ich zahle gut!"
+msgstr "Do you have carrots? I pay well!"
+
+msgid "Wenn du Blumen hast, kaufe ich sie dir ab!"
+msgstr "If you have flowers, I'll buy them from you!"
+
+msgid "Kaufe Birnen zu fairen Preisen!"
+msgstr "Buying pears at fair prices!"
+
+msgid "Würstchen sind leider ausverkauft!"
+msgstr "Sorry, sausages are sold out!"
+
+msgid "Apfel"
+msgstr "Apple"
+
+msgid "Blumen"
+msgstr "Flowers"
+
+msgid "Karotte"
+msgstr "Carrot"
+
+msgid "Birne"
+msgstr "Pear"
+
+msgid "Erdbeeren"
+msgstr "Strawberries"
+
+msgid "Möchtest du %s für %s$ verkaufen?"
+msgstr "Do you want to sell %s for %s$?"
+
+msgid "Verkaufen: %s"
+msgstr "Selling: %s"
+
+msgid "Wie viel möchtest du verkaufen? (%s$ pro Stück)"
+msgstr "How much do you want to sell? (%s$ per item)"
+
+msgid "Du hast nicht genug davon in deinem Inventar!"
+msgstr "You don't have enough of this in your inventory!"
+
+msgid "Du hast diesen Gegenstand nicht!"
+msgstr "You dont have this item!"
+
+msgid "isst eine %s!"
+msgstr "eats a %s!"

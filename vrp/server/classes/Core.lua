@@ -200,6 +200,10 @@ function Core:constructor()
 		RaceManager:new()
 		QuestManager:new()
 
+		if MARKET_ACTIVE then
+			Market:new()
+		end
+
 		if EVENT_EASTER then
 			Easter:new()
 		end

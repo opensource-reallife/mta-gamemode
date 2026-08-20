@@ -5399,7 +5399,7 @@ msgid "Pilz"
 msgstr "Mushroom"
 
 msgid "Kanne"
-msgstr "Jug"
+msgstr "Watering can"
 
 msgid "Blitzer"
 msgstr "Speed camera"
@@ -6600,3 +6600,36 @@ msgstr "%s\nClick here to cancel the quest!"
 
 msgid "Tägliche Aufgabe"
 msgstr "Daily quest"
+
+msgid "Apfelbaum"
+msgstr "Apple tree"
+
+msgid "Blumen"
+msgstr "Flowers"
+
+msgid "Karotten-Samen"
+msgstr "Carrot seeds"
+
+msgid "Karotte"
+msgstr "Carrot"
+
+msgid "Karotten"
+msgstr "Carrots"
+
+msgid "Birnbaum-Samen"
+msgstr "Pear tree seeds"
+
+msgid "Birnbaum"
+msgstr "Pear tree"
+
+msgid "Birne"
+msgstr "Pear"
+
+msgid "Erdbeer-Samen"
+msgstr "Strawberry seeds"
+
+msgid "Erdbeeren"
+msgstr "Strawberries"
+
+msgid "Erdbeerpflanze"
+msgstr "Strawberry plant"
