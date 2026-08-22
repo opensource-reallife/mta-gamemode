@@ -2005,6 +2005,7 @@
 	<vrpfile src="files/images/Radar/Blips/ServiceTechnician.png"/>
 	<vrpfile src="files/images/Radar/Blips/Jewel.png"/>
 	<vrpfile src="files/images/Radar/Blips/SatelliteDish.png"/>
+	<vrpfile src="files/images/Radar/Blips/FerrisWheel.png"/>
 
 	<vrpfile src="files/images/Jobs/HeaderLogistician.png"/>
 	<vrpfile src="files/images/Jobs/HeaderTrashman.png"/>

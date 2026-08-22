@@ -1,8 +1,8 @@
 -- ****************************************************************************
 -- *
 -- *  PROJECT:     vRoleplay
--- *  FILE:        TODO
--- *  PURPOSE:     TODO
+-- *  FILE:        server/classes/Gameplay/FerrisWheel/FerrisWheelManager.lua
+-- *  PURPOSE:     Ferris wheel manager class
 -- *
 -- ****************************************************************************
 
@@ -17,12 +17,16 @@ FerrisWheelManager.UpdateMap = {}
 
 function FerrisWheelManager:constructor()
     self.m_BankAccountServer = BankServer.get("gameplay.ferris_wheel")
-    self:addWheel(Vector3(391.100, -2028.580, 19.95), -90) --beach
+    self:addWheel(Vector3(391.100, -2028.580, 19.95), -90, true) --beach
 end
 
-function FerrisWheelManager:addWheel(position, rotation)
+function FerrisWheelManager:addWheel(position, rotation, blip)
     local wheel = FerrisWheel:new(position, rotation)
     --self:registerUpdate(wheel)
+    if blip then
+        wheel.m_Blip = Blip:new("FerrisWheel.png", position.x, position.y, root, 400)
+        wheel.m_Blip:setDisplayText("Riesenrad")
+    end
     table.insert(FerrisWheelManager.Map, wheel)
 end
 
@@ -34,7 +38,6 @@ function FerrisWheelManager:registerUpdate(wheel)
             FerrisWheelManager.UpdateInterval,
             0
         )
-
     end
 end
 
