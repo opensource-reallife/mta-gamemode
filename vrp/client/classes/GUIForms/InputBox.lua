@@ -6,6 +6,7 @@
 -- *
 -- ****************************************************************************
 InputBox = inherit(GUIForm)
+inherit(Singleton, InputBox)
 
 function InputBox:constructor(title, text, callback, integerOnly, offsetY)
 	local offsetY = offsetY or 0
@@ -16,6 +17,7 @@ function InputBox:constructor(title, text, callback, integerOnly, offsetY)
 
 	GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true)
 	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, title, true, true, self)
+	self.m_Window:deleteOnClose(true)
 
 	self.m_Label = GUIGridLabel:new(1, 1, 20, 1 + offsetY, text, self.m_Window)
 	self.m_EditBox = GUIGridEdit:new(1, 2 + offsetY, 20, 1, self.m_Window)
@@ -59,11 +61,14 @@ addEventHandler("inputBox", root,
 	function(title, text, callback, ...)
 		local additionalParameters = {...}
 		local inputBox = InputBox:new(title, text)
-		inputBox:setServerTrigger(callback, additionalParameters)
+		if inputBox then
+			inputBox:setServerTrigger(callback, additionalParameters)
+		end
 	end
 )
 
 InputBoxWithCheckbox = inherit(GUIForm)
+inherit(Singleton, InputBoxWithCheckbox)
 
 function InputBoxWithCheckbox:constructor(title, text, textCheckbox ,callback, integerOnly, offsetY)
 	local offsetY = offsetY or 0
@@ -74,6 +79,7 @@ function InputBoxWithCheckbox:constructor(title, text, textCheckbox ,callback, i
 
 	GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true)
 	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, title, true, true, self)
+	self.m_Window:deleteOnClose(true)
 
 	self.m_Label = GUIGridLabel:new(1, 1, 20, 1 + offsetY, text, self.m_Window)
 	self.m_EditBox = GUIGridEdit:new(1, 2 + offsetY, 20, 1, self.m_Window)
