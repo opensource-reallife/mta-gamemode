@@ -25,7 +25,7 @@ function FerrisWheelManager:addWheel(position, rotation, blip)
     --self:registerUpdate(wheel)
     if blip then
         wheel.m_Blip = Blip:new("FerrisWheel.png", position.x, position.y, root, 400)
-        wheel.m_Blip:setDisplayText("Riesenrad")
+        wheel.m_Blip:setDisplayText("Riesenrad", BLIP_CATEGORY.Leisure)
     end
     table.insert(FerrisWheelManager.Map, wheel)
 end

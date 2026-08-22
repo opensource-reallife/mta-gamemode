@@ -120,7 +120,7 @@ function ShopManager:loadShops()
 	self.m_RestockNonCollisionCol:setData("NonCollisionArea", {players = true}, true)
 
 	self.m_RestockBlip = Blip:new("RcShop.png", 260.78, 10.45, {groupType = "Firma"})
-	self.m_RestockBlip:setDisplayText("Shop-Lieferant")
+	self.m_RestockBlip:setDisplayText("Shop-Lieferant", BLIP_CATEGORY.Other)
 end
 
 function ShopManager:loadVehicleShops()
