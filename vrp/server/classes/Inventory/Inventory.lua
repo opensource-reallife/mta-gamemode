@@ -331,19 +331,54 @@ function Inventory:removeItem(item, amount, value)
 	if self.m_ItemData[item] then
 		local bag = self.m_ItemData[item]["Tasche"]
 		local places = self:getPlaces(bag)
+		local totalAvailable = 0
 		local itemValue
+
 		for place = 0, places do
 			local id = self:getItemID(bag, place)
 			if self.m_Items[id] and self.m_Items[id]["Objekt"] and self.m_Items[id]["Objekt"] == item then
-				if self.m_Items[id]["Menge"] >= amount then
-					if not value then
-						if self:removeItemFromPlace(bag, place, amount) then
-							return true
+				if not value then
+					totalAvailable = totalAvailable + self.m_Items[id]["Menge"]
+				else
+					itemValue = self:getItemValueByBag(bag, place)
+					if itemValue == value then
+						totalAvailable = totalAvailable + self.m_Items[id]["Menge"]
+					end
+				end
+			end
+		end
+
+		if totalAvailable < amount then
+			return false
+		end
+
+		local remainingAmount = amount
+		for place = 0, places do
+			local id = self:getItemID(bag, place)
+			if self.m_Items[id] and self.m_Items[id]["Objekt"] and self.m_Items[id]["Objekt"] == item then
+				if not value then
+					local currentAmount = self.m_Items[id]["Menge"]
+					if currentAmount > 0 then
+						local removeFromSlot = math.min(currentAmount, remainingAmount)
+						if self:removeItemFromPlace(bag, place, removeFromSlot) then
+							remainingAmount = remainingAmount - removeFromSlot
+							if remainingAmount <= 0 then
+								return true
+							end
 						end
-					else
-						itemValue = self:getItemValueByBag(bag, place)
-						if itemValue == value then
-							return self:removeItemFromPlace(bag, place, amount, value)
+					end
+				else
+					itemValue = self:getItemValueByBag(bag, place)
+					if itemValue == value then
+						local currentAmount = self.m_Items[id]["Menge"]
+						if currentAmount > 0 then
+							local removeFromSlot = math.min(currentAmount, remainingAmount)
+							if self:removeItemFromPlace(bag, place, removeFromSlot, value) then
+								remainingAmount = remainingAmount - removeFromSlot
+								if remainingAmount <= 0 then
+									return true
+								end
+							end
 						end
 					end
 				end
@@ -465,42 +500,73 @@ function Inventory:giveItem(item, amount, value)
 	if self.m_ItemData[item] then
 		local bag = self.m_ItemData[item]["Tasche"]
 		local itemMax = self.m_ItemData[item]["Item_Max"]
+		local stackMax = self.m_ItemData[item]["Stack_max"]
+		local currentTotal = self:getItemAmount(item)
 
-		if self:getItemAmount(item) + amount > itemMax  then
+		if currentTotal + amount > itemMax then
 			self.m_Owner:sendError(_("Du kannst maximal %d %s in dein Inventar legen!", self.m_Owner, itemMax, _(item, self.m_Owner)))
-			return
+			return false
 		end
 
-		local placeType, place
-		if self:getPlaceForItem(item, amount) and not value then --Stack
-			placeType = "stack"
-			place = self:getPlaceForItem(item, amount)
-		else -- New
-			placeType = "new"
-			place = self:getLowEmptyPlace(bag)
-		end
-
-		if place then
+		local existingStackSpace = 0
+		local places = self:getPlaces(bag)
+		for place = 0, places do
 			local id = self:getItemID(bag, place)
-			if placeType == "stack" then
-				local itemAmount = self.m_Items[id]["Menge"]
-				self.m_Items[id]["Menge"] = itemAmount + amount
-				self:saveItemAmount(id, self.m_Items[id]["Menge"])
-				return true
-			elseif placeType == "new" then
-				if amount > 0 then
-					local lastId = self:insertItem(amount, item, place, bag, value or "", self.m_ItemData[item]["MaxWear"])
-					self:loadItem(lastId)
-					self:setItemValueByBag(bag,place, value or "")
-					return true
+			if id and self.m_Items[id]["Objekt"] == item and not value then
+				local currentAmount = self.m_Items[id]["Menge"]
+				if currentAmount < stackMax then
+					existingStackSpace = existingStackSpace + (stackMax - currentAmount)
 				end
 			end
-		elseif not self.m_Owner.m_Disconnecting then
-			self.m_Owner:sendError(_("Nicht genug Platz für %d %s in deinem Inventar!", self.m_Owner, amount, _(item, self.m_Owner)))
 		end
+
+		local amountForExistingStacks = math.min(amount, existingStackSpace)
+		local amountForNewStacks = amount - amountForExistingStacks
+		local newStacksNeeded = math.ceil(amountForNewStacks / stackMax)
+
+		local emptySlots = 0
+		for place = 0, places do
+			if not self:getItemID(bag, place) then
+				emptySlots = emptySlots + 1
+			end
+		end
+
+		if newStacksNeeded > emptySlots then
+			self.m_Owner:sendError(_("Nicht genug Platz für %d %s in deinem Inventar!", self.m_Owner, amount, _(item, self.m_Owner)))
+			return false
+		end
+
+		local remainingAmount = amount
+		for place = 0, places do
+			if remainingAmount <= 0 then break end
+
+			local id = self:getItemID(bag, place)
+			if id and self.m_Items[id]["Objekt"] == item and not value then
+				local currentAmount = self.m_Items[id]["Menge"]
+				if currentAmount < stackMax then
+					local addToStack = math.min(remainingAmount, stackMax - currentAmount)
+					self.m_Items[id]["Menge"] = currentAmount + addToStack
+					self:saveItemAmount(id, self.m_Items[id]["Menge"])
+					remainingAmount = remainingAmount - addToStack
+				end
+			end
+		end
+
+		while remainingAmount > 0 do
+			local currentAmount = math.min(remainingAmount, stackMax)
+			local place = self:getLowEmptyPlace(bag)
+			local lastId = self:insertItem(currentAmount, item, place, bag, value or "", self.m_ItemData[item]["MaxWear"])
+			self:loadItem(lastId)
+			self:setItemValueByBag(bag, place, value or "")
+			remainingAmount = remainingAmount - currentAmount
+		end
+
+		return true
 	elseif not self.m_Owner.m_Disconnecting then
 		self.m_Owner:sendError(_("Ungültiges Item! (%s)", self.m_Owner, item))
 	end
+
+	return false
 end
 
 function Inventory:getItemWearLevelByBag(bag, place)
