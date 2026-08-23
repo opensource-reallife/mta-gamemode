@@ -70,6 +70,7 @@ function RcVanExtension:toggleRC(player, rcVehicle, state, force, death)
 			self.m_RcVehicle[rcVehicle].isRcVehicle = true	
 			self.m_RcVehicle[rcVehicle]:setPosition(self.matrix:transformPosition(Vector3(0, -4,0)))
 			self.m_RcVehicle[rcVehicle]:setRotation(0, 0, self.matrix.rotation.z - 180)
+			self.m_RcVehicle[rcVehicle]:setData("disableSpeedLimit", true, true)
 
 			table.insert(self.m_RcVehicleUser, player)
 			self:setData("RcVehicleUser", self.m_RcVehicleUser, true)
