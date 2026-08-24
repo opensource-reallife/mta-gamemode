@@ -283,39 +283,9 @@ function Inventory:getFreePlacesForItem(item)
 	end
 
 	if self.m_ItemData[item] then
-		local bag = self.m_ItemData[item]["Tasche"]
-		local invplaetze = self:getPlaces(bag)
-		local stackMax = self.m_ItemData[item]["Stack_max"]
+		local currentAmount = self:getItemAmount(item)
 		local itemMax = self.m_ItemData[item]["Item_Max"]
-		local placesplus = 0
-		local amount = 0
-		local places = 0
-
-		if self:getItemAmount(item) >= itemMax then
-			return 0
-		end
-
-		for i = 0, invplaetze do
-			local place = i
-			local id = self:getItemID(bag, place)
-			local itemName = self.m_ItemData[item]["Name"]
-			amount = 0
-			placesplus = 0
-			if itemName and id then
-				if itemName == item then
-					amount = self.m_Items[id]["Menge"]
-					if amount <= stackMax then
-						placesplus = stackMax-amount
-						places = places + placesplus
-					end
-				end
-			else
-				places = places+stackMax
-			end
-		end
-
-		if places > itemMax then places = itemMax	end
-		return places
+		return math.max(0, itemMax - currentAmount)
 	else
 		outputDebugString("[INV] Ungültiges Item: "..item)
 	end
