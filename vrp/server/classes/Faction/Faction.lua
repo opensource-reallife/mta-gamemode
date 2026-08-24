@@ -70,6 +70,7 @@ function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, 
 	self.m_VehicleTexture = false
 
 	self.m_DiplomacyJSON = diplomacy
+	self.m_LastDiplomacyChange = {}
 
 	self.m_PlayerLimit = playerLimit > 0 and true or false
 	self.m_MaxPlayers = playerLimit
@@ -956,6 +957,13 @@ function Faction:changeDiplomacy(targetFaction, diplomacy, player)
 	end
 	table.insert(self.m_Diplomacy, {targetFaction:getId(), diplomacy})
 	outputDebugString(("Created Diplomacy for %s and %s - Status: %s"):format(self:getShortName(), targetFaction:getShortName(), FACTION_DIPLOMACY[diplomacy] or "Unknown"))
+
+	-- PlayerManager:getSingleton():breakingNews("Die %s und die %s haben einen neuen Diplomatiestatus!  - %s", self:getShortName(), targetFaction:getShortName(), FACTION_DIPLOMACY[diplomacy] or "Unknown")
+	-- Discord:getSingleton():outputBreakingNews(string.format("Die %s und die %s haben einen neuen Diplomatiestatus!  - %s", self:getShortName(), targetFaction:getShortName(), FACTION_DIPLOMACY[diplomacy] or "Unknown"))
+end
+
+function Faction:checkLastDiplomacyChange(targetFaction, diplomacy, player)
+
 end
 
 function Faction:createDiplomacyRequest(sourceFaction, targetFaction, diplomacy, player)

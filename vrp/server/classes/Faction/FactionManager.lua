@@ -797,6 +797,18 @@ function FactionManager:Event_changeDiplomacy(target, diplomacy)
 		end
 	end
 
+	if diplomacy == FACTION_DIPLOMACY["Verbündet"] then
+		if FactionManager.Map[faction1:getId()].m_LastDiplomacyChange[1] then
+			client:sendError(_("Deine Fraktion kann heute kein neues Bündnis eingehen!", client))
+			client:triggerEvent("factionRetrieveDiplomacy", faction1:getId(), faction1.m_Diplomacy, faction1.m_DiplomacyPermissions, faction1.m_DiplomacyRequests)
+			return
+		elseif FactionManager.Map[faction2:getId()].m_LastDiplomacyChange[1] then
+			client:sendError(_("Die Fraktion %s kann heute kein neues Bündnis eingehen!", client, faction2:getShortName()))
+			client:triggerEvent("factionRetrieveDiplomacy", faction2:getId(), faction2.m_Diplomacy, faction2.m_DiplomacyPermissions, faction1.m_DiplomacyRequests)
+			return
+		end
+	end
+
 	if diplomacy < faction1:getDiplomacy(faction2) then
 		for index, data in pairs(faction1.m_DiplomacyRequests) do
 			if data["source"] == faction1:getId() and data["status"] == FACTION_DIPLOMACY["Verbündet"] then
@@ -815,6 +827,19 @@ function FactionManager:Event_changeDiplomacy(target, diplomacy)
 	else
 		faction1:changeDiplomacy(faction2, diplomacy, client)
 		faction2:changeDiplomacy(faction1, diplomacy, client)
+
+		FactionManager.Map[faction1:getId()].m_LastDiplomacyChange[diplomacy] = {
+			["timestamp"] = getTimestamp(),
+			["faction"] = faction2:getId()
+		}
+		FactionManager.Map[faction2:getId()].m_LastDiplomacyChange[diplomacy] = {
+			["timestamp"] = getTimestamp(),
+			["faction"] = faction1:getId()
+		}
+
+		PlayerManager:getSingleton():breakingNews("Die %s und die %s haben einen neuen Diplomatiestatus!  - %s", faction1:getShortName(), faction2:getShortName(), FACTION_DIPLOMACY[diplomacy] or "Unknown")
+		Discord:getSingleton():outputBreakingNews(string.format("Die %s und die %s haben einen neuen Diplomatiestatus!  - %s", faction1:getShortName(), faction2:getShortName(), FACTION_DIPLOMACY[diplomacy] or "Unknown"))
+
 		self:sendDiplomaciesToClient()
 	end
 
@@ -852,6 +877,20 @@ function FactionManager:Event_answerDiplomacyRequest(id, answer)
 	if answer == "accept" then
 		faction1:changeDiplomacy(faction2, diplomacy, client)
 		faction2:changeDiplomacy(faction1, diplomacy, client)
+
+		if diplomacy == FACTION_DIPLOMACY["Verbündet"] then
+			FactionManager.Map[faction1:getId()].m_LastDiplomacyChange[diplomacy] = {
+				["timestamp"] = getTimestamp(),
+				["faction"] = faction2:getId()
+			}
+			FactionManager.Map[faction2:getId()].m_LastDiplomacyChange[diplomacy] = {
+				["timestamp"] = getTimestamp(),
+				["faction"] = faction1:getId()
+			}
+		end
+		PlayerManager:getSingleton():breakingNews("Die %s und die %s haben einen neuen Diplomatiestatus!  - %s", faction1:getShortName(), faction2:getShortName(), FACTION_DIPLOMACY[diplomacy] or "Unknown")
+		Discord:getSingleton():outputBreakingNews(string.format("Die %s und die %s haben einen neuen Diplomatiestatus!  - %s", faction1:getShortName(), faction2:getShortName(), FACTION_DIPLOMACY[diplomacy] or "Unknown"))
+	
 		self:sendDiplomaciesToClient()
 	elseif answer == "decline" then
 		faction1:sendShortMessage(("%s hat eure %s an die %s abgelehnt!"):format(client:getName(), FACTION_DIPLOMACY_REQUEST[diplomacy], faction2:getShortName()))
