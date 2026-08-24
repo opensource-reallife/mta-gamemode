@@ -16,7 +16,7 @@ function Market:constructor()
 
     self:addTrader(218, Vector3(1480.17, -1705.34, 14.05), 140, "Frida Fraise", "Möchtest du Erdbeeren verkaufen?", "Erdbeeren", Randomizer:get(5, 15), 70)
     self:addTrader(31, Vector3(1480.41, -1710.62, 14.05), 38, "Maria Manzana", "Verkaufst du Äpfel?", "Apfel", Randomizer:get(5, 30), 70)
-    self:addTrader(158, Vector3(1480.48, -1684.65, 14.05), 124, "Carlos Carota", "Hast du Karotten? Ich zahle gut!", "Karotte", Randomizer:get(5, 60), 70)
+    self:addTrader(158, Vector3(1480.48, -1684.65, 14.05), 124, "Carlos Carota", "Hast du Karotten? Ich zahle gut!", "Karotte", Randomizer:get(15, 60), 70)
     self:addTrader(264, Vector3(1478.28, -1706.71, 14.05), 205, "Benjamin Blume", "Wenn du Blumen hast, kaufe ich sie dir ab!", 14, Randomizer:get(200, 500), 50)
     self:addTrader(72, Vector3(1478.29, -1689.98, 14.05), 315, "Patrick Pera", "Kaufe Birnen zu fairen Preisen!", "Birne", Randomizer:get(5, 30), 70)
     self:addTrader(205, Vector3(1470.76, -1677.19, 14.05), 246, "Wilma Worstje", "Würstchen sind leider ausverkauft!")

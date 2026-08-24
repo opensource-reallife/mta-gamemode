@@ -201,7 +201,7 @@ SHOP_ITEMS = {
 		["Kanne"] = 500,
 		["Apfelbaum-Samen"] = 60,
 		["Blumen-Samen"] = 80,
-		["Karotten-Samen"] = 20,
+		["Karotten-Samen"] = 10,
 		["Birnbaum-Samen"] = 60,
 		["Erdbeer-Samen"] = 40,
 	};
