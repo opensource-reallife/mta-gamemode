@@ -618,6 +618,7 @@ function Player:respawn(position, rotation, bJailSpawn)
 	self.m_LastCopAttackTime = 0
 	self.m_LastCopAttack = nil
 	self.m_SuicideEscape = false
+	self.m_LastDamagedBy = {}
 
 	if self:isPremium() then
 		self:setArmor(100)
@@ -918,6 +919,10 @@ function Player:removeLastDamaged(player)
 	self.m_LastDamagedBy[player] = nil
 end
 
+function Player:removeLastDamagedAll()
+	self.m_LastDamagedBy = {}
+end
+
 function Player:checkLastDamaged()
 	local now = getRealTime().timestamp
 	for player, tick in pairs(self.m_LastDamagedBy) do
@@ -935,6 +940,36 @@ function Player:checkLastDamaged()
 			self:removeLastDamaged(player)
 		end
 	end
+end
+
+function Player:getLastDamaged()
+    return self.m_LastDamagedBy
+end
+
+function Player:getLastDamagedTime()
+    local now = getRealTime().timestamp
+    local result = {}
+
+    for player, tick in pairs(self.m_LastDamagedBy) do
+        if isValidElement(player, "player") then
+            local elapsed = now - tick
+            local remaining = (60 * 3) - elapsed
+
+            if remaining > 0 then
+                result[player] = {
+                    tick = tick,
+                    elapsed = elapsed,
+                    remaining = remaining
+                }
+            else
+                self:removeLastDamaged(player)
+            end
+        else
+            self:removeLastDamaged(player)
+        end
+    end
+
+    return result
 end
 
 function Player:updateSync()
