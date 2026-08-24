@@ -368,7 +368,7 @@ function HouseManager:Event_buyHouseFromPlayer()
 		if price + housePrice <= client:getBankMoney() then
 			house:sellToPlayer(house.m_Owner, client)
 		else
-			return client:sendError(_("Du hast nicht genug Geld auf der Bank. (%s)", client, toMoneyString(housePrice + price)))
+			return client:sendError(_("Du hast nicht genug Geld auf der Bank! (%s)", client, toMoneyString(housePrice + price)))
 		end
 	else
 		return client:sendError(_("Das Haus steht nicht zum Verkauf!", client))

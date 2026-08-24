@@ -261,6 +261,10 @@
 	<script src="server/classes/Gameplay/Race/Toptimes.lua" type="server"/>
 	<script src="server/classes/Gameplay/Race/Kart.lua" type="server"/>
 
+	<!-- Greenhouse -->
+	<script src="server/classes/Gameplay/GreenhouseManager.lua" type="server"/>
+	<script src="server/classes/Gameplay/Greenhouse.lua" type="server"/>
+
 	<!-- Roaming Planes/Accident Planes -->
 	<script src="server/classes/Gameplay/Plane/Plane.lua" type="server" />
 	<script src="server/classes/Gameplay/Plane/PlaneManager.lua" type="server" />

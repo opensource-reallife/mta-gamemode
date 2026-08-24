@@ -1936,7 +1936,7 @@ msgstr "The flowers have not yet grown sufficiently!"
 msgid "Du hast %d %s geerntet!"
 msgstr "You harvested %d %s!"
 
-msgid "Du hast in deinem Inventar nicht Platz für %d %s!"
+msgid "Du hast in deinem Inventar keinen Platz für %d %s!"
 msgstr "You don't have space for %d %s in your inventory!"
 
 msgid "Die Pflanze ist noch nicht gewachsen!"
@@ -5350,3 +5350,27 @@ msgstr "You dont have this item!"
 
 msgid "isst eine %s!"
 msgstr "eats a %s!"
+
+msgid "Du darfst im Gewächshaus keine illegalen Pflanzen anpflanzen!"
+msgstr "You can't plant illegal plants in the greenhouse!"
+
+msgid "Gewächshaus"
+msgstr "Greenhouse"
+
+msgid "Du kannst das nicht tun, solange du gesucht wirst!"
+msgstr "You're not allowed to do this while you are wanted!"
+
+msgid "Willst du ein Gewächshaus für %s kaufen? Achtung: Der Anbau illegaler Pflanzen ist darin nicht möglich!"
+msgstr "Do you want to buy a greenhouse for %s? Warning: You can't plant illegal plants in it!"
+
+msgid "Willst du dein Gewächshaus betreten?"
+msgstr "Do you want to enter your greenhouse?"
+
+msgid "Willst du dein Gewächshaus verlassen?"
+msgstr "Do you want to leave your greenhouse?"
+
+msgid "Du kannst das nicht tun, während deine Gruppe die Gärtnerei überfällt!"
+msgstr "You can't do this while your group is robbing the gardening shop!"
+
+msgid "Du hast nicht genug Geld auf der Bank! (%s)"
+msgstr "You don't have enough money in your bank account! (%s)"

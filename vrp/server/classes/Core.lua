@@ -199,6 +199,7 @@ function Core:constructor()
 		HappyHourManager:new()
 		RaceManager:new()
 		QuestManager:new()
+		GreenhouseManager:new()
 
 		if MARKET_ACTIVE then
 			Market:new()

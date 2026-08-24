@@ -7,7 +7,7 @@
 -- ****************************************************************************
 Growable = inherit(Object)
 
-function Growable:constructor(id, type, typeData, pos, ownerId, size, planted, lastGrown, lastWatered, timesEarned)
+function Growable:constructor(id, type, typeData, pos, ownerId, size, planted, lastGrown, lastWatered, timesEarned, inGreenhouse)
 	self.m_Id = id
 	self.m_Type = type
 	self.m_Object = createObject(typeData["Object"], pos, 0, 0, math.random(0,360))
@@ -31,19 +31,33 @@ function Growable:constructor(id, type, typeData, pos, ownerId, size, planted, l
 	self.ms_Illegal = typeData["Illegal"]
 	self.m_BankAccountServer = BankServer.get("faction.state")
 
-	--self.m_Colshape = createColSphere(pos.x, pos.y, pos.z+1, 1)
-	--addEventHandler("onColShapeHit", self.m_Colshape, bind(self.onColShapeHit, self))
-	--addEventHandler("onColShapeLeave", self.m_Colshape, bind(self.onColShapeLeave, self))
+	self.m_Colshape = createColSphere(pos.x, pos.y, pos.z+1, 1)
+	addEventHandler("onColShapeHit", self.m_Colshape, bind(self.onColShapeHit, self))
+	addEventHandler("onColShapeLeave", self.m_Colshape, bind(self.onColShapeLeave, self))
+
+	self.m_InGreenhouse = inGreenhouse
+	if inGreenhouse then
+		local player = PlayerManager:getSingleton():getPlayerFromId(ownerId)
+		if player then
+			local greenhouse = GreenhouseManager:getSingleton().m_Greenhouses[player]
+			self:setDimension(greenhouse and greenhouse.m_Dimension or PRIVATE_DIMENSION_SERVER)
+		end
+	end
 
 	self:refreshObjectSize()
+	self:checkGrow()
 end
 
 function Growable:destructor()
 	GrowableManager:getSingleton():removePlant(self.m_Id)
-	--if isElement(self.m_Colshape) then self.m_Colshape:destroy() end
+	if isElement(self.m_Colshape) then self.m_Colshape:destroy() end
 	if isElement(self.m_Object) then self.m_Object:destroy() end
 end
 
+function Growable:setDimension(dim)
+	self.m_Object:setDimension(dim)
+	self.m_Colshape:setDimension(dim)
+end
 
 function Growable:checkGrow(force)
 	local ts = getRealTime().timestamp
@@ -89,7 +103,6 @@ function Growable:harvest(player)
 					player:sendInfo(_("Du hast einen Blumenstrauß geerntet!", player))
 					giveWeapon(player, 14, 1, true)
 					sql:queryExec("DELETE FROM ??_plants WHERE Id = ?", sql:getPrefix(), self.m_Id)
-					triggerClientEvent("ColshapeStreamer:deleteColshape", player, "growable", self.m_Id)
 					delete(self)
 				else
 					player:sendError(_("Du hast bereits einen Blumenstrauß dabei!", player))
@@ -107,7 +120,6 @@ function Growable:harvest(player)
 			player:triggerEvent("hidePlantGUI")
 			self.m_Size = 0
 			sql:queryExec("DELETE FROM ??_plants WHERE Id = ?", sql:getPrefix(), self.m_Id)
-			triggerClientEvent("ColshapeStreamer:deleteColshape", player, "growable", self.m_Id)
 			StatisticsLogger:getSingleton():addDrugHarvestLog(player, self.m_Type, self.m_OwnerId, amount, 1)
 			delete(self)
 		elseif amount > 0 then
@@ -127,7 +139,6 @@ function Growable:harvest(player)
 							StatisticsLogger:getSingleton():addDrugHarvestLog(player, self.m_Type, self.m_OwnerId, amount, 0)
 							if self.m_TimesEarned >= self.ms_TimesEarnedForDestroy  then
 								sql:queryExec("DELETE FROM ??_plants WHERE Id = ?", sql:getPrefix(), self.m_Id)
-								triggerClientEvent("ColshapeStreamer:deleteColshape", player, "growable", self.m_Id)
 								delete(self)
 							end
 							player:setData("Plant:Current", false)
@@ -139,7 +150,7 @@ function Growable:harvest(player)
 					player:sendError(_("Die Pflanze wird gerade schon geerntet!", player))
 				end
 			else
-				player:sendError(_("Du hast in deinem Inventar nicht Platz für %d %s!", player, amount, self.ms_Item))
+				player:sendError(_("Du hast in deinem Inventar keinen Platz für %d %s!", player, amount, self.ms_Item))
 			end
 		else
 			player:sendError(_("Die Pflanze ist noch nicht gewachsen!", player))

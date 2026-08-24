@@ -242,7 +242,6 @@ function Player:loadCharacter()
 	FactionState:getSingleton():checkInsideGarage(self)
 	BeggarPedManager:getSingleton():sendBeggarPedsToClient(self)
 	InteriorEnterExitManager:getSingleton():sendInteriorEnterExitToClient(self)
-	GrowableManager:getSingleton():sendGrowablesToClient(self)
 	PedScale:getSingleton():updateClients(self)
 end
 
