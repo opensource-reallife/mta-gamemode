@@ -8,7 +8,7 @@
 LocalPlayer = inherit(Player)
 addRemoteEvents{"retrieveInfo", "playerWasted", "playerCashChange", "disableDamage",
 "playerSendToHospital", "abortDeathGUI", "sendTrayNotification","setClientTime", "setClientAdmin", "toggleRadar", "onTryPickupWeapon", "onServerRunString", "playSound", "stopBleeding", "restartBleeding", "setCanBeKnockedOffBike", "setOcclusion"
-,"onTryEnterExit", "onAllowRadioCommunication", "playSound", "playSFX", "playSFX3D"}
+,"onTryEnterExit", "onAllowRadioCommunication", "playSound", "playSFX", "playSFX3D", "Player:ReceiveLastDamagedInfo"}
 
 function LocalPlayer:constructor()
 	self.m_Locale = "en"
@@ -1059,3 +1059,13 @@ function LocalPlayer:hungerDecrease()
 		triggerServerEvent("playerDecreaseHunger", localPlayer)
 	end
 end
+
+addEvent("Player:ReceiveLastDamagedInfo", true)
+addEventHandler("Player:ReceiveLastDamagedInfo", localPlayer, function(state)
+	local time = getRealTime()
+	if state == true or state == "true" or state == 1 then
+		ShortMessage:new(_"["..tostring(time.hour)..":"..tostring(time.minute)..":"..tostring(time.second).."] Du befindest dich derzeit noch in einer Kampfsituation!", "Kampfhandlung", Color.Red, 5000)
+	else
+		ShortMessage:new(_"["..tostring(time.hour)..":"..tostring(time.minute)..":"..tostring(time.second).."] Du befindest dich derzeit in keiner Kampfsituation!", "Kampfhandlung", Color.Green, 5000)
+	end
+end)

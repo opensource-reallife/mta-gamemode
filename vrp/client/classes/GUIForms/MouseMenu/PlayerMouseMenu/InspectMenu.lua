@@ -12,7 +12,7 @@ function InspectMenu:constructor(posX, posY, element)
 
 	self.m_AnimationTick = getTickCount() 
 	local fontScale = (screenHeight/1080)
-	self.m_TreatButton = GUIButton:new(-screenWidth, 0, screenWidth*0.05, screenHeight*0.025, "Behandeln", nil, Color.White):setBackgroundColor(Color.Clear):setAlternativeColor(Color.Clear):setFont(VRPFont(22*fontScale, Fonts.EkMukta_Bold)):setColor(Color.White):setAlign("center", "center")
+	self.m_TreatButton = GUIButton:new(-screenWidth, 0, screenWidth*0.08, screenHeight*0.025, "Behandeln", nil, Color.White):setBackgroundColor(Color.Clear):setAlternativeColor(Color.Clear):setFont(VRPFont(22*fontScale, Fonts.EkMukta_Bold)):setColor(Color.White):setAlign("center", "center")
 	self.m_TreatButton:setBarEnabled(false)
 	self.m_TreatLineColor = false
 	self.m_TreatAlpha = 0
@@ -35,6 +35,31 @@ function InspectMenu:constructor(posX, posY, element)
 		delete(self) 
 		triggerServerEvent("Damage:getPlayerDamage", localPlayer, element)
 	end
+
+	self.m_LastAttackedButton = GUIButton:new(-screenWidth, 0, screenWidth*0.08, screenHeight*0.025, "Kampfhandlung", nil, Color.White):setBackgroundColor(Color.Clear):setAlternativeColor(Color.Clear):setFont(VRPFont(22*fontScale, Fonts.EkMukta_Bold)):setColor(Color.White):setAlign("center", "center")
+	self.m_LastAttackedButton:setBarEnabled(false)
+	self.m_LastAttackedLineColor = false
+	self.m_LastAttackedAlpha = 0
+	self.m_LastAttackedButton.onHover = function()
+		playSound("files/audio/walkie_click.ogg")
+		self.m_LastAttackedButton:setColor(Color.Black)
+		self.m_LastAttackedLineColor = true
+		self.m_AnimationLastAttackedFade = CAnimation:new(self, "m_LastAttackedAlpha")
+		self.m_AnimationLastAttackedFade:startAnimation(200, "OutQuad", 255)
+	end
+	self.m_LastAttackedButton.onUnhover = function()
+		self.m_LastAttackedButton:setColor(Color.White)
+		self.m_LastAttackedLineColor = false
+		self.m_LastAttackedAlpha = 0
+		if self.m_AnimationLastAttackedFade then
+			self.m_AnimationLastAttackedFade:stopAnimation()
+		end
+	end
+	self.m_LastAttackedButton.onLeftClick = function()
+		delete(self)
+		triggerServerEvent("Player:isLastDamagedBy", localPlayer, element)
+	end
+
 
 	if element ~= localPlayer then
 		self.m_InspectWeapon = GUIButton:new(-screenWidth, 0, screenWidth*0.05, screenHeight*0.025, "Waffen", nil, Color.White):setBackgroundColor(Color.Clear):setAlternativeColor(Color.Clear):setFont(VRPFont(22*fontScale, Fonts.EkMukta_Bold)):setColor(Color.White):setAlign("center", "center")
@@ -91,23 +116,34 @@ function InspectMenu:Event_onDraw()
 					dxSetBlendMode("add") 
 
 					self.m_TreatButton:setAlpha(alpha)
-					
 					self.m_TreatButton:setPosition(sx+((screenWidth*.07)*easeProg)+2, (sy-screenHeight*.04) - screenHeight*0.0125)
+
+					self.m_LastAttackedButton:setAlpha(alpha)
+					self.m_LastAttackedButton:setPosition(sx+((screenWidth*.07)*easeProg)+2, (sy-screenHeight*.04) - screenHeight*0.0125 - screenHeight*0.025)
 					
 					
 					dxDrawRectangle(sx+screenWidth*.02,  (sy-screenHeight*.04)-1, screenWidth*.05*easeProg, 4, Color.changeAlpha(Color.Black, alpha))
 					dxDrawRectangle(sx+screenWidth*.02,  (sy-screenHeight*.04), screenWidth*.05*easeProg, 2, Color.changeAlpha(Color.White, alpha))
 					dxDrawRectangle(sx+((screenWidth*.07)*easeProg), (sy-screenHeight*.04) - screenHeight*0.0125, 2,  screenHeight*0.025, self.m_TreatLineColor and Color.changeAlpha(Color.Red, alpha) or Color.changeAlpha(Color.White, alpha))
+					dxDrawRectangle(sx+((screenWidth*.07)*easeProg), (sy-screenHeight*.04) - screenHeight*0.0125 - screenHeight*0.025, 2,  screenHeight*0.025, self.m_LastAttackedLineColor and Color.changeAlpha(Color.Red, alpha) or Color.changeAlpha(Color.White, alpha))
 					
 					dxDrawCircle(sx+screenWidth*.02, (sy-screenHeight*.04)+1, screenWidth*0.01*prog, 0, 360, Color.changeAlpha(Color.White, alpha*(1-prog)))
 					dxDrawCircle(sx+screenWidth*.02, (sy-screenHeight*.04)+1, screenWidth*0.002*prog, 0, 360, Color.changeAlpha(Color.White, alpha))
 
 					if self.m_TreatLineColor then
-						dxDrawRectangle(sx+((screenWidth*.07)*easeProg)+2 + screenWidth* 0.05, (sy-screenHeight*.04) - screenHeight*0.0125, screenWidth*0.015, screenHeight*0.025, Color.changeAlpha(Color.Red, self.m_TreatAlpha)) 
-						dxDrawText("+", (sx+((screenWidth*.07)*easeProg)+2) + screenWidth* 0.05, (sy-screenHeight*.04) - screenHeight*0.0125, (sx+((screenWidth*.07)*easeProg)+2) + (screenWidth* 0.05) + (screenWidth*0.015),  (sy-screenHeight*.04) - screenHeight*0.0125+ screenHeight*0.025, Color.changeAlpha(Color.White, self.m_TreatAlpha), 2, "default-bold", "center", "center") 
+						dxDrawRectangle(sx+((screenWidth*.07)*easeProg)+2 + screenWidth* 0.08, (sy-screenHeight*.04) - screenHeight*0.0125, screenWidth*0.015, screenHeight*0.025, Color.changeAlpha(Color.Red, self.m_TreatAlpha)) 
+						dxDrawText("+", (sx+((screenWidth*.07)*easeProg)+2) + screenWidth* 0.08, (sy-screenHeight*.04) - screenHeight*0.0125, (sx+((screenWidth*.07)*easeProg)+2) + (screenWidth* 0.08) + (screenWidth*0.015),  (sy-screenHeight*.04) - screenHeight*0.0125+ screenHeight*0.025, Color.changeAlpha(Color.White, self.m_TreatAlpha), 2, "default-bold", "center", "center") 
 					else 
 						self.m_TreatButton:setBackgroundColor(Color.Clear)
 						self.m_TreatButton:setAlternativeColor(Color.Clear)
+					end
+
+					if self.m_LastAttackedLineColor then
+						dxDrawRectangle(sx+((screenWidth*.07)*easeProg)+2 + screenWidth* 0.08, (sy-screenHeight*.04) - screenHeight*0.0125 - screenHeight*0.025, screenWidth*0.015, screenHeight*0.025, Color.changeAlpha(Color.Red, self.m_LastAttackedAlpha)) 
+						dxDrawText("!", (sx+((screenWidth*.07)*easeProg)+2) + screenWidth* 0.08, (sy-screenHeight*.04) - screenHeight*0.0125, (sx+((screenWidth*.07)*easeProg)+2) + (screenWidth* 0.08) + (screenWidth*0.015),  (sy-screenHeight*.04) - screenHeight*0.0125 - screenHeight*0.025, Color.changeAlpha(Color.White, self.m_LastAttackedAlpha), 2, "default-bold", "center", "center") 
+					else 
+						self.m_LastAttackedButton:setBackgroundColor(Color.Clear)
+						self.m_LastAttackedButton:setAlternativeColor(Color.Clear)
 					end
 
 					if self.m_Element ~= localPlayer then
@@ -154,6 +190,7 @@ end
 
 function InspectMenu:destructor()
 	self.m_TreatButton:delete()
+	self.m_LastAttackedButton:delete()
 	if self.m_Element ~= localPlayer then
 		self.m_InspectWeapon:delete()
 	end

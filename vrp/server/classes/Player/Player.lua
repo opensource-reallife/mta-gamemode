@@ -16,6 +16,7 @@ Player.ms_ScreamHook = Hook:new()
 
 addEvent("characterInitialized")
 
+addRemoteEvents{"Player:isLastDamagedBy"}
 function Player:constructor()
 	self:setVoiceBroadcastTo(nil)
 
@@ -49,6 +50,8 @@ function Player:constructor()
 	setElementData(self, "dutyTimeFaction", 0)
 	setElementData(self, "dutyTimeCompany", 0)
 	setElementData(self, "dutyTime", 0)
+
+	addEventHandler("Player:isLastDamagedBy", root, bind(self.Event_GetLastDamaged, self))
 end
 
 function Player:destructor()
@@ -937,8 +940,22 @@ function Player:checkLastDamaged()
 	end
 end
 
-function Player:getLastDamaged()
-    return self.m_LastDamagedBy
+function Player:getLastDamaged(state)
+    local now = getRealTime().timestamp
+	for player, tick in pairs(self.m_LastDamagedBy) do
+		if player and isValidElement(player, "player") then
+			if now - tick < 60*3 then
+				local secondsMinutes = string.format("%.2d:%.2d", (now - tick)/60%60, (now - tick)%60)
+				return true
+			else
+				if now - tick > 60*3 then
+					return false
+				end
+			end
+		else
+			return false
+		end
+	end
 end
 
 function Player:getLastDamagedTime()
@@ -965,6 +982,10 @@ function Player:getLastDamagedTime()
     end
 
     return result
+end
+
+function Player:Event_GetLastDamaged()
+	triggerClientEvent(self, "Player:ReceiveLastDamagedInfo", self, self:getLastDamaged(state, time))
 end
 
 function Player:updateSync()
