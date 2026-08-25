@@ -524,6 +524,7 @@ function FactionState:Command_ticket(source, cmd, target)
 	if target then
 		if type(target) == "string" then
 			local targetPlayer = PlayerManager:getSingleton():getPlayerFromPartOfName(target, source)
+			local ticketPrice = TICKET_PRICE_ONCE + TICKET_PRICE_PER_WANTED*targetPlayer:getWanteds()
 			if targetPlayer then
 				local faction = source:getFaction()
 				if not faction then return end
@@ -532,12 +533,12 @@ function FactionState:Command_ticket(source, cmd, target)
 					if getDistanceBetweenPoints3D(source:getPosition(), targetPlayer:getPosition()) <= 5 then
 						if source ~= targetPlayer then
 							if targetPlayer:getWanteds() <= 2 then
-								if targetPlayer:getMoney() >= TICKET_PRICE*targetPlayer:getWanteds() then
+								if targetPlayer:getMoney() >= ticketPrice then
 									source.m_CurrentTicket = targetPlayer
 									targetPlayer:triggerEvent("stateFactionOfferTicket", source)
-									source:sendSuccess(_("Du hast %s ein Ticket für %d$ angeboten!", source,  targetPlayer:getName(), TICKET_PRICE*targetPlayer:getWanteds() ))
+									source:sendSuccess(_("Du hast %s ein Ticket für %d$ angeboten!", source,  targetPlayer:getName(), ticketPrice))
 								else
-									source:sendError(_("%s hat nicht genug Geld dabei! (%d$)", source, targetPlayer:getName(),  TICKET_PRICE*targetPlayer:getWanteds() ))
+									source:sendError(_("%s hat nicht genug Geld dabei! (%d$)", source, targetPlayer:getName(),  ticketPrice))
 								end
 							else
 								source:sendError("Der Spieler hat kein oder ein zu hohes Fahndungslevel!")
@@ -561,14 +562,16 @@ end
 
 function FactionState:Event_OnTicketAccept(cop)
 	if client then
-		if client:getMoney() >=  TICKET_PRICE*client:getWanteds() then
+		local ticketPrice = TICKET_PRICE_ONCE + TICKET_PRICE_PER_WANTED*client:getWanteds()
+		local ticketReward = ticketPrice * 0.5
+		if client:getMoney() >= ticketPrice then
 			if client:getWanteds() <= 2 then
 				if cop and isElement(cop) then
 					cop:sendSuccess(_("%s hat dein Ticket angenommen und bezahlt!", cop, client:getName()))
-					self.m_BankAccountServer:transferMoney(cop:getFaction(),  TICKET_PRICE*client:getWanteds(), "Ticket", "Faction", "Ticket")
+					self.m_BankAccountServer:transferMoney(cop:getFaction(), ticketReward, "Ticket", "Faction", "Ticket")
 				end
 				client:sendSuccess(_("Du hast das Ticket angenommen! Dir wurde(n) %s Wanted(s) erlassen!", client, client:getWanteds()))
-				client:transferMoney(self.m_BankAccountServer,  TICKET_PRICE*client:getWanteds(), "[SAPD] Kautionsticket", "Faction", "Ticket")
+				client:transferMoney(self.m_BankAccountServer, ticketPrice, "[SAPD] Kautionsticket", "Faction", "Ticket")
 				client:setWanteds(0)
 			end
 		end

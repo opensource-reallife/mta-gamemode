@@ -218,7 +218,7 @@ function FactionManager:OnRenderSpeed()
 end
 
 function FactionManager:stateFactionOfferTicket( cop )
-	ShortMessage:new(_("%s bietet dir ein Ticket für den Erlass eines Wanteds für %s an. Klicke hier um es anzunehmen!", cop:getName(), toMoneyString(TICKET_PRICE*localPlayer:getWanteds()+500)), "Wanted-Ticket", Color.DarkLightBlue, 30000)
+	ShortMessage:new(_("%s bietet dir ein Ticket für den Erlass eines Wanteds für %s an. Klicke hier um es anzunehmen!", cop:getName(), toMoneyString(TICKET_PRICE_PER_WANTED*localPlayer:getWanteds() + TICKET_PRICE_ONCE)), "Wanted-Ticket", Color.DarkLightBlue, 30000)
 	.m_Callback = function (this)	triggerServerEvent("factionStateAcceptTicket", localPlayer, cop); delete(this)	end
 
 end
