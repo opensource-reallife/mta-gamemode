@@ -11,7 +11,6 @@ function ExecutionPed:constructor( player, weapon, bodypart )
 	if ExecutionPed.Map[player] then delete(ExecutionPed.Map[player]) end
 	outputDebug(player:getFaction() and not player:getFaction():isEvilFaction() and player:isFactionDuty())
 	player:setReviveWeapons(player:getFaction() and not player:getFaction():isEvilFaction() and player:isFactionDuty())
-	if player.vehicle then player:removeFromVehicle() end
 	local x, y, z = getElementPosition(player)
 	local dim = player:getDimension()
 	local int = player:getInterior()
@@ -29,7 +28,6 @@ function ExecutionPed:constructor( player, weapon, bodypart )
 		nextframe(function() attachElements(self.m_Entity, player) self:setRandomAnimation() end)
 	end
 	self.m_HealthTimer = setTimer(function() setElementHealth(self.m_Entity, 20) end, 1000, 1)
-	--setTimer(setElementCollisionsEnabled, 3000, 1, player, false)
 	toggleAllControls(player, false)
 	player:setWeaponSlot(0)
 	ExecutionPed.Map[player] = self
