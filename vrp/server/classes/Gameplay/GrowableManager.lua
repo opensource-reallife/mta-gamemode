@@ -50,7 +50,7 @@ GrowableManager.Types = {
 		["ItemPerSize"] = 1,
 		["TimesEarnedForDestroy"] = 1,
 		["Illegal"] = false,
-		["SizeBetweenPlants"] = 2
+		["SizeBetweenPlants"] = 1.5
 	};
 	["Karotte"] = {
 		["Object"] = 861,
@@ -65,7 +65,7 @@ GrowableManager.Types = {
 		["ItemPerSize"] = 1,
 		["TimesEarnedForDestroy"] = 1,
 		["Illegal"] = false,
-		["SizeBetweenPlants"] = 2
+		["SizeBetweenPlants"] = 1.5
 	};
 	["Birnbaum"] = {
 		["Object"] = 657,

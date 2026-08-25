@@ -31,7 +31,7 @@ function Growable:constructor(id, type, typeData, pos, ownerId, size, planted, l
 	self.ms_Illegal = typeData["Illegal"]
 	self.m_BankAccountServer = BankServer.get("faction.state")
 
-	self.m_Colshape = createColSphere(pos.x, pos.y, pos.z+1, 1)
+	self.m_Colshape = createColSphere(pos.x, pos.y, pos.z+1, GrowableManager.Types[type]["SizeBetweenPlants"]/3)
 	addEventHandler("onColShapeHit", self.m_Colshape, bind(self.onColShapeHit, self))
 	addEventHandler("onColShapeLeave", self.m_Colshape, bind(self.onColShapeLeave, self))
 
