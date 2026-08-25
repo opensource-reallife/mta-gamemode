@@ -2248,6 +2248,7 @@
 	<vrpfile src="files/images/Inventory/infoblubf.png" />
 	<vrpfile src="files/images/Inventory/items/Objekte.png" />
 	<vrpfile src="files/images/Inventory/items/Drogen/Weed.png" />
+	<vrpfile src="files/images/Inventory/items/Drogen/Weed-Samen.png" />
 	<vrpfile src="files/images/Inventory/items/Drogen/Shroom.png" />
 	<vrpfile src="files/images/Inventory/items/Drogen/Samen.png" />
 	<vrpfile src="files/images/Inventory/items/Drogen/Ecstasy.png" />
@@ -2331,6 +2332,11 @@
 	<vrpfile src="files/images/Inventory/items/Essen/Karotte.png" />
 	<vrpfile src="files/images/Inventory/items/Essen/Birne.png" />
 	<vrpfile src="files/images/Inventory/items/Essen/Erdbeeren.png" />
+	<vrpfile src="files/images/Inventory/items/Essen/Apfelbaum-Samen.png" />
+	<vrpfile src="files/images/Inventory/items/Essen/Birnbaum-Samen.png" />
+	<vrpfile src="files/images/Inventory/items/Essen/Karotten-Samen.png" />
+	<vrpfile src="files/images/Inventory/items/Essen/Erdbeer-Samen.png" />
+	<vrpfile src="files/images/Inventory/items/Essen/Blumen-Samen.png" />
 
 	<vrpfile src="files/images/Inventory/items/Objekte/helm.png" />
 	<vrpfile src="files/images/Inventory/items/Objekte/crosshelmet.png" />
