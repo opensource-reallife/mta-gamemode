@@ -918,10 +918,6 @@ function Player:removeLastDamaged(player)
 	self.m_LastDamagedBy[player] = nil
 end
 
-function Player:removeLastDamagedAll()
-	self.m_LastDamagedBy = {}
-end
-
 function Player:checkLastDamaged()
 	local now = getRealTime().timestamp
 	for player, tick in pairs(self.m_LastDamagedBy) do
