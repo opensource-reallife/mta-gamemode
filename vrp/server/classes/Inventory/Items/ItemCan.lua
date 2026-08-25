@@ -23,6 +23,7 @@ function ItemCan:use( player, itemId, bag, place, itemName )
 		local fillstate = tonumber(player:getInventory():getItemValueByBag(bag, place)) or 0
 		self.m_Cans[player] = createObject(1902, 0, 0, 0)
 		self.m_Cans[player]:setScale(0.5)
+		self.m_Cans[player]:setDimension(player:getDimension())
 		exports.bone_attach:attachElementToBone(self.m_Cans[player], player, 12, 0, 0, 0.5, 180, 0, 0)
 		player:triggerEvent("itemCanEnable", fillstate)
 		bindKey(player, "x", "down", self.m_UseBind, bag, place)
