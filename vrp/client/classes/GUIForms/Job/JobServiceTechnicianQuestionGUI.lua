@@ -83,5 +83,6 @@ addEventHandler("openServiceTechnicianQuestionGraphicUserInterface", root,
 	function(questions)
 		local gui = JobServiceTechnicianQuestionGUI:getSingleton()
 		gui:setQuestions(questions)
+        CruiseControl:getSingleton():setEnabled(false)
 	end
 )
