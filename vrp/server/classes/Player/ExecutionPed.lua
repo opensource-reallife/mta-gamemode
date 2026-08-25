@@ -11,6 +11,7 @@ function ExecutionPed:constructor( player, weapon, bodypart )
 	if ExecutionPed.Map[player] then delete(ExecutionPed.Map[player]) end
 	outputDebug(player:getFaction() and not player:getFaction():isEvilFaction() and player:isFactionDuty())
 	player:setReviveWeapons(player:getFaction() and not player:getFaction():isEvilFaction() and player:isFactionDuty())
+	if player.vehicle then player:removeFromVehicle() end
 	local x, y, z = getElementPosition(player)
 	local dim = player:getDimension()
 	local int = player:getInterior()
