@@ -57,6 +57,7 @@ function Greenhouse:destructor()
         plant:setDimension(PRIVATE_DIMENSION_SERVER)
 	end
     
+	self.m_ExitMarker:destroy()
     DimensionManager:getSingleton():freeDimension(self.m_Dimension)
     delete(self.m_MapParser)
 end
