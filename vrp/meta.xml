@@ -3202,7 +3202,7 @@
 	<vrpfile src="files/audio/gate_open.mp3"/>
 	<vrpfile src="files/audio/announcment.mp3"/>
 	<vrpfile src="files/audio/wasted.mp3"/>
-	<vrpfile src="files/audio/scary.mp3"/>
+	<!-- <vrpfile src="files/audio/scary.mp3"/> -->
 	<vrpfile src="files/audio/scream.mp3"/>
 	<vrpfile src="files/audio/ept_notification.wav"/>
 	<vrpfile src="files/audio/scary_source.txt"/>
@@ -3583,7 +3583,7 @@
 	<vrpfile src="files/models/skins/santaThin.dff" />
 	<vrpfile src="files/models/skins/snowman.txd" />
 	<vrpfile src="files/models/skins/snowman.dff" />
-	<vrpfile src="files/models/skins/kobold.txd" />
+	<!-- <vrpfile src="files/models/skins/kobold.txd" /> -->
 	<vrpfile src="files/models/skins/kobold.dff" />
 	<!-- Christmas Event End-->
 
