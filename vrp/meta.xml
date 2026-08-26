@@ -3583,8 +3583,8 @@
 	<vrpfile src="files/models/skins/santaThin.dff" />
 	<vrpfile src="files/models/skins/snowman.txd" />
 	<vrpfile src="files/models/skins/snowman.dff" />
-	<!-- <vrpfile src="files/models/skins/kobold.txd" />
-	<vrpfile src="files/models/skins/kobold.dff" /> -->
+	<file src="files/models/skins/kobold.txd" />
+	<vrpfile src="files/models/skins/kobold.dff" />
 	<!-- Christmas Event End-->
 
 	<!--Skins-->
