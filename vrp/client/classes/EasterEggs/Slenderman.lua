@@ -10,7 +10,7 @@ function EasterEgg.Slenderman:constructor(position, rotation)
 	-- create ped + sound
 	self.m_StartPosition = position
 	self.m_Ped = createPed(230, position, rotation.z)
-	-- self.m_Sound = Sound3D("files/audio/scary.mp3", position) too large
+	self.m_Sound = Sound3D("files/audio/scary.mp3", position)
 	self.m_Sound:setMaxDistance(300)
 	self.m_Sound:setMinDistance(1)
 	self.m_Sound:attach(self.m_Ped)
