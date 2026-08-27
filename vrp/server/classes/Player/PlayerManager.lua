@@ -12,7 +12,7 @@ addRemoteEvents{"playerReady", "playerSendMoney", "unfreezePlayer", "requestWeap
 "startWeaponLevelTraining","switchSpawnWithFactionSkin","Event_setPlayerWasted", "Event_playerTryToBreakoutJail", "onClientRequestTime", "playerDecreaseAlcoholLevel",
 "premiumOpenVehiclesList", "premiumTakeVehicle","destroyPlayerWastedPed","onDeathPedWasted", "toggleSeatBelt", "onPlayerTryGateOpen", "onPlayerUpdateSpawnLocation",
 "attachPlayerToVehicle", "onPlayerFinishArcadeEasterEgg", "changeWalkingstyle", "PlayerManager:onRequestQuickTrade", "PlayerManager:onAcceptQuickTrade", "removeMeFromVehicle",
-"playerLocale", "requestPlayerWeapons", "playerDecreaseHunger", "toggleObjectPickup"}
+"playerLocale", "requestPlayerWeapons", "playerDecreaseHunger", "toggleObjectPickup", "Player:isLastDamagedBy"}
 
 function PlayerManager:constructor()
 	self.m_WastedHook = Hook:new()
@@ -69,9 +69,10 @@ function PlayerManager:constructor()
 	addEventHandler("playerReconnect", root, bind(self.Event_forcePlayerReconnect, self))
 	addEventHandler("playerDecreaseHunger", root, bind(self.Event_DecreaseHunger, self))
 	addEventHandler("toggleObjectPickup", root, bind(self.Event_toggleObjectPickup, self))
-
 	addEventHandler("PlayerManager:onAcceptQuickTrade", root, bind(self.Event_OnStartQuickTrade, self))
 	addEventHandler("PlayerManager:onRequestQuickTrade", root, bind(self.Event_RequestQuickTrade, self))
+	addEventHandler("Player:isLastDamagedBy", root, bind(self.Event_GetLastDamaged, self))
+
 	addCommandHandler("s",bind(self.Command_playerScream, self))
 	addCommandHandler("l",bind(self.Command_playerWhisper, self))
 	addCommandHandler("ooc",bind(self.Command_playerOOC, self))
@@ -1339,4 +1340,9 @@ function PlayerManager:Event_toggleObjectPickup()
 			end
 		end
 	end
+end
+
+function PlayerManager:Event_GetLastDamaged()
+	if not client or not isElement(client) then return end
+	triggerClientEvent(client, "Player:ReceiveLastDamagedInfo", client, client:getLastDamaged())
 end
