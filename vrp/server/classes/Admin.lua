@@ -63,6 +63,10 @@ function Admin:constructor()
 	addCommandHandler("givevip", bind(self.addPremium, self))
 	addCommandHandler("givepremveh", bind(self.addPremiumVehicle, self))
 
+	addCommandHandler("credits", bind(self.getCredits, self))
+	addCommandHandler("givecredits", bind(self.giveCredits, self))
+	addCommandHandler("setcredits", bind(self.setCredits, self))
+
     local adminCommandBind = bind(self.command, self)
 	self.m_ToggleJetPackBind = bind(self.toggleJetPack, self)
 	self.m_DeleteArrowBind = bind(self.deleteArrow, self)
@@ -2396,7 +2400,7 @@ function Admin:addPremium(player, cmd, target, days)
 	if not targetPlayer then return player:sendError(_("Der Spieler muss online sein oder wurde nicht gefunden!", player)) end
 
 	if sqlPremium:queryFetchSingle("SELECT UserId FROM user WHERE UserId = ?", targetPlayer:getId()) == nil then
-		sqlPremium:queryFetch("INSERT INTO user (game_id, UserId, Name, premium_easter, premium, premium_bis) VALUES (?, ?, ?, 0, 0, 0); ", targetPlayer:getId(), targetPlayer:getId(), targetPlayer:getName())
+		sqlPremium:queryFetch("INSERT INTO user (UserId, Name, premium_easter, premium, premium_bis) VALUES (?, ?, 0, 0, 0); ", targetPlayer:getId(), targetPlayer:getName())
 	end
 
 	if daysNum == -1 then
@@ -2444,6 +2448,69 @@ function Admin:addPremiumVehicle(player, cmd, target, model, soundvan)
 	player:sendSuccess(_("Du hast %s ein Premiumfahrzeug gegeben!", player, targetPlayer:getName()))
 
 	sqlPremium:queryFetch("INSERT INTO premium_veh (Model, abgeholt, Timestamp_buy, Timestamp_abgeholt, Preis, Soundvan, UserId) VALUES (?, ?, ?, ?, ?, ?, ?);", model, 0, getRealTime().timestamp, 0, 0, soundvan, targetPlayer:getId())
+end
+
+function Admin:getCredits(player, cmd, target)
+	if not (player:getRank() >= ADMIN_RANK_PERMISSION["getCredits"]) then return end
+	if not target or target == "" then return player:sendError(_("Syntax: /getcredits [Spielername]", player)) end
+
+	local targetPlayer = getPlayerFromName(target)
+	if not targetPlayer then return player:sendError(_("Der Spieler muss online sein oder wurde nicht gefunden!", player)) end
+
+	if sqlPremium:queryFetchSingle("SELECT UserId FROM user WHERE UserId = ?", targetPlayer:getId()) == nil then
+		sqlPremium:queryFetch("INSERT INTO user (UserId, Name, Credits, premium_easter, premium, premium_bis) VALUES (?, ?, ?, 0, 0, 0); ", targetPlayer:getId(), targetPlayer:getName(), targetPlayer:getCredits())
+	end
+
+	player:sendInfo(_("%s hat %d Credits!", player, targetPlayer:getName(), targetPlayer:getCredits()))
+end
+
+function Admin:giveCredits(player, cmd, target, amount)
+	if not (player:getRank() >= ADMIN_RANK_PERMISSION["giveCredits"]) then return end
+	if not target or target == "" then return player:sendError(_("Syntax: /givecredits [Spielername] [Betrag]", player)) end
+	if not amount or amount == "" then return player:sendError(_("Syntax: /givecredits [Spielername] [Betrag]", player)) end
+	amount = tonumber(amount)
+	if not amount or amount <= 0 then return player:sendError(_("Syntax: /givecredits [Spielername] [Betrag]", player)) end
+
+	local targetPlayer = getPlayerFromName(target)
+	if not targetPlayer then return player:sendError(_("Der Spieler muss online sein oder wurde nicht gefunden!", player)) end
+
+	if sqlPremium:queryFetchSingle("SELECT UserId FROM user WHERE UserId = ?", targetPlayer:getId()) == nil then
+		sqlPremium:queryFetch("INSERT INTO user (UserId, Name, Credits, premium_easter, premium, premium_bis) VALUES (?, ?, ?, 0, 0, 0); ", targetPlayer:getId(), targetPlayer:getName(), targetPlayer:getCredits())
+	end
+
+	local targetCredits = targetPlayer:getCredits()
+	targetCredits = targetCredits + amount
+
+	sqlPremium:queryExec("UPDATE user SET Name = ?, Credits = ? WHERE UserId = ?;", targetPlayer:getName(), targetCredits, targetPlayer:getId())
+
+	targetPlayer:sendSuccess(_("Du hast %d Credits erhalten!\nDein neuer Kontostand beträgt %d Credits.", targetPlayer, amount, targetPlayer:getCredits()))
+	player:sendSuccess(_("Du hast %s %d Credits gegeben!\nSein neuer Kontostand beträgt %d Credits.", player, targetPlayer:getName(), amount, targetPlayer:getCredits()))
+
+	targetPlayer.m_Premium:refresh()
+end
+
+function Admin:setCredits(player, cmd, target, amount)
+	if not (player:getRank() >= ADMIN_RANK_PERMISSION["setCredits"]) then return end
+	if not target or target == "" then return player:sendError(_("Syntax: /setcredits [Spielername] [Betrag]", player)) end
+	if not amount or amount == "" then return player:sendError(_("Syntax: /setcredits [Spielername] [Betrag]", player)) end
+	amount = tonumber(amount)
+	if not amount or amount < 0 then return player:sendError(_("Syntax: /setcredits [Spielername] [Betrag]", player)) end
+
+	local targetPlayer = getPlayerFromName(target)
+	if not targetPlayer then return player:sendError(_("Der Spieler muss online sein oder wurde nicht gefunden!", player)) end
+
+	if sqlPremium:queryFetchSingle("SELECT UserId FROM user WHERE UserId = ?", targetPlayer:getId()) == nil then
+		sqlPremium:queryFetch("INSERT INTO user (UserId, Name, Credits, premium_easter, premium, premium_bis) VALUES (?, ?, ?, 0, 0, 0); ", targetPlayer:getId(), targetPlayer:getName(), targetPlayer:getCredits())
+	end
+
+	local targetCredits = targetPlayer:getCredits()
+
+	sqlPremium:queryExec("UPDATE user SET Name = ?, Credits = ? WHERE UserId = ?;", targetPlayer:getName(), amount, targetPlayer:getId())
+
+	targetPlayer:sendSuccess(_("Dein Kontostand wurde von %d auf %d Credits gesetzt.", targetPlayer, targetPlayer:getCredits(), amount))
+	player:sendSuccess(_("Du hast den Kontostand von %s auf %d Credits gesetzt.", player, targetPlayer:getName(), amount))
+
+	targetPlayer.m_Premium:refresh()
 end
 
 addEvent("requestAdminPermissions", true)

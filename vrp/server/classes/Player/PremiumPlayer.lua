@@ -11,6 +11,7 @@ function PremiumPlayer:constructor(player)
 	self.m_Player = player
 	self.m_Premium = false
 	self.m_PremiumEvent = 0
+	self.m_Credits = 0
 
 	self:refresh()
 end
@@ -20,12 +21,14 @@ function PremiumPlayer:refresh()
 	if row then
 		self.m_PremiumUntil = row.premium_bis
 		self.m_PremiumEvent = row.premium_easter
+		self.m_Credits = row.Credits
 		if row.premium_bis == -1 then --permanent
 			self.m_Premium = true
 			self.m_PremiumUntil = -1
 		end
 	else
 		self.m_PremiumUntil = 0
+		self.m_Credits = 0
 	end
 	local freeVIP = self.m_Player:getRank() >= ADMIN_RANK_PERMISSION["freeVip"]
 	if self.m_PremiumUntil > getRealTime().timestamp or freeVIP or self.m_PremiumUntil == -1 then
@@ -51,6 +54,10 @@ end
 
 function PremiumPlayer:isPremium()
 	return self.m_Premium
+end
+
+function PremiumPlayer:getCredits()
+	return self.m_Credits
 end
 
 function PremiumPlayer:openVehicleList()
@@ -100,7 +107,7 @@ function PremiumPlayer:giveEventMonth()
 	end
 
 	if sqlPremium:queryFetchSingle("SELECT UserId FROM user WHERE UserId = ?", self.m_Player:getId()) == nil then
-		sqlPremium:queryFetch("INSERT INTO user (game_id, UserId, Name, premium_easter, premium, premium_bis) VALUES (?, ?, ?, 0, 0, 0); ", self.m_Player:getId(), self.m_Player:getId(), self.m_Player:getName())
+		sqlPremium:queryFetch("INSERT INTO user (UserId, Name, premium_easter, premium, premium_bis) VALUES (?, ?, 0, 0, 0); ", self.m_Player:getId(), self.m_Player:getName())
 	end
 
 	local row = sqlPremium:queryFetchSingle("SELECT premium_bis FROM user WHERE UserId = ?", self.m_Player:getId())
