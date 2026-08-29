@@ -1124,14 +1124,14 @@ function Player:payDay()
 		end
 	end
 
-	--[[ income_interest = math.floor(self:getBankMoney() * 0.01)
-	if income_interest > 1500 then income_interest = 1500 end
+	income_interest = math.floor(self:getBankMoney() / 1000)
+	if income_interest > 500 then income_interest = 500 end
 	if income_interest > 0 then
 		income = income + income_interest
 		BankServer.get("server.bank"):transferMoney({self, true, true}, income_interest, "Bankzinsen", "Bank", "Interest", {silent = true})
 		self:addPaydayText("income", _("Bankzinsen", self), income_interest)
-		points_total = points_total + math.floor(income_interest/500)
-	end ]]
+		points_total = points_total + math.floor(income_interest / 100)
+	end
 
 	--noob bonus
 	if self:getPlayTime() <= PAYDAY_NOOB_BONUS_MAX_PLAYTIME * 60 then
