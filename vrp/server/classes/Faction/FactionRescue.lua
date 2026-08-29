@@ -601,6 +601,23 @@ function FactionRescue:createDeathPickup(player, ...)
 									self.m_DeathBlips[player]:delete()
 									self.m_DeathBlips[player] = nil
 								end
+
+								if player.m_DeathPickupTimer then
+									if isTimer(player.m_DeathPickupTimer) then killTimer(player.m_DeathPickupTimer) end
+									player.m_DeathPickupTimer = nil
+								end
+
+								if (self.m_DeathClaimedBy[player]) then
+									self.m_HasRescueClaimed[self.m_DeathClaimedBy[player]] = nil
+									self.m_DeathClaimedBy[player] = nil
+								end
+
+								if (self.m_DeathTexts[player]) then
+									for i, rp in pairs(self:getOnlinePlayers()) do
+										rp:deleteShortMessage(self.m_DeathTexts[player][2])
+									end
+								end
+
 							else
 								hitPlayer:sendError(_("Es liegt bereits ein Spieler auf der Trage! (%s)", hitPlayer, inspect(hitPlayer.m_RescueStretcher.player)))
 							end
