@@ -613,9 +613,9 @@ function FactionRescue:Event_acceptPlayerRescue(basicText, text, player)
 end
 
 function FactionRescue:destroyDeathBlip()
-	if player.m_DeathPickupTimer then
-		if isTimer(player.m_DeathPickupTimer) then killTimer(player.m_DeathPickupTimer) end
-		player.m_DeathPickupTimer = nil
+	if client.m_DeathPickupTimer then
+		if isTimer(client.m_DeathPickupTimer) then killTimer(client.m_DeathPickupTimer) end
+		client.m_DeathPickupTimer = nil
 	end
 
 	if client.m_DeathPickup then
