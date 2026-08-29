@@ -45,8 +45,8 @@ function FactionRescue:sendSound(text, withOffDuty, tts, ...)
 	end
 end
 
-function FactionRescue:sendNeedReviveMessage(text, player)
-	ShortMessage:new(text, nil, nil, -1, function()
+function FactionRescue:sendNeedReviveMessage(header, text, player)
+	ShortMessage:new(text, header, Color.Green, -1, function()
 		triggerServerEvent("factionRescueAcceptPlayerRescue", localPlayer, player)
 		return "forceOpen"
 	end)

@@ -550,10 +550,11 @@ function FactionRescue:createDeathPickup(player, ...)
 			player.m_DeathPickupTimer = setTimer(function()
 			
 				for index, rescuePlayer in pairs(self:getOnlinePlayers()) do
+					local header = ("Neuer Verwundeter: %s"):format(player:getName())
 					local basicText = ("%s benötigt ärztliche Hilfe.\nPosition: %s - %s\n%%s"):format(player:getName(), getZoneName(player:getPosition()), getZoneName(player:getPosition(), true))
 					local text = _(basicText, rescuePlayer, "(klicke zum übernehmen)")
-					self.m_DeathTexts[player] = {basicText, text}
-					rescuePlayer:triggerEvent("rescueSendNeedReviveMessage", text, player)
+					self.m_DeathTexts[player] = {basicText, text, header}
+					rescuePlayer:triggerEvent("rescueSendNeedReviveMessage", header, text, player)
 					-- outputChatBox(text)
 
 					-- if rescuePlayer:isFactionDuty() and rescuePlayer:getPubync("Rescue:Type") == "medic" then
@@ -638,8 +639,8 @@ function FactionRescue:createDeathPickup(player, ...)
 end
 
 function FactionRescue:Event_acceptPlayerRescue(player)
-	if not player:isDead() then return end
-	if client:isFactionDuty() and client:getPublicSync("Rescue:Type") == "medic" then
+	-- if not player:isDead() then return end
+	-- if client:isFactionDuty() and client:getPublicSync("Rescue:Type") == "medic" then
 		if self.m_HasRescueClaimed[client] then
 			return client:sendError(_("Du hast bereits ein Einsatz übernommen", client))
 		end
@@ -659,16 +660,19 @@ function FactionRescue:Event_acceptPlayerRescue(player)
 		if (self.m_DeathTexts[player]) then
 			local basicText = self.m_DeathTexts[player][1]
 			local text = self.m_DeathTexts[player][2]
+			local header = ("Verwundeter: %s"):format(player:getName())
+
+			local color = {178, 35, 33}
 	
 			for i, rp in pairs(self:getOnlinePlayers()) do
-				rp:editShortMessage(text, _(basicText, rp, _("Einsatz von %s übernommen", rp, client:getName())), nil, nil, 15000, "clear")
+				rp:editShortMessage(text, _(basicText, rp, _("Einsatz von %s übernommen", rp, client:getName())), header, color, 15000, "clear")
 			end
 		end
 
 		player:triggerEvent("blockSelfExecution", player)
-	else
-		client:sendError(_("Du bist nicht im Medic-Dienst!", client))
-	end
+	-- else
+	-- 	client:sendError(_("Du bist nicht im Medic-Dienst!", client))
+	-- end
 end
 
 function FactionRescue:destroyDeathBlip()
