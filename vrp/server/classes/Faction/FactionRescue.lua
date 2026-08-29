@@ -42,6 +42,7 @@ function FactionRescue:constructor()
 
 	self.m_GateHitBind = bind(self.onBarrierHit, self)
 
+	self.m_DeathTexts = {}
 
 	-- Barriers
 	Gate:new(968, Vector3(1138.5, -1384.88, 13.48), Vector3(0, 90, 0), Vector3(1138.5, -1384.88, 13.33), Vector3(0, 5, 0), false).onGateHit = self.m_GateHitBind
@@ -129,7 +130,21 @@ function FactionRescue:constructor()
 					self.m_DeathBlips[player]:delete()
 					self.m_DeathBlips[player] = nil
 				end
+
+				if (self.m_DeathTexts[player]) then
+					for i, rp in pairs(self:getOnlinePlayers()) do
+						rp:deleteShortMessage(self.m_DeathTexts[player][2])
+					end
+				end
 			end
+
+			if player.m_DeathPickupTimer then
+				if isTimer(player.m_DeathPickupTimer) then killTimer(player.m_DeathPickupTimer) end
+				player.m_DeathPickupTimer = nil
+			end
+
+
+
 
 			if player.m_RescueStretcher then
 				if player.m_RescueStretcher.player then
@@ -530,7 +545,8 @@ function FactionRescue:createDeathPickup(player, ...)
 				for index, rescuePlayer in pairs(self:getOnlinePlayers()) do
 					local basicText = ("%s benötigt ärztliche Hilfe.\nPosition: %s - %s\n%%s"):format(player:getName(), getZoneName(player:getPosition()), getZoneName(player:getPosition(), true))
 					local text = _(basicText, rescuePlayer, "(klicke zum übernehmen)")
-					rescuePlayer:triggerEvent("rescueSendNeedReviveMessage", basicText, text, player)
+					self.m_DeathTexts[player] = {basicText, text}
+					rescuePlayer:triggerEvent("rescueSendNeedReviveMessage", text, player)
 					-- outputChatBox(text)
 
 					-- if rescuePlayer:isFactionDuty() and rescuePlayer:getPubync("Rescue:Type") == "medic" then
@@ -597,13 +613,24 @@ function FactionRescue:createDeathPickup(player, ...)
 	--self:createDeathTimeout(player, ...)
 end
 
-function FactionRescue:Event_acceptPlayerRescue(basicText, text, player)
+function FactionRescue:Event_acceptPlayerRescue(player)
 	-- if not player:isDead() then return end
 	if client:isFactionDuty() and client:getPublicSync("Rescue:Type") == "medic" then
 		client:sendInfo(_("Du hast den Einsatz übernommen!", client))
+		player:sendInfo(_("Ein Sanitäter ist auf dem Weg zu dir", player))
 
-		for i, rp in pairs(self:getOnlinePlayers()) do
-			rp:editShortMessage(text, _(basicText, rp, _("Einsatz von %s übernommen", rp, client:getName())), nil, nil, 15000, function() end)
+		if self.m_DeathBlips[player] then
+			self.m_DeathBlips[player]:setColor({0, 255, 0})
+		end
+
+
+		if (self.m_DeathTexts[player]) then
+			local basicText = self.m_DeathTexts[player][1]
+			local text = self.m_DeathTexts[player][2]
+	
+			for i, rp in pairs(self:getOnlinePlayers()) do
+				rp:editShortMessage(text, _(basicText, rp, _("Einsatz von %s übernommen", rp, client:getName())), nil, nil, 15000, "clear")
+			end
 		end
 
 		player:triggerEvent("blockSelfExecution", player)
@@ -616,6 +643,12 @@ function FactionRescue:destroyDeathBlip()
 	if client.m_DeathPickupTimer then
 		if isTimer(client.m_DeathPickupTimer) then killTimer(client.m_DeathPickupTimer) end
 		client.m_DeathPickupTimer = nil
+	end
+
+	if (self.m_DeathTexts[client]) then
+		for i, rp in pairs(self:getOnlinePlayers()) do
+			rp:deleteShortMessage(self.m_DeathTexts[client][2])
+		end
 	end
 
 	if client.m_DeathPickup then

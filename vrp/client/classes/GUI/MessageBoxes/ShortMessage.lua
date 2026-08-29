@@ -219,13 +219,21 @@ addEventHandler("shortMessageEdit", root, function(text, newText, title, tcolor,
 			sm:setTimeout(timeout)
 		end
 		if callback then
-			sm.m_Callback = function()
-				triggerServerEvent(callback, root, unpack(additionalParameters))
+			if callback == "clear" then
+				sm.m_Callback = function() end
+			else
+				sm.m_Callback = function() 
+					triggerServerEvent(callback, root, unpack(additionalParameters))	
+				end
 			end
 		end
 		if onTimeout then
-			sm.m_TimeoutFunc = function()
-				triggerServerEvent(onTimeout, root, unpack(additionalParameters))
+			if onTimeout == "clear" then
+				sm.m_TimeoutFunc = function() end
+			else
+				sm.m_TimeoutFunc = function() 
+					triggerServerEvent(onTimeout, root, unpack(additionalParameters))	
+				end
 			end
 		end
 	end
