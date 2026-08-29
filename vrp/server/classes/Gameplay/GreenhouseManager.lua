@@ -35,6 +35,9 @@ function GreenhouseManager:constructor()
         if (source:getFaction() and source:isFactionDuty()) or (source:getCompany() and source:isCompanyDuty()) then
             return source:sendError(_("Du darfst nicht im Dienst sein!", source))
         end
+        if source:isInVehicle() then
+            return source:sendError(_("Du darfst in keinem Fahrzeug sitzen!", source))
+        end
         if source:getWanteds() >= 1 then
             return source:sendError(_("Du kannst das nicht tun, solange du gesucht wirst!", source))
         end
