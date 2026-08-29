@@ -43,6 +43,8 @@ function FactionRescue:constructor()
 	self.m_GateHitBind = bind(self.onBarrierHit, self)
 
 	self.m_DeathTexts = {}
+	self.m_HasRescueClaimed = {}
+	self.m_DeathClaimedBy = {}
 
 	-- Barriers
 	Gate:new(968, Vector3(1138.5, -1384.88, 13.48), Vector3(0, 90, 0), Vector3(1138.5, -1384.88, 13.33), Vector3(0, 5, 0), false).onGateHit = self.m_GateHitBind
@@ -136,6 +138,11 @@ function FactionRescue:constructor()
 						rp:deleteShortMessage(self.m_DeathTexts[player][2])
 					end
 				end
+			end
+
+			if (self.m_DeathClaimedBy[player]) then
+				self.m_HasRescueClaimed[self.m_DeathClaimedBy[player]] = nil
+				self.m_DeathClaimedBy[player] = nil
 			end
 
 			if player.m_DeathPickupTimer then
@@ -615,9 +622,13 @@ end
 
 function FactionRescue:Event_acceptPlayerRescue(player)
 	-- if not player:isDead() then return end
-	if client:isFactionDuty() and client:getPublicSync("Rescue:Type") == "medic" then
+	if client:isFactionDuty() and client:getPublicSync("Rescue:Type") == "medic" and not self.m_HasRescueClaimed[client] then
 		client:sendInfo(_("Du hast den Einsatz übernommen!", client))
 		player:sendInfo(_("Ein Sanitäter ist auf dem Weg zu dir", player))
+
+		client:startNavigationTo(player:getPosition())
+		self.m_HasRescueClaimed[client] = true
+		self.m_DeathClaimedBy[player] = client
 
 		if self.m_DeathBlips[player] then
 			self.m_DeathBlips[player]:setColor({0, 255, 0})
@@ -643,6 +654,11 @@ function FactionRescue:destroyDeathBlip()
 	if client.m_DeathPickupTimer then
 		if isTimer(client.m_DeathPickupTimer) then killTimer(client.m_DeathPickupTimer) end
 		client.m_DeathPickupTimer = nil
+	end
+
+	if (self.m_DeathClaimedBy[player]) then
+		self.m_HasRescueClaimed[self.m_DeathClaimedBy[player]] = nil
+		self.m_DeathClaimedBy[player] = nil
 	end
 
 	if (self.m_DeathTexts[client]) then
