@@ -8,7 +8,7 @@
 LocalPlayer = inherit(Player)
 addRemoteEvents{"retrieveInfo", "playerWasted", "playerCashChange", "disableDamage",
 "playerSendToHospital", "abortDeathGUI", "sendTrayNotification","setClientTime", "setClientAdmin", "toggleRadar", "onTryPickupWeapon", "onServerRunString", "playSound", "stopBleeding", "restartBleeding", "setCanBeKnockedOffBike", "setOcclusion"
-,"onTryEnterExit", "onAllowRadioCommunication", "playSound", "playSFX", "playSFX3D", "Player:ReceiveLastDamagedInfo"}
+,"onTryEnterExit", "onAllowRadioCommunication", "playSound", "playSFX", "playSFX3D", "Player:ReceiveLastDamagedInfo", "blockSelfExecution"}
 
 function LocalPlayer:constructor()
 	self.m_Locale = "en"
@@ -61,6 +61,7 @@ function LocalPlayer:constructor()
 	addEventHandler("setOcclusion",root,function( bool ) setOcclusionsEnabled(bool) end)
 	addEventHandler("onTryEnterExit", root, bind(self.Event_tryEnterExit, self))
 	addEventHandler("onAllowRadioCommunication", root, bind(self.Event_allowRadioCommunication, self))
+	addEventHandler("blockSelfExecution", root, bind(self.Event_blockSelfExecution, self))
 	addCommandHandler("noafk", bind(self.onAFKCodeInput, self))
 	addCommandHandler("anim", bind(self.startAnimation, self))
 
@@ -461,13 +462,13 @@ function LocalPlayer:createWastedTimer()
 			if timeGone >= MEDIC_TIME-500 then
 				self.m_OnDeathTimerUp()
 			else
-				if not localPlayer:isPremium() and not self.m_SuicideAllowed and timeGone and (MEDIC_TIME - timeGone <= MEDIC_TIME - 60000) and not (table.size(FactionManager:getSingleton():getFromId(4):getOnlinePlayers(true, true)) >= 1) then
+				if not localPlayer:isPremium() and not self.m_SuicideAllowed and not self.m_BlockSelfExecution and timeGone and (MEDIC_TIME - timeGone <= MEDIC_TIME - 60000) and not (table.size(FactionManager:getSingleton():getFromId(4):getOnlinePlayers(true, true)) >= 1) then
 					self.m_SuicideAllowed = true
 					self.m_DeathMessage:delete()
 					triggerEvent("infoBox", localPlayer, _"Da gerade kein Mitglied vom Rescue Team aktiv ist, kannst du jetzt durch einen Klick auf die Shortmessage früher respawnen!")
 					self:createDeathShortMessage()
 				end
-				if localPlayer:isPremium() or self.m_SuicideAllowed then
+				if (localPlayer:isPremium() and not self.m_BlockSelfExecution) or self.m_SuicideAllowed then
 					self.m_DeathMessage.m_Text = _("Du bist schwer verletzt und verblutest in %s Sekunden...\n(Drücke hier um dich umzubringen)", math.floor((MEDIC_TIME - timeGone)/1000))
 				else
 					self.m_DeathMessage.m_Text = _("Du bist schwer verletzt und verblutest in %s Sekunden...", math.floor((MEDIC_TIME - timeGone)/1000))
@@ -1059,6 +1060,11 @@ function LocalPlayer:hungerDecrease()
 		triggerServerEvent("playerDecreaseHunger", localPlayer)
 	end
 end
+
+function LocalPlayer:Event_blockSelfExecution()
+	self.m_BlockSelfExecution = true
+end
+
 
 addEvent("Player:ReceiveLastDamagedInfo", true)
 addEventHandler("Player:ReceiveLastDamagedInfo", localPlayer, function(state)

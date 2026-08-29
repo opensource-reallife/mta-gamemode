@@ -8,10 +8,11 @@
 FactionRescue = inherit(Singleton)
 
 addRemoteEvents{
-	"rescueLadderUpdateCollision", "rescueLadderFixCamera"
+	"rescueLadderUpdateCollision", "rescueLadderFixCamera", "rescueSendNeedReviveMessage"
 }
 
 function FactionRescue:constructor()
+	addEventHandler("rescueSendNeedReviveMessage", localPlayer, bind(self.sendNeedReviveMessage, self))
 end
 
 function FactionRescue:getOnlinePlayers(afkCheck, dutyCheck)
@@ -42,6 +43,13 @@ function FactionRescue:sendSound(text, withOffDuty, tts, ...)
 			end
 		end
 	end
+end
+
+function FactionRescue:sendNeedReviveMessage(basicText, text, player)
+	ShortMessage:new(text, nil, nil, 60 * 1000, function()
+		triggerServerEvent("factionRescueAcceptPlayerRescue", localPlayer, basicText, text, player)
+		return "forceOpen"
+	end)
 end
 
 addEventHandler("rescueLadderUpdateCollision", root, function(enable)

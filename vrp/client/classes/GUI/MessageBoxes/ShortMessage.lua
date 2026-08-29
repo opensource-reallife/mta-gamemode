@@ -89,6 +89,8 @@ function ShortMessage:constructor(text, title, tcolor, timeout, callback, timeou
 
 	table.insert(MessageBoxManager.Map, self)
 	MessageBoxManager.resortPositions()
+
+	ShortMessage.Map[text] = self
 end
 
 function ShortMessage:virtual_destructor(force)
@@ -196,5 +198,35 @@ addEvent("shortMessageDelete", true)
 addEventHandler("shortMessageDelete", root, function(text)
 	if(ShortMessage.Map[text]) then
 		delete(ShortMessage.Map[text])
+	end
+end)
+
+addEvent("shortMessageEdit", true)
+addEventHandler("shortMessageEdit", root, function(text, newText, title, tcolor, timeout, callback, onTimeout, ...)
+	if(ShortMessage.Map[text]) then
+		local additionalParameters = {...}
+		sm = ShortMessage.Map[text]
+		if newText then
+			sm:setText(newText)
+		end
+		if title then
+			sm.m_Title = title
+		end
+		if tcolor then
+			sm.m_TitleColor = (type(tcolor) == "table" and tcolor) or (type(tcolor) == "number" and {fromcolor(tcolor)}) or {125, 0, 0}
+		end
+		if timeout then
+			sm:setTimeout(timeout)
+		end
+		if callback then
+			sm.m_Callback = function()
+				triggerServerEvent(callback, root, unpack(additionalParameters))
+			end
+		end
+		if onTimeout then
+			sm.m_TimeoutFunc = function()
+				triggerServerEvent(onTimeout, root, unpack(additionalParameters))
+			end
+		end
 	end
 end)

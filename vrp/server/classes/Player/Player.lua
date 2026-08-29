@@ -747,6 +747,7 @@ function Player:sendSuccess(text, timeout, title)	self:triggerEvent("successBox"
 
 function Player:sendShortMessage(text, ...) self:triggerEvent("shortMessageBox", text, ...)	end
 function Player:deleteShortMessage(text) self:triggerEvent("shortMessageDelete", text) end
+function Player:editShortMessage(text, ...) self:triggerEvent("shortMessageEdit", text, ...) end
 
 function Player:sendTrayNotification(text, icon, sound)	self:triggerEvent("sendTrayNotification", text, icon, sound)	end
 

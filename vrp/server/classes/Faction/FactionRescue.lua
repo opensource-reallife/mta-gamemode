@@ -11,7 +11,7 @@ addRemoteEvents{
 	"factionRescueToggleDuty", "factionRescueHealPlayerQuestion", "factionRescueDiscardHealPlayer", "factionRescueHealPlayer",
 	"factionRescueWastedFinished", "factionRescueToggleStretcher", "factionRescuePlayerHealBase",
 	"factionRescueReviveAbort", "factionRescueToggleLadder", "factionRescueToggleDefibrillator", "factionRescueFillFireExtinguisher",
-	"factionRescueChangeRadioStatus"
+	"factionRescueChangeRadioStatus", "factionRescueAcceptPlayerRescue"
 }
 
 function FactionRescue:constructor()
@@ -31,6 +31,8 @@ function FactionRescue:constructor()
 
 	self:createDutyPickup(-2203.64, -2309.79, 31.38, 0) -- Angel Pine
 
+	self.m_ShortMessagesIds = {}
+
 	self.m_VehicleFires = {}
 
 	self.m_LastStrecher = {}
@@ -39,6 +41,7 @@ function FactionRescue:constructor()
 	self.m_BankAccountServerCorpse = BankServer.get("player.corpse")
 
 	self.m_GateHitBind = bind(self.onBarrierHit, self)
+
 
 	-- Barriers
 	Gate:new(968, Vector3(1138.5, -1384.88, 13.48), Vector3(0, 90, 0), Vector3(1138.5, -1384.88, 13.33), Vector3(0, 5, 0), false).onGateHit = self.m_GateHitBind
@@ -115,6 +118,7 @@ function FactionRescue:constructor()
 	addEventHandler("factionRescueToggleLadder", root, bind(self.Event_toggleLadder, self))
 	addEventHandler("factionRescueFillFireExtinguisher", root, bind(self.Event_fillFireExtinguisher, self))
 	addEventHandler("factionRescueChangeRadioStatus", root, bind(self.Event_changeRadioStatus, self))
+	addEventHandler("factionRescueAcceptPlayerRescue", root, bind(self.Event_acceptPlayerRescue, self))
 
 	PlayerManager:getSingleton():getQuitHook():register(
 		function(player)
@@ -521,20 +525,28 @@ function FactionRescue:createDeathPickup(player, ...)
 
 	if not player:isInGangwar() then
 		if player:getInterior() == 0 and player:getDimension() == 0 then
-			for index, rescuePlayer in pairs(self:getOnlinePlayers()) do
-				local text = _("%s benötigt ärztliche Hilfe.\nPosition: %s - %s", rescuePlayer, player:getName(), getZoneName(player:getPosition()), getZoneName(player:getPosition(), true))
-				if rescuePlayer:isFactionDuty() and rescuePlayer:getPublicSync("Rescue:Type") == "medic" then
-					rescuePlayer:sendWarning(text, 10000, "Arzt benötigt")
-				else
-					rescuePlayer:sendShortMessage(text)
+			setTimer(function()
+			
+				for index, rescuePlayer in pairs(self:getOnlinePlayers()) do
+					local basicText = ("%s benötigt ärztliche Hilfe.\nPosition: %s - %s\n%%s"):format(player:getName(), getZoneName(player:getPosition()), getZoneName(player:getPosition(), true))
+					local text = _(basicText, rescuePlayer, "(klicke zum übernehmen)")
+					rescuePlayer:triggerEvent("rescueSendNeedReviveMessage", basicText, text, player)
+					-- outputChatBox(text)
+
+					-- if rescuePlayer:isFactionDuty() and rescuePlayer:getPubync("Rescue:Type") == "medic" then
+					-- 	rescuePlayer:sendWarning(text, 10000, "Arzt benötigt")
+					-- else
+					
+	
+					-- end
 				end
-			end
-			if self.m_DeathBlips[player] then
-				self.m_DeathBlips[player]:delete()
-				self.m_DeathBlips[player] = nil
-			end
-			self.m_DeathBlips[player] = Blip:new("Rescue.png", player.position.x, player.position.y, {faction = 4, duty = true}, 2000, {200, 50, 0})
-			self.m_DeathBlips[player]:setDisplayText("verwundeter Spieler")
+				if self.m_DeathBlips[player] then
+					self.m_DeathBlips[player]:delete()
+					self.m_DeathBlips[player] = nil
+				end
+				self.m_DeathBlips[player] = Blip:new("Rescue.png", player.position.x, player.position.y, {faction = 4, duty = true}, 2000, {200, 50, 0})
+				self.m_DeathBlips[player]:setDisplayText("verwundeter Spieler")
+			end, player:isPremium() and 60 * 1000 or 10, 1)
 		end
 	end
 
@@ -583,6 +595,21 @@ function FactionRescue:createDeathPickup(player, ...)
 	)
 	-- Create PlayerDeathTimeout
 	--self:createDeathTimeout(player, ...)
+end
+
+function FactionRescue:Event_acceptPlayerRescue(basicText, text, player)
+	-- if not player:isDead() then return end
+	if client:isFactionDuty() and client:getPublicSync("Rescue:Type") == "medic" then
+		client:sendInfo(_("Du hast den Einsatz übernommen!", client))
+
+		for i, rp in pairs(self:getOnlinePlayers()) do
+			rp:editShortMessage(text, _(basicText, rp, _("Einsatz von %s übernommen", rp, client:getName())), nil, nil, 15000)
+		end
+
+		player:triggerEvent("blockSelfExecution", player)
+	else
+		client:sendError(_("Du bist nicht im Medic-Dienst!", client))
+	end
 end
 
 function FactionRescue:destroyDeathBlip()
