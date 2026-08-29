@@ -639,8 +639,8 @@ function FactionRescue:createDeathPickup(player, ...)
 end
 
 function FactionRescue:Event_acceptPlayerRescue(player)
-	-- if not player:isDead() then return end
-	-- if client:isFactionDuty() and client:getPublicSync("Rescue:Type") == "medic" then
+	if not player:isDead() then return end
+	if client:isFactionDuty() and client:getPublicSync("Rescue:Type") == "medic" then
 		if self.m_HasRescueClaimed[client] then
 			return client:sendError(_("Du hast bereits ein Einsatz übernommen", client))
 		end
@@ -670,9 +670,9 @@ function FactionRescue:Event_acceptPlayerRescue(player)
 		end
 
 		player:triggerEvent("blockSelfExecution", player)
-	-- else
-	-- 	client:sendError(_("Du bist nicht im Medic-Dienst!", client))
-	-- end
+	else
+		client:sendError(_("Du bist nicht im Medic-Dienst!", client))
+	end
 end
 
 function FactionRescue:destroyDeathBlip()
