@@ -621,8 +621,12 @@ function FactionRescue:createDeathPickup(player, ...)
 end
 
 function FactionRescue:Event_acceptPlayerRescue(player)
-	-- if not player:isDead() then return end
-	if client:isFactionDuty() and client:getPublicSync("Rescue:Type") == "medic" and not self.m_HasRescueClaimed[client] then
+	if not player:isDead() then return end
+	if client:isFactionDuty() and client:getPublicSync("Rescue:Type") == "medic" then
+		if self.m_HasRescueClaimed[client] then
+			return client:sendError(_("Du hast bereits ein Einsatz übernommen", client))
+		end
+
 		client:sendInfo(_("Du hast den Einsatz übernommen!", client))
 		player:sendInfo(_("Ein Sanitäter ist auf dem Weg zu dir", player))
 
