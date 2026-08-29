@@ -373,6 +373,7 @@ end
 function LocalPlayer:onDeathTimerUp()
 	self.m_Death = false
 	self.m_SuicideAllowed = false
+	self.m_BlockSelfExecution = false
 	if self.m_DeathMessage then
 		delete(self.m_DeathMessage)
 	end
@@ -483,7 +484,7 @@ function LocalPlayer:createDeathShortMessage()
 	if localPlayer:isPremium() or self.m_SuicideAllowed then
 		self.m_DeathMessage = ShortMessage:new(_("Du bist schwer verletzt und verblutest in %s Sekunden...\n(Drücke hier um dich umzubringen)", MEDIC_TIME/1000), nil, nil, MEDIC_TIME,
 			function()
-				if self.m_Death then
+				if self.m_Death and not self.m_BlockSelfExecution then
 					self.m_OnDeathTimerUp()
 					if isTimer(self.m_CameraTimer) then
 						killTimer(self.m_CameraTimer)

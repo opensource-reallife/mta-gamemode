@@ -525,7 +525,7 @@ function FactionRescue:createDeathPickup(player, ...)
 
 	if not player:isInGangwar() then
 		if player:getInterior() == 0 and player:getDimension() == 0 then
-			setTimer(function()
+			player.m_DeathPickupTimer = setTimer(function()
 			
 				for index, rescuePlayer in pairs(self:getOnlinePlayers()) do
 					local basicText = ("%s benötigt ärztliche Hilfe.\nPosition: %s - %s\n%%s"):format(player:getName(), getZoneName(player:getPosition()), getZoneName(player:getPosition(), true))
@@ -603,7 +603,7 @@ function FactionRescue:Event_acceptPlayerRescue(basicText, text, player)
 		client:sendInfo(_("Du hast den Einsatz übernommen!", client))
 
 		for i, rp in pairs(self:getOnlinePlayers()) do
-			rp:editShortMessage(text, _(basicText, rp, _("Einsatz von %s übernommen", rp, client:getName())), nil, nil, 15000)
+			rp:editShortMessage(text, _(basicText, rp, _("Einsatz von %s übernommen", rp, client:getName())), nil, nil, 15000, function() end)
 		end
 
 		player:triggerEvent("blockSelfExecution", player)
@@ -613,6 +613,11 @@ function FactionRescue:Event_acceptPlayerRescue(basicText, text, player)
 end
 
 function FactionRescue:destroyDeathBlip()
+	if player.m_DeathPickupTimer then
+		if isTimer(player.m_DeathPickupTimer) then killTimer(player.m_DeathPickupTimer) end
+		player.m_DeathPickupTimer = nil
+	end
+
 	if client.m_DeathPickup then
 		client:dropReviveMoney()
 		client.m_DeathPickup:destroy()
