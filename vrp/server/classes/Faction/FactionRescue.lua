@@ -966,8 +966,8 @@ function FactionRescue:addVehicleFire(veh)
 
 	local model = veh:getModel()
 	local pos = veh:getPosition()
-	local rx, ry, rz = getElementRotation(veh)
-	local r1, g1, b1, r2, g2, b2 = veh:getColor(true)
+	local rot = veh:getRotation()
+	local color = {veh:getColor(true)}
 	setTimer(function(veh)
 		if instanceof(veh, FactionVehicle) or instanceof(veh, CompanyVehicle) then
 			local occs = veh:getOccupants()
@@ -985,22 +985,7 @@ function FactionRescue:addVehicleFire(veh)
 		self.m_VehicleFires[veh].Blip:setOptionalColor(BLIP_COLOR_CONSTANTS.Orange)
 		self.m_VehicleFires[veh].Blip:setDisplayText("Verkehrsbehinderung")
 
-		local tempVehicle = TemporaryVehicle.create(model, pos.x, pos.y, pos.z, rz)
-		tempVehicle:setHealth(300)
-		tempVehicle:setColor(r1, g1, b1, r2, g2, b2)
-		tempVehicle:disableRespawn(true)
-		tempVehicle:setLocked(true)
-		tempVehicle:setData("Burned", true, true)
-		tempVehicle.burned = true
-		tempVehicle.Blip = Blip:new("CarShop.png", 0, 0, {company = CompanyStaticId.MECHANIC}, 400)
-		tempVehicle.Blip:setColor({150, 150, 150}) -- gets deleted on tow
-		tempVehicle.Blip:setDisplayText("Auto-Wrack")
-		tempVehicle.Blip:attachTo(tempVehicle)
-
-		CompanyManager:getSingleton():getFromId(CompanyStaticId.MECHANIC):sendWarning("Ein verbranntes Auto-Wrack muss abgeschleppt werden! Position: %s", "Auto-Wrack", true, pos, zone)
-		for i= 0, 5 do tempVehicle:setDoorState(i, chance(50) and 2 or 4) end
-		tempVehicle:setWheelStates(chance(50) and 1 or 0, chance(50) and 1 or 0, chance(50) and 1 or 0, chance(50) and 1 or 0)
-
+		CompanyManager:getFromId(CompanyStaticId.MECHANIC):createVehicleWreck(model, pos, rot.z, color)
 	end, 10000, 1, veh)
 
 	self.m_VehicleFires[veh]:setOnFinishHook(function(stats)

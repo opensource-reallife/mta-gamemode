@@ -1,6 +1,29 @@
 MechanicTow = inherit(Company)
 addRemoteEvents{"mechanicRepair", "mechanicRepairConfirm", "mechanicRepairCancel", "mechanicDetachFuelTank", "mechanicTakeFuelNozzle", "mechanicRejectFuelNozzle", "mechanicTakeVehicle", "mechanicOpenTakeGUI", "mechanicVehicleRequestFill", "mechanicAttachBike", "mechanicDetachBike"}
 
+MechanicTow.SpawnPositions = {
+	{904.833, -1183.605, 16, 180},
+	{900.833, -1183.605, 16, 180},
+}
+
+MechanicTow.WreckPositions = {
+	{549, Vector3(2279.96, -1221.82, 23.74), 341.48}, -- Jefferson
+	{542, Vector3(1822.29, -1176.24, 23.42), 67.06}, -- Glen Park
+	{566, Vector3(1925.51, -1522.42, 3.13), 257.66}, -- Idlewood
+	{466, Vector3(1873.29, -1849.98, 13.32), 208.13}, -- Idlewood
+	{560, Vector3(2182.29, -1911.52, 13.26), 158.20}, -- Willowfield
+	{543, Vector3(2584.96, -1779.13, 1.39), 339.54}, -- Ganton
+	{589, Vector3(2730.65, -1186.91, 69.14), 173.78}, -- Los Flores
+	{579, Vector3(1139.53, -1722.54, 13.67), 146.50}, -- Conference Center
+	{492, Vector3(1010.04, -1447.67, 13.30), 41.05}, -- Market
+	{467, Vector3(537.75, -1680.38, 18.52), 219.09}, -- Rodeo
+	{410, Vector3(194.65, -1466.71, 12.62), 355.75}, -- Rodeo
+	{496, Vector3(389.15, -1148.55, 77.87), 319.31}, -- Richman
+	{436, Vector3(694.81, -1012.89, 51.68), 7.84}, -- Richman
+	{429, Vector3(1200.12, -633.20, 103.72), 313.16}, -- Red County
+	{506, Vector3(1656.06, -982.49, 37.80), 247.95}, -- Mulholland Intersection
+}
+
 function MechanicTow:constructor()
 	self.m_PendingQuestions = {}
 
@@ -39,6 +62,9 @@ function MechanicTow:constructor()
 	addEventHandler("onTrailerDetach", root, bind( self.onDetachVehicleFromTow, self))
 
 	PlayerManager:getSingleton():getQuitHook():register(bind(self.onPlayerQuit, self))
+
+	self.m_WreckBind = bind(self.onWreckTimerUp, self)
+	self:onWreckTimerUp()
 end
 
 function MechanicTow:destuctor()
@@ -268,7 +294,6 @@ function MechanicTow:onEnterTowLot(hitElement)
 			towingBike:destroy()
 			hitElement.vehicle:setData("towingBike", nil, true)
 			hitElement:sendInfo(_("Du hast erfolgreich ein Fahrzeug-Wrack abgeschleppt!", hitElement))
-			self.m_BankAccountServer:transferMoney(hitElement, 250, "Fahrzeug-Wrack", "Company", "Towed")
 		else
 			towingBike:toggleRespawn(true)
 			towingBike:setCollisionsEnabled(true)
@@ -280,8 +305,9 @@ function MechanicTow:onEnterTowLot(hitElement)
 
 			StatisticsLogger:getSingleton():vehicleTowLogs(hitElement, towingBike)
 			self:addLog(hitElement, "Abschlepp-Logs", ("hat ein Fahrzeug (%s) von %s abgeschleppt!"):format(towingBike:getName(), getElementData(towingBike, "OwnerName") or "Unbekannt"))
-			self.m_BankAccountServer:transferMoney(hitElement, 150, "Fahrzeug abgeschleppt", "Company", "Towed")
 		end
+		self.m_BankAccountServer:transferMoney(self, 500, "Fahrzeug abgeschleppt", "Company", "Towed")
+		self.m_BankAccountServer:transferMoney({hitElement, true}, 250, "Fahrzeug abgeschleppt", "Company", "Towed")
 	else
 		hitElement.vehicle:setData("towingBike", nil, true)
 	end
@@ -343,7 +369,6 @@ function MechanicTow:onDetachVehicleFromTow(towTruck, vehicle)
 						driver:sendInfo(_("Das Fahrzeug ist nun abgeschleppt!", driver))
 						StatisticsLogger:getSingleton():vehicleTowLogs(driver, source)
 						self:addLog(driver, "Abschlepp-Logs", ("hat ein Fahrzeug (%s) von %s abgeschleppt!"):format(source:getName(), getElementData(source, "OwnerName") or "Unbekannt"))
-						self.m_BankAccountServer:transferMoney(driver, 150, "Fahrzeug abgeschleppt", "Company", "Towed")
 					else
 						if source.Blip then
 							source.Blip:delete()
@@ -351,8 +376,9 @@ function MechanicTow:onDetachVehicleFromTow(towTruck, vehicle)
 						self:addLog(driver, "Abschlepp-Logs", ("hat ein Fahrzeug-Wrack (%s) abgeschleppt!"):format(source:getName()))
 						source:destroy()
 						driver:sendInfo(_("Du hast erfolgreich ein Fahrzeug-Wrack abgeschleppt!", driver))
-						self.m_BankAccountServer:transferMoney(driver, 250, "Fahrzeug-Wrack", "Company", "Towed")
 					end
+					self.m_BankAccountServer:transferMoney(self, 500, "Fahrzeug abgeschleppt", "Company", "Towed")
+					self.m_BankAccountServer:transferMoney({driver, true}, 250, "Fahrzeug abgeschleppt", "Company", "Towed")
 				else
 					driver:sendWarning(_("Dieses Fahrzeug kann nicht abgeschleppt werden!", driver))
 				end
@@ -566,10 +592,45 @@ function MechanicTow:checkLeviathanTowing(player, vehicle)
 	end
 end
 
-MechanicTow.SpawnPositions = {
-	{904.833, -1183.605, 16, 180},
-	{900.833, -1183.605, 16, 180},
-	--{833.2, -1198.1, 17.70, 180},
-	--{1091.7, -1198.3, 17.70, 180},
-	--
-}
+function MechanicTow:onWreckTimerUp()
+	if table.size(self:getOnlinePlayers(true, true)) >= 1 then
+		local wrecks = 0
+		for k, vehicle in pairs(getElementsByType("vehicle")) do
+			if vehicle.burned then wrecks = wrecks + 1 end
+		end
+		if wrecks < 3 then
+			self:createRandomVehicleWreck()
+		end
+	end
+
+	if isTimer(self.m_WreckTimer) then killTimer(self.m_WreckTimer) end
+	self.m_WreckTimer = Timer(self.m_WreckBind, Randomizer:get(3, 7) * 60 * 1000, 1)
+end
+
+function MechanicTow:createRandomVehicleWreck()
+	local model, pos, rot = unpack(Randomizer:getRandomTableValue(MechanicTow.WreckPositions))
+	if not getElementsWithinRange(pos, 20, "vehicle", 0, 0)[1] and not getElementsWithinRange(pos, 100, "player", 0, 0)[1] then
+		self:createVehicleWreck(model, pos, rot, color)
+	end
+end
+
+function MechanicTow:createVehicleWreck(model, pos, rotZ, color)
+	local tempVehicle = TemporaryVehicle.create(model, pos.x, pos.y, pos.z, rotZ)
+	tempVehicle:setHealth(300)
+	if color then
+		tempVehicle:setColor(unpack(color))
+	end
+	tempVehicle:disableRespawn(true)
+	tempVehicle:setLocked(true)
+	tempVehicle:setData("Burned", true, true)
+	tempVehicle.burned = true
+	tempVehicle.Blip = Blip:new("CarShop.png", 0, 0, {company = CompanyStaticId.MECHANIC}, 400)
+	tempVehicle.Blip:setColor({150, 150, 150}) -- gets deleted on tow
+	tempVehicle.Blip:setDisplayText("Fahrzeug-Wrack")
+	tempVehicle.Blip:attachTo(tempVehicle)
+
+	local zone = getZoneName(pos).." - "..getZoneName(pos, true)
+	CompanyManager:getSingleton():getFromId(CompanyStaticId.MECHANIC):sendWarning("Ein Fahrzeug-Wrack muss abgeschleppt werden! Position: %s", "Fahrzeug-Wrack", true, pos, zone)
+	for i= 0, 5 do tempVehicle:setDoorState(i, chance(50) and 2 or 4) end
+	tempVehicle:setWheelStates(chance(50) and 1 or 0, chance(50) and 1 or 0, chance(50) and 1 or 0, chance(50) and 1 or 0)
+end
