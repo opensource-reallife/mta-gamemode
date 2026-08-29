@@ -8,7 +8,7 @@
 
 ItemCan = inherit(Item)
 
-function ItemCan:constructor( )
+function ItemCan:constructor()
 	self.m_UseBind = bind(self.action, self)
 	self.m_Cans = {}
 end
@@ -17,7 +17,7 @@ function ItemCan:destructor()
 
 end
 
-function ItemCan:use( player, itemId, bag, place, itemName )
+function ItemCan:use(player, itemId, bag, place, itemName)
 	if not player:getPublicSync("ItemCanEnabled") then
 		if isElement(self.m_Cans[player]) then self.m_Cans[player]:destroy() end
 		local fillstate = tonumber(player:getInventory():getItemValueByBag(bag, place)) or 0
@@ -40,8 +40,9 @@ function ItemCan:action(player, key, state, bag, place)
 	if state == "down" then
 		local itemName = "Kanne"
 		local fillstate = tonumber(player:getInventory():getItemValueByBag(bag, place)) or 0
+		local greenhouse = GreenhouseManager:getSingleton().m_Greenhouses[player]
 		if fillstate < 1 then
-			if isElementInWater( player ) then
+			if isElementInWater(player) or greenhouse then
 				player:getInventory():setItemValueByBag(bag, place, 10)
 				player:triggerEvent("itemCanRefresh", 10)
 				player:sendSuccess(_("Kanne aufgefüllt!", player))
@@ -51,8 +52,10 @@ function ItemCan:action(player, key, state, bag, place)
 		else
 			local plant = player:getData("Plant:Current")
 			if plant then
-				player:getInventory():setItemValueByBag(bag, place, fillstate-1)
-				player:triggerEvent("itemCanRefresh", fillstate-1)
+				if not greenhouse then
+					player:getInventory():setItemValueByBag(bag, place, fillstate-1)
+					player:triggerEvent("itemCanRefresh", fillstate-1)
+				end
 				plant:waterPlant(player)
 			else
 				player:sendError(_("Keine Pflanze zum Bewässern in der Nähe!", player))
