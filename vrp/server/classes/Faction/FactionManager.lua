@@ -99,7 +99,56 @@ function FactionManager:loadFactions()
 			playerActionPermissions[factionRow.Id] = fromJSON(factionRow.FactionActionPermissions)
 		end
 
-		local instance = Faction:new(row.Id, row.Name_Short, row.Name_Shorter, row.Name, row.BankAccount, {players, playerLoans, playerActionMoneySplits, playerPermissions, playerWeaponPermissions, playerActionPermissions}, row.RankLoans, row.RankSkins, row.RankWeapons, row.Depot, row.Type, row.Diplomacy, row.RankPermissions, row.RankActions, row.PlayerLimit, row.MaxVehicles, row.VehicleLimits, row.DiscordRole, row.ActionSplits)
+		local function parseJSON(value)
+			if type(value) ~= "string" then
+				return value
+			end
+
+			local data = fromJSON(value)
+
+			local function convertTable(tbl)
+				if type(tbl) ~= "table" then
+					return tbl
+				end
+
+				local converted = {}
+
+				for key, value in pairs(tbl) do
+					local newKey = tonumber(key) or key
+
+					if type(value) == "table" then
+						converted[newKey] = convertTable(value)
+					else
+						converted[newKey] = value
+					end
+				end
+
+				return converted
+			end
+
+			return convertTable(data)
+		end
+
+		local color = parseJSON(row.Color)
+		local colorVehicles = parseJSON(row.ColorVehicles)
+		local ranks = parseJSON(row.Ranks)
+		local rankBadges = parseJSON(row.RanksBadges)
+		local skins = parseJSON(row.Skins)
+		local specialSkins = parseJSON(row.SkinsSpecial)
+		local weapons = parseJSON(row.Weapons)
+		local specialWeapons = parseJSON(row.WeaponsSpecial)
+
+		local spawnpoint = parseJSON(row.DestinationSpawnpoint)
+		local navigation = parseJSON(row.DestinationNavigation)
+		local wt = parseJSON(row.DestinationWT)
+		local swt = parseJSON(row.DestinationSWT)
+		local airDrop = parseJSON(row.DestinationAirDrop)
+		local interiorEnter = parseJSON(row.InteriorEnter)
+		local dt = parseJSON(row.DestinationDT)
+
+
+		local instance = Faction:new(row.Id, row.Name_Short, row.Name_Shorter, row.Name, row.BankAccount, {players, playerLoans, playerActionMoneySplits, playerPermissions, playerWeaponPermissions, playerActionPermissions}, row.RankLoans, row.RankSkins, row.RankWeapons, row.Depot, row.Type, row.Diplomacy, row.RankPermissions, row.RankActions, row.PlayerLimit, row.MaxVehicles, row.VehicleLimits, row.DiscordRole, row.ActionSplits, color, colorVehicles, ranks, rankBadges, skins, specialSkins, weapons, specialWeapons, interiorEnter, wt, spawnpoint, airDrop, navigation, dt)
+
 		FactionManager.Map[row.Id] = instance
 		count = count + 1
 	end

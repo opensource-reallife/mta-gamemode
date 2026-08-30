@@ -10,7 +10,7 @@ Faction = inherit(Object)
 
 -- implement by children
 
-function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, players, rankLoans, rankSkins, rankWeapons, depotId, factionType, diplomacy, rankPermissions, rankActions, playerLimit, maxVehicles, vehicleLimits, discordRole, actionSplits)
+function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, players, rankLoans, rankSkins, rankWeapons, depotId, factionType, diplomacy, rankPermissions, rankActions, playerLimit, maxVehicles, vehicleLimits, discordRole, actionSplits, color, colorVehicles, ranks, ranksBadges, skins, skinsSpecial, weapons, weaponsSpecial, interiorEnter, destinationWT, destinationSpawnpoint, destinationAirDrop, destinationNavigation, destinationDT)
 	self.m_Id = Id
 	self.m_Name_Short = name_short
 	self.m_ShorterName = name_shorter
@@ -27,18 +27,33 @@ function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, 
 	self.m_BankAccount = BankAccount.load(bankAccountId) or BankAccount.create(BankAccountTypes.Faction, self:getId())
 	self.m_Settings = UserGroupSettings:new(USER_GROUP_TYPES.Faction, Id)
 	self.m_Invitations = {}
-	self.m_RankNames = factionRankNames[Id]
-	self.m_Skins = factionSkins[Id]
+
+	-- Faction Settings
+	self.m_Color = color
+	self.m_ColorVehicles = colorVehicles
+	self.m_RankNames = ranks
+	self.m_RankNamesNew = ranks
+	self.m_RanksBadges = ranksBadges
+	self.m_Skins = skins
+	self.m_ValidWeapons = weapons
+	self.m_SpecialWeapons = weaponsSpecial
+
+	self.m_InteriorEnter = interiorEnter
+	self.m_DestinationWT = destinationWT
+	self.m_DestinationSpawnpoint = destinationSpawnpoint
+	self.m_DestinationAirDrop = destinationAirDrop
+	self.m_DestinationNavigation = destinationNavigation
+	self.m_DestinationDT = destinationDT
 	
 	if factionType == "State" then
-		self.m_SpecialSkin = factionSpecialSkins[Id] or {}
+		self.m_SpecialSkin = skinsSpecial
 	else 
 		for i, v in pairs(self.m_Skins) do if tonumber(self:getSetting("Skin", i, 0)) == -1 then self.m_SpecialSkin = i end end
 	end
 	
-	self.m_ValidWeapons = factionWeapons[Id]
-	self.m_SpecialWeapons = factionSpecialWeapons[Id]
-	self.m_Color = factionColors[Id]
+	-- self.m_ValidWeapons = factionWeapons[Id]
+	-- self.m_SpecialWeapons = factionSpecialWeapons[Id]
+	-- self.m_Color = factionColors[Id]
 	self.m_WeaponDepotInfo = factionType == "State" and factionWeaponDepotInfoState or factionWeaponDepotInfo
 	self.m_EquipmentDepotInfo = factionEquipmentDepotInfo
 	self.m_Countdowns = {}
@@ -1215,4 +1230,52 @@ end
 function Faction:setActionSplit(name, split)
 	if not name or not split then return end
 	self.m_ActionSplits[name] = split
+end
+
+function Faction:getColor()
+	return self.m_Color
+end
+
+function Faction:getColorVehicles()
+	return self.m_ColorVehicles
+end
+
+function Faction:getRankBadges()
+	return self.m_RanksBadges
+end
+
+function Faction:getSkins()
+	return self.m_Skins
+end
+
+function Faction:getValidWeapons()
+	return self.m_ValidWeapons
+end
+
+function Faction:getSpecialWeapons()
+	return self.m_SpecialWeapons
+end
+
+function Faction:getInteriorEnter()
+	return self.m_InteriorEnter
+end
+
+function Faction:getDestinationWT()
+	return self.m_DestinationWT
+end
+
+function Faction:getDestinationSpawnpoint()
+	return self.m_DestinationSpawnpoint
+end
+
+function Faction:getDestinationAirDrop()
+	return self.m_DestinationAirDrop
+end
+
+function Faction:getDestinationNavigation()
+	return self.m_DestinationNavigation
+end
+
+function Faction:getDestinationDT()
+	return self.m_DestinationDT
 end
