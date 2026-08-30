@@ -10,6 +10,7 @@ InactivityManager = inherit(Singleton)
 function InactivityManager:constructor()
 	self:clearHouses()
 	self:clearProperties()
+	self:clearShops()
 end
 
 function InactivityManager:clearHouses()
@@ -45,6 +46,18 @@ function InactivityManager:clearProperties()
 		if row.GroupId ~= 0 then
 			if self:isGroupInactive(row.GroupId) then
 				GroupPropertyManager:getSingleton():clearProperty(row.Id, row.GroupId, row.Price, true)
+			end
+		end
+	end
+end
+
+function InactivityManager:clearShops()
+	for _, shop in pairs(ShopManager.Map) do
+		if shop.m_OwnerType == 2 and shop.m_OwnerId ~= 0 then
+			if self:isGroupInactive(shop.m_OwnerId) then
+				local price = math.floor((shop.m_Price * 0.75))
+				shop.m_BankAccountServer:transferMoney(shop.m_Owner, price, "Shop-Verkauf wegen Inaktivität", "Shop", "Sell")
+				shop:clear()
 			end
 		end
 	end

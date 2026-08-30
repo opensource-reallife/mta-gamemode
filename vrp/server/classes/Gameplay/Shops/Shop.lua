@@ -268,9 +268,7 @@ function Shop:sell(player)
 				self.m_BankAccountServer:transferMoney(group, money, "Shop-Verkauf", "Shop", "Sell")
 				group:sendMessage(_("[GRUPPE] %s hat den Shop '%s' für %d$ verkauft!", player, player:getName(), self.m_Name, money), 255, 0, 0)
 				group:addLog(player, "Immobilien", _("hat den Shop '%s' für %d$ verkauft!", player, self.m_Name, money))
-				self.m_OwnerId = 0
-				self:loadOwner()
-				self:save()
+				self:clear()
 			else
 				player:sendError(_("Du bist nicht berechtigt einen Shop zu verkaufen!", player))
 			end
@@ -280,13 +278,18 @@ function Shop:sell(player)
 	end
 end
 
+function Shop:clear()
+	self.m_OwnerId = 0
+	self:loadOwner()
+	self:save()
+end
+
 function Shop:getOwnerName()
 	if self.m_Owner then
 		return self.m_Owner:getName()
 	end
 	return "Keiner"
 end
-
 
 function Shop:addBlip(blip)
 	local b = Blip:new(blip, self.m_Position.x, self.m_Position.y, root, 400)
