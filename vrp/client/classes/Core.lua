@@ -137,6 +137,7 @@ function Core:ready() --onClientResourceStart
 	StreetRaceEvent:new()
 	VehicleGarages:new()
 	SkinShopGUI.initializeAll()
+	FurnitureShopGUI.initialize()
 	ItemManager:new()
 	CinemaManager:new()
 	CustomAnimationManager:new()

@@ -19,7 +19,7 @@ WorldItem.constructor = pure_virtual
 function WorldItem:virtual_constructor(item, owner, pos, rotation, breakable, player, isPermanent, locked, value)
 	self.m_Item = item
 	self.m_ItemName = item:getName()
-	self.m_ModelId = item:getModelId()
+	self.m_ModelId = tonumber(value) or item:getModelId()
 	self.m_Owner = owner
 	self.m_Placer = player
 	
@@ -123,7 +123,7 @@ function WorldItem:onCollect(player, resendList, id, typ)
 		return false
 	end
 
-	if player:getInventory():giveItem(self.m_ItemName, 1) then
+	if player:getInventory():giveItem(self.m_ItemName, 1, self.m_ModelId) then
 		if self.m_Item.removeFromWorld then
 			self.m_Item:removeFromWorld(player, self, self.m_Object)
 		end
@@ -226,7 +226,7 @@ function WorldItem:onMove(player)
 			end
 			self.m_CurrentMovingPlayer = nil
 			removeEventHandler("onPlayerQuit", player, self.m_OnMovePlayerDisconnectFunc)
-		end, self.m_Object
+		end, self.m_Object, self.m_ModelId
 	)
 end
 

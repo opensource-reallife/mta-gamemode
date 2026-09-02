@@ -158,6 +158,10 @@ function ServerSettings:constructor()
 			Account.REGISTRATION_ACTIVATED = toboolean(row.Value)
 		end
 
+		if row.Index == "MaxFurniturePlayer" then
+			MAX_FURNITURE_PER_PLAYER = tonumber(row.Value)
+		end
+
 		self.m_Settings[row.Index] = row.Value
 	end
 end

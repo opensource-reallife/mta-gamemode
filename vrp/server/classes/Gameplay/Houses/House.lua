@@ -446,6 +446,15 @@ function House:sellToPlayer(seller, buyer)
 end
 
 function House:clearHouse()
+	if WorldItem.Map[self:getOwner()] then
+		for modelId, objects in pairs(WorldItem.Map[self:getOwner()]) do
+			for object, worldItem in pairs(objects) do
+				if worldItem:getItem():getName() == "Einrichtung" then
+					worldItem:onDelete()
+				end
+			end
+		end
+	end
 	self.m_Owner = false
 	self.m_Keys = {}
 	self.m_Money = 0

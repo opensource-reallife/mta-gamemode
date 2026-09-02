@@ -15,7 +15,7 @@ HouseGUI.GarageBlips = {}
 function HouseGUI:constructor(ownerName, price, rentprice, isValidRob, isClosed, tenants, money, hasKey, houseId, pickup, garage, salePrice)
 	self.m_isOwner = ownerName == localPlayer:getName()
 	self.m_isTenant = tenants and tenants[localPlayer:getPrivateSync("Id")]
-	self.m_isRentEnabled = rentprice > 0
+	self.m_isRentEnabled = rentprice and rentprice > 0
 	self.m_isInside = localPlayer:getDimension() > 0 or localPlayer:getInterior() > 0
 	self.m_Tenants = tenants
 	self.m_Money = money
@@ -184,7 +184,7 @@ function HouseGUI:buyHouse()
 end
 
 function HouseGUI:sellHouse()
-	QuestionBox:new("Möchtest du wirklich dein Haus verkaufen? Du erhälst 75% des Preises auf dein Konto gutgeschrieben!",
+	QuestionBox:new("Möchtest du wirklich dein Haus verkaufen? Du erhälst 75% des Preises und verbliebene Einrichtungsgegenstände werden gelöscht!",
 	function() triggerServerEvent("sellHouse",root) end,
 	nil,
 	localPlayer.position

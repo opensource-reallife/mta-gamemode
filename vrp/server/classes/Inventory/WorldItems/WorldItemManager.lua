@@ -21,7 +21,7 @@ function WorldItemManager:constructor()
 	for k, row in pairs(result) do 
 		id, model, item, value, interior, dimension, breakable, owner, locked = row.Id, row.Model, row.Item, row.Value, row.Interior, row.Dimension, row.Breakable, row.Owner, row.Locked
 		posX, posY, posZ, rot = row.PosX, row.PosY, row.PosZ, row.Rotation
-		worldItemInstance = PlayerWorldItem:new(ItemManager.Map[item], owner, Vector3(posX, posY, posZ), rot, breakable, owner, true, locked)
+		worldItemInstance = PlayerWorldItem:new(ItemManager.Map[item], owner, Vector3(posX, posY, posZ), rot, breakable, owner, true, locked, row.Model)
 		worldItemInstance:setDataBaseId(id)
 		worldItemInstance:setValue(value)
 		worldItemInstance:setInterior(interior) 

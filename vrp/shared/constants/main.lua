@@ -550,6 +550,181 @@ SkinInfo = {
 	[289] = {"Airport Worker", math.huge, -1},
 }
 
+FurnitureCategories = {
+	"Multimedia",
+	"Wohnzimmer",
+	"Sofas & Sessel",
+	"Küche",
+	"Esszimmer",
+	"Schlafzimmer",
+	"Badezimmer",
+	"Büro",
+	"Pflanzen",
+	"Lampen",
+	"Fitness",
+}
+
+FurnitureInfo = {
+	-- Multimedia
+    [2320] = {"Kleiner Fernseher", 150, "Multimedia"},
+    [2322] = {"Grauer Fernseher", 300, "Multimedia"},
+    [2224] = {"Futuristischer Fernseher", 1200, "Multimedia"},
+    [2318] = {"Schwarzer Fernseher", 450, "Multimedia"},
+    [1717] = {"Fernseher", 600, "Multimedia"},
+    [2028] = {"Schwarze Konsole", 250, "Multimedia"},
+    [1719] = {"Graue Konsole", 200, "Multimedia"},
+    [2297] = {"Fernseher (Schrank)", 800, "Multimedia"},
+    [1792] = {"Großer Fernseher", 1500, "Multimedia"},
+
+    -- Wohnzimmer
+    [1817] = {"Langer Couchtisch", 200, "Wohnzimmer"},
+    [1819] = {"Runder Couchtisch (Hell)", 180, "Wohnzimmer"},
+    [2235] = {"Langer Couchtisch (Hell)", 220, "Wohnzimmer"},
+    [2236] = {"Dunkler Couchtisch", 250, "Wohnzimmer"},
+    [2315] = {"Couchtisch", 150, "Wohnzimmer"},
+    [1822] = {"Runder Couchtisch (Glas)", 300, "Wohnzimmer"},
+    [2126] = {"Rechteckiger Couchtisch (Glas)", 350, "Wohnzimmer"},
+    [1818] = {"Quadratischer Couchtisch", 175, "Wohnzimmer"},
+    [2346] = {"Lowboard", 400, "Wohnzimmer"},
+    [2314] = {"Langes Lowboard", 500, "Wohnzimmer"},
+    [2313] = {"Fernsehschrank", 600, "Wohnzimmer"},
+
+	-- Sofas & Sessel
+    [2293] = {"Dunkler Fußhocker", 80, "Sofas & Sessel"},
+    [1708] = {"Moderner Sessel", 400, "Sofas & Sessel"},
+    [1762] = {"Staubiger Sessel", 120, "Sofas & Sessel"},
+    [1735] = {"Gelber Sessel", 250, "Sofas & Sessel"},
+    [1755] = {"Gemusterter Sessel", 300, "Sofas & Sessel"},
+    [1759] = {"Billiger Sessel", 100, "Sofas & Sessel"},
+    [1764] = {"Kariertes Sofa", 700, "Sofas & Sessel"},
+    [1713] = {"Modernes Sofa", 900, "Sofas & Sessel"},
+    [2290] = {"Dunkles Sofa", 850, "Sofas & Sessel"},
+    [1761] = {"Staubiges Sofa", 150, "Sofas & Sessel"},
+    [1768] = {"Blaues Sofa", 750, "Sofas & Sessel"},
+    [1760] = {"Gemustertes Sofa", 650, "Sofas & Sessel"},
+    [1763] = {"Billiges Sofa", 200, "Sofas & Sessel"},
+    [1703] = {"Schwarzes Sofa", 1000, "Sofas & Sessel"},
+    [1702] = {"Braunes Sofa", 950, "Sofas & Sessel"},
+
+    -- Küche
+    [2149] = {"Mikrowelle", 120, "Küche"},
+    [2147] = {"Kühlschrank", 400, "Küche"},
+    [2170] = {"Herd", 800, "Küche"},
+
+    [2141] = {"Küchenschrank (Grau)", 1200, "Küche"},
+	[2131] = {"Großer Küchenschrank (Grau)", 1200, "Küche"},
+    [2339] = {"Theke (Grau)", 500, "Küche"},
+    [2132] = {"Spüle (Grau)", 350, "Küche"},
+
+    [2136] = {"Spüle (Holz)", 400, "Küche"},
+    [2139] = {"Theke (3) (Holz)", 600, "Küche"},
+    [2138] = {"Theke (2) (Holz)", 550, "Küche"},
+    [2137] = {"Theke (Holz)", 500, "Küche"},
+    [2135] = {"Herd (Holz)", 900, "Küche"},
+    [2305] = {"Theke (Ecke) (Holz)", 650, "Küche"},
+    [2303] = {"Theke mit Waschmaschine (Holz)", 1100, "Küche"},
+    [2140] = {"Küchenschrank (Holz)", 450, "Küche"},
+
+    [2128] = {"Küchenschrank (Rot)", 420, "Küche"},
+    [2129] = {"Theke (Rot)", 520, "Küche"},
+    [2127] = {"Großer Küchenschrank (Rot)", 700, "Küche"},
+    [2130] = {"Spüle (Rot)", 380, "Küche"},
+    [2294] = {"Herd (Rot)", 850, "Küche"},
+    [2304] = {"Theke (Ecke) (Rot)", 620, "Küche"},
+
+    [2158] = {"Küchenschrank (Grün)", 430, "Küche"},
+    [2337] = {"Theke mit Waschmaschine (Grün)", 1150, "Küche"},
+    [2334] = {"Theke (Grün)", 530, "Küche"},
+    [2335] = {"Theke (1) (Grün)", 510, "Küche"},
+    [2336] = {"Spüle (2) (Grün)", 400, "Küche"},
+    [2338] = {"Theke (Ecke) (Grün)", 630, "Küche"},
+    [2157] = {"Theke (3) (Grün)", 580, "Küche"},
+    [2159] = {"Theke (4) (Grün)", 600, "Küche"},
+    [2160] = {"Spüle (Grün)", 390, "Küche"},
+
+    -- Esszimmer
+    [2118] = {"Ovaler Tisch", 400, "Esszimmer"},
+    [2115] = {"Heller Tisch", 350, "Esszimmer"},
+    [2117] = {"Dunkler Tisch", 450, "Esszimmer"},
+    [2086] = {"Runder Glastisch", 500, "Esszimmer"},
+    [2109] = {"Runder Holztisch", 420, "Esszimmer"},
+    [2030] = {"Runder Marmortisch", 1200, "Esszimmer"},
+
+    [2123] = {"Moderner Stuhl", 150, "Esszimmer"},
+    [2079] = {"Luxuriöser Stuhl", 500, "Esszimmer"},
+    [1720] = {"Hölzerner Stuhl", 120, "Esszimmer"},
+    [2121] = {"Roter Klappstuhl", 80, "Esszimmer"},
+    [2125] = {"Roter Hocker", 70, "Esszimmer"},
+
+    -- Schlafzimmer
+    [1793] = {"Große Matratze", 300, "Schlafzimmer"},
+    [1800] = {"Einzelbett (Metall)", 400, "Schlafzimmer"},
+    [1801] = {"Doppelbett (Metall)", 700, "Schlafzimmer"},
+    [1701] = {"Gepolstertes Doppelbett", 1200, "Schlafzimmer"},
+    [1796] = {"Kariertes Einzelbett", 350, "Schlafzimmer"},
+    [1802] = {"Doppelbett (Holz)", 900, "Schlafzimmer"},
+    [1798] = {"Blaues Doppelbett", 850, "Schlafzimmer"},
+    [1745] = {"Gestreiftes Doppelbett", 800, "Schlafzimmer"},
+    [2302] = {"Rustikales Doppelbett", 1000, "Schlafzimmer"},
+    [1794] = {"Kariertes Doppelbett", 750, "Schlafzimmer"},
+    [1700] = {"Altmodisches Doppelbett", 600, "Schlafzimmer"},
+    [2299] = {"Braunes Doppelbett", 950, "Schlafzimmer"},
+    [2090] = {"Dunkles Doppelbett", 1100, "Schlafzimmer"},
+    [1797] = {"Modernes Doppelbett", 1300, "Schlafzimmer"},
+    [14866] = {"Helles Doppelbett", 1050, "Schlafzimmer"},
+
+    [2330] = {"Kleiderschrank", 800, "Schlafzimmer"},
+    [2078] = {"Wohnzimmerschrank", 600, "Schlafzimmer"},
+    [2328] = {"Beistelltisch", 150, "Schlafzimmer"},
+    [1741] = {"Kommode", 400, "Schlafzimmer"},
+
+    -- Badezimmer
+    [2517] = {"Dusche", 500, "Badezimmer"},
+    [2516] = {"Badewanne", 800, "Badezimmer"},
+    [2514] = {"Toilette", 200, "Badezimmer"},
+    [2739] = {"Waschbecken", 150, "Badezimmer"},
+
+    -- Büro
+    [2333] = {"Weißer Schreibtisch", 250, "Büro"},
+    [2331] = {"Weißer Hocker", 80, "Büro"},
+    [2205] = {"Dunkler Schreibtisch", 450, "Büro"},
+    [2180] = {"Heller Schreibtisch", 400, "Büro"},
+    [1714] = {"Schwarzer Bürostuhl", 250, "Büro"},
+    [2356] = {"Blauer Bürostuhl", 280, "Büro"},
+    [2167] = {"Hoher Büroschrank", 600, "Büro"},
+    [2164] = {"Büroschrank", 500, "Büro"},
+    [2197] = {"Aktenschrank", 550, "Büro"},
+    [1742] = {"Büroregal", 300, "Büro"},
+    [2199] = {"Kleines Büroregal", 200, "Büro"},
+    [2161] = {"Dunkles Büroregal", 350, "Büro"},
+    [2190] = {"Computer", 1200, "Büro"},
+    [1808] = {"Wasserspender", 180, "Büro"},
+    [2202] = {"Kopierer", 400, "Büro"},
+
+    -- Pflanzen
+    [2252] = {"Pflanze (Schale)", 50, "Pflanzen"},
+    [2249] = {"Tischpflanze", 60, "Pflanzen"},
+    [2247] = {"Tischpflanze (Kiefer)", 70, "Pflanzen"},
+    [2251] = {"Tischpflanze (Vase)", 80, "Pflanzen"},
+    [948] = {"Topfpflanze (Gras)", 40, "Pflanzen"},
+    [2001] = {"Topfpflanze (Palme)", 120, "Pflanzen"},
+    [2241] = {"Topfpflanze", 55, "Pflanzen"},
+    [2811] = {"Topfpflanze (Aloe)", 90, "Pflanzen"},
+
+	-- Lampen
+    [2239] = {"Stehlampe", 100, "Lampen"},
+    [2108] = {"Deckenfluter", 150, "Lampen"},
+    [2069] = {"Schirmlampe", 80, "Lampen"},
+    [2106] = {"Tischlampe", 60, "Lampen"},
+	[3534] = {"Rote Tischlampe", 60, "Lampen"},
+	[2238] = {"Lavalampe", 60, "Lampen"},
+
+    -- Fitness
+    [2630] = {"Fahrradtrainer", 300, "Fitness"},
+    [2628] = {"Kraftstation", 500, "Fitness"},
+    [2627] = {"Laufband", 800, "Fitness"},
+}
+
 Tasks = {
 	TASK_GUARD = 1,
 	TASK_SHOOT_TARGET = 2,

@@ -128,4 +128,6 @@
 	<map src="cinema.map"/>
 
 	<!--<map src="admin-auction.map" />--> <!-- Auction Event map at Veriona Beach, ugly -->
+
+	<map src="nofurniture.map" />
 </meta>

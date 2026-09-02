@@ -272,6 +272,8 @@ function Inventory:addItemEvents(item)
 				self.m_InfoText1:setText(_("%s - Menge: %s", _(itemName), tostring(item.Amount)))
 				if itemName == "Kleidung" and item.Value and SkinInfo[tonumber(item.Value)] then
 					self.m_InfoText2:setText(_(SkinInfo[tonumber(item.Value)][1]))
+				elseif itemName == "Einrichtung" and item.Value and FurnitureInfo[tonumber(item.Value)] then
+					self.m_InfoText2:setText(_(FurnitureInfo[tonumber(item.Value)][1]))
 				elseif (itemName == "Zigarettenpackung" or itemName == "Donutbox") and tonumber(item.Value) then
 					local info = _(self.m_ItemData[itemName]["Info"])
 					self.m_InfoText2:setText(_("%s (%s übrig)", info, tonumber(item.Value)))

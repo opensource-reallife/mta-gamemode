@@ -16,14 +16,15 @@ function ObjectPlacer:constructor(model, callback, hideObject, placeAnywhere)
 		self.m_Object = createPed(model, localPlayer:getPosition())
 	end
 
-	self.m_hideObject = hideObject
+	self.m_HideObject = hideObject
 	self.m_Object:setCollisionsEnabled(false)
 	self.m_Object:setInterior(localPlayer:getInterior())
 	self.m_Object:setDimension(localPlayer:getDimension())
 	self.m_Callback = callback
 
-	if self.m_hideObject then
-		self.m_Object:setRotation(0, 0, self.m_hideObject:getRotation().z)
+	if hideObject then
+		hideObject.m_OrigDim = hideObject:getDimension()
+		self.m_Object:setRotation(hideObject:getRotation())
 		hideObject:setDimension(PRIVATE_DIMENSION_CLIENT)
 	end
 
@@ -73,8 +74,10 @@ function ObjectPlacer:destructor()
 	nextframe(
 		function()
 			localPlayer.m_ObjectPlacerActive = false
-			if self.m_hideObject then
-				self.m_hideObject:setDimension(0)
+			local hideObject = self.m_HideObject
+			if hideObject then
+				hideObject:setDimension(hideObject.m_OrigDim)
+				hideObject.m_OrigDim = nil
 			end
 		end
 	)

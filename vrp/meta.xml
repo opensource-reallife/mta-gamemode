@@ -318,6 +318,7 @@
 	<script src="server/classes/Gameplay/Places/BoxManager.lua" type="server"/>
 	<script src="server/classes/Gameplay/Places/Casino.lua" type="server"/>
 	<script src="server/classes/Gameplay/Places/SkinShops.lua" type="server"/>
+	<script src="server/classes/Gameplay/Places/FurnitureShop.lua" type="server"/>
 	<script src="server/classes/Gameplay/Places/Skydiving.lua" type="server"/>
 	<script src="server/classes/Gameplay/Places/Townhall.lua" type="server"/>
 
@@ -1004,6 +1005,7 @@
     <script src="client/classes/GUIForms/Shop/ItemShopGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Shop/PlayHouseShopGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Shop/SkinShopGUI.lua" type="client" />
+	<script src="client/classes/GUIForms/Shop/FurnitureShopGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Shop/VehicleShopGUI.lua" type="client" />
 
     <script src="client/classes/GUIForms/Vehicle/PremiumVehicleGUI.lua" type="client" />
@@ -1852,6 +1854,7 @@
 
 	<vrpfile src="files/images/Shops/DrivingSchool.png"/>
 	<vrpfile src="files/images/Shops/ClothesHeader.png"/>
+	<vrpfile src="files/images/Shops/FurnitureHeader.png"/>
 	<vrpfile src="files/images/Shops/TuningHeader.png"/>
 	<vrpfile src="files/images/Shops/Bertrams.png"/>
 	<vrpfile src="files/images/Shops/HarrysBikes.png"/>
@@ -1973,6 +1976,7 @@
 	<vrpfile src="files/images/Radar/Blips/Mechanic.png"/>
 	<vrpfile src="files/images/Radar/Blips/DrivingSchool.png"/>
 	<vrpfile src="files/images/Radar/Blips/Skinshop.png"/>
+	<vrpfile src="files/images/Radar/Blips/FurnitureShop.png"/>
 	<vrpfile src="files/images/Radar/Blips/TuningGarage.png"/>
 	<vrpfile src="files/images/Radar/Blips/CarLot.png"/>
 	<vrpfile src="files/images/Radar/Blips/VehicleTexture.png"/>
