@@ -588,6 +588,7 @@ FurnitureInfo = {
     [2346] = {"Lowboard", 400, "Wohnzimmer"},
     [2314] = {"Langes Lowboard", 500, "Wohnzimmer"},
     [2313] = {"Fernsehschrank", 600, "Wohnzimmer"},
+    [2078] = {"Glasschrank", 600, "Wohnzimmer"},
 
 	-- Sofas & Sessel
     [2293] = {"Dunkler Fußhocker", 80, "Sofas & Sessel"},
@@ -674,7 +675,6 @@ FurnitureInfo = {
     [14866] = {"Helles Doppelbett", 1050, "Schlafzimmer"},
 
     [2330] = {"Kleiderschrank", 800, "Schlafzimmer"},
-    [2078] = {"Wohnzimmerschrank", 600, "Schlafzimmer"},
     [2328] = {"Beistelltisch", 150, "Schlafzimmer"},
     [1741] = {"Kommode", 400, "Schlafzimmer"},
 
@@ -705,7 +705,7 @@ FurnitureInfo = {
     [2252] = {"Pflanze (Schale)", 50, "Pflanzen"},
     [2249] = {"Tischpflanze", 60, "Pflanzen"},
     [2247] = {"Tischpflanze (Kiefer)", 70, "Pflanzen"},
-    [2251] = {"Tischpflanze (Vase)", 80, "Pflanzen"},
+    [2251] = {"Blaue Vase", 80, "Pflanzen"},
     [948] = {"Topfpflanze (Gras)", 40, "Pflanzen"},
     [2001] = {"Topfpflanze (Palme)", 120, "Pflanzen"},
     [2241] = {"Topfpflanze", 55, "Pflanzen"},
@@ -716,7 +716,6 @@ FurnitureInfo = {
     [2108] = {"Deckenfluter", 150, "Lampen"},
     [2069] = {"Schirmlampe", 80, "Lampen"},
     [2106] = {"Tischlampe", 60, "Lampen"},
-	[3534] = {"Rote Tischlampe", 60, "Lampen"},
 	[2238] = {"Lavalampe", 60, "Lampen"},
 
     -- Fitness

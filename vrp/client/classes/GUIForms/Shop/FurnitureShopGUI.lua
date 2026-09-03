@@ -7,12 +7,11 @@
 -- ****************************************************************************
 FurnitureShopGUI = inherit(GUIForm)
 inherit(Singleton, FurnitureShopGUI)
-addRemoteEvents{"furnitureBought"}
 
 function FurnitureShopGUI:constructor(marker)
 	GUIForm.constructor(self, 10, 10, screenWidth/5/ASPECT_RATIO_MULTIPLIER, screenHeight/2, true, false, marker)
 
-	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Kleidungsgeschäft", false, true, self)
+	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Einrichtungsgeschäft", false, true, self)
 	self.m_FurnitureList = GUIGridList:new(0, self.m_Height*0.22, self.m_Width, self.m_Height*0.72, self.m_Window)
 	self.m_FurnitureList:addColumn(_"Name", 0.75)
 	self.m_FurnitureList:addColumn(_"Preis", 0.25)
@@ -31,7 +30,9 @@ function FurnitureShopGUI:constructor(marker)
 				item.onLeftDoubleClick = function() triggerServerEvent("furnitureBuy", localPlayer, model) end
 				item.onLeftClick = function()
 					if self.m_Object then
-						self.m_Object:setModel(model)
+						if self.m_Object:getModel() ~= model then
+							self.m_Object:setModel(model)
+						end
 					else
 						self.m_Object = createObject(model, 1390.32, -23.21, 1000.91)
 						self.m_Object:setDoubleSided(true)
@@ -43,10 +44,7 @@ function FurnitureShopGUI:constructor(marker)
 		end
 	end
 
-	self.m_FurnitureBought = bind(self.Event_FurnitureBought, self)
 	self.m_RotateObject = bind(self.rotateObject, self)
-
-	addEventHandler("furnitureBought", root, self.m_FurnitureBought)
 	addEventHandler("onClientPreRender", root, self.m_RotateObject)
 
 	showChat(false)
@@ -54,7 +52,6 @@ end
 
 function FurnitureShopGUI:virtual_destructor()
 	HUDRadar:getSingleton():show()
-	removeEventHandler("furnitureBought", root, self.m_FurnitureBought)
 	removeEventHandler("onClientPreRender", root, self.m_RotateObject)
 	localPlayer:setFrozen(false)
 	localPlayer:setPosition(-551.76, 2593.88, 53.93)
@@ -68,10 +65,6 @@ function FurnitureShopGUI:virtual_destructor()
 	showChat(true)
 end
 
-function FurnitureShopGUI:Event_FurnitureBought()
-	delete(self)
-end
-
 function FurnitureShopGUI:rotateObject()
 	if self.m_Object then
 		local rot = self.m_Object:getRotation()
@@ -80,16 +73,18 @@ function FurnitureShopGUI:rotateObject()
 end
 
 function FurnitureShopGUI.initialize()
-	local marker = Marker.create(-553.23, 2593.86, 53.93-1, "cylinder", 1.4, 255, 255, 0)
+	local marker = Marker.create(-553.23, 2593.86, 53.93-1, "cylinder", 1.2, 255, 255, 0)
 	addEventHandler("onClientMarkerHit", marker, function(hitElement, matchingDimension)
 		if hitElement == localPlayer and matchingDimension then
-			HUDRadar:getSingleton():hide()
-			localPlayer:setFrozen(true)
-			localPlayer:setPosition(0, 0, 0, i)
-			localPlayer:setDimension(PRIVATE_DIMENSION_CLIENT)
-			localPlayer:setInterior(1)
-			setCameraMatrix(1396.98, -22.93, 1005.92, 1390.32, -23.21, 1000.91)
-			FurnitureShopGUI:new(marker)
+			if hitElement.position.z - 5 < source.position.z then
+				HUDRadar:getSingleton():hide()
+				localPlayer:setFrozen(true)
+				localPlayer:setPosition(0, 0, 0, i)
+				localPlayer:setDimension(PRIVATE_DIMENSION_CLIENT)
+				localPlayer:setInterior(1)
+				setCameraMatrix(1396.98, -22.93, 1005.92, 1390.32, -23.21, 1000.91)
+				FurnitureShopGUI:new(marker)
+			end
 		end
 	end)
 

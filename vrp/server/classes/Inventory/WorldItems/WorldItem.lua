@@ -123,7 +123,8 @@ function WorldItem:onCollect(player, resendList, id, typ)
 		return false
 	end
 
-	if player:getInventory():giveItem(self.m_ItemName, 1, self.m_ModelId) then
+	local value = self.m_ItemName == "Einrichtung" and self.m_ModelId or nil
+	if player:getInventory():giveItem(self.m_ItemName, 1, value) then
 		if self.m_Item.removeFromWorld then
 			self.m_Item:removeFromWorld(player, self, self.m_Object)
 		end
