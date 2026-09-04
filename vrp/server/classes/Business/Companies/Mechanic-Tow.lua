@@ -648,7 +648,7 @@ function MechanicTow:Event_mechanicWreckTruckStart()
 		return player:sendError(_("Es sind noch nicht genügend Fahrzeug-Wracks abgeschleppt worden! (%d/%d)", player, self.m_TowedWrecks, requiredWrecks))
 	end
 
-	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo("company", "startWreckTruck") then
+	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "company", "startWreckTruck") then
 		return player:sendError(_("Du bist nicht berechtigt einen Schrottplatz-Transport zu starten!", player))
 	end
 
