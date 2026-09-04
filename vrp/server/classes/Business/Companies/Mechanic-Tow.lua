@@ -597,7 +597,7 @@ function MechanicTow:checkLeviathanTowing(player, vehicle)
 end
 
 function MechanicTow:onWreckTimerUp()
-	if table.size(self:getOnlinePlayers(true, true)) >= 1 then
+	if table.size(self:getOnlinePlayers(true, false)) >= 1 then
 		local wrecks = 0
 		for k, vehicle in pairs(getElementsByType("vehicle")) do
 			if vehicle.burned then wrecks = wrecks + 1 end
@@ -608,7 +608,7 @@ function MechanicTow:onWreckTimerUp()
 	end
 
 	if isTimer(self.m_WreckTimer) then killTimer(self.m_WreckTimer) end
-	self.m_WreckTimer = Timer(self.m_WreckBind, Randomizer:get(3, 7) * 60 * 1000, 1)
+	self.m_WreckTimer = Timer(self.m_WreckBind, Randomizer:get(5, 15) * 60 * 1000, 1)
 end
 
 function MechanicTow:createRandomVehicleWreck()
