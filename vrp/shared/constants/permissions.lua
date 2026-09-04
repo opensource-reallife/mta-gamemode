@@ -61,6 +61,7 @@ PERMISSIONS_INFO = { -- name = {{type, id} type = 0 for all, {faction min rank, 
 	["changeActionMoneySplit"] =	{{0}, {["faction"] = 5, ["company"] = nil, ["group"] = nil}},
 	["useWeapons"] =				{{0}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}},
 	["toggleActionMoneySplit"] =	{{0}, {["faction"] = 4, ["company"] = nil, ["group"] = nil}},
+	["startWreckTruck"] =			{{2, {CompanyStaticId.MECHANIC}}, {["faction"] = nil, ["company"] = 0, ["group"] = nil}},
 }
 
 PERMISSION_NAMES = {
@@ -125,6 +126,7 @@ PERMISSION_NAMES = {
 	["changeActionMoneySplit"] =	"Aktionsbeteiligung ändern",
 	["useWeapons"] =				"Waffen benutzen",
 	["toggleActionMoneySplit"] =	"Aktionsbeteiligung de/aktivieren",
+	["startWreckTruck"] =			"Schrottplatz-Transport starten",
 }
 
 ACTION_PERMISSIONS_INFO = {

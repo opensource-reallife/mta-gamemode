@@ -32,6 +32,23 @@ function MechanicTow:constructor()
 
 	SpeakBubble3D:new(self.m_BugPed, _"Ich kann Wanzen aufspüren", _"Klicke mich an!")
 
+	self.m_WreckPed = createPed(50, 887.83, -1232.17, 17.27, 90)
+	setElementData(self.m_WreckPed, "clickable", true)
+	self.m_WreckPed:setData("NPC:Immortal", true)
+	self.m_WreckPed:setFrozen(true)
+	self.m_WreckPed:setData("onClickEvent", function()
+		if localPlayer:getCompany() and localPlayer:getCompany():getId() == CompanyStaticId.MECHANIC then
+			QuestionBox:new(_"Möchtest du einen Schrottplatz-Transport starten?", function()
+				triggerServerEvent("mechanicWreckTruckStart", localPlayer)
+			end, nil, self.m_WreckPed, 10)
+		else
+			ErrorBox:new(_"Du bist kein Mechaniker!")
+		end
+	end)
+
+	ElementInfo:new(self.m_WreckPed, _"Schrottplatz-Transport", 1.2)
+	ElementInfoManager:getSingleton():addEventToElement(self.m_WreckPed)
+
 	self.m_RenderFuelHoles = {}
 	self.m_RequestFill = bind(MechanicTow.requestFill, self)
 

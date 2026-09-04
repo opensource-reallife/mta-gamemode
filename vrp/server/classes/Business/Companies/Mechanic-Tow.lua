@@ -1,5 +1,5 @@
 MechanicTow = inherit(Company)
-addRemoteEvents{"mechanicRepair", "mechanicRepairConfirm", "mechanicRepairCancel", "mechanicDetachFuelTank", "mechanicTakeFuelNozzle", "mechanicRejectFuelNozzle", "mechanicTakeVehicle", "mechanicOpenTakeGUI", "mechanicVehicleRequestFill", "mechanicAttachBike", "mechanicDetachBike"}
+addRemoteEvents{"mechanicRepair", "mechanicRepairConfirm", "mechanicRepairCancel", "mechanicDetachFuelTank", "mechanicTakeFuelNozzle", "mechanicRejectFuelNozzle", "mechanicTakeVehicle", "mechanicOpenTakeGUI", "mechanicVehicleRequestFill", "mechanicAttachBike", "mechanicDetachBike", "mechanicWreckTruckStart"}
 
 MechanicTow.SpawnPositions = {
 	{904.833, -1183.605, 16, 180},
@@ -26,6 +26,7 @@ MechanicTow.WreckPositions = {
 
 function MechanicTow:constructor()
 	self.m_PendingQuestions = {}
+	self.m_TowedWrecks = 0
 
 	local safe = createObject(2332, 857.594, -1182.628, 17.569, 0, 0, 270)
 	safe:setScale(0.7)
@@ -59,7 +60,8 @@ function MechanicTow:constructor()
 	addEventHandler("mechanicAttachBike", root, bind(self.Event_mechanicAttachBike, self))
 	addEventHandler("mechanicDetachBike", root, bind(self.Event_mechanicDetachBike, self))
 	addEventHandler("onTrailerAttach", root, bind(self.onAttachVehicleToTow, self))
-	addEventHandler("onTrailerDetach", root, bind( self.onDetachVehicleFromTow, self))
+	addEventHandler("onTrailerDetach", root, bind(self.onDetachVehicleFromTow, self))
+	addEventHandler("mechanicWreckTruckStart", root, bind(self.Event_mechanicWreckTruckStart, self))
 
 	PlayerManager:getSingleton():getQuitHook():register(bind(self.onPlayerQuit, self))
 
@@ -294,6 +296,7 @@ function MechanicTow:onEnterTowLot(hitElement)
 			towingBike:destroy()
 			hitElement.vehicle:setData("towingBike", nil, true)
 			hitElement:sendInfo(_("Du hast erfolgreich ein Fahrzeug-Wrack abgeschleppt!", hitElement))
+			self.m_TowedWrecks = self.m_TowedWrecks + 1
 		else
 			towingBike:toggleRespawn(true)
 			towingBike:setCollisionsEnabled(true)
@@ -376,6 +379,7 @@ function MechanicTow:onDetachVehicleFromTow(towTruck, vehicle)
 						self:addLog(driver, "Abschlepp-Logs", ("hat ein Fahrzeug-Wrack (%s) abgeschleppt!"):format(source:getName()))
 						source:destroy()
 						driver:sendInfo(_("Du hast erfolgreich ein Fahrzeug-Wrack abgeschleppt!", driver))
+						self.m_TowedWrecks = self.m_TowedWrecks + 1
 					end
 					self.m_BankAccountServer:transferMoney(self, 500, "Fahrzeug abgeschleppt", "Company", "Towed")
 					self.m_BankAccountServer:transferMoney({driver, true}, 250, "Fahrzeug abgeschleppt", "Company", "Towed")
@@ -633,4 +637,76 @@ function MechanicTow:createVehicleWreck(model, pos, rotZ, color)
 	CompanyManager:getSingleton():getFromId(CompanyStaticId.MECHANIC):sendWarning("Ein Fahrzeug-Wrack muss abgeschleppt werden! Position: %s", "Fahrzeug-Wrack", true, pos, zone)
 	for i= 0, 5 do tempVehicle:setDoorState(i, chance(50) and 2 or 4) end
 	tempVehicle:setWheelStates(chance(50) and 1 or 0, chance(50) and 1 or 0, chance(50) and 1 or 0, chance(50) and 1 or 0)
+end
+
+function MechanicTow:Event_mechanicWreckTruckStart()
+	if source ~= client then return end
+	local player = client
+
+	local requiredWrecks = 3
+	if requiredWrecks > self.m_TowedWrecks then
+		return player:sendError(_("Es sind noch nicht genügend Fahrzeug-Wracks abgeschleppt worden! (%d/%d)", player, self.m_TowedWrecks, requiredWrecks))
+	end
+
+	if not PermissionsManager:getSingleton():hasPlayerPermissionsTo("company", "startWreckTruck") then
+		return player:sendError(_("Du bist nicht berechtigt einen Schrottplatz-Transport zu starten!", player))
+	end
+
+	if player:getCompany() and player:getCompany():getId() == CompanyStaticId.MECHANIC and player:isCompanyDuty() then
+		self.m_TowedWrecks = self.m_TowedWrecks - requiredWrecks
+
+		local start = Vector3(882.80, -1226.39, 17.27)
+		local destination = Vector3(-1908.87, -1716.91, 21.76)
+
+		local marker = createMarker(destination.x, destination.y, destination.z - 1, "cylinder", 5, 255, 0, 0, 122, player)
+		local blip = Blip:new("Marker.png", destination.x, destination.y, player, 9999, BLIP_COLOR_CONSTANTS.Red)
+
+		local vehicle = TemporaryVehicle.create(578, start.x, start.y, start.z + 0.5, 0)
+		local color = companyColors[self:getId()]
+		vehicle:addCountdownDestroy(10)
+		vehicle:setColor(color.r, color.g, color.b, color.r, color.g, color.b)
+
+		for i = 0, requiredWrecks - 1 do
+			local wreck = createObject(3594, 0, 0, 0)
+			wreck:attach(vehicle, 0, -1.7, 0.3 + i)
+		end
+
+		addEventHandler("onMarkerHit", marker, function(hitElement, matchingDimension)
+			if matchingDimension and hitElement == vehicle then
+				local driver = hitElement:getOccupant(0)
+				if not source.m_SecondHit then
+					driver:sendSuccess(_("Transport abgeschlossen! Fahre zurück, um deine Bezahlung zu erhalten!", driver))
+					self:addLog(player, "Schrottplatz-Transport", "hat einen Schrottplatz-Transport abgeschlossen!")
+					self.m_BankAccountServer:transferMoney(self, 3000, "Schrottplatz-Transport", "Company", "WreckTruck")
+					for k, v in pairs(hitElement:getAttachedElements()) do
+						v:destroy()
+					end
+					source:setPosition(start.x, start.y, start.z - 1)
+					blip:setPosition(start)
+					player:startNavigationTo(start)
+					source.m_SecondHit = true
+				else
+					self.m_BankAccountServer:transferMoney({driver, true}, 750, "Schrottplatz-Transport", "Company", "WreckTruck")
+					hitElement:destroy()
+				end
+			end
+		end)
+	
+		addEventHandler("onElementDestroy", vehicle, function()
+			if blip then blip:delete() end
+			if marker then marker:destroy() end
+			for k, v in pairs(source:getAttachedElements()) do
+				v:destroy()
+			end
+		end)
+
+		player:warpIntoVehicle(vehicle)
+		player:sendInfo(_("Fahre zum auf der Karte markierten Schrottplatz!", player))
+		player:startNavigationTo(destination)
+
+		self:addLog(player, "Schrottplatz-Transport", "hat einen Schrottplatz-Transport gestartet!")
+		self:sendShortMessage("Ein Schrottplatz-Transport wurde gestartet!")
+	else
+		player:sendError(_("Du bist nicht im Dienst deines Unternehmens aktiv!", player))
+	end
 end
