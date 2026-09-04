@@ -9,17 +9,20 @@ MTAFixes = inherit(Singleton)
 
 function MTAFixes:constructor()
 	self:dft_pathnode_teleport()
-
 	--bindKey("steer_forward", "down", bind(self.fixBikeSpeedBug, self))
-	bindKey("horn", "down", bind(self.fixHydraulicsOxygenBug, self))
-	bindKey("forwards", "down", bind(self.fixRunSpeedBug, self))
-	bindKey("backwards", "down", bind(self.fixRunSpeedBug, self))
-	bindKey("jump", "down", bind(self.fixRunSpeedBug, self))
+	addEventHandler("onClientRender", root, bind(self.fixRunSpeedBug, self))
 end
 
 function MTAFixes:fixRunSpeedBug()
-	if localPlayer:getMoveState() == "sprint" and localPlayer:getTask("secondary", 0) == "TASK_SIMPLE_FIGHT" then
+	if localPlayer:getControlState("sprint") and localPlayer:getControlState("jump")
+	and (localPlayer:getControlState("forwards") or localPlayer:getControlState("backwards"))
+	and (localPlayer:getControlState("left") or localPlayer:getControlState("right")) then
 		localPlayer:setControlState("sprint", false)
+		localPlayer:setControlState("jump", false)
+		localPlayer:setControlState("forwards", false)
+		localPlayer:setControlState("backwards", false)
+		localPlayer:setControlState("left", false)
+		localPlayer:setControlState("right", false)
 	end
 end
 
