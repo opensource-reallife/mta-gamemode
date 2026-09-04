@@ -15,7 +15,7 @@ ItemFood.Settings = {
 	["Zigarette"] = {["Model"] = 3027, ["Text"] = "raucht eine %s!", ["Animation"] = {"smoking", "M_SMKSTND_LOOP", 11500}, ["Attach"] = {11, 0, 0.07, 0.15, 0, -90, 90}, ["CustomEvent"] = "smokeEffect" },
 	["Donut"] = {["Hunger"] = 30, ["Model"] = 1915, ["ModelScale"] = {1.2}, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, 0, 0.05, 0.15, 0, -90, 90}},
 	["Keks"] = {["Hunger"] = 100, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
-	["Apfel"] = {["Hunger"] = 20, ["Model"] = 3105, ["ModelScale"] = {1.4}, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, 0, 0.05, 0.08, 0, -90, 90}},
+	["Apfel"] = {["Hunger"] = 10, ["Model"] = 3105, ["ModelScale"] = {1.4}, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, 0, 0.05, 0.08, 0, -90, 90}},
 	["Zombie-Burger"] = {["Hunger"] = 60, ["Model"] = 2880, ["Text"] = "isst einen %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["CustomEvent"] = "bloodFx"},
 	["Kuheuter mit Pommes"] = {["Hunger"] = 60, ["Text"] = "isst %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, 0, 0.05, 0.1, 0, -90, 0}, ["CustomEvent"] = "bloodFx"},
 	["Suessigkeiten"] = {["Hunger"] = 5, ["Text"] = "nascht leckere %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
@@ -26,7 +26,7 @@ ItemFood.Settings = {
 	["Frittiertes Hähnchen"] = {["Hunger"] = 50, ["Text"] = "isst %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
 	["Pommes"] = {["Hunger"] = 5, ["Text"] = "isst %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
 	["Karotte"] = {["Hunger"] = 10, ["Model"] = 3103, ["ModelScale"] = {2.5, 0.5, 0.5}, ["Text"] = "isst eine %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, -0.015, 0.03, 0.1, 0, 0, 0}},
-	["Birne"] = {["Hunger"] = 20, ["Model"] = 3104, ["ModelScale"] = {1.4}, ["Text"] = "isst eine %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, 0, 0.05, 0.08, 0, -90, 90}},
+	["Birne"] = {["Hunger"] = 10, ["Model"] = 3104, ["ModelScale"] = {1.4}, ["Text"] = "isst eine %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}, ["Attach"] = {12, 0, 0.05, 0.08, 0, -90, 90}},
 	["Erdbeeren"] = {["Hunger"] = 5, ["Text"] = "isst %s!", ["Animation"] = {"FOOD", "EAT_BURGER", 4500}},
 	-- Alcohol
 	["Bier"] = {["Model"] = 1486, ["Text"] = "trinkt ein %s!", ["Animation"] = {"BAR", "dnk_stndM_loop", 4500}, ["Alcohol"] = 0.25, ["Attach"] = {12, -0.05, 0.05, 0.09, 0, -90, 0}},
