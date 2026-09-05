@@ -100,7 +100,7 @@ function FurnitureShopGUI.initialize()
 	removeWorldModel(2857, 10000, 0, 0, 0)
 	removeWorldModel(2857, 10000, 0, 0, 0)
 
-	for i = 0, 4 do
+	for i = 1, 4 do
 		setInteriorFurnitureEnabled(i, false)
 	end
 end
