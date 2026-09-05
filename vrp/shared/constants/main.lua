@@ -559,6 +559,7 @@ FurnitureCategories = {
 	"Schlafzimmer",
 	"Badezimmer",
 	"Büro",
+	"Türen",
 	"Pflanzen",
 	"Lampen",
 	"Fitness",
@@ -679,10 +680,15 @@ FurnitureInfo = {
     [1741] = {"Kommode", 400, "Schlafzimmer"},
 
     -- Badezimmer
-    [2517] = {"Dusche", 500, "Badezimmer"},
-    [2516] = {"Badewanne", 800, "Badezimmer"},
-    [2514] = {"Toilette", 200, "Badezimmer"},
-    [2739] = {"Waschbecken", 150, "Badezimmer"},
+    [2517] = {"Einfache Dusche", 500, "Badezimmer"},
+	[2527] = {"Gebrauchte Dusche", 500, "Badezimmer"},
+    [2516] = {"Einfache Badewanne", 800, "Badezimmer"},
+	[2526] = {"Gebrauchte Badewanne", 800, "Badezimmer"},
+    [2514] = {"Einfache Toilette", 200, "Badezimmer"},
+	[2525] = {"Gebrauchte Toilette", 200, "Badezimmer"},
+    [2739] = {"Einfaches Waschbecken", 150, "Badezimmer"},
+	[2523] = {"Modernes Waschbecken", 250, "Badezimmer"},
+	[2518] = {"Hängendes Waschbecken", 150, "Badezimmer"},
 
     -- Büro
     [2333] = {"Weißer Schreibtisch", 250, "Büro"},
@@ -700,6 +706,12 @@ FurnitureInfo = {
     [2190] = {"Computer", 1200, "Büro"},
     [1808] = {"Wasserspender", 180, "Büro"},
     [2202] = {"Kopierer", 400, "Büro"},
+
+	-- Türen
+	[1502] = {"Einfache Tür", 200, "Türen"},
+	[1491] = {"Hochwertige Tür", 300, "Türen"},
+	[1492] = {"Alte Tür", 100, "Türen"},
+	[1494] = {"Dunkle Tür", 200, "Türen"},
 
     -- Pflanzen
     [2252] = {"Pflanze (Schale)", 50, "Pflanzen"},
