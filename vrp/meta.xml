@@ -223,6 +223,7 @@
 	<script src="server/classes/Gameplay/Door.lua" type="server"/>
 	<script src="server/classes/Gameplay/InteriorManager.lua" type="server"/>
 	<script src="server/classes/Gameplay/Tour.lua" type="server"/>
+	<script src="server/classes/Gameplay/InitiativeManager.lua" type="server"/>
 
 	<!-- Gameplay -->
 	<script src="server/classes/Gameplay/Places/Sewers.lua" type="server"/>
@@ -1100,6 +1101,7 @@
 	<script src="client/classes/GUIForms/WeatherStationGUI.lua" type="client" />
     <script src="client/classes/GUIForms/ActionMoneySplitGUI.lua" type="client" />
 	<script src="client/classes/GUIForms/QuestGUI.lua" type="client"/>
+	<script src="client/classes/GUIForms/InitiativeGUI.lua" type="client"/>
 
 	<!-- Web forms -->
 	<script src="client/classes/WebForms/TicketGUI.lua" type="client"/>

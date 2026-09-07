@@ -44,4 +44,9 @@ function TownhallGUI:constructor(rangeElement)
         delete(self)
         HousesForSaleGUI:new(rangeElement)
     end)
+
+    self:addItem(_"Wöchentliche Initiative", Color.Accent, function()
+        delete(self)
+        InitiativeGUI:new(rangeElement)
+    end)
 end

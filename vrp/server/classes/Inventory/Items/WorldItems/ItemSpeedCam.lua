@@ -8,13 +8,11 @@
 ItemSpeedCam = inherit(Item)
 ItemSpeedCam.Map = {}
 
-local MAX_SPEEDCAMS = 10
-local COST_FACTOR = 5 -- 1km/h = 5$
-local MIN_RANK = 2
-local ALLOWED_SPEED = 80
-local SCAN_RADIUS = 35
-
-local TRUCKS = {
+ItemSpeedCam.MAX_SPEEDCAMS = 10
+ItemSpeedCam.COST_FACTOR = 5 -- $ per km/h
+ItemSpeedCam.ALLOWED_SPEED = 80
+ItemSpeedCam.SCAN_RADIUS = 35
+ItemSpeedCam.TRUCKS = {
         [403] = true, -- Linerunner
         [406] = true, -- Dumper
         [407] = true, -- Firetruck
@@ -53,7 +51,7 @@ end
 
 function ItemSpeedCam:use(player)
 	if player:getFaction() and player:getFaction():getId() == 1 and player:isFactionDuty() then
-		if self:count() < MAX_SPEEDCAMS then
+		if self:count() < ItemSpeedCam.MAX_SPEEDCAMS then
 			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "faction", "useSpeedCam") then
 				local result = self:startObjectPlacing(player,
 					function(item, position, rotation)
@@ -61,7 +59,6 @@ function ItemSpeedCam:use(player)
 
 						local worldItem = FactionWorldItem:new(self, player:getFaction(), position, rotation, false, player)
 						worldItem:setFactionSuperOwner(true)
-						--worldItem:setMinRank(MIN_RANK)
 
 						player:getInventory():removeItem(self:getName(), 1)
 
@@ -88,7 +85,7 @@ function ItemSpeedCam:use(player)
 				player:sendError(_("Du bist nicht berechtigt Blitzer aufzustellen!", player))
 			end
 		else
-			player:sendError(_("Es sind bereits %d/%d Anlagen aufgestellt!", player, self:count(), MAX_SPEEDCAMS))
+			player:sendError(_("Es sind bereits %d/%d Anlagen aufgestellt!", player, self:count(), ItemSpeedCam.MAX_SPEEDCAMS))
 		end
 	else
 		player:sendError(_("Du bist nicht berechtigt! Das Item wurde abgenommen!", player))
@@ -107,23 +104,23 @@ end
 function ItemSpeedCam:onColShapeHit(element, dim)
 	if dim then
 		if element:getType() == "vehicle" then
-			if element:getSpeed() > ALLOWED_SPEED + 5 then
+			if element:getSpeed() > ItemSpeedCam.ALLOWED_SPEED + 5 then
 				if element:getOccupant() then
 					local player = element:getOccupant()
 					if player:getFaction() and (player:getFaction():isStateFaction() or player:getFaction():isRescueFaction()) and player:isFactionDuty() then return end
 					local speed = math.floor(element:getSpeed())
-					local costs = (speed-ALLOWED_SPEED)*COST_FACTOR
+					local costs = (speed - ItemSpeedCam.ALLOWED_SPEED) * ItemSpeedCam.COST_FACTOR
 					local objectRot = source.object.rotation.z - 90
 					local elementRot = element.rotation.z
 					local elementNeededRot = elementRot + 180 > 360 and 0 + (elementRot + 180) - 360 or elementRot + 180
-					local positivRot = objectRot + SCAN_RADIUS > 360 and 0 + (objectRot + SCAN_RADIUS) - 360 or objectRot + SCAN_RADIUS
-					local positivRot2 = objectRot - SCAN_RADIUS < 0 and 360 - (objectRot - SCAN_RADIUS) or objectRot - SCAN_RADIUS
+					local positivRot = objectRot + ItemSpeedCam.SCAN_RADIUS > 360 and 0 + (objectRot + ItemSpeedCam.SCAN_RADIUS) - 360 or objectRot + ItemSpeedCam.SCAN_RADIUS
+					local positivRot2 = objectRot - ItemSpeedCam.SCAN_RADIUS < 0 and 360 - (objectRot - ItemSpeedCam.SCAN_RADIUS) or objectRot - ItemSpeedCam.SCAN_RADIUS
 
 					if (positivRot < elementNeededRot  or positivRot2 > elementNeededRot  ) then return end
 
 					local vehType = nil
 
-					if element:getVehicleType() == VehicleType.Automobile and TRUCKS[element:getModel()] then
+					if element:getVehicleType() == VehicleType.Automobile and ItemSpeedCam.TRUCKS[element:getModel()] then
 						vehType = "Truck"
 					elseif element:getVehicleType() == VehicleType.Automobile then
 						vehType = "Driving"
@@ -136,11 +133,11 @@ function ItemSpeedCam:onColShapeHit(element, dim)
 					local oldSTVO = player:getSTVO(vehType)
 					local newSTVO = 0
 					if (vehType == "Driving" and player:hasDrivingLicense()) or (vehType == "Bike" and player:hasBikeLicense()) or (vehType == "Truck" and player:hasTruckLicense()) then
-						if element:getSpeed() >= 90 and element:getSpeed() < 120 then
+						if element:getSpeed() >= ItemSpeedCam.ALLOWED_SPEED + 10 and element:getSpeed() < ItemSpeedCam.ALLOWED_SPEED + 40 then
 							stvoPoints = 3
 							newSTVO = oldSTVO + stvoPoints
 							player:setSTVO(vehType, newSTVO)
-						elseif element:getSpeed() >= 120 then
+						elseif element:getSpeed() >= ItemSpeedCam.ALLOWED_SPEED + 40 then
 							stvoPoints = 6
 							newSTVO = oldSTVO + stvoPoints
 							player:setSTVO(vehType, newSTVO)

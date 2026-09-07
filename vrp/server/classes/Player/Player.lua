@@ -1065,6 +1065,8 @@ function Player:payDay()
 	local outgoing_vehicles, outgoing_rent, outgoing_house, outgoing_income = 0, 0, 0, 0
 	local points_total = 0
 
+	local initiative = InitiativeManager:getSingleton():getActiveInitiative()
+
 	--Income:
 	if self:getFaction() then
 		income_faction = self:getFaction():paydayPlayer(self)
@@ -1098,7 +1100,8 @@ function Player:payDay()
 
 	local combined_loan = income_faction + income_company
 	if combined_loan < PAYDAY_UNEMPLOYED then
-		income_unemployed = PAYDAY_UNEMPLOYED - combined_loan
+		local mult = (initiative == 3) and 2 or 1
+		income_unemployed = PAYDAY_UNEMPLOYED * mult - combined_loan
 		income = income + income_unemployed
 		BankServer.get("server.bank"):transferMoney({self, true, true}, income_unemployed, "Grundsicherung", "Bank", "Interest", {silent = true})
 		self:addPaydayText("income", _("Grundsicherung", self), income_unemployed)
@@ -1144,7 +1147,8 @@ function Player:payDay()
 	local temp_bank_money = self:getBankMoney() + income
 
 	if combined_loan > PAYDAY_UNEMPLOYED then
-		outgoing_income = math.round(combined_loan * math.clamp(0.05, combined_loan / 10000, 0.25))
+		local mult = (initiative == 4 and 0.75) or (initiative == 3 and 1.25) or 1
+		outgoing_income = math.round(combined_loan * (math.clamp(0.05, combined_loan / 10000, 0.25) * mult))
 		if (combined_loan - outgoing_income) < PAYDAY_UNEMPLOYED then
 			outgoing_income = combined_loan - PAYDAY_UNEMPLOYED
 		end
@@ -1173,7 +1177,8 @@ function Player:payDay()
 		end
 		local house = HouseManager:getSingleton():getPlayerHouse(self)
 		if house then
-			outgoing_house = outgoing_house + house.m_BuyPrice / 2000
+			local mult = (initiative == 4) and 2 or 1
+			outgoing_house = outgoing_house + (house.m_BuyPrice / 2000 * mult)
 			self:addPaydayText("outgoing", _("Grundsteuer", self), outgoing_house)
 			self:transferBankMoney({BankServer.get("server.property_tax"), nil, nil, true}, outgoing_house, _("Grundsteuer", self), "Property", "Tax", {silent = true, allowNegative = true})
 			temp_bank_money = temp_bank_money - outgoing_house

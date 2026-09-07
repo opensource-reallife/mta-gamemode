@@ -93,12 +93,12 @@ EVENT_CHRISTMAS_MARKET = EVENT_CHRISTMAS and (getRealTime().monthday >= 6 and ge
 SNOW_SHADERS_ENABLED = getRealTime().month == 11 or getRealTime().month == 0 -- disable them during summer time
 FIREWORK_ENABLED = true -- can users use firework?
 FIREWORK_SHOP_ACTIVE = getRealTime().month == 11 and (getRealTime().monthday >= 25 and getRealTime().monthday <= 31) -- can users buy firework at the user meetup point?
-MARKET_ACTIVE = not EVENT_CHRISTMAS and not EVENT_EASTER and (getRealTime().weekday == 3 or getRealTime().weekday == 6)
+MARKET_POSSIBLE = not EVENT_CHRISTMAS and not EVENT_EASTER
 
 -- PAYDAY:
-PAYDAY_NOOB_BONUS = 200 -- dollar
+PAYDAY_NOOB_BONUS = 250 -- dollar
 PAYDAY_NOOB_BONUS_MAX_PLAYTIME = 10 -- hours
-PAYDAY_UNEMPLOYED = 300
+PAYDAY_UNEMPLOYED = 500
 
 --TEXTURES:
 TEXTURE_STATUS = {

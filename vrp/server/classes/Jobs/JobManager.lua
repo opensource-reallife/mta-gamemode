@@ -7,7 +7,6 @@
 -- ****************************************************************************
 JobManager = inherit(Singleton)
 
-
 function JobManager:constructor()
 	-- ATTENTION: Please use the same order server and clientside
 	self.m_Jobs = {
@@ -47,7 +46,7 @@ function JobManager:constructor()
 		end
 	)
 
-	nextframe(bind(self.refreshJobMultiplicators, self))
+	self:refreshJobMultiplicators()
 	self.m_TimedPulse = TimedPulse:new(JOBMULT_REFRESH_TIME*1000*60)
 	self.m_TimedPulse:registerHandler(bind(self.refreshJobMultiplicators, self))
 end
@@ -132,16 +131,21 @@ function JobManager:Event_jobQuit()
 	client:setJob(nil)
 end
 
-function JobManager:refreshJobMultiplicators()
-	self.m_JobMultiplicators = { }
+function JobManager:refreshJobMultiplicators(mult, silent)
+	self.m_JobMultiplicators = {}
+
 	for k, v in ipairs(self.m_Jobs) do
-		local random = false
-		if v:getId() ~= 10 and v:getId() ~= 12 then -- Treasure Seeker, Boxer
-			random = Randomizer:get(0, 10 * Randomizer:get(0, 1)) * 10 / 100
+		local mult = mult or Randomizer:get(0, 10 * Randomizer:get(0, 1)) * 10 / 100
+		if v:getId() == 10 or v:getId() == 12 then -- Treasure Seeker, Boxer
+			mult = false
 		end
-		v:setMultiplicator(random)
-		self.m_JobMultiplicators[v:getId()] = random
+		v:setMultiplicator(mult)
+		self.m_JobMultiplicators[v:getId()] = mult
 	end
+
 	triggerClientEvent(root, "receiveJobMultiplicators", root, self.m_JobMultiplicators)
-	CompanyManager:getSingleton():getFromId(CompanyStaticId.SANNEWS):sendShortMessage("Die Job-Multiplikatoren haben sich geändert!")
+
+	if not silent then
+		CompanyManager:getSingleton():getFromId(CompanyStaticId.SANNEWS):sendShortMessage("Die Job-Multiplikatoren haben sich geändert!")
+	end
 end

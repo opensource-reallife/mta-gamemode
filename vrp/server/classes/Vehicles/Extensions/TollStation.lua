@@ -28,21 +28,25 @@ function TollStation:destructor()
 end
 
 function TollStation:checkRequirements(player)
-	-- Step 1: Check for State Duty
-		if player:getFaction() then
-			local faction = player:getFaction()
-			if faction:isStateFaction() or faction:isRescueFaction() then
-				if player:isFactionDuty() then
-					player:sendShortMessage(_("Willkommen bei der Maut-Station %s! Da du Staats-Dienstlich unterwegs bist, darfst du kostenlos passieren! Gute Fahrt.", player, self.m_Name), _("Maut-Station: %s", player, self.m_Name), {125, 0, 0})
-					return true
-				end
+	if player:getFaction() then
+		local faction = player:getFaction()
+		if faction:isStateFaction() or faction:isRescueFaction() then
+			if player:isFactionDuty() then
+				player:sendShortMessage(_("Willkommen bei der Maut-Station %s! Da du Staats-Dienstlich unterwegs bist, darfst du kostenlos passieren! Gute Fahrt.", player, self.m_Name), _("Maut-Station: %s", player, self.m_Name), {125, 0, 0})
+				return true
 			end
 		end
+	end
 
-		if player:getInventory():getItemAmount("Mautpass") > 0 then
-			player:sendShortMessage(_("Willkommen bei der Maut-Station %s! Da du einen Mautpass besitzt, darfst du kostenlos passieren! Gute Fahrt.", player, self.m_Name), _("Maut-Station: %s", player, self.m_Name), {125, 0, 0})
-			return true
-		end
+	if InitiativeManager:getSingleton():getActiveInitiative() == 6 then
+		player:sendShortMessage(_("Willkommen bei der Maut-Station %s! Aufgrund einer aktuellen Initiative, darfst du kostenlos passieren! Gute Fahrt.", player, self.m_Name), _("Maut-Station: %s", player, self.m_Name), {125, 0, 0})
+		return true
+	end
+
+	if player:getInventory():getItemAmount("Mautpass") > 0 then
+		player:sendShortMessage(_("Willkommen bei der Maut-Station %s! Da du einen Mautpass besitzt, darfst du kostenlos passieren! Gute Fahrt.", player, self.m_Name), _("Maut-Station: %s", player, self.m_Name), {125, 0, 0})
+		return true
+	end
 
 	return false
 end

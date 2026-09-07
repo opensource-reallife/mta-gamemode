@@ -119,6 +119,7 @@ function Core:constructor()
 		PhoneInteraction:new()
 		NameManager:new()
 		PlayerManager:new()
+		NoDm:new()
 		JobManager:new()
 		BankManager:new()
 		BankServer:new()
@@ -197,12 +198,12 @@ function Core:constructor()
 		ColorCarsManager:new()
 		LeaderCheck:new()
 		VehicleRcUpgradeShop:new()
-		HappyHourManager:new()
 		RaceManager:new()
 		QuestManager:new()
 		GreenhouseManager:new()
 
-		if MARKET_ACTIVE then
+		local weekday = getRealTime().weekday
+		if MARKET_POSSIBLE and (weekday == 6 or weekday == 3) then
 			Market:new()
 		end
 
@@ -272,6 +273,8 @@ function Core:constructor()
 		HeavyWeaponTransportManager:new()
 		ActionMoneySplitManager:new()
 		--AmmunationEvaluation:new()
+		InitiativeManager:new()
+
 		-- Disable Heathaze-Effect (causes unsightly effects on 3D-GUIs e.g. SpeakBubble3D)
 		setHeatHaze(0)
 
@@ -363,6 +366,7 @@ function Core:destructor()
 		delete(CasinoWheelManager:getSingleton())
 		delete(PricePoolManager:getSingleton())
 		delete(SkyscraperManager:getSingleton())
+		delete(InitiativeManager:getSingleton())
 		if EVENT_EASTER then
 			delete(Easter:getSingleton())
 		end

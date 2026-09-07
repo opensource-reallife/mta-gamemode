@@ -9,11 +9,11 @@
 HappyHourManager = inherit(Singleton)
 
 function HappyHourManager:constructor()
-    GlobalTimer:getSingleton():registerEvent(bind(self.startHappyHour, self), "HappyHourBegin", nil, 12, 00)
+    GlobalTimer:getSingleton():registerEvent(bind(self.startHappyHour, self), "HappyHourBegin", nil, 12, 30)
     GlobalTimer:getSingleton():registerEvent(bind(self.endHappyHour, self), "HappyHourEnd", nil, 13, 30)
 
     GlobalTimer:getSingleton():registerEvent(bind(self.startHappyHour, self), "HappyHourBegin", nil, 16, 30)
-    GlobalTimer:getSingleton():registerEvent(bind(self.endHappyHour, self), "HappyHourEnd", nil, 18, 00)
+    GlobalTimer:getSingleton():registerEvent(bind(self.endHappyHour, self), "HappyHourEnd", nil, 17, 30)
 
 	GlobalTimer:getSingleton():registerEvent(bind(self.startHappyHour, self), "HappyHourBegin", nil, 21, 30)
     GlobalTimer:getSingleton():registerEvent(bind(self.endHappyHour, self), "HappyHourEnd", nil, 22, 30)
