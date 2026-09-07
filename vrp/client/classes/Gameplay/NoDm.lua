@@ -1,5 +1,6 @@
 NoDm = inherit(Singleton)
-addRemoteEvents{"checkNoDm"}
+addRemoteEvents{"checkNoDm", "addNoDm", "removeNoDm", "receiveNoDm"}
+
 NoDm.Zones = {
 	[1] = {Vector3(1399.112, -1862.453, 0), Vector3(160, 120, 40)}, -- Townhall
 	[2] = {Vector3(1754.75, -1722.17, 10), Vector3(57, 40, 30)},
@@ -17,7 +18,7 @@ if EVENT_HALLOWEEN then
 	NoDm.Zones[#NoDm.Zones+1] = {Vector3(807.48, -1130.5, 20), Vector3(145, 75, 40)} --grave yard
 end
 
-if EVENT_CHRISTMAS or MARKET_ACTIVE then
+if EVENT_CHRISTMAS then
 	NoDm.Zones[#NoDm.Zones+1] = {Vector3(1441.15, -1720.72, 12), Vector3(76.71, 116.84, 40)} --pershing square
 end
 
@@ -29,17 +30,17 @@ function NoDm:constructor()
 	self.m_RenderBind = bind(self.renderNoDmImage, self)
 	self.m_UnRenderBind = bind(self.unrenderNoDmImage, self)
 
-	local colshape
+	self.m_ZoneHitBind = bind(self.onNoDmZoneHit, self)
+	self.m_ZoneLeaveBind = bind(self.onNoDmZoneLeave, self)
 
 	for index, koords in pairs(NoDm.Zones) do
-		colshape = createColCuboid(koords[1], koords[2])
-		if koords[3] and koords[3] > 0 then
-			colshape:setInterior(koords[3])
-		else
-			self.m_NoDmRadarAreas[index] = HUDRadar:getSingleton():addArea(koords[1].x, koords[1].y, koords[2].x, -1*koords[2].y, {0, 255, 0, 150})
-		end
-		self:addZone(colshape)
+		self:addZone(koords)
 	end
+
+	triggerServerEvent("requestNoDm", localPlayer)
+
+	addEventHandler("addNoDm", localPlayer, bind(self.addZone, self))
+	addEventHandler("removeNoDm", localPlayer, bind(self.removeZone, self))
 end
 
 function NoDm:onNoDmZoneHit(hitElement, dim)
@@ -54,11 +55,33 @@ function NoDm:onNoDmZoneLeave(hitElement, dim)
 	end
 end
 
-function NoDm:addZone(colShape)
-	local index = #self.m_NoDmZones+1
+function NoDm:addZone(koords, index)
+	if type(koords[1]) == "table" then
+		koords[1] = Vector3(unpack(koords[1]))
+	end
+
+	if type(koords[2]) == "table" then
+		koords[2] = Vector3(unpack(koords[2]))
+	end
+
+	local colShape = createColCuboid(koords[1], koords[2])
+	addEventHandler("onClientColShapeHit", colShape, self.m_ZoneHitBind)
+	addEventHandler("onClientColShapeLeave", colShape, self.m_ZoneLeaveBind)
+
+	local index = index or #self.m_NoDmZones+1
+	if koords[3] and koords[3] > 0 then
+		colShape:setInterior(koords[3])
+	else
+		self.m_NoDmRadarAreas[index] = HUDRadar:getSingleton():addArea(koords[1].x, koords[1].y, koords[2].x, -1*koords[2].y, {0, 255, 0, 150})
+	end
 	self.m_NoDmZones[index] = colShape
-	addEventHandler ("onClientColShapeHit", colShape, bind(self.onNoDmZoneHit, self))
-	addEventHandler ("onClientColShapeLeave", colShape, bind(self.onNoDmZoneLeave, self))
+end
+
+function NoDm:removeZone(index)
+	local colShape = self.m_NoDmZones[index]
+	removeEventHandler("onClientColShapeHit", colShape, self.m_ZoneHitBind)
+	removeEventHandler("onClientColShapeLeave", colShape, self.m_ZoneLeaveBind)
+	HUDRadar:getSingleton():removeArea(self.m_NoDmRadarAreas[index])
 end
 
 function NoDm:setPlayerNoDm(state)

@@ -1,8 +1,9 @@
 Market = inherit(Singleton)
+addRemoteEvents{"marketSellItem"}
 
 function Market:constructor()
 	self.m_BankServer = BankServer.get("gameplay.market")
-    self.m_Blip = Blip:new("Calendar.png", 1480.60, -1666.62, root, 100)
+    self.m_Blip = Blip:new("Calendar.png", 1480.60, -1666.62, root, 400)
     self.m_Blip:setDisplayText("Wochenmarkt")
 	self.m_MapParser = MapParser:new(":exo_maps/market.map")
 	self.m_MapParser:create()
@@ -21,9 +22,11 @@ function Market:constructor()
     self:addTrader(72, Vector3(1478.29, -1689.98, 14.05), 315, "Patrick Pera", "Kaufe Birnen zu fairen Preisen!", "Birne", Randomizer:get(5, 30), 70)
     self:addTrader(205, Vector3(1470.76, -1677.19, 14.05), 246, "Wilma Worstje", "Würstchen sind leider ausverkauft!")
 
-    addRemoteEvents({"marketSellItem", "marketSellWeapon"})
-    addEventHandler("marketSellItem", root, self.m_Binds["marketSellItem"])
+    addEvent("marketSellWeapon", false)
     addEventHandler("marketSellWeapon", root, self.m_Binds["marketSellWeapon"])
+    addEventHandler("marketSellItem", root, self.m_Binds["marketSellItem"])
+
+    NoDm:getSingleton():addZone({{1441.15, -1720.72, 12}, {76.71, 116.84, 40}}, "market")
 end
 
 function Market:addTrader(model, pos, rotZ, name, text, item, price, spawnChance)
@@ -104,12 +107,16 @@ end
 function Market:destructor()
     delete(self.m_Blip)
     delete(self.m_MapParser)
+
     for k, trader in pairs(self.m_Traders) do
         removeEventHandler("onColShapeHit", trader.m_ColShape, self.m_Binds["onTraderColShapeHit"])
         removeEventHandler("onElementClicked", trader, self.m_Binds["onTraderClicked"])
         trader.m_ColShape:destroy()
         trader:destroy()
     end
+
     removeEventHandler("marketSellItem", root, self.m_Binds["marketSellItem"])
     removeEventHandler("marketSellWeapon", root, self.m_Binds["marketSellWeapon"])
+
+    NoDm:getSingleton():removeZone("market")
 end
