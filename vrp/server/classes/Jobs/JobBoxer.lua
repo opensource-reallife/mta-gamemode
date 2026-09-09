@@ -23,6 +23,8 @@ function JobBoxer:constructor()
     self.m_PlayerLevelCache = {}
     self.m_BankAccountServer = BankServer.get("job.boxer")
 
+    self.m_RegenerationTimer = {}
+
     addEventHandler("onMarkerHit", self.m_PickupMarker,
         function(player)
             if player:getJob() == self then
@@ -54,6 +56,7 @@ function JobBoxer:constructor()
     addEventHandler("boxerJobStartJob", root, bind(self.startJob, self, typ))
     addEventHandler("boxerJobEndJob", root, bind(self.endJob, self))
     addEventHandler("boxerJobAbortJob", root, bind(self.abortJob, self))
+    addEventHandler("onPlayerDamage", root, bind(self.onDamage, self))
 end
 
 function JobBoxer:destructor()
@@ -95,11 +98,19 @@ function JobBoxer:startJob(typ)
     setPedFightingStyle(client, 5)
 
     client:triggerEvent("boxerJobStartFight", typ, dimension)
+
+    self.m_RegenerationTimer[client] = Timer(function(player)
+        if isElement(player) and self:isPlayerBoxing(player) then
+            player:setHealth(player:getHealth() + 1)
+        else
+            sourceTimer:destroy()
+        end
+    end, 1000, 0, client)
 end
 
 function JobBoxer:endJob()
     local level = client:getPublicSync("JobBoxer:activeLevel")
-    local income = Randomizer:get(JobBoxerMoney[1], JobBoxerMoney[level]) * JOB_PAY_MULTIPLICATOR * self:getMultiplicator(client) * (Randomizer:get(90, 110) / 100)
+    local income = math.round(Randomizer:get(JobBoxerMoney[1], JobBoxerMoney[level]) * JOB_PAY_MULTIPLICATOR * self:getMultiplicator(client) * (Randomizer:get(90, 110) / 100))
     local points = math.round(income / 50 * JOB_EXTRA_POINT_FACTOR)
     self.m_BankAccountServer:transferMoney({client, true}, income, "Boxer-Job", "Job", "Boxer")
     local duration = getRealTime().timestamp - client.m_LastJobAction
@@ -140,6 +151,12 @@ function JobBoxer:isPlayerBoxing(player)
         return true
     else
         return false
+    end
+end
+
+function JobBoxer:onDamage()
+    if self:isPlayerBoxing(source) and isTimer(self.m_RegenerationTimer[source]) then
+        self.m_RegenerationTimer[source]:reset()
     end
 end
 
