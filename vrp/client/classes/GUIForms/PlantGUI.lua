@@ -27,7 +27,7 @@ function PlantGUI:constructor(id, type, lastGrow, size, maxSize, item, itemsPerS
 	if size < maxSize then
 		local nextGrow = lastGrow+60*60
 		nextGrow = math.floor((nextGrow-ts)/60)
-		GUILabel:new(10, 70, self.m_Width-20, 20, _("Nächster Wachstum in ~%d Minuten", nextGrow), self):setAlignX("center")
+		GUILabel:new(10, 70, self.m_Width-20, 20, _("Nächster Wachstum in ~%d Minuten", math.max(0, nextGrow)), self):setAlignX("center")
 	end
 	GUILabel:new(10, 90, self.m_Width-20, 20, _("Derzeitige Ernte: %d/%d %s", size*itemsPerSize, maxSize*itemsPerSize, item), self):setAlignX("center")
 	local watered = math.floor(lastWatered+wateredTime*60*60-ts)
