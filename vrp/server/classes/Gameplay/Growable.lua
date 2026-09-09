@@ -66,7 +66,7 @@ function Growable:checkGrow(force)
 		if ts > nextGrow or force then
 			local grow = self.ms_GrowPerHour
 			local watered = ""
-			if self.m_LastWatered + self.ms_HoursWatered*60*60 - ts > 0 then
+			if self.m_LastWatered + self.ms_HoursWatered*60*60 - (ts-60*15) > 0 then
 				grow = self.ms_GrowPerHourWatered
 				watered = "(watered)"
 			else
