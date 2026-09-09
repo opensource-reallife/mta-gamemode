@@ -110,7 +110,14 @@ function TrunkGUI:loadItems()
     local item
     for index, itemInv in pairs(self.m_Items) do
         if self.m_ItemData[itemInv["Objekt"]]["Handel"] == 1 then
-            item = self.m_MyItemsGrid:addItem(itemInv["Objekt"], itemInv["Menge"])
+            local displayName = itemInv["Objekt"]
+            local itemValue = tonumber(itemInv["Value"])
+            if displayName == "Einrichtung" and FurnitureInfo[itemValue] then
+                displayName = FurnitureInfo[itemValue][1]
+            elseif displayName == "Kleidung" and SkinInfo[itemValue] then
+                displayName = SkinInfo[itemValue][1]
+            end
+            item = self.m_MyItemsGrid:addItem(_(displayName), itemInv["Menge"])
             item.onLeftClick = function()
                 self.m_SelectedItemType = "item"
                 self.m_SelectedItem = itemInv["Objekt"]
@@ -149,8 +156,17 @@ function TrunkGUI:refreshTrunkData(id, items, weapons, vehicle)
     self.m_Vehicle = vehicle
     for index, item in pairs(items) do
         if item["Item"] ~= "none" then
-            self.m_ItemSlots[index].Label:setText(item["Item"])
-            self.m_ItemSlots[index].Amount:setText(_("%d Stk.", item["Amount"]))
+            local itemValue = tonumber(item["Value"])
+            if item["Item"] == "Einrichtung" and FurnitureInfo[itemValue] then
+                self.m_ItemSlots[index].Label:setText(_(FurnitureInfo[itemValue][1]))
+                self.m_ItemSlots[index].Amount:setText("")
+            elseif item["Item"] == "Kleidung" and SkinInfo[itemValue] then
+                self.m_ItemSlots[index].Label:setText(_(SkinInfo[itemValue][1]))
+                self.m_ItemSlots[index].Amount:setText("")
+            else
+                self.m_ItemSlots[index].Label:setText(_(item["Item"]))
+                self.m_ItemSlots[index].Amount:setText(_("%d Stk.", item["Amount"]))
+            end
             self.m_ItemSlots[index].Image:setImage("files/images/Inventory/items/"..self.m_ItemData[item.Item]["Icon"])
             self.m_ItemSlots[index].TakeButton:setEnabled(true)
         else

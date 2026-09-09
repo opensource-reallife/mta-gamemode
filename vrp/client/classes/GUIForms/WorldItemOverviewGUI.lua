@@ -34,10 +34,10 @@ function WorldItemOverviewGUI:constructor(sOwnerName, tblObjects, id, type)
 	--object list
 	self.m_PlacedObjectsLabel = GUILabel:new(5, 30, self.m_Width, 30, "", self) --will be set on list loading
 	self.m_ObjectList = GUIGridList:new(5, 65, self.m_Width - 10, 200, self)
-		:addColumn(_"Name", 0.2)
-		:addColumn(_"Position", 0.3)
-		:addColumn(_"Ersteller", 0.2)
-		:addColumn(_"Erstellzeit", 0.3)
+		:addColumn(_"Name", 0.25)
+		:addColumn(_"Position", 0.25)
+		:addColumn(_"Ersteller", 0.25)
+		:addColumn(_"Erstellzeit", 0.25)
 	self.m_ObjectList.onLeftClick = bind(WorldItemOverviewGUI.Event_OnListItemClick, self)
 
 	self.m_ListRefreshButton = GUIButton:new(self.m_Width-35, 65, 30, 30, " "..FontAwesomeSymbols.Refresh, self):setFont(FontAwesome(15)):setFontSize(1)
@@ -52,10 +52,10 @@ function WorldItemOverviewGUI:constructor(sOwnerName, tblObjects, id, type)
 
 	--filter
 	GUILabel:new(5, 270, self.m_Width, 30, _"Filter", self)
-	self.m_FilterEditName       = GUIEdit:new(5, 305, 120, 30, self):setFontSize(1)
-	self.m_FilterEditPosition   = GUIEdit:new(130, 305, 190, 30, self):setFontSize(1)
-	self.m_FilterEditPlacer     = GUIEdit:new(325, 305, 120, 30, self):setFontSize(1)
-	self.m_FilterEditTime       = GUIEdit:new(450, 305, 150, 30, self):setFontSize(1)
+	self.m_FilterEditName       = GUIEdit:new(5, 305, 145, 30, self):setFontSize(1)
+	self.m_FilterEditPosition   = GUIEdit:new(155, 305, 145, 30, self):setFontSize(1)
+	self.m_FilterEditPlacer     = GUIEdit:new(305, 305, 145, 30, self):setFontSize(1)
+	self.m_FilterEditTime       = GUIEdit:new(455, 305, 145, 30, self):setFontSize(1)
 	self.m_FilterApplyButton    = GUIButton:new(self.m_Width-35, 305, 30, 30, " "..FontAwesomeSymbols.Check, self):setFont(FontAwesome(15)):setFontSize(1)
 	self.m_FilterApplyButton:setBackgroundColor(Color.Accent)
 	self.m_FilterApplyButton.onLeftClick = bind(WorldItemOverviewGUI.applyFilter, self)
@@ -113,15 +113,16 @@ function WorldItemOverviewGUI:loadObjectsInList(tblObjects)
 				end
 			end
 			if insertObject then
+				local objectName = _(FurnitureInfo[object:getModel()] and FurnitureInfo[object:getModel()][1] or object:getData("Name"))
 				self.m_ObjectList:addItem(
-					object:getData("Name"),
+					objectName,
 					getZoneName(object:getPosition()),
 					object:getData("Placer"),
 					getOpticalTimestamp(object:getData("PlacedTimestamp"))
 				).m_Id = i
 				table.insert(self.m_FullObjectList, {
 					Object      = object,
-					Name        = object:getData("Name"),
+					Name        = objectName,
 					Zone        = getZoneName(object:getPosition()),
 					Placer      = object:getData("Placer"),
 					Timestamp   = getOpticalTimestamp(object:getData("PlacedTimestamp"))
