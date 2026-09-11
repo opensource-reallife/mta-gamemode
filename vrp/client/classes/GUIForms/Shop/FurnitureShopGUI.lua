@@ -112,6 +112,10 @@ function FurnitureShopGUI.initialize()
 		removeWorldModel(2845, 10000, 0, 0, 0, i)
 		removeWorldModel(2846, 10000, 0, 0, 0, i)
 		removeWorldModel(2840, 10000, 0, 0, 0, i)
+		removeWorldModel(15027, 10000, 0, 0, 0, i)
+		removeWorldModel(15028, 10000, 0, 0, 0, i)
+		removeWorldModel(2866, 10000, 0, 0, 0, i)
+		removeWorldModel(2813, 10000, 0, 0, 0, i)
 	end
 
 	for i = 1, 4 do

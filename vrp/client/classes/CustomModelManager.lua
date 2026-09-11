@@ -289,6 +289,7 @@ function CustomModelManager:constructor()
 	self:loadShader("Other/trans.png", "txgrass1_1")
 	self:loadShader("Other/trans.png", "andydark")
 	self:loadShader("Other/trans.png", "andydark2")
+	self:loadShader("Other/trans.png", "shad_exp")
 end
 
 function CustomModelManager:loadImportDFF(filePath, modelId)
