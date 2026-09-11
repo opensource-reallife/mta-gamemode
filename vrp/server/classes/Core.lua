@@ -203,7 +203,7 @@ function Core:constructor()
 		GreenhouseManager:new()
 
 		local weekday = getRealTime().weekday
-		if MARKET_POSSIBLE and (weekday == 6 or weekday == 3) then
+		if MARKET_POSSIBLE and weekday == 6 then
 			Market:new()
 		end
 

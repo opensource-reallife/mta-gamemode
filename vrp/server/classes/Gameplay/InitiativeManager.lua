@@ -27,8 +27,8 @@ InitiativeManager.Data = {
 		"Die Lohnsteuer ist 25%% reduziert, dafür wird die Grundsteuer verdoppelt."
 	},
 	[5] = {
-		"Sonntagsmarkt",
-		"Der Wochenmarkt findet auch Sonntags statt (nicht während dem Oster- oder Weihnachtsevent)."
+		"Mittwochsmarkt",
+		"Der Wochenmarkt findet auch Mittwochs statt (nicht während dem Oster- oder Weihnachtsevent)."
 	},
 	[6] = {
 		"Keine Maut",
@@ -91,7 +91,7 @@ function InitiativeManager:constructor()
 		JobManager:getSingleton():refreshJobMultiplicators(50 / 100, true)
 	elseif initiative == 5 then
 		local weekday = getRealTime().weekday
-		if MARKET_POSSIBLE and weekday == 0 then
+		if MARKET_POSSIBLE and weekday == 3 then
 			Market:new()
 		end
 	elseif initiative == 6 then
