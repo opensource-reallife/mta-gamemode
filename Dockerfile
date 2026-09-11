@@ -1,7 +1,9 @@
-FROM debian:bullseye
+FROM debian:trixie
 
 # Prerequisites
-RUN apt-get -y update && apt-get install -y --no-install-recommends ca-certificates wget unzip openssl libncursesw6
+RUN apt-get -y update && apt-get install -y --no-install-recommends ca-certificates wget unzip libncursesw6 debconf libc6
+RUN wget http://launchpadlibrarian.net/475574732/libssl1.1_1.1.1f-1ubuntu2_amd64.deb && dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+RUN wget http://launchpadlibrarian.net/475574733/openssl_1.1.1f-1ubuntu2_amd64.deb && dpkg -i openssl_1.1.1f-1ubuntu2_amd64.deb
 
 # Set timezone
 ENV TZ=Europe/Berlin
