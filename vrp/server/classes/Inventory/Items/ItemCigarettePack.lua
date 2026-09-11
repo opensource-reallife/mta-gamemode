@@ -29,9 +29,13 @@ function ItemCigarettePack:use(player, itemId, bag, place, itemName)
 		end, 20*60*1000, 1)
 
 		if chance(20) then
-			player:setHealth(player:getHealth() - Randomizer:get(2, 8))
-			player:setChoking(true)
-			nextframe(function() player:setChoking(false) end)
+			local pos, rand = player:getPosition(), Randomizer:get(0, 6)
+			local health = player:getHealth() - Randomizer:get(2, 8)
+			triggerClientEvent(root, "playSFX3D", root, "pain_a", 2, rand, pos.x, pos.y, pos.z, false)
+			player:setHealth(health)
+			if health <= 0 then
+				player:giveAchievement(114)
+			end
 		end
 
 		if cigarettesLeft >= 1 then
