@@ -529,8 +529,16 @@ function PolicePanel:giveWanteds(action)
 	if item then
 		local player = item.player
 		if action == "set" then
-			GiveWantedBox:new(player, 0, MAX_WANTED_LEVEL, "Wanteds setzen", function(player, amount, reason) self:updateCurrentView() triggerServerEvent("factionStateSetWanteds", localPlayer, player, amount, reason) end)
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(localPlayer, "faction", "setWanteds") then
+				ErrorBox:new(_"Dazu hast du keine Berechtigung!")
+				return
+			end
+			GiveWantedBox:new(player, 1, MAX_WANTED_LEVEL, "Wanteds setzen", function(player, amount, reason) self:updateCurrentView() triggerServerEvent("factionStateSetWanteds", localPlayer, player, amount, reason) end)
 		elseif action == "give" then
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(localPlayer, "faction", "giveWanteds") then
+				ErrorBox:new(_"Dazu hast du keine Berechtigung!")
+				return
+			end
 			GiveWantedBox:new(player, 1, MAX_WANTED_LEVEL, "Wanteds geben", function(player, amount, reason) self:updateCurrentView() triggerServerEvent("factionStateGiveWanteds", localPlayer, player, amount, reason) end)
 		end
 	else
@@ -543,9 +551,17 @@ function PolicePanel:giveSTVO(action)
 	if item then
 		local player = item.player
 		if action == "give" then
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(localPlayer, "faction", "giveStvo") then
+				ErrorBox:new(_"Dazu hast du keine Berechtigung!")
+				return
+			end
 			GiveSTVOBox:new(player, 1, 6, "STVO-Punkte geben", function(player, category, amount, reason) self:updateCurrentView() triggerServerEvent("factionStateGiveSTVO", localPlayer, player, category, amount, reason) end)
 		elseif action == "set" then
-			GiveSTVOBox:new(player, 0, 20, "STVO-Punkte setzen", function(player, category, amount, reason) self:updateCurrentView() triggerServerEvent("factionStateSetSTVO", localPlayer, player, category, amount, reason) end)
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(localPlayer, "faction", "setStvo") then
+				ErrorBox:new(_"Dazu hast du keine Berechtigung!")
+				return
+			end
+			GiveSTVOBox:new(player, 1, 20, "STVO-Punkte setzen", function(player, category, amount, reason) self:updateCurrentView() triggerServerEvent("factionStateSetSTVO", localPlayer, player, category, amount, reason) end)
 		end
 	else
 		ErrorBox:new(_"Kein Spieler ausgewählt!")

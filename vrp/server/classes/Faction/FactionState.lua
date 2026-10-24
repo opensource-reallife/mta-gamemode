@@ -1193,10 +1193,17 @@ function FactionState:Command_suspect(player,cmd,target,amount,...)
 		local reason2, wAmount2
 		if amount then
 			if not tonumber(amount) then
+				if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "faction", "setWanteds") then
+					return client:sendError(_("Du hast keine Berechtigung, um Wanteds zu setzen!", client))
+				end
 				reason2, wAmount2 = self:getFullReasonFromShortcut(amount)
 				if reason2 and wAmount2 then
 					reason = reason2
 					amount = wAmount2
+				end
+			else
+				if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "faction", "setWantedsWR") then
+					return client:sendError(_("Du hast keine Berechtigung, um eigene Wanteds zu setzen!", client))
 				end
 			end
 		end
@@ -1284,6 +1291,10 @@ function FactionState:Event_giveSTVO(target, category, amount, reason)
 			if reason == "" or not reason then
 				return client:sendError(_("Du musst einen Grund angeben!", client))
 			end
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "giveStvo") then
+				ErrorBox:new(_"Dazu hast du keine Berechtigung!")
+				return
+			end
 
 			local currentSTVO = target:getSTVO(category)
 			local newSTVO = target:getSTVO(category) + amount
@@ -1301,6 +1312,11 @@ function FactionState:Event_setSTVO(target, category, amount, reason)
 	local faction = client:getFaction()
 	if faction and faction:isStateFaction() then
 		if client:isFactionDuty() then
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "setStvo") then
+				ErrorBox:new(_"Dazu hast du keine Berechtigung!")
+				return
+			end
+
 			local newSTVO = tonumber(amount)
 			target:setSTVO(category, newSTVO)
 			outputChatBox(_("%s hat deine STVO-Punkt/e auf %d gesetzt!", target, client:getName(), newSTVO), target, 255, 255, 0 )
@@ -1976,6 +1992,10 @@ function FactionState:Event_giveWanteds(target, amount, reason)
 	local faction = client:getFaction()
 	if faction and faction:isStateFaction() then
 		if client:isFactionDuty() then
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "setWanteds") then
+				return client:sendError(_("Du hast keine Berechtigung, um Wanteds zu vergeben!", client))
+			end
+
 			if target:getFaction() and target:getFaction():isStateFaction() and target:isFactionDuty() then
 				return client:sendError(_("Du kannst Beamten im Dienst keine Wanteds geben.", client))
 			end
@@ -2001,6 +2021,10 @@ function FactionState:Event_setWanteds(target, amount, reason)
 	local faction = client:getFaction()
 	if faction and faction:isStateFaction() then
 		if client:isFactionDuty() then
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "setWanteds") then
+				return client:sendError(_("Du hast keine Berechtigung, um Wanteds zu setzen!", client))
+			end
+
 			if target:getFaction() and target:getFaction():isStateFaction() and target:isFactionDuty() then
 				return client:sendError(_("Du kannst Beamten im Dienst keine Wanteds geben.", client))
 			end
@@ -2026,6 +2050,10 @@ function FactionState:Event_clearWanteds(target)
 	local faction = client:getFaction()
 	if faction and faction:isStateFaction() then
 		if client:isFactionDuty() then
+			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "faction", "removeWanteds") then
+				return client:sendError(_("Du hast keine Berechtigung, um Wanteds zu löschen!", client))
+			end
+
 			target:takeWanteds(MAX_WANTED_LEVEL)
 			outputChatBox(_("Dir wurden alle Wanteds von %s erlassen", target, client:getName()), target, 255, 255, 0 )
 			local msg = ("%s hat %s alle Wanteds erlassen!"):format(client:getName(), target:getName())
