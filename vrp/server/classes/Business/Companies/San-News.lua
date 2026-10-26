@@ -295,9 +295,13 @@ function SanNews:Event_requestNewsAppUnlock(pay)
 			client:sendError(_("Du hast zu wenig Geld auf deinem Bankkonto! (%s$)", client, costs))
 		end
 	end
-	local minutes = math.ceil(JobManager:getSingleton().m_TimedPulse.m_Timer:getDetails() / 1000 / 60)
-	local realTime = getRealTime()
-	local changeTime = (realTime.hour*60 + realTime.minute + minutes) % 1440
-	local timeFormatted = ("%02d:%02d"):format(changeTime/60, changeTime%60)
+	local jobManager = JobManager:getSingleton()
+	local timeFormatted = "-"
+	if jobManager.m_TimedPulse and isTimer(jobManager.m_TimedPulse.m_Timer) then
+		local minutes = math.ceil(jobManager.m_TimedPulse.m_Timer:getDetails() / 1000 / 60)
+		local realTime = getRealTime()
+		local changeTime = (realTime.hour*60 + realTime.minute + minutes) % 1440
+		timeFormatted = ("%02d:%02d"):format(changeTime/60, changeTime%60)
+	end
 	client:triggerEvent("receiveNewsAppUnlock", self.m_AppUnlocked[client:getId()], timeFormatted)
 end
