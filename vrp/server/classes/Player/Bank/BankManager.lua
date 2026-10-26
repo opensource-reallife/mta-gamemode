@@ -8,12 +8,13 @@
 BankManager = inherit(Singleton)
 
 function BankManager:constructor()
-	addRemoteEvents{"bankWithdraw", "bankDeposit", "bankTransfer", "bankMoneyBalanceRequest"}
+	addRemoteEvents{"bankWithdraw", "bankDeposit", "bankTransfer", "bankMoneyBalanceRequest", "bankStatementsRequest"}
 
 	addEventHandler("bankWithdraw", root, bind(self.Event_Withdraw, self))
 	addEventHandler("bankDeposit", root, bind(self.Event_Deposit, self))
 	addEventHandler("bankTransfer", root, bind(self.Event_Transfer, self))
 	addEventHandler("bankMoneyBalanceRequest", root, bind(self.Event_bankMoneyBalanceRequest, self))
+	addEventHandler("bankStatementsRequest", root, bind(self.Event_bankStatementsRequest, self))
 end
 
 function BankManager:Event_Withdraw(amount)
@@ -98,4 +99,9 @@ end
 
 function BankManager:Event_bankMoneyBalanceRequest()
 	client:triggerEvent("bankMoneyBalanceRetrieve", client:getBankMoney())
+end
+
+function BankManager:Event_bankStatementsRequest()
+	local result = sqlLogs:queryFetch("SELECT Date, Money, Reason FROM ??_Money WHERE ElementType = ? AND ElementId = ? AND BankAccount = ? ORDER BY Id DESC LIMIT 20", sqlLogs:getPrefix(), "player", client:getId(), 1)
+	client:triggerEvent("bankStatementsRetrieve", result)
 end

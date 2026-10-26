@@ -8,6 +8,8 @@
 AppBank = inherit(PhoneApp)
 AppBank.ATMs = {} -- gets loaded in core
 
+addRemoteEvents{"bankStatementsRetrieve"}
+
 function AppBank:constructor()
 	PhoneApp.constructor(self, "Bank", "IconBank.png")
 end
@@ -51,15 +53,28 @@ function AppBank:onOpen(form)
 	end
 
 	self.m_Tabs["Statements"] = self.m_TabPanel:addTab(_"Kontoauszug", FontAwesomeSymbols.List)
-	local tab = self.m_Tabs["Statements"]
-	self.m_StatementsBrowser = GUIWebView:new(0, 0, tab.m_Width, tab.m_Height-10, (INGAME_WEB_PATH .. "/ingame/vRPphone/apps/bank/index.php?player=%s&sessionID=%s"):format(localPlayer:getName(), localPlayer:getSessionId()), true, tab)
+	GUILabel:new(10, 10, 240, 50, _"Bank", self.m_Tabs["Statements"])
+	self.m_StatementsGrid = GUIGridList:new(10, 60, form.m_Width-20, form.m_Height-120, self.m_Tabs["Statements"])
+	self.m_StatementsGrid:addColumn(_"Kontoauszug", 0.3)
+	self.m_StatementsGrid:addColumn("", 0.7)
 
 	addEventHandler("bankMoneyBalanceRetrieve", root, bind(self.Event_OnMoneyReceive, self))
 	triggerServerEvent("bankMoneyBalanceRequest", root)
+
+	addEventHandler("bankStatementsRetrieve", root, bind(self.Event_OnStatementsReceive, self))
+	triggerServerEvent("bankStatementsRequest", root)
 end
 
 function AppBank:Event_OnMoneyReceive(amount)
 	self.m_AccountBalanceLabel:setText(toMoneyString(amount))
+end
+
+function AppBank:Event_OnStatementsReceive(statements)
+	self.m_StatementsGrid:clear()
+	for k, statement in pairs(statements) do
+		self.m_StatementsGrid:addItemNoClick(statement.Date)
+		self.m_StatementsGrid:addItem(toMoneyString(statement.Money), statement.Reason)
+	end
 end
 
 function AppBank:TransferButton_Click()
