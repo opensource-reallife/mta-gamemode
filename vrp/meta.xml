@@ -1631,6 +1631,7 @@
 	<file src="files/html/help.htm" />
 	<file src="files/html/editor.htm" />
 	<file src="files/html/memo.htm" />
+	<file src="files/html/snake.htm"/>
 
 	<vrpfile src="files/images/LogoNoFont.png"/>
 	<vrpfile src="files/images/MessageBoxes/Info.png" onDemand="false"/>
