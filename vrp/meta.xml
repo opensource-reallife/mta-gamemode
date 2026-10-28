@@ -1592,6 +1592,42 @@
 	<export function="phpSDKUnbanPlayer" type="server" http="true" />
 	<export function="phpSDKAddWarn" type="server" http="true" />
 	<export function="phpSDKRemoveWarn" type="server" http="true" />
+	<export function="phpSDKChangeMember" type="server" http="true" />
+	<export function="phpSDKGetPlayerLive" type="server" http="true" />
+	<export function="phpSDKEditPlayer" type="server" http="true" />
+	<export function="phpSDKMarketFee" type="server" http="true" />
+	<export function="phpSDKPremiumGiven" type="server" http="true" />
+	<export function="phpSDKBankTransfer" type="server" http="true" />
+	<export function="phpSDKVoucher" type="server" http="true" />
+	<export function="phpSDKForceTransfer" type="server" http="true" />
+	<export function="phpSDKGetBalances" type="server" http="true" />
+	<export function="phpSDKShopVehicles" type="server" http="true" />
+	<export function="phpSDKShopVehicleEdit" type="server" http="true" />
+	<export function="phpSDKShopVehicleAdd" type="server" http="true" />
+	<export function="phpSDKShopVehicleDelete" type="server" http="true" />
+	<export function="phpSDKOrgReloadLimits" type="server" http="true" />
+	<export function="phpSDKFactionDepot" type="server" http="true" />
+	<export function="phpSDKFactionDepotEdit" type="server" http="true" />
+	<export function="phpSDKSetMembership" type="server" http="true" />
+	<export function="phpSDKOrgSkins" type="server" http="true" />
+	<export function="phpSDKHouse" type="server" http="true" />
+	<export function="phpSDKGroupProperty" type="server" http="true" />
+	<export function="phpSDKInitiatives" type="server" http="true" />
+	<export function="phpSDKRouletteLimit" type="server" http="true" />
+	<export function="phpSDKReloadServerSettings" type="server" http="true" />
+	<export function="phpSDKStateEvidence" type="server" http="true" />
+	<export function="phpSDKLoginFix" type="server" http="true" />
+	<export function="phpSDKAdminAnnounce" type="server" http="true" />
+	<export function="phpSDKLeaderBan" type="server" http="true" />
+	<export function="phpSDKVehicleKeys" type="server" http="true" />
+	<export function="phpSDKVehicleKeyChange" type="server" http="true" />
+	<export function="phpSDKGangwar" type="server" http="true" />
+	<export function="phpSDKFCShopReload" type="server" http="true" />
+	<export function="phpSDKOrgRespawnVehicles" type="server" http="true" />
+	<export function="phpSDKReloadBadNames" type="server" http="true" />
+	<export function="phpSDKOrgLoan" type="server" http="true" />
+	<export function="phpSDKAccountRename" type="server" http="true" />
+	<export function="phpSDKAccountDelete" type="server" http="true" />
 	<export function="phpSDKPrisonPlayer" type="server" http="true" />
 	<export function="phpSDKUnprisonPlayer" type="server" http="true" />
 	<export function="phpSDKTakeScreenShot" type="server" http="true" />

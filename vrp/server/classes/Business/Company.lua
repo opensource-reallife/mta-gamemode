@@ -28,7 +28,7 @@ function Company:constructor(Id, Name, ShortName, ShorterName, Creator, players,
 	self.m_Vehicles = {}
 	self.m_Level = 0
 	self.m_RankNames = companyRankNames[Id]
-	self.m_Skins = companySkins[Id]
+	self.m_Skins = companySkins[Id] -- nach dem Laden der Einstellungen ggf. durch die Liste aus dem ControlPanel ersetzt
 	-- Settings
 	self.m_VehiclesCanBeModified = Settings.VehiclesCanBeModified or false
 
@@ -42,6 +42,7 @@ function Company:constructor(Id, Name, ShortName, ShorterName, Creator, players,
 
 	self.m_BankAccount = BankAccount.load(bankAccountId) or BankAccount.create(BankAccountTypes.Company, self.m_Id)
 	self.m_Settings = UserGroupSettings:new(USER_GROUP_TYPES.Company, Id)
+	self.m_Skins = self.m_Settings:getSkinList(companySkins[Id]) -- im ControlPanel änderbar (Kategorie „SkinList“)
 
 	sql:queryExec("UPDATE ??_companies SET BankAccount = ? WHERE Id = ?;", sql:getPrefix(), self.m_BankAccount:getId(), self.m_Id)
 

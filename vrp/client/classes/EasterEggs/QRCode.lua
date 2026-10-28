@@ -6,8 +6,7 @@ function EasterEgg.QRCode:constructor()
 end
 
 function EasterEgg.QRCode:onStreamIn(surface)
-	local json = toJSON({["sId"] = localPlayer:getSessionId(), ["id"] = localPlayer:getPrivateSync("Id"), ["name"] = localPlayer:getName()}, true)
-	self.m_Url = (INGAME_WEB_PATH .. "/ingame/qr/qr.php?size=300x300&text=" .. INGAME_WEB_PATH .. "/ingame/qr/result.php?data=%s"):format(json:sub(2, #json-1))
-	outputDebug(self.m_Url)
+	-- QR-Code kommt vom ControlPanel (CP-Token wie beim WebPanel); der Scan-Link darin vergibt dort das Achievement
+	self.m_Url = (CP_WEB_PATH .. "/qr.php?token=%s"):format(localPlayer:getCpToken())
 	GUIWebView:new(0, 0, 300, 300, self.m_Url, true, surface)
 end

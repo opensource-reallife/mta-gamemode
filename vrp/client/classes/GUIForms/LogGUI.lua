@@ -37,7 +37,7 @@ function LogGUI:updateLog(start, amount)
 	self.m_Cache = {}
 
 	local options = {
-		["postData"] = ("secret=%s"):format(INGAME_WEB_SECRET)
+		["postData"] = ("token=%s"):format(localPlayer:getCpToken()) -- CP prüft das Token und die Mitgliedschaft
 	}
 
 	local filter = "";
@@ -54,6 +54,10 @@ function LogGUI:updateLog(start, amount)
 	--outputConsole(url)
 	fetchRemote(url, options,
 			function(responseData, responseInfo)
+				if responseInfo and not responseInfo.success then
+					outputDebugString(("LogGUI: Logs nicht geladen (Fehler %s) – %s"):format(tostring(responseInfo.statusCode), url), 2)
+					return
+				end
 				self.m_Cache = fromJSON(responseData)
 				if self.m_Cache then
 					self.m_Cache = table.setIndexToInteger(self.m_Cache)

@@ -247,6 +247,42 @@ function GroupPropertyManager:SellProperty(  )
 	end
 end
 
+-- Immobilie aus der Datenbank (neu) laden / aus dem Speicher nehmen (ControlPanel: phpSDKGroupProperty)
+function GroupPropertyManager:loadProperty(id, elevator)
+	local row = sql:queryFetchSingle("SELECT * FROM ??_group_property WHERE Id = ?", sql:getPrefix(), id)
+	if not row then return false end
+	self.Map[row.Id] = GroupProperty:new(row.Id, row.Name, row.GroupId, row.Type, row.Price, Vector3(unpack(split(row.Pickup, ","))), row.InteriorId,  Vector3(unpack(split(row.InteriorSpawn, ","))), row.Cam, row.open, row.Message, row.DepotId, row.ElevatorData, row.SalePrice, elevator)
+	if (row.DepotId or 0) == 0 and self.Map[row.Id].m_DepotId then -- neues Lager gleich speichern
+		sql:queryExec("UPDATE ??_group_property SET DepotId = ? WHERE Id = ?", sql:getPrefix(), self.Map[row.Id].m_DepotId, row.Id)
+	end
+	return self.Map[row.Id]
+end
+
+function GroupPropertyManager:unloadProperty(id, keepElevator)
+	local property = self.Map[id]
+	if not property then return false end
+	local elevator = property.m_Elevator
+	if property.m_Owner then
+		for _, player in ipairs(property.m_Owner:getOnlinePlayers()) do
+			player:triggerEvent("destroyGroupBlip", property.m_Id)
+		end
+	end
+	property:destroyElements(keepElevator)
+	delete(property) -- speichert Tür, Lager, Schlüssel und Verkaufspreis
+	self.Map[id] = nil
+	return true, elevator
+end
+
+-- Blip und Ausgang für die Mitglieder der Besitzergruppe neu senden (nach dem Neuladen)
+function GroupPropertyManager:syncPropertyForOwner(property)
+	if not property or not property.m_Owner then return end
+	local x, y, z = getElementPosition(property.m_Pickup)
+	for _, player in ipairs(property.m_Owner:getOnlinePlayers()) do
+		player:triggerEvent("addPickupToGroupStream", property.m_ExitMarker, property.m_Id)
+		player:triggerEvent("createGroupBlip", x, y, z, property.m_Id, property.m_Owner.m_Type)
+	end
+end
+
 function GroupPropertyManager:destructor()
 	for id, obj in pairs( self.Map ) do
 		obj:delete()

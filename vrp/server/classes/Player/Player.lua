@@ -756,6 +756,7 @@ function Player:getCredits() return self.m_Premium:getCredits() end
 
 function Player:setPhonePartner(partner) self.m_PhonePartner = partner end
 function DatabasePlayer:setSessionId(hash) self.m_SessionId = hash if self:isActive() then self:setPrivateSync("SessionID", self.m_SessionId) end end
+function DatabasePlayer:setCpToken(token) if self:isActive() then self:setPrivateSync("CpToken", token) end end
 
 function Player:getInventory()
 	return self.m_Inventory
@@ -834,6 +835,17 @@ function Player:isCompanyDuty()
 	return self.m_CompanyDuty
 end
 
+-- Dienst als Text: "faction:Id" bzw. "company:Id", sonst nil (z. B. für Kill- und Schadenslogs)
+function Player:getDutyGroup()
+	if self:isFactionDuty() and self:getFaction() then return "faction:" .. self:getFaction():getId() end
+	if self:isCompanyDuty() and self:getCompany() then return "company:" .. self:getCompany():getId() end
+	return nil
+end
+
+-- wie getDutyGroup, auch für Werte, die kein Spieler sind (dann nil)
+function Player.getDutyGroupOf(player)
+	return isElement(player) and getElementType(player) == "player" and player:getDutyGroup() or nil
+end
 
 -- this is not the function to set the player duty. Use FactionEvil:getSingleton():setPlayerDuty for evil factin, other factions can only go duty at their pickup
 function Player:setFactionDuty(state)

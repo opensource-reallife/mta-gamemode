@@ -159,7 +159,7 @@ function GrowableManager:addNewPlant(type, position, owner, inGreenhouse)
 	local ts = getRealTime().timestamp
 	sql:queryExec("INSERT INTO ??_plants (Type, Owner, PosX, PosY, PosZ, Size, planted, last_grown, last_watered, times_earned, in_greenhouse) VALUES (? , ? , ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 	sql:getPrefix(), type, owner:getId(), position.x, position.y, position.z, 0, ts, ts, 0, 0, inGreenhouse)
-	StatisticsLogger:getSingleton():addPlantLog(owner, type)
+	StatisticsLogger:getSingleton():addPlantLog(owner, type, position)
 	local id = sql:lastInsertId()
 	GrowableManager.Map[id] = Growable:new(id, type, GrowableManager.Types[type], position, owner:getId(), 0, ts, ts, 0, 0, inGreenhouse)
 	GrowableManager.Map[id]:onColShapeHit(owner, true)

@@ -120,7 +120,7 @@ function Growable:harvest(player)
 			player:triggerEvent("hidePlantGUI")
 			self.m_Size = 0
 			sql:queryExec("DELETE FROM ??_plants WHERE Id = ?", sql:getPrefix(), self.m_Id)
-			StatisticsLogger:getSingleton():addDrugHarvestLog(player, self.m_Type, self.m_OwnerId, amount, 1)
+			StatisticsLogger:getSingleton():addDrugHarvestLog(player, self.m_Type, self.m_OwnerId, amount, 1, isElement(self.m_Object) and self.m_Object:getPosition())
 			delete(self)
 		elseif amount > 0 then
 			if player:getInventory():getFreePlacesForItem(self.ms_Item) >= amount then
@@ -136,7 +136,7 @@ function Growable:harvest(player)
 							self.m_Size = 0
 							self.m_TimesEarned = self.m_TimesEarned + 1
 							self:refreshObjectSize()
-							StatisticsLogger:getSingleton():addDrugHarvestLog(player, self.m_Type, self.m_OwnerId, amount, 0)
+							StatisticsLogger:getSingleton():addDrugHarvestLog(player, self.m_Type, self.m_OwnerId, amount, 0, isElement(self.m_Object) and self.m_Object:getPosition())
 							if self.m_TimesEarned >= self.ms_TimesEarnedForDestroy  then
 								sql:queryExec("DELETE FROM ??_plants WHERE Id = ?", sql:getPrefix(), self.m_Id)
 								delete(self)

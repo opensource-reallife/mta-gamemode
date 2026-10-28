@@ -276,3 +276,25 @@ SHOT_STRENGTH_AGAINST_KEVLAR =
 	[30] = 2,
 	[31] = 2,
 }
+
+-- NoDM-Zonen: {Ecke, Größe, Interior}. Der Client sperrt dort das Schießen, der Server prüft sie für die Kill-/Schadenslogs (NoDm:isPlayerInZone)
+NODM_ZONES = {
+	[1] = {Vector3(1399.112, -1862.453, 0), Vector3(160, 120, 40)}, -- Townhall
+	[2] = {Vector3(1754.75, -1722.17, 10), Vector3(57, 40, 30)},
+	[3] = {Vector3(430, -100, 998), Vector3(50, 40, 10), 4},
+	[5] = {Vector3(1072.5, -1385, 12), Vector3{113, 94.1, 25}}, -- Rescue
+	[6] = {Vector3(1266, 22, 20), Vector3{150, 150, 50}}, -- Kart
+	--[8] = {Vector3(2713.39, -1880.29, 8), Vector3(104, 80, 50)}, -- Auction Event	
+	[9] = {Vector3(1503.79, -1387.92,  23234), Vector3(151, 101, 30), 1}, -- Auction Event Interior
+	[10] = {Vector3(2730.97, -2423.91, 810.44), Vector3(100, 200, 30), 5 },
+	[11] = {Vector3(456.71, -1742.53, 784.67), Vector3(100, 55, 55), 18},
+	[12] = {Vector3(1699.21, -1802.53, 10), Vector3(112, 60, 30)} --user meetup
+}
+
+if EVENT_HALLOWEEN then
+	NODM_ZONES[#NODM_ZONES+1] = {Vector3(807.48, -1130.5, 20), Vector3(145, 75, 40)} --grave yard
+end
+
+if EVENT_CHRISTMAS then
+	NODM_ZONES[#NODM_ZONES+1] = {Vector3(1441.15, -1720.72, 12), Vector3(76.71, 116.84, 40)} --pershing square
+end

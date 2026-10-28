@@ -805,7 +805,7 @@ end
 
 function FactionGUI:ShowLogs()
 	self:close()
-	local url = (INGAME_WEB_PATH .. "/ingame/logs/groupLogs.php?groupType=%s&groupId=%d"):format("faction", self.m_Id)
+	local url = GROUP_LOGS_URL:format("faction", self.m_Id)
 	self.m_LogGUI = LogGUI:new(nil, url)
 	self.m_LogGUI:addBackButton(function() FactionGUI:getSingleton():show() end)
 end

@@ -326,6 +326,11 @@ function LocalPlayer:getSessionId()
 	return self:getPrivateSync("SessionID") or ""
 end
 
+-- Token fürs ControlPanel (vom Server mit CP_SECRET signiert): Anmeldung im Spiel-Browser und Gruppen-Logs
+function LocalPlayer:getCpToken()
+	return self:getPrivateSync("CpToken") or ""
+end
+
 function LocalPlayer:playCashChange( bNoSound )
 	if not bNoSound then
 		playSound( "files/audio/cash_register.ogg" )

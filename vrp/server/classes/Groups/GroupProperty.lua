@@ -8,7 +8,7 @@
 GroupProperty = inherit(Object)
 local PICKUP_SOLD = 1272
 local PICKUP_FOR_SALE = 1273
-function GroupProperty:constructor(Id, Name, OwnerId, Type, Price, Pickup, InteriorId, InteriorSpawn, Cam, Open, Message, depotId, elevatorData, SalePrice)
+function GroupProperty:constructor(Id, Name, OwnerId, Type, Price, Pickup, InteriorId, InteriorSpawn, Cam, Open, Message, depotId, elevatorData, SalePrice, elevator)
 
 	self.m_Id = Id
 	self.m_Name = Name
@@ -38,13 +38,16 @@ function GroupProperty:constructor(Id, Name, OwnerId, Type, Price, Pickup, Inter
 	self.m_DepotId = depotId
 	self.m_Depot = Depot.load(depotId, self)
 
-	if elevatorData then
+	if elevator then -- beim Neuladen über das ControlPanel bleibt der Aufzug bestehen
+		self.m_Elevator = elevator
+	elseif elevatorData then
 		local elevatorData = fromJSON(elevatorData)
 		if elevatorData and elevatorData.stations and #elevatorData.stations > 1 then
 			local elevator = Elevator:new()
 			for i, station in ipairs(elevatorData.stations) do
 				elevator:addStation(station.name, normaliseVector(station.position), station.rotation, station.interior, station.dimension)
 			end
+			self.m_Elevator = elevator
 		end
 	end
 
@@ -55,6 +58,7 @@ function GroupProperty:constructor(Id, Name, OwnerId, Type, Price, Pickup, Inter
 	self.m_ExitMarker = createMarker(Vector3(InteriorSpawn.x, InteriorSpawn.y, InteriorSpawn.z-1), "cylinder", 1, 255, 255, 255, 200)
 	ElementInfo:new(self.m_ExitMarker, "Ausgang", 1.2, "Walking", true)
 	local colshape = createColSphere(Vector3(InteriorSpawn.x, InteriorSpawn.y, InteriorSpawn.z-1), 3)
+	self.m_ExitCol = colshape
 	colshape:setInterior(InteriorId)
 	colshape:setDimension(self.m_Dimension)
 	self.m_ExitMarker:setInterior(InteriorId)
@@ -78,6 +82,7 @@ function GroupProperty:constructor(Id, Name, OwnerId, Type, Price, Pickup, Inter
 		door1:setDimension(self.m_Dimension)
 		door2:setInterior(self.m_Interior)
 		door2:setDimension(self.m_Dimension)
+		self.m_Doors = {door1, door2}
 	end
 
 end
@@ -102,6 +107,22 @@ function GroupProperty:destructor()
 		self.m_Depot:save()
 	else
 		outputDebugString("Save Depot for Group Property "..self.m_Id.." failed! (Not found)")
+	end
+end
+
+-- Elemente der Immobilie entfernen (ControlPanel: Bearbeiten = entfernen und neu laden, Löschen); keepElevator beim Neuladen
+function GroupProperty:destroyElements(keepElevator)
+	for _, el in pairs({self.m_Pickup, self.m_ExitMarker, self.m_ExitCol, unpack(self.m_Doors or {})}) do
+		if isElement(el) then destroyElement(el) end
+	end
+	if self.m_Elevator and not keepElevator then
+		for _, station in pairs(self.m_Elevator.m_Stations or {}) do
+			for _, col in ipairs(getElementsByType("colshape")) do
+				if col.m_Marker == station.marker then destroyElement(col) end
+			end
+			if isElement(station.marker) then destroyElement(station.marker) end
+		end
+		Elevator.Map[self.m_Elevator.m_Id] = nil
 	end
 end
 

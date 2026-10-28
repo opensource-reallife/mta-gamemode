@@ -60,6 +60,29 @@ function UserGroupSettings:getSetting(category, key, default)
     return self.m_Settings[category][key] and self.m_Settings[category][key][1] or default 
 end
 
+-- Skins einer Fraktion / eines Unternehmens: im ControlPanel gepflegte Liste (Kategorie „SkinList“), sonst die aus den Konstanten
+function UserGroupSettings:getSkinList(default)
+    local list = {}
+    for key, data in pairs(self.m_Settings["SkinList"] or {}) do
+        if data[1] ~= nil and tonumber(key) then list[tonumber(key)] = true end
+    end
+    if next(list) then return list end
+    return table.copy(default or {})
+end
+
+-- Einstellung sofort in die Datenbank schreiben (ControlPanel); nil = löschen. Ersetzt auch doppelte Zeilen desselben Schlüssels
+function UserGroupSettings:writeSetting(category, key, value)
+    local category, key = tostring(category), tostring(key)
+    sql:queryExec("DELETE FROM ??_user_group_settings WHERE GroupType = ? AND GroupId = ? AND Category = ? AND `Key` = ?;", sql:getPrefix(), self.m_GroupType, self.m_GroupId, category, key)
+    if value == nil then
+        if self.m_Settings[category] then self.m_Settings[category][key] = nil end
+        return
+    end
+    sql:queryExec("INSERT INTO ??_user_group_settings (GroupType, GroupId, Category, `Key`, Value) VALUES (?, ?, ?, ?, ?);", sql:getPrefix(), self.m_GroupType, self.m_GroupId, category, key, tostring(value))
+    if not self.m_Settings[category] then self.m_Settings[category] = {} end
+    self.m_Settings[category][key] = {tostring(value), sql:lastInsertId(), false, tostring(value)}
+end
+
 function UserGroupSettings:restoreDefaults()
     self.m_Settings = {}
     sql:queryExec("DELETE FROM ??_user_group_settings WHERE GroupType = ? AND GroupId = ?;", sql:getPrefix(), self.m_GroupType, self.m_GroupId)

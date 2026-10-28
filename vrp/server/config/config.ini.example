@@ -17,4 +17,5 @@ MYSQL_PREMIUM_PASSWORD=root
 MYSQL_PREMIUM_DATABASE=vrp
 
 BOARD_BASE_URL=https://forum.exo-reallife.de/index.php
+CP_SECRET=
 BOARD_SECRET=

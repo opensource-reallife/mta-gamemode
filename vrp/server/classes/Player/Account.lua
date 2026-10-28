@@ -201,6 +201,7 @@ function Account.loginSuccess(player, Id, Username, ForumId, RegisterDate, Teams
 		jwtSign(function(result)
 			player:setSessionId(result)
 		end, {["sub"] = player:getId(), ["name"] = player:getName(), ["exp"] = getRealTime().timestamp + 60 * 60 * 24, ["forumId"] = player:getAccount().m_ForumId}, JWT_ALGORITHM_HS256, Config.get("INGAME_WEB_SECRET"))
+		Account.signCpToken(player)
 	end
 
 	ServiceSync:getSingleton():syncPlayer(Id)
@@ -512,3 +513,20 @@ function Account.updatePendingLogins()
 	end
 end
 Account.LoginUpdateTimer = setTimer(Account.updatePendingLogins, 1000, 0)
+
+-- Token fürs ControlPanel (Anmeldung im Spiel-Browser, Gruppen-Logs): signiert mit CP_SECRET, das nur der Server kennt.
+-- (Die Session-ID oben ist mit INGAME_WEB_SECRET signiert – das bekommt jeder Client, damit ließe sich jedes Konto fälschen.)
+-- 24 Stunden gültig, alle 6 Stunden erneuert.
+function Account.signCpToken(player)
+	local secret = Config.get("CP_SECRET")
+	if not secret or secret == "" or not isElement(player) or not player:getId() then return end
+	jwtSign(function(result)
+		if isElement(player) then player:setCpToken(result) end
+	end, {["sub"] = player:getId(), ["name"] = player:getName(), ["aud"] = "cp", ["exp"] = getRealTime().timestamp + 60 * 60 * 24}, JWT_ALGORITHM_HS256, secret)
+end
+
+Account.CpTokenTimer = setTimer(function()
+	for _, player in pairs(getElementsByType("player")) do
+		if player.isLoggedIn and player:isLoggedIn() then Account.signCpToken(player) end
+	end
+end, 6 * 60 * 60 * 1000, 0)

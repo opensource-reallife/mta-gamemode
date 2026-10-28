@@ -22,7 +22,8 @@ Config.register("MYSQL_PREMIUM_DATABASE", "string", "vrp")
 Config.register("WEB_ACCOUNT_USERNAME", "string", "")
 Config.register("WEB_ACCOUNT_PASSWORD", "string", "")
 
-Config.register("INGAME_WEB_SECRET", "string", "")
+Config.register("INGAME_WEB_SECRET", "string", "") -- geht an jeden Client (alte Web-Skripte) – nie für Anmeldungen verwenden
+Config.register("CP_SECRET", "string", "") -- nur auf dem Server: signiert die Tokens fürs ControlPanel (Anmeldung, Logs)
 
 Config.register("DISCORD_WEBHOOK_URL", "string", "")
 Config.register("DISCORD_WEBHOOK_URL_GW", "string", "")

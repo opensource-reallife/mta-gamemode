@@ -182,8 +182,8 @@ function StatisticsLogger:addKillLog(player, target, weapon)
     if isElement(player) then userId = player:getId() else userId = player or 0 end
 	if isElement(target) then targetId = target:getId() else targetId = target or 0 end
 	local range = getDistanceBetweenPoints3D(player:getPosition(), target:getPosition())
-    sqlLogs:queryExec("INSERT INTO ??_Kills (UserId, TargetId, Weapon, RangeBetween, Position, Date) VALUES (?, ?, ?, ?, ?, NOW())",
-        sqlLogs:getPrefix(), userId, targetId, weapon, range, self:getZone(target))
+    sqlLogs:queryExec("INSERT INTO ??_Kills (UserId, TargetId, Weapon, RangeBetween, Position, UserDuty, TargetDuty, UserNoDm, TargetNoDm, Date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())",
+        sqlLogs:getPrefix(), userId, targetId, weapon, range, self:getZone(target), Player.getDutyGroupOf(player), Player.getDutyGroupOf(target), NoDm.isInZoneOf(player), NoDm.isInZoneOf(target))
 end
 
 function StatisticsLogger:addDamageLog(player, target, weapon, startTime, totalLoss, hitCount, zone)
@@ -192,8 +192,8 @@ function StatisticsLogger:addDamageLog(player, target, weapon, startTime, totalL
 	if isElement(target) then targetId = target:getId() else targetId = target or 0 end
 	local startTimeData = getRealTime(startTime)
 	local totalLoss = math.round(totalLoss, 3) -- maybe this will fix the out of range warnings
-	sqlLogs:queryExec("INSERT INTO ??_Damage (UserId, TargetId, Position, Weapon, Damage, Hits, StartTime, Date) VALUES (?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?), NOW())",
-        sqlLogs:getPrefix(), userId, targetId, zone or "Unknown", weapon, totalLoss, hitCount, tostring(startTime))
+	sqlLogs:queryExec("INSERT INTO ??_Damage (UserId, TargetId, Position, Weapon, Damage, Hits, StartTime, UserDuty, TargetDuty, UserNoDm, TargetNoDm, Date) VALUES (?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?), ?, ?, ?, ?, NOW())",
+        sqlLogs:getPrefix(), userId, targetId, zone or "Unknown", weapon, totalLoss, hitCount, tostring(startTime), Player.getDutyGroupOf(player), Player.getDutyGroupOf(target), NoDm.isInZoneOf(player), NoDm.isInZoneOf(target))
 end
 
 function StatisticsLogger:addHealLog(player, heal, reason)
@@ -240,18 +240,18 @@ function StatisticsLogger:addVehicleDeleteLog(userId, admin, model, reason)
         sqlLogs:getPrefix(), userId, adminId, model, self:getZone(admin), reason)
 end
 
-function StatisticsLogger:addPlantLog(player, type)
+function StatisticsLogger:addPlantLog(player, type, pos)
 	if isElement(player) then userId = player:getId() else userId = player or 0 end
-	sqlLogs:queryExec("INSERT INTO ??_DrugPlants (UserId, Type, Date ) VALUES(?, ?,  NOW())",
-        sqlLogs:getPrefix(), userId, type)
+	sqlLogs:queryExec("INSERT INTO ??_DrugPlants (UserId, Type, PosX, PosY, PosZ, Date ) VALUES(?, ?, ?, ?, ?, NOW())",
+        sqlLogs:getPrefix(), userId, type, pos and pos.x, pos and pos.y, pos and pos.z)
 end
 
-function StatisticsLogger:addDrugHarvestLog(player, type, owner, amount, state )
+function StatisticsLogger:addDrugHarvestLog(player, type, owner, amount, state, pos)
 	local userId = 0
 	local ownerId = tonumber(owner)
 	if isElement(player) then userId = player:getId() else userId = player or 0 end
-	sqlLogs:queryExec("INSERT INTO ??_DrugHarvest (UserId, OwnerId, Type, Amount, State, Date ) VALUES(?, ?, ?, ?, ?,  NOW())",
-        sqlLogs:getPrefix(), userId, ownerId, type, amount, state)
+	sqlLogs:queryExec("INSERT INTO ??_DrugHarvest (UserId, OwnerId, Type, Amount, State, PosX, PosY, PosZ, Date ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, NOW())",
+        sqlLogs:getPrefix(), userId, ownerId, type, amount, state, pos and pos.x, pos and pos.y, pos and pos.z)
 end
 
 function StatisticsLogger:addDrugUse( player, type )

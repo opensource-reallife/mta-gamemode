@@ -7,7 +7,7 @@
 -- ****************************************************************************
 TicketGUI = inherit(GUIWebForm)
 inherit(Singleton, TicketGUI)
-HelpGUI.TicketBaseUrl = "https://cp.openreallife.net/tickets?minimal"
+HelpGUI.TicketBaseUrl = CP_WEB_PATH .. "/tickets.php" -- Ticket-System des ControlPanels (nur Tickets, ohne Navigation)
 
 function TicketGUI:constructor()
 	local width = screenWidth * 0.8
@@ -19,7 +19,7 @@ function TicketGUI:constructor()
 	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Ticket-System", true, true, self)
 	self.m_Window:addBackButton(function () SelfGUI:getSingleton():show() end)
 	self.m_Window:addTitlebarButton(FontAwesomeSymbols.Home, bind(self.internalBrowserNavigateHome, self))
-	self.m_WebView = GUIWebView:new(0, 32, self.m_Width, self.m_Height-32, ("https://cp.openreallife.net/api/auth/?redirect=/tickets?minimal&token=%s"):format(localPlayer:getSessionId()), true, self.m_Window)
+	self.m_WebView = GUIWebView:new(0, 32, self.m_Width, self.m_Height-32, (CP_WEB_PATH .. "/ingame.php?to=tickets&token=%s"):format(localPlayer:getCpToken()), true, self.m_Window)
 	self.m_WebView.onDocumentReady = bind(self.onBrowserReady, self)
 	addCommandHandler("report", bind(self.show, self))
 	addCommandHandler("tickets", bind(self.show, self))
