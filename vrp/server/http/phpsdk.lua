@@ -1753,7 +1753,9 @@ function phpSDKGangwar(adminId, action, areaId, value)
 end
 
 -- Gutschein aus dem ControlPanel (Shop → Gutschein einlösen) an einen Spieler, der gerade online ist: Geld aufs Bankkonto, Punkte
--- und Items. data = {money = n, points = n, items = {{item = "Name", amount = n}, …}, label = "Gutschein „…“"}. Items, für die im Inventar kein
+-- Items und Waffen. data = {money = n, points = n, items = {{item = "Name", amount = n}, …}, weapons = {{weapon = id, ammo = n}, …},
+-- label = "Gutschein „…“"}. Waffen kommen in den ersten freien Platz der Waffenbox (Platz 4–6 nur mit VIP, wie
+-- PlayerManager:Event_gunBoxAddWeapon); ohne freien Platz ok = false (dann per Ticket). Items, für die im Inventar kein
 -- Platz ist (wie Inventory:giveItem: Item_Max, Stapel und freie Plätze der Tasche), werden nicht gegeben und als ticket = true
 -- zurückgemeldet – die holt sich der Spieler per Ticket. Offline: TARGET_OFFLINE (dann schreibt das CP direkt in die Datenbank).
 function phpSDKVoucher(adminId, playerId, data)
@@ -1796,9 +1798,49 @@ function phpSDKVoucher(adminId, playerId, data)
 		local given = fits and inv:giveItem(name, amount) ~= false
 		items[#items + 1] = {item = name, amount = amount, ok = given, ticket = not given}
 	end
+	local weapons = {}
+	player.m_GunBox = type(player.m_GunBox) == "table" and player.m_GunBox or {}
+	for _, wp in ipairs(type(data.weapons) == "table" and data.weapons or {}) do
+		local weaponId, ammo = math.floor(tonumber(wp.weapon) or 0), math.floor(tonumber(wp.ammo) or 0)
+		local given = false
+		if weaponId > 0 and weaponId ~= 38 and ammo > 0 then
+			for i = 1, 6 do
+				local key = tostring(i)
+				player.m_GunBox[key] = player.m_GunBox[key] or {WeaponId = 0, Amount = 0, VIP = i >= 4}
+				local slot = player.m_GunBox[key]
+				if not given and slot["WeaponId"] == 0 and (not slot["VIP"] or player:isPremium()) then
+					slot["WeaponId"], slot["Amount"] = weaponId, ammo
+					given = true
+				end
+			end
+		end
+		weapons[#weapons + 1] = {weapon = weaponId, ammo = ammo, ok = given}
+	end
 	player:save()
 	player:sendSuccess(_("%s: erhalten!", player, reason))
-	return {status = "SUCCESS", money = money, points = points, items = items}
+	return {status = "SUCCESS", money = money, points = points, items = items, weapons = weapons}
+end
+
+-- Punkte aus dem ControlPanel (Shop → Punkteshop) für einen Spieler, der gerade online ist (Punkte liegen im Speicher):
+-- amount < 0 zieht ab (NOT_ENOUGH_POINTS, wenn er zu wenige hat), amount > 0 bucht zurück. Offline: TARGET_OFFLINE
+-- (dann schreibt das CP direkt in die Datenbank). Gibt den neuen Punktestand zurück.
+function phpSDKShopPoints(playerId, amount, reason)
+	local player = Player.getFromId(tonumber(playerId))
+	if not player or not isElement(player) or not (player.isActive and player:isActive()) then
+		return {status = "ERROR", error = "TARGET_OFFLINE"}
+	end
+	amount = math.floor(tonumber(amount) or 0)
+	if amount == 0 then return {status = "ERROR", error = "INVALID_AMOUNT"} end
+	if amount < 0 and player:getPoints() < -amount then
+		return {status = "ERROR", error = "NOT_ENOUGH_POINTS"}
+	end
+	if amount < 0 then
+		player:takePoints(-amount, tostring(reason or "Punkteshop"))
+	else
+		player:givePoints(amount, tostring(reason or "Punkteshop"))
+	end
+	player:save()
+	return {status = "SUCCESS", points = player:getPoints()}
 end
 
 -- Überweisung aus dem ControlPanel (Allgemein → Überweisen): vom Bankkonto des Spielers fromId (online oder offline) an einen Spieler,

@@ -11,7 +11,7 @@ PRIVATE_DIMENSION_CLIENT = 2 -- This dimension should be used for things which
 INGAME_WEB_PATH = "https://ingame.openreallife.net"
 PICUPLOAD_PATH = "https://picupload.pewx.de"
 -- Fraktions-, Unternehmens- und Gruppen-Logs (LogGUI) kommen vom ControlPanel (api_group_logs.php, POST secret = INGAME_WEB_SECRET)
-CP_WEB_PATH = "http://127.0.0.1:8000" -- CP läuft vorerst lokal; später "https://cp.openreallife.net"
+CP_WEB_PATH = "https://cp-dev.openreallife.net" -- neues CP (lokal zum Testen: "http://127.0.0.1:8000"); später "https://cp.openreallife.net"
 GROUP_LOGS_URL = CP_WEB_PATH .. "/api_group_logs.php?groupType=%s&groupId=%d"
 
 if DEBUG then

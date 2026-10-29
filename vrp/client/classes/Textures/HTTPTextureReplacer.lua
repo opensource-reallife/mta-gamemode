@@ -1,6 +1,7 @@
 HTTPTextureReplacer = inherit(TextureReplacer)
 HTTPTextureReplacer.BasePath = "https://picupload.pewx.de/textures/"
 HTTPTextureReplacer.BaseCPPath = "https://cp.openreallife.net/storage/textures/"
+HTTPTextureReplacer.NewCPPath = CP_WEB_PATH .. "/uploads/textures/" -- neues ControlPanel (Texturen hochladen); die alten bleiben über BaseCPPath
 HTTPTextureReplacer.ExternalPath = "http://i.imgur.com/"
 HTTPTextureReplacer.ClientPath = "files/images/Textures/remote/%s"
 HTTPTextureReplacer.Queue = Queue:new()
@@ -24,7 +25,8 @@ end)()]]
 -- normal methods
 function HTTPTextureReplacer:constructor(element, fileName, textureName, options, force, forceMaximum)
 	--do not use assert as it produces a "real" lua error and blocks any textures loading afterwards
-	if not (fileName and fileName:len() > 0 and (fileName:find(HTTPTextureReplacer.BasePath) or fileName:find(HTTPTextureReplacer.ExternalPath) or fileName:find(HTTPTextureReplacer.BaseCPPath:gsub("%-", "%%-")))) then
+	local newCP = fileName and fileName:sub(1, #HTTPTextureReplacer.NewCPPath) == HTTPTextureReplacer.NewCPPath -- Adresse wörtlich vergleichen (Punkte und Bindestriche)
+	if not (fileName and fileName:len() > 0 and (fileName:find(HTTPTextureReplacer.BasePath) or fileName:find(HTTPTextureReplacer.ExternalPath) or fileName:find(HTTPTextureReplacer.BaseCPPath:gsub("%-", "%%-")) or newCP)) then
 		outputDebugString("Bad Argument @ HTTPTextureReplacer:constructor #2", 1)
 		outputDebugString(fileName, 1)
 	 	return
@@ -33,10 +35,13 @@ function HTTPTextureReplacer:constructor(element, fileName, textureName, options
 	self.m_PathType = 1
 	if fileName:find(HTTPTextureReplacer.ExternalPath) then self.m_PathType = 2 end
 	if fileName:find(HTTPTextureReplacer.BaseCPPath:gsub("%-", "%%-")) then self.m_PathType = 3 end
+	if newCP then self.m_PathType = 4 end
 	if self.m_PathType == 1 then
 		self.m_FileName = fileName:gsub(HTTPTextureReplacer.BasePath, "")
 	elseif self.m_PathType == 2 then
 		self.m_FileName = fileName:gsub(HTTPTextureReplacer.ExternalPath, "")
+	elseif self.m_PathType == 4 then
+		self.m_FileName = fileName:sub(#HTTPTextureReplacer.NewCPPath + 1)
 	else
 		self.m_FileName = fileName:gsub(HTTPTextureReplacer.BaseCPPath:gsub("%-", "%%-"), "")
 	end
@@ -74,6 +79,8 @@ function HTTPTextureReplacer:downloadTexture()
 				provider = HTTPProvider:new(HTTPTextureReplacer.BasePath, dgi)
 			elseif self.m_PathType == 2 then
 				provider = HTTPProvider:new(HTTPTextureReplacer.ExternalPath, dgi)
+			elseif self.m_PathType == 4 then
+				provider = HTTPProvider:new(HTTPTextureReplacer.NewCPPath, dgi)
 			else
 				provider = HTTPProvider:new(HTTPTextureReplacer.BaseCPPath, dgi)
 			end

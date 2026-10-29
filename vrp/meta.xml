@@ -1599,6 +1599,7 @@
 	<export function="phpSDKPremiumGiven" type="server" http="true" />
 	<export function="phpSDKBankTransfer" type="server" http="true" />
 	<export function="phpSDKVoucher" type="server" http="true" />
+	<export function="phpSDKShopPoints" type="server" http="true" />
 	<export function="phpSDKForceTransfer" type="server" http="true" />
 	<export function="phpSDKGetBalances" type="server" http="true" />
 	<export function="phpSDKShopVehicles" type="server" http="true" />
