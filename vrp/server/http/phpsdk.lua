@@ -291,6 +291,31 @@ function phpSDKEditPlayer(adminId, targetId, action, data)
 		end
 		return result("SUCCESS")
 
+	elseif action == "inventory" then
+		if not online then return result("ERROR", "TARGET_OFFLINE") end
+		local inv = player:getInventory()
+		local item, amount = tostring(data.item or ""), math.floor(tonumber(data.amount) or 0)
+		if not inv or not inv.m_ItemData[item] or amount == 0 then return result("ERROR", "UNKNOWN_ITEM") end
+		if amount > 0 then
+			if inv:getItemAmount(item) + amount > inv.m_ItemData[item]["Item_Max"] then return result("ERROR", "ITEM_MAX") end
+			if inv:giveItem(item, amount) == false then return result("ERROR", "INVENTORY_FULL") end
+		else
+			if inv:getItemAmount(item) < -amount then return result("ERROR", "NOT_ENOUGH") end
+			inv:removeItem(item, -amount)
+		end
+		return result("SUCCESS")
+
+	elseif action == "gunbox" then
+		if not online then return result("ERROR", "TARGET_OFFLINE") end
+		local slot = math.floor(tonumber(data.slot) or 0)
+		if slot < 1 or slot > 6 then return result("ERROR", "UNKNOWN_SLOT") end
+		local weaponId, ammo = math.floor(tonumber(data.weapon) or 0), math.max(0, math.floor(tonumber(data.amount) or 0))
+		player.m_GunBox = type(player.m_GunBox) == "table" and player.m_GunBox or {}
+		player.m_GunBox[tostring(slot)] = {WeaponId = weaponId, Amount = weaponId > 0 and ammo or 0, VIP = slot >= 4}
+		player:triggerEvent("receiveGunBoxData", player.m_GunBox)
+		player:save()
+		return result("SUCCESS")
+
 	elseif action == "vehicle" or action == "trunk" then
 		local vehicle
 		local list = VehicleManager:getSingleton():getPlayerVehicles(targetId)
@@ -1852,3 +1877,77 @@ addEventHandler("onPlayerScreenShot", root, function(resource, status, pixels, t
 		end
 	end
 end)
+
+function phpSDKWorldItemList()
+	local list = {}
+	for item in pairs(WorldItemManager.Map) do
+		local obj = item.getObject and item:getObject()
+		if not item.m_Delete and obj and isElement(obj) then
+			local pos = obj:getPosition()
+			list[#list + 1] = {
+				key = (tostring(item):gsub("table: ", "")),
+				item = item.m_ItemName or "Unknown",
+				model = obj:getModel(),
+				ownerType = instanceof(item, FactionWorldItem) and "faction" or instanceof(item, CompanyWorldItem) and "company" or "player",
+				owner = tonumber(item:getOwner()) or 0,
+				ownerName = tostring(obj:getData("Owner") or ""),
+				placer = tostring(obj:getData("Placer") or ""),
+				placed = tonumber(obj:getData("PlacedTimestamp")) or 0,
+				x = pos.x, y = pos.y, z = pos.z,
+				interior = obj:getInterior(), dimension = obj:getDimension(),
+				permanent = item:isPermanent() and true or false,
+			}
+		end
+	end
+	return {status = "SUCCESS", items = list}
+end
+
+function phpSDKWorldItemDelete(adminId, keys)
+	local wanted = {}
+	for _, k in ipairs(type(keys) == "table" and keys or {}) do
+		wanted[tostring(k)] = true
+	end
+	local count = 0
+	for item in pairs(WorldItemManager.Map) do
+		if not item.m_Delete and wanted[(tostring(item):gsub("table: ", ""))] then
+			local dbId = item:isPermanent() and item:getDataBaseId() or 0
+			item:onDelete()
+			if dbId > 0 then
+				item:setDataBaseId(0)
+				sql:queryExec("DELETE FROM ??_WorldItems WHERE Id=?", sql:getPrefix(), dbId)
+			end
+			count = count + 1
+		end
+	end
+	if count > 0 then
+		local adminName = Account.getNameFromId(tonumber(adminId)) or "Control Panel"
+		Admin:getSingleton():sendShortMessage(("%s hat %d platzierte Objekte über das Control Panel entfernt."):format(adminName, count))
+		StatisticsLogger:getSingleton():addAdminAction(tonumber(adminId), "deleteWorldItems", tostring(count))
+	end
+	return {status = "SUCCESS", count = count}
+end
+
+function phpSDKVehicleRespawn(adminId, vehicleId)
+	vehicleId = tonumber(vehicleId)
+	local vehicle
+	for _, v in ipairs(getElementsByType("vehicle")) do
+		if v.getId and v:getId() == vehicleId and not instanceof(v, TemporaryVehicle) then
+			vehicle = v
+			break
+		end
+	end
+	if not vehicle then return {status = "ERROR", error = "NOT_LOADED"} end
+	if vehicle.isRespawnAllowed and not vehicle:isRespawnAllowed() then return {status = "ERROR", error = "RESPAWN_NOT_ALLOWED"} end
+	vehicle:removeAttachedPlayers()
+	local ok
+	if instanceof(vehicle, PermanentVehicle, true) then
+		ok = vehicle:respawnOnSpawnPosition()
+	else
+		ok = vehicle:respawn(true, true)
+	end
+	if ok == false then return {status = "ERROR", error = "RESPAWN_FAILED"} end
+	local adminName = Account.getNameFromId(tonumber(adminId)) or "Control Panel"
+	Admin:getSingleton():sendShortMessage(("%s hat das Fahrzeug %s (ID %d) über das Control Panel respawnt."):format(adminName, vehicle:getName(), vehicleId))
+	StatisticsLogger:getSingleton():addAdminAction(tonumber(adminId), "respawnVehicle", tostring(vehicleId))
+	return {status = "SUCCESS"}
+end
