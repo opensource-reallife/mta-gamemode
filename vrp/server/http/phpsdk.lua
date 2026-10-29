@@ -1878,6 +1878,17 @@ addEventHandler("onPlayerScreenShot", root, function(resource, status, pixels, t
 	end
 end)
 
+local function phpSDKNotifyPlayer(playerId, text)
+	local target, offline = DatabasePlayer.get(tonumber(playerId))
+	if not target then return end
+	if offline then
+		target:addOfflineMessage(text, 1)
+		delete(target)
+	else
+		target:sendShortMessage(text)
+	end
+end
+
 function phpSDKWorldItemList()
 	local list = {}
 	for item in pairs(WorldItemManager.Map) do
@@ -1907,9 +1918,12 @@ function phpSDKWorldItemDelete(adminId, keys)
 	for _, k in ipairs(type(keys) == "table" and keys or {}) do
 		wanted[tostring(k)] = true
 	end
-	local count = 0
+	local count, owners = 0, {}
 	for item in pairs(WorldItemManager.Map) do
 		if not item.m_Delete and wanted[(tostring(item):gsub("table: ", ""))] then
+			local ownerType = instanceof(item, FactionWorldItem) and "faction" or instanceof(item, CompanyWorldItem) and "company" or "player"
+			local ownerKey = ownerType .. ":" .. tostring(tonumber(item:getOwner()) or 0)
+			owners[ownerKey] = (owners[ownerKey] or 0) + 1
 			local dbId = item:isPermanent() and item:getDataBaseId() or 0
 			item:onDelete()
 			if dbId > 0 then
@@ -1923,6 +1937,22 @@ function phpSDKWorldItemDelete(adminId, keys)
 		local adminName = Account.getNameFromId(tonumber(adminId)) or "Control Panel"
 		Admin:getSingleton():sendShortMessage(("%s hat %d platzierte Objekte über das Control Panel entfernt."):format(adminName, count))
 		StatisticsLogger:getSingleton():addAdminAction(tonumber(adminId), "deleteWorldItems", tostring(count))
+		for ownerKey, n in pairs(owners) do
+			local ownerType, ownerId = ownerKey:match("^(%a+):(%d+)$")
+			ownerId = tonumber(ownerId)
+			if ownerId and ownerId > 0 then
+				local text = ("%s hat %d eurer platzierten Objekte über das Control Panel entfernt."):format(adminName, n)
+				if ownerType == "faction" then
+					local faction = FactionManager:getSingleton():getFromId(ownerId)
+					if faction then faction:sendShortMessage(text) end
+				elseif ownerType == "company" then
+					local company = CompanyManager:getSingleton():getFromId(ownerId)
+					if company then company:sendShortMessage(text) end
+				else
+					phpSDKNotifyPlayer(ownerId, ("%s hat %d deiner platzierten Objekte über das Control Panel entfernt."):format(adminName, n))
+				end
+			end
+		end
 	end
 	return {status = "SUCCESS", count = count}
 end
@@ -1948,6 +1978,16 @@ function phpSDKVehicleRespawn(adminId, vehicleId)
 	if ok == false then return {status = "ERROR", error = "RESPAWN_FAILED"} end
 	local adminName = Account.getNameFromId(tonumber(adminId)) or "Control Panel"
 	Admin:getSingleton():sendShortMessage(("%s hat das Fahrzeug %s (ID %d) über das Control Panel respawnt."):format(adminName, vehicle:getName(), vehicleId))
+	local text = ("%s hat euer Fahrzeug %s über das Control Panel respawnt."):format(adminName, vehicle:getName())
+	if instanceof(vehicle, FactionVehicle) and vehicle:getFaction() then
+		vehicle:getFaction():sendShortMessage(text)
+	elseif instanceof(vehicle, CompanyVehicle) and vehicle:getCompany() then
+		vehicle:getCompany():sendShortMessage(text)
+	elseif instanceof(vehicle, GroupVehicle) and vehicle:getGroup() then
+		vehicle:getGroup():sendShortMessage(text)
+	elseif tonumber(vehicle:getOwner()) then
+		phpSDKNotifyPlayer(vehicle:getOwner(), ("%s hat dein Fahrzeug %s über das Control Panel respawnt."):format(adminName, vehicle:getName()))
+	end
 	StatisticsLogger:getSingleton():addAdminAction(tonumber(adminId), "respawnVehicle", tostring(vehicleId))
 	return {status = "SUCCESS"}
 end
@@ -1961,6 +2001,7 @@ function phpSDKNickchangeFee(adminId, playerId, amount, toAdmin, reason)
 	if not account then return {status = "ERROR", error = "NO_ACCOUNT"} end
 	reason = tostring(reason or "Namensänderung")
 	toAdmin = toAdmin == true or toAdmin == 1
+	local message = amount > 0 and ("Für deine Namensänderung wurden %s$ von deinem Bankkonto abgebucht."):format(amount) or ("Die Kosten deiner Namensänderung (%s$) wurden dir erstattet."):format(-amount)
 	local admin = Admin:getSingleton().m_BankAccount
 	if amount > 0 then
 		if account:getMoney() < amount then return {status = "ERROR", error = "NOT_ENOUGH_MONEY", money = account:getMoney()} end
@@ -1981,8 +2022,10 @@ function phpSDKNickchangeFee(adminId, playerId, amount, toAdmin, reason)
 	end
 	if online then
 		player:triggerEvent("bankMoneyBalanceRetrieve", player:getBankMoney())
+		player:sendShortMessage(message)
 	else
 		account:save()
+		phpSDKNotifyPlayer(playerId, message)
 	end
 	return {status = "SUCCESS", money = account:getMoney()}
 end
