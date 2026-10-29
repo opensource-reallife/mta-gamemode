@@ -277,7 +277,6 @@ SHOT_STRENGTH_AGAINST_KEVLAR =
 	[31] = 2,
 }
 
--- NoDM-Zonen: {Ecke, Größe, Interior}. Der Client sperrt dort das Schießen, der Server prüft sie für die Kill-/Schadenslogs (NoDm:isPlayerInZone)
 NODM_ZONES = {
 	[1] = {Vector3(1399.112, -1862.453, 0), Vector3(160, 120, 40)}, -- Townhall
 	[2] = {Vector3(1754.75, -1722.17, 10), Vector3(57, 40, 30)},

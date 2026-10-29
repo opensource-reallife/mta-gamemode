@@ -37,7 +37,7 @@ function LogGUI:updateLog(start, amount)
 	self.m_Cache = {}
 
 	local options = {
-		["postData"] = ("token=%s"):format(localPlayer:getCpToken()) -- CP prüft das Token und die Mitgliedschaft
+		["postData"] = ("token=%s"):format(localPlayer:getCpToken())
 	}
 
 	local filter = "";

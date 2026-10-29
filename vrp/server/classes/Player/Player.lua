@@ -835,14 +835,12 @@ function Player:isCompanyDuty()
 	return self.m_CompanyDuty
 end
 
--- Dienst als Text: "faction:Id" bzw. "company:Id", sonst nil (z. B. für Kill- und Schadenslogs)
 function Player:getDutyGroup()
 	if self:isFactionDuty() and self:getFaction() then return "faction:" .. self:getFaction():getId() end
 	if self:isCompanyDuty() and self:getCompany() then return "company:" .. self:getCompany():getId() end
 	return nil
 end
 
--- wie getDutyGroup, auch für Werte, die kein Spieler sind (dann nil)
 function Player.getDutyGroupOf(player)
 	return isElement(player) and getElementType(player) == "player" and player:getDutyGroup() or nil
 end

@@ -38,7 +38,7 @@ function GroupProperty:constructor(Id, Name, OwnerId, Type, Price, Pickup, Inter
 	self.m_DepotId = depotId
 	self.m_Depot = Depot.load(depotId, self)
 
-	if elevator then -- beim Neuladen über das ControlPanel bleibt der Aufzug bestehen
+	if elevator then
 		self.m_Elevator = elevator
 	elseif elevatorData then
 		local elevatorData = fromJSON(elevatorData)
@@ -110,7 +110,6 @@ function GroupProperty:destructor()
 	end
 end
 
--- Elemente der Immobilie entfernen (ControlPanel: Bearbeiten = entfernen und neu laden, Löschen); keepElevator beim Neuladen
 function GroupProperty:destroyElements(keepElevator)
 	for _, el in pairs({self.m_Pickup, self.m_ExitMarker, self.m_ExitCol, unpack(self.m_Doors or {})}) do
 		if isElement(el) then destroyElement(el) end

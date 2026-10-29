@@ -514,9 +514,6 @@ function Account.updatePendingLogins()
 end
 Account.LoginUpdateTimer = setTimer(Account.updatePendingLogins, 1000, 0)
 
--- Token fürs ControlPanel (Anmeldung im Spiel-Browser, Gruppen-Logs): signiert mit CP_SECRET, das nur der Server kennt.
--- (Die Session-ID oben ist mit INGAME_WEB_SECRET signiert – das bekommt jeder Client, damit ließe sich jedes Konto fälschen.)
--- 24 Stunden gültig, alle 6 Stunden erneuert.
 function Account.signCpToken(player)
 	local secret = Config.get("CP_SECRET")
 	if not secret or secret == "" or not isElement(player) or not player:getId() then return end

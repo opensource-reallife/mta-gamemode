@@ -1,7 +1,7 @@
 HTTPTextureReplacer = inherit(TextureReplacer)
 HTTPTextureReplacer.BasePath = "https://picupload.pewx.de/textures/"
 HTTPTextureReplacer.BaseCPPath = "https://cp.openreallife.net/storage/textures/"
-HTTPTextureReplacer.NewCPPath = CP_WEB_PATH .. "/uploads/textures/" -- neues ControlPanel (Texturen hochladen); die alten bleiben über BaseCPPath
+HTTPTextureReplacer.NewCPPath = CP_WEB_PATH .. "/uploads/textures/"
 HTTPTextureReplacer.ExternalPath = "http://i.imgur.com/"
 HTTPTextureReplacer.ClientPath = "files/images/Textures/remote/%s"
 HTTPTextureReplacer.Queue = Queue:new()
@@ -25,7 +25,7 @@ end)()]]
 -- normal methods
 function HTTPTextureReplacer:constructor(element, fileName, textureName, options, force, forceMaximum)
 	--do not use assert as it produces a "real" lua error and blocks any textures loading afterwards
-	local newCP = fileName and fileName:sub(1, #HTTPTextureReplacer.NewCPPath) == HTTPTextureReplacer.NewCPPath -- Adresse wörtlich vergleichen (Punkte und Bindestriche)
+	local newCP = fileName and fileName:sub(1, #HTTPTextureReplacer.NewCPPath) == HTTPTextureReplacer.NewCPPath
 	if not (fileName and fileName:len() > 0 and (fileName:find(HTTPTextureReplacer.BasePath) or fileName:find(HTTPTextureReplacer.ExternalPath) or fileName:find(HTTPTextureReplacer.BaseCPPath:gsub("%-", "%%-")) or newCP)) then
 		outputDebugString("Bad Argument @ HTTPTextureReplacer:constructor #2", 1)
 		outputDebugString(fileName, 1)

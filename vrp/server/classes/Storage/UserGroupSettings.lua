@@ -60,7 +60,6 @@ function UserGroupSettings:getSetting(category, key, default)
     return self.m_Settings[category][key] and self.m_Settings[category][key][1] or default 
 end
 
--- Skins einer Fraktion / eines Unternehmens: im ControlPanel gepflegte Liste (Kategorie „SkinList“), sonst die aus den Konstanten
 function UserGroupSettings:getSkinList(default)
     local list = {}
     for key, data in pairs(self.m_Settings["SkinList"] or {}) do
@@ -70,7 +69,6 @@ function UserGroupSettings:getSkinList(default)
     return table.copy(default or {})
 end
 
--- Einstellung sofort in die Datenbank schreiben (ControlPanel); nil = löschen. Ersetzt auch doppelte Zeilen desselben Schlüssels
 function UserGroupSettings:writeSetting(category, key, value)
     local category, key = tostring(category), tostring(key)
     sql:queryExec("DELETE FROM ??_user_group_settings WHERE GroupType = ? AND GroupId = ? AND Category = ? AND `Key` = ?;", sql:getPrefix(), self.m_GroupType, self.m_GroupId, category, key)

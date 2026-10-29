@@ -7,7 +7,7 @@
 -- ****************************************************************************
 TicketGUI = inherit(GUIWebForm)
 inherit(Singleton, TicketGUI)
-HelpGUI.TicketBaseUrl = CP_WEB_PATH .. "/tickets.php" -- Ticket-System des ControlPanels (nur Tickets, ohne Navigation)
+HelpGUI.TicketBaseUrl = CP_WEB_PATH .. "/tickets.php"
 
 function TicketGUI:constructor()
 	local width = screenWidth * 0.8

@@ -16,7 +16,6 @@ function NoDm:removeZone(index)
     self.m_NoDmZones[index] = nil
 end
 
--- Steht der Spieler in einer NoDM-Zone? Wie die Colshapes beim Client: Dimension 0, passendes Interior, innerhalb des Quaders
 function NoDm:isPlayerInZone(player)
 	if not isElement(player) or player:getDimension() ~= 0 then return false end
 	local pos, int = player:getPosition(), player:getInterior()
@@ -35,7 +34,6 @@ function NoDm:isPlayerInZone(player)
 	return false
 end
 
--- 1 / 0, ob ein Spieler in einer NoDM-Zone steht; nil, wenn es kein Spieler ist oder NoDm nicht läuft (z. B. für Kill- und Schadenslogs)
 function NoDm.isInZoneOf(player)
 	if not isElement(player) or getElementType(player) ~= "player" or not NoDm:isInstantiated() then return nil end
 	return NoDm:getSingleton():isPlayerInZone(player) and 1 or 0

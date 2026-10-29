@@ -8,11 +8,9 @@
 Discord = inherit(Singleton) 
 
 function Discord:constructor()
-	-- Meldungen zusätzlich loggen (ControlPanel → Übersicht „Breaking News“), auch im Debug-Modus ohne Discord
 	sqlLogs:queryExec("CREATE TABLE IF NOT EXISTS ??_BreakingNews (Id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, Type VARCHAR(16) NOT NULL, Text VARCHAR(500) NOT NULL, Date DATETIME NOT NULL, KEY TypeDate (Type, Date))", sqlLogs:getPrefix())
 end
 
--- Discord-Erwähnungen von Rollen (<@&Id>) im Log durch das Kürzel der Fraktion ersetzen
 function Discord:logNews(newsType, text)
 	local clean = tostring(text):gsub("<@&(%d+)>", function(roleId)
 		for _, faction in pairs(FactionManager.Map or {}) do

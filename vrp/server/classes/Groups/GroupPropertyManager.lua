@@ -247,12 +247,11 @@ function GroupPropertyManager:SellProperty(  )
 	end
 end
 
--- Immobilie aus der Datenbank (neu) laden / aus dem Speicher nehmen (ControlPanel: phpSDKGroupProperty)
 function GroupPropertyManager:loadProperty(id, elevator)
 	local row = sql:queryFetchSingle("SELECT * FROM ??_group_property WHERE Id = ?", sql:getPrefix(), id)
 	if not row then return false end
 	self.Map[row.Id] = GroupProperty:new(row.Id, row.Name, row.GroupId, row.Type, row.Price, Vector3(unpack(split(row.Pickup, ","))), row.InteriorId,  Vector3(unpack(split(row.InteriorSpawn, ","))), row.Cam, row.open, row.Message, row.DepotId, row.ElevatorData, row.SalePrice, elevator)
-	if (row.DepotId or 0) == 0 and self.Map[row.Id].m_DepotId then -- neues Lager gleich speichern
+	if (row.DepotId or 0) == 0 and self.Map[row.Id].m_DepotId then
 		sql:queryExec("UPDATE ??_group_property SET DepotId = ? WHERE Id = ?", sql:getPrefix(), self.Map[row.Id].m_DepotId, row.Id)
 	end
 	return self.Map[row.Id]
@@ -268,12 +267,11 @@ function GroupPropertyManager:unloadProperty(id, keepElevator)
 		end
 	end
 	property:destroyElements(keepElevator)
-	delete(property) -- speichert Tür, Lager, Schlüssel und Verkaufspreis
+	delete(property)
 	self.Map[id] = nil
 	return true, elevator
 end
 
--- Blip und Ausgang für die Mitglieder der Besitzergruppe neu senden (nach dem Neuladen)
 function GroupPropertyManager:syncPropertyForOwner(property)
 	if not property or not property.m_Owner then return end
 	local x, y, z = getElementPosition(property.m_Pickup)

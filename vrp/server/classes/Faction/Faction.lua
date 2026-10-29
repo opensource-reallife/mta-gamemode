@@ -28,7 +28,7 @@ function Faction:constructor(Id, name_short, name_shorter, name, bankAccountId, 
 	self.m_Settings = UserGroupSettings:new(USER_GROUP_TYPES.Faction, Id)
 	self.m_Invitations = {}
 	self.m_RankNames = factionRankNames[Id]
-	self.m_Skins = self.m_Settings:getSkinList(factionSkins[Id]) -- im ControlPanel änderbar (Kategorie „SkinList“)
+	self.m_Skins = self.m_Settings:getSkinList(factionSkins[Id])
 	
 	if factionType == "State" then
 		self.m_SpecialSkin = factionSpecialSkins[Id] or {}
@@ -469,7 +469,7 @@ function Faction:setPlayerRank(playerId, rank)
 		playerId = playerId:getId()
 	end
 	local player = Player.getFromId(playerId)
-	if rank == 6 and player then -- offline: das Achievement gibt es beim nächsten Login (onPlayerJoin)
+	if rank == 6 and player then
 		player:giveAchievement(66)
 	end
 
@@ -982,7 +982,6 @@ function Faction:sendMoveRequest(targetChannel, text)
 end
 
 function Faction:onPlayerJoin(player) -- join means comming online (onPlayerJoin-Event)
-	-- Leader-Achievement nachholen, wenn der Spieler offline Leader wurde (z. B. über das ControlPanel)
 	if self:getPlayerRank(player) == 6 and not player:getAchievementStatus(66) then
 		player:giveAchievement(66)
 	end

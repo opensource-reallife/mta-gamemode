@@ -154,7 +154,6 @@ function phpSDKSendActivationMail(userID, username)
 	callRemote(INGAME_WEB_PATH .. "/ingame/boardActivation.php", phpSDKSendActivationMailCallback, userID, username)
 end
 
--- ControlPanel: in welchem Modus ein Spieler gerade ist (für das Team, wie AFK) – nil = normal unterwegs
 local function phpSDKPlayerActivity(player)
 	local name = function(lobby, field) local n = lobby and lobby[field] return n and n ~= "" and (": " .. tostring(n)) or "" end
 	if player.deathmatchLobby then return "DM-Halle" .. name(player.deathmatchLobby, "m_Name") end
@@ -180,8 +179,8 @@ function phpSDKSendOnlinePlayers()
 				["Company"] = player:getCompany() and player:getCompany():getId() or 0,
 				["GroupId"] = player:getGroup() and player:getGroup():getId() or 0,
 				["PlayTime"] = player:getPlayTime() or 0,
-				["AFK"] = player.m_isAFK and true or false, -- ControlPanel: AFK-Anzeige fürs Team
-				["Activity"] = phpSDKPlayerActivity(player), -- ControlPanel: DM-Halle, Snipermode, Color Cars … fürs Team
+				["AFK"] = player.m_isAFK and true or false,
+				["Activity"] = phpSDKPlayerActivity(player),
 			}
 			i = i+1
 		end
@@ -189,9 +188,6 @@ function phpSDKSendOnlinePlayers()
 	return players
 end
 
--- Live-Stand eines Spielers für das ControlPanel (Charakter / Spielerprofil, alle paar Sekunden abgefragt, nur lesend).
--- Waffen, Bargeld und Waffenbox speichert das Spiel erst beim Speichern bzw. Ausloggen – hier kommt der aktuelle Stand
--- aus dem Speicher. Offline: {online = false}.
 function phpSDKGetPlayerLive(playerId)
 	local player = Player.getFromId(tonumber(playerId))
 	if not player or not isElement(player) or not (player.isActive and player:isActive()) then
@@ -222,7 +218,6 @@ function phpSDKGetPlayerLive(playerId)
 		city = getZoneName(x, y, z, true),
 		posX = math.floor(x * 10) / 10,
 		posY = math.floor(y * 10) / 10,
-		-- Live-Ansicht im CP (Spieler beobachten)
 		rot = math.floor((vehicle and select(3, getElementRotation(vehicle)) or select(3, getElementRotation(player))) or 0),
 		speed = vehicle and math.floor(Vector3(getElementVelocity(vehicle)):getLength() * 180) or 0,
 		weapon = getPedWeapon(player) or 0,
@@ -232,11 +227,10 @@ function phpSDKGetPlayerLive(playerId)
 		interior = getElementInterior(player),
 		dimension = getElementDimension(player),
 		vehicle = vehicle and getElementModel(vehicle) or nil,
-		-- für „Spieler bearbeiten“ im ControlPanel (Werte vorausfüllen)
 		playTime = player:getPlayTime(),
 		paNote = player:getPaNote() or 0,
 		points = player.m_Points or 0,
-		skin = getElementModel(player), -- aktueller Skin (Avatar oben rechts, Charakter)
+		skin = getElementModel(player),
 		weaponLevel = player:getWeaponLevel() or 0,
 		vehicleLevel = player:getVehicleLevel() or 0,
 		skinLevel = player:getSkinLevel() or 0,
@@ -249,10 +243,6 @@ function phpSDKGetPlayerLive(playerId)
 	}
 end
 
--- Spieler über das ControlPanel bearbeiten („Spieler bearbeiten“, ab Developer – das CP prüft die Berechtigung).
--- action "stats" / "weapons": nur wenn der Spieler online ist (sonst TARGET_OFFLINE, das CP schreibt dann in die DB).
--- action "vehicle" / "trunk": nur wenn das Fahrzeug im Spiel geladen ist (sonst NOT_LOADED, das CP schreibt in die DB).
--- Der Spieler bekommt keine Nachricht; das CP trägt die Änderung ins Admin-Log ein und informiert die Admins im Spiel.
 function phpSDKEditPlayer(adminId, targetId, action, data)
 	local result = function(status, err) return {status = status, error = err} end
 	targetId = tonumber(targetId)
@@ -265,7 +255,7 @@ function phpSDKEditPlayer(adminId, targetId, action, data)
 		if not online then return result("ERROR", "TARGET_OFFLINE") end
 		if data.money then player:setMoney(tonumber(data.money)) end
 		if data.bank and player:getBankAccount() then player:getBankAccount():setMoney(tonumber(data.bank), "ControlPanel", true) end
-		if data.playTime then -- gespeicherte Zeit so setzen, dass die Gesamtzeit (inkl. dieser Sitzung) dem Wert entspricht
+		if data.playTime then
 			player:setPlayTime(tonumber(data.playTime) - (player:getPlayTime() - player.m_LastPlayTime))
 		end
 		if data.paNote then player:setPaNote(tonumber(data.paNote)) end
@@ -283,7 +273,7 @@ function phpSDKEditPlayer(adminId, targetId, action, data)
 
 	elseif action == "weapons" then
 		if not online then return result("ERROR", "TARGET_OFFLINE") end
-		if data.give then -- {Waffen-ID, Munition}: geben (eine Waffe im selben Slot wird ersetzt, wie im Spiel)
+		if data.give then
 			if not giveWeapon(player, tonumber(data.give[1]), tonumber(data.give[2]) or 0, false) then
 				return result("ERROR", "GIVE_FAILED")
 			end
@@ -301,10 +291,10 @@ function phpSDKEditPlayer(adminId, targetId, action, data)
 	elseif action == "vehicle" or action == "trunk" then
 		local vehicle
 		local list = VehicleManager:getSingleton():getPlayerVehicles(targetId)
-		if tonumber(data.ownerType) == 2 or tonumber(data.ownerType) == 3 then -- Fahrzeug einer Fraktion / eines Unternehmens (targetId = deren Id)
+		if tonumber(data.ownerType) == 2 or tonumber(data.ownerType) == 3 then
 			local org = tonumber(data.ownerType) == 2 and FactionManager:getSingleton():getFromId(targetId) or CompanyManager:getSingleton():getFromId(targetId)
 			list = org and org.m_Vehicles or {}
-		elseif tonumber(data.ownerType) == 4 then -- Gruppenfahrzeug (targetId = Gruppen-Id; nur geladen, solange die Gruppe gespawnt ist)
+		elseif tonumber(data.ownerType) == 4 then
 			list = VehicleManager:getSingleton():getGroupVehicles(targetId)
 		end
 		for _, v in pairs(list) do
@@ -359,10 +349,6 @@ function phpSDKEditPlayer(adminId, targetId, action, data)
 	return result("ERROR", "UNKNOWN_ACTION")
 end
 
--- Gehalt aus dem ControlPanel (Fraktion / Unternehmen → InGame → Berechtigungen → Gehalt, Mitgliederliste): das CP prüft,
--- wer das darf (Leader der eigenen Organisation, Team). Wie im Spiel (Event_factionSaveRank / Event_companySaveRank):
---   action "rank":   data {rank, loan} – Gehalt eines Rangs (höchstens FACTION_ / COMPANY_MAX_RANK_LOANS), gespeichert mit save()
---   action "member": data {playerId, enabled} – bekommt dieses Mitglied Gehalt (setPlayerLoanEnabled)
 function phpSDKOrgLoan(adminId, groupType, groupId, action, data)
 	local result = function(status, err) return {status = status, error = err} end
 	local instance = groupType == "faction" and FactionManager:getSingleton():getFromId(tonumber(groupId)) or groupType == "company" and CompanyManager:getSingleton():getFromId(tonumber(groupId))
@@ -386,7 +372,6 @@ function phpSDKOrgLoan(adminId, groupType, groupId, action, data)
 		instance:addLog(tonumber(adminId), category, ("hat das Gehalt von %s %s! (Control Panel)"):format(Account.getNameFromId(playerId) or playerId, enabled and "aktiviert" or "deaktiviert"))
 		return result("SUCCESS")
 	elseif action == "split" and groupType == "faction" then
-		-- Aktionsbeteiligung eines Mitglieds an/aus (wie factionToggleActionMoneySplit)
 		local playerId = tonumber(data.playerId)
 		if not instance:isPlayerMember(playerId) then return result("ERROR", "NOT_A_MEMBER") end
 		local enabled = data.enabled == true or data.enabled == 1
@@ -397,9 +382,6 @@ function phpSDKOrgLoan(adminId, groupType, groupId, action, data)
 	return result("ERROR", "UNKNOWN_ACTION")
 end
 
--- Erzwungene Transaktion aus dem ControlPanel (Dashboard → Transaktionen, Berechtigung prüft das CP): Geld von einem Konto
--- auf ein anderes – Spieler (online oder offline), Fraktion, Unternehmen, Gruppe oder Adminkasse. Über das Spiel, weil die
--- Konten dort im Speicher liegen; gebucht wie im Spiel (transferMoney → Geld-Log), auch wenn das Konto dadurch ins Minus geht.
 local function phpSDKBankAccount(kind, id)
 	id = tonumber(id)
 	if kind == "player" then
@@ -417,13 +399,11 @@ local function phpSDKBankAccount(kind, id)
 		return group and group.m_BankAccount or BankAccount.loadByOwner(id, BankAccountTypes.Group)
 	elseif kind == "admin" then
 		return Admin:getSingleton().m_BankAccount
-	elseif kind == "topup" then -- Adminkasse aufladen: neues Geld aus einem eigenen Server-Konto (geht ins Minus, steht im Geld-Log)
+	elseif kind == "topup" then
 		return BankServer.get("admin.topup")
 	end
 end
 
--- Aktuelle Kontostände für das ControlPanel (Transaktionen): {"kind:id" = Geld} für die übergebenen Konten.
--- Offline Spieler: Konto aus dem Speicher bzw. aus der DB geladen (nach Überweisungen ist der Speicher aktueller als die DB).
 function phpSDKGetBalances(accounts)
 	local balances = {}
 	for _, a in pairs(type(accounts) == "table" and accounts or {}) do
@@ -431,7 +411,6 @@ function phpSDKGetBalances(accounts)
 		local account
 		if kind == "player" then
 			local player = Player.getFromId(id)
-			-- offline: Konto aus dem Speicher (nach Überweisungen dort aktueller als in der Datenbank), sonst aus der DB geladen
 			account = player and isElement(player) and player:getBankAccount() or (id and BankAccount.loadByOwner(id, BankAccountTypes.Player))
 		elseif kind == "group" then
 			local group = GroupManager.Map[id]
@@ -461,9 +440,6 @@ function phpSDKForceTransfer(adminId, fromKind, fromId, toKind, toId, amount, re
 	return {status = "SUCCESS", from = from:getMoney(), to = to:getMoney()}
 end
 
--- VIP bzw. Premium-Fahrzeug aus dem ControlPanel (wie /givevip und /givepremveh): das CP hat vrp_premium schon geschrieben,
--- hier wird der Premiumstatus des online Spielers neu geladen (PremiumPlayer:refresh) und er bekommt die Nachricht –
--- ohne Reconnect. Premium-Fahrzeuge liest die Abholstelle ohnehin jedes Mal aus der Datenbank. Offline: TARGET_OFFLINE.
 function phpSDKPremiumGiven(adminId, playerId, kind, text)
 	local player = Player.getFromId(tonumber(playerId))
 	if not player or not isElement(player) or not (player.isActive and player:isActive()) then
@@ -476,9 +452,6 @@ function phpSDKPremiumGiven(adminId, playerId, kind, text)
 	return {status = "SUCCESS"}
 end
 
--- Gebühr für eine Marktplatz-Anzeige im ControlPanel: vom Bankkonto des Spielers (online oder offline) gehen share an das
--- Unternehmen companyId (San News, als normale Überweisung im Geld-Log), der Rest wird gelöscht.
--- Über das Spiel, weil Spieler- und Unternehmenskonten im Speicher liegen. Fehler: NO_ACCOUNT, NOT_ENOUGH_MONEY, UNKNOWN_COMPANY.
 function phpSDKMarketFee(playerId, amount, companyId, share, reason)
 	local result = function(status, err, money) return {status = status, error = err, money = money} end
 	amount, share = math.floor(tonumber(amount) or 0), math.floor(tonumber(share) or 0)
@@ -493,7 +466,7 @@ function phpSDKMarketFee(playerId, amount, companyId, share, reason)
 	if share > 0 then
 		account:transferMoney({company, true}, share, reason, "Marktplatz", "Anzeige")
 	end
-	if amount - share > 0 then -- Anteil, der aus dem Spiel genommen wird
+	if amount - share > 0 then
 		account:__takeMoney(amount - share, reason, true)
 		StatisticsLogger:getSingleton():addMoneyLogNew(account.m_OwnerId, account.m_OwnerType, account.m_Id, 0, BankAccountTypes.Server, 0, amount - share, reason, "Marktplatz", "Gebühr")
 	end
@@ -858,8 +831,6 @@ function phpSDKRemoveWarn(adminId, targetId, warnId)
 	return data:sub(2, #data-1)
 end
 
--- Austritt in der Spielerakte: offenen Eintrag schließen (HistoryPlayer:addLeaveEntry). Gibt es keinen offenen Eintrag (z. B. weil der
--- Eintritt ohne Akteneintrag gesetzt wurde), einen vollständigen anlegen – Eintritt und Austritt zur selben Zeit
 local function phpSDKHistoryLeave(playerId, uninviterId, elementId, elementType, rank, internal, external)
 	local open = sql:queryFetchSingle("SELECT Id FROM ??_player_history WHERE UserId = ? AND ElementId = ? AND ElementType = ? AND LeaveDate IS NULL", sql:getPrefix(), playerId, elementId, elementType)
 	if open then
@@ -870,10 +841,6 @@ local function phpSDKHistoryLeave(playerId, uninviterId, elementId, elementType,
 	end
 end
 
--- Fraktion / Unternehmen über das ControlPanel ändern, während der Spieler online ist (offline schreibt das CP selbst in die DB).
--- Gleicher Ablauf wie Event_factionRankUp / Event_factionRankDown / Event_factionDeleteMember bzw. die Company-Gegenstücke:
--- Rang im Speicher + DB, Spielerakte (HistoryPlayer), Gruppen-Log, Rechte, Nachricht an den Spieler und ServiceSync.
--- Die Berechtigung (Admin oder Leader) prüft das ControlPanel. action: "up", "down" oder "uninvite".
 function phpSDKChangeMember(adminId, targetId, groupType, groupId, action, reasonExternal, reasonInternal)
 	local result = function(status, err, rank)
 		local data = toJSON({status = status, error = err, rank = rank}, true)
@@ -889,7 +856,6 @@ function phpSDKChangeMember(adminId, targetId, groupType, groupId, action, reaso
 	if not instance then return result("ERROR", "UNKNOWN_GROUP") end
 	if not instance:isPlayerMember(targetId) then return result("ERROR", "NOT_A_MEMBER") end
 
-	-- auch offline: die Organisation liegt im Speicher des Servers, eine reine DB-Änderung sähe das Spiel nicht
 	local target = Player.getFromId(targetId)
 	if target and not isElement(target) then target = nil end
 
@@ -904,7 +870,7 @@ function phpSDKChangeMember(adminId, targetId, groupType, groupId, action, reaso
 		if not reasonExternal or reasonExternal == "" then return result("ERROR", "REASON_MISSING") end
 		phpSDKHistoryLeave(targetId, adminId, instance:getId(), groupType, rank, reasonInternal or "", reasonExternal)
 		instance:addLog(adminId, category, ("hat den Spieler %s aus %s geworfen! (Control Panel)"):format(targetName, groupType == "faction" and "der Fraktion" or "dem Unternehmen"))
-		instance:removePlayer(targetId) -- schickt dem Spieler „Du wurdest aus deiner Fraktion / deinem Unternehmen entlassen!“
+		instance:removePlayer(targetId)
 		if target then target:sendShortMessage(("Entlassen von %s über das ControlPanel. Grund: %s"):format(adminName, reasonExternal), instance:getName()) end
 		Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(targetId)
 		return result("SUCCESS", nil, rank)
@@ -923,7 +889,6 @@ function phpSDKChangeMember(adminId, targetId, groupType, groupId, action, reaso
 	end
 	instance:addLog(adminId, category, ("hat den Spieler %s auf Rang %d %s! (Control Panel)"):format(targetName, newRank, action == "up" and "befördert" or "degradiert"))
 
-	-- Rechte wie PermissionsManager:onRankChange (das arbeitet mit der Instanz des Ändernden, die ein Admin nicht hat)
 	local perms = instance.m_PlayerPermissions and instance.m_PlayerPermissions[targetId]
 	if perms then
 		for name in pairs(perms) do
@@ -936,7 +901,7 @@ function phpSDKChangeMember(adminId, targetId, groupType, groupId, action, reaso
 		if target then PermissionsManager:getSingleton():syncPermissions(target, groupType) end
 	end
 
-	if not target then -- offline: die Nachricht schreibt das CP als Offline-Nachricht
+	if not target then
 		Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(targetId)
 		return result("SUCCESS", nil, newRank)
 	end
@@ -945,7 +910,7 @@ function phpSDKChangeMember(adminId, targetId, groupType, groupId, action, reaso
 	else
 		target:sendShortMessage(_("Du wurdest von %s auf Rang %d degradiert!", target, adminName, newRank), instance:getName())
 	end
-	if reasonExternal and reasonExternal ~= "" then -- z. B. „Leaderwechsel: … übernimmt den Posten“
+	if reasonExternal and reasonExternal ~= "" then
 		target:sendShortMessage(reasonExternal, instance:getName())
 	end
 	target:setPublicSync(groupType == "faction" and "FactionRank" or "CompanyRank", newRank)
@@ -1010,8 +975,6 @@ function phpSDKStopScreenCapture(userId)
 end
 
 
--- Namensänderung aus dem ControlPanel (Spieler selbst oder Admin). Das CP prüft Format und Wartezeit und benennt das
--- Forum-Konto um; hier: Name in der Datenbank, beim online Spieler sofort (wie DatabasePlayer:setNewNick) und Spielerakte.
 function phpSDKAccountRename(actorId, targetId, newName, byAdmin)
 	local result = function(status, err, old) return {status = status, error = err, old = old} end
 	targetId, actorId = tonumber(targetId), tonumber(actorId)
@@ -1033,8 +996,6 @@ function phpSDKAccountRename(actorId, targetId, newName, byAdmin)
 	return result("SUCCESS", nil, oldName)
 end
 
--- Account-Löschung aus dem ControlPanel (DSGVO): Spieler aus Fraktion, Unternehmen und Gruppe nehmen (mit Akte und Log,
--- solange er ggf. noch online ist) und danach kicken. Personenbezogene Daten löscht bzw. ersetzt das CP danach in der Datenbank.
 function phpSDKAccountDelete(actorId, targetId)
 	local result = function(status, err) return {status = status, error = err} end
 	targetId, actorId = tonumber(targetId), tonumber(actorId)
@@ -1060,7 +1021,7 @@ function phpSDKAccountDelete(actorId, targetId)
 		local player = Player.getFromId(targetId)
 		if player and isElement(player) then
 			group:removePlayer(targetId)
-		else -- offline: Group:removePlayer greift auf das Spieler-Element zu, daher nur die Daten
+		else
 			group.m_Players[targetId] = nil
 			group.m_PlayerLoans[targetId] = nil
 			group.m_PlayerPermissions[targetId] = nil
@@ -1074,8 +1035,6 @@ function phpSDKAccountDelete(actorId, targetId)
 	return result("SUCCESS")
 end
 
--- Autohäuser für das ControlPanel. Die Fahrzeuge liegen im Speicher (VehicleShop.m_VehicleList[Modell][Index], je mit
--- Ausstellungsfahrzeug); Lager würfelt das Spiel beim Start neu aus – daher live. Rechte prüft das CP.
 local function phpSDKFindShopVehicle(shopVehId)
 	shopVehId = tonumber(shopVehId)
 	for shopId, shop in pairs(ShopManager.VehicleShopsMap) do
@@ -1121,9 +1080,9 @@ function phpSDKShopVehicleEdit(adminId, shopVehId, data)
 	if tonumber(data.maxStock) then entry.maxStock = math.floor(tonumber(data.maxStock)) end
 	sql:queryExec("UPDATE ??_vehicle_shop_veh SET Model = ?, Name = ?, Price = ?, Level = ?, MaxStock = ?, TemplateId = ? WHERE Id = ?", sql:getPrefix(),
 		model, getVehicleNameFromModel(model), entry.price, entry.level, tonumber(data.maxStock) or entry.maxStock, entry.templateId or 0, entry.id)
-	if tonumber(data.stock) then -- schreibt CurrentStock selbst und blendet das Ausstellungsfahrzeug ein bzw. aus
+	if tonumber(data.stock) then
 		local max = entry.maxStock
-		if max == -1 then entry.maxStock = math.max(0, tonumber(data.stock)) end -- „-1“ = kein Lager: hier wie das Spiel ohne Grenze
+		if max == -1 then entry.maxStock = math.max(0, tonumber(data.stock)) end
 		shop:internalSetVehicleStock(model, index, math.max(0, math.floor(tonumber(data.stock))))
 		entry.maxStock = max
 	end
@@ -1136,7 +1095,7 @@ function phpSDKShopVehicleAdd(adminId, shopId, model, price, level, stock, maxSt
 	model = tonumber(model)
 	if not model or not getVehicleNameFromModel(model) or getVehicleNameFromModel(model) == "" then return {status = "ERROR", error = "INVALID_MODEL"} end
 	local x, y, z, rz
-	if pos == "admin" then -- Position des Admins im Spiel (dort, wo das Ausstellungsfahrzeug stehen soll)
+	if pos == "admin" then
 		local admin = Player.getFromId(tonumber(adminId))
 		if not admin or not isElement(admin) then return {status = "ERROR", error = "ADMIN_OFFLINE"} end
 		x, y, z = getElementPosition(admin)
@@ -1165,8 +1124,6 @@ function phpSDKShopVehicleDelete(adminId, shopVehId)
 	return {status = "SUCCESS"}
 end
 
--- Limits einer Fraktion / eines Unternehmens aus der Datenbank übernehmen (das CP hat PlayerLimit, MaxVehicles und
--- VehicleLimits geändert) – wie beim Start (Faction/Company:constructor), ohne Neustart.
 function phpSDKOrgReloadLimits(groupType, groupId)
 	local instance = groupType == "faction" and FactionManager:getSingleton():getFromId(tonumber(groupId)) or groupType == "company" and CompanyManager:getSingleton():getFromId(tonumber(groupId))
 	if not instance then return {status = "ERROR", error = "UNKNOWN_GROUP"} end
@@ -1181,16 +1138,13 @@ function phpSDKOrgReloadLimits(groupType, groupId)
 	return {status = "SUCCESS"}
 end
 
--- Kaufbare Fahrzeuge eines Fraktions-/Unternehmenshändlers neu laden (das CP hat vrp_fc_vehicle_shop_veh geändert)
 function phpSDKFCShopReload(shopId)
 	local shop = ShopManager.FCVehicleShopsMap[tonumber(shopId)]
-	if not shop then return {status = "ERROR", error = "UNKNOWN_SHOP"} end -- Händler ohne aktive Fraktion / Unternehmen: gilt ab dem nächsten Start
+	if not shop then return {status = "ERROR", error = "UNKNOWN_SHOP"} end
 	shop:reload()
 	return {status = "SUCCESS"}
 end
 
--- Alle Fahrzeuge einer Fraktion / eines Unternehmens respawnen (ControlPanel, Team-Dashboard). Wie der Admin-Respawn im Spiel
--- (Faction/Company:respawnVehicles mit Admin): ohne 15-Minuten-Sperre, Meldung an die Organisation und an die Admins, Admin-Log.
 function phpSDKOrgRespawnVehicles(adminId, groupType, groupId)
 	groupId = tonumber(groupId)
 	local instance = groupType == "faction" and FactionManager:getSingleton():getFromId(groupId) or groupType == "company" and CompanyManager:getSingleton():getFromId(groupId)
@@ -1218,7 +1172,6 @@ function phpSDKOrgRespawnVehicles(adminId, groupType, groupId)
 	return {status = "SUCCESS", vehicles = vehicles, respawned = vehicles - fails}
 end
 
--- Gesperrte Namen (vrp_bad_names) neu laden – das ControlPanel hat die Liste geändert (NameManager liest sie sonst nur beim Start)
 function phpSDKReloadBadNames()
 	local manager = NameManager:getSingleton()
 	local names = {}
@@ -1229,8 +1182,6 @@ function phpSDKReloadBadNames()
 	return {status = "SUCCESS", count = #names}
 end
 
--- Waffen-, Item- und Ausrüstungslager einer Fraktion live (ControlPanel, InGame → Waffen- & Itemlager):
--- Bestand aus dem Speicher des Spiels, dazu die Maxima je Waffe (Waffen / Magazine, Staat x4) und welche Waffen die Fraktion führt
 function phpSDKFactionDepot(factionId)
 	local faction = FactionManager:getSingleton():getFromId(tonumber(factionId))
 	if not faction then return {status = "ERROR", error = "UNKNOWN_GROUP"} end
@@ -1257,9 +1208,6 @@ function phpSDKFactionDepot(factionId)
 	return {status = "SUCCESS", weapons = weapons, items = items, itemSlots = 6, equipment = equipment}
 end
 
--- Lager einer Fraktion bearbeiten (ControlPanel → Fraktion → InGame → Waffen- & Itemlager, ab Administrator). Speichert sofort.
--- kind "weapon": key = Waffen-ID, a = Waffen, b = Magazine (beides 0 = entfernen); "item": key = Platz 1–6, a = Item ("" = leeren),
--- b = Menge; "equipment": key = Name, a = Anzahl
 function phpSDKFactionDepotEdit(adminId, factionId, kind, key, a, b)
 	local faction = FactionManager:getSingleton():getFromId(tonumber(factionId))
 	if not faction then return {status = "ERROR", error = "UNKNOWN_GROUP"} end
@@ -1292,9 +1240,6 @@ function phpSDKFactionDepotEdit(adminId, factionId, kind, key, a, b)
 	return {status = "SUCCESS"}
 end
 
--- Spieler in eine Fraktion / ein Unternehmen / eine Gruppe setzen (groupId 0 = entfernen), wie Admin:Event_adminSetPlayer… im Spiel,
--- aber auch für Spieler, die nicht online sind (ControlPanel → Spielerprofil → Administrieren → Gruppierung setzen)
--- record = false: nichts in der Spielerakte (weder den alten Eintrag schließen noch einen neuen anlegen)
 function phpSDKSetMembership(adminId, targetId, groupType, groupId, rank, reasonExternal, reasonInternal, record)
 	record = record ~= false
 	targetId, groupId, rank = tonumber(targetId), tonumber(groupId) or 0, tonumber(rank) or 0
@@ -1305,7 +1250,6 @@ function phpSDKSetMembership(adminId, targetId, groupType, groupId, rank, reason
 	if target and not isElement(target) then target = nil end
 	local column = groupType == "faction" and "FactionId" or groupType == "company" and "CompanyId" or "GroupId"
 	local row = sql:queryFetchSingle(("SELECT %s AS Cur FROM ??_character WHERE Id = ?"):format(column), sql:getPrefix(), targetId)
-	-- Gruppen wie im Admin-Menü bzw. beim Einloggen (DatabasePlayer): nicht geladene Gruppe erst laden
 	local get = function(id)
 		if groupType == "group" and not manager:getFromId(id) then manager:loadFromId(id) end
 		return manager:getFromId(id)
@@ -1315,10 +1259,9 @@ function phpSDKSetMembership(adminId, targetId, groupType, groupId, rank, reason
 	if groupId > 0 and not new then return {status = "ERROR", error = "UNKNOWN_GROUP"} end
 	local maxRank = groupType == "faction" and FactionRank.Leader or groupType == "company" and CompanyRank.Leader or 6
 	if rank < 0 or rank > maxRank then return {status = "ERROR", error = "RANK_OUT_OF_RANGE"} end
-	-- Leadersperre wie bei Beförderungen im Spiel: ab dem Manager-Rang nicht erlaubt
 	local managerRank = groupType == "faction" and FactionRank.Manager or groupType == "company" and CompanyRank.Manager
 	if managerRank and rank >= managerRank and LeaderCheck:getSingleton():hasPlayerLeaderBan(targetId) then return {status = "ERROR", error = "LEADER_BAN"} end
-	if old and new and old == new then -- schon Mitglied: nur den Rang setzen
+	if old and new and old == new then
 		if old:getPlayerRank(targetId) == rank then return {status = "SUCCESS", unchanged = true} end
 		old:setPlayerRank(targetId, rank)
 		if groupType ~= "group" and record then HistoryPlayer:getSingleton():setHighestRank(targetId, rank, old:getId(), groupType) end
@@ -1334,7 +1277,7 @@ function phpSDKSetMembership(adminId, targetId, groupType, groupId, rank, reason
 			phpSDKHistoryLeave(targetId, adminId, old:getId(), groupType, old:getPlayerRank(targetId) or 0, reasonInternal or "", reasonExternal or "Control Panel")
 		end
 		old:removePlayer(targetId)
-	elseif groupType ~= "group" and row and (row.Cur or 0) > 0 then -- Organisation nicht geladen (deaktiviert): nur die Datenbank
+	elseif groupType ~= "group" and row and (row.Cur or 0) > 0 then
 		sql:queryExec(("UPDATE ??_character SET %s = 0, %s = 0 WHERE Id = ?"):format(column, groupType == "faction" and "FactionRank" or "CompanyRank"), sql:getPrefix(), targetId)
 	end
 	if new then
@@ -1343,16 +1286,13 @@ function phpSDKSetMembership(adminId, targetId, groupType, groupId, rank, reason
 			HistoryPlayer:getSingleton():setHighestRank(targetId, rank, new:getId(), groupType)
 		end
 		new:addPlayer(targetId, rank)
-		if groupType == "group" then new:spawnVehicles() end -- wie Admin:Event_adminSetPlayerGroup
+		if groupType == "group" then new:spawnVehicles() end
 		if target then target:sendShortMessage(("Du wurdest über das ControlPanel in %s gesetzt (Rang %d)."):format(new:getName(), rank), new:getName()) end
 	end
 	Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(targetId)
 	return {status = "SUCCESS"}
 end
 
--- Skins einer Fraktion / eines Unternehmens ändern (ControlPanel → InGame → Skins). action "save" = Skin hinzufügen bzw. bearbeiten
--- (oldSkinId = bisheriger Skin, wenn die Skin-ID geändert wird; minRank -1 = Sonderskin), "delete" = entfernen.
--- Danach bekommen Spieler im Dienst, deren Skin weg ist oder über ihrem Rang liegt, einen freien Skin ihres Rangs (changeSkin des Spiels)
 function phpSDKOrgSkins(adminId, groupType, groupId, action, skinId, minRank, oldSkinId)
 	local instance = groupType == "faction" and FactionManager:getSingleton():getFromId(tonumber(groupId)) or groupType == "company" and CompanyManager:getSingleton():getFromId(tonumber(groupId))
 	if not instance then return {status = "ERROR", error = "UNKNOWN_GROUP"} end
@@ -1369,7 +1309,6 @@ function phpSDKOrgSkins(adminId, groupType, groupId, action, skinId, minRank, ol
 	for _ in pairs(instance.m_Skins) do count = count + 1 end
 	if action == "delete" and count <= 1 then return {status = "ERROR", error = "LAST_SKIN"} end
 
-	-- beim ersten Mal die Liste aus den Konstanten übernehmen, danach gilt die Liste in der Datenbank
 	if not next(settings.m_Settings["SkinList"] or {}) then
 		for id in pairs(instance.m_Skins) do settings:writeSetting("SkinList", id, 1) end
 	end
@@ -1385,7 +1324,7 @@ function phpSDKOrgSkins(adminId, groupType, groupId, action, skinId, minRank, ol
 		settings:writeSetting("SkinList", skinId, 1)
 		settings:writeSetting("Skin", skinId, minRank)
 	end
-	if groupType == "faction" and not instance:isStateFaction() then -- Sonderskin (Rang -1) wie im Konstruktor neu bestimmen
+	if groupType == "faction" and not instance:isStateFaction() then
 		instance.m_SpecialSkin = nil
 		for id in pairs(instance.m_Skins) do if tonumber(instance:getSetting("Skin", id, 0)) == -1 then instance.m_SpecialSkin = id end end
 	end
@@ -1396,7 +1335,7 @@ function phpSDKOrgSkins(adminId, groupType, groupId, action, skinId, minRank, ol
 		local model = player:getModel()
 		local rank = instance:getPlayerRank(player) or 0
 		if onDuty and (removed[model] or (instance.m_Skins[model] and tonumber(instance:getSetting("Skin", model, 0)) > rank)) then
-			instance:changeSkin(player) -- ohne Skin-ID: erster freier Skin für den Rang
+			instance:changeSkin(player)
 			player:sendShortMessage("Deine Dienstkleidung wurde über das ControlPanel geändert – du hast eine andere bekommen.", instance:getName())
 			changed = changed + 1
 		end
@@ -1405,8 +1344,6 @@ function phpSDKOrgSkins(adminId, groupType, groupId, action, skinId, minRank, ol
 end
 
 
--- Haus anlegen / bearbeiten / löschen (ControlPanel → Team-Dashboard → Häuser). data = {x, y, z, interior, price, rent, buyPrice, salePrice, showInTownhall, locked}.
--- Löschen: Besitzer bekommt den Kaufpreis und die Hauskasse zurück (online Nachricht, sonst Offline-Nachricht); Spieler im Haus werden hinausgesetzt
 function phpSDKHouse(adminId, action, houseId, data)
 	local hm = HouseManager:getSingleton()
 	houseId, data = tonumber(houseId) or 0, type(data) == "table" and data or {}
@@ -1435,7 +1372,6 @@ function phpSDKHouse(adminId, action, houseId, data)
 		end
 		if price then house.m_Price = price end
 		if rent then house.m_RentPrice = rent end
-		-- bezahlter Preis (Grundlage beim Verkauf / Löschen) und Verkauf an Spieler nur mit Besitzer; abgeschlossen live
 		if house.m_Owner and tonumber(data.buyPrice) then house.m_BuyPrice = tonumber(data.buyPrice) end
 		if house.m_Owner and data.salePrice ~= nil then
 			local sale = tonumber(data.salePrice) or 0
@@ -1469,7 +1405,7 @@ function phpSDKHouse(adminId, action, houseId, data)
 					target:triggerEvent("removeHouseBlip", houseId)
 				end
 			end
-			house:clearHouse() -- Möbel, Mieter, Verkauf
+			house:clearHouse()
 		end
 		if isElement(house.m_Pickup) then destroyElement(house.m_Pickup) end
 		if isElement(house.m_HouseMarker) then destroyElement(house.m_HouseMarker) end
@@ -1481,14 +1417,10 @@ function phpSDKHouse(adminId, action, houseId, data)
 	return {status = "ERROR", error = "UNKNOWN_ACTION"}
 end
 
--- Gruppenimmobilie anlegen / bearbeiten / löschen (ControlPanel → Team-Dashboard → Gruppenimmobilien).
--- data = {name, price, type, pickup = "x,y,z", interior, spawn = "x,y,z", cam = "…" oder ""}. Bearbeiten = speichern und neu laden.
--- Löschen: die Besitzergruppe bekommt den vollen Kaufpreis zurück, mit Gruppen-Log und Nachricht (online sofort, sonst beim nächsten Login)
 function phpSDKGroupProperty(adminId, action, propId, data)
 	local pm = GroupPropertyManager:getSingleton()
 	propId, data = tonumber(propId) or 0, type(data) == "table" and data or {}
 	if action == "save" then
-		-- Typ (Gang / Firma) setzt das Spiel beim Kauf – neu immer 1, beim Bearbeiten unverändert. Besitzer und Lager ändert das CP nicht
 		local name, price, cam, pickup, interior, spawn = data.name, tonumber(data.price), tostring(data.cam or ""), data.pickup, tonumber(data.interior), data.spawn
 		local open, salePrice, elevatorData = tonumber(data.open) == 1 and 1 or 0, tonumber(data.salePrice) or 0, tostring(data.elevator or "")
 		if not name or not price or not pickup or not interior or not spawn then return {status = "ERROR", error = "MISSING_DATA"} end
@@ -1500,10 +1432,9 @@ function phpSDKGroupProperty(adminId, action, propId, data)
 			return {status = "SUCCESS", id = id}
 		end
 		if not pm.Map[propId] then return {status = "ERROR", error = "UNKNOWN_PROPERTY"} end
-		-- Aufzug nur behalten, wenn sich seine Daten nicht ändern (sonst neu aufbauen)
 		local old = sql:queryFetchSingle("SELECT ElevatorData FROM ??_group_property WHERE Id = ?", sql:getPrefix(), propId) or {}
 		local keepElevator = (old.ElevatorData or "") == elevatorData
-		local _, elevator = pm:unloadProperty(propId, keepElevator) -- speichert vorher Tür, Lager, Schlüssel, Verkaufspreis aus dem Speicher
+		local _, elevator = pm:unloadProperty(propId, keepElevator)
 		sql:queryExec("UPDATE ??_group_property SET Name = ?, Price = ?, Cam = NULLIF(?, ''), Pickup = ?, InteriorId = ?, InteriorSpawn = ?, open = ?, ElevatorData = NULLIF(?, ''), SalePrice = ? WHERE Id = ?",
 			sql:getPrefix(), name, price, cam, pickup, interior, spawn, open, elevatorData, salePrice, propId)
 		pm:syncPropertyForOwner(pm:loadProperty(propId, keepElevator and elevator or nil))
@@ -1513,7 +1444,7 @@ function phpSDKGroupProperty(adminId, action, propId, data)
 		if not property then return {status = "ERROR", error = "UNKNOWN_PROPERTY"} end
 		local groupId, price, name = tonumber(property.m_OwnerID) or 0, property.m_Price or 0, property.m_Name
 		local group = groupId > 0 and (GroupManager:getSingleton():getFromId(groupId) or (GroupManager:getSingleton():loadFromId(groupId) and GroupManager:getSingleton():getFromId(groupId)))
-		for _, player in ipairs(getElementsByType("player")) do -- Spieler in der Immobilie hinaussetzen
+		for _, player in ipairs(getElementsByType("player")) do
 			if player:getDimension() == property.m_Dimension and player:getInterior() == property.m_Interior then
 				player:setInterior(0)
 				player:setDimension(0)
@@ -1547,8 +1478,6 @@ function phpSDKGroupProperty(adminId, action, propId, data)
 end
 
 
--- Wöchentliche Initiativen (Rathaus) für das ControlPanel: Name, Beschreibung, aktiv und Stimmen – live aus dem Speicher
--- (die Datenbank schreibt das Spiel erst beim Beenden)
 function phpSDKInitiatives()
 	local manager = InitiativeManager:isInstantiated() and InitiativeManager:getSingleton()
 	if not manager then return {status = "ERROR", error = "NOT_LOADED"} end
@@ -1560,8 +1489,6 @@ function phpSDKInitiatives()
 	return {status = "SUCCESS", active = manager:getActiveInitiative(), initiatives = list}
 end
 
--- Roulette-Limit eines Spielers (ControlPanel → Spielerprofil → Sanktionieren): Höchsteinsatz in $ bis zum nächsten Serverstart
--- wie vrp_roulette_limits (das CP schreibt die Tabelle). limit nil = nur abfragen, 0 = Limit aufheben. Gibt Limit und bisherige Einsätze zurück
 function phpSDKRouletteLimit(userId, limit)
 	userId, limit = tonumber(userId), tonumber(limit)
 	if not userId then return {status = "ERROR", error = "UNKNOWN_PLAYER"} end
@@ -1577,8 +1504,6 @@ function phpSDKRouletteLimit(userId, limit)
 	return {status = "SUCCESS", limit = cur and cur.Limit or 0, bets = cur and cur.Bets or 0}
 end
 
--- Servereinstellungen (vrp_settings) neu laden, nachdem das ControlPanel sie geändert hat. Wie beim Start, danach die
--- Änderungen der laufenden Initiative „Mehr Punkte (Job)“ wieder anwenden (sonst gingen sie beim Neuladen verloren)
 function phpSDKReloadServerSettings()
 	ServerSettings:getSingleton():load()
 	if InitiativeManager:isInstantiated() and InitiativeManager:getSingleton():getActiveInitiative() == 7 then
@@ -1588,8 +1513,6 @@ function phpSDKReloadServerSettings()
 	return {status = "SUCCESS"}
 end
 
--- Asservatenkammer (ControlPanel → Team-Dashboard → Debug / Fix): reload = true lädt vrp_state_evidence neu (das CP hat sie geändert).
--- Gibt Füllstand (Wert in $ wie StateEvidence:getObjectPrice) und Maximum zurück, dazu den Wert je Eintrag
 function phpSDKStateEvidence(reload)
 	if not StateEvidence:isInstantiated() then return {status = "ERROR", error = "NOT_LOADED"} end
 	local evidence = StateEvidence:getSingleton()
@@ -1601,9 +1524,6 @@ function phpSDKStateEvidence(reload)
 	return {status = "SUCCESS", fill = math.floor(evidence.m_FillState or 0), max = STATE_EVIDENCE_MAX_OBJECTS, values = values}
 end
 
--- Login-Fix wie im Adminmenü (Admin:Event_OnAdminLoginFix): hängt ein Account noch im Speicher (DatabasePlayer.Map),
--- obwohl der Spieler nicht mehr verbunden ist, kann er sich nicht einloggen – der Eintrag wird entfernt.
--- NOT_IN_USE = Account ist nicht in Benutzung; ONLINE = Spieler ist wirklich verbunden (dann nichts tun)
 function phpSDKLoginFix(adminId, targetId)
 	targetId = tonumber(targetId)
 	if not targetId then return {status = "ERROR", error = "UNKNOWN_PLAYER"} end
@@ -1614,7 +1534,6 @@ function phpSDKLoginFix(adminId, targetId)
 	return {status = "SUCCESS"}
 end
 
--- Adminansage wie im Adminmenü („adminAnnounce“): Banner „Admin Ankündigung“ für alle Spieler, Eintrag im Admin-Log
 function phpSDKAdminAnnounce(adminId, text)
 	text = tostring(text or ""):gsub("^%s+", ""):gsub("%s+$", "")
 	if text == "" then return {status = "ERROR", error = "EMPTY"} end
@@ -1624,8 +1543,6 @@ function phpSDKAdminAnnounce(adminId, text)
 	return {status = "SUCCESS", players = #getElementsByType("player")}
 end
 
--- Leadersperre vergeben / aufheben (ControlPanel → Team-Dashboard → Leadersperren), wie LeaderCheck:Event_editLeaderBans im Adminmenü.
--- action "add": validUntil = Zeitstempel (0 = dauerhaft), admins = Liste der beteiligten Account-IDs; "remove": Sperre aufheben
 function phpSDKLeaderBan(adminId, action, playerId, reason, validUntil, admins)
 	local check = LeaderCheck:getSingleton()
 	adminId, playerId, validUntil = tonumber(adminId) or 0, tonumber(playerId), tonumber(validUntil) or 0
@@ -1656,8 +1573,6 @@ function phpSDKLeaderBan(adminId, action, playerId, reason, validUntil, admins)
 	return {status = "ERROR", error = "UNKNOWN_ACTION"}
 end
 
--- Schlüssel gespawnter Fahrzeuge (ControlPanel → Fahrzeugkarten): {"Fahrzeug-Id" = {Spieler-Ids}}. Vergebene Schlüssel speichert
--- das Spiel erst mit dem Fahrzeug – bis dahin ist nur der Speicher aktuell. Nicht gespawnte Fahrzeuge fehlen (dann gilt die DB)
 function phpSDKVehicleKeys(ids)
 	local want = {}
 	for _, id in pairs(type(ids) == "table" and ids or {}) do
@@ -1674,8 +1589,6 @@ function phpSDKVehicleKeys(ids)
 	return {status = "SUCCESS", keys = keys}
 end
 
--- Schlüssel eines gespawnten Privatfahrzeugs vergeben / entziehen (ControlPanel → Spielerprofil → Fahrzeuge, ab Administrator).
--- action "add" / "remove"; ist das Fahrzeug nicht gespawnt, kommt NOT_SPAWNED und das ControlPanel ändert die Datenbank
 function phpSDKVehicleKeyChange(adminId, vehicleId, playerId, action)
 	vehicleId, playerId = tonumber(vehicleId), tonumber(playerId)
 	if not vehicleId or not playerId then return {status = "ERROR", error = "INVALID"} end
@@ -1691,7 +1604,6 @@ function phpSDKVehicleKeyChange(adminId, vehicleId, playerId, action)
 			else
 				return {status = "ERROR", error = "UNKNOWN_ACTION"}
 			end
-			-- gleich speichern, damit die Datenbank (und das ControlPanel) den Stand kennt
 			sql:queryExec("UPDATE ??_vehicles SET `Keys` = ? WHERE Id = ?", sql:getPrefix(), toJSON(vehicle.m_Keys, true), vehicleId)
 			Admin:getSingleton():sendShortMessage("%s hat %s den Schlüssel für Fahrzeug %d %s! (Control Panel)",
 				{Account.getNameFromId(tonumber(adminId)) or "?", Account.getNameFromId(playerId) or tostring(playerId), vehicleId, action == "add" and "gegeben" or "entzogen"})
@@ -1701,9 +1613,6 @@ function phpSDKVehicleKeyChange(adminId, vehicleId, playerId, action)
 	return {status = "ERROR", error = "NOT_SPAWNED"}
 end
 
--- Gangwar-Menü wie im Adminmenü (GangwarDebugGUI → Admin:Event_OnAdminGangwarChangeOwner / Event_OnAdminGangwarReset), für das ControlPanel.
--- action "list": alle Gebiete; "owner": Gebiet an Fraktion value geben (gilt als gerade attackiert); "release": ab Zeitstempel value
--- attackierbar (0 = sofort). Während eines laufenden Angriffs wird nichts geändert (UNDER_ATTACK)
 function phpSDKGangwar(adminId, action, areaId, value)
 	if not Gangwar:isInstantiated() then return {status = "ERROR", error = "NOT_LOADED"} end
 	local gw = Gangwar:getSingleton()
@@ -1711,13 +1620,12 @@ function phpSDKGangwar(adminId, action, areaId, value)
 	if action == "list" then
 		local areas = {}
 		for _, area in pairs(gw.m_Areas or {}) do
-			if type(area) == "table" then -- deaktivierte Gebiete stehen als false in der Liste
+			if type(area) == "table" then
 			areas[#areas + 1] = {id = area.m_ID, name = area.m_Name, owner = area.m_Owner or 0, lastAttack = area.m_LastAttack or 0, attacked = area.m_IsAttacked and true or false}
 			end
 		end
 		return {status = "SUCCESS", areas = areas, pause = pause, now = getRealTime().timestamp}
 	end
-	-- nach der Gebiets-ID der Datenbank suchen (m_Areas ist nach Ladereihenfolge nummeriert)
 	local area
 	for _, a in pairs(gw.m_Areas or {}) do
 		if type(a) == "table" and tonumber(a.m_ID) == tonumber(areaId) then area = a end
@@ -1752,12 +1660,6 @@ function phpSDKGangwar(adminId, action, areaId, value)
 	return {status = "ERROR", error = "UNKNOWN_ACTION"}
 end
 
--- Gutschein aus dem ControlPanel (Shop → Gutschein einlösen) an einen Spieler, der gerade online ist: Geld aufs Bankkonto, Punkte
--- Items und Waffen. data = {money = n, points = n, items = {{item = "Name", amount = n}, …}, weapons = {{weapon = id, ammo = n}, …},
--- label = "Gutschein „…“"}. Waffen kommen in den ersten freien Platz der Waffenbox (Platz 4–6 nur mit VIP, wie
--- PlayerManager:Event_gunBoxAddWeapon); ohne freien Platz ok = false (dann per Ticket). Items, für die im Inventar kein
--- Platz ist (wie Inventory:giveItem: Item_Max, Stapel und freie Plätze der Tasche), werden nicht gegeben und als ticket = true
--- zurückgemeldet – die holt sich der Spieler per Ticket. Offline: TARGET_OFFLINE (dann schreibt das CP direkt in die Datenbank).
 function phpSDKVoucher(adminId, playerId, data)
 	local player = Player.getFromId(tonumber(playerId))
 	if not player or not isElement(player) or not (player.isActive and player:isActive()) then
@@ -1821,9 +1723,6 @@ function phpSDKVoucher(adminId, playerId, data)
 	return {status = "SUCCESS", money = money, points = points, items = items, weapons = weapons}
 end
 
--- Punkte aus dem ControlPanel (Shop → Punkteshop) für einen Spieler, der gerade online ist (Punkte liegen im Speicher):
--- amount < 0 zieht ab (NOT_ENOUGH_POINTS, wenn er zu wenige hat), amount > 0 bucht zurück. Offline: TARGET_OFFLINE
--- (dann schreibt das CP direkt in die Datenbank). Gibt den neuen Punktestand zurück.
 function phpSDKShopPoints(playerId, amount, reason)
 	local player = Player.getFromId(tonumber(playerId))
 	if not player or not isElement(player) or not (player.isActive and player:isActive()) then
@@ -1843,10 +1742,6 @@ function phpSDKShopPoints(playerId, amount, reason)
 	return {status = "SUCCESS", points = player:getPoints()}
 end
 
--- Überweisung aus dem ControlPanel (Allgemein → Überweisen): vom Bankkonto des Spielers fromId (online oder offline) an einen Spieler,
--- eine Fraktion, ein Unternehmen, eine Gruppe oder die Adminkasse (toType "player" | "faction" | "company" | "group" | "admin") –
--- wie BankManager:Event_Transfer (Geld-Log „Bank/Transfer“, Nachricht bzw. Offline-Nachricht an einen Spieler als Empfänger).
--- Fehler: INVALID_AMOUNT, SAME_PLAYER, NO_ACCOUNT, UNKNOWN_TARGET, NOT_ENOUGH_MONEY, TRANSFER_FAILED. Gibt den neuen Kontostand zurück.
 function phpSDKBankTransfer(fromId, toType, toId, amount, purpose)
 	local result = function(status, err, money) return {status = status, error = err, money = money} end
 	fromId, toId, amount = tonumber(fromId), tonumber(toId), math.floor(tonumber(amount) or 0)
@@ -1855,7 +1750,6 @@ function phpSDKBankTransfer(fromId, toType, toId, amount, purpose)
 	if amount < 1 or isNan(amount) then return result("ERROR", "INVALID_AMOUNT") end
 	if toType == "player" and fromId == toId then return result("ERROR", "SAME_PLAYER") end
 
-	-- Empfänger: Ziel für transferMoney und Name
 	local target, toName
 	if toType == "player" then
 		toName = Account.getNameFromId(toId)

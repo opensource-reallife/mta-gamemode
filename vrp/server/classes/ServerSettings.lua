@@ -11,7 +11,6 @@ function ServerSettings:constructor()
 	self:load()
 end
 
--- Werte aus vrp_settings übernehmen (beim Start und über das ControlPanel: phpSDKReloadServerSettings)
 function ServerSettings:load()
 	self.m_Settings = {}
 

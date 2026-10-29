@@ -1,7 +1,7 @@
 NoDm = inherit(Singleton)
 addRemoteEvents{"checkNoDm", "addNoDm", "removeNoDm", "receiveNoDm"}
 
-NoDm.Zones = NODM_ZONES -- siehe shared/constants/guns.lua
+NoDm.Zones = NODM_ZONES
 
 function NoDm:constructor()
 	self.m_NoDmZones = {}
