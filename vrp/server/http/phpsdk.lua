@@ -209,6 +209,7 @@ function phpSDKGetPlayerLive(playerId)
 		online = true,
 		weapons = weapons,
 		money = player:getMoney() or 0,
+		points = player:getPoints() or 0,
 		bank = bank and bank:getMoney() or nil,
 		gunBox = player.m_GunBox or {},
 		health = math.floor(getElementHealth(player)),
@@ -268,6 +269,8 @@ function phpSDKEditPlayer(adminId, targetId, action, data)
 		if data.bikeLicense ~= nil then player.m_HasBikeLicense = data.bikeLicense == true or data.bikeLicense == 1 end
 		if data.truckLicense ~= nil then player.m_HasTruckLicense = data.truckLicense == true or data.truckLicense == 1 end
 		if data.pilotsLicense ~= nil then player:setHasPilotsLicense(data.pilotsLicense == true or data.pilotsLicense == 1) end
+		if data.points then player:setPoints(tonumber(data.points)) end
+		if data.credits and player.m_Premium then player.m_Premium:refresh() end
 		player:save()
 		return result("SUCCESS")
 
