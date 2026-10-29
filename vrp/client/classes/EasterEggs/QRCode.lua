@@ -6,7 +6,15 @@ function EasterEgg.QRCode:constructor()
 end
 
 function EasterEgg.QRCode:onStreamIn(surface)
-	-- QR-Code kommt vom ControlPanel (CP-Token wie beim WebPanel); der Scan-Link darin vergibt dort das Achievement
+	if localPlayer:getCpToken() == "" then
+		if isTimer(self.m_WaitTimer) then killTimer(self.m_WaitTimer) end
+		self.m_WaitTimer = setTimer(function() if self.m_CacheArea == surface then self:onStreamIn(surface) end end, 2000, 1)
+		return
+	end
 	self.m_Url = (CP_WEB_PATH .. "/qr.php?token=%s"):format(localPlayer:getCpToken())
 	GUIWebView:new(0, 0, 300, 300, self.m_Url, true, surface)
+end
+
+function EasterEgg.QRCode:onStreamOut()
+	if isTimer(self.m_WaitTimer) then killTimer(self.m_WaitTimer) end
 end
