@@ -1622,6 +1622,20 @@ function phpSDKVehicleKeyChange(adminId, vehicleId, playerId, action)
 	return {status = "ERROR", error = "NOT_SPAWNED"}
 end
 
+function phpSDKRunningEvents()
+	local action = ActionsCheck:isInstantiated() and ActionsCheck:getSingleton():isCurrentAction() or false
+	local gangwars = {}
+	if Gangwar:isInstantiated() then
+		for _, area in pairs(Gangwar:getSingleton().m_Areas or {}) do
+			if type(area) == "table" and area.m_IsAttacked then
+				local f1, f2 = area:getMatchFactions()
+				gangwars[#gangwars + 1] = {area = area.m_Name, attacker = f1 and f1:getShortName() or "", owner = f2 and f2:getShortName() or ""}
+			end
+		end
+	end
+	return {status = "SUCCESS", action = action or false, gangwars = gangwars}
+end
+
 function phpSDKGangwar(adminId, action, areaId, value)
 	if not Gangwar:isInstantiated() then return {status = "ERROR", error = "NOT_LOADED"} end
 	local gw = Gangwar:getSingleton()

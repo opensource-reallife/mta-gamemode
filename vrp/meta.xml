@@ -1623,6 +1623,7 @@
 	<export function="phpSDKVehicleKeys" type="server" http="true" />
 	<export function="phpSDKVehicleKeyChange" type="server" http="true" />
 	<export function="phpSDKGangwar" type="server" http="true" />
+	<export function="phpSDKRunningEvents" type="server" http="true" />
 	<export function="phpSDKFCShopReload" type="server" http="true" />
 	<export function="phpSDKOrgRespawnVehicles" type="server" http="true" />
 	<export function="phpSDKReloadBadNames" type="server" http="true" />
