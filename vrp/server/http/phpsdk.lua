@@ -872,7 +872,7 @@ function phpSDKChangeMember(adminId, targetId, groupType, groupId, action, reaso
 	if action == "uninvite" then
 		if not reasonExternal or reasonExternal == "" then return result("ERROR", "REASON_MISSING") end
 		phpSDKHistoryLeave(targetId, adminId, instance:getId(), groupType, rank, reasonInternal or "", reasonExternal)
-		instance:addLog(adminId, category, ("hat den Spieler %s aus %s geworfen! (Control Panel)"):format(targetName, groupType == "faction" and "der Fraktion" or "dem Unternehmen"))
+		instance:addLog(adminId, category, ("hat den Spieler %s über das ControlPanel aus %s geworfen!"):format(targetName, groupType == "faction" and "der Fraktion" or "dem Unternehmen"))
 		instance:removePlayer(targetId)
 		if target then target:sendShortMessage(("Entlassen von %s über das ControlPanel. Grund: %s"):format(adminName, reasonExternal), instance:getName()) end
 		Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(targetId)
@@ -890,7 +890,7 @@ function phpSDKChangeMember(adminId, targetId, groupType, groupId, action, reaso
 	if action == "up" then
 		HistoryPlayer:getSingleton():setHighestRank(targetId, newRank, instance:getId(), groupType)
 	end
-	instance:addLog(adminId, category, ("hat den Spieler %s auf Rang %d %s! (Control Panel)"):format(targetName, newRank, action == "up" and "befördert" or "degradiert"))
+	instance:addLog(adminId, category, ("hat den Spieler %s über das ControlPanel auf Rang %d %s!"):format(targetName, newRank, action == "up" and "befördert" or "degradiert"))
 
 	local perms = instance.m_PlayerPermissions and instance.m_PlayerPermissions[targetId]
 	if perms then
@@ -1263,10 +1263,14 @@ function phpSDKSetMembership(adminId, targetId, groupType, groupId, rank, reason
 	local maxRank = groupType == "faction" and FactionRank.Leader or groupType == "company" and CompanyRank.Leader or 6
 	if rank < 0 or rank > maxRank then return {status = "ERROR", error = "RANK_OUT_OF_RANGE"} end
 	local managerRank = groupType == "faction" and FactionRank.Manager or groupType == "company" and CompanyRank.Manager
+	local category = groupType == "faction" and "Fraktion" or groupType == "company" and "Unternehmen" or "Gruppe"
+	local targetName = Account.getNameFromId(targetId)
 	if managerRank and rank >= managerRank and LeaderCheck:getSingleton():hasPlayerLeaderBan(targetId) then return {status = "ERROR", error = "LEADER_BAN"} end
 	if old and new and old == new then
 		if old:getPlayerRank(targetId) == rank then return {status = "SUCCESS", unchanged = true} end
+		local oldRank = old:getPlayerRank(targetId) or 0
 		old:setPlayerRank(targetId, rank)
+		old:addLog(tonumber(adminId), category, ("hat den Spieler %s über das ControlPanel auf Rang %d %s!"):format(targetName, rank, rank > oldRank and "befördert" or "degradiert"))
 		if groupType ~= "group" and record then HistoryPlayer:getSingleton():setHighestRank(targetId, rank, old:getId(), groupType) end
 		if target then
 			target:setPublicSync(groupType == "faction" and "FactionRank" or groupType == "company" and "CompanyRank" or "GroupRank", rank)
@@ -1279,6 +1283,7 @@ function phpSDKSetMembership(adminId, targetId, groupType, groupId, rank, reason
 		if groupType ~= "group" and record then
 			phpSDKHistoryLeave(targetId, adminId, old:getId(), groupType, old:getPlayerRank(targetId) or 0, reasonInternal or "", reasonExternal or "Control Panel")
 		end
+		old:addLog(tonumber(adminId), category, ("hat den Spieler %s über das ControlPanel aus %s geworfen!"):format(targetName, groupType == "faction" and "der Fraktion" or groupType == "company" and "dem Unternehmen" or "der Gruppe"))
 		old:removePlayer(targetId)
 	elseif groupType ~= "group" and row and (row.Cur or 0) > 0 then
 		sql:queryExec(("UPDATE ??_character SET %s = 0, %s = 0 WHERE Id = ?"):format(column, groupType == "faction" and "FactionRank" or "CompanyRank"), sql:getPrefix(), targetId)
@@ -1289,6 +1294,7 @@ function phpSDKSetMembership(adminId, targetId, groupType, groupId, rank, reason
 			HistoryPlayer:getSingleton():setHighestRank(targetId, rank, new:getId(), groupType)
 		end
 		new:addPlayer(targetId, rank)
+		new:addLog(tonumber(adminId), category, ("hat den Spieler %s über das ControlPanel mit Rang %d in %s eingeladen!"):format(targetName, rank, groupType == "faction" and "die Fraktion" or groupType == "company" and "das Unternehmen" or "die Gruppe"))
 		if groupType == "group" then new:spawnVehicles() end
 		if target then target:sendShortMessage(("Du wurdest über das ControlPanel in %s gesetzt (Rang %d)."):format(new:getName(), rank), new:getName()) end
 	end
