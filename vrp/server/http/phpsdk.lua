@@ -1951,3 +1951,38 @@ function phpSDKVehicleRespawn(adminId, vehicleId)
 	StatisticsLogger:getSingleton():addAdminAction(tonumber(adminId), "respawnVehicle", tostring(vehicleId))
 	return {status = "SUCCESS"}
 end
+
+function phpSDKNickchangeFee(adminId, playerId, amount, toAdmin, reason)
+	amount = math.floor(tonumber(amount) or 0)
+	if amount == 0 then return {status = "ERROR", error = "INVALID_AMOUNT"} end
+	local player = Player.getFromId(tonumber(playerId))
+	local online = player and isElement(player) and player.isActive and player:isActive()
+	local account = online and player:getBankAccount() or BankAccount.loadByOwner(tonumber(playerId), BankAccountTypes.Player)
+	if not account then return {status = "ERROR", error = "NO_ACCOUNT"} end
+	reason = tostring(reason or "Namensänderung")
+	toAdmin = toAdmin == true or toAdmin == 1
+	local admin = Admin:getSingleton().m_BankAccount
+	if amount > 0 then
+		if account:getMoney() < amount then return {status = "ERROR", error = "NOT_ENOUGH_MONEY", money = account:getMoney()} end
+		if toAdmin then
+			if not account:transferMoney(admin, amount, reason, "Admin", "Namensänderung") then return {status = "ERROR", error = "TRANSFER_FAILED"} end
+		else
+			account:__takeMoney(amount, reason, true)
+			StatisticsLogger:getSingleton():addMoneyLogNew(account.m_OwnerId, account.m_OwnerType, account.m_Id, 0, BankAccountTypes.Server, 0, amount, reason, "Admin", "Namensänderung")
+		end
+	else
+		amount = -amount
+		if toAdmin then
+			admin:transferMoney(account, amount, reason, "Admin", "Namensänderung", {allowNegative = true})
+		else
+			account:__giveMoney(amount, reason, true)
+			StatisticsLogger:getSingleton():addMoneyLogNew(0, BankAccountTypes.Server, 0, account.m_OwnerId, account.m_OwnerType, account.m_Id, amount, reason, "Admin", "Namensänderung")
+		end
+	end
+	if online then
+		player:triggerEvent("bankMoneyBalanceRetrieve", player:getBankMoney())
+	else
+		account:save()
+	end
+	return {status = "SUCCESS", money = account:getMoney()}
+end

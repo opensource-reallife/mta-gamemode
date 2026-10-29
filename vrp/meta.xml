@@ -1629,6 +1629,7 @@
 	<export function="phpSDKWorldItemList" type="server" http="true" />
 	<export function="phpSDKWorldItemDelete" type="server" http="true" />
 	<export function="phpSDKVehicleRespawn" type="server" http="true" />
+	<export function="phpSDKNickchangeFee" type="server" http="true" />
 	<export function="phpSDKReloadBadNames" type="server" http="true" />
 	<export function="phpSDKOrgLoan" type="server" http="true" />
 	<export function="phpSDKAccountRename" type="server" http="true" />
