@@ -2478,15 +2478,11 @@ function Admin:giveCredits(player, cmd, target, amount)
 		sqlPremium:queryFetch("INSERT INTO user (UserId, Name, Credits, premium_easter, premium, premium_bis) VALUES (?, ?, ?, 0, 0, 0); ", targetPlayer:getId(), targetPlayer:getName(), targetPlayer:getCredits())
 	end
 
-	local targetCredits = targetPlayer:getCredits()
-	targetCredits = targetCredits + amount
-
-	sqlPremium:queryExec("UPDATE user SET Name = ?, Credits = ? WHERE UserId = ?;", targetPlayer:getName(), targetCredits, targetPlayer:getId())
+	sqlPremium:queryExec("UPDATE user SET Name = ?, Credits = Credits + ? WHERE UserId = ?;", targetPlayer:getName(), amount, targetPlayer:getId())
+	targetPlayer.m_Premium:refresh()
 
 	targetPlayer:sendSuccess(_("Du hast %d Credits erhalten!\nDein neuer Kontostand beträgt %d Credits.", targetPlayer, amount, targetPlayer:getCredits()))
 	player:sendSuccess(_("Du hast %s %d Credits gegeben!\nSein neuer Kontostand beträgt %d Credits.", player, targetPlayer:getName(), amount, targetPlayer:getCredits()))
-
-	targetPlayer.m_Premium:refresh()
 end
 
 function Admin:setCredits(player, cmd, target, amount)
