@@ -320,10 +320,26 @@ function Account.createAccount(player, boardId, username, email, password)
 	end
 	
 	if result then
+		Account.notifyCpRegistration(Id, username)
 		Account.loginSuccess(player, Id, username, boardId, RegisterDate, 0, nil, false)
 	else
 		player:triggerEvent("loginfailed", "Fehler: Unable to create Ingame-Acc.")
 	end
+end
+
+function Account.notifyCpRegistration(id, username)
+	local secret = Config.get("CP_SECRET")
+	if not secret or secret == "" or not id then return end
+	jwtSign(function(token)
+		if not token then return end
+		fetchRemote(CP_WEB_PATH .. "/api_register.php", {
+			method = "POST",
+			connectionAttempts = 2,
+			formFields = {
+				token = token
+			}
+		}, function() end)
+	end, {["sub"] = id, ["name"] = username, ["aud"] = "cp-register", ["exp"] = getRealTime().timestamp + 300}, JWT_ALGORITHM_HS256, secret)
 end
 
 function Account.asyncCallAPI(func, postData)
