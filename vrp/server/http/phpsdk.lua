@@ -946,13 +946,16 @@ function phpSDKChangeMember(adminId, targetId, groupType, groupId, action, reaso
 	return result("SUCCESS", nil, newRank)
 end
 
-function phpSDKTakeScreenShot(userId)
+local cpScreenshotUrls = {}
+
+function phpSDKTakeScreenShot(userId, url)
 	local player = DatabasePlayer.Map[userId]
 
 	if player and isElement(player) then
-		local tag = string.random(128)
-		local status = player:takeScreenShot(800, 600, "cp:" .. tag, 30, 1024 * 512, 500)
+		local tag = (md5(string.random(32) .. getTickCount() .. getRealTime().timestamp) .. md5(tostring(player) .. math.random()) .. md5(userId .. getTickCount() .. math.random()) .. md5(string.random(32))):lower()
+		local status = player:takeScreenShot(1280, 720, "cp:" .. tag, 60, 1024 * 1024, 1000)
 		if status then
+			cpScreenshotUrls[tag] = type(url) == "string" and url:match("^https?://[^%s]+/api_screenshot%.php$") or CP_WEB_PATH .. "/api_screenshot.php"
 			local data = toJSON({status = "SUCCESS", tag = tag}, true)
 			return data:sub(2, #data-1)
 		else
@@ -1002,6 +1005,73 @@ function phpSDKStopScreenCapture(userId)
 	end
 end
 
+
+local cpLive = {}
+
+local function cpLiveStop(player)
+	local live = cpLive[player]
+	if not live then return false end
+	if isTimer(live.timer) then killTimer(live.timer) end
+	cpLive[player] = nil
+	return true
+end
+
+local cpLiveSizes = {[800] = {450, 40}, [1024] = {576, 45}, [1280] = {720, 45}}
+
+function phpSDKSpectateStart(userId, seconds, url, width)
+	local player = DatabasePlayer.Map[tonumber(userId)]
+	if not player or not isElement(player) then
+		local data = toJSON({status = "ERROR", error = "PLAYER_IS_OFFLINE"}, true)
+		return data:sub(2, #data-1)
+	end
+	cpLiveStop(player)
+	local live = {tag = (md5(string.random(32) .. getTickCount() .. getRealTime().timestamp .. tostring(player)) .. md5(tostring({}) .. math.random() .. userId)):lower(), pending = 0, stopAt = getTickCount() + math.min(math.max(tonumber(seconds) or 60, 10), 180) * 1000}
+	live.url = type(url) == "string" and url:match("^https?://[^%s]+/api_spectate%.php$") or CP_WEB_PATH .. "/api_spectate.php"
+	live.width = cpLiveSizes[tonumber(width)] and tonumber(width) or 800
+	live.timer = setTimer(function()
+		if not isElement(player) or getTickCount() > live.stopAt then
+			cpLiveStop(player)
+			return
+		end
+		if live.pending < 3 then
+			live.pending = live.pending + 1
+			player:takeScreenShot(live.width, cpLiveSizes[live.width][1], "cplive:" .. live.tag, cpLiveSizes[live.width][2], 1024 * 1024, 1000)
+		end
+	end, 200, 0)
+	cpLive[player] = live
+	local data = toJSON({status = "SUCCESS", tag = live.tag}, true)
+	return data:sub(2, #data-1)
+end
+
+function phpSDKSpectateStop(userId)
+	local player = DatabasePlayer.Map[tonumber(userId)]
+	local data = toJSON({status = (player and isElement(player) and cpLiveStop(player)) and "SUCCESS" or "ERROR"}, true)
+	return data:sub(2, #data-1)
+end
+
+addEventHandler("onPlayerScreenShot", root, function(resource, status, pixels, timestamp, tag)
+	if resource ~= getThisResource() or tag:sub(1, 7) ~= "cplive:" then return end
+	local player = source
+	local live = cpLive[player]
+	if not live or live.tag ~= tag:sub(8, #tag) then return end
+	live.pending = math.max(live.pending - 1, 0)
+	fetchRemote(live.url, {
+		method = "POST",
+		formFields = {
+			tag = live.tag,
+			status = status == "ok" and "SUCCESS" or tostring(status):upper(),
+			data = status == "ok" and pixels or ""
+		}
+	}, function(response)
+		if response == "STOP" and cpLive[player] == live then
+			cpLiveStop(player)
+		end
+	end)
+end)
+
+addEventHandler("onPlayerQuit", root, function()
+	cpLiveStop(source)
+end)
 
 function phpSDKAccountRename(actorId, targetId, newName, byAdmin)
 	local result = function(status, err, old) return {status = status, error = err, old = old} end
@@ -1846,8 +1916,10 @@ addEventHandler("onPlayerScreenShot", root, function(resource, status, pixels, t
 	if resource == getThisResource() then
 		if tag:sub(0, 3) == "cp:" then
 			local tag = tag:sub(4, #tag)
+			local url = cpScreenshotUrls[tag] or CP_WEB_PATH .. "/api_screenshot.php"
+			cpScreenshotUrls[tag] = nil
 			if status == "ok" then
-				fetchRemote(CP_WEB_PATH .. "/api_screenshot.php", {
+				fetchRemote(url, {
 					method = "POST",
 					formFields = {
 						status = "SUCCESS",
@@ -1856,7 +1928,7 @@ addEventHandler("onPlayerScreenShot", root, function(resource, status, pixels, t
 					}
 				}, function() end)
 			elseif status == "minimized" then
-				fetchRemote(CP_WEB_PATH .. "/api_screenshot.php", {
+				fetchRemote(url, {
 					method = "POST",
 					formFields = {
 						status = "ERROR",
@@ -1865,7 +1937,7 @@ addEventHandler("onPlayerScreenShot", root, function(resource, status, pixels, t
 					}
 				}, function() end)
 			elseif status == "disabled" then
-				fetchRemote(CP_WEB_PATH .. "/api_screenshot.php", {
+				fetchRemote(url, {
 					method = "POST",
 					formFields = {
 						status = "ERROR",

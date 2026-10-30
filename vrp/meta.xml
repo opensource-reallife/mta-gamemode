@@ -1641,6 +1641,8 @@
 	<export function="phpSDKTakeScreenShot" type="server" http="true" />
 	<export function="phpSDKStartScreenCapture" type="server" http="true" />
 	<export function="phpSDKStopScreenCapture" type="server" http="true" />
+	<export function="phpSDKSpectateStart" type="server" http="true" />
+	<export function="phpSDKSpectateStop" type="server" http="true" />
 
 	<!-- Files -->
 	<!-- do not replace the following file tag by vrpfile -->
