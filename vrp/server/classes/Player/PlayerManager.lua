@@ -415,7 +415,8 @@ function PlayerManager:playerQuit(quitType, reason, responsibleElement)
 	end
 
 	if source:isLoggedIn() then
-		StatisticsLogger:addLogin(source, getPlayerName( source ) , "Logout")
+		local quitReason = (quitType == "Kicked" or quitType == "Banned") and reason and reason ~= "" and (": " .. reason) or ""
+		StatisticsLogger:addLogin(source, getPlayerName( source ) , ("Logout (%s%s)"):format(quitType or "Unknown", quitReason):sub(1, 64))
 	end
 	if source:getExecutionPed() then delete(source:getExecutionPed()) end
 	if source.m_SpeedCol then

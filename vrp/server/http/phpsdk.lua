@@ -946,7 +946,7 @@ function phpSDKChangeMember(adminId, targetId, groupType, groupId, action, reaso
 	return result("SUCCESS", nil, newRank)
 end
 
-local cpCrosshairApi = CP_WEB_PATH .. "/api_crosshair.php"
+local cpCrosshairApi = get("cpCrosshairApi") or CP_WEB_PATH .. "/api_crosshair.php"
 
 local function sendCrosshairs(player, crosshairs)
 	if type(crosshairs) ~= "table" then return end
@@ -967,7 +967,11 @@ local function sendCrosshairs(player, crosshairs)
 end
 
 function phpSDKSetCrosshair(userId, data, url)
-	cpCrosshairApi = type(url) == "string" and url:match("^https?://[^%s]+/api_crosshair%.php$") or cpCrosshairApi
+	local api = type(url) == "string" and url:match("^https?://[^%s]+/api_crosshair%.php$")
+	if api and api ~= cpCrosshairApi then
+		cpCrosshairApi = api
+		set("cpCrosshairApi", api)
+	end
 	local player = DatabasePlayer.Map[userId]
 
 	if player and isElement(player) then
@@ -995,13 +999,16 @@ addEventHandler("characterInitialized", root,
 
 local cpScreenshotUrls = {}
 
-function phpSDKTakeScreenShot(userId, url)
+function phpSDKTakeScreenShot(userId, url, adminId)
 	local player = DatabasePlayer.Map[userId]
 
 	if player and isElement(player) then
 		local tag = (md5(string.random(32) .. getTickCount() .. getRealTime().timestamp) .. md5(tostring(player) .. math.random()) .. md5(userId .. getTickCount() .. math.random()) .. md5(string.random(32))):lower()
 		local status = player:takeScreenShot(1280, 720, "cp:" .. tag, 60, 1024 * 1024, 1000)
 		if status then
+			if tonumber(adminId) then
+				sql:queryExec("INSERT INTO ??_account_screenshot (UserId, AdminId, Tag, Status, CreatedAt, UpdatedAt) VALUES (?, ?, ?, 'Processing', NOW(), NOW())", sql:getPrefix(), userId, tonumber(adminId), tag)
+			end
 			cpScreenshotUrls[tag] = type(url) == "string" and url:match("^https?://[^%s]+/api_screenshot%.php$") or CP_WEB_PATH .. "/api_screenshot.php"
 			local data = toJSON({status = "SUCCESS", tag = tag}, true)
 			return data:sub(2, #data-1)
@@ -1137,15 +1144,103 @@ function phpSDKAccountRename(actorId, targetId, newName, byAdmin)
 		player:setName(newName)
 		player:sendShortMessage(byAdmin and ("%s hat deinen Namen über das ControlPanel von %s in %s geändert."):format(Account.getNameFromId(actorId) or "Ein Admin", oldName, newName)
 			or ("Dein Name wurde über das ControlPanel von %s in %s geändert."):format(oldName, newName), "Account")
+	else
+		sql:queryExec("INSERT INTO ??_offlinemessage (PlayerId, Text, Typ, Time) VALUES (?, ?, 1, ?)", sql:getPrefix(), targetId, ("Dein Name wurde über das ControlPanel von %s in %s geändert."):format(oldName, newName), getRealTime().timestamp)
 	end
 	return result("SUCCESS", nil, oldName)
 end
 
-function phpSDKAccountDelete(actorId, targetId)
-	local result = function(status, err) return {status = status, error = err} end
+function phpSDKAccountLock(actorId, targetId, reason)
+	targetId = tonumber(targetId)
+	if not targetId or not Account.getNameFromId(targetId) then return {status = "ERROR", error = "UNKNOWN_PLAYER"} end
+	sql:queryExec("UPDATE ??_account SET AutologinToken = NULL, RememberToken = NULL, ApiToken = NULL WHERE Id = ?", sql:getPrefix(), targetId)
+	local player = Player.getFromId(targetId)
+	if player and isElement(player) then
+		player:kick(tostring(reason or "Dein Account ist zur Löschung vorgemerkt."))
+	end
+	return {status = "SUCCESS"}
+end
+
+local function phpSDKAccountPurge(targetId, newName, keepSerials)
+	local purged = {}
+	local prefix = sql:getPrefix()
+	local run = function(label, db, query, ...)
+		local result, rows = dbPoll(dbQuery(db.m_DBHandle, query, ...), -1)
+		if result and tonumber(rows) and rows > 0 then purged[label] = (purged[label] or 0) + rows end
+	end
+	local account = sql:queryFetchSingle("SELECT LastSerial FROM ??_account WHERE Id = ?", prefix, targetId) or {}
+	local lastSerial = account.LastSerial and account.LastSerial ~= "" and account.LastSerial or nil
+	local ban = sql:queryFetchSingle("SELECT Id, serial FROM ??_bans WHERE player_id = ? AND (expires = 0 OR expires >= UNIX_TIMESTAMP()) ORDER BY expires = 0 DESC, expires DESC LIMIT 1", prefix, targetId)
+	if ban and (ban.serial or ""):gsub("%s", "") == "" and lastSerial then
+		sql:queryExec("UPDATE ??_bans SET serial = ? WHERE Id = ?", prefix, lastSerial, ban.Id)
+	end
+	if not keepSerials then
+		local serials = {}
+		for _, row in ipairs(sql:queryFetch("SELECT Serial FROM ??_account_to_serial WHERE PlayerId = ? UNION SELECT Serial FROM ??_client_statistics WHERE UserId = ?", prefix, targetId, prefix, targetId) or {}) do
+			if row.Serial and row.Serial ~= "" then serials[row.Serial] = true end
+		end
+		if lastSerial then serials[lastSerial] = true end
+		for serial in pairs(serials) do
+			local used = sql:queryFetchSingle("SELECT (SELECT COUNT(*) FROM ??_account_to_serial WHERE Serial = ? AND PlayerId <> ?) + (SELECT COUNT(*) FROM ??_account WHERE LastSerial = ? AND Id <> ?) AS Count", prefix, serial, targetId, prefix, serial, targetId)
+			if not used or tonumber(used.Count) == 0 then
+				run("Mods", sql, "DELETE FROM ??_account_mods WHERE Serial = ?", prefix, serial)
+				run("Multiaccount-Serials", sql, "DELETE FROM ??_account_multiaccount WHERE Serial = ?", prefix, serial)
+			end
+		end
+		run("Serials", sql, "DELETE FROM ??_account_to_serial WHERE PlayerId = ?", prefix, targetId)
+		run("Hardware", sql, "DELETE FROM ??_client_statistics WHERE UserId = ?", prefix, targetId)
+		run("Multiaccount-Serials", sql, "DELETE FROM ??_account_multiaccount WHERE LinkedTo = ?", prefix, targetId)
+	end
+	run("Screenshots", sql, "DELETE FROM ??_account_screenshot WHERE UserId = ?", prefix, targetId)
+	run("TeamSpeak", sql, "DELETE FROM ??_teamspeak_identity WHERE UserId = ?", prefix, targetId)
+	run("Aktivität", sql, "DELETE FROM ??_account_activity WHERE UserId = ?", prefix, targetId)
+	run("Offline-Nachrichten", sql, "DELETE FROM ??_offlinemessage WHERE PlayerId = ?", prefix, targetId)
+	run("Alte CP-Sitzungen", sql, "DELETE FROM cploggedin WHERE gameid = ?", targetId)
+	for _, col in ipairs({"Firstname", "Lastname", "EMail", "Adress", "PLZ", "City", "Country"}) do
+		run("Rechnungsdaten", sqlPremium, ("UPDATE `user` SET `%s` = NULL WHERE UserId = ? AND `%s` IS NOT NULL"):format(col, col), targetId)
+		run("Rechnungsdaten", sqlPremium, ("UPDATE `user` SET `%s` = '' WHERE UserId = ? AND `%s` <> ''"):format(col, col), targetId)
+	end
+	run("Rechnungsdaten", sqlPremium, "UPDATE `user` SET Name = ? WHERE UserId = ?", newName, targetId)
+	local playerCols = {UserId = true, UserID = true, TargetId = true, PlayerId = true, PoliceId = true, HostId = true, ReceivingId = true, GivingId = true, Attacker = true, Target = true, SellerId = true, BuyerId = true, Receiver = true}
+	local keep = {vrplogs_punish = true, vrplogs_punishlog = true}
+	local tables = {}
+	for _, row in ipairs(sqlLogs:queryFetch("SELECT TABLE_NAME AS T, COLUMN_NAME AS C FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ?", sqlLogs.m_Database) or {}) do
+		tables[row.T] = tables[row.T] or {}
+		tables[row.T][row.C] = true
+	end
+	for name, cols in pairs(tables) do
+		if not keep[name] then
+			local where, args = {}, {}
+			for col in pairs(cols) do
+				if playerCols[col] then
+					where[#where + 1] = ("`%s` = ?"):format(col)
+					args[#args + 1] = targetId
+				end
+			end
+			if cols.FromType and cols.ToType then
+				where[#where + 1] = "(FromType = 1 AND FromId = ?) OR (ToType = 1 AND ToId = ?)"
+				args[#args + 1], args[#args + 2] = targetId, targetId
+			end
+			if cols.ElementType and cols.ElementId then
+				where[#where + 1] = "(ElementType = 'player' AND ElementId = ?)"
+				args[#args + 1] = targetId
+			end
+			if #where > 0 then
+				run("Logs", sqlLogs, ("DELETE FROM `%s` WHERE %s"):format(name, table.concat(where, " OR ")), unpack(args))
+			end
+		end
+	end
+	sql:queryExec("UPDATE ??_account SET Name = ?, EMail = NULL, Password = '', Salt = '', " .. (keepSerials and "" or "LastSerial = NULL, ") .. "LastIP = NULL, AutologinToken = NULL, RememberToken = NULL, ApiToken = NULL, TeamspeakId = NULL, TeamspeakActivationCode = NULL, ForumID = 0 WHERE Id = ?", prefix, newName, targetId)
+	return purged
+end
+
+function phpSDKAccountDelete(actorId, targetId, newName, keepSerials)
+	local result = function(status, err, purged) return {status = status, error = err, purged = purged} end
 	targetId, actorId = tonumber(targetId), tonumber(actorId)
 	local name = Account.getNameFromId(targetId)
 	if not name then return result("ERROR", "UNKNOWN_PLAYER") end
+	newName = tostring(newName or "")
+	if not newName:match("^[a-zA-Z0-9_.%[%]]+$") or #newName > 22 then return result("ERROR", "INVALID_NAME") end
 	local row = sql:queryFetchSingle("SELECT FactionId, CompanyId, GroupId FROM ??_character WHERE Id = ?", sql:getPrefix(), targetId) or {}
 	local reason = "Account gelöscht"
 	local faction = row.FactionId and row.FactionId ~= 0 and FactionManager:getSingleton():getFromId(row.FactionId)
@@ -1177,7 +1272,7 @@ function phpSDKAccountDelete(actorId, targetId)
 	if player and isElement(player) then
 		player:kick("Dein Account wurde gelöscht.")
 	end
-	return result("SUCCESS")
+	return result("SUCCESS", nil, phpSDKAccountPurge(targetId, newName, keepSerials == true or keepSerials == 1 or keepSerials == "1"))
 end
 
 local function phpSDKFindShopVehicle(shopVehId)
@@ -1645,6 +1740,10 @@ function phpSDKRouletteLimit(userId, limit)
 	if not userId then return {status = "ERROR", error = "UNKNOWN_PLAYER"} end
 	local cur = RouletteManager.Limits[userId]
 	if limit then
+		sql:queryExec("DELETE FROM ??_roulette_limits WHERE UserId = ?", sql:getPrefix(), userId)
+		if limit > 0 then
+			sql:queryExec("INSERT INTO ??_roulette_limits (UserId, `Limit`) VALUES (?, ?)", sql:getPrefix(), userId, limit)
+		end
 		if limit > 0 then
 			RouletteManager.Limits[userId] = {Limit = limit, Bets = cur and cur.Bets or 0}
 		else
@@ -1761,7 +1860,22 @@ function phpSDKVehicleKeyChange(adminId, vehicleId, playerId, action)
 			return {status = "SUCCESS"}
 		end
 	end
-	return {status = "ERROR", error = "NOT_SPAWNED"}
+	local row = sql:queryFetchSingle("SELECT `Keys` FROM ??_vehicles WHERE Id = ?", sql:getPrefix(), vehicleId)
+	if not row then return {status = "ERROR", error = "UNKNOWN_VEHICLE"} end
+	local keys = row.Keys and fromJSON(row.Keys) or {}
+	keys = type(keys) == "table" and keys or {}
+	local has = table.find(keys, playerId)
+	if action == "add" then
+		if has then return {status = "ERROR", error = "ALREADY"} end
+		table.insert(keys, playerId)
+	elseif action == "remove" then
+		if not has then return {status = "ERROR", error = "NO_KEY"} end
+		table.remove(keys, has)
+	else
+		return {status = "ERROR", error = "UNKNOWN_ACTION"}
+	end
+	sql:queryExec("UPDATE ??_vehicles SET `Keys` = ? WHERE Id = ?", sql:getPrefix(), toJSON(keys, true), vehicleId)
+	return {status = "SUCCESS", spawned = false}
 end
 
 function phpSDKRunningEvents()
@@ -1888,10 +2002,14 @@ function phpSDKVoucher(adminId, playerId, data)
 	return {status = "SUCCESS", money = money, points = points, items = items, weapons = weapons}
 end
 
-function phpSDKShopPoints(playerId, amount, reason)
+function phpSDKShopPoints(playerId, amount, reason, offline)
 	local player = Player.getFromId(tonumber(playerId))
 	if not player or not isElement(player) or not (player.isActive and player:isActive()) then
-		return {status = "ERROR", error = "TARGET_OFFLINE"}
+		amount = math.floor(tonumber(amount) or 0)
+		if not offline or player or amount == 0 then return {status = "ERROR", error = "TARGET_OFFLINE"} end
+		local result, rows = dbPoll(dbQuery(sql.m_DBHandle, "UPDATE ??_character SET Points = Points + ? WHERE Id = ? AND Points + ? >= 0", sql:getPrefix(), amount, tonumber(playerId), amount), -1)
+		if not result or tonumber(rows) == 0 then return {status = "ERROR", error = "NOT_ENOUGH_POINTS"} end
+		return {status = "SUCCESS"}
 	end
 	amount = math.floor(tonumber(amount) or 0)
 	if amount == 0 then return {status = "ERROR", error = "INVALID_AMOUNT"} end
@@ -1973,8 +2091,14 @@ addEventHandler("onPlayerScreenShot", root, function(resource, status, pixels, t
 						data = pixels,
 						tag = tag
 					}
-				}, function() end)
+				}, function(response)
+					local image = tostring(response or ""):match("^OK:(%x+%.jpeg)$")
+					if image then
+						sql:queryExec("UPDATE ??_account_screenshot SET Status = 'Success', Image = ?, UpdatedAt = NOW() WHERE Tag = ? AND Status = 'Processing'", sql:getPrefix(), image, tag)
+					end
+				end)
 			elseif status == "minimized" then
+				sql:queryExec("UPDATE ??_account_screenshot SET Status = 'Minimized', UpdatedAt = NOW() WHERE Tag = ? AND Status = 'Processing'", sql:getPrefix(), tag)
 				fetchRemote(url, {
 					method = "POST",
 					formFields = {
@@ -1984,6 +2108,7 @@ addEventHandler("onPlayerScreenShot", root, function(resource, status, pixels, t
 					}
 				}, function() end)
 			elseif status == "disabled" then
+				sql:queryExec("UPDATE ??_account_screenshot SET Status = 'Disabled', UpdatedAt = NOW() WHERE Tag = ? AND Status = 'Processing'", sql:getPrefix(), tag)
 				fetchRemote(url, {
 					method = "POST",
 					formFields = {
@@ -2193,4 +2318,683 @@ function phpSDKCreditsChanged(playerId, text)
 	player.m_Premium.m_Credits = row and row.Credits or 0
 	if text and text ~= "" then player:sendShortMessage(tostring(text)) end
 	return {status = "SUCCESS", credits = player.m_Premium.m_Credits}
+end
+
+function phpSDKSetPassword(adminId, targetId, hash)
+	targetId = tonumber(targetId)
+	if not targetId or type(hash) ~= "string" or (hash ~= "" and not hash:match("^%$2[aby]%$%d%d%$")) then return {status = "ERROR", error = "INVALID"} end
+	if not sql:queryFetchSingle("SELECT Id FROM ??_account WHERE Id = ?", sql:getPrefix(), targetId) then return {status = "ERROR", error = "UNKNOWN_PLAYER"} end
+	sql:queryExec("UPDATE ??_account SET Password = ?, Salt = NULL, AutologinToken = '' WHERE Id = ?", sql:getPrefix(), hash, targetId)
+	return {status = "SUCCESS"}
+end
+
+function phpSDKSetEmail(adminId, targetId, email)
+	targetId = tonumber(targetId)
+	if not targetId or type(email) ~= "string" or (email ~= "" and not Account.isEmailValid(email)) then return {status = "ERROR", error = "INVALID"} end
+	if not sql:queryFetchSingle("SELECT Id FROM ??_account WHERE Id = ?", sql:getPrefix(), targetId) then return {status = "ERROR", error = "UNKNOWN_PLAYER"} end
+	if email ~= "" and sql:queryFetchSingle("SELECT Id FROM ??_account WHERE LCASE(EMail) = LCASE(?) AND Id <> ?", sql:getPrefix(), email, targetId) then return {status = "ERROR", error = "EMAIL_USED"} end
+	if email == "" then
+		sql:queryExec("UPDATE ??_account SET EMail = NULL WHERE Id = ?", sql:getPrefix(), targetId)
+	else
+		sql:queryExec("UPDATE ??_account SET EMail = ? WHERE Id = ?", sql:getPrefix(), email, targetId)
+	end
+	return {status = "SUCCESS"}
+end
+
+local function phpSDKAffected(db, query, ...)
+	local result, rows = dbPoll(dbQuery(db.m_DBHandle, query, ...), -1)
+	return result and tonumber(rows) or false
+end
+
+function phpSDKCreditsBook(playerId, amount, mode)
+	playerId, amount = tonumber(playerId), math.floor(tonumber(amount) or 0)
+	local name = playerId and Account.getNameFromId(playerId)
+	if not name then return {status = "ERROR", error = "UNKNOWN_PLAYER"} end
+	local row = sqlPremium:queryFetchSingle("SELECT Credits FROM `user` WHERE UserId = ?", playerId)
+	if mode == "set" then
+		if amount < 0 then return {status = "ERROR", error = "INVALID_AMOUNT"} end
+		if row then
+			sqlPremium:queryExec("UPDATE `user` SET Credits = ? WHERE UserId = ?", amount, playerId)
+		else
+			sqlPremium:queryExec("INSERT INTO `user` (UserId, Name, Credits, premium_easter, premium, premium_bis) VALUES (?, ?, ?, 0, 0, 0)", playerId, name, amount)
+		end
+	elseif row then
+		if amount ~= 0 and (phpSDKAffected(sqlPremium, "UPDATE `user` SET Credits = Credits + ? WHERE UserId = ? AND Credits + ? >= 0", amount, playerId, amount) or 0) == 0 then
+			return {status = "ERROR", error = "NOT_ENOUGH_CREDITS"}
+		end
+	elseif amount < 0 then
+		return {status = "ERROR", error = "NOT_ENOUGH_CREDITS"}
+	elseif amount > 0 then
+		sqlPremium:queryExec("INSERT INTO `user` (UserId, Name, Credits, premium_easter, premium, premium_bis) VALUES (?, ?, ?, 0, 0, 0)", playerId, name, amount)
+	end
+	local credits = tonumber((sqlPremium:queryFetchSingle("SELECT Credits FROM `user` WHERE UserId = ?", playerId) or {}).Credits) or 0
+	local player = Player.getFromId(playerId)
+	if player and isElement(player) and player.m_Premium then
+		player.m_Premium.m_Credits = credits
+	end
+	return {status = "SUCCESS", credits = credits}
+end
+
+function phpSDKPremiumGrant(playerId, data)
+	playerId = tonumber(playerId)
+	local name = playerId and Account.getNameFromId(playerId)
+	if not name then return {status = "ERROR", error = "UNKNOWN_PLAYER"} end
+	data = type(data) == "table" and data or {}
+	local credits, vipDays = math.floor(tonumber(data.credits) or 0), math.floor(tonumber(data.vipDays) or 0)
+	local vipPermanent = data.vipPermanent == true or data.vipPermanent == 1
+	local result = {status = "SUCCESS", vehicles = 0}
+	if credits > 0 or vipDays > 0 or vipPermanent then
+		local row = sqlPremium:queryFetchSingle("SELECT premium_bis FROM `user` WHERE UserId = ?", playerId)
+		if not row then
+			sqlPremium:queryExec("INSERT INTO `user` (UserId, Name, premium_easter, premium, premium_bis) VALUES (?, ?, 0, 0, 0)", playerId, name)
+			row = {premium_bis = 0}
+		end
+		if credits > 0 then
+			result.credits = phpSDKCreditsBook(playerId, credits).status == "SUCCESS"
+		end
+		if vipDays > 0 or vipPermanent then
+			local current = tonumber(row.premium_bis) or 0
+			local untilTime = (vipPermanent or current == -1) and -1 or math.max(getRealTime().timestamp, current) + vipDays * 86400
+			sqlPremium:queryExec("UPDATE `user` SET premium = 1, premium_bis = ? WHERE UserId = ?", untilTime, playerId)
+			result.vipUntil = untilTime
+		end
+	end
+	for _, veh in ipairs(type(data.vehicles) == "table" and data.vehicles or {}) do
+		local model = math.floor(tonumber(veh.model) or 0)
+		if model >= 400 and model <= 611 then
+			sqlPremium:queryExec("INSERT INTO premium_veh (Model, abgeholt, Timestamp_buy, Timestamp_abgeholt, Preis, Soundvan, UserId) VALUES (?, 0, UNIX_TIMESTAMP(), 0, 0, ?, ?)", model, (veh.sound == true or veh.sound == 1) and 1 or 0, playerId)
+			result.vehicles = result.vehicles + 1
+		end
+	end
+	return result
+end
+
+function phpSDKVoucherOffline(adminId, playerId, data)
+	playerId = tonumber(playerId)
+	if not playerId or not Account.getNameFromId(playerId) then return {status = "ERROR", error = "UNKNOWN_PLAYER"} end
+	local player = Player.getFromId(playerId)
+	if player and isElement(player) then return {status = "ERROR", error = "TARGET_ONLINE"} end
+	data = type(data) == "table" and data or {}
+	local prefix = sql:getPrefix()
+	local reason = tostring(data.label or "Gutschein")
+	local result = {status = "SUCCESS", items = {}, weapons = {}}
+	local money, points = math.floor(tonumber(data.money) or 0), math.floor(tonumber(data.points) or 0)
+	if money > 0 then
+		local account = BankAccount.loadByOwner(playerId, BankAccountTypes.Player)
+		if account then
+			account:__giveMoney(money, reason, true)
+			account:save()
+			StatisticsLogger:getSingleton():addMoneyLogNew(0, BankAccountTypes.Server, 0, account.m_OwnerId, account.m_OwnerType, account.m_Id, money, reason, "ControlPanel", "Gutschein")
+		end
+		result.money = account and true or false
+	end
+	if points > 0 then
+		result.points = (phpSDKAffected(sql, "UPDATE ??_character SET Points = Points + ? WHERE Id = ?", prefix, points, playerId) or 0) > 0
+	end
+	local slots = math.floor(tonumber(data.slots) or 21)
+	for _, it in ipairs(type(data.items) == "table" and data.items or {}) do
+		local name, amount = tostring(it.item or ""), math.floor(tonumber(it.amount) or 0)
+		local info = sql:queryFetchSingle("SELECT Tasche, stack_max, max_items FROM ??_inventory_items WHERE Objektname = ?", prefix, name)
+		local given = false
+		if info and amount > 0 then
+			local stackMax = math.max(1, tonumber(info.stack_max) or 1)
+			local rows = sql:queryFetch("SELECT id, Objekt, Platz, Menge, Value FROM ??_inventory_slots WHERE PlayerId = ? AND Tasche = ?", prefix, playerId, info.Tasche) or {}
+			local total, used, stacks, space = 0, {}, {}, 0
+			for _, s in ipairs(rows) do
+				used[tonumber(s.Platz)] = true
+				if s.Objekt == name then
+					total = total + tonumber(s.Menge)
+					if tostring(s.Value or "") == "" and tonumber(s.Menge) < stackMax then
+						stacks[#stacks + 1] = s
+						space = space + stackMax - tonumber(s.Menge)
+					end
+				end
+			end
+			local free = {}
+			for place = 0, slots - 1 do
+				if not used[place] then free[#free + 1] = place end
+			end
+			if total + amount <= tonumber(info.max_items) and math.ceil(math.max(0, amount - space) / stackMax) <= #free then
+				local left = amount
+				for _, s in ipairs(stacks) do
+					if left <= 0 then break end
+					local add = math.min(left, stackMax - tonumber(s.Menge))
+					sql:queryExec("UPDATE ??_inventory_slots SET Menge = ? WHERE id = ?", prefix, tonumber(s.Menge) + add, s.id)
+					left = left - add
+				end
+				for _, place in ipairs(free) do
+					if left <= 0 then break end
+					sql:queryExec("INSERT INTO ??_inventory_slots (PlayerId, Menge, Objekt, Platz, Tasche, Value, WearLevel) VALUES (?, ?, ?, ?, ?, '', 0)", prefix, playerId, math.min(left, stackMax), name, place, info.Tasche)
+					left = left - math.min(left, stackMax)
+				end
+				given = true
+			end
+		end
+		result.items[#result.items + 1] = {item = name, amount = amount, ok = given}
+	end
+	local weaponList = type(data.weapons) == "table" and data.weapons or {}
+	if #weaponList > 0 then
+		local row = sql:queryFetchSingle("SELECT GunBox FROM ??_character WHERE Id = ?", prefix, playerId)
+		local box = row and row.GunBox and fromJSON(row.GunBox) or {}
+		box = type(box) == "table" and box or {}
+		local vip = data.vip == true or data.vip == 1
+		for _, wp in ipairs(weaponList) do
+			local weaponId, ammo = math.floor(tonumber(wp.weapon) or 0), math.floor(tonumber(wp.ammo) or 0)
+			local given = false
+			if row and weaponId > 0 and weaponId ~= 38 and ammo > 0 then
+				for i = 1, 6 do
+					local key = tostring(i)
+					box[key] = box[key] or {WeaponId = 0, Amount = 0, VIP = i >= 4}
+					if not given and tonumber(box[key].WeaponId) == 0 and (not box[key].VIP or vip) then
+						box[key].WeaponId, box[key].Amount = weaponId, ammo
+						given = true
+					end
+				end
+			end
+			result.weapons[#result.weapons + 1] = {weapon = weaponId, ammo = ammo, ok = given}
+		end
+		if row then
+			sql:queryExec("UPDATE ??_character SET GunBox = ? WHERE Id = ?", prefix, toJSON(box), playerId)
+		end
+	end
+	return result
+end
+
+function phpSDKModBan(adminId, targetId, action, days, reason)
+	targetId, adminId = tonumber(targetId), tonumber(adminId)
+	if not targetId or not Account.getNameFromId(targetId) then return {status = "ERROR", error = "UNKNOWN_PLAYER"} end
+	if action == "add" then
+		days = math.floor(tonumber(days) or -1)
+		if days < 0 or days > 3650 then return {status = "ERROR", error = "INVALID_DURATION"} end
+		ModdingCheck:getSingleton():addBan(targetId, adminId, days, tostring(reason or ""))
+	elseif action == "remove" then
+		ModdingCheck:getSingleton():removeBan(targetId)
+	else
+		return {status = "ERROR", error = "UNKNOWN_ACTION"}
+	end
+	return {status = "SUCCESS"}
+end
+
+function phpSDKPunishEntry(adminId, targetId, action, data)
+	targetId, adminId = tonumber(targetId), tonumber(adminId) or 0
+	data = type(data) == "table" and data or {}
+	if not targetId then return {status = "ERROR", error = "UNKNOWN_PLAYER"} end
+	local prefix = sqlLogs:getPrefix()
+	if action == "add" then
+		local punishType, reason = tostring(data.type or ""), tostring(data.reason or "")
+		if punishType == "" or reason == "" then return {status = "ERROR", error = "INVALID"} end
+		sqlLogs:queryExec("INSERT INTO ??_Punish (UserId, AdminId, Type, Reason, InternalMessage, Duration, Date) VALUES (?, ?, ?, ?, ?, ?, NOW())",
+			prefix, targetId, adminId, punishType, reason, tostring(data.internal or ""), math.max(0, math.floor(tonumber(data.duration) or 0)))
+		return {status = "SUCCESS"}
+	end
+	local row = sqlLogs:queryFetchSingle("SELECT * FROM ??_Punish WHERE Id = ? AND UserId = ?", prefix, tonumber(data.id), targetId)
+	if not row then return {status = "ERROR", error = "UNKNOWN_PUNISH"} end
+	if action == "edit" then
+		local reason, duration, internal = tostring(data.reason or ""), math.max(0, math.floor(tonumber(data.duration) or 0)), tostring(data.internal or "")
+		local deletedAt = tostring(data.deletedAt or "")
+		sqlLogs:queryExec("UPDATE ??_Punish SET Reason = ?, Duration = ?, InternalMessage = ?, DeletedAt = NULLIF(?, '') WHERE Id = ?", prefix, reason, duration, internal, deletedAt, row.Id)
+	elseif action == "purge" then
+		sqlLogs:queryExec("DELETE FROM ??_Punish WHERE Id = ?", prefix, row.Id)
+	else
+		return {status = "ERROR", error = "UNKNOWN_ACTION"}
+	end
+	return {status = "SUCCESS"}
+end
+
+function phpSDKPlayerHistory(adminId, targetId, action, data)
+	targetId = tonumber(targetId)
+	data = type(data) == "table" and data or {}
+	if not targetId or not Account.getNameFromId(targetId) then return {status = "ERROR", error = "UNKNOWN_PLAYER"} end
+	local prefix = sql:getPrefix()
+	if action == "add" then
+		if data.type ~= "faction" and data.type ~= "company" then return {status = "ERROR", error = "INVALID_TYPE"} end
+		sql:queryExec("INSERT INTO ??_player_history (UserId, InviterId, UninviterId, ElementType, ElementId, InternalReason, ExternalReason, HighestRank, UninviteRank, JoinDate, LeaveDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULLIF(?, ''))",
+			prefix, targetId, tonumber(data.inviter) or 0, tonumber(data.uninviter) or 0, data.type, tonumber(data.elementId) or 0, tostring(data.internal or ""), tostring(data.external or ""),
+			tonumber(data.highestRank) or 0, tonumber(data.uninviteRank) or 0, tostring(data.join or ""), tostring(data.leave or ""))
+		return {status = "SUCCESS"}
+	end
+	local row = sql:queryFetchSingle("SELECT Id FROM ??_player_history WHERE Id = ? AND UserId = ?", prefix, tonumber(data.id), targetId)
+	if not row then return {status = "ERROR", error = "UNKNOWN_ENTRY"} end
+	if action == "edit" then
+		sql:queryExec("UPDATE ??_player_history SET JoinDate = ?, LeaveDate = NULLIF(?, ''), HighestRank = ?, UninviteRank = ?, ExternalReason = ?, InternalReason = ? WHERE Id = ?",
+			prefix, tostring(data.join or ""), tostring(data.leave or ""), tonumber(data.highestRank) or 0, tonumber(data.uninviteRank) or 0, tostring(data.external or ""), tostring(data.internal or ""), row.Id)
+	elseif action == "delete" then
+		sql:queryExec("DELETE FROM ??_player_history WHERE Id = ?", prefix, row.Id)
+	else
+		return {status = "ERROR", error = "UNKNOWN_ACTION"}
+	end
+	return {status = "SUCCESS"}
+end
+
+function phpSDKAntiCheatWhitelist(adminId, targetId, codes)
+	targetId = tonumber(targetId)
+	if not targetId or not Account.getNameFromId(targetId) then return {status = "ERROR", error = "UNKNOWN_PLAYER"} end
+	local list = {}
+	for _, code in ipairs(type(codes) == "table" and codes or {}) do
+		if tonumber(code) then list[#list + 1] = math.floor(tonumber(code)) end
+	end
+	if #list > 0 then
+		sql:queryExec("INSERT INTO ??_account_anticheat_whitelist (PlayerId, Bypass) VALUES (?, ?) ON DUPLICATE KEY UPDATE Bypass = VALUES(Bypass)", sql:getPrefix(), targetId, toJSON(list))
+	else
+		sql:queryExec("DELETE FROM ??_account_anticheat_whitelist WHERE PlayerId = ?", sql:getPrefix(), targetId)
+	end
+	local anticheat = AntiCheat:getSingleton()
+	anticheat.m_AntiCheatWhitelist = {}
+	for _, info in pairs(sql:queryFetch("SELECT Serial, Bypass FROM ??_account_anticheat_whitelist w INNER JOIN ??_account_to_serial a on w.PlayerId = a.PlayerId", sql:getPrefix(), sql:getPrefix()) or {}) do
+		anticheat.m_AntiCheatWhitelist[info.Serial] = info.Bypass ~= "" and fromJSON(info.Bypass) or {}
+	end
+	return {status = "SUCCESS"}
+end
+
+function phpSDKScreenshotDelete(adminId, ids)
+	local deleted = 0
+	for _, id in ipairs(type(ids) == "table" and ids or {ids}) do
+		if tonumber(id) then
+			sql:queryExec("DELETE FROM ??_account_screenshot WHERE Id = ?", sql:getPrefix(), tonumber(id))
+			deleted = deleted + 1
+		end
+	end
+	return {status = "SUCCESS", deleted = deleted}
+end
+
+function phpSDKAdminLog(adminId, text)
+	StatisticsLogger:getSingleton():addAdminAction(tonumber(adminId) or 0, "ControlPanel", tostring(text or ""):sub(1, 255))
+	return {status = "SUCCESS"}
+end
+
+function phpSDKOrgLimits(adminId, groupType, groupId, players, vehicles, models)
+	groupId, players, vehicles = tonumber(groupId), math.floor(tonumber(players) or -1), math.floor(tonumber(vehicles) or -1)
+	local tbl = ({faction = "factions", company = "companies"})[groupType]
+	if not tbl or not groupId then return {status = "ERROR", error = "UNKNOWN_GROUP"} end
+	if players < 0 or players > 500 or vehicles < 0 or vehicles > 500 then return {status = "ERROR", error = "INVALID_LIMIT"} end
+	local limits = {}
+	for model, amount in pairs(type(models) == "table" and models or {}) do
+		if tonumber(model) and tonumber(amount) then limits[tostring(math.floor(tonumber(model)))] = math.floor(tonumber(amount)) end
+	end
+	sql:queryExec("UPDATE ??_" .. tbl .. " SET PlayerLimit = ?, MaxVehicles = ?, VehicleLimits = ? WHERE Id = ?", sql:getPrefix(), players, vehicles, toJSON(limits), groupId)
+	return phpSDKOrgReloadLimits(groupType, groupId)
+end
+
+function phpSDKFCVehicle(adminId, action, data)
+	data = type(data) == "table" and data or {}
+	local prefix = sql:getPrefix()
+	local ownerType = ({faction = 2, company = 3})[data.groupType]
+	local ownerId, id = tonumber(data.groupId), tonumber(data.id) or 0
+	if not ownerType or not ownerId then return {status = "ERROR", error = "UNKNOWN_GROUP"} end
+	local old = id > 0 and sql:queryFetchSingle("SELECT Id, ShopId, Tunings FROM ??_fc_vehicle_shop_veh WHERE Id = ? AND OwnerType = ? AND OwnerId = ?", prefix, id, ownerType, ownerId)
+	if id > 0 and not old then return {status = "ERROR", error = "UNKNOWN_VEHICLE"} end
+	if action == "delete" then
+		sql:queryExec("DELETE FROM ??_fc_vehicle_shop_veh WHERE Id = ?", prefix, id)
+		phpSDKFCShopReload(old.ShopId)
+		return {status = "SUCCESS"}
+	elseif action ~= "save" then
+		return {status = "ERROR", error = "UNKNOWN_ACTION"}
+	end
+	local shopId, model, price = tonumber(data.shop), tonumber(data.model), math.floor(tonumber(data.price) or -1)
+	if not shopId or not model or price < 0 then return {status = "ERROR", error = "INVALID"} end
+	local handling = tostring(data.handling or "")
+	local els = tostring(data.els or "")
+	local tunings = old and fromJSON(old.Tunings or "") or nil
+	tunings = type(tunings) == "table" and tunings or (type(data.tunings) == "table" and data.tunings or {})
+	tunings.Color1, tunings.Color2 = data.color1, data.color2
+	if old then
+		sql:queryExec("UPDATE ??_fc_vehicle_shop_veh SET ShopId = ?, Model = ?, Price = ?, Description = ?, Handling = NULLIF(?, ''), ELSPreset = NULLIF(?, ''), Tunings = ? WHERE Id = ?",
+			prefix, shopId, model, price, tostring(data.description or ""), handling, els, toJSON(tunings), id)
+		if tonumber(old.ShopId) ~= shopId then phpSDKFCShopReload(old.ShopId) end
+	else
+		sql:queryExec("INSERT INTO ??_fc_vehicle_shop_veh (Model, ShopId, Price, Description, OwnerId, OwnerType, Tunings, Handling, ELSPreset) VALUES (?, ?, ?, ?, ?, ?, ?, NULLIF(?, ''), NULLIF(?, ''))",
+			prefix, model, shopId, price, tostring(data.description or ""), ownerId, ownerType, toJSON(tunings), handling, els)
+	end
+	phpSDKFCShopReload(shopId)
+	return {status = "SUCCESS"}
+end
+
+function phpSDKBadName(adminId, action, id, name)
+	id, name = tonumber(id) or 0, tostring(name or "")
+	if action == "save" then
+		if not name:match("^%*?[%w_]+%*?$") or #name < 2 or #name > 50 then return {status = "ERROR", error = "INVALID_NAME"} end
+		if id > 0 then
+			sql:queryExec("UPDATE ??_bad_names SET Name = ? WHERE Id = ?", sql:getPrefix(), name, id)
+		else
+			sql:queryExec("INSERT INTO ??_bad_names (Name) VALUES (?)", sql:getPrefix(), name)
+		end
+	elseif action == "delete" then
+		sql:queryExec("DELETE FROM ??_bad_names WHERE Id = ?", sql:getPrefix(), id)
+	else
+		return {status = "ERROR", error = "UNKNOWN_ACTION"}
+	end
+	return phpSDKReloadBadNames()
+end
+
+function phpSDKSetAdminRank(adminId, targetId, rank)
+	targetId, rank = tonumber(targetId), tonumber(rank)
+	if not targetId or not Account.getNameFromId(targetId) then return {status = "ERROR", error = "UNKNOWN_PLAYER"} end
+	if not rank or rank < 0 then return {status = "ERROR", error = "INVALID_RANK"} end
+	local player = Player.getFromId(targetId)
+	if player and isElement(player) then return {status = "ERROR", error = "ONLINE"} end
+	sql:queryExec("UPDATE ??_account SET `Rank` = ? WHERE Id = ?", sql:getPrefix(), math.floor(rank), targetId)
+	return {status = "SUCCESS"}
+end
+
+function phpSDKServerSetting(adminId, index, value, desc, reload)
+	index = tostring(index or "")
+	local row = sql:queryFetchSingle("SELECT Id FROM ??_settings WHERE `Index` = ?", sql:getPrefix(), index)
+	if not row then return {status = "ERROR", error = "UNKNOWN_SETTING"} end
+	if desc == nil then
+		sql:queryExec("UPDATE ??_settings SET Value = ? WHERE Id = ?", sql:getPrefix(), tostring(value or ""), row.Id)
+	else
+		sql:queryExec("UPDATE ??_settings SET Value = ?, `Desc` = NULLIF(?, '') WHERE Id = ?", sql:getPrefix(), tostring(value or ""), tostring(desc), row.Id)
+	end
+	if reload == true or reload == 1 then
+		return phpSDKReloadServerSettings()
+	end
+	return {status = "SUCCESS"}
+end
+
+function phpSDKModBlacklist(adminId, action, sha256, md5)
+	sha256, md5 = tostring(sha256 or ""), tostring(md5 or "")
+	if not sha256:match("^%x+$") or #sha256 ~= 64 or not md5:match("^%x+$") or #md5 ~= 32 then return {status = "ERROR", error = "INVALID_HASH"} end
+	if action == "block" then
+		if not sql:queryFetchSingle("SELECT 1 AS Found FROM ??_mod_blacklist WHERE SHA256 = ? OR MD5 = ?", sql:getPrefix(), sha256, md5) then
+			sql:queryExec("INSERT INTO ??_mod_blacklist (SHA256, MD5) VALUES (?, ?)", sql:getPrefix(), sha256, md5)
+		end
+	elseif action == "unblock" then
+		sql:queryExec("DELETE FROM ??_mod_blacklist WHERE SHA256 = ? OR MD5 = ?", sql:getPrefix(), sha256, md5)
+	else
+		return {status = "ERROR", error = "UNKNOWN_ACTION"}
+	end
+	ModdingCheck:getSingleton():loadBans(true)
+	return {status = "SUCCESS"}
+end
+
+function phpSDKStateEvidenceEdit(adminId, action, id, data)
+	id, data = tonumber(id) or 0, type(data) == "table" and data or {}
+	local result = {status = "SUCCESS", id = id}
+	if action == "delete" then
+		sql:queryExec("DELETE FROM ??_state_evidence WHERE Id = ?", sql:getPrefix(), id)
+	elseif action == "save" then
+		local evidenceType, amount = tostring(data.type or ""), math.floor(tonumber(data.amount) or 0)
+		if evidenceType == "" or amount < 1 or amount > 100000 then return {status = "ERROR", error = "INVALID"} end
+		if id > 0 then
+			sql:queryExec("UPDATE ??_state_evidence SET Type = ?, Object = ?, Amount = ? WHERE Id = ?", sql:getPrefix(), evidenceType, tostring(data.object or ""), amount, id)
+		else
+			local _, _, insertId = dbPoll(dbQuery(sql.m_DBHandle, "INSERT INTO ??_state_evidence (Type, Object, Amount, UserId, Timestamp) VALUES (?, ?, ?, ?, UNIX_TIMESTAMP())", sql:getPrefix(), evidenceType, tostring(data.object or ""), amount, tonumber(adminId) or 0), -1)
+			result.id = insertId
+		end
+	else
+		return {status = "ERROR", error = "UNKNOWN_ACTION"}
+	end
+	if StateEvidence:isInstantiated() then StateEvidence:getSingleton():loadObjectData() end
+	return result
+end
+
+function phpSDKMultiAccount(adminId, action, id, data)
+	id, data = tonumber(id) or 0, type(data) == "table" and data or {}
+	if action == "delete" then
+		sql:queryExec("DELETE FROM ??_account_multiaccount WHERE ID = ?", sql:getPrefix(), id)
+		return {status = "SUCCESS"}
+	elseif action ~= "save" then
+		return {status = "ERROR", error = "UNKNOWN_ACTION"}
+	end
+	local serial = tostring(data.serial or ""):upper()
+	if not serial:match("^%x+$") or #serial ~= 32 then return {status = "ERROR", error = "INVALID_SERIAL"} end
+	local linked = {}
+	for _, accountId in ipairs(type(data.accounts) == "table" and data.accounts or {}) do
+		if tonumber(accountId) then linked[#linked + 1] = math.floor(tonumber(accountId)) end
+	end
+	if #linked < 2 then return {status = "ERROR", error = "TOO_FEW_ACCOUNTS"} end
+	local allow = (data.allowCreate == true or data.allowCreate == 1) and 1 or 0
+	if id > 0 then
+		sql:queryExec("UPDATE ??_account_multiaccount SET Serial = ?, LinkedTo = ?, allowCreate = ? WHERE ID = ?", sql:getPrefix(), serial, toJSON(linked), allow, id)
+	else
+		sql:queryExec("INSERT INTO ??_account_multiaccount (Serial, LinkedTo, allowCreate, Admin, Timestamp) VALUES (?, ?, ?, ?, UNIX_TIMESTAMP())", sql:getPrefix(), serial, toJSON(linked), allow, tonumber(adminId) or 0)
+	end
+	return {status = "SUCCESS"}
+end
+
+function phpSDKAdminPoll(adminId, action, data)
+	adminId, data = tonumber(adminId), type(data) == "table" and data or {}
+	if action == "vote" then
+		local pollId = tonumber(data.pollId)
+		if not adminId or not pollId then return {status = "ERROR", error = "INVALID"} end
+		sql:queryExec("DELETE FROM ??_admin_poll_vote WHERE PollId = ? AND AdminId = ?", sql:getPrefix(), pollId, adminId)
+		sql:queryExec("INSERT INTO ??_admin_poll_vote (PollId, AdminId, Vote, CreatedAt) VALUES (?, ?, ?, NOW())", sql:getPrefix(), pollId, adminId, (data.agree == true or data.agree == 1) and 1 or 0)
+		return {status = "SUCCESS"}
+	elseif action == "finish" then
+		sql:queryExec("UPDATE ??_admin_poll SET FinishedAt = NOW(), UpdatedAt = NOW() WHERE FinishedAt IS NULL", sql:getPrefix())
+		return {status = "SUCCESS"}
+	elseif action == "create" then
+		local title = tostring(data.title or "")
+		if title == "" then return {status = "ERROR", error = "INVALID"} end
+		sql:queryExec("UPDATE ??_admin_poll SET FinishedAt = NOW(), UpdatedAt = NOW() WHERE FinishedAt IS NULL", sql:getPrefix())
+		local _, _, insertId = dbPoll(dbQuery(sql.m_DBHandle, "INSERT INTO ??_admin_poll (Title, URL, AdminId, CreatedAt, UpdatedAt) VALUES (?, ?, ?, NOW(), NOW())", sql:getPrefix(), title, tostring(data.url or ""):sub(1, 255), adminId or 0), -1)
+		return {status = "SUCCESS", id = insertId}
+	end
+	return {status = "ERROR", error = "UNKNOWN_ACTION"}
+end
+
+local phpSDKMapColumns = {"Type", "Model", "PosX", "PosY", "PosZ", "RotX", "RotY", "RotZ", "ScaleX", "ScaleY", "ScaleZ", "Interior", "Dimension", "Breakable", "Collision", "Doublesided", "Textures", "LodEnabled", "Radius", "Creator"}
+
+function phpSDKMapImport(adminId, data)
+	data = type(data) == "table" and data or {}
+	local prefix = sql:getPrefix()
+	local objects = type(data.objects) == "table" and data.objects or {}
+	if #objects == 0 then return {status = "ERROR", error = "NO_OBJECTS"} end
+	local mapId = tonumber(data.targetId) or 0
+	if mapId > 0 then
+		if not sql:queryFetchSingle("SELECT Id FROM ??_map_editor_maps WHERE Id = ?", prefix, mapId) then return {status = "ERROR", error = "UNKNOWN_MAP"} end
+		sql:queryExec("DELETE FROM ??_map_editor_objects WHERE MapId = ?", prefix, mapId)
+	else
+		local name = tostring(data.name or "")
+		if #name < 3 or #name > 100 then return {status = "ERROR", error = "INVALID_NAME"} end
+		if sql:queryFetchSingle("SELECT Id FROM ??_map_editor_maps WHERE Name = ?", prefix, name) then return {status = "ERROR", error = "NAME_TAKEN"} end
+		local _, _, insertId = dbPoll(dbQuery(sql.m_DBHandle, "INSERT INTO ??_map_editor_maps (Name, Creator, SaveObjects, Activated, Deactivatable, Category) VALUES (?, ?, ?, ?, ?, NULLIF(?, ''))", prefix, name,
+			tonumber(data.creator) or tonumber(adminId) or 0, tonumber(data.saveObjects) or 1, tonumber(data.activated) or 0, tonumber(data.deactivatable) or 1, tostring(data.category or "")), -1)
+		mapId = tonumber(insertId)
+		if not mapId then return {status = "ERROR", error = "INSERT_FAILED"} end
+	end
+	local placeholders = {}
+	for i = 1, #phpSDKMapColumns do placeholders[i] = "NULLIF(?, '')" end
+	local query = ("INSERT INTO ??_map_editor_objects (MapId, %s) VALUES (?, %s)"):format(table.concat(phpSDKMapColumns, ", "), table.concat(placeholders, ", "))
+	for _, object in ipairs(objects) do
+		local values = {}
+		for i, column in ipairs(phpSDKMapColumns) do
+			local value = type(object) == "table" and object[column]
+			values[i] = (value == nil or value == false) and "" or tostring(value)
+		end
+		sql:queryExec(query, prefix, mapId, unpack(values))
+	end
+	return {status = "SUCCESS", id = mapId, objects = #objects}
+end
+
+function phpSDKTexture(adminId, action, data)
+	data = type(data) == "table" and data or {}
+	local prefix = sql:getPrefix()
+	if action == "status" then
+		local id, status = tonumber(data.id), tonumber(data.status)
+		if not id or not status or status < 0 or status > 3 then return {status = "ERROR", error = "INVALID"} end
+		sql:queryExec("UPDATE ??_textureshop SET Status = ?, Admin = ? WHERE Id = ?", prefix, status, tonumber(adminId) or 0, id)
+	elseif action == "add" then
+		local userId, name, image, model = tonumber(data.userId), tostring(data.name or ""), tostring(data.image or ""), tonumber(data.model) or 0
+		if not userId or #name < 3 or #name > 60 or not image:match("^https?://") then return {status = "ERROR", error = "INVALID"} end
+		sql:queryExec("INSERT INTO ??_textureshop (UserId, Name, Image, Model, Status, Public, Admin, Date, Earnings) VALUES (?, ?, ?, ?, 0, ?, 0, NOW(), 0)",
+			prefix, userId, name, image, model, (data.public == true or data.public == 1) and 1 or 0)
+	elseif action == "delete" then
+		local id, userId = tonumber(data.id), tonumber(data.userId)
+		if not id or not userId then return {status = "ERROR", error = "INVALID"} end
+		sql:queryExec("DELETE FROM ??_textureshop WHERE Id = ? AND UserId = ? AND Status <> 2", prefix, id, userId)
+	else
+		return {status = "ERROR", error = "UNKNOWN_ACTION"}
+	end
+	return {status = "SUCCESS"}
+end
+
+function phpSDKStorageCleanup(adminId, area, file)
+	file = tostring(file or "")
+	if not file:match("^[%w%.%-_]+$") then return {status = "ERROR", error = "INVALID_FILE"} end
+	local result, rows
+	if area == "screenshots" then
+		result, rows = dbPoll(dbQuery(sql.m_DBHandle, "DELETE FROM ??_account_screenshot WHERE Image = ?", sql:getPrefix(), file), -1)
+	elseif area == "textures" then
+		result, rows = dbPoll(dbQuery(sql.m_DBHandle, "DELETE FROM ??_textureshop WHERE Image LIKE ?", sql:getPrefix(), "%/uploads/textures/" .. file), -1)
+	else
+		return {status = "ERROR", error = "UNKNOWN_AREA"}
+	end
+	return {status = "SUCCESS", deleted = result and tonumber(rows) or 0}
+end
+
+local phpSDKEditPlayerColumns = {money = "Money", points = "Points", playTime = "PlayTime", paNote = "PaNote", weaponLevel = "WeaponLevel", vehicleLevel = "VehicleLevel",
+	skinLevel = "SkinLevel", jobLevel = "JobLevel", fishingLevel = "FishingLevel", drivingLicense = "HasDrivingLicense", bikeLicense = "HasBikeLicense",
+	truckLicense = "HasTruckLicense", pilotsLicense = "HasPilotsLicense"}
+
+function phpSDKEditPlayerOffline(adminId, targetId, action, data)
+	targetId, data = tonumber(targetId), type(data) == "table" and data or {}
+	local result = function(status, err) return {status = status, error = err} end
+	if not targetId then return result("ERROR", "UNKNOWN_PLAYER") end
+	local prefix = sql:getPrefix()
+	local ownerType = tonumber(data.ownerType) or 1
+	if ownerType == 1 then
+		local player = Player.getFromId(targetId)
+		if player and isElement(player) then return result("ERROR", "TARGET_ONLINE") end
+	end
+	if action == "stats" then
+		for key, column in pairs(phpSDKEditPlayerColumns) do
+			local value = data[key]
+			if value ~= nil then
+				value = (value == true and 1) or (value == false and 0) or tonumber(value)
+				if value then sql:queryExec(("UPDATE ??_character SET `%s` = ? WHERE Id = ?"):format(column), prefix, math.floor(value), targetId) end
+			end
+		end
+		if tonumber(data.bank) then
+			sql:queryExec("UPDATE ??_bank_accounts SET Money = ? WHERE OwnerType = 1 AND OwnerId = ?", prefix, math.floor(tonumber(data.bank)), targetId)
+		end
+	elseif action == "weapons" then
+		local row = sql:queryFetchSingle("SELECT Weapons FROM ??_character WHERE Id = ?", prefix, targetId)
+		local list = row and row.Weapons and fromJSON(row.Weapons) or {}
+		list = type(list) == "table" and list or {}
+		local keep = {}
+		if type(data.give) == "table" then
+			local weaponId, ammo = math.floor(tonumber(data.give[1]) or 0), math.floor(tonumber(data.give[2]) or 0)
+			for _, w in ipairs(list) do
+				if type(w) == "table" and getSlotFromWeapon(tonumber(w[1]) or 0) ~= getSlotFromWeapon(weaponId) then keep[#keep + 1] = w end
+			end
+			keep[#keep + 1] = {weaponId, ammo}
+		elseif not data.all then
+			local remove = {}
+			for _, id in ipairs(type(data.weapons) == "table" and data.weapons or {}) do remove[tonumber(id) or -1] = true end
+			for _, w in ipairs(list) do
+				if type(w) == "table" and not remove[tonumber(w[1]) or 0] then keep[#keep + 1] = w end
+			end
+		end
+		sql:queryExec("UPDATE ??_character SET Weapons = ? WHERE Id = ?", prefix, toJSON(keep), targetId)
+	elseif action == "vehicle" then
+		local vehicleId = tonumber(data.vehicleId)
+		local row = vehicleId and sql:queryFetchSingle("SELECT Tunings FROM ??_vehicles WHERE Id = ? AND OwnerType = ? AND OwnerId = ?", prefix, vehicleId, ownerType, targetId)
+		if not row then return result("ERROR", "NOT_FOUND") end
+		local tunings = row.Tunings and fromJSON(row.Tunings) or {}
+		tunings = type(tunings) == "table" and tunings or {}
+		tunings.Color1, tunings.Color2 = data.color1, data.color2
+		sql:queryExec("UPDATE ??_vehicles SET Model = ?, Fuel = ?, Mileage = ?, Tunings = ? WHERE Id = ?", prefix, tonumber(data.model), tonumber(data.fuel) or 0, tonumber(data.mileage) or 0, toJSON(tunings), vehicleId)
+	elseif action == "trunk" then
+		local trunk = sql:queryFetchSingle("SELECT t.* FROM ??_vehicles v JOIN ??_vehicle_trunks t ON t.Id = v.TrunkId WHERE v.Id = ? AND v.OwnerType = ? AND v.OwnerId = ?", prefix, prefix, tonumber(data.vehicleId), ownerType, targetId)
+		if not trunk then return result("ERROR", "NO_TRUNK") end
+		local slot, column, value = math.floor(tonumber(data.slot) or 0), nil, nil
+		local decode = function(json) local t = json and fromJSON(json) return type(t) == "table" and t or {} end
+		if data.op == "addItem" then
+			slot = 0
+			for i = 1, 4 do
+				local s = decode(trunk["ItemSlot" .. i])
+				if slot == 0 and ((s.Item or "none") == "none" or (tonumber(s.Amount) or 0) <= 0) then slot = i end
+			end
+			if slot == 0 then return result("ERROR", "TRUNK_FULL") end
+			column, value = "ItemSlot" .. slot, {Item = tostring(data.item or ""), Amount = math.floor(tonumber(data.amount) or 0), Value = tostring(data.value or "")}
+		elseif data.op == "removeItem" and slot >= 1 and slot <= 4 then
+			column, value = "ItemSlot" .. slot, {Item = "none", Amount = 0, Value = ""}
+		elseif data.op == "addWeapon" then
+			slot = 0
+			for i = 1, 2 do
+				if slot == 0 and (tonumber(decode(trunk["WeaponSlot" .. i]).WeaponId) or 0) == 0 then slot = i end
+			end
+			if slot == 0 then return result("ERROR", "TRUNK_FULL_WEAPON") end
+			column, value = "WeaponSlot" .. slot, {WeaponId = math.floor(tonumber(data.weapon) or 0), Amount = math.floor(tonumber(data.amount) or 0)}
+		elseif data.op == "removeWeapon" and slot >= 1 and slot <= 2 then
+			column, value = "WeaponSlot" .. slot, {WeaponId = 0, Amount = 0}
+		else
+			return result("ERROR", "UNKNOWN_ACTION")
+		end
+		sql:queryExec(("UPDATE ??_vehicle_trunks SET %s = ? WHERE Id = ?"):format(column), prefix, toJSON(value), trunk.Id)
+	elseif action == "inventory" then
+		local item, amount = tostring(data.item or ""), math.floor(tonumber(data.amount) or 0)
+		local info = sql:queryFetchSingle("SELECT Tasche, stack_max, max_items, MaxWear FROM ??_inventory_items WHERE Objektname = ?", prefix, item)
+		if not info then return result("ERROR", "UNKNOWN_ITEM") end
+		local rows = sql:queryFetch("SELECT id, Platz, Menge FROM ??_inventory_slots WHERE PlayerId = ? AND Objekt = ? ORDER BY Platz", prefix, targetId, item) or {}
+		local have, stack = 0, math.max(1, tonumber(info.stack_max) or 1)
+		for _, r in ipairs(rows) do have = have + tonumber(r.Menge) end
+		if amount > 0 then
+			if have + amount > tonumber(info.max_items) then return result("ERROR", "ITEM_MAX") end
+			local used, free, space = {}, 0, 0
+			for _, r in ipairs(sql:queryFetch("SELECT Platz FROM ??_inventory_slots WHERE PlayerId = ? AND Tasche = ?", prefix, targetId, info.Tasche) or {}) do used[tonumber(r.Platz)] = true end
+			for place = 0, 20 do if not used[place] then free = free + 1 end end
+			for _, r in ipairs(rows) do space = space + math.max(0, stack - tonumber(r.Menge)) end
+			if math.ceil(math.max(0, amount - space) / stack) > free then return result("ERROR", "INVENTORY_FULL") end
+			local rest = amount
+			for _, r in ipairs(rows) do
+				if rest > 0 and tonumber(r.Menge) < stack then
+					local add = math.min(stack - tonumber(r.Menge), rest)
+					sql:queryExec("UPDATE ??_inventory_slots SET Menge = Menge + ? WHERE id = ?", prefix, add, r.id)
+					rest = rest - add
+				end
+			end
+			local wear = (tonumber(info.MaxWear) or 0) > 0 and tostring(math.floor(tonumber(info.MaxWear))) or ""
+			for place = 0, 20 do
+				if rest > 0 and not used[place] then
+					local put = math.min(stack, rest)
+					sql:queryExec("INSERT INTO ??_inventory_slots (PlayerId, Objekt, Platz, Menge, Tasche, Value, WearLevel) VALUES (?, ?, ?, ?, ?, '', NULLIF(?, ''))", prefix, targetId, item, place, put, info.Tasche, wear)
+					rest = rest - put
+				end
+			end
+		else
+			if have < -amount then return result("ERROR", "NOT_ENOUGH") end
+			local rest = -amount
+			for i = #rows, 1, -1 do
+				if rest > 0 then
+					local take = math.min(tonumber(rows[i].Menge), rest)
+					if take == tonumber(rows[i].Menge) then
+						sql:queryExec("DELETE FROM ??_inventory_slots WHERE id = ?", prefix, rows[i].id)
+					else
+						sql:queryExec("UPDATE ??_inventory_slots SET Menge = Menge - ? WHERE id = ?", prefix, take, rows[i].id)
+					end
+					rest = rest - take
+				end
+			end
+		end
+	elseif action == "gunbox" then
+		local slot = math.floor(tonumber(data.slot) or 0)
+		if slot < 1 or slot > 6 then return result("ERROR", "UNKNOWN_SLOT") end
+		local row = sql:queryFetchSingle("SELECT GunBox FROM ??_character WHERE Id = ?", prefix, targetId)
+		local box = row and row.GunBox and fromJSON(row.GunBox) or {}
+		box = type(box) == "table" and box or {}
+		local weaponId = math.floor(tonumber(data.weapon) or 0)
+		box[tostring(slot)] = {WeaponId = weaponId, Amount = weaponId > 0 and math.floor(tonumber(data.amount) or 0) or 0, VIP = slot >= 4}
+		sql:queryExec("UPDATE ??_character SET GunBox = ? WHERE Id = ?", prefix, toJSON(box), targetId)
+	else
+		return result("ERROR", "UNKNOWN_ACTION")
+	end
+	return result("SUCCESS")
+end
+
+function phpSDKGiveQRAchievementOffline(playerId, achievementId)
+	playerId, achievementId = tonumber(playerId), tonumber(achievementId)
+	if not playerId or not achievementId then return {status = "ERROR", error = "INVALID"} end
+	local player = Player.getFromId(playerId)
+	if player and isElement(player) then return {status = "ERROR", error = "TARGET_ONLINE"} end
+	local row = sql:queryFetchSingle("SELECT Achievements FROM ??_character WHERE Id = ?", sql:getPrefix(), playerId)
+	if not row then return {status = "ERROR", error = "UNKNOWN_PLAYER"} end
+	local list = row.Achievements and fromJSON(row.Achievements) or nil
+	list = type(list) == "table" and list or {["0"] = false}
+	if list[tostring(achievementId)] then return {status = "SUCCESS", already = true} end
+	list[tostring(achievementId)] = true
+	local exp = tonumber((sql:queryFetchSingle("SELECT exp FROM ??_achievements WHERE id = ?", sql:getPrefix(), achievementId) or {}).exp) or 0
+	sql:queryExec("UPDATE ??_character SET Achievements = ?, Points = Points + ? WHERE Id = ?", sql:getPrefix(), toJSON(list), exp, playerId)
+	return {status = "SUCCESS", already = false}
 end
