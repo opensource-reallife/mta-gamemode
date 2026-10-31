@@ -9,7 +9,7 @@ function LoginRuleGUI:constructor()
 	GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true)
 	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Regelwerk", true, true, self)
 
-	self.m_Browser = GUIGridWebView:new(1, 1, 15, 15, "https://forum.openreallife.net/cms/index.php?board/24-regeln/", true, self.m_Window)
+	self.m_Browser = GUIGridWebView:new(1, 1, 15, 15, (CP_WEB_PATH .. "/rules.php?ingame=1&lang=%s"):format(localPlayer:getLocale()), true, self.m_Window)
 end
 
 function LoginRuleGUI:destructor()
