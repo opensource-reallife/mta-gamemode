@@ -948,12 +948,30 @@ end
 
 local cpCrosshairApi = CP_WEB_PATH .. "/api_crosshair.php"
 
+local function sendCrosshairs(player, crosshairs)
+	if type(crosshairs) ~= "table" then return end
+	for _, kind in ipairs({"normal", "sniper"}) do
+		local item = crosshairs[kind]
+		if type(item) == "table" and item.url then
+			fetchRemote(item.url,
+				function(pixels, errorCode)
+					if errorCode == 0 and isElement(player) then
+						player:triggerLatentEvent("crosshairApply", kind, item.hash, pixels)
+					end
+				end
+			)
+		else
+			player:triggerEvent("crosshairApply", kind)
+		end
+	end
+end
+
 function phpSDKSetCrosshair(userId, data, url)
 	cpCrosshairApi = type(url) == "string" and url:match("^https?://[^%s]+/api_crosshair%.php$") or cpCrosshairApi
 	local player = DatabasePlayer.Map[userId]
 
 	if player and isElement(player) then
-		player:triggerEvent("crosshairApply", fromJSON(data))
+		sendCrosshairs(player, fromJSON(data))
 		local data = toJSON({status = "SUCCESS"}, true)
 		return data:sub(2, #data-1)
 	else
@@ -968,10 +986,7 @@ addEventHandler("characterInitialized", root,
 		fetchRemote(cpCrosshairApi .. "?id=" .. player:getId(),
 			function(data, errorCode)
 				if errorCode == 0 and isElement(player) then
-					local crosshairs = fromJSON(data)
-					if type(crosshairs) == "table" then
-						player:triggerEvent("crosshairApply", crosshairs)
-					end
+					sendCrosshairs(player, fromJSON(data))
 				end
 			end
 		)

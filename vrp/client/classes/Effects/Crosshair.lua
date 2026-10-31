@@ -25,20 +25,12 @@ end
 
 addRemoteEvents{"crosshairApply"}
 addEventHandler("crosshairApply", root,
-	function(data)
-		for kind in pairs(Crosshair.Textures) do
-			local item = type(data) == "table" and data[kind]
-			if type(item) ~= "table" or not item.url then
-				Crosshair.reset(kind)
-			elseif not (Crosshair.Active[kind] and Crosshair.Active[kind].hash == item.hash) then
-				fetchRemote(item.url,
-					function(pixels, errorCode)
-						if errorCode == 0 then
-							Crosshair.apply(kind, pixels, item.hash)
-						end
-					end
-				)
-			end
+	function(kind, hash, pixels)
+		if not Crosshair.Textures[kind] then return end
+		if not pixels then
+			Crosshair.reset(kind)
+		elseif not (Crosshair.Active[kind] and Crosshair.Active[kind].hash == hash) then
+			Crosshair.apply(kind, pixels, hash)
 		end
 	end
 )
