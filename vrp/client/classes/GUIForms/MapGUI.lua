@@ -14,7 +14,7 @@ function MapGUI:constructor(func)
 	self.m_Callback = func
 
 	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _"Karte", true, true, self)
-	self.m_Map = GUIImage:new(self.m_Width*0.02, self.m_Height*0.06, self.m_Width*0.96, self.m_Width*0.96, "files/images/Radar_GTA/Radar.jpg", self.m_Window)
+	self.m_Map = GUIImage:new(self.m_Width*0.02, self.m_Height*0.06, self.m_Width*0.96, self.m_Width*0.96, "files/images/Radar/Radar_GTA/Radar.jpg", self.m_Window)
 
 	self.m_Map.onLeftDoubleClick = bind(self.Map_DoubleClick, self)
 end

@@ -103,27 +103,39 @@ function HUDRadar:updateMapTexture(checkForDesign)
 		self.m_WaterColor = tocolor(121, 170, 213)
 	end
 
-	-- Recreate map texture
-	if self.m_Texture and isElement(self.m_Texture) then
-		destroyElement(self.m_Texture)
-	end
-	self.m_Texture = dxCreateRenderTarget(self.m_ImageSize, self.m_ImageSize)
-	dxSetTextureEdge(self.m_Texture, "border", self.m_WaterColor)
-
-	dxSetRenderTarget(self.m_Texture)
-
-	-- Draw actual map texture
 	if checkForDesign or not self.m_MapImagePath then
 		self.m_MapImagePath = self:makePath("Radar.jpg", false, checkForDesign)
+		if self.m_MapImage and isElement(self.m_MapImage) then
+			destroyElement(self.m_MapImage)
+		end
+		self.m_MapImage = nil
 	end
-	dxDrawRectangle(0, 0, self.m_ImageSize, self.m_ImageSize, self.m_WaterColor) -- water
-	dxDrawImage(0, 0, self.m_ImageSize, self.m_ImageSize, self.m_MapImagePath)
+	if not self.m_MapImage or not isElement(self.m_MapImage) then
+		self.m_MapImage = dxCreateTexture(self.m_MapImagePath, "dxt1", false, "clamp")
+	end
 
 	if checkForDesign then
 		for k, blip in pairs(self.m_Blips) do
 			blip:updateDesignSet()
 		end
 		self.m_ImagePaths = {} -- recreate them at runtime
+	end
+
+	if self.m_Texture and isElement(self.m_Texture) then
+		destroyElement(self.m_Texture)
+	end
+	self.m_Texture = dxCreateRenderTarget(self.m_ImageSize, self.m_ImageSize)
+	self.m_MapReady = (self.m_MapImage and self.m_Texture) and true or false
+	self.m_MapRetry = getTickCount()
+	if not self.m_Texture then
+		return
+	end
+	dxSetTextureEdge(self.m_Texture, "border", self.m_WaterColor)
+
+	dxSetRenderTarget(self.m_Texture)
+	dxDrawRectangle(0, 0, self.m_ImageSize, self.m_ImageSize, self.m_WaterColor) -- water
+	if self.m_MapImage then
+		dxDrawImage(0, 0, self.m_ImageSize, self.m_ImageSize, self.m_MapImage)
 	end
 
 	-- Draw radar areas
@@ -142,8 +154,20 @@ function HUDRadar:updateMapTexture(checkForDesign)
 	dxSetRenderTarget()
 end
 
+function HUDRadar:checkMapTexture()
+	if not self.m_MapReady and self.m_DesignSet ~= RadarDesign.Default and getTickCount() - (self.m_MapRetry or 0) > 2000 then
+		self:updateMapTexture()
+	end
+end
+
 function HUDRadar:getImagePath(file, isMap)
-	if isMap then return self.m_MapImagePath end
+	if isMap then
+		self:checkMapTexture()
+		if self.m_MapImage and isElement(self.m_MapImage) then
+			return self.m_MapImage
+		end
+		return self.m_MapImagePath
+	end
 	if not self.m_ImagePaths[file] then
 		self.m_ImagePaths[file] = self:makePath(file, true)
 	end
@@ -218,6 +242,10 @@ end
 
 function HUDRadar:draw()
 	if not self.m_Enabled or not self.m_Visible or self.m_DesignSet == RadarDesign.Default then
+		return
+	end
+	self:checkMapTexture()
+	if not self.m_Texture then
 		return
 	end
 	dxSetRenderTarget(self.m_RenderTargetAll, true)

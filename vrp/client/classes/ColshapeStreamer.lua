@@ -26,7 +26,13 @@ function ColshapeStreamer:destructor()
 end
 
 function ColshapeStreamer:registerColshape(pos, element, category, elementId, size, colshapeHitEvent, colshapeLeaveEvent, streamInEvent, streamOutEvent)
-    local index = #ColshapeStreamer.Map+1
+    local old = element.index and ColshapeStreamer.Map[element.index]
+    local index = (old and old.element == element) and element.index or #ColshapeStreamer.Map+1
+    if old and old.element == element then
+        removeEventHandler("onClientElementStreamIn", element, self.m_StreamInBind)
+        removeEventHandler("onClientElementStreamOut", element, self.m_StreamOutBind)
+        if old.colshape then old.colshape:destroy() end
+    end
     ColshapeStreamer.Map[index] = {}
     ColshapeStreamer.Map[index].element = element
     ColshapeStreamer.Map[index].element.index = index
@@ -56,6 +62,10 @@ function ColshapeStreamer:deleteColshape(category, elementId)
     for key, colshape in pairs(ColshapeStreamer.Map) do
         if colshape.category == category and colshape.elementId == elementId then
             if colshape.colshape then colshape.colshape:destroy() end
+            if isElement(colshape.element) then
+                removeEventHandler("onClientElementStreamIn", colshape.element, self.m_StreamInBind)
+                removeEventHandler("onClientElementStreamOut", colshape.element, self.m_StreamOutBind)
+            end
             ColshapeStreamer.Map[key] = nil
         end
     end
