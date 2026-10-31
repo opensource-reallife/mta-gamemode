@@ -29,8 +29,9 @@ Account.PendingRequests = {
 	Registrations = {}
 }
 
-function Account.login(player, username, password, pwhash, enableAutologin)
+function Account.login(player, username, password, pwhash, enableAutologin, webLogin)
 	if player:getAccount() then return false end
+	player.m_WebLogin = webLogin == true
 	if (not username or not password) and not pwhash then return false end
 
 	if not player or not player.loadCharacter or not player.getSerial  then
@@ -60,18 +61,37 @@ function Account.login(player, username, password, pwhash, enableAutologin)
 		end
 	end
 
-	if not FORUM_LOGIN then
-		local row = sql:queryFetchSingle("SELECT Id, ForumId, Name, Password, Salt, RegisterDate, TeamspeakId, AutologinToken FROM ??_account WHERE LCASE(Name) = ?", sql:getPrefix(), username)
+	local account = sql:queryFetchSingle("SELECT Id, ForumId, Name, Password, Salt, RegisterDate, TeamspeakId, AutologinToken FROM ??_account WHERE LCASE(Name) = ?", sql:getPrefix(), username)
+	local storedHash = account and account.Password and account.Password:sub(1, 2) == "$2"
+	local useForum = FORUM_LOGIN and (not account or tonumber(account.ForumId) ~= 0)
+	if player.m_WebLogin and account and not storedHash and (account.Password == "" or (not useForum and not account.Password)) then
+		player:triggerEvent("loginNeedReset", account.Name)
+		return
+	end
+
+	if storedHash then
+		passwordVerify(password, account.Password, {}, Async.waitFor(self))
+		if not Async.wait() then
+			player:triggerEvent("loginfailed", _("Falscher Name oder Passwort", player))
+			return
+		end
+		Account.loginSuccess(player, account.Id, account.Name, account.ForumId, account.RegisterDate, account.TeamspeakId, Account.updateAutologin(player, account, enableAutologin))
+		return
+	end
+
+	if not useForum then
+		local row = account
 		if not row then
 			player:triggerEvent("loginfailed", _("Dieser Account existiert nicht", player))
 			return
 		end
 
-		local passwordHash = sha256(row.Salt..password)
+		local passwordHash = sha256((row.Salt or "")..password)
 		if passwordHash ~= row.Password then
 			player:triggerEvent("loginfailed", _("Falsches Passwort", player))
 			return
 		end
+		Account.storePassword(row.Id, password)
 
 		local loginToken = nil
 
@@ -99,9 +119,10 @@ function Account.login(player, username, password, pwhash, enableAutologin)
 		local row = Async.wait()
 
 		if not row then
-			Account.createAccount(player, data.userID, data.username, data.email)
+			Account.createAccount(player, data.userID, data.username, data.email, password)
 			return
 		else
+			Account.storePassword(row.Id, password)
 			local loginToken = nil
 
 			if enableAutologin then
@@ -126,6 +147,28 @@ function Account.login(player, username, password, pwhash, enableAutologin)
 end
 addEvent("accountlogin", true)
 addEventHandler("accountlogin", root, function(...) Async.create(Account.login)(client, ...) end)
+
+function Account.updateAutologin(player, row, enableAutologin)
+	if enableAutologin then
+		local loginToken = string.random(32) .. "." .. player:getSerial()
+		sql:queryExec("UPDATE ??_account SET AutologinToken = ? WHERE Id = ?", sql:getPrefix(), loginToken, row.Id)
+		return loginToken
+	elseif row.AutologinToken and row.AutologinToken ~= "" then
+		sql:queryExec("UPDATE ??_account SET AutologinToken = ? WHERE Id = ?", sql:getPrefix(), "", row.Id)
+	end
+end
+
+function Account.storePassword(id, password)
+	passwordHash(password, "bcrypt", {}, function(hash)
+		if hash then
+			sql:queryExec("UPDATE ??_account SET Password = ?, Salt = NULL WHERE Id = ?", sql:getPrefix(), hash, id)
+		end
+	end)
+end
+
+function Account.isEmailValid(email)
+	return type(email) == "string" and #email <= 50 and email:match("^[%w._-]+@[%w._-]+%.%w+$") and true or false
+end
 
 function Account.loginSuccess(player, Id, Username, ForumId, RegisterDate, TeamspeakId, pwhash)
 	if DatabasePlayer.getFromId(Id) then
@@ -158,6 +201,16 @@ function Account.loginSuccess(player, Id, Username, ForumId, RegisterDate, Teams
 		-- Todo Maybe it´s more beautiful not kicking player directly only display a more information error
 		if player and isElement(player) then player:triggerEvent("loginfailed", "Du wurdest gebannt!") end
 		return false
+	end
+
+	if player.m_WebLogin and not player.m_EmailChecked then
+		local mailRow = sql:queryFetchSingle("SELECT EMail FROM ??_account WHERE Id = ?", sql:getPrefix(), Id)
+		if not mailRow or not Account.isEmailValid(mailRow.EMail) then
+			player.m_PendingLogin = {Id, Username, ForumId, RegisterDate, TeamspeakId, pwhash}
+			player:triggerEvent("loginNeedEmail")
+			return false
+		end
+		player.m_EmailChecked = true
 	end
 
 	-- Update last serial and last login
@@ -220,12 +273,58 @@ addEventHandler("checkRegisterAllowed", root, function()
 			if not MultiAccount.allowedToCreateAnMultiAccount(client:getSerial()) then
 				local name = Account.getNameFromId(playerId)
 				client:triggerEvent("receiveRegisterAllowed", false, name)
+			else
+				client:triggerEvent("receiveRegisterAllowed", true, Account.getNameFromId(playerId))
 			end
 		end
 	end
 end)
 
-function Account.register(player, username, password, email)
+function Account.isEmailUsed(email)
+	return sql:queryFetchSingle("SELECT Id FROM ??_account WHERE LCASE(EMail) = LCASE(?)", sql:getPrefix(), email) and true or false
+end
+
+function Account.checkEmailDomain(email, callback)
+	local domain = email:lower():match("@([%w._-]+%.%w+)$")
+	if not domain then return callback(false, "email_invalid") end
+	local secret = Config.get("CP_SECRET")
+	if not secret or secret == "" then return Account.checkEmailDns(domain, callback) end
+	jwtSign(function(token)
+		if not token then return Account.checkEmailDns(domain, callback) end
+		fetchRemote(CP_WEB_PATH .. "/api_email_check.php", {method = "POST", connectionAttempts = 1, formFields = {token = token}}, function(data, info)
+			local result = info and info.success and fromJSON(data)
+			if type(result) ~= "table" or not result.ok then return Account.checkEmailDns(domain, callback) end
+			if not result.bad then return callback(true) end
+			callback(false, result.status == "disposable" and "email_disposable" or result.status == "no_mx" and "email_nomx" or "email_domain")
+		end)
+	end, {["email"] = email, ["aud"] = "cp-email", ["exp"] = getRealTime().timestamp + 300}, JWT_ALGORITHM_HS256, secret)
+end
+
+function Account.checkEmailDns(domain, callback)
+	fetchRemote("https://dns.google/resolve?type=MX&name=" .. domain, {connectionAttempts = 1}, function(data, info)
+		local result = info and info.success and fromJSON(data)
+		if type(result) ~= "table" or tonumber(result.Status) == nil then return callback(true) end
+		if tonumber(result.Status) == 3 then return callback(false, "email_domain") end
+		if tonumber(result.Status) == 0 then
+			for _, answer in pairs(result.Answer or {}) do
+				if tonumber(answer.type) == 15 then return callback(true) end
+			end
+			return callback(false, "email_nomx")
+		end
+		callback(true)
+	end)
+end
+
+function Account.getReferrer(name, serial)
+	local row = sql:queryFetchSingle("SELECT Id, Name, LastSerial FROM ??_account WHERE LCASE(Name) = LCASE(?)", sql:getPrefix(), name)
+	if not row then return false, "ref_unknown" end
+	if row.LastSerial == serial or sql:queryFetchSingle("SELECT ID FROM ??_account_to_serial WHERE PlayerId = ? AND Serial = ?", sql:getPrefix(), row.Id, serial) then
+		return false, "ref_self"
+	end
+	return row.Id, row.Name
+end
+
+function Account.register(player, username, password, email, referrer)
 	if player:getAccount() then return false end
 	if not username or not password then return false end
 
@@ -246,8 +345,8 @@ function Account.register(player, username, password, email)
 		return false
 	end
 
-	if #password < 5 then
-		player:triggerEvent("registerfailed", _("Passwort zu kurz! Min. 5 Zeichen!", player))
+	if #password < 8 then
+		player:triggerEvent("registerfailed", _("Passwort zu kurz! Min. 8 Zeichen!", player))
 		return false
 	end
 
@@ -255,6 +354,28 @@ function Account.register(player, username, password, email)
 	if not email:match("^[%w._-]+@[%w._-]+%.%w+$") or #email > 50 then
 		player:triggerEvent("registerfailed", _("Ungültige eMail", player))
 		return false
+	end
+
+	if Account.isEmailUsed(email) then
+		player:triggerEvent("registerfailed", _("E-Mail wird bereits verwendet!", player))
+		return false
+	end
+
+	Account.checkEmailDomain(email, Async.waitFor(self))
+	local domainOk, domainCode = Async.wait()
+	if not domainOk then
+		player:triggerEvent("registerfailed", domainCode == "email_nomx" and _("Für diese E-Mail-Adresse gibt es keinen Mailserver!", player) or domainCode == "email_disposable" and _("Wegwerf-Adressen gehen nicht – bitte gib eine echte E-Mail-Adresse an!", player) or _("Diese E-Mail-Adresse gibt es nicht (Domain oder Endung unbekannt)!", player))
+		return false
+	end
+
+	local referrerId
+	if type(referrer) == "string" and referrer ~= "" then
+		local id, code = Account.getReferrer(referrer, player:getSerial())
+		if not id then
+			player:triggerEvent("registerfailed", code == "ref_self" and _("Du kannst dich nicht selbst werben!", player) or _("Der Spieler, der dich geworben hat, wurde nicht gefunden!", player))
+			return false
+		end
+		referrerId = id
 	end
 
 	-- Check Serial
@@ -274,12 +395,7 @@ function Account.register(player, username, password, email)
 			return false
 		end
 
-		if sql:queryFetchSingle("SELECT Name FROM ??_account WHERE EMail = ?", sql:getPrefix(), email) then
-			player:triggerEvent("registerfailed", _("E-Mail wird bereits verwendet!", player))
-			return false
-		end
-
-		Account.createAccount(player, 0, username, email, password)
+		Account.createAccount(player, 0, username, email, password, referrerId)
 		return
 	end
 
@@ -289,7 +405,7 @@ function Account.register(player, username, password, email)
 	local data = fromJSON(result)
 
 	if data and data.status and data.status == 200 then
-		Account.createAccount(player, data.data.userID, username, email)
+		Account.createAccount(player, data.data.userID, username, email, password, referrerId)
 	else
 		if data and data.message then
 			if data.message == "username is not notUnique" then
@@ -311,12 +427,13 @@ end
 addEvent("accountregister", true)
 addEventHandler("accountregister", root, function(...) Async.create(Account.register)(client, ...) end)
 
-function Account.createAccount(player, boardId, username, email, password)
+function Account.createAccount(player, boardId, username, email, password, referrerId)
 	local result, _, Id = sql:queryFetch("INSERT INTO ??_account (ForumId, Name, EMail, Rank, LastSerial, LastIP, LastLogin, RegisterDate) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW());", sql:getPrefix(), boardId, username, email, 0, player:getSerial(), player:getIP())
-	if password then
-		local salt = md5(math.random())
-		local passwordHash = sha256(salt..password)
-		sql:queryExec("UPDATE ??_account SET Password = ?, Salt = ? WHERE Name = ? ", sql:getPrefix(), passwordHash, salt, username)
+	if result and referrerId then
+		sql:queryExec("UPDATE ??_account SET ReferrerId = ? WHERE Id = ?", sql:getPrefix(), referrerId, Id)
+	end
+	if password and result then
+		Account.storePassword(Id, password)
 	end
 	
 	if result then

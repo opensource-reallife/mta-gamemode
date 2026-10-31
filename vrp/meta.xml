@@ -112,6 +112,7 @@
 
 	<!-- Player -->
 	<script src="server/classes/Player/Account.lua" type="server"/>
+	<script src="server/classes/Player/LoginWeb.lua" type="server"/>
 	<script src="server/classes/Player/MultiAccount.lua" type="server"/>
 	<script src="server/classes/Player/DatabasePlayer.lua" type="server"/>
 	<script src="server/classes/Player/Player.lua" type="server"/>
@@ -1072,6 +1073,7 @@
     <script src="client/classes/GUIForms/KartGUI.lua" type="client" />
     <script src="client/classes/GUIForms/LogGUI.lua" type="client" />
     <script src="client/classes/GUIForms/LoginGUI.lua" type="client" />
+	<script src="client/classes/GUIForms/LoginWebGUI.lua" type="client" />
 	<script src="client/classes/GUIForms/LoginRuleGUI.lua" type="client" />
 	<script src="client/classes/GUIForms/LoginMusicGUI.lua" type="client" />
     <script src="client/classes/GUIForms/MapGUI.lua" type="client" />
@@ -1633,10 +1635,36 @@
 	<export function="phpSDKNickchangeFee" type="server" http="true" />
 	<export function="phpSDKCreditPurchase" type="server" http="true" />
 	<export function="phpSDKCreditsChanged" type="server" http="true" />
+	<export function="phpSDKSetPassword" type="server" http="true" />
+	<export function="phpSDKSetEmail" type="server" http="true" />
 	<export function="phpSDKReloadBadNames" type="server" http="true" />
 	<export function="phpSDKOrgLoan" type="server" http="true" />
 	<export function="phpSDKAccountRename" type="server" http="true" />
 	<export function="phpSDKAccountDelete" type="server" http="true" />
+	<export function="phpSDKAccountLock" type="server" http="true" />
+	<export function="phpSDKCreditsBook" type="server" http="true" />
+	<export function="phpSDKPremiumGrant" type="server" http="true" />
+	<export function="phpSDKVoucherOffline" type="server" http="true" />
+	<export function="phpSDKModBan" type="server" http="true" />
+	<export function="phpSDKPunishEntry" type="server" http="true" />
+	<export function="phpSDKPlayerHistory" type="server" http="true" />
+	<export function="phpSDKAntiCheatWhitelist" type="server" http="true" />
+	<export function="phpSDKScreenshotDelete" type="server" http="true" />
+	<export function="phpSDKAdminLog" type="server" http="true" />
+	<export function="phpSDKOrgLimits" type="server" http="true" />
+	<export function="phpSDKFCVehicle" type="server" http="true" />
+	<export function="phpSDKBadName" type="server" http="true" />
+	<export function="phpSDKSetAdminRank" type="server" http="true" />
+	<export function="phpSDKServerSetting" type="server" http="true" />
+	<export function="phpSDKModBlacklist" type="server" http="true" />
+	<export function="phpSDKStateEvidenceEdit" type="server" http="true" />
+	<export function="phpSDKMultiAccount" type="server" http="true" />
+	<export function="phpSDKAdminPoll" type="server" http="true" />
+	<export function="phpSDKMapImport" type="server" http="true" />
+	<export function="phpSDKTexture" type="server" http="true" />
+	<export function="phpSDKStorageCleanup" type="server" http="true" />
+	<export function="phpSDKEditPlayerOffline" type="server" http="true" />
+	<export function="phpSDKGiveQRAchievementOffline" type="server" http="true" />
 	<export function="phpSDKPrisonPlayer" type="server" http="true" />
 	<export function="phpSDKUnprisonPlayer" type="server" http="true" />
 	<export function="phpSDKTakeScreenShot" type="server" http="true" />
@@ -1680,6 +1708,7 @@
 	<file src="files/html/editor.htm" />
 	<file src="files/html/memo.htm" />
 	<file src="files/html/snake.htm"/>
+	<file src="files/html/login.htm" />
 
 	<vrpfile src="files/images/LogoNoFont.png"/>
 	<vrpfile src="files/images/MessageBoxes/Info.png" onDemand="false"/>

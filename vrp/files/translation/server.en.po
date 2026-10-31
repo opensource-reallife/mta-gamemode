@@ -5374,3 +5374,27 @@ msgstr "You can't do this while your group is robbing the gardening shop!"
 
 msgid "Du hast nicht genug Geld auf der Bank! (%s)"
 msgstr "You don't have enough money in your bank account! (%s)"
+
+msgid "Der Spieler, der dich geworben hat, wurde nicht gefunden!"
+msgstr "The player who referred you was not found!"
+
+msgid "Diese E-Mail-Adresse gibt es nicht (Domain oder Endung unbekannt)!"
+msgstr "This email address does not exist (unknown domain or ending)!"
+
+msgid "Du kannst dich nicht selbst werben!"
+msgstr "You cannot refer yourself!"
+
+msgid "E-Mail wird bereits verwendet!"
+msgstr "Email is already in use!"
+
+msgid "Falscher Name oder Passwort"
+msgstr "Wrong name or password"
+
+msgid "Für diese E-Mail-Adresse gibt es keinen Mailserver!"
+msgstr "There is no mail server for this email address!"
+
+msgid "Passwort zu kurz! Min. 8 Zeichen!"
+msgstr "Password too short! At least 8 characters!"
+
+msgid "Wegwerf-Adressen gehen nicht – bitte gib eine echte E-Mail-Adresse an!"
+msgstr "Disposable addresses are not allowed – please enter a real email address!"

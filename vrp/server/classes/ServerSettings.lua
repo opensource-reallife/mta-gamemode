@@ -50,6 +50,10 @@ function ServerSettings:load()
 			FORUM_LOGIN = toboolean(row.Value)
 		end
 
+		if row.Index == "LoginWeb" then
+			resourceRoot:setData("LoginWeb", toboolean(row.Value))
+		end
+
 		if row.Index == "MinMembersWeapontruck" then
 			WEAPONTRUCK_MIN_MEMBERS = tonumber(row.Value)
 		end

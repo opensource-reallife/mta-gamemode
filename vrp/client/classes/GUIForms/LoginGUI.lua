@@ -358,6 +358,7 @@ end
 addEvent("receiveRegisterAllowed", true)
 addEventHandler("receiveRegisterAllowed", root,
 	function(state, name)
+		if not LoginGUI:isInstantiated() then return end
 		if state == false then
 			LoginGUI:getSingleton():showRegisterMultiaccountError(name)
 		end
@@ -367,6 +368,7 @@ addEventHandler("receiveRegisterAllowed", root,
 addEvent("loginfailed", true)
 addEventHandler("loginfailed", root,
 	function(text)
+		if not LoginGUI:isInstantiated() then return end
 		ErrorBox:new(text)
 		LoginGUI:getSingleton():setLoggingIn(false)
 	end
@@ -374,6 +376,7 @@ addEventHandler("loginfailed", root,
 addEvent("registerfailed", true)
 addEventHandler("registerfailed", root,
 	function(text)
+		if not LoginGUI:isInstantiated() then return end
 		ErrorBox:new(text)
 		LoginGUI:getSingleton():setLoggingIn(false)
 	end
@@ -382,6 +385,7 @@ addEventHandler("registerfailed", root,
 addEvent("closeLogin", true)
 addEventHandler("closeLogin", root,
 	function()
+		if not LoginGUI:isInstantiated() then return end
 		LoginGUI:getSingleton():initClose()
 	end
 )
@@ -404,6 +408,7 @@ addEventHandler("loginInformationUpdate", root,
 addEvent("loginsuccess", true)
 addEventHandler("loginsuccess", root,
 	function(pwhash)
+		if not LoginGUI:isInstantiated() then return end
 		local lgi = LoginGUI:getSingleton()
 
 		if lgi.m_Elements.swSavePW:isChecked() and pwhash then

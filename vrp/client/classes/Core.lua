@@ -89,7 +89,7 @@ function Core:onDownloadComplete()
 	-- create login gui
 	local pwhash = core:get("Login", "password", "")
 	local username = core:get("Login", "username", "")
-	lgi = LoginGUI:new(username, pwhash)
+	lgi = (resourceRoot:getData("LoginWeb") ~= false and LoginWebGUI or LoginGUI):new(username, pwhash)
 
 	-- other
 	setAmbientSoundEnabled( "gunfire", false )

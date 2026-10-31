@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+<style>
+@font-face { font-family: "Mukta"; src: url("http://mta/local/files/fonts/EkMukta.ttf"); font-weight: 400; }
+@font-face { font-family: "Mukta"; src: url("http://mta/local/files/fonts/EkMukta-Bold.ttf"); font-weight: 600 800; }
+:root {
+	--bg: #0b0e1a; --card: #1c1e2b; --head: #151722; --line: #2c2f42; --input: #12141e;
+	--text: #e6e8ee; --muted: #9a9eb0; --blue: #8a4fe6; --ghost: #2a2d42;
+	--green: #2fa75a; --red: #e5484d; --orange: #e8902f; --yellow: #d9a21b;
+}
+* { box-sizing: border-box; }
+html { font-size: max(11px, min(1.5vh, 16px)); }
+html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; }
+body { display: flex; align-items: center; justify-content: center; color: var(--text); font-family: "Mukta", "Segoe UI", Tahoma, sans-serif; line-height: 1.45; user-select: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+a { color: var(--blue); text-decoration: none; cursor: pointer; }
+a:hover { text-decoration: underline; }
+.gwin { width: 30rem; max-width: calc(100vw - 2rem); max-height: calc(100vh - 2rem); display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 14px; background: var(--card); box-shadow: 0 20px 60px rgba(0,0,0,.6); overflow: hidden; opacity: 0; transform: translateY(12px) scale(.98); transition: opacity .25s, transform .25s; }
+.gwin.shown { opacity: 1; transform: none; }
+.gwin.closing { opacity: 0; transform: scale(.97); }
+header { display: flex; align-items: center; gap: .75rem; padding: .9rem 1.25rem; border-bottom: 1px solid var(--line); background: var(--head); flex: none; }
+header img { height: 2.2rem; }
+header .t { font-weight: 700; }
+header .t small { display: block; font-weight: 400; color: var(--muted); font-size: .8rem; }
+.body { padding: 1.1rem 1.5rem 1.4rem; overflow-y: auto; }
+.body[hidden] { display: none; }
+.pills { display: flex; gap: .4rem; margin: 0 0 .6rem; }
+.pills button { padding: .45rem 1rem; border: 0; border-radius: 8px; background: transparent; color: var(--blue); font: inherit; font-weight: 600; cursor: pointer; }
+.pills button:hover { background: var(--ghost); }
+.pills button.active { background: var(--blue); color: #fff; }
+label { display: block; margin: .8rem 0 .3rem; font-size: .85rem; color: var(--muted); }
+label .hint { font-size: .8rem; }
+input[type=text], input[type=password], input[type=email], textarea { width: 100%; padding: .55rem .8rem; border: 1px solid var(--line); border-radius: 8px; background: var(--input); color: var(--text); font: inherit; user-select: text; }
+input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(138,79,230,.25); }
+input.bad, textarea.bad { border-color: var(--red); }
+input.warn { border-color: var(--orange); }
+input[type=checkbox] { accent-color: var(--blue); width: 1rem; height: 1rem; margin: 0; flex: none; }
+.check { display: flex; gap: .5rem; align-items: center; margin-top: 1rem; color: var(--text); font-size: .9rem; cursor: pointer; }
+.switch { display: inline-flex; align-items: center; gap: .6rem; margin-top: 1rem; color: var(--text); font-size: .9rem; cursor: pointer; }
+.switch input { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+.switch .track { position: relative; flex: none; width: 2.5rem; height: 1.4rem; border: 1px solid var(--line); border-radius: 999px; background: var(--input); transition: background .15s, border-color .15s; }
+.switch .track::after { content: ""; position: absolute; top: 50%; left: .2rem; width: 1rem; height: 1rem; border-radius: 50%; background: var(--muted); transform: translateY(-50%); transition: left .15s, background .15s; }
+.switch input:checked + .track { background: var(--blue); border-color: var(--blue); }
+.switch input:checked + .track::after { left: calc(100% - 1.2rem); background: #fff; }
+.switch.off { opacity: .5; cursor: default; }
+.hint { color: var(--muted); font-size: .85rem; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; margin-top: 1.1rem; }
+.btn { padding: .55rem 1.2rem; border: 0; border-radius: 8px; background: var(--blue); color: #fff; font: inherit; cursor: pointer; }
+.btn.green { background: var(--green); }
+.btn:hover { filter: brightness(1.1); }
+.btn[disabled] { opacity: .45; cursor: not-allowed; filter: none; }
+.line { font-size: .85rem; margin-top: .25rem; min-height: 0; }
+.line:empty { display: none; }
+.line.ok { color: var(--green); }
+.line.bad { color: var(--red); }
+.line.wait { color: var(--muted); }
+.pwmeter { height: 6px; border-radius: 999px; background: var(--ghost); margin-top: .4rem; overflow: hidden; }
+.pwmeter span { display: block; height: 100%; width: 0; border-radius: 999px; transition: width .2s, background .2s; }
+.checks { list-style: none; margin: 1rem 0 0; padding: .6rem .8rem; border: 1px solid var(--line); border-radius: 10px; background: rgba(42,45,66,.5); font-size: .82rem; display: grid; grid-template-columns: 1fr 1fr; gap: .2rem .75rem; }
+.checks li { color: var(--muted); padding-left: 1.1rem; text-indent: -1.1rem; }
+.checks li::before { content: "•"; display: inline-block; width: 1.1rem; text-indent: 0; font-weight: 700; }
+.checks li.ok { color: var(--text); }
+.checks li.ok::before { content: "✓"; color: var(--green); }
+.checks li.bad { color: var(--red); }
+.checks li.bad::before { content: "✗"; }
+.checks li.warn { color: var(--orange); }
+.checks li.warn::before { content: "!"; }
+.warnmark { display: inline-flex; align-items: center; justify-content: center; width: 1.15rem; height: 1.15rem; border-radius: 50%; background: var(--orange); color: #111; font-weight: 800; font-size: .8rem; vertical-align: middle; flex: none; }
+.leakbox { display: flex; gap: .6rem; align-items: flex-start; margin-top: .75rem; padding: .7rem .8rem; border: 1px solid rgba(232,144,47,.55); border-radius: 10px; background: rgba(232,144,47,.12); font-size: .85rem; }
+.leakbox[hidden], .message[hidden], [hidden] { display: none !important; }
+.leakbox .warnmark { margin-top: .1rem; }
+.leakbox .switch { margin-top: .6rem; font-size: .85rem; }
+.message { margin: .25rem 0 .5rem; padding: .7rem .9rem; border-radius: 8px; font-size: .9rem; }
+.message.warn { background: rgba(232,144,47,.14); color: #f0b067; }
+.message.success { background: rgba(47,167,90,.14); color: #7bd9a0; }
+.vtitle { margin: .4rem 0 .2rem; font-size: 1.05rem; }
+textarea { resize: vertical; min-height: 5rem; }
+.codebox { margin: .9rem 0 .25rem; padding: .9rem; border: 1px dashed var(--blue); border-radius: 10px; text-align: center; }
+.codebox .big { font: 700 1.2rem/1.4 ui-monospace, monospace; letter-spacing: .06em; margin-bottom: .4rem; user-select: text; overflow-wrap: anywhere; }
+#v_forgot .message { margin-top: .9rem; }
+.status { margin-top: .75rem; color: var(--muted); font-size: .85rem; white-space: pre-line; }
+.status:empty { display: none; }
+.foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .5rem; padding: .6rem 1.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .8rem; flex: none; }
+.lang { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: .2rem; color: var(--muted); font-size: .75rem; }
+.seg { display: flex; padding: 2px; border: 1px solid var(--line); border-radius: 8px; background: var(--input); }
+.seg button { padding: .25rem .65rem; border: 0; border-radius: 6px; background: transparent; color: var(--muted); font: inherit; font-size: .82rem; cursor: pointer; }
+.seg button:hover { color: var(--text); }
+.seg button.active { background: var(--blue); color: #fff; }
+.spin { display: inline-block; width: .9em; height: .9em; margin-right: .4rem; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; vertical-align: -.1em; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="gwin" id="win">
+	<header><img src="http://mta/local/files/images/Logo.png" alt=""><div class="t"><span id="project">OpenReallife</span><small data-t="welcome"></small></div>
+		<div class="lang"><span data-t="language"></span><div class="seg"><button type="button" data-lang="de">Deutsch</button><button type="button" data-lang="en">English</button></div></div></header>
+
+	<form class="body" data-view="login" id="v_login" autocomplete="off">
+		<nav class="pills"><button type="button" class="active" data-go="login" data-t="tab_login"></button><button type="button" data-go="register" data-t="tab_register"></button></nav>
+		<label for="l_u" data-t="username"></label><input id="l_u" type="text" maxlength="22" spellcheck="false">
+		<label for="l_p" data-t="password"></label><input id="l_p" type="password">
+		<div class="switch" role="switch" aria-checked="false"><input id="l_save" type="checkbox" tabindex="-1"><span class="track"></span><span data-t="remember"></span></div>
+		<div class="actions"><button class="btn green" type="submit" id="l_btn" data-t="btn_login"></button><a data-go="forgot" data-t="forgot_link"></a></div>
+		<div class="status" id="l_status"></div>
+	</form>
+
+	<form class="body" data-view="register" id="v_register" autocomplete="off" hidden>
+		<nav class="pills"><button type="button" data-go="login" data-t="tab_login"></button><button type="button" class="active" data-go="register" data-t="tab_register"></button></nav>
+		<p class="message success" id="r_serialok" hidden></p>
+		<label for="r_u"><span data-t="username"></span> <span class="hint" data-t="username_hint"></span></label><input id="r_u" type="text" maxlength="22" spellcheck="false">
+		<div class="line" id="r_u_line"></div>
+		<label for="r_m"><span data-t="email"></span> <span class="hint" data-t="email_hint"></span></label><input id="r_m" type="email" maxlength="50" spellcheck="false">
+		<div class="line" id="r_m_line"></div>
+		<div class="row2">
+			<div><label for="r_p"><span data-t="password"></span> <span class="warnmark" id="r_p_mark" hidden>!</span></label><input id="r_p" type="password"><div class="pwmeter"><span id="r_meter"></span></div><div class="line" id="r_p_line"></div></div>
+			<div><label for="r_p2" data-t="password2"></label><input id="r_p2" type="password"><div class="line" id="r_p2_line"></div></div>
+		</div>
+		<div class="leakbox" id="r_leak" hidden><span class="warnmark">!</span><div><strong data-t="leak_title"></strong> <span data-t="leak_text"></span>
+			<div class="switch" role="switch" aria-checked="false"><input id="r_leakok" type="checkbox" tabindex="-1"><span class="track"></span><span data-t="leak_ok"></span></div></div></div>
+		<label for="r_ref"><span data-t="ref"></span> <span class="hint" data-t="ref_hint"></span></label><input id="r_ref" type="text" maxlength="22" spellcheck="false">
+		<div class="line" id="r_ref_line"></div>
+		<div class="switch" role="switch" aria-checked="false"><input id="r_rules" type="checkbox" tabindex="-1"><span class="track"></span><span><span data-t="rules_a"></span> <a id="r_rules_link" data-t="rules_link"></a><span data-t="rules_b"></span></span></div>
+		<ul class="checks">
+			<li id="c_name" data-t="c_name"></li><li id="c_email" data-t="c_email"></li>
+			<li id="c_pw" data-t="c_pw"></li><li id="c_serial" data-t="c_serial"></li>
+		</ul>
+		<div class="actions"><button class="btn green" type="submit" id="r_btn" data-t="btn_register" disabled></button><span class="hint" id="r_btnhint" data-t="register_hint"></span></div>
+		<div class="status" id="r_status"></div>
+	</form>
+
+	<form class="body" data-view="forgot" id="v_forgot" autocomplete="off" hidden>
+		<nav class="pills"><button type="button" class="active" data-go="login" data-t="tab_login"></button><button type="button" data-go="register" data-t="tab_register"></button></nav>
+		<p class="message warn" id="f_reset" hidden></p>
+		<h3 class="vtitle" data-t="forgot_title"></h3>
+		<p class="hint" data-t="forgot_text"></p>
+		<label for="f_who" data-t="forgot_who"></label><input id="f_who" type="text" maxlength="120" spellcheck="false">
+		<p class="message success" id="f_ok" hidden></p>
+		<div class="actions"><button class="btn" type="submit" id="f_btn" data-t="forgot_btn"></button><a data-go="login" data-t="to_login"></a></div>
+		<p class="hint"><span data-t="forgot_noemail"></span> <a data-go="ticket" data-t="ticket_create"></a></p>
+	</form>
+
+	<form class="body" data-view="ticket" id="v_ticket" autocomplete="off" hidden>
+		<nav class="pills"><button type="button" class="active" data-go="login" data-t="tab_login"></button><button type="button" data-go="register" data-t="tab_register"></button></nav>
+		<h3 class="vtitle" data-t="ticket_title"></h3>
+		<p class="hint" data-t="ticket_text"></p>
+		<label for="t_name" data-t="ticket_name"></label><input id="t_name" type="text" maxlength="22" spellcheck="false">
+		<label for="t_text" data-t="ticket_msg"></label><textarea id="t_text" rows="4" maxlength="2000"></textarea>
+		<label for="t_old"><span data-t="ticket_old"></span> <span class="hint" data-t="optional"></span></label><input id="t_old" type="text" maxlength="64" spellcheck="false">
+		<label for="t_mail"><span data-t="ticket_mail"></span> <span class="hint" data-t="ticket_mail_hint"></span></label><input id="t_mail" type="email" maxlength="120" spellcheck="false">
+		<div class="switch" role="switch" aria-checked="false"><input id="t_notify" type="checkbox" tabindex="-1"><span class="track"></span><span data-t="ticket_notify"></span></div>
+		<p class="hint" data-t="ticket_serial"></p>
+		<div class="actions"><button class="btn green" type="submit" id="t_btn" data-t="ticket_btn"></button><a data-go="login" data-t="to_login"></a></div>
+	</form>
+
+	<div class="body" data-view="ticketdone" id="v_ticketdone" hidden>
+		<nav class="pills"><button type="button" class="active" data-go="login" data-t="tab_login"></button><button type="button" data-go="register" data-t="tab_register"></button></nav>
+		<p class="message success" data-t="ticket_done"></p>
+		<div class="codebox"><div class="hint" data-t="ticket_id"></div><div class="big" id="d_ref"></div><div class="hint" data-t="ticket_code"></div><div class="big" id="d_code"></div></div>
+		<div class="actions"><button class="btn" type="button" id="d_copy" data-t="ticket_copy"></button><a data-go="login" data-t="to_login"></a></div>
+		<p class="hint" id="d_hint"></p>
+	</div>
+
+	<form class="body" data-view="needemail" id="v_needemail" autocomplete="off" hidden>
+		<h3 class="vtitle" data-t="needemail_title"></h3>
+		<p class="message warn" data-t="needemail_text"></p>
+		<label for="e_mail" data-t="email"></label><input id="e_mail" type="email" maxlength="50" spellcheck="false">
+		<div class="line" id="e_mail_line"></div>
+		<div class="actions"><button class="btn green" type="submit" id="e_btn" data-t="needemail_btn"></button></div>
+		<p class="hint" data-t="needemail_hint"></p>
+	</form>
+
+	<div class="body" data-view="serialused" id="v_serialused" hidden>
+		<nav class="pills"><button type="button" data-go="login" data-t="tab_login"></button><button type="button" class="active" data-go="register" data-t="tab_register"></button></nav>
+		<p class="message warn" id="s_text"></p>
+		<div class="actions"><button class="btn" type="button" data-go="login" data-t="to_login"></button></div>
+		<p class="hint"><span data-t="serial_help"></span> <a data-go="ticket" data-t="not_mine"></a></p>
+	</div>
+
+	<div class="foot"><span><span data-t="problems"></span> <a data-go="ticket" data-t="noaccess"></a></span><span data-t="foot"></span></div>
+</div>
+<script>
+var L = {
+	de: {
+		welcome: "Willkommen auf dem Server", language: "Sprache", tab_login: "Anmelden", tab_register: "Registrieren",
+		username: "Benutzername", password: "Passwort", password2: "Passwort wiederholen", remember: "Auf diesem PC angemeldet bleiben",
+		btn_login: "Anmelden", btn_register: "Account erstellen", busy_login: "Anmelden …", busy_register: "Account wird erstellt …",
+		username_hint: "(dein Name im Spiel, 3–22 Zeichen)", email: "E-Mail-Adresse", email_hint: "(zum Bestätigen und für „Passwort vergessen“)",
+		ref: "Geworben von", ref_hint: "(optional – Spielername)",
+		rules_a: "Ich akzeptiere das", rules_link: "Regelwerk", rules_b: "",
+		c_name: "Name erlaubt und frei", c_email: "E-Mail gültig und frei", c_pw: "Passwort sicher genug", c_serial: "Dieser PC hat noch keinen Account",
+		register_hint: "Erst wenn alles grün ist.", register_ready: "Pro PC ist ein Account erlaubt.",
+		name_ok: "✓ Der Name ist frei", name_invalid: "✗ 3–22 Zeichen, nur Buchstaben, Zahlen, _ und .", name_blocked: "✗ Dieser Name ist nicht erlaubt (enthält ein gesperrtes Wort).", name_used: "✗ Dieser Name ist schon vergeben.",
+		email_ok: "✓ Die E-Mail-Adresse ist frei", email_invalid: "✗ Bitte eine gültige E-Mail-Adresse angeben.", email_used: "✗ Diese E-Mail-Adresse wird schon von einem anderen Account genutzt.", email_domain: "✗ Diese Domain gibt es nicht – prüfe die Endung (z. B. .de oder .com).", email_nomx: "✗ Diese Domain kann keine E-Mails empfangen.", email_disposable: "✗ Wegwerf-Adressen gehen nicht – bitte eine echte Adresse angeben.",
+		ref_ok: "✓ Spieler gefunden: %s", ref_unknown: "✗ Keinen Spieler mit diesem Namen gefunden.", ref_self: "✗ Du kannst dich nicht selbst werben.",
+		checking: "… wird geprüft",
+		pw_short: "✗ zu kurz – mind. 8 Zeichen", pw_weak: "schwach", pw_medium: "mittel", pw_strong: "stark", pw_min: " – mind. 8 Zeichen",
+		pw_match: "✓ stimmt überein", pw_nomatch: "✗ stimmt nicht überein",
+		leak_title: "Dieses Passwort ist öffentlich bekannt.", leak_text: "Es taucht in Listen geleakter Passwörter auf (z. B. aus Datenlecks anderer Seiten) und wird bei Angriffen als Erstes ausprobiert. Wir empfehlen ein anderes.",
+		leak_ok: "Mir ist das klar – ich möchte das Passwort trotzdem verwenden", c_pw_leak: "Passwort in öffentlichen Listen – Bestätigung nötig",
+		serial_ok: "Auf diesem PC ist schon ein Account (%s) registriert, das Team hat aber einen weiteren erlaubt. Du kannst dich jetzt registrieren.",
+		serial_used: "Für diesen PC gibt es bereits einen Account. Auf diesem PC ist schon %s registriert. Pro PC ist nur ein Account erlaubt – bitte melde dich damit an.",
+		serial_used_noname: "Für diesen PC gibt es bereits einen Account. Pro PC ist nur ein Account erlaubt – bitte melde dich damit an.",
+		serial_help: "Spielt jemand anderes (z. B. Familie) auf demselben PC, kann das Team einen weiteren Account freigeben – erstelle dafür einen Multiaccount-Antrag.",
+		to_login: "Zur Anmeldung", foot: "Registrieren ist nur hier im Spiel möglich.",
+		needreset: "Für deinen Account ist kein gültiges Passwort hinterlegt – z. B. weil das Team es zurückgesetzt hat. Setze über den Link ein neues Passwort.", needemail_title: "E-Mail-Adresse angeben", needemail_text: "Für deinen Account ist keine gültige E-Mail-Adresse hinterlegt. Bitte gib eine echte Adresse an – sie wird für „Passwort vergessen“ gebraucht.", needemail_btn: "Speichern und anmelden", needemail_hint: "Du bekommst einen Link, um die Adresse zu bestätigen.", needemail_busy: "Wird gespeichert …",
+		problems: "Probleme?", noaccess: "Kein Zugang", ticket_create: "Ticket erstellen", not_mine: "Das ist nicht mein Account", optional: "(optional)",
+		ticket_title: "Kein Zugang zum Account", ticket_text: "Du kommst nicht mehr in deinen Account (z. B. Passwort und E-Mail-Adresse vergessen)? Erstelle ein Ticket – das Team meldet sich dort bei dir.", ticket_name: "Name deines Accounts", ticket_msg: "Was ist passiert?",
+		ticket_old: "Alte Serial", ticket_mail: "E-Mail-Adresse", ticket_mail_hint: "(optional – für Benachrichtigungen, z. B. deine neue Adresse)", ticket_notify: "Bei Antworten per E-Mail benachrichtigen", ticket_serial: "Die Serial dieses PCs wird automatisch mitgeschickt.", ticket_btn: "Ticket erstellen", ticket_busy: "Wird erstellt …",
+		ticket_done: "Dein Ticket ist erstellt. Notiere dir Ticket-ID und Zugangscode – der Code wird nur jetzt angezeigt.", ticket_id: "Ticket-ID", ticket_code: "Zugangscode", ticket_copy: "Kopieren", ticket_where: "Unter %s rufst du das Ticket ohne Anmeldung auf und antwortest dem Team. Gib beides an niemanden weiter.", forgot_link: "Passwort vergessen?", forgot_title: "Passwort vergessen", forgot_who: "Name oder E-Mail-Adresse", forgot_btn: "Link schicken", forgot_busy: "Wird gesendet …",
+		forgot_text: "Gib deinen Namen oder deine E-Mail-Adresse ein. Wir schicken dir einen Link, mit dem du ein neues Passwort festlegst – es gilt für das Control Panel, das Forum und das Spiel. Das geht nur mit einer bestätigten E-Mail-Adresse.",
+		forgot_sent: "Falls es ein Konto mit diesem Namen bzw. dieser Adresse gibt und die E-Mail-Adresse bestätigt ist, haben wir dir einen Link geschickt. Er gilt 60 Minuten. Schau auch im Spam-Ordner nach.",
+		forgot_noemail: "Keine E-Mail bekommen? Ohne bestätigte E-Mail-Adresse können wir keinen Link schicken."
+	},
+	en: {
+		welcome: "Welcome to the server", language: "Language", tab_login: "Log in", tab_register: "Register",
+		username: "Username", password: "Password", password2: "Repeat password", remember: "Stay logged in on this PC",
+		btn_login: "Log in", btn_register: "Create account", busy_login: "Logging in …", busy_register: "Creating account …",
+		username_hint: "(your in-game name, 3–22 characters)", email: "Email address", email_hint: "(for confirmation and “forgot password”)",
+		ref: "Referred by", ref_hint: "(optional – player name)",
+		rules_a: "I accept the", rules_link: "rules", rules_b: "",
+		c_name: "Name allowed and available", c_email: "Email valid and available", c_pw: "Password strong enough", c_serial: "This PC has no account yet",
+		register_hint: "Only when everything is green.", register_ready: "One account per PC is allowed.",
+		name_ok: "✓ This name is available", name_invalid: "✗ 3–22 characters, only letters, numbers, _ and .", name_blocked: "✗ This name is not allowed (contains a blocked word).", name_used: "✗ This name is already taken.",
+		email_ok: "✓ This email address is available", email_invalid: "✗ Please enter a valid email address.", email_used: "✗ This email address is already used by another account.", email_domain: "✗ This domain does not exist – check the ending (e.g. .com).", email_nomx: "✗ This domain cannot receive emails.", email_disposable: "✗ Disposable addresses are not allowed – please use a real address.",
+		ref_ok: "✓ Player found: %s", ref_unknown: "✗ No player with this name found.", ref_self: "✗ You cannot refer yourself.",
+		checking: "… checking",
+		pw_short: "✗ too short – at least 8 characters", pw_weak: "weak", pw_medium: "medium", pw_strong: "strong", pw_min: " – at least 8 characters",
+		pw_match: "✓ matches", pw_nomatch: "✗ does not match",
+		leak_title: "This password is publicly known.", leak_text: "It appears in lists of leaked passwords (e.g. from data breaches of other sites) and is among the first to be tried in attacks. We recommend a different one.",
+		leak_ok: "I understand – I want to use this password anyway", c_pw_leak: "Password in public lists – confirmation required",
+		serial_ok: "An account (%s) is already registered on this PC, but the team has allowed another one. You can register now.",
+		serial_used: "There is already an account for this PC. %s is registered on this PC. Only one account per PC is allowed – please log in with it.",
+		serial_used_noname: "There is already an account for this PC. Only one account per PC is allowed – please log in with it.",
+		serial_help: "If someone else (e.g. family) plays on the same PC, the team can allow another account – submit a multi-account request for that.",
+		to_login: "Back to login", foot: "Registration is only possible here in the game.",
+		needreset: "There is no valid password for your account – e.g. because the team reset it. Set a new password using the link.", needemail_title: "Enter an email address", needemail_text: "There is no valid email address for your account. Please enter a real address – it is needed for “forgot password”.", needemail_btn: "Save and log in", needemail_hint: "You will receive a link to confirm the address.", needemail_busy: "Saving …",
+		problems: "Problems?", noaccess: "No access", ticket_create: "Create a ticket", not_mine: "This is not my account", optional: "(optional)",
+		ticket_title: "No access to your account", ticket_text: "You can no longer get into your account (e.g. forgot password and email address)? Create a ticket – the team will get back to you there.", ticket_name: "Name of your account", ticket_msg: "What happened?",
+		ticket_old: "Old serial", ticket_mail: "Email address", ticket_mail_hint: "(optional – for notifications, e.g. your new address)", ticket_notify: "Notify me by email about replies", ticket_serial: "The serial of this PC is sent automatically.", ticket_btn: "Create ticket", ticket_busy: "Creating …",
+		ticket_done: "Your ticket has been created. Write down the ticket ID and access code – the code is only shown now.", ticket_id: "Ticket ID", ticket_code: "Access code", ticket_copy: "Copy", ticket_where: "At %s you can open the ticket without logging in and reply to the team. Do not share either with anyone.", forgot_link: "Forgot password?", forgot_title: "Forgot password", forgot_who: "Name or email address", forgot_btn: "Send link", forgot_busy: "Sending …",
+		forgot_text: "Enter your name or email address. We will send you a link to set a new password – it applies to the Control Panel, the forum and the game. This only works with a confirmed email address.",
+		forgot_sent: "If there is an account with this name or address and the email address is confirmed, we have sent you a link. It is valid for 60 minutes. Please also check your spam folder.",
+		forgot_noemail: "No email received? Without a confirmed email address we cannot send a link."
+	}
+};
+var lang = "de", busy = false, view = "login", savedPw = false, SAVED = "••••••••••";
+var state = { name: null, email: null, ref: true, pwned: 0, pwSeq: 0, serial: true, serialName: "" };
+var timers = {}, ticketDone = null;
+
+function $(id) { return document.getElementById(id); }
+function t(key, arg) { var s = (L[lang][key] !== undefined ? L[lang][key] : L.de[key]) || ""; return arg !== undefined ? s.replace("%s", arg) : s; }
+function send() { if (window.mta) { mta.triggerEvent.apply(mta, arguments); } }
+function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+function applyLang() {
+	document.documentElement.lang = lang;
+	document.querySelectorAll("[data-t]").forEach(function (el) { el.textContent = t(el.dataset.t); });
+	document.querySelectorAll("[data-lang]").forEach(function (b) { b.classList.toggle("active", b.dataset.lang === lang); });
+	if (busy) { setBusy(true); }
+	if (view === "register") { revalidate(); }
+	renderSerial();
+}
+
+function show(v) {
+	if (busy) { return; }
+	if (v === "register" && !state.serial) { v = "serialused"; }
+	view = v;
+	document.querySelectorAll("[data-view]").forEach(function (el) { el.hidden = el.dataset.view !== v; });
+	if (v === "register" || v === "serialused") { send("loginWebView", "register"); }
+	if (document.activeElement && document.activeElement.blur) { document.activeElement.blur(); }
+	if (v === "register") { revalidate(); }
+	if (v === "ticket" && !$("t_name").value) { $("t_name").value = $("l_u").value; }
+	if (v === "forgot") { if (!$("f_who").value) { $("f_who").value = $("l_u").value; } $("f_ok").hidden = true; $("f_reset").hidden = true; }
+}
+
+function setLine(id, cls, text) { var el = $(id); el.className = "line" + (cls ? " " + cls : ""); el.textContent = text || ""; }
+function setCheck(id, cls) { $(id).className = cls || ""; }
+
+function pwScore(pw) {
+	var s = 0;
+	if (pw.length >= 8) { s++; }
+	if (pw.length >= 12) { s++; }
+	if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) { s++; }
+	if (/\d/.test(pw)) { s++; }
+	if (/[^A-Za-z0-9]/.test(pw)) { s++; }
+	return s;
+}
+
+function checkPassword(fromInput) {
+	var pw = $("r_p").value, pw2 = $("r_p2").value, meter = $("r_meter");
+	if (!pw) {
+		meter.style.width = "0"; setLine("r_p_line"); $("r_p").className = "";
+	} else if (pw.length < 8) {
+		meter.style.width = "20%"; meter.style.background = "var(--red)"; setLine("r_p_line", "bad", t("pw_short")); $("r_p").className = "bad";
+	} else {
+		var s = pwScore(pw), lvl = s >= 4 ? ["pw_strong", "100%", "var(--green)"] : s >= 3 ? ["pw_medium", "66%", "var(--yellow)"] : ["pw_weak", "40%", "var(--orange)"];
+		meter.style.width = lvl[1]; meter.style.background = lvl[2]; setLine("r_p_line", "", t(lvl[0]) + t("pw_min")); $("r_p_line").className = "line hint";
+		$("r_p").className = state.pwned > 0 ? "warn" : "";
+	}
+	if (pw2) { setLine("r_p2_line", pw === pw2 ? "ok" : "bad", t(pw === pw2 ? "pw_match" : "pw_nomatch")); $("r_p2").className = pw === pw2 ? "" : "bad"; } else { setLine("r_p2_line"); $("r_p2").className = ""; }
+	if (fromInput) {
+		state.pwned = 0; setSwitch($("r_leakok"), false);
+		clearTimeout(timers.pw);
+		if (pw.length >= 8) { timers.pw = setTimeout(function () { state.pwSeq++; send("loginWebPassword", pw, state.pwSeq); }, 600); }
+	}
+	$("r_leak").hidden = !(state.pwned > 0 && pw.length >= 8);
+	$("r_p_mark").hidden = $("r_leak").hidden;
+	update();
+}
+
+function queueCheck(field, input, line) {
+	var v = input.value.trim();
+	clearTimeout(timers[field]);
+	if (field === "ref" && !v) { state.ref = true; setLine(line); input.className = ""; update(); return; }
+	if (!v) { state[field] = null; setLine(line); input.className = ""; update(); return; }
+	state[field] = "wait";
+	setLine(line, "wait", t("checking"));
+	update();
+	timers[field] = setTimeout(function () { send("loginWebCheck", field, v); }, 450);
+}
+
+function revalidate() {
+	[["name", "r_u", "r_u_line"], ["email", "r_m", "r_m_line"], ["ref", "r_ref", "r_ref_line"]].forEach(function (f) { if ($(f[1]).value.trim()) { queueCheck(f[0], $(f[1]), f[2]); } });
+	checkPassword(false);
+}
+
+function update() {
+	var pw = $("r_p").value, pw2 = $("r_p2").value;
+	var pwOk = pw.length >= 8 && pw === pw2, leakOk = state.pwned <= 0 || $("r_leakok").checked;
+	setCheck("c_name", state.name === true ? "ok" : state.name === false ? "bad" : "");
+	setCheck("c_email", state.email === true ? "ok" : state.email === false ? "bad" : "");
+	setCheck("c_pw", !pw ? "" : !pwOk ? "bad" : state.pwned > 0 ? "warn" : "ok");
+	$("c_pw").textContent = state.pwned > 0 && pwOk ? t("c_pw_leak") : t("c_pw");
+	setCheck("c_serial", state.serial ? "ok" : "bad");
+	var ready = state.name === true && state.email === true && state.ref === true && pwOk && leakOk && state.serial && $("r_rules").checked;
+	if (!busy) { $("r_btn").disabled = !ready; }
+	$("r_btnhint").textContent = t(ready ? "register_ready" : "register_hint");
+}
+
+function renderSerial() {
+	$("r_serialok").hidden = !(state.serial && state.serialName);
+	$("r_serialok").textContent = t("serial_ok", state.serialName);
+	$("s_text").textContent = state.serialName ? t("serial_used", state.serialName) : t("serial_used_noname");
+}
+
+function setBusy(on) {
+	busy = on;
+	var lb = $("l_btn"), rb = $("r_btn");
+	lb.disabled = on;
+	lb.innerHTML = on ? '<span class="spin"></span>' + esc(t("busy_login")) : esc(t("btn_login"));
+	rb.innerHTML = on && view === "register" ? '<span class="spin"></span>' + esc(t("busy_register")) : esc(t("btn_register"));
+	document.querySelectorAll("input, .pills button, [data-lang]").forEach(function (el) { el.disabled = on; }); document.querySelectorAll(".switch").forEach(function (el) { el.classList.toggle("off", on); });
+	if (on) { rb.disabled = true; } else { update(); $("l_status").textContent = ""; $("r_status").textContent = ""; }
+}
+
+window.LoginUI = {
+	init: function (d) {
+		lang = d.locale === "en" ? "en" : "de";
+		$("project").textContent = d.project || "OpenReallife";
+		$("l_u").value = d.name || "";
+		if (d.saved) { $("l_p").value = SAVED; savedPw = true; setSwitch($("l_save"), true); }
+		applyLang();
+		show("login");
+		requestAnimationFrame(function () { $("win").classList.add("shown"); });
+	},
+	busy: function (d) { setBusy(!!d.state); },
+	status: function (d) { $(view === "register" ? "r_status" : "l_status").textContent = d.text || ""; },
+	check: function (d) {
+		var map = { name: ["r_u", "r_u_line", "name_ok"], email: ["r_m", "r_m_line", "email_ok"], ref: ["r_ref", "r_ref_line", "ref_ok"] }, m = map[d.field];
+		if (!m || $(m[0]).value.trim() !== d.value) { return; }
+		state[d.field] = !!d.ok;
+		setLine(m[1], d.ok ? "ok" : "bad", d.ok ? t(m[2], d.extra) : t(d.code));
+		$(m[0]).className = d.ok ? "" : "bad";
+		update();
+	},
+	pwned: function (d) {
+		if (d.seq !== state.pwSeq) { return; }
+		state.pwned = d.count > 0 ? d.count : 0;
+		checkPassword(false);
+	},
+	serial: function (d) {
+		state.serial = !!d.allowed;
+		state.serialName = d.name || "";
+		renderSerial();
+		if (!state.serial && view === "register") { show("serialused"); }
+		update();
+	},
+	forgot: function (d) {
+		$("f_btn").disabled = false;
+		$("f_btn").textContent = t("forgot_btn");
+		if (d.ok) { $("f_ok").textContent = t("forgot_sent"); $("f_ok").hidden = false; }
+	},
+	ticket: function (d) {
+		$("t_btn").disabled = false;
+		$("t_btn").textContent = t("ticket_btn");
+		if (!d.ok) { return; }
+		ticketDone = d;
+		$("d_ref").textContent = d.ref;
+		$("d_code").textContent = d.code;
+		$("d_hint").textContent = t("ticket_where", d.url);
+		$("t_text").value = "";
+		show("ticketdone");
+	},
+	needreset: function (d) {
+		$("f_who").value = d.name || $("l_u").value;
+		show("forgot");
+		$("f_reset").textContent = t("needreset");
+		$("f_reset").hidden = false;
+	},
+	needemail: function () {
+		show("needemail");
+		$("e_btn").disabled = false;
+		$("e_btn").textContent = t("needemail_btn");
+	},
+	setemail: function (d) {
+		$("e_btn").disabled = false;
+		$("e_btn").textContent = t("needemail_btn");
+		if (!d.ok) { setLine("e_mail_line", "bad", t(d.code)); $("e_mail").className = "bad"; }
+	},
+	close: function () { $("win").classList.add("closing"); }
+};
+
+document.addEventListener("click", function (e) {
+	var go = e.target.closest("[data-go]");
+	if (go) { e.preventDefault(); show(go.dataset.go); return; }
+	var lb = e.target.closest("[data-lang]");
+	if (lb && lb.dataset.lang !== lang) { lang = lb.dataset.lang; applyLang(); send("loginWebLocale", lang); return; }
+	if (e.target.id === "r_rules_link") { e.preventDefault(); send("loginWebRules"); }
+});
+
+document.addEventListener("keydown", function (e) {
+	var tag = e.target && e.target.tagName;
+	if ((e.key === "m" || e.key === "M") && !e.repeat && tag !== "INPUT" && tag !== "TEXTAREA") { send("loginWebMusic"); }
+});
+
+function setSwitch(input, on) {
+	input.checked = on;
+	input.closest(".switch").setAttribute("aria-checked", on ? "true" : "false");
+	input.dispatchEvent(new Event("change"));
+}
+document.querySelectorAll(".switch").forEach(function (row) {
+	row.addEventListener("click", function (e) {
+		if (e.target.closest("a")) { return; }
+		e.preventDefault();
+		var input = row.querySelector("input");
+		if (!busy) { setSwitch(input, !input.checked); }
+	});
+});
+
+$("l_p").addEventListener("input", function () {
+	if (savedPw) { savedPw = false; var v = this.value.replace(/•/g, ""); this.value = v; }
+});
+$("l_p").addEventListener("focus", function () { if (savedPw) { this.select(); } });
+
+$("v_login").addEventListener("submit", function (e) {
+	e.preventDefault();
+	if (busy) { return; }
+	var name = $("l_u").value.trim(), pw = $("l_p").value;
+	if (!name) { $("l_u").focus(); return; }
+	if (!pw) { $("l_p").focus(); return; }
+	var useSaved = savedPw && pw === SAVED;
+	send("loginWebLogin", name, useSaved ? "" : pw, $("l_save").checked ? "1" : "0", useSaved ? "1" : "0");
+});
+
+$("v_forgot").addEventListener("submit", function (e) {
+	e.preventDefault();
+	var who = $("f_who").value.trim();
+	if (busy || $("f_btn").disabled) { return; }
+	if (who.length < 3) { $("f_who").focus(); return; }
+	$("f_ok").hidden = true;
+	$("f_btn").disabled = true;
+	$("f_btn").textContent = t("forgot_busy");
+	send("loginWebForgot", who);
+});
+
+$("v_ticket").addEventListener("submit", function (e) {
+	e.preventDefault();
+	if (busy || $("t_btn").disabled) { return; }
+	var name = $("t_name").value.trim(), text = $("t_text").value.trim(), mail = $("t_mail").value.trim();
+	["t_name", "t_text", "t_mail"].forEach(function (id) { $(id).className = ""; });
+	if (name.length < 3) { $("t_name").className = "bad"; $("t_name").focus(); return; }
+	if (text.length < 10) { $("t_text").className = "bad"; $("t_text").focus(); return; }
+	if (mail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) { $("t_mail").className = "bad"; $("t_mail").focus(); return; }
+	$("t_btn").disabled = true;
+	$("t_btn").textContent = t("ticket_busy");
+	send("loginWebTicket", name, text, mail, mail && $("t_notify").checked ? "1" : "0", $("t_old").value.trim());
+});
+$("d_copy").addEventListener("click", function () {
+	if (ticketDone) { send("loginWebCopy", t("ticket_id") + ": " + ticketDone.ref + "\n" + t("ticket_code") + ": " + ticketDone.code + "\n" + ticketDone.url); }
+});
+
+$("v_needemail").addEventListener("submit", function (e) {
+	e.preventDefault();
+	var mail = $("e_mail").value.trim();
+	if ($("e_btn").disabled) { return; }
+	if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) { setLine("e_mail_line", "bad", t("email_invalid")); $("e_mail").className = "bad"; return; }
+	setLine("e_mail_line");
+	$("e_mail").className = "";
+	$("e_btn").disabled = true;
+	$("e_btn").textContent = t("needemail_busy");
+	send("loginWebSetEmail", mail);
+});
+
+$("v_register").addEventListener("submit", function (e) {
+	e.preventDefault();
+	if (busy || $("r_btn").disabled) { return; }
+	send("loginWebRegister", $("r_u").value.trim(), $("r_p").value, $("r_m").value.trim(), $("r_ref").value.trim());
+});
+
+$("r_u").addEventListener("input", function () { queueCheck("name", this, "r_u_line"); });
+$("r_m").addEventListener("input", function () { queueCheck("email", this, "r_m_line"); });
+$("r_ref").addEventListener("input", function () { queueCheck("ref", this, "r_ref_line"); });
+$("r_p").addEventListener("input", function () { checkPassword(true); });
+$("r_p2").addEventListener("input", function () { checkPassword(false); });
+$("r_leakok").addEventListener("change", update);
+$("r_rules").addEventListener("change", update);
+
+applyLang();
+send("loginWebReady");
+if (!window.mta) { LoginUI.init({ name: "", saved: false, locale: "de" }); }
+</script>
+</body>
+</html>

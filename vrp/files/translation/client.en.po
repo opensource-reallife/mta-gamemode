@@ -6633,3 +6633,30 @@ msgstr "Strawberries"
 
 msgid "Erdbeerpflanze"
 msgstr "Strawberry plant"
+
+msgid "Beschreibe dein Problem in mindestens 10 Zeichen."
+msgstr "Describe your problem in at least 10 characters."
+
+msgid "Das Ticket konnte nicht erstellt werden. Versuche es später erneut."
+msgstr "The ticket could not be created. Please try again later."
+
+msgid "Die Anfrage hat nicht geklappt. Versuche es später erneut."
+msgstr "The request did not work. Please try again later."
+
+msgid "Die E-Mail-Adresse ist ungültig."
+msgstr "The email address is invalid."
+
+msgid "Du hast gerade erst ein Ticket erstellt. Versuche es später erneut."
+msgstr "You have just created a ticket. Please try again later."
+
+msgid "Gib den Namen deines Accounts an (3–22 Zeichen)."
+msgstr "Enter the name of your account (3–22 characters)."
+
+msgid "In die Zwischenablage kopiert."
+msgstr "Copied to the clipboard."
+
+msgid "Zu viele Anfragen. Versuche es in %d Minuten erneut."
+msgstr "Too many requests. Please try again in %d minutes."
+
+msgid "Verbindung zum Forum fehlgeschlagen! (%d/%d)\nVersuche erneut%s"
+msgstr "Connection to the forum failed! (%d/%d)\nTrying again%s"
