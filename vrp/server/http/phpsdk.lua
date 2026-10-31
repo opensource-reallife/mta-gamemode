@@ -946,6 +946,38 @@ function phpSDKChangeMember(adminId, targetId, groupType, groupId, action, reaso
 	return result("SUCCESS", nil, newRank)
 end
 
+local cpCrosshairApi = CP_WEB_PATH .. "/api_crosshair.php"
+
+function phpSDKSetCrosshair(userId, data, url)
+	cpCrosshairApi = type(url) == "string" and url:match("^https?://[^%s]+/api_crosshair%.php$") or cpCrosshairApi
+	local player = DatabasePlayer.Map[userId]
+
+	if player and isElement(player) then
+		player:triggerEvent("crosshairApply", fromJSON(data))
+		local data = toJSON({status = "SUCCESS"}, true)
+		return data:sub(2, #data-1)
+	else
+		local data = toJSON({status = "ERROR", error = "PLAYER_IS_OFFLINE"}, true)
+		return data:sub(2, #data-1)
+	end
+end
+
+addEventHandler("characterInitialized", root,
+	function()
+		local player = source
+		fetchRemote(cpCrosshairApi .. "?id=" .. player:getId(),
+			function(data, errorCode)
+				if errorCode == 0 and isElement(player) then
+					local crosshairs = fromJSON(data)
+					if type(crosshairs) == "table" then
+						player:triggerEvent("crosshairApply", crosshairs)
+					end
+				end
+			end
+		)
+	end
+)
+
 local cpScreenshotUrls = {}
 
 function phpSDKTakeScreenShot(userId, url)
