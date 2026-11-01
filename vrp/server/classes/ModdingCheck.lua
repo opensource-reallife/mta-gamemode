@@ -116,8 +116,11 @@ function ModdingCheck:handleOnPlayerModInfo ( filename, modList )
 
 			local found = false
 
+			local md5, sha256 = tostring(item.md5):upper(), tostring(item.sha256):upper()
+			local paddedMd5, paddedSha256 = tostring(item.paddedMd5 or ""):upper(), tostring(item.paddedSha256 or ""):upper()
 			for _, v in pairs(self.m_ModBans) do
-				if v.MD5 == item.md5 or v.SHA256 == item.sha256 then
+				local banMd5, banSha256 = v.MD5 and tostring(v.MD5):upper(), v.SHA256 and tostring(v.SHA256):upper()
+				if (banMd5 and (banMd5 == md5 or banMd5 == paddedMd5)) or (banSha256 and (banSha256 == sha256 or banSha256 == paddedSha256)) then
 					tNames[#tNames+1] = item.id.." - "..item.name
 					found = true
 				end

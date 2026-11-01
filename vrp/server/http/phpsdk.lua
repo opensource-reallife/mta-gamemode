@@ -2692,11 +2692,21 @@ function phpSDKServerSetting(adminId, index, value, desc, reload)
 end
 
 function phpSDKModBlacklist(adminId, action, sha256, md5)
-	sha256, md5 = tostring(sha256 or ""), tostring(md5 or "")
-	if not sha256:match("^%x+$") or #sha256 ~= 64 or not md5:match("^%x+$") or #md5 ~= 32 then return {status = "ERROR", error = "INVALID_HASH"} end
+	sha256, md5 = tostring(sha256 or ""):upper(), tostring(md5 or ""):upper()
+	local hasSha = sha256:match("^%x+$") and #sha256 == 64
+	local hasMd5 = md5:match("^%x+$") and #md5 == 32
+	if not hasSha and not hasMd5 then return {status = "ERROR", error = "INVALID_HASH"} end
+	if not hasSha then sha256 = "-" end
+	if not hasMd5 then md5 = "-" end
 	if action == "block" then
 		if not sql:queryFetchSingle("SELECT 1 AS Found FROM ??_mod_blacklist WHERE SHA256 = ? OR MD5 = ?", sql:getPrefix(), sha256, md5) then
-			sql:queryExec("INSERT INTO ??_mod_blacklist (SHA256, MD5) VALUES (?, ?)", sql:getPrefix(), sha256, md5)
+			if hasSha and hasMd5 then
+				sql:queryExec("INSERT INTO ??_mod_blacklist (SHA256, MD5) VALUES (?, ?)", sql:getPrefix(), sha256, md5)
+			elseif hasSha then
+				sql:queryExec("INSERT INTO ??_mod_blacklist (SHA256) VALUES (?)", sql:getPrefix(), sha256)
+			else
+				sql:queryExec("INSERT INTO ??_mod_blacklist (MD5) VALUES (?)", sql:getPrefix(), md5)
+			end
 		end
 	elseif action == "unblock" then
 		sql:queryExec("DELETE FROM ??_mod_blacklist WHERE SHA256 = ? OR MD5 = ?", sql:getPrefix(), sha256, md5)
