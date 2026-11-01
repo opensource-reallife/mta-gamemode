@@ -410,6 +410,77 @@ function phpSDKOrgLoan(adminId, groupType, groupId, action, data)
 	return result("ERROR", "UNKNOWN_ACTION")
 end
 
+function phpSDKOrgPermissions(adminId, groupType, groupId, scope, permissionsType, target, changes)
+	local result = function(status, err, skipped) return {status = status, error = err, skipped = skipped} end
+	local instance = groupType == "faction" and FactionManager:getSingleton():getFromId(tonumber(groupId)) or groupType == "company" and CompanyManager:getSingleton():getFromId(tonumber(groupId))
+	if not instance then return result("ERROR", "UNKNOWN_GROUP") end
+	if permissionsType ~= "permission" and groupType ~= "faction" then return result("ERROR", "UNKNOWN_ACTION") end
+	if type(changes) ~= "table" then return result("ERROR", "INVALID") end
+
+	local manager = PermissionsManager:getSingleton()
+	local leaderRank = manager.m_LeaderRank[groupType]
+	local info = permissionsType == "permission" and PERMISSIONS_INFO or permissionsType == "action" and ACTION_PERMISSIONS_INFO
+	if permissionsType ~= "weapon" and not info then return result("ERROR", "UNKNOWN_ACTION") end
+	local allowed = function(name, rank)
+		if permissionsType == "weapon" then return tonumber(name) ~= nil end
+		return info[name] and info[name][2][groupType] and rank >= info[name][2][groupType]
+	end
+
+	local skipped = 0
+	local permType = permissionsType == "action" and "Aktionsrechte" or permissionsType == "weapon" and "Waffenrechte" or "Rechte"
+	if scope == "rank" then
+		local rank = tonumber(target)
+		if not rank or rank < 0 or rank > leaderRank then return result("ERROR", "UNKNOWN_RANK") end
+		if rank == leaderRank then return result("ERROR", "LEADER_RANK") end
+		local tbl = permissionsType == "permission" and instance.m_RankPermissions or permissionsType == "action" and instance.m_RankActions or instance.m_RankWeapons
+		tbl[tostring(rank)] = tbl[tostring(rank)] or {}
+		for name, state in pairs(changes) do
+			if allowed(name, rank) then
+				if permissionsType == "weapon" then
+					tbl[tostring(rank)][tostring(name)] = fromboolean(toboolean(state))
+				else
+					tbl[tostring(rank)][name] = toboolean(state) and true or false
+				end
+			else
+				skipped = skipped + 1
+			end
+		end
+		for _, player in pairs(instance:getOnlinePlayers()) do
+			manager:syncPermissions(player, groupType)
+		end
+		instance:save()
+		instance:addLog(tonumber(adminId), "Rechte", ("hat die %s von Rang %d geändert! (Control Panel)"):format(permType, rank))
+	elseif scope == "player" then
+		local playerId = tonumber(target)
+		if not playerId or not instance:isPlayerMember(playerId) then return result("ERROR", "NOT_A_MEMBER") end
+		local rank = instance:getPlayerRank(playerId)
+		if rank == leaderRank then return result("ERROR", "LEADER_RANK") end
+		local tbl = permissionsType == "permission" and instance.m_PlayerPermissions or permissionsType == "action" and instance.m_PlayerActionPermissions or instance.m_PlayerWeaponPermissions
+		tbl[playerId] = tbl[playerId] or {}
+		for name, state in pairs(changes) do
+			if allowed(name, rank) then
+				local key = permissionsType == "weapon" and tostring(name) or name
+				if state == "default" then
+					tbl[playerId][key] = nil
+				else
+					tbl[playerId][key] = toboolean(state) and true or false
+				end
+			else
+				skipped = skipped + 1
+			end
+		end
+		instance:savePlayerPermissions(playerId)
+		local player = Player.getFromId(playerId)
+		if player and isElement(player) then
+			manager:syncPermissions(player, groupType)
+		end
+		instance:addLog(tonumber(adminId), "Rechte", ("hat die %s von %s geändert! (Control Panel)"):format(permType, Account.getNameFromId(playerId) or playerId))
+	else
+		return result("ERROR", "UNKNOWN_ACTION")
+	end
+	return result("SUCCESS", nil, skipped)
+end
+
 local function phpSDKBankAccount(kind, id)
 	id = tonumber(id)
 	if kind == "player" then
