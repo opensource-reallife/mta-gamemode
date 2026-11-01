@@ -503,7 +503,7 @@ function PermissionsManager:checkForNewActions()
 	for name, info in pairs(ACTION_PERMISSIONS_INFO) do
 		for i, faction in pairs(FactionManager:getSingleton():getAllFactions()) do
 			if (info[1][1] == 0 or (info[1][1] == 1 and table.find(info[1][2], faction:getId()))) and ACTION_PERMISSIONS_INFO[name][2]["faction"] then
-				if not faction.m_RankActions["6"][name] then
+				if faction.m_RankActions["6"][name] == nil then
 					for rank = 0, 6 do
 						faction.m_RankActions[tostring(rank)][name] = true
 					end
@@ -517,7 +517,7 @@ function PermissionsManager:checkForNewPermissions()
 	for name, info in pairs(PERMISSIONS_INFO) do
 		for i, faction in pairs(FactionManager:getSingleton():getAllFactions()) do
 			if (info[1][1] == 0 or (info[1][1] == 1 and table.find(info[1][2], faction:getId()))) and PERMISSIONS_INFO[name][2]["faction"] then
-				if not faction.m_RankPermissions["6"][name] then
+				if faction.m_RankPermissions["6"][name] == nil then
 					for rank = 0, 6 do
 						if rank ~= 6 then state = false else state = true end
 						faction.m_RankPermissions[tostring(rank)][name] = state
@@ -527,7 +527,7 @@ function PermissionsManager:checkForNewPermissions()
 		end
 		for i, company in pairs(CompanyManager.Map) do
 			if (info[1][1] == 0 or (info[1][1] == 2 and table.find(info[1][2], company:getId()))) and PERMISSIONS_INFO[name][2]["company"] then
-				if not company.m_RankPermissions["5"][name] then
+				if company.m_RankPermissions["5"][name] == nil then
 					for rank = 0, 5 do
 						if rank ~= 5 then state = false else state = true end
 						company.m_RankPermissions[tostring(rank)][name] = state
@@ -537,7 +537,7 @@ function PermissionsManager:checkForNewPermissions()
 		end
 		for i, group in pairs(GroupManager.Map) do
 			if info[1][1] == 0 and PERMISSIONS_INFO[name][2]["group"] then
-				if not group.m_RankPermissions["6"][name] then
+				if group.m_RankPermissions["6"][name] == nil then
 					for rank = 0, 6 do
 						if rank ~= 6 then state = false else state = true end
 						group.m_RankPermissions[tostring(rank)][name] = state
