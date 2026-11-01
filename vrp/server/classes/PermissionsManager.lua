@@ -212,6 +212,10 @@ function PermissionsManager:Event_changeRankPermission(permissionsType, type, ra
 		self:syncPermissions(player, type)
 	end
 
+	if type ~= "group" then
+		instance:save()
+	end
+
 	local text = error and "Einige Rechte konnten nicht geändert werden." or "Rechte erfolgreich geändert."
 	client:sendInfo(_("%s", client, text))
 	self:addLog(instance, client, permissionsType)
@@ -289,6 +293,10 @@ function PermissionsManager:Event_changeRankPermissions(permissionsType, tbl, ty
 
 	for i, player in pairs(instance:getOnlinePlayers()) do
 		self:syncPermissions(player, type)
+	end
+
+	if type ~= "group" then
+		instance:save()
 	end
 
 	local text = error and "Einige Rechte konnten nicht geändert werden." or "Rechte erfolgreich geändert."
