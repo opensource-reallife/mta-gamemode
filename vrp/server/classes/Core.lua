@@ -202,6 +202,7 @@ function Core:constructor()
 		RaceManager:new()
 		QuestManager:new()
 		GreenhouseManager:new()
+		AutoSave:new()
 
 		local weekday = getRealTime().weekday
 		if MARKET_POSSIBLE and weekday == 6 then

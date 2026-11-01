@@ -71,6 +71,7 @@
 	<script src="server/classes/Storage/SQL.lua" type="server"/>
 	<script src="server/classes/Storage/MySQL.lua" type="server"/>
 	<script src="server/classes/Storage/UserGroupSettings.lua" type="server"/>
+	<script src="server/classes/Storage/AutoSave.lua" type="server"/>
 	<script src="server/classes/Storage/Teamspeak/TSConnect.lua" type="server"/>
 	<script src="server/classes/Core.lua" type="server"/>
 	<script src="server/classes/Player/WhiteList.lua" type="server"/>
@@ -1639,6 +1640,7 @@
 	<export function="phpSDKSetEmail" type="server" http="true" />
 	<export function="phpSDKReloadBadNames" type="server" http="true" />
 	<export function="phpSDKOrgLoan" type="server" http="true" />
+	<export function="phpSDKOrgPermissions" type="server" http="true" />
 	<export function="phpSDKAccountRename" type="server" http="true" />
 	<export function="phpSDKAccountDelete" type="server" http="true" />
 	<export function="phpSDKAccountLock" type="server" http="true" />
