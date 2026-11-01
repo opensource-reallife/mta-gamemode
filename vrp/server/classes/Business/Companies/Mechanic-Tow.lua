@@ -494,6 +494,7 @@ function MechanicTow:FillAccept(player, target, vehicle, fuel, price)
 		if target:getBankMoney() >= price then
 			target:transferBankMoney(self.m_BankAccountServer, price, "Mech&Tow tanken", "Company", "Refill")
 			vehicle:setFuel(vehicle:getFuel() + fuel)
+			if vehicle.saveUsage then vehicle:saveUsage() end
 
 			self.m_BankAccountServer:transferMoney({player, true}, math.floor(price*0.3), "Mech&Tow tanken", "Company", "Refill")
 			self.m_BankAccountServer:transferMoney(self, math.floor(price*0.7), "Tanken", "Company", "Refill")

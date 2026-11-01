@@ -168,6 +168,10 @@ function Vehicle:onPlayerEnter(player, seat)
 	end
 
 	if seat == 0 then
+		if self.saveUsage then
+			self:saveUsage(true)
+		end
+
 		if not player:getPublicSync("inDrivingLession") and not player.raceLobby then
 			if not player:hasCorrectLicense(source) then
 				player:sendShortMessage(_("Achtung: Du hast keinen Führerschein für dieses Fahrzeug!", player))
@@ -231,6 +235,10 @@ function Vehicle:onPlayerExit(player, seat)
 	local hbState = getControlState( player, "handbrake")
 
 	if seat == 0 then
+		if self.saveUsage then
+			self:saveUsage(true)
+		end
+
 		if hbState then
 			setControlState( player, "handbrake", false)
 		end

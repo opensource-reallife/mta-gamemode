@@ -169,6 +169,7 @@ function GasStationManager:confirmTransaction(vehicle, fuel, station, opticalFue
 					end
 				end
 			end
+			vehicle:saveUsage()
 		end
 	end
 end

@@ -56,6 +56,10 @@ function Player:destructor()
 		return
 	end
 	self.m_Disconnecting = true -- use this variable e.g. to prevent the server from sending events to this player
+	local vehicle = self:getOccupiedVehicle()
+	if vehicle and self:getOccupiedVehicleSeat() == 0 and vehicle.saveUsage then
+		vehicle:saveUsage(true)
+	end
 	if self.m_SpawnerVehicle and isElement(self.m_SpawnerVehicle) then -- TODO: Move this to an appropriate position to be able to use the quit hook
 		destroyElement(self.m_SpawnerVehicle)
 	end
