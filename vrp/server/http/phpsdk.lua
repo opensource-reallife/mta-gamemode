@@ -1187,7 +1187,11 @@ addEventHandler("onPlayerScreenShot", root, function(resource, status, pixels, t
 			status = status == "ok" and "SUCCESS" or tostring(status):upper(),
 			data = status == "ok" and pixels or ""
 		}
-	}, function(response)
+	}, function(response, info)
+		if response ~= "OK" and response ~= "STOP" and not live.logged then
+			live.logged = true
+			outputServerLog(("[CP] Live-Bild an %s nicht angenommen: HTTP %s, Antwort %s"):format(live.url, tostring(type(info) == "table" and info.statusCode or info), tostring(response):sub(1, 120)))
+		end
 		if response == "STOP" and cpLive[player] == live then
 			cpLiveStop(player)
 		end
@@ -2154,6 +2158,7 @@ addEventHandler("onPlayerScreenShot", root, function(resource, status, pixels, t
 			local tag = tag:sub(4, #tag)
 			local url = cpScreenshotUrls[tag] or CP_WEB_PATH .. "/api_screenshot.php"
 			cpScreenshotUrls[tag] = nil
+			outputServerLog(("[CP] Screenshot von %s erhalten: %s, %d Bytes"):format(getPlayerName(source), tostring(status), status == "ok" and #pixels or 0))
 			if status == "ok" then
 				fetchRemote(url, {
 					method = "POST",
@@ -2162,10 +2167,12 @@ addEventHandler("onPlayerScreenShot", root, function(resource, status, pixels, t
 						data = pixels,
 						tag = tag
 					}
-				}, function(response)
+				}, function(response, info)
 					local image = tostring(response or ""):match("^OK:(%x+%.jpeg)$")
 					if image then
 						sql:queryExec("UPDATE ??_account_screenshot SET Status = 'Success', Image = ?, UpdatedAt = NOW() WHERE Tag = ? AND Status = 'Processing'", sql:getPrefix(), image, tag)
+					else
+						outputServerLog(("[CP] Screenshot an %s nicht angenommen: HTTP %s, Antwort %s"):format(url, tostring(type(info) == "table" and info.statusCode or info), tostring(response):sub(1, 120)))
 					end
 				end)
 			elseif status == "minimized" then
