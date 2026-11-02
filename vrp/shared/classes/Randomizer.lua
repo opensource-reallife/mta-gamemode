@@ -8,7 +8,7 @@
 Randomizer = inherit(Object)
 
 function Randomizer:changeSeed()
-	local seed = getTickCount()
+	local seed = getTickCount() + getRealTime().timestamp
 	if self.m_LastSeed ~= seed then -- only change to a different seed from the last
 		self.m_LastSeed = seed
 		math.randomseed(seed)
@@ -16,7 +16,7 @@ function Randomizer:changeSeed()
 end
 
 function Randomizer:get(min, max)
-	self:changeSeed()
+	if not self.m_LastSeed then self:changeSeed() end
 	return math.random(min, max)
 end
 
