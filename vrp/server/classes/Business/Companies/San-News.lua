@@ -286,7 +286,7 @@ end
 
 function SanNews:Event_requestNewsAppUnlock(pay)
 	if pay then
-		local costs = 1000
+		local costs = SANNEWS_APP_UNLOCK_COST
 		if client:getBankMoney() >= costs then
 			client:transferBankMoney({self, nil, true}, costs, "San News App", "Company", "App")
 			client:sendShortMessage(_("Die Funktion steht dir nun bis zum Server-Neustart zur Verfügung!", client))

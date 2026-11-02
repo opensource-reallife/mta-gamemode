@@ -213,7 +213,7 @@ function AppSanNews:Event_receiveNewsAppUnlock(unlocked, time)
 		self:refreshJobGrid()
 	else
 		self.m_JobLabel:setText(_"Funktion gesperrt")
-		self.m_UnlockButton:setText(_("Freischalten (%d$)", 1000))
+		self.m_UnlockButton:setText(_("Freischalten (%d$)", SANNEWS_APP_UNLOCK_COST))
 		self.m_UnlockButton:setEnabled(true)
 		self:refreshJobGrid()
 	end
