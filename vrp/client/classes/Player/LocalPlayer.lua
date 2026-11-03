@@ -678,8 +678,6 @@ function LocalPlayer:toggleAFK(state)
 		CustomF11Map:getSingleton():enable()
 		Nametag:getSingleton():setDisabled(false)
 		toggleAllControls(true, true, false)
-		toggleControl("action", true)
-		toggleControl("fire", true)
 		fadeCamera(true, 0)
 	end
 end
@@ -688,8 +686,6 @@ function LocalPlayer:renderAFK()
 	local w, h = screenWidth, screenHeight
 	dxDrawText(_("Du wurdest AFK gesetzt!\nGib folgenden Befehl ein: /noafk %s", self.m_AFKCode), 0, 0, w, h, tocolor(255, 0, 0, 255), 2, "clear", "center", "center", false, false, true)
 	toggleAllControls(false, true, false)
-	toggleControl("action", false)
-	toggleControl("fire", false)
 	fadeCamera(false, 0)
 	dxDrawRectangle(0, h/2, w, h/2, Color.Black)
 	dxDrawRectangle(w/2, 0, w/2, h, Color.Black)
