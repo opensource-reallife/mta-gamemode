@@ -2512,7 +2512,7 @@ function phpSDKVoucherOffline(adminId, playerId, data)
 	local slots = math.floor(tonumber(data.slots) or 21)
 	for _, it in ipairs(type(data.items) == "table" and data.items or {}) do
 		local name, amount = tostring(it.item or ""), math.floor(tonumber(it.amount) or 0)
-		local info = sql:queryFetchSingle("SELECT Tasche, stack_max, max_items FROM ??_inventory_items WHERE Objektname = ?", prefix, name)
+		local info = sql:queryFetchSingle("SELECT Tasche, stack_max, max_items, MaxWear FROM ??_inventory_items WHERE Objektname = ?", prefix, name)
 		local given = false
 		if info and amount > 0 then
 			local stackMax = math.max(1, tonumber(info.stack_max) or 1)
@@ -2540,9 +2540,10 @@ function phpSDKVoucherOffline(adminId, playerId, data)
 					sql:queryExec("UPDATE ??_inventory_slots SET Menge = ? WHERE id = ?", prefix, tonumber(s.Menge) + add, s.id)
 					left = left - add
 				end
+				local wear = (tonumber(info.MaxWear) or 0) > 0 and tostring(math.floor(tonumber(info.MaxWear))) or ""
 				for _, place in ipairs(free) do
 					if left <= 0 then break end
-					sql:queryExec("INSERT INTO ??_inventory_slots (PlayerId, Menge, Objekt, Platz, Tasche, Value, WearLevel) VALUES (?, ?, ?, ?, ?, '', 0)", prefix, playerId, math.min(left, stackMax), name, place, info.Tasche)
+					sql:queryExec("INSERT INTO ??_inventory_slots (PlayerId, Menge, Objekt, Platz, Tasche, Value, WearLevel) VALUES (?, ?, ?, ?, ?, '', NULLIF(?, ''))", prefix, playerId, math.min(left, stackMax), name, place, info.Tasche, wear)
 					left = left - math.min(left, stackMax)
 				end
 				given = true
