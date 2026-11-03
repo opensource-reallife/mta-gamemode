@@ -159,6 +159,7 @@ function StateEvidence:Event_startEvidenceTruck()
 							table.insert(objToDelete, evObj.Id)
 						end
 					end
+					totalMoney = math.max(totalMoney, STATE_EVIDENCE_MAX_OBJECTS * 0.25)
 					if totalMoney > 0 then
 						ActionsCheck:getSingleton():setAction("Geldtransport")
 						FactionState:getSingleton():sendMoveRequest(TSConnect.Channel.STATE)
@@ -167,10 +168,11 @@ function StateEvidence:Event_startEvidenceTruck()
 						Discord:getSingleton():outputBreakingNews("Ein Geld-Transporter ist unterwegs! Bitte bleiben Sie vom Transport fern!")
 						FactionState:getSingleton():sendShortMessage(client:getName().." hat einen Geldtransport gestartet!",10000)
 						StatisticsLogger:getSingleton():addActionLog("Geld-Transport", "start", client, client:getFaction(), "faction")
-						sql:queryFetchSingle(function()
-							self:loadObjectData()
-						end, "DELETE FROM ??_state_evidence WHERE Id IN (??)",sql:getPrefix(), table.concat(objToDelete, ","))
-
+						if #objToDelete > 0 then
+							sql:queryFetchSingle(function()
+								self:loadObjectData()
+							end, "DELETE FROM ??_state_evidence WHERE Id IN (??)",sql:getPrefix(), table.concat(objToDelete, ","))
+						end
 					else
 						client:sendError(_("In der Asservatenkammer befindet sich zu wenig Material!", client))
 					end
