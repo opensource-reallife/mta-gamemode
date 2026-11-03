@@ -170,10 +170,45 @@ function Account.isEmailValid(email)
 	return type(email) == "string" and #email <= 50 and email:match("^[%w._-]+@[%w._-]+%.%w+$") and true or false
 end
 
+function Account.loginFix(player, Id)
+	local existing = DatabasePlayer.getFromId(Id)
+	if not existing then return true end
+	local serial = player:getSerial()
+	local row = sql:queryFetchSingle("SELECT LastSerial FROM ??_account WHERE Id = ?", sql:getPrefix(), Id)
+	local known = (row and row.LastSerial == serial) or sql:queryFetchSingle("SELECT ID FROM ??_account_to_serial WHERE PlayerId = ? AND Serial = ?", sql:getPrefix(), Id, serial)
+	if not known then return false end
+	if not isElement(existing) then
+		DatabasePlayer.Map[Id] = nil
+		outputServerLog(("[LoginFix] Account %d automatisch freigegeben (gleiche Serial %s)"):format(Id, serial))
+		return true
+	end
+	if getElementType(existing) == "player" and existing ~= player and existing:getSerial() == serial then
+		outputServerLog(("[LoginFix] Alte Verbindung von Account %d getrennt (gleiche Serial %s)"):format(Id, serial))
+		existing:kick("Erneut angemeldet – alte Verbindung beendet.")
+		local left = DatabasePlayer.getFromId(Id)
+		if not left then
+			return true
+		end
+		if not isElement(left) then
+			DatabasePlayer.Map[Id] = nil
+			outputServerLog(("[LoginFix] Account %d nach dem Kick freigegeben"):format(Id))
+			return true
+		end
+		return "retry"
+	end
+	return false
+end
+
 function Account.loginSuccess(player, Id, Username, ForumId, RegisterDate, TeamspeakId, pwhash)
 	if DatabasePlayer.getFromId(Id) then
-		player:triggerEvent("loginfailed", "Dieser Account ist schon in Benutzung")
-		return false
+		local fixed = Account.loginFix(player, Id)
+		if fixed == "retry" then
+			player:triggerEvent("loginfailed", "Deine alte Verbindung wurde beendet. Bitte melde dich erneut an.")
+			return false
+		elseif not fixed then
+			player:triggerEvent("loginfailed", "Dieser Account ist schon in Benutzung")
+			return false
+		end
 	end
 
 	if MULTIACCOUNT_CHECK then
