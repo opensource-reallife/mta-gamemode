@@ -786,9 +786,9 @@ EVIDENCETRUCK_MAX_LOAD = 90000 -- Dollars
 STATE_EVIDENCE_MAX_OBJECTS = 100000 -- dollars
 STATE_EVIDENCE_MAX_CLIPS = 50
 STATE_EVIDENCE_OBJECT_PRICE = {
-	Waffe = 1, -- * weapon cost
-	Munition = 1, -- * munition cost
-	Item = 10
+	Waffe = 1.5, -- * weapon cost
+	Munition = 2, -- * munition cost
+	Item = 15
 }
 
 
