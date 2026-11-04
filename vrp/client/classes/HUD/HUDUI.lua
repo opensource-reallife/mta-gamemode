@@ -80,9 +80,6 @@ function HUDUI:draw()
 		self:drawRedDot()
 	end
 
-	if localPlayer:getPublicSync("AFK") == true then
-		self:drawAFK()
-	end
 	if DEBUG then ExecTimeRecorder:getSingleton():endRecording("UI/HUD_general", 1, 1) end
 end
 
@@ -564,10 +561,6 @@ function HUDUI:drawRedDot()
 			end
 		end
 	end
-end
-
-function HUDUI:drawAFK()
-	dxDrawText ("- AFK - ",0,0,screenWidth, 100,  Color.Orange, 5, "sans","center" )
 end
 
 function HUDUI:setScale( scale )

@@ -853,7 +853,7 @@ function PlayerManager:Event_setPhoneStatus(state)
 	client:togglePhone(state)
 end
 
-function PlayerManager:Event_toggleAFK(state, teleport)
+function PlayerManager:Event_toggleAFK(state)
 	if state == true then
 		if client.m_JailTime then
 			if client.m_JailTime > 0 then
@@ -881,13 +881,6 @@ function PlayerManager:Event_toggleAFK(state, teleport)
 	if state == true then
 		self.m_AFKHook:call(client)
 		client:startAFK()
-		if client:isInVehicle() then client:removeFromVehicle() end
-		setElementInterior(client, 4)
-		setElementDimension(client,0)
-		local afkPos = AFK_POSITIONS[math.random(1, #AFK_POSITIONS)]
-		if teleport then
-			client:setPosition(afkPos.x, afkPos.y, 999.5546875)
-		end
 	else
 		client:endAFK()
 	end
