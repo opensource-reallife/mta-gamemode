@@ -9,6 +9,8 @@ InteriorManager = inherit(Singleton)
 
 function InteriorManager:constructor()
     self.m_Map = {}
+
+    self:createDefaultInteriors()
 end
 
 function InteriorManager:registerInterior(Id, interiorId, spawnPosition)
@@ -33,6 +35,23 @@ function InteriorManager:teleportPlayerToInterior(player, Id)
         setElementDimension(player,Id)
         player:setUniqueInterior(Id)
     end
+end
+
+function InteriorManager:createDefaultInteriors()
+	--[[
+    for k, info in pairs(self.InteriorData) do
+        InteriorEnterExit:new(info.enter + Vector3(0, 0, 0.5), info.spawn + Vector3(0, 0, 0.5), info.rotation, 0, info.interior, info.dimension, true)
+    end
+	--]]
+
+    -- Copied over from InteriorEnterExit
+	local data = {
+        {1567.91, -1898.01, 13.56, 460.56, -88.65, 999.55, 90, 0, 4},
+	}
+
+	for k, info in pairs(data) do
+		InteriorEnterExit:new(Vector3(info[1], info[2], info[3]), Vector3(info[4], info[5], info[6]), info[7], info[8], info[9], info[10])
+	end
 end
 
 InteriorManager.InteriorData = {
@@ -134,6 +153,7 @@ InteriorManager.InteriorData = {
     {enter = Vector3(2421.52, -1220.65, 24.6085), spawn = Vector3(1204.81, -12.79, 1000.09), dimension = 0, interior = 2, rotation = -180},
     {enter = Vector3(2506.74, 2120.39, 9.8472), spawn = Vector3(1204.81, -12.79, 1000.09), dimension = 1, interior = 2, rotation = 0},
     {enter = Vector3(1259.39, -785.332, 91.042), spawn = Vector3(1260.58, -785.31, 1090.96), dimension = 0, interior = 5, rotation = 90},
+    {enter = Vector3(1567.93, -1898.01, 13.56), spawn = Vector3(460.16, -88.62, 999.55), dimension = 0, interior = 4, rotation = 90}, -- AFK-Cafe
 
 
     --{enter = Vector3(2196.92, 1676.52, 11.368), spawn = Vector3(2233.91, 1714.73, 1011.38), dimension = 0, interior = 1, rotation = 90}, CASINO

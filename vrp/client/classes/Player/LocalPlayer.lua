@@ -23,7 +23,6 @@ function LocalPlayer:constructor()
 	self.m_CurrentAFKTime = 0
 	self.m_AFKTime = 0
 	self.m_AFKStartTime = 0
-	self.m_AFKRender = bind(self.renderAFK, self)
 	self.m_LastMortemPickup = getTickCount()
 	self.m_LastPositon = self:getPosition()
 	self.m_PlayTime = setTimer(bind(self.setPlayTime, self), 60000, 0)
@@ -601,53 +600,59 @@ function LocalPlayer:checkAFK()
 	if DEBUG then return end
 	if DEBUG_AFK then return end
 
-	if not self:isAFK() then
+	if not self:getPublicSync("AFK") == true then
 		if self:getPublicSync("gangwarParticipant") then return end
 		local pos = self:getPosition()
 		local distance = getDistanceBetweenPoints3D(pos, self.m_LastPositon) or 0
 		self.m_LastPositon = pos
 
+		if self:getInterior() == 4 and getDistanceBetweenPoints3D(pos, Vector3(449.03, -88.86, 999.55)) < 50 then
+			self:toggleAFK(true, false)
+			return
+		end
+
 		self.m_AFKCheckCount = self.m_AFKCheckCount + 1
 		if distance > 15 then
 			self.m_AFKCheckCount = 0
-			self.m_AFKCode = false
 			triggerServerEvent("toggleAFK", localPlayer, false)
+			removeEventHandler ( "onClientPedDamage", localPlayer, cancelEvent)
 			return
 		end
 		local afkMinutes = self.m_AFKCheckCount*5/60
 		if afkMinutes == 12 then
 			if not localPlayer:getData("inJail") and not localPlayer:getData("inAdminPrison") then
-				outputChatBox (_("WARNUNG: Du wirst in %d Minute/n AFK gesetzt!", 3), 255, 0, 0 )
-				self:sendTrayNotification(_("WARNUNG: Du wirst in %d Minute/n AFK gesetzt!", 3), "warning", true)
+				outputChatBox ( _"WARNUNG: Du wirst in 3 Minuten zum AFK-Cafe befördert!", 255, 0, 0 )
+				self:sendTrayNotification(_"WARNUNG: Du wirst in 3 Minuten zum AFK-Cafe befördert!", "warning", true)
 				self:generateAFKCode()
 				return
 			end
 		elseif afkMinutes == 14 then
 			if not localPlayer:getData("inJail") and not localPlayer:getData("inAdminPrison") then
-				outputChatBox (_("WARNUNG: Du wirst in %d Minute/n AFK gesetzt!", 1), 255, 0, 0 )
-				self:sendTrayNotification(_("WARNUNG: Du wirst in %d Minute/n AFK gesetzt!", 1), "warning", true)
+				outputChatBox ( _"WARNUNG: Du wirst in einer Minute zum AFK-Cafe befördert!", 255, 0, 0 )
+				self:sendTrayNotification(_"WARNUNG: Du wirst in einer Minute zum AFK-Cafe befördert!", "warning", true)
 				return
 			end
 		elseif afkMinutes >= 15 then
 			if not localPlayer:getData("inJail") and not localPlayer:getData("inAdminPrison") then
-				self:toggleAFK(true)
+				self:toggleAFK(true, true)
 				return
 			end
 		end
+
 	else
-		HUDUI:getSingleton():hide()
-		HUDRadar:getSingleton():hide()
-		local pos = localPlayer:getPosition()
-		setCameraMatrix(pos.x, pos.y, pos.z-10, pos.x, pos.y, pos.z-100)
+		if self:getInterior() == 0 then
+			self:toggleAFK(false)
+		end
 	end
 end
 
-function LocalPlayer:toggleAFK(state)
+function LocalPlayer:toggleAFK(state, teleport)
 	if not self:isLoggedIn() then return end
 
 	if state == true then
+		self.m_AFKCode = false
 		GUIForm.closeAll()
-		InfoBox:new(_"Du wurdest AFK gesetzt!")
+		InfoBox:new(_"Du wurdest ins AFK-Cafe teleportiert!")
 
 		if localPlayer:getPublicSync("Faction:Duty") and localPlayer:getFaction() then
 			if localPlayer:getFaction():isStateFaction() then
@@ -660,45 +665,26 @@ function LocalPlayer:toggleAFK(state)
 		if localPlayer:getPublicSync("Company:Duty") then
 			triggerServerEvent("companyToggleDuty", localPlayer)
 		end
-		
-		triggerServerEvent("toggleAFK", localPlayer, true)
+
+		triggerServerEvent("toggleAFK", localPlayer, true, teleport)
+		addEventHandler ( "onClientPedDamage", localPlayer, cancelEvent)
 		self.m_AFKStartTime = getTickCount()
 		NoDm:getSingleton():checkNoDm()
-		triggerServerEvent("onOnlineSlotMachineForceOut", localPlayer)
+		setInteriorSoundsEnabled(false)
 
-		if not self.m_AFKCode then self:generateAFKCode() end
-		addEventHandler("onClientRender", root, self.m_AFKRender)
-		CustomF11Map:getSingleton():disable()
-		Nametag:getSingleton():setDisabled(true)
-		HUDUI:getSingleton():hide()
-		HUDRadar:getSingleton():hide()
+		triggerServerEvent("onOnlineSlotMachineForceOut", localPlayer)
 	else
-		self.m_AFKCode = false
 		InfoBox:new(_("Willkommen zurück, %s!", localPlayer:getName()))
 		triggerServerEvent("toggleAFK", localPlayer, false)
+		removeEventHandler ( "onClientPedDamage", localPlayer, cancelEvent)
 		self:setAFKTime() -- Set CurrentAFKTime
 		self.m_AFKStartTime = 0
 		self:setAFKTime() -- Add CurrentAFKTime to AFKTime + Reset CurrentAFKTime
 		NoDm:getSingleton():checkNoDm()
-
-		removeEventHandler("onClientRender", root, self.m_AFKRender)
-		CustomF11Map:getSingleton():enable()
-		Nametag:getSingleton():setDisabled(false)
-		HUDUI:getSingleton():show()
-		HUDRadar:getSingleton():show()
-		setCameraTarget(localPlayer)
-		toggleAllControls(true, true, false)
-		fadeCamera(true, 0)
+		setInteriorSoundsEnabled(true)
 	end
 end
 
-function LocalPlayer:renderAFK()
-	local w, h = screenWidth, screenHeight
-	dxDrawText(_("Du wurdest AFK gesetzt!\nGib folgenden Befehl ein: /noafk %s", self.m_AFKCode), 0, 0, w, h, tocolor(255, 0, 0, 255), 2, "clear", "center", "center", false, false, true)
-	toggleAllControls(false, true, false)
-	fadeCamera(false, 0)
-	clearChatBox()
-end
 
 function LocalPlayer:renderPedNameTags()
 	if DEBUG then ExecTimeRecorder:getSingleton():startRecording("3D/PedNameTag") end
@@ -767,17 +753,13 @@ function LocalPlayer:generateAFKCode()
 	end
 	local fcode = table.concat(code)
 	self.m_AFKCode = fcode
-	outputChatBox(_("Um nicht AFK gesetzt zu werden, gib folgenden Befehl ein: /noafk %s", fcode),255,0,0)
+	outputChatBox(_("Um nicht ins AFK-Cafe zu kommen, gib folgenden Befehl ein: /noafk %s", fcode),255,0,0)
 end
 
 function LocalPlayer:onAFKCodeInput(cmd, code)
 	if self.m_AFKCode then
 		if self.m_AFKCode == code then
-			if self:isAFK() then
-				self:toggleAFK(false)
-			else
-				outputChatBox(_"Vorgang abgebrochen.", 255, 0, 0)
-			end
+			outputChatBox(_"Vorgang abgebrochen.", 255, 0, 0)
 			self.m_AFKCheckCount = 0
 			self.m_AFKCode = false
 		else
