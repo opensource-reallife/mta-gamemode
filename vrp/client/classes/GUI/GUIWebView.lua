@@ -35,6 +35,9 @@ function GUIWebView:constructor(posX, posY, width, height, url, transparent, par
 end
 
 function GUIWebView:virtual_destructor()
+    if self.m_Destroyed then return end
+    self.m_Destroyed = true
+
     removeEventHandler("onClientBrowserLoadingFailed", root, self.m_OutputLoadErrorFunc)
     focusBrowser(nil)
     self:setRenderingEnabled(false)
