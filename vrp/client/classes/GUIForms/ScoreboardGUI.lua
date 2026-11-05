@@ -29,7 +29,7 @@ function ScoreboardGUI:constructor()
 	self.m_Pad, self.m_CloseSize, self.m_LogoHeight = pad, closeSize, logoHeight
 	self.m_Logo = GUIImage:new((self.m_SideWidth - logoWidth)/2, pad, logoWidth, logoHeight, "files/images/LogoNoFont.png", self.m_Side)
 	self.m_CloseButton = GUIButton:new(self.m_SideWidth - closeSize - pad + 4, pad + logoHeight + 6, closeSize, closeSize, FontAwesomeSymbols.Close, self.m_Side):setFont(FontAwesome(math.floor(18*self.m_Scale))):setBackgroundColor(Color.Clear):setBarEnabled(false):setBackgroundHoverColor(Color.Red):setHoverColor(Color.White):setFontSize(1)
-	self.m_CloseButton.onLeftClick = function() self:hide() end
+	self.m_CloseButton.onLeftClick = function() self:close() end
 	self.m_CloseButton:setVisible(false)
 
 	local infoY = pad + logoHeight + 6
@@ -62,6 +62,7 @@ function ScoreboardGUI:constructor()
 	self.m_OldWeaponSlot = localPlayer:getWeaponSlot()
 
 	self.m_ScrollBind = bind(self.onScoreBoardScroll, self)
+	self.m_RightClickBind = bind(self.onRightClickKey, self)
 	self.m_CursorHook = bind(self.onCursorToggle, self)
 	self.m_ClickBind = bind(self.onClick, self)
 end
@@ -80,6 +81,8 @@ function ScoreboardGUI:onShow()
 	self.m_Showing = true
 	bindKey("mouse_wheel_up", "down", self.m_ScrollBind)
 	bindKey("mouse_wheel_down", "down", self.m_ScrollBind)
+	self.m_RightClickDown = false
+	bindKey("mouse2", "both", self.m_RightClickBind)
 	Cursor:getHook():register(self.m_CursorHook)
 
 	RadioGUI:getSingleton():setControlEnabled(false)
@@ -94,6 +97,7 @@ function ScoreboardGUI:onHide()
 	end
 	unbindKey("mouse_wheel_up", "down", self.m_ScrollBind)
 	unbindKey("mouse_wheel_down", "down", self.m_ScrollBind)
+	unbindKey("mouse2", "both", self.m_RightClickBind)
 	Cursor:getHook():unregister(self.m_CursorHook)
 	self:closeMenu()
 	self.m_Pinned = false
@@ -104,6 +108,13 @@ end
 function ScoreboardGUI:hide()
 	self.m_Pinned = false
 	self:setVisible(false)
+end
+
+function ScoreboardGUI:close()
+	self:hide()
+	if isCursorShowing() then
+		Cursor:toggleCursor(nil, "up")
+	end
 end
 
 function ScoreboardGUI:isPinned()
@@ -128,6 +139,19 @@ function ScoreboardGUI:onCursorToggle(state)
 		if self.m_Pinned then
 			self:hide()
 		end
+	end
+end
+
+function ScoreboardGUI:onRightClickKey(key, state)
+	if state == "down" then
+		self.m_RightClickDown = not isCursorShowing()
+	elseif self.m_RightClickDown then
+		self.m_RightClickDown = false
+		nextframe(function()
+			if self.m_Showing and not isCursorShowing() then
+				Cursor:toggleCursor(key, "down")
+			end
+		end)
 	end
 end
 

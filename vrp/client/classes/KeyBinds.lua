@@ -306,7 +306,7 @@ function KeyBinds:scoreboardGUI(_, keyState)
 	local scoreboard = ScoreboardGUI:getSingleton()
 	if keyState == "down" then
 		if scoreboard:isPinned() then
-			scoreboard:hide()
+			scoreboard:close()
 		else
 			scoreboard:setVisible(true):bringToFront()
 		end
