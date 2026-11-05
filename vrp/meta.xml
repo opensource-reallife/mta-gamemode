@@ -200,6 +200,7 @@
 	<script src="server/classes/UI/Nametag.lua" type="server"/>
 	<script src="server/classes/UI/ShortMessageQuestion.lua" type="server"/>
 	<script src="server/classes/UI/QuestionBox.lua" type="server"/>
+	<script src="server/classes/UI/PaymentChoice.lua" type="server"/>
 
 	<!-- Damage -->
 	<script src="server/classes/Gameplay/InjurySystem/DamageManager.lua" type="server"/>
@@ -1087,6 +1088,7 @@
     <script src="client/classes/GUIForms/PlantGUI.lua" type="client" />
     <script src="client/classes/GUIForms/PlayerPermissionsGUI.lua" type="client" />
     <script src="client/classes/GUIForms/QuestionBox.lua" type="client" />
+    <script src="client/classes/GUIForms/PaymentChoiceGUI.lua" type="client" />
     <script src="client/classes/GUIForms/RadioCommunicationGUI.lua" type="client" />
     <script src="client/classes/GUIForms/RankPermissionsGUI.lua" type="client" />
     <script src="client/classes/GUIForms/ScoreboardGUI.lua" type="client" />
