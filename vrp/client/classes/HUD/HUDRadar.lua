@@ -10,7 +10,8 @@ addRemoteEvents{ "HUDRadar:showRadar", "HUDRadar:hideRadar" }
 
 function HUDRadar:constructor()
 	self.m_ImageSize = 1536, 1536 --3072, 3072
-	self.m_Width, self.m_Height = 340*screenWidth/1600, 200*screenHeight/900
+	self.m_Scale = math.clamp(0.5, tonumber(core:get("HUD", "radarScale", 1)) or 1, 1.5)
+	self.m_Width, self.m_Height = 340*screenWidth/1600*self.m_Scale, 200*screenHeight/900*self.m_Scale
 	self.m_PosX, self.m_PosY = 20*screenWidth/1600, screenHeight - self.m_Height - 20*screenWidth/1600
 	self.m_RenderTargetAll = dxCreateRenderTarget(screenWidth, screenHeight, true)
 	self.m_Diagonal = math.sqrt(self.m_Width^2+self.m_Height^2)
@@ -18,7 +19,7 @@ function HUDRadar:constructor()
 	self.m_StatusBarsEnabled = false
 	self:toggleStatusBars(core:get("HUD", "drawStatusBars", false))
 
-	self.m_Zoom = 1
+	self.m_Zoom = math.clamp(0.5, tonumber(core:get("HUD", "radarZoom", 1)) or 1, 2.5)
 	self.m_Rotation = 0
 	self.m_Blips = Blip.Blips
 	self.m_Areas = {}
@@ -28,6 +29,7 @@ function HUDRadar:constructor()
 
 	-- Create a renderTarget that has the size of the diagonal of the actual image
 	self.m_RenderTarget = dxCreateRenderTarget(self.m_Diagonal, self.m_Diagonal)
+	self.m_RenderTargetSize = self.m_Diagonal
 	self:updateMapTexture(true)
 
 	-- Settings
@@ -303,12 +305,14 @@ function HUDRadar:draw()
 	if isNotInInterior then
 		dxSetRenderTarget(self.m_RenderTarget, true)
 
+		local sectionSize = self.m_Diagonal/self.m_Zoom
+
 		-- Draw radar map
-		dxDrawImageSection(0, 0, self.m_Diagonal, self.m_Diagonal, mapX - self.m_Diagonal/2, mapY - self.m_Diagonal/2, self.m_Diagonal, self.m_Diagonal, self.m_Texture, self.m_Rotation)
+		dxDrawImageSection(0, 0, self.m_Diagonal, self.m_Diagonal, mapX - sectionSize/2, mapY - sectionSize/2, sectionSize, sectionSize, self.m_Texture, self.m_Rotation)
 
 		-- Draw route map overlay
 		if self.m_RouteRenderTarget then
-			dxDrawImageSection(0, 0, self.m_Diagonal, self.m_Diagonal, mapX - self.m_Diagonal/2, mapY - self.m_Diagonal/2, self.m_Diagonal, self.m_Diagonal,
+			dxDrawImageSection(0, 0, self.m_Diagonal, self.m_Diagonal, mapX - sectionSize/2, mapY - sectionSize/2, sectionSize, sectionSize,
 				self.m_RouteRenderTarget, self.m_Rotation)
 		end
 
@@ -378,13 +382,13 @@ function HUDRadar:drawBlips()
 	--
 	local px, py, pz = getElementPosition(localPlayer)
 	local mapCenterX, mapCenterY = self.m_PosX + self.m_Width/2, self.m_PosY + self.m_Height/2
-	local mat = math.matrix.three.rotate_z(math.rad(self.m_Rotation)) * math.matrix.three.scale(self.m_ImageSize/6000, -self.m_ImageSize/6000, 1) * math.matrix.three.translate(-px, -py, -pz)
+	local mat = math.matrix.three.rotate_z(math.rad(self.m_Rotation)) * math.matrix.three.scale(self.m_ImageSize/6000*self.m_Zoom, -self.m_ImageSize/6000*self.m_Zoom, 1) * math.matrix.three.translate(-px, -py, -pz)
 	local rotLimit = math.atan2(self.m_Height, self.m_Width)
 	local obj = localPlayer:getPrivateSync("isSpecting")
 
 	if obj then
 		px, py, pz = getElementPosition(obj)
-		mat = math.matrix.three.rotate_z(math.rad(self.m_Rotation)) * math.matrix.three.scale(self.m_ImageSize/6000, -self.m_ImageSize/6000, 1)
+		mat = math.matrix.three.rotate_z(math.rad(self.m_Rotation)) * math.matrix.three.scale(self.m_ImageSize/6000*self.m_Zoom, -self.m_ImageSize/6000*self.m_Zoom, 1)
 			* math.matrix.three.translate(-px, -py, -pz)
 	end
 
@@ -530,8 +534,8 @@ function HUDRadar:worldToMapPosition(worldX, worldY)
 end
 
 function HUDRadar:setZoom(zoom)
-	error("Not implemented yet")
-	self.m_Zoom = zoom
+	self.m_Zoom = math.clamp(0.5, tonumber(zoom) or 1, 2.5)
+	core:set("HUD", "radarZoom", self.m_Zoom)
 end
 
 function HUDRadar:getZoom()
@@ -550,6 +554,22 @@ end
 
 function HUDRadar:getWidth()
 	return self.m_Width
+end
+
+function HUDRadar:setScale(scale)
+	self.m_Scale = math.clamp(0.5, tonumber(scale) or 1, 1.5)
+	core:set("HUD", "radarScale", self.m_Scale)
+
+	self.m_Width, self.m_Height = 340*screenWidth/1600*self.m_Scale, 200*screenHeight/900*self.m_Scale
+	self.m_PosY = screenHeight - self.m_Height - 20*screenWidth/1600 - (self.m_StatusBarsEnabled and self.m_Height/20 or 0)
+	self.m_Diagonal = math.sqrt(self.m_Width^2+self.m_Height^2)
+
+	if self.m_Diagonal > self.m_RenderTargetSize then
+		destroyElement(self.m_RenderTarget)
+		self.m_RenderTarget = dxCreateRenderTarget(self.m_Diagonal, self.m_Diagonal)
+		self.m_RenderTargetSize = self.m_Diagonal
+	end
+	MessageBoxManager.onRadarPositionChange()
 end
 
 function HUDRadar:toggleStatusBars(state)

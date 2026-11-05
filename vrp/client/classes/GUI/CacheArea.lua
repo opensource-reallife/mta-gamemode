@@ -83,7 +83,8 @@ function CacheArea:drawCached(skipPostGUI)
 	end
 	-- Render! :>
 	dxSetBlendMode(self.m_BlendMode or "add")
-	dxDrawImage(self.m_AbsoluteX, self.m_AbsoluteY, self.m_Width, self.m_Height, self.m_RenderTarget, 0, 0, 0, tocolor(255, 255, 255, self.m_Alpha), postGUI)
+	local renderScale = self.m_RenderScale or 1
+	dxDrawImage(self.m_AbsoluteX, self.m_AbsoluteY, self.m_Width*renderScale, self.m_Height*renderScale, self.m_RenderTarget, 0, 0, 0, tocolor(255, 255, 255, self.m_Alpha), postGUI)
 	dxSetBlendMode("blend")
 
 	return true

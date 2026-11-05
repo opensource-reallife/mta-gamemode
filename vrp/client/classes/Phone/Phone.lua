@@ -10,6 +10,7 @@ inherit(Singleton, Phone)
 
 function Phone:constructor()
 	GUIForm.constructor(self, screenWidth-310, screenHeight-620, 295, 600)
+	self:setScale(core:get("HUD", "phoneScale", 1))
 
 	self.m_Phone = core:get("Phone", "PhoneModel", 1)
 	self.m_Background = core:get("Phone", "Background", "iOS_7")
@@ -64,6 +65,16 @@ function Phone:constructor()
 	end
 
 	triggerServerEvent("setPhoneStatus", root, self.m_PhoneOn)
+end
+
+function Phone:setScale(scale)
+	scale = math.clamp(0.7, tonumber(scale) or 1, math.max(1, math.min(1.5, (screenHeight-20)/620)))
+	core:set("HUD", "phoneScale", scale)
+	self.m_RenderScale = scale ~= 1 and scale or nil
+
+	self.m_PosX, self.m_PosY = screenWidth-310*scale, screenHeight-620*scale
+	self.m_AbsoluteX, self.m_AbsoluteY = self.m_PosX, self.m_PosY
+	self:anyChange()
 end
 
 function Phone:switchOff()

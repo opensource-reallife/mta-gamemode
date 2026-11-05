@@ -8,14 +8,12 @@
 HUDSpeedo = inherit(Singleton)
 
 function HUDSpeedo:constructor()
-	self.m_Size = 256
-	self.m_FuelSize = 128
+	self:setScale(core:get("HUD", "speedoScale", 1))
 	self:setAlpha()
 	self:setLightOption()
 	self.m_Draw = bind(self.draw, self)
 	self.m_Indicator = {["left"] = 0, ["right"] = 0}
-	self.m_DigitalFont = VRPFont(30, Fonts.Digital)
-	self.m_MileageFont = VRPFont(20)
+
 
 	-- Add event handlers
 	addEventHandler("onClientPlayerVehicleEnter", localPlayer,
@@ -51,6 +49,15 @@ function HUDSpeedo:constructor()
 	)
 end
 
+function HUDSpeedo:setScale(scale)
+	self.m_Scale = math.clamp(0.5, tonumber(scale) or 1, 1.5)
+	core:set("HUD", "speedoScale", self.m_Scale)
+	self.m_Size = 256*self.m_Scale
+	self.m_FuelSize = 128*self.m_Scale
+	self.m_DigitalFont = VRPFont(30*self.m_Scale, Fonts.Digital)
+	self.m_MileageFont = VRPFont(20*self.m_Scale)
+end
+
 function HUDSpeedo:show()
 	addEventHandler("onClientRender", root, self.m_Draw, true, "high+10")
 end
@@ -78,6 +85,7 @@ function HUDSpeedo:draw()
 	local vehicleType = getVehicleType(vehicle)
 	local handbrake = getElementData( vehicle, "Handbrake" )
 	local speed = vehicle:getSpeed()
+	local s = self.m_Scale
 	local drawX, drawY = screenWidth - self.m_Size, screenHeight - self.m_Size - 10
 
 	-- Set maximum
@@ -116,9 +124,9 @@ function HUDSpeedo:draw()
 	if not isPlane then
 		-- draw the engine icon
 		if getVehicleEngineState(vehicle) then
-			dxDrawImage(drawX, drawY + 15, self.m_Size, self.m_Size, "files/images/Speedo/engine.png", 0, 0, 0, Color.changeAlpha(Color.Green, self.m_Alpha))
+			dxDrawImage(drawX, drawY + 15*s, self.m_Size, self.m_Size, "files/images/Speedo/engine.png", 0, 0, 0, Color.changeAlpha(Color.Green, self.m_Alpha))
 		elseif vehicle.EngineStart then
-			dxDrawImage(drawX, drawY + 15, self.m_Size, self.m_Size, "files/images/Speedo/engine.png", 0, 0, 0, tocolor(255, 255, 255, self.m_Alpha))
+			dxDrawImage(drawX, drawY + 15*s, self.m_Size, self.m_Size, "files/images/Speedo/engine.png", 0, 0, 0, tocolor(255, 255, 255, self.m_Alpha))
 		end
 
 		if handbrake or getPedControlState("handbrake") or vehicle:isFrozen() then
@@ -128,21 +136,21 @@ function HUDSpeedo:draw()
 		else
 			local cruiseSpeed = CruiseControl:getSingleton():getSpeed()
 			if cruiseSpeed then
-				dxDrawText(("%i"):format(math.floor(cruiseSpeed)), drawX+128, drawY+60, nil, nil, Color.changeAlpha(Color.Yellow, self.m_Alpha), 1, getVRPFont(self.m_DigitalFont), "center")
+				dxDrawText(("%i"):format(math.floor(cruiseSpeed)), drawX+128*s, drawY+60*s, nil, nil, Color.changeAlpha(Color.Yellow, self.m_Alpha), 1, getVRPFont(self.m_DigitalFont), "center")
 			else
 				local speedLimit = SpeedLimit:getSingleton():getSpeed()
-				dxDrawText(speedLimit and math.floor(speedLimit) or "-", drawX+128, drawY+60, nil, nil, Color.changeAlpha(Color.Orange, self.m_Alpha), 1, getVRPFont(self.m_DigitalFont), "center")
+				dxDrawText(speedLimit and math.floor(speedLimit) or "-", drawX+128*s, drawY+60*s, nil, nil, Color.changeAlpha(Color.Orange, self.m_Alpha), 1, getVRPFont(self.m_DigitalFont), "center")
 			end
 		end
 
-		dxDrawText(("%.1f km"):format(vehicle:getMileage() and vehicle:getMileage()/1000 or 0), drawX+128, drawY+155, nil, nil, tocolor(255, 255, 255, self.m_Alpha), 1, getVRPFont(self.m_MileageFont), "center")
+		dxDrawText(("%.1f km"):format(vehicle:getMileage() and vehicle:getMileage()/1000 or 0), drawX+128*s, drawY+155*s, nil, nil, tocolor(255, 255, 255, self.m_Alpha), 1, getVRPFont(self.m_MileageFont), "center")
 		if vehicle:getVehicleType() == VehicleType.Automobile then
 			if not self:allOccupantsBuckeled() and getVehicleEngineState(vehicle) then
 				if getTickCount()%1000 > 500 then
-					dxDrawImage(drawX + 128 - 48, drawY + 120, 24, 24, "files/images/Speedo/seatbelt.png", 0, 0, 0, Color.changeAlpha(Color.Red, self.m_Alpha))
+					dxDrawImage(drawX + 80*s, drawY + 120*s, 24*s, 24*s, "files/images/Speedo/seatbelt.png", 0, 0, 0, Color.changeAlpha(Color.Red, self.m_Alpha))
 				end
 			elseif getVehicleEngineState(vehicle) then
-				dxDrawImage(drawX + 128 - 48, drawY + 120, 24, 24, "files/images/Speedo/seatbelt.png", 0, 0, 0, Color.changeAlpha(Color.Green, self.m_Alpha))
+				dxDrawImage(drawX + 80*s, drawY + 120*s, 24*s, 24*s, "files/images/Speedo/seatbelt.png", 0, 0, 0, Color.changeAlpha(Color.Green, self.m_Alpha))
 			end
 		end
 
@@ -160,19 +168,19 @@ function HUDSpeedo:draw()
 		-- draw the fuel-o-meter
 		self.m_Fuel = vehicle:getData("fuel")
 		if getVehicleOverrideLights(vehicle) ~= 2 then
-			dxDrawImage(drawX-100, drawY+115, self.m_FuelSize, self.m_FuelSize, "files/images/Speedo/fuel.png", 0, 0, 0, tocolor(255, 255, 255, self.m_Alpha))
+			dxDrawImage(drawX-100*s, drawY+115*s, self.m_FuelSize, self.m_FuelSize, "files/images/Speedo/fuel.png", 0, 0, 0, tocolor(255, 255, 255, self.m_Alpha))
 		else
-			dxDrawImage(drawX-100, drawY+115, self.m_FuelSize, self.m_FuelSize, "files/images/Speedo/fuel.png", 0, 0, 0, tocolor(255, 255, 255, self.m_Alpha))
+			dxDrawImage(drawX-100*s, drawY+115*s, self.m_FuelSize, self.m_FuelSize, "files/images/Speedo/fuel.png", 0, 0, 0, tocolor(255, 255, 255, self.m_Alpha))
 			if self.m_LightOption then
-				dxDrawImage(drawX-100, drawY+115, self.m_FuelSize, self.m_FuelSize, "files/images/Speedo/fuel_light.png", 0, 0, 0, tocolor(255, 255, 255, lightAlpha))
+				dxDrawImage(drawX-100*s, drawY+115*s, self.m_FuelSize, self.m_FuelSize, "files/images/Speedo/fuel_light.png", 0, 0, 0, tocolor(255, 255, 255, lightAlpha))
 			end
 		end
-		dxDrawImage(drawX-100, drawY+115, self.m_FuelSize, self.m_FuelSize, "files/images/Speedo/fuel_needle.png", self.m_Fuel * 180/100, 0, 0, tocolor(255, 255, 255, needleAlpha))
+		dxDrawImage(drawX-100*s, drawY+115*s, self.m_FuelSize, self.m_FuelSize, "files/images/Speedo/fuel_needle.png", self.m_Fuel * 180/100, 0, 0, tocolor(255, 255, 255, needleAlpha))
 
 		if localPlayer.vehicle.towedByVehicle then
 			self.m_TrailerFuel = localPlayer.vehicle.towedByVehicle:getFuel()
 			if self.m_TrailerFuel then
-				dxDrawImage(drawX-100, drawY+115, self.m_FuelSize, self.m_FuelSize, "files/images/Speedo/fuel_needle_trailer.png", self.m_TrailerFuel * 180/100, 0, 0, tocolor(255, 255, 255, needleAlpha))
+				dxDrawImage(drawX-100*s, drawY+115*s, self.m_FuelSize, self.m_FuelSize, "files/images/Speedo/fuel_needle_trailer.png", self.m_TrailerFuel * 180/100, 0, 0, tocolor(255, 255, 255, needleAlpha))
 			end
 		end
 		--dxSetBlendMode("blend")

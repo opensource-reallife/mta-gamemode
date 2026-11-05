@@ -268,13 +268,22 @@ function DxElement:setAbsolutePosition(posX, posY)
 	return self
 end
 
+function DxElement:toUnscaledCursor(cursorX, cursorY)
+	local area = self.m_CacheArea or self
+	local scale = area.m_RenderScale
+	if scale then
+		return area.m_AbsoluteX + (cursorX - area.m_AbsoluteX)/scale, area.m_AbsoluteY + (cursorY - area.m_AbsoluteY)/scale
+	end
+	return cursorX, cursorY
+end
+
 function DxElement:isCursorWithinBox(left, top, right, bottom)
 	local relCursorX, relCursorY = getCursorPosition()
 	if not relCursorX then
 		return false
 	end
 
-	local cursorX, cursorY = relCursorX * screenWidth, relCursorY * screenHeight
+	local cursorX, cursorY = self:toUnscaledCursor(relCursorX * screenWidth, relCursorY * screenHeight)
 	local absoluteX, absoluteY = self:getPosition(true)
 
 	return cursorX >= absoluteX + left and cursorY >= absoluteY + top and cursorX < absoluteX + right and cursorY < absoluteY + bottom

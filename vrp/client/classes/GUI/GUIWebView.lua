@@ -145,6 +145,7 @@ function GUIWebView:onCursorMove(relX, relY, absX, absY)
     if not self.m_ControlsEnabled then return end
     if isCursorShowing() then
 		local guiX, guiY = self:getPosition(true)
+		absX, absY = self:toUnscaledCursor(absX, absY)
 		self.m_Browser:injectMouseMove(absX - guiX, absY - guiY)
 	end
 end

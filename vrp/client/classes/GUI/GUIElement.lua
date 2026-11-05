@@ -165,7 +165,7 @@ function GUIElement:updateInput()
 	-- Check for hovers, clicks, ...
 	local relCursorX, relCursorY = getCursorPosition()
 	if relCursorX then
-		local cursorX, cursorY = relCursorX * screenWidth, relCursorY * screenHeight
+		local cursorX, cursorY = self:toUnscaledCursor(relCursorX * screenWidth, relCursorY * screenHeight)
 
 		self:performChecks(getKeyState("mouse1"), getKeyState("mouse2"), cursorX, cursorY)
 	end

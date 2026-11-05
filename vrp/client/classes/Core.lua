@@ -232,6 +232,7 @@ function Core:ready() --onClientResourceStart
 end
 
 function Core:afterLogin()
+	FPSLimit:new()
 	Time:new()
 	RadioGUI:new()
 	HUDSpeedo:new()

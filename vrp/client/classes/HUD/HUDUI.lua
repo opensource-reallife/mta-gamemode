@@ -20,7 +20,6 @@ function HUDUI:constructor()
 	local enabled = core:get("HUD", "showRadar")
 	self.m_MunitionProgress = 0
 	self.m_ChartAnims = {}
-	self.m_FPSLimit = getFPSLimit()
 
 	if self.m_UIMode == UIStyle.Default and self.m_Enabled then
 		setPlayerHudComponentVisible("all", true)
@@ -527,7 +526,7 @@ function HUDUI:drawChart()
 	drawCol(2, 0, Color.Clear, localPlayer:getWeaponLevel(), FontAwesomeSymbols.Bullseye, Color.Clear, "weapon-level", not core:get("HUD", "chartPointLevelVisible", true))
 	drawCol(2, 0, Color.Clear, localPlayer:getJobLevel(), FontAwesomeSymbols.Suitcase, Color.Clear, "job-level", not core:get("HUD", "chartPointLevelVisible", true))
 	drawCol(2, 0, Color.Clear, localPlayer:getFishingLevel(), FontAwesomeSymbols.Anchor, Color.Clear, "fishing-level", not core:get("HUD", "chartPointLevelVisible", true))
-	drawCol(2, 0, Color.Clear, math.min(self.m_FPSLimit, localPlayer.FPS.frames + 1), FontAwesomeSymbols.Desktop, Color.Clear, "fps", not core:get("HUD", "chartFPSVisible", true))
+	drawCol(2, 0, Color.Clear, math.min(getFPSLimit(), localPlayer.FPS.frames + 1), FontAwesomeSymbols.Desktop, Color.Clear, "fps", not core:get("HUD", "chartFPSVisible", true))
 
 	--weapons
 	local weaponIconPath = FileModdingHelper:getSingleton():getWeaponImage(self:getLocalTarget():getWeapon())
@@ -561,6 +560,10 @@ function HUDUI:drawRedDot()
 			end
 		end
 	end
+end
+
+function HUDUI:getScaleSliderValue()
+	return (self.m_Scale - 0.5)/1.875
 end
 
 function HUDUI:setScale( scale )

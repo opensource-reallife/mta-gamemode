@@ -26,6 +26,7 @@ function ServerSettings:load()
 
 		if row.Index == "FPSLimit" then
 			setFPSLimit(tonumber(row.Value) or 65)
+			resourceRoot:setData("ServerFPSLimit", tonumber(row.Value) or 65)
 		end
 
 		if row.Index == "ServiceSync" then
