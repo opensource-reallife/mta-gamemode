@@ -45,6 +45,9 @@ function PhoneApp:open()
 end
 
 function PhoneApp:close()
+	if not self.m_IsOpen then
+		return
+	end
 	if self.onClose then
 		self:onClose(self.m_Form)
 	end

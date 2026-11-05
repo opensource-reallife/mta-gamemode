@@ -247,6 +247,7 @@ function AppCall:Event_receivePhoneNumbers(list)
 end
 
 function AppCall:openIncoming(caller, voiceEnabled, showSkin)
+	self:clearEndTimer()
 	self:closeAll()
 	local parent, width, height = self.m_Background, self.m_Background.m_Width, self.m_Background.m_Height
 
@@ -374,6 +375,7 @@ function AppCall:busy()
 		triggerServerEvent("callBusy", root, self.m_Caller)
 	end
 	self.m_Caller = nil
+	self.m_InCall = false
 	self:openMain()
 end
 
@@ -382,6 +384,7 @@ function AppCall:getCaller()
 end
 
 function AppCall:openInCall(calleeType, callee, resultType, voiceCall, showSkin)
+	self:clearEndTimer()
 	self:closeAll()
 	local parent, width, height = self.m_Background, self.m_Background.m_Width, self.m_Background.m_Height
 
@@ -420,8 +423,9 @@ function AppCall:openInCall(calleeType, callee, resultType, voiceCall, showSkin)
 	elseif resultType == CALL_RESULT_BUSY then
 		self.m_ResultLabel:setText("Abgelehnt...")
 		self.m_ResultLabel:setColor(Color.Red)
-		setTimer(
+		self.m_EndTimer = setTimer(
 			function()
+				self.m_EndTimer = nil
 				if self:isOpen() and Phone:getSingleton():isOpen() then
 					self:openMain()
 				end
@@ -434,8 +438,9 @@ function AppCall:openInCall(calleeType, callee, resultType, voiceCall, showSkin)
 		self.m_ResultLabel:setText(_"Aufgelegt")
 		self.m_ResultLabel:setColor(Color.Red)
 		self:playRingSound(false)
-		setTimer(
+		self.m_EndTimer = setTimer(
 			function()
+				self.m_EndTimer = nil
 				if self:isOpen() and Phone:getSingleton():isOpen() then
 					self:openMain()
 				end
@@ -471,7 +476,7 @@ function AppCall:ButtonReplace_Click()
 end
 
 function AppCall:onClose()
-	if self.m_InCall then
+	if self.m_InCall and not self:isEnding() then
 		self:ButtonReplace_Click()
 	end
 end
@@ -479,6 +484,7 @@ end
 function AppCall:Event_callIncoming(caller, voiceEnabled, showSkin)
 	if not caller then return end
 
+	self:clearEndTimer()
 	Phone:getSingleton():closeAllApps()
 	Phone:getSingleton():openApp(self)
 	self:openIncoming(caller, voiceEnabled, showSkin)
@@ -516,7 +522,30 @@ function AppCall:Event_callReplace(responsiblePlayer)
 	self:openInCall("player", callee, CALL_RESULT_REPLACE)
 end
 
+function AppCall:isEnding()
+	return self.m_EndTimer and isTimer(self.m_EndTimer) or false
+end
+
+function AppCall:clearEndTimer()
+	if self:isEnding() then
+		killTimer(self.m_EndTimer)
+		self.m_InCall = false
+		self.m_Caller = false
+	end
+	self.m_EndTimer = nil
+end
+
+function AppCall:isBusy()
+	return (self.m_InCall or (self.m_Caller and self:isOpen())) and not self:isEnding() and true or false
+end
+
 function AppCall:startCall(type, target)
+	if self:isBusy() then
+		ErrorBox:new(_"Du telefonierst gerade!")
+		return
+	end
+	self:clearEndTimer()
+
 	if Phone:getSingleton():isOn()then
 		Phone:getSingleton():onShow()
 		Phone:getSingleton():closeAllApps()

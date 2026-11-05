@@ -43,6 +43,11 @@ end
 function PhoneInteraction:callStart(player, voiceEnabled, showSkin)
 	if not player then return end
 
+	if client:getPhonePartner() or client.IncomingCall then
+		client:sendError(_("Du telefonierst gerade!", client))
+		return
+	end
+
 	if not player:isPhoneEnabled() then
 		client:sendError(_("Besetzt... Der Spieler ist gerade nicht erreichbar!", client, player.name))
 		client:triggerEvent("callReplace", player)

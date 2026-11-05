@@ -214,6 +214,15 @@ function Phone:openApp(app)
 		self:open()
 		showCursor(false)
 	end
+	local callApp = self:getAppByClass(AppCall)
+	if callApp and app ~= callApp and callApp:isBusy() then
+		app = callApp
+	end
+	for k, other in ipairs(self.m_Apps) do
+		if other ~= app and other:isOpen() then
+			other:close()
+		end
+	end
 	self.m_CurrentApp = app
 
 	-- Hide app icon surface/activity
