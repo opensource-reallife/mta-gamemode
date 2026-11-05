@@ -170,10 +170,10 @@ BeggarNames = { -- Wer namen zwischendrin einfügt wird erschossen!
 
 BeggarAnimations = {
 	{
-        "crack", "crckdeth2", -1, false, true, false
+        "crack", "crckdeth2", -1, false, false, false
     };
     {
-        "dealer", "dealer_idle", -1, true, true, true
+        "dealer", "dealer_idle", -1, true, false, true
     };
     {
         "dealer", "dealer_idle", -1, true, false, true

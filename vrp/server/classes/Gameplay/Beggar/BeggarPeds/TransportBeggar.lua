@@ -17,6 +17,7 @@ function TransportBeggar:acceptTransport(player)
 		for seat = 1, veh.maxPassengers do
 			if not veh:getOccupant(seat) then
 				local pos = Randomizer:getRandomTableValue(BeggarTransportPositions)
+				self:setFrozen(false)
 				self:warpIntoVehicle(veh, seat)
 
 				player:meChat(true, "bittet %s in sein Fahrzeug", self.m_Name, false)

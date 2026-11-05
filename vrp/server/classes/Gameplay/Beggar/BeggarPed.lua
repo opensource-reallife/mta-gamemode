@@ -25,6 +25,8 @@ function BeggarPed:virtual_constructor(id, classId)
 	self.m_LastRobTime = 0
 	self.m_BankAccountServer = BankServer.get("gameplay.beggar")
 
+	self:setFrozen(true)
+
 	addEventHandler("onPedWasted", self, bind(self.Event_onPedWasted, self))
 	--addEventHandler("onColShapeHit", self.m_ColShape, bind(self.Event_onColShapeHit, self))
 	--addEventHandler("onColShapeLeave", self.m_ColShape, bind(self.Event_onColShapeLeave, self))
@@ -117,7 +119,8 @@ end
 function BeggarPed:Event_onPedWasted(totalAmmo, killer, killerWeapon, bodypart, stealth)
 	if not self.m_Dead then
 		self.m_Dead = true
-		
+		self:setFrozen(false)
+
 		--create a rescue mission if there is someone online, otherwise just despawn him
 		if #FactionRescue:getSingleton():getOnlinePlayers(true, false) >= 1 then
 			self:setHealth(20)
