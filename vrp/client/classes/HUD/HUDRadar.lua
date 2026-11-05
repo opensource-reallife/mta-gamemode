@@ -30,7 +30,11 @@ function HUDRadar:constructor()
 	-- Create a renderTarget that has the size of the diagonal of the actual image
 	self.m_RenderTarget = dxCreateRenderTarget(self.m_Diagonal, self.m_Diagonal)
 	self.m_RenderTargetSize = self.m_Diagonal
+	self.m_MapImages = {}
 	self:updateMapTexture(true)
+	for design in ipairs(RadarDesign) do
+		self:getMapImage(self:makePath("Radar.jpg", false, design))
+	end
 
 	-- Settings
 	if core:get("HUD", "showRadar", nil) == nil then
@@ -106,14 +110,11 @@ function HUDRadar:updateMapTexture(checkForDesign)
 	end
 
 	if checkForDesign or not self.m_MapImagePath then
-		self.m_MapImagePath = self:makePath("Radar.jpg", false, checkForDesign)
-		if self.m_MapImage and isElement(self.m_MapImage) then
-			destroyElement(self.m_MapImage)
-		end
+		self.m_MapImagePath = self:makePath("Radar.jpg", false)
 		self.m_MapImage = nil
 	end
 	if not self.m_MapImage or not isElement(self.m_MapImage) then
-		self.m_MapImage = dxCreateTexture(self.m_MapImagePath, "dxt1", false, "clamp")
+		self.m_MapImage = self:getMapImage(self.m_MapImagePath)
 	end
 
 	if checkForDesign then
@@ -156,6 +157,15 @@ function HUDRadar:updateMapTexture(checkForDesign)
 	dxSetRenderTarget()
 end
 
+function HUDRadar:getMapImage(path)
+	local image = self.m_MapImages[path]
+	if not image or not isElement(image) then
+		image = dxCreateTexture(path, "dxt1", false, "clamp")
+		self.m_MapImages[path] = image
+	end
+	return image
+end
+
 function HUDRadar:checkMapTexture()
 	if not self.m_MapReady and self.m_DesignSet ~= RadarDesign.Default and getTickCount() - (self.m_MapRetry or 0) > 2000 then
 		self:updateMapTexture()
@@ -176,14 +186,14 @@ function HUDRadar:getImagePath(file, isMap)
 	return self.m_ImagePaths[file]
 end
 
-function HUDRadar:makePath(fileName, isBlip)
+function HUDRadar:makePath(fileName, isBlip, design)
 	if isBlip then
 		if fileExists("_custom/files/images/Radar/Blips/"..fileName) then
 			return "_custom/files/images/Radar/Blips/"..fileName
 		end
 		return "files/images/Radar/Blips/"..fileName
 	else
-		local designSet = (self.m_DesignSet == RadarDesign.Monochrome) and "Radar_Monochrome" or "Radar_GTA"
+		local designSet = ((design or self.m_DesignSet) == RadarDesign.Monochrome) and "Radar_Monochrome" or "Radar_GTA"
 		if fileExists("_custom/files/images/Radar/"..designSet.."/Radar.png") then
 			return "_custom/files/images/Radar/"..designSet.."/Radar.png"
 		elseif fileExists("_custom/files/images/Radar/"..designSet.."/Radar.jpg") then
