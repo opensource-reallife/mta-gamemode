@@ -1,197 +1,174 @@
-local CHESS_DEBUG = false
 ChessSession = inherit(Object)
 
-function ChessSession:constructor( id, players, speedchess, time)
+local PIECE_LETTERS = {k = "K", q = "D", r = "T", b = "L", n = "S", p = ""}
+
+function ChessSession:constructor(id, players, time)
 	self.m_ID = id
 	self.m_Players = players
+	self.m_TimeLeft = {w = time*1000, b = time*1000}
+	self.m_Captured = {w = "", b = ""}
+	self.m_Game = ChessLogic.newGame()
 	self.m_QuitEvent = bind(ChessSession.Event_onPlayerQuit, self)
 	addEventHandler("onPlayerQuit", players[1], self.m_QuitEvent)
 	addEventHandler("onPlayerQuit", players[2], self.m_QuitEvent)
-	if speedchess then
-		self.m_GameTime = time or 3*60
+
+	self:startClock()
+	local data = self:createUpdate()
+	data.white, data.black = players[1]:getName(), players[2]:getName()
+	for i, player in ipairs(players) do
+		data.color = i == 1 and "w" or "b"
+		data.moves = data.color == data.turn and ChessLogic.moveMap(self.m_Game.state) or {}
+		player:triggerEvent("onClientChessStart", data)
 	end
-	self.m_IsSpeedChess = speedchess
-	self.m_LogicHandler = ChessLogic:new( self )
-	self.m_LogicHandler:placeStart()
-	self:startGame()
-	self:nextTurn()
 end
 
-function ChessSession:startGame()
-	local fMatrix = self.m_LogicHandler:getPositionMatrix()
-	if CHESS_DEBUG then
-		triggerClientEvent("onClientChessStart", self.m_Players[1], self.m_Players, fMatrix, 1, self.m_IsSpeedChess)
+function ChessSession:destructor()
+	ChessSessionManager:getSingleton():removeReference(self)
+	removeEventHandler("onPlayerQuit", self.m_Players[1], self.m_QuitEvent)
+	removeEventHandler("onPlayerQuit", self.m_Players[2], self.m_QuitEvent)
+	self:killClock()
+end
+
+function ChessSession:isThisPlayer(player)
+	return self.m_Players[1] == player or self.m_Players[2] == player
+end
+
+function ChessSession:getColor(player)
+	return self.m_Players[1] == player and "w" or "b"
+end
+
+function ChessSession:getOpponentColor(player)
+	return self.m_Players[1] == player and "b" or "w"
+end
+
+function ChessSession:startClock()
+	self.m_TurnStart = getTickCount()
+	self.m_ClockTimer = setTimer(bind(ChessSession.onTimeEnd, self), math.max(self.m_TimeLeft[self.m_Game.state.turn], 50), 1)
+end
+
+function ChessSession:killClock()
+	if self.m_ClockTimer and isTimer(self.m_ClockTimer) then
+		killTimer(self.m_ClockTimer)
+	end
+	self.m_ClockTimer = nil
+end
+
+function ChessSession:stopClock(color)
+	self:killClock()
+	self.m_TimeLeft[color] = math.max(self.m_TimeLeft[color] - (getTickCount() - self.m_TurnStart), 0)
+end
+
+function ChessSession:getTimes()
+	local turn = self.m_Game.state.turn
+	local times = {w = self.m_TimeLeft.w, b = self.m_TimeLeft.b}
+	if self.m_ClockTimer then
+		times[turn] = math.max(times[turn] - (getTickCount() - self.m_TurnStart), 0)
+	end
+	return times
+end
+
+function ChessSession:createUpdate()
+	local state = self.m_Game.state
+	local check = ChessLogic.isInCheck(state, state.turn) and ChessLogic.toName(ChessLogic.kingIndex(state, state.turn)) or false
+	return {
+		board = ChessLogic.boardString(state),
+		turn = state.turn,
+		check = check,
+		from = self.m_LastFrom or false,
+		to = self.m_LastTo or false,
+		time = self:getTimes(),
+		captured = self.m_Captured,
+		moves = {},
+	}
+end
+
+function ChessSession:sendUpdate(data, finished)
+	for i, player in ipairs(self.m_Players) do
+		local color = i == 1 and "w" or "b"
+		data.moves = (not finished and color == data.turn) and ChessLogic.moveMap(self.m_Game.state) or {}
+		player:triggerEvent("onClientChessUpdate", data)
+	end
+end
+
+function ChessSession:getNotation(result)
+	local text
+	if result.castle then
+		text = result.to:sub(1, 1) == "g" and "0-0" or "0-0-0"
 	else
-		if self.m_Players[1] ~= self.m_Players[2] then
-			triggerClientEvent("onClientChessStart", self.m_Players[1], self.m_Players, fMatrix, 1 , self.m_IsSpeedChess)
-			triggerClientEvent("onClientChessStart",self.m_Players[2], self.m_Players, fMatrix, 2, self.m_IsSpeedChess)
+		text = PIECE_LETTERS[result.piece:lower()] .. result.from .. (result.captured ~= "" and "x" or "-") .. result.to
+		if result.promo ~= "" then
+			text = text .. "=" .. PIECE_LETTERS[result.promo]
 		end
 	end
-	if self.m_IsSpeedChess then
-		self.m_TimeTable = {}
-		for i = 1,2 do
-			self.m_TimeTable[i] = {self.m_Players[i],self.m_GameTime}
-		end
+	if result.reason == "Schachmatt" then
+		return text .. "#"
 	end
+	local state = self.m_Game.state
+	return ChessLogic.isInCheck(state, state.turn) and text .. "+" or text
 end
 
-function ChessSession:movePlayerPiece( player, fromIndex, toIndex, team)
-	if self.m_LogicHandler then
-		if self.m_Turn == player then
-			self.m_LogicHandler:movePiece( fromIndex, toIndex, team )
-		end
+function ChessSession:movePiece(player, from, to, promo)
+	local color = self:getColor(player)
+	if self.m_Game.state.turn ~= color then return end
+
+	local result = ChessLogic.play(self.m_Game, from, to, promo)
+	if not result then
+		player:triggerEvent("onClientChessUpdate", self:createResync())
+		return
 	end
-end
 
-function ChessSession:rankUpPawn( player, toIndex, piece, team ) 
-	if self.m_LogicHandler then
-		if self.m_Turn == player then
-			self.m_LogicHandler:setIndexPiece( toIndex, piece, team)
-			self:onUpdateField(self.m_LogicHandler.m_FieldMatrix, true, toIndex, toIndex, team)
-			self:nextTurn()
-		end
+	self:stopClock(color)
+	self.m_LastFrom, self.m_LastTo = result.from, result.to
+	if result.captured ~= "" then
+		self.m_Captured[color] = self.m_Captured[color] .. result.captured
 	end
-end
+	if not result.winner then
+		self:startClock()
+	end
 
+	local data = self:createUpdate()
+	data.mover = color
+	data.notation = self:getNotation(result)
+	self:sendUpdate(data, result.winner ~= nil)
 
-function ChessSession:onUpdateField( fMatrix, sound , from, to, team)
-	if CHESS_DEBUG then
-		triggerClientEvent("onClientChessUpdate", self.m_Players[1], fMatrix)
-	else
-		if self.m_Players then
-			if self.m_Players[1] ~= self.m_Players[2] then
-				triggerClientEvent("onClientChessUpdate", self.m_Players[1], fMatrix, sound, from, to, team)
-				triggerClientEvent("onClientChessUpdate", self.m_Players[2], fMatrix, sound, from, to, team)
-			end
-		end
+	if result.winner then
+		self:endGame(result.winner, result.reason)
 	end
 end
 
-function ChessSession:onPieceBeaten( piece, team, piece2, team2)
-	triggerClientEvent("onClientChessPieceBeat", self.m_Players[1], piece, team, piece2, team2)
-	triggerClientEvent("onClientChessPieceBeat", self.m_Players[2], piece, team, piece2, team2)
+function ChessSession:createResync()
+	local data = self:createUpdate()
+	data.moves = ChessLogic.moveMap(self.m_Game.state)
+	return data
 end
 
-function ChessSession:endGame( winner, reason )
-	triggerClientEvent("onClientChessStop", self.m_Players[1], reason, winner)
-	triggerClientEvent("onClientChessStop", self.m_Players[2], reason, winner)
-	self.m_End = true
-	if (self.m_Players[1]:getRank() >= RANK.Administrator and winner == self.m_Players[2]) or (self.m_Players[2]:getRank() >= RANK.Administrator and winner == self.m_Players[1]) then
+function ChessSession:surrender(player)
+	self:endGame(self:getOpponentColor(player), "Kapitulation")
+end
+
+function ChessSession:onTimeEnd()
+	self.m_ClockTimer = nil
+	local turn = self.m_Game.state.turn
+	self.m_TimeLeft[turn] = 0
+	self:endGame(turn == "w" and "b" or "w", "Zeit abgelaufen")
+end
+
+function ChessSession:endGame(winnerColor, reason)
+	if self.m_Ended then return end
+	self.m_Ended = true
+	self:killClock()
+
+	for _, player in ipairs(self.m_Players) do
+		player:triggerEvent("onClientChessStop", winnerColor, reason, self.m_TimeLeft)
+	end
+
+	local winner = winnerColor == "w" and self.m_Players[1] or winnerColor == "b" and self.m_Players[2] or false
+	if winner and ((self.m_Players[1]:getRank() >= RANK.Administrator and winner == self.m_Players[2]) or (self.m_Players[2]:getRank() >= RANK.Administrator and winner == self.m_Players[1])) then
 		winner:giveAchievement(113)
 	end
 	delete(self)
 end
 
-function ChessSession:nextTurn(isPawnRankUp, playerToSelect)
-	if isPawnRankUp and playerToSelect then 
-		triggerClientEvent("onClientChessChoosePawnRank", self.m_Players[playerToSelect], isPawnRankUp, playerToSelect)
-		return
-	end
-	if self.m_Turn then
-		if self.m_Players then
-			if self.m_Turn == self.m_Players[2] then
-				self.m_Turn = self.m_Players[1]
-			else
-				self.m_Turn = self.m_Players[2]
-			end
-			if self.m_IsSpeedChess then
-				self:startTurnTime()
-			end
-		end
-	else
-		self.m_Turn = self.m_Players[1]
-		if self.m_IsSpeedChess then
-			if self.m_Players and not self.m_End then
-				if self.m_Players[1] then	
-					triggerClientEvent("onClientChessClockUpdate", self.m_Players[1], self.m_Turn , self.m_TimeTable)
-				end
-				if self.m_Players[2] then
-					triggerClientEvent("onClientChessClockUpdate", self.m_Players[2], self.m_Turn , self.m_TimeTable)
-				end
-				self:startTurnTime()
-			end
-		end
-	end
-end
-
-function ChessSession:startTurnTime()
-	if self.m_Turn then
-		if self.m_TurnTimer then
-			if isTimer(self.m_TurnTimer) then
-				killTimer(self.m_TurnTimer)
-			end
-			self.m_TurnTimer = nil
-		end
-		self.m_TurnTimer = setTimer(bind(ChessSession.Timer_syncTime, self), 1000,0)
-	end
-end
-
-function ChessSession:Timer_syncTime()
-	if self.m_IsSpeedChess then
-		if self.m_Turn then
-			if self.m_Players then
-				for i = 1,2 do
-					if self.m_TimeTable[i][1] == self.m_Turn then
-						self.m_TimeTable[i][2] = self.m_TimeTable[i][2] - 1
-					end
-					if self.m_TimeTable[i][2] <= 0 then
-						self:onTimeEnd( self.m_Turn )
-					end
-				end
-				if self.m_Players then
-					if self.m_Players[1] then
-						triggerClientEvent("onClientChessClockUpdate", self.m_Players[1], self.m_Turn , self.m_TimeTable)
-					end
-					if self.m_Players[2] then
-						triggerClientEvent("onClientChessClockUpdate", self.m_Players[2], self.m_Turn , self.m_TimeTable)
-					end
-				end
-			end
-		end
-	end
-end
-
-function ChessSession:onTimeEnd( player )
-	local winner = self.m_Players[1]
-	if player == winner then
-		winner = self.m_Players[2]
-	end
-	self:endGame( winner , "Zeit ausgelaufen!" )
-end
-
-function ChessSession:isThisPlayer( player )
-	if self.m_Players then
-		return self.m_Players[1] == player or self.m_Players[2] == player
-	end
-	return false
-end
-
-function ChessSession:destructor()
-	ChessSessionManager:getSingleton():removeReference( self )
-	removeEventHandler("onPlayerQuit", self.m_Players[1], self.m_QuitEvent)
-	removeEventHandler("onPlayerQuit", self.m_Players[2], self.m_QuitEvent)
-	delete(self.m_LogicHandler)
-	if isTimer(self.m_TurnTimer) then
-		killTimer(self.m_TurnTimer)
-	end
-	self.m_Players = nil
-
-end
-function ChessSession:onKingFall( team )
-	if team >= 1 then
-		if team == 1 then
-			team = 2
-		else
-			team = 1
-		end
-		self:endGame( self.m_Players[team] , "Schachmatt!")
-	end
-end
-
-function ChessSession:Event_onPlayerQuit( )
-	local winner = self.m_Players[1]
-	if source == self.m_Players[1] then
-		winner = self.m_Players[2]
-	end
-	self:endGame( winner, "Gegner hat verlassen!")
+function ChessSession:Event_onPlayerQuit()
+	self:endGame(self:getOpponentColor(source), "Gegner hat das Spiel verlassen")
 end

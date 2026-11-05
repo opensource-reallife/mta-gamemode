@@ -1,446 +1,298 @@
-ChessGraphics = inherit(Object)
-local w,h = screenWidth, screenHeight
-local BEAT_ICON_SIZE = w*0.1
-local centerX = (CHESS_CONSTANT.START_X + CHESS_CONSTANT.WIDTH*0.5)
-local centerY = (CHESS_CONSTANT.START_Y + CHESS_CONSTANT.HEIGHT*0.5)
-local imageWidth = CHESS_CONSTANT.WIDTH*0.15
+ChessGraphics = inherit(GUIForm)
 
-function ChessGraphics:constructor( team, super )
-	self.m_Super = super
-	self.m_TimeData = super.m_TimeData
-	self.m_RenderFunction = bind(ChessGraphics.draw,self)
-	self.m_ClickFunction = bind(ChessGraphics.click,self)
-	self.m_TeamSide = team
-	if super.m_IsSpeedChess then
-		self.m_Clock = ChessClock:new( self )
-	end
-	addEventHandler("onClientRender",root, self.m_RenderFunction)
-	addEventHandler("onClientClick",root, self.m_ClickFunction)
+local PADDING = 10
+local TITLE_HEIGHT = 32
+local PANEL_HEIGHT = 66
+local BUTTON_HEIGHT = 36
+local PROMOTIONS = {"q", "r", "b", "n"}
+local COLOR_OVERLAY = tocolor(30, 30, 30)
+local COLOR_LOW_TIME = tocolor(255, 110, 100)
+local COLOR_WIN = tocolor(110, 220, 110)
+local COLOR_LOSE = tocolor(240, 90, 80)
+local COLOR_SURRENDER = tocolor(180, 60, 50)
 
-	local i = 0
-	local tile
-	local color
-	self.m_ChessTiles =	{}
-	for height = 0,7 do
-		for width = 0,7 do
-			i = i + 1
-			color = ((i - 1)/ 8) % 2 < 1
-			self.m_ChessTiles[i] = ChessTile:new(i, width,height,color, self)
-		end
-	end
-	self.m_AmbientRand1 =  math.random(1,2)
-	self.m_AmbientRand2 =  math.random(1,2)
-	showCursor(true)
+function ChessGraphics:constructor(color, whiteName, blackName)
+	local tileSize = math.floor(math.clamp(320, screenHeight*0.72, 640)/8)
+	local boardSize = tileSize*8
+	local sideWidth = screenWidth < 1024 and 200 or 250
+	local width = boardSize + sideWidth + PADDING*3
+	local height = TITLE_HEIGHT + boardSize + PADDING*2
+	GUIForm.constructor(self, math.floor((screenWidth - width)/2), math.floor((screenHeight - height)/2), width, height)
+	GUIForm.DoNotClose[self] = true
+
+	self.m_Color = color
+	self.m_TileSize = tileSize
+	self.m_BoardSize = boardSize
+	self.m_Moves = {}
+	self.m_Board = ""
+	self.m_Window = GUIWindow:new(0, 0, width, height, _"Schach", true, false, self)
+
+	self:createBoard()
+
+	local sideX, top = boardSize + PADDING*2, TITLE_HEIGHT + PADDING
+	local buttonY = top + boardSize - BUTTON_HEIGHT
+	local ownY = buttonY - PADDING - PANEL_HEIGHT
+	local listY = top + PANEL_HEIGHT + PADDING
+	local names = {w = whiteName, b = blackName}
+	local opponent = color == "w" and "b" or "w"
+
+	self.m_Panels = {
+		[opponent] = self:createPanel(sideX, top, sideWidth, names[opponent]),
+		[color] = self:createPanel(sideX, ownY, sideWidth, names[color]),
+	}
+
+	self.m_MoveList = GUIGridList:new(sideX, listY, sideWidth, ownY - PADDING - listY, self.m_Window)
+	self.m_MoveList:addColumn("#", 0.16)
+	self.m_MoveList:addColumn(_"Weiß", 0.38)
+	self.m_MoveList:addColumn(_"Schwarz", 0.38)
+	self.m_MoveCount = 0
+
+	self.m_ActionButton = GUIButton:new(sideX, buttonY, sideWidth, BUTTON_HEIGHT, _"Aufgeben", self.m_Window)
+	self.m_ActionButton:setBackgroundColor(COLOR_SURRENDER)
+	self.m_ActionButton.onLeftClick = bind(ChessGraphics.onActionClick, self)
+
+	self:createPromotionOverlay()
+	self:createResultOverlay()
+
+	self.m_ClockTimer = setTimer(bind(ChessGraphics.updateClocks, self), 200, 0)
 end
-
 
 function ChessGraphics:destructor()
-	removeEventHandler("onClientRender",root, self.m_RenderFunction)
-	removeEventHandler("onClientClick",root, self.m_ClickFunction)
-	local i = 0
-	local tile
-	for height = 0,7 do
-		for width = 0,7 do
-			i = i + 1
-			tile = self.m_ChessTiles[i]
-			if tile then
-				delete(tile)
-			end
-		end
+	GUIForm.DoNotClose[self] = nil
+	if isTimer(self.m_ClockTimer) then
+		killTimer(self.m_ClockTimer)
 	end
-	if self.m_Clock then
-		delete(self.m_Clock)
+	if self.m_SurrenderTimer and isTimer(self.m_SurrenderTimer) then
+		killTimer(self.m_SurrenderTimer)
 	end
-	showCursor(false)
+	GUIForm.destructor(self)
 end
 
-function ChessGraphics:draw()
-
-	self:drawBoardMargin()
-	self:drawTiles()
-	self:drawBeaten()
-	if self.m_Clock then
-		self.m_Clock:draw()
-	end
-	self:drawMoveLine()
-	self:onHover()
-	self:drawButtons()
-	self:drawBeatFeed()
-	if self.m_EndReason and self.m_Loser then
-		self:drawEndReason()
-	end
-	self:drawPawnSelection()
-end
-
-function ChessGraphics:drawEndReason( )
-	dxDrawRectangle(CHESS_CONSTANT.START_X+CHESS_CONSTANT.MARGIN+1+CHESS_CONSTANT.TILE_SIZE*0.05,10+CHESS_CONSTANT.TILE_SIZE*0.05,CHESS_CONSTANT.WIDTH,CHESS_CONSTANT.FONT_CHAPAZA_HEIGHT,tocolor(0,0,0,240))
-	dxDrawRectangle(CHESS_CONSTANT.START_X+CHESS_CONSTANT.MARGIN+1,10,CHESS_CONSTANT.WIDTH,CHESS_CONSTANT.FONT_CHAPAZA_HEIGHT,tocolor(100,100,100,255))
-	local text
-	if self.m_Loser == localPlayer then
-		text = "Gewonnen: "..self.m_EndReason
-		local width = dxGetTextWidth(text,1,CHESS_CONSTANT.FONT_CHAPAZA)
-		dxDrawImage(CHESS_CONSTANT.START_X+CHESS_CONSTANT.WIDTH-CHESS_CONSTANT.TILE_SIZE*0.25, CHESS_CONSTANT.START_Y-CHESS_CONSTANT.TILE_SIZE, CHESS_CONSTANT.TILE_SIZE, CHESS_CONSTANT.TILE_SIZE, CHESS_CONSTANT.PATH.."crown.png",20,0,0)
-		dxDrawText(text,CHESS_CONSTANT.START_X+CHESS_CONSTANT.MARGIN,  10, CHESS_CONSTANT.START_X+CHESS_CONSTANT.WIDTH,10+CHESS_CONSTANT.FONT_CHAPAZA_HEIGHT, tocolor(0, 0, 0,255),CHESS_CONSTANT.FONT_INFO_SCALE,CHESS_CONSTANT.FONT_INFO,"center","center")
-	else
-		text = "Verloren: "..self.m_EndReason
-		local width = dxGetTextWidth(text,1,CHESS_CONSTANT.FONT_CHAPAZA)
-		dxDrawText(text, CHESS_CONSTANT.START_X+CHESS_CONSTANT.MARGIN,  10, CHESS_CONSTANT.START_X+CHESS_CONSTANT.WIDTH,10+CHESS_CONSTANT.FONT_CHAPAZA_HEIGHT,tocolor(124, 10, 2,255),CHESS_CONSTANT.FONT_INFO_SCALE,CHESS_CONSTANT.FONT_INFO,"center","center")
-	end
-end
-
-function ChessGraphics:drawBeatFeed()
-	if self.m_DrawBeatFeed then
-		if self.m_BeatenPiece and self.m_BeatingPiece then
-			if self.m_BeatDrawTick then
-				local now = getTickCount()
-				if now - self.m_BeatDrawTick <= 10000 then
-					local piece1, team1 = self.m_BeatingPiece[1], self.m_BeatingPiece[2]
-					local piece2, team2 = self.m_BeatenPiece[1], self.m_BeatenPiece[2]
-					local isBlack, isBlack2
-					if team1 == 1 then
-						isBlack = ""
-						isBlack2 = "B"
-					else
-						isBlack = "B"
-						isBlack2 = ""
-					end
-					dxDrawImage(CHESS_CONSTANT.START_X+((CHESS_CONSTANT.WIDTH*0.5)-CHESS_CONSTANT.TILE_SIZE*0.3)-CHESS_CONSTANT.MARGIN*2,CHESS_CONSTANT.START_Y+CHESS_CONSTANT.HEIGHT+CHESS_CONSTANT.MARGIN*1.5, CHESS_CONSTANT.TILE_SIZE*0.6, CHESS_CONSTANT.TILE_SIZE*0.6, CHESS_CONSTANT.PATH..CHESS_CONSTANT.CHESS_URL[piece1]..isBlack..".png")
-					dxDrawImage(CHESS_CONSTANT.START_X+((CHESS_CONSTANT.WIDTH*0.5)+CHESS_CONSTANT.TILE_SIZE*0.4)-CHESS_CONSTANT.MARGIN*2,CHESS_CONSTANT.START_Y+CHESS_CONSTANT.HEIGHT+CHESS_CONSTANT.MARGIN*1.5+CHESS_CONSTANT.TILE_SIZE*0.1, CHESS_CONSTANT.TILE_SIZE*0.4,CHESS_CONSTANT.TILE_SIZE*0.4, CHESS_CONSTANT.PATH.."feed.png")
-					dxDrawImage(CHESS_CONSTANT.START_X+((CHESS_CONSTANT.WIDTH*0.5)+CHESS_CONSTANT.TILE_SIZE*0.9)-CHESS_CONSTANT.MARGIN*2,CHESS_CONSTANT.START_Y+CHESS_CONSTANT.HEIGHT+CHESS_CONSTANT.MARGIN*1.5, CHESS_CONSTANT.TILE_SIZE*0.6,CHESS_CONSTANT.TILE_SIZE*0.6, CHESS_CONSTANT.PATH..CHESS_CONSTANT.CHESS_URL[piece2]..isBlack2..".png")
-				else
-					self.m_DrawBeatFeed = false
-				end
-			end
+function ChessGraphics:createBoard()
+	local flipped = self.m_Color == "b"
+	self.m_Tiles = {}
+	for row = 0, 7 do
+		for col = 0, 7 do
+			local rank = flipped and 7 - row or row
+			local file = flipped and 7 - col or col
+			local name = string.char(97 + file) .. (8 - rank)
+			local tile = ChessTile:new(
+				PADDING + col*self.m_TileSize, TITLE_HEIGHT + PADDING + row*self.m_TileSize, self.m_TileSize, name, (rank + file)%2 == 1,
+				col == 0 and tostring(8 - rank) or false, row == 7 and string.char(97 + file) or false, self.m_Window, self
+			)
+			self.m_Tiles[rank*8 + file + 1] = tile
 		end
 	end
 end
 
-function ChessGraphics:drawButtons()
-	dxDrawImage(CHESS_CONSTANT.CLOCK_X+CHESS_CONSTANT.CLOCK_WIDTH*1.2,CHESS_CONSTANT.CLOCK_Y+CHESS_CONSTANT.TILE_SIZE*0.1,CHESS_CONSTANT.TILE_SIZE*0.8,CHESS_CONSTANT.TILE_SIZE*0.8,CHESS_CONSTANT.PATH.."white-flag.png",self.m_SurrenderFlagRotation or 0,0,0,self.m_SurrenderFlagColor or tocolor(255,255,255,255))
-	if self.m_GameOver then
-		dxDrawImage(CHESS_CONSTANT.CLOCK_X-CHESS_CONSTANT.TILE_SIZE*1.1,CHESS_CONSTANT.CLOCK_Y+CHESS_CONSTANT.TILE_SIZE*0.1,CHESS_CONSTANT.TILE_SIZE*0.8,CHESS_CONSTANT.TILE_SIZE*0.8,CHESS_CONSTANT.PATH.."exit.png",0,0,0,self.m_CloseFlagColor or tocolor(200,200,200,255))
-	end
+function ChessGraphics:createPanel(posX, posY, width, name)
+	local background = GUIRectangle:new(posX, posY, width, PANEL_HEIGHT, Color.Primary, self.m_Window)
+	return {
+		background = background,
+		name = GUILabel:new(8, 6, width - 16, 22, name, background),
+		clock = GUILabel:new(8, 30, 84, 30, "", background),
+		captured = ChessCapturedRow:new(96, 34, width - 104, 24, background),
+	}
 end
 
-function ChessGraphics:drawPawnSelection()
-	if self.m_DrawPawnSelection then
+function ChessGraphics:createPromotionOverlay()
+	local size = self.m_TileSize
+	local width, height = size*4 + 16, size + 16 + BUTTON_HEIGHT + 8
+	local posX = PADDING + (self.m_BoardSize - width)/2
+	local posY = TITLE_HEIGHT + PADDING + (self.m_BoardSize - height)/2
 
-		dxDrawRectangle(centerX-imageWidth*1.1, centerY-imageWidth*0.6, imageWidth*2.2, imageWidth*1.3, tocolor(0, 0, 0, 255))
-
-		dxDrawImage(centerX-imageWidth, centerY-imageWidth*0.5,  imageWidth, imageWidth,  CHESS_CONSTANT.PATH.."tile.png", 0, 0, 0, tocolor(244, 125, 66, 255))
-		dxDrawImage(centerX-imageWidth, centerY-imageWidth*0.5,  imageWidth, imageWidth, CHESS_CONSTANT.PATH..CHESS_CONSTANT.CHESS_URL[2]..".png")
-
-		dxDrawImage(centerX+imageWidth*0.05, centerY-imageWidth*0.5,  imageWidth, imageWidth, CHESS_CONSTANT.PATH.."tile.png", 0, 0, 0, tocolor(244, 125, 66, 255))
-		dxDrawImage(centerX+imageWidth*0.05, centerY-imageWidth*0.5,  imageWidth, imageWidth, CHESS_CONSTANT.PATH..CHESS_CONSTANT.CHESS_URL[5]..".png")
-
-		dxDrawText("Tausche die Figur aus! (Autom. Dame)", centerX-imageWidth*1.1, centerY-imageWidth*0.7+1, centerX*2, centerY-imageWidth*0.6+1, tocolor(0, 0, 0, 255), 1, "default-bold", "left", "top")
-		dxDrawText("Tausche die Figur aus! (Autom. Dame)", centerX-imageWidth*1.1, centerY-imageWidth*0.7, centerX*2, centerY-imageWidth*0.6, tocolor(255, 255, 255, 255), 1, "default-bold", "left", "top")
-
-	end
-end
-
-function ChessGraphics:drawBoardMargin()
-	local margin = CHESS_CONSTANT.MARGIN
-	dxDrawImage(0,0, w, h,CHESS_CONSTANT.PATH.."table.jpg")
-	self:drawAmbient()
-	dxDrawImage(CHESS_CONSTANT.START_X-margin,CHESS_CONSTANT.START_Y,margin,CHESS_CONSTANT.HEIGHT,CHESS_CONSTANT.PATH.."board.jpg")
-	dxDrawImage(CHESS_CONSTANT.START_X+CHESS_CONSTANT.WIDTH,CHESS_CONSTANT.START_Y,margin,CHESS_CONSTANT.HEIGHT,CHESS_CONSTANT.PATH.."board.jpg")
-	dxDrawImage(CHESS_CONSTANT.START_X-margin,CHESS_CONSTANT.START_Y-margin,CHESS_CONSTANT.WIDTH+margin*2,margin,CHESS_CONSTANT.PATH.."board.jpg")
-	dxDrawImage(CHESS_CONSTANT.START_X-margin,CHESS_CONSTANT.START_Y+CHESS_CONSTANT.HEIGHT,CHESS_CONSTANT.WIDTH+margin*2,margin,CHESS_CONSTANT.PATH.."board.jpg")
-end
-
-function ChessGraphics:drawAmbient()
-	if self.m_AmbientRand1 == 1 then
-		dxDrawImage(w*0.08,h*0.7, w*0.16, w*0.16,CHESS_CONSTANT.PATH.."cup.png")
-	else
-		dxDrawImage(w*0.08,h*0.7, w*0.16, w*0.16,CHESS_CONSTANT.PATH.."glass2.png")
-	end
-	if self.m_AmbientRand2 == 1 then
-		dxDrawImage(w*0.08,h*0.1, w*0.16, w*0.16,CHESS_CONSTANT.PATH.."cup.png",40)
-	else
-		dxDrawImage(w*0.8,h*0.1, w*0.16, w*0.16,CHESS_CONSTANT.PATH.."glass2.png",60)
-	end
-end
-function ChessGraphics:drawTiles()
-	local i = 0
-	local tile
-	for height = 0,7 do
-		for width = 0,7 do
-			i = i + 1
-			tile = self.m_ChessTiles[i]
-			if tile then
-				tile:draw()
-			end
+	self.m_PromotionOverlay = GUIRectangle:new(posX, posY, width, height, COLOR_OVERLAY, self.m_Window)
+	for i, promo in ipairs(PROMOTIONS) do
+		local piece = self.m_Color == "w" and promo:upper() or promo
+		local button = ChessTile:new(8 + (i - 1)*size, 8, size, promo, i%2 == 0, false, false, self.m_PromotionOverlay, self)
+		button:setState(piece, false, true)
+		button.onLeftClick = function()
+			self:sendPromotion(promo)
 		end
 	end
-end
-
-function ChessGraphics:drawBeaten()
-	local x,y, piece, width
-	local left, right = CHESS_CONSTANT.START_X-CHESS_CONSTANT.MARGIN, CHESS_CONSTANT.START_X+CHESS_CONSTANT.WIDTH+CHESS_CONSTANT.MARGIN
-	local pieceCount = 0
-	local currentPiece = 0
-	local iconSize = 0
-	for k, v in pairs(self.m_Super.m_BeatList) do
-		for piece, count in pairs(v) do
-			for i = 1,count do
-				if k == 1 then
-					dxDrawImage(left - i* CHESS_CONSTANT.TILE_SIZE,CHESS_CONSTANT.START_Y+(piece-1)*CHESS_CONSTANT.TILE_SIZE,  CHESS_CONSTANT.TILE_SIZE,  CHESS_CONSTANT.TILE_SIZE, CHESS_CONSTANT.PATH..CHESS_CONSTANT.CHESS_URL[piece]..".png" )
-				else
-					dxDrawImage(right + (i-1)*CHESS_CONSTANT.TILE_SIZE,CHESS_CONSTANT.START_Y+(piece-1)*CHESS_CONSTANT.TILE_SIZE, CHESS_CONSTANT.TILE_SIZE, CHESS_CONSTANT.TILE_SIZE, CHESS_CONSTANT.PATH..CHESS_CONSTANT.CHESS_URL[piece].."B.png" )
-				end
-			end
-		end
+	local cancel = GUIButton:new(8, size + 16, width - 16, BUTTON_HEIGHT, _"Abbrechen", self.m_PromotionOverlay)
+	cancel.onLeftClick = function()
+		self.m_Promotion = nil
+		self.m_PromotionOverlay:setVisible(false)
 	end
+	self.m_PromotionOverlay:setVisible(false)
 end
 
-function ChessGraphics:drawMoveLine( )
-	if self.m_MoveLineAlpha then
-		if self.m_MoveLineAlpha > 0 then
-			if 	self.m_MoveLineFrom and self.m_MoveLineTo then
-				local index1 = self.m_ChessTiles[self.m_MoveLineFrom]
-				local index2 = self.m_ChessTiles[self.m_MoveLineTo]
-				if index1 and index2 then
-					dxDrawLine(index1.m_PosX+CHESS_CONSTANT.TILE_SIZE/2, index1.m_PosY+CHESS_CONSTANT.TILE_SIZE/2, index2.m_PosX+CHESS_CONSTANT.TILE_SIZE/2, index2.m_PosY+CHESS_CONSTANT.TILE_SIZE/2, tocolor(self.m_MoveCol1,self.m_MoveCol2,0,self.m_MoveLineAlpha),2)
-				end
-				self.m_MoveLineAlpha = self.m_MoveLineAlpha - 0.9
-			end
-		end
-	end
+function ChessGraphics:createResultOverlay()
+	local width, height = math.min(self.m_BoardSize*0.8, 400), 100
+	local posX = PADDING + (self.m_BoardSize - width)/2
+	local posY = TITLE_HEIGHT + PADDING + (self.m_BoardSize - height)/2
+
+	self.m_ResultOverlay = GUIRectangle:new(posX, posY, width, height, COLOR_OVERLAY, self.m_Window)
+	self.m_ResultTitle = GUILabel:new(8, 14, width - 16, 40, "", self.m_ResultOverlay):setAlignX("center")
+	self.m_ResultReason = GUILabel:new(8, 58, width - 16, 26, "", self.m_ResultOverlay):setAlignX("center")
+	self.m_ResultOverlay:setVisible(false)
 end
 
-function ChessGraphics:click( button, state)
-	if button == "left" and state == "up" then
-		if self.m_CurrentCursorTile then
-			self:onClick()
-			if not self.m_DrawPawnSelection then
-				self.m_CurrentCursorTile:onClick()
-				self.m_LastClick = self.m_CurrentCursorTile
-				self:showAvailableMoves()
-				local c,r = ChessRule:getSingleton():getFieldPieceRow( self.m_CurrentCursorTile.m_Index )
-			end
-		end
-	elseif button == "right" and state == "up" then
-		if self.m_LastClick then
-			self.m_LastClick:removeMarking()
-		end
+function ChessGraphics:updateGame(data)
+	self.m_Moves = data.moves or {}
+	self.m_Selected = nil
+	self.m_Promotion = nil
+	self.m_PromotionOverlay:setVisible(false)
+	self.m_Board = data.board
+	self.m_From, self.m_To, self.m_Check = data.from, data.to, data.check
+
+	self:refreshTiles()
+	self:setClock(data.turn, data.time)
+
+	self.m_Panels.w.captured:setPieces(data.captured.w)
+	self.m_Panels.b.captured:setPieces(data.captured.b)
+	self.m_Panels.w.background:setColor(data.turn == "w" and Color.Accent or Color.Primary)
+	self.m_Panels.b.background:setColor(data.turn == "b" and Color.Accent or Color.Primary)
+	self.m_Window:setTitleBarText(data.turn == self.m_Color and _"Schach - Du bist am Zug" or _"Schach - Dein Gegner ist am Zug")
+
+	if data.notation then
+		self:addNotation(data.mover, data.notation)
 	end
 end
 
-function ChessGraphics:onClick()
-	if isCursorShowing() then
-		local cx, cy = getCursorPosition()
-		if cx and cy then
-			cx = cx*w
-			cy = cy*h
-			if cx >= CHESS_CONSTANT.CLOCK_X+CHESS_CONSTANT.CLOCK_WIDTH*1.2 and cx <= CHESS_CONSTANT.CLOCK_X+CHESS_CONSTANT.CLOCK_WIDTH*1.2+CHESS_CONSTANT.TILE_SIZE*0.8 then
-				if cy >= CHESS_CONSTANT.CLOCK_Y+CHESS_CONSTANT.TILE_SIZE*0.1 and cy <= CHESS_CONSTANT.CLOCK_Y+CHESS_CONSTANT.TILE_SIZE*0.9 then
-					self.m_Super:onSurrenderClick()
-				end
-			end
-			if self.m_GameOver then
-				if cx >= CHESS_CONSTANT.CLOCK_X- CHESS_CONSTANT.TILE_SIZE*1.1 and cx <= CHESS_CONSTANT.CLOCK_X- CHESS_CONSTANT.TILE_SIZE*0.3 then
-					if cy >= CHESS_CONSTANT.CLOCK_Y+CHESS_CONSTANT.TILE_SIZE*0.1 and cy <= CHESS_CONSTANT.CLOCK_Y+CHESS_CONSTANT.TILE_SIZE*0.9 then
-						delete(self)
-					end
-				end
-			end
-			if self.m_DrawPawnSelection then
-				local hasSelectedPawn = false
-				local selectionPiece = 2
-				if cx >= centerX-imageWidth and cx <= centerX then
-					if cy >= centerY-imageWidth*0.5 and cy <= centerY + imageWidth*0.5 then
-						selectionPiece = 2
-						hasSelectedPawn = true
-					end
-				end
-				if cx >= centerX and cx <= centerX+imageWidth then
-					if cy >= centerY-imageWidth*0.5 and cy <= centerY + imageWidth*0.5 then
-						selectionPiece = 5
-						hasSelectedPawn = true
-					end
-				end
-				if hasSelectedPawn then
-					if self.m_SelectionTimeout then
-						killTimer(self.m_SelectionTimeout)
-					end
-					self:Event_PawnSelectionConfirm( selectionPiece )
-				end
-			end
+function ChessGraphics:addNotation(mover, notation)
+	if mover == "w" then
+		self.m_MoveCount = self.m_MoveCount + 1
+		self.m_LastMoveItem = self.m_MoveList:addItemNoClick(self.m_MoveCount .. ".", notation, "")
+	elseif self.m_LastMoveItem then
+		self.m_LastMoveItem:setColumnText(3, notation)
+	end
+	self.m_MoveList:scrollToItem(self.m_MoveCount)
+end
+
+function ChessGraphics:refreshTiles()
+	local targets = self.m_Selected and self.m_Moves[self.m_Selected] or {}
+	for index, tile in ipairs(self.m_Tiles) do
+		local name = tile:getName()
+		local piece = self.m_Board:sub(index, index)
+		if piece == "." then
+			piece = ""
 		end
+
+		local mark = false
+		if name == self.m_Selected then
+			mark = "selected"
+		elseif targets[name] ~= nil then
+			mark = piece ~= "" and "capture" or "target"
+		elseif name == self.m_Check then
+			mark = "check"
+		elseif name == self.m_From or name == self.m_To then
+			mark = "last"
+		end
+		tile:setState(piece, mark, self.m_Moves[name] ~= nil)
 	end
 end
 
-function ChessGraphics:onHover()
-	if isCursorShowing() then
-		local cx, cy = getCursorPosition()
-		if cx and cy then
-			cx = cx*w
-			cy = cy*h
-			if cx >= CHESS_CONSTANT.CLOCK_X+CHESS_CONSTANT.CLOCK_WIDTH*1.2 and cx <= CHESS_CONSTANT.CLOCK_X+CHESS_CONSTANT.CLOCK_WIDTH*1.2+CHESS_CONSTANT.TILE_SIZE*0.8 then
-				if cy >= CHESS_CONSTANT.CLOCK_Y+CHESS_CONSTANT.TILE_SIZE*0.1 and cy <= CHESS_CONSTANT.CLOCK_Y+CHESS_CONSTANT.TILE_SIZE*0.9 then
-					self.m_SurrenderFlagColor = tocolor(200,0,0,255)
-					self.m_SurrenderFlagRotation = 10
-					return
-				end
-			end
-			if cx >= CHESS_CONSTANT.CLOCK_X- CHESS_CONSTANT.TILE_SIZE*1.1 and cx <= CHESS_CONSTANT.CLOCK_X- CHESS_CONSTANT.TILE_SIZE*0.3 then
-				if cy >= CHESS_CONSTANT.CLOCK_Y+CHESS_CONSTANT.TILE_SIZE*0.1 and cy <= CHESS_CONSTANT.CLOCK_Y+CHESS_CONSTANT.TILE_SIZE*0.9 then
-					self.m_CloseFlagColor = tocolor(255,255,255,255)
-					return
-				end
-			end
-		end
-	end
-	self.m_SurrenderFlagColor = tocolor(255,255,255,255)
-	self.m_SurrenderFlagRotation = 0
-	self.m_CloseFlagColor = tocolor(180,180,180,255)
-end
+function ChessGraphics:onTileClick(tile)
+	if self.m_Over or self.m_Promotion then return end
 
-function ChessGraphics:showAvailableMoves()
-	if self.m_LastClick:isLocalPiece() then
-		self.m_CurrentSelectedPiece = self.m_LastClick
-		local preIndex, curIndex
-		if self.m_PotentialMoves then
-			for i = 1,#self.m_PotentialMoves do
-				curIndex = self.m_PotentialMoves[i]
-				if type(curIndex) == "number" then
-					self.m_ChessTiles[curIndex].m_IsPossibleMove = false
-				end
-			end
-		end
-		self.m_PotentialMoves = ChessRule:getSingleton():getMoveOptions( self.m_LastClick.m_Piece, self.m_LastClick.m_Index, self.m_LastClick)
-		local bFirstElement = false
-		local blockDrawing
-		local currentStateDirection = ""
-		for index = 1,#self.m_PotentialMoves do
-			if index ~= 1 then
-				curIndex = self.m_PotentialMoves[index]
-				preIndex = self.m_PotentialMoves[index-1]
-				if type(preIndex) == "string" then
-					bFirstElement = true
-					blockDrawing = false
-					currentStateDirection = preIndex
-				else
-					bFirstElement = false
-				end
-				if type(curIndex) == "number" then
-					if currentStateDirection ~= "ATTACK" then
-						if self.m_ChessTiles[curIndex].m_Piece == 0 then
-							if not blockDrawing then
-								self.m_ChessTiles[curIndex].m_IsPossibleMove = true
-							end
-						elseif self.m_ChessTiles[curIndex].m_PieceTeam ~= self.m_TeamSide then
-							if not blockDrawing then
-								if self.m_LastClick.m_Piece ~= 6 then
-									self.m_ChessTiles[curIndex].m_IsPossibleMove = true
-									blockDrawing = true
-								end
-							end
-						else
-							blockDrawing = true
-						end
-					else
-						if self.m_ChessTiles[curIndex].m_PieceTeam ~= self.m_TeamSide and self.m_ChessTiles[curIndex].m_Piece ~= 0 then
-							self.m_ChessTiles[curIndex].m_IsPossibleMove = true
-							blockDrawing = true
-						end
-					end
-				else
-					blockDrawing = false
-				end
-			end
-		end
-	end
-end
-
-function ChessGraphics:clickNextMove( tileObj )
-	if tileObj and self.m_CurrentSelectedPiece  then
-		if self.m_CurrentSelectedPiece:isLocalPiece() then
-			local team = tileObj.m_PieceTeam
-			local piece = tileObj.m_Piece
-			local index = tileObj.m_Index
-			local movePieceIndex = self.m_CurrentSelectedPiece.m_Index
-			if piece == 0 or team ~= self.m_TeamSide then
-				self.m_Super:nextMove( index, movePieceIndex )
-			end
-		end
-	end
-end
-function ChessGraphics:update( fMatrix, bStart)
-	self.m_DrawMatrix = fMatrix
-	local tile
-	local piece
-	local first, limit, step, modify = 1,64, 1
-	local index
-	if self.m_TeamSide == 2 then --// Flip the whole board so black is on the bottom
-		first,limit, step = 64, 1, -1
-	end
-	for i = first, limit, step do
-		if self.m_TeamSide == 2 then
-			index = (64 - i)+1
+	local name = tile:getName()
+	local targets = self.m_Selected and self.m_Moves[self.m_Selected]
+	if targets and targets[name] ~= nil then
+		if targets[name] then
+			self.m_Promotion = {from = self.m_Selected, to = name}
+			self.m_PromotionOverlay:setVisible(true)
 		else
-			index = i
+			self:sendMove(self.m_Selected, name, "")
 		end
-		tile = self.m_ChessTiles[index]
-		piece = fMatrix[i][1]
-		team = fMatrix[i][2]
-		if tile then
-			tile:setPiece( piece, team, bStart )
+		return
+	end
+
+	if self.m_Moves[name] and self.m_Selected ~= name then
+		self.m_Selected = name
+	else
+		self.m_Selected = nil
+	end
+	self:refreshTiles()
+end
+
+function ChessGraphics:sendPromotion(promo)
+	local promotion = self.m_Promotion
+	if not promotion then return end
+
+	self.m_Promotion = nil
+	self.m_PromotionOverlay:setVisible(false)
+	self:sendMove(promotion.from, promotion.to, promo)
+end
+
+function ChessGraphics:sendMove(from, to, promo)
+	self.m_Moves = {}
+	self.m_Selected = nil
+	self:refreshTiles()
+	ChessSession:getSingleton():sendMove(from, to, promo)
+end
+
+function ChessGraphics:setClock(turn, times)
+	self.m_Turn = turn
+	self.m_Times = times
+	self.m_ClockTick = getTickCount()
+	self:updateClocks()
+end
+
+function ChessGraphics:updateClocks()
+	if not self.m_Times then return end
+
+	for color, panel in pairs(self.m_Panels) do
+		local left = self.m_Times[color]
+		if color == self.m_Turn then
+			left = math.max(left - (getTickCount() - self.m_ClockTick), 0)
+		end
+		local seconds = math.ceil(left/1000)
+		local text = ("%d:%02d"):format(math.floor(seconds/60), seconds%60)
+		if panel.clock:getText() ~= text then
+			panel.clock:setText(text)
+			panel.clock:setColor(seconds <= 30 and COLOR_LOW_TIME or Color.White)
 		end
 	end
-	local preIndex, curIndex
-	if self.m_PotentialMoves then
-		for i = 1,#self.m_PotentialMoves do
-			curIndex = self.m_PotentialMoves[i]
-			if type(curIndex) == "number" then
-				self.m_ChessTiles[curIndex].m_IsPossibleMove = false
+end
+
+function ChessGraphics:onActionClick()
+	if self.m_Over then
+		ChessSession:getSingleton():clear()
+		return
+	end
+
+	if self.m_SurrenderArmed then
+		self.m_SurrenderArmed = false
+		ChessSession:getSingleton():surrender()
+		return
+	end
+
+	self.m_SurrenderArmed = true
+	self.m_ActionButton:setText(_"Wirklich aufgeben?")
+	self.m_SurrenderTimer = setTimer(
+		function()
+			self.m_SurrenderArmed = false
+			if not self.m_Over then
+				self.m_ActionButton:setText(_"Aufgeben")
 			end
-		end
-	end
+		end, 3000, 1
+	)
 end
 
-function ChessGraphics:setPiece( id, intPiece, team)
-	if id and intPiece then
-		if self.m_ChessTiles[id] then
-			self.m_ChessTiles[id]:setPiece( intPiece,  team)
-		end
-	end
-end
+function ChessGraphics:showResult(winner, reason, times)
+	self.m_Over = true
+	self.m_Moves = {}
+	self.m_Selected = nil
+	self.m_Promotion = nil
+	self.m_PromotionOverlay:setVisible(false)
+	self:refreshTiles()
+	self:setClock(false, times)
 
-function ChessGraphics:setCurrentCursorTile( tile )
-	if getKeyState("mouse1") then
-		if self.m_LastClick then
-			self.m_LastClick.m_LastClicked = false
-		end
-	end
-	if self.m_CurrentCursorTile ~= tile then
-		self.m_CurrentCursorTile = tile
-	end
-end
+	self.m_Panels.w.background:setColor(Color.Primary)
+	self.m_Panels.b.background:setColor(Color.Primary)
+	self.m_Window:setTitleBarText(_"Schach")
+	self.m_ActionButton:setText(_"Schließen")
+	self.m_ActionButton:setBackgroundColor(Color.Accent)
 
-function ChessGraphics:startPawnSelection( indexPiece, team )
-	self.m_DrawPawnSelection = true
-	self.m_SelectionIndexPiece = indexPiece
-	self.m_SelectionTeam = team
-	self.m_TimerTimeoutFunction = bind(ChessGraphics.Event_ChessSelectionTimeout, self)
-	self.m_SelectionTimeout = setTimer(  self.m_TimerTimeoutFunction, 10000, 1)
-end
-
-function ChessGraphics:Event_PawnSelectionConfirm( piece )
-	if self.m_SelectionIndexPiece then
-		triggerServerEvent( "onServerGetChessPawnSelection", localPlayer, self.m_SelectionIndexPiece, piece or 2, self.m_SelectionTeam)
+	if winner == "draw" then
+		self.m_ResultTitle:setText(_"Remis")
+	elseif winner == self.m_Color then
+		self.m_ResultTitle:setText(_"Du hast gewonnen!"):setColor(COLOR_WIN)
+	else
+		self.m_ResultTitle:setText(_"Du hast verloren!"):setColor(COLOR_LOSE)
 	end
-	self.m_DrawPawnSelection = false
-	self.m_SelectionIndexPiece = nil
-	self.m_SelectionTeam = nil
-end
-
-function ChessGraphics:Event_ChessSelectionTimeout( )
-	if self.m_SelectionIndexPiece then
-		triggerServerEvent( "onServerGetChessPawnSelection", localPlayer, self.m_SelectionIndexPiece, 2, self.m_SelectionTeam)
-	end
-	self.m_DrawPawnSelection = false
-	self.m_SelectionIndexPiece = nil
-	self.m_SelectionTeam = nil
+	self.m_ResultReason:setText(_(reason))
+	self.m_ResultOverlay:setVisible(true)
 end

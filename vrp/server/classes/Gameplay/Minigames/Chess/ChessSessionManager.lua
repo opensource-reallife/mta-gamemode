@@ -1,109 +1,92 @@
 ChessSessionManager = inherit(Singleton)
 
-addRemoteEvents{"onServerGetChessMove", "onServerGetSurrender", "chessQuestion", "chessQuestionAccept", "chessQuestionDecline", "onServerGetChessPawnSelection"}
+addRemoteEvents{"onServerGetChessMove", "onServerGetSurrender", "chessQuestion", "chessQuestionAccept", "chessQuestionDecline"}
 
+local GAME_TIME = 6*60
+local REQUEST_TIMEOUT = 60*1000
 
 function ChessSessionManager:constructor()
-	self.m_Map = {	}
+	self.m_Map = {}
 	addEventHandler("onServerGetChessMove", root, bind(ChessSessionManager.Event_GetChessMove, self))
-	addEventHandler("onServerGetChessPawnSelection", root, bind(ChessSessionManager.Event_GetPawnSelection, self))
 	addEventHandler("onServerGetSurrender", root, bind(ChessSessionManager.Event_GetSurrender, self))
+	addEventHandler("chessQuestion", root, bind(ChessSessionManager.Event_Question, self))
+	addEventHandler("chessQuestionAccept", root, bind(ChessSessionManager.Event_QuestionAccept, self))
+	addEventHandler("chessQuestionDecline", root, bind(ChessSessionManager.Event_QuestionDecline, self))
 end
 
 function ChessSessionManager:destructor()
 
 end
 
-function ChessSessionManager:Event_newGame( player1, player2)
-	if not self:getPlayerGame( player1 ) and not self:getPlayerGame( player2 ) then
-		self.m_Map[#self.m_Map+1] = ChessSession:new(#self.m_Map+1, {player1,player2}, true, 6*60)
+function ChessSessionManager:Event_newGame(player1, player2)
+	if player1 == player2 then return end
+	if self:getPlayerGame(player1) or self:getPlayerGame(player2) then
+		player1:sendError(_("Du oder dein Gegner spielt bereits Schach!", player1))
+		player2:sendError(_("Du oder dein Gegner spielt bereits Schach!", player2))
+		return
 	end
+	self.m_Map[#self.m_Map + 1] = ChessSession:new(#self.m_Map + 1, {player1, player2}, GAME_TIME)
 end
 
-function ChessSessionManager:removeReference( obj )
-	for i = 1, #self.m_Map do
+function ChessSessionManager:removeReference(obj)
+	for i = #self.m_Map, 1, -1 do
 		if obj == self.m_Map[i] then
 			table.remove(self.m_Map, i)
 		end
 	end
 end
-function ChessSessionManager:Event_GetChessMove( toIndex, fromIndex, team)
-	if client then
-		if client == source then
-			local gObject = self:getPlayerGame( client )
-			if gObject then
-				gObject:movePlayerPiece( client, toIndex, fromIndex, team)
-			end
-		end
-	end
-end
 
-function ChessSessionManager:Event_GetPawnSelection( toIndex, pieceSelection, team ) 
-	if client then
-		if client == source then
-			local gObject = self:getPlayerGame( client )
-			if gObject then
-				gObject:rankUpPawn( client, toIndex, pieceSelection, team)
-			end
+function ChessSessionManager:Event_GetChessMove(from, to, promo)
+	if client and client == source then
+		local game = self:getPlayerGame(client)
+		if game then
+			game:movePiece(client, from, to, promo)
 		end
 	end
 end
 
 function ChessSessionManager:Event_GetSurrender()
-	if client then
-		if client == source then
-			local gObject = self:getPlayerGame( client )
-			if gObject then
-				local winner
-				if gObject.m_Players[1] == client then
-					winner = gObject.m_Players[2]
-				else
-					winner = gObject.m_Players[1]
-				end
-				gObject:endGame( winner, "Kapitulation!" )
-			end
+	if client and client == source then
+		local game = self:getPlayerGame(client)
+		if game then
+			game:surrender(client)
 		end
 	end
 end
 
---// G/S
-function ChessSessionManager:getPlayerGame( player )
-	local gObject
-	for index = 1,#self.m_Map do
-		gObject = self.m_Map[index]
-		if gObject then
-			if gObject:isThisPlayer( player ) then
-				return gObject
-			end
-		else
-			self.m_Map[index] = nil
+function ChessSessionManager:Event_Question(target)
+	if not client or not isElement(target) or getElementType(target) ~= "player" or target == client then return end
+	if self:getPlayerGame(client) or self:getPlayerGame(target) then
+		client:sendError(_("Du oder dein Gegner spielt bereits Schach!", client))
+		return
+	end
+	if client.chessRequestTarget == target and getTickCount() - client.chessRequestTick < REQUEST_TIMEOUT then
+		client:sendError(_("Du hast dem Spieler bereits eine Anfrage gesendet", client))
+		return
+	end
+	client:sendShortMessage(_("Du hast eine Schach-Anfrage an %s gesendet!", client, target:getName()))
+	client.chessRequestTarget = target
+	client.chessRequestTick = getTickCount()
+	target:triggerEvent("onAppDashboardGameInvitation", client, "Schach", "chessQuestionAccept", "chessQuestionDecline", client)
+end
+
+function ChessSessionManager:Event_QuestionAccept(host)
+	if not client or not isElement(host) or host.chessRequestTarget ~= client then return end
+	host.chessRequestTarget = nil
+	self:Event_newGame(host, client)
+end
+
+function ChessSessionManager:Event_QuestionDecline(host)
+	if not client or not isElement(host) or host.chessRequestTarget ~= client then return end
+	host.chessRequestTarget = nil
+	host:sendError(_("Der Spieler %s hat abgelehnt!", host, client:getName()))
+end
+
+function ChessSessionManager:getPlayerGame(player)
+	for index = 1, #self.m_Map do
+		if self.m_Map[index]:isThisPlayer(player) then
+			return self.m_Map[index]
 		end
 	end
 	return false
 end
-
-addEventHandler("chessQuestionAccept", root,
-	function(host)
-		ChessSessionManager:getSingleton():Event_newGame(host, client)
-		client.chessPlaying = true
-		host.chessSendRequest = false
-	end
-)
-
-addEventHandler("chessQuestionDecline", root,
-	function(host)
-		if host.chessSendRequest then
-			host:sendError(_("Der Spieler %s hat abgelehnt!", host, client.name))
-			host.chessSendRequest = false
-		end
-	end
-)
-
-addEventHandler("chessQuestion", root,
-    function(target)
-		if client.chessSendRequest then client:sendError(_("Du hast dem Spieler bereits eine Anfrage gesendet", client)) return end
-		client:sendShortMessage(_("Du hast eine Schach-Anfrage an %s gesendet!", client, target:getName()))
-		client.chessSendRequest = true
-		target:triggerEvent("onAppDashboardGameInvitation", client, "Schach", "chessQuestionAccept", "chessQuestionDecline", client)
-	end
-)

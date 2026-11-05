@@ -1385,12 +1385,9 @@
 	<script src="client/classes/Gameplay/Minigames/TurtleRace.lua" type="client"/>
 
 	<!-- CHESS -->
-	<script src="client/classes/Gameplay/Minigames/Chess/ChessConstants.lua" type="client" cache="true" />
 	<script src="client/classes/Gameplay/Minigames/Chess/ChessSession.lua" type="client" cache="true" />
 	<script src="client/classes/Gameplay/Minigames/Chess/ChessTile.lua" type="client" cache="true" />
 	<script src="client/classes/Gameplay/Minigames/Chess/ChessGraphics.lua" type="client" cache="true" />
-	<script src="client/classes/Gameplay/Minigames/Chess/ChessRule.lua" type="client" cache="true" />
-	<script src="client/classes/Gameplay/Minigames/Chess/ChessClock.lua" type="client" cache="true" />
 	<script src="client/classes/Gameplay/Minigames/Skribble/Skribble.lua" type="client" cache="true" />
 
 	<script src="client/classes/Gameplay/Places/Atrium.lua" type="client"/>
