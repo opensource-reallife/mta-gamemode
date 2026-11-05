@@ -294,7 +294,7 @@ function SelfGUI:constructor()
 
 	self.m_SettingsGrid = GUIGridList:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.3, self.m_Height*0.9, tabSettings)
 	self.m_SettingsGrid:addColumn(_"Einstellungen", 1)
-	local SettingsTable = {"Darstellung", "Grafik", "Kampf", "Fahrzeuge", "Sounds / Radio", "Steuerung", "Allgemein"}
+	local SettingsTable = {"Darstellung", "Grafik", "Sounds / Radio", "Steuerung", "Fahrzeuge", "Kampf", "Spawn", "Sprache", "Server-Tour"}
 	local item
 	for index, setting in pairs(SettingsTable) do
 		item = self.m_SettingsGrid:addItem(_(setting))
@@ -776,10 +776,9 @@ function SelfGUI:isBackgroundBlurred()
 end
 
 local SETTING_SECTIONS = {
-	["Darstellung"] = {"HUD", "Radar", "Chat", "Tacho", "Spieler"},
-	["Grafik"] = {"Effekte", "Events", "Texturen", "Leistung"},
+	["Darstellung"] = {"HUD", "Radar", "Tacho", "Chat", "Spieler"},
+	["Grafik"] = {"Leistung", "Effekte", "Texturen", "Events"},
 	["Kampf"] = {"Anzeige", "Waffen am Körper"},
-	["Allgemein"] = {"Spawn", "Sprache", "Server-Tour"},
 }
 
 function SelfGUI:createSectionBar(category, section)
@@ -792,7 +791,7 @@ function SelfGUI:createSectionBar(category, section)
 		changerWidth = changerWidth - buttonSize - padding
 	end
 
-	local sectionBar = GUIRectangle:new(0, 0, barWidth, barHeight, tocolor(0, 0, 0, 180), self.m_SettingBG)
+	local sectionBar = GUIRectangle:new(0, 0, barWidth, barHeight, tocolor(0, 0, 0, 0), self.m_SettingBG)
 	GUIRectangle:new(0, barHeight - 2, barWidth, 2, Color.Accent, sectionBar)
 
 	local sectionChange = GUIChanger:new(padding, padding, changerWidth, buttonSize, sectionBar)
@@ -1181,15 +1180,15 @@ function SelfGUI:onSettingChange(setting)
 		end
 
 	elseif setting == "Spawn" then
-		GUILabel:new(self.m_Width*0.02, self.m_Height*0.1, self.m_Width*0.6, self.m_Height*0.04, _"Spawnposition (beim Login)", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
+		GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.07, _"Spawnposition (beim Login)", self.m_SettingBG)
 
-		self.m_Default = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.15, self.m_Width*0.30, self.m_Height*0.04, _"Letzter Standort", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
-		self.m_Noobspawn = GUICheckbox:new(self.m_Width*0.33, self.m_Height*0.15, self.m_Width*0.30, self.m_Height*0.04, _"Stadthalle", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
-		self.m_FactionBase = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.21, self.m_Width*0.30, self.m_Height*0.04, _"Fraktionsbase", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
-		self.m_CompanyBase = GUICheckbox:new(self.m_Width*0.33, self.m_Height*0.21, self.m_Width*0.30, self.m_Height*0.04, _"Unternehmensbase", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
-		self.m_GroupBase = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.27, self.m_Width*0.30, self.m_Height*0.04, _"Gruppe", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
-		self.m_House = GUICheckbox:new(self.m_Width*0.33, self.m_Height*0.27, self.m_Width*0.30, self.m_Height*0.04, _"Haus", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
-		self.m_Vehicle = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.33, self.m_Width*0.30, self.m_Height*0.04, _"Wohnwagen/Boot", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
+		self.m_Default = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.09, self.m_Width*0.30, self.m_Height*0.04, _"Letzter Standort", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
+		self.m_Noobspawn = GUICheckbox:new(self.m_Width*0.33, self.m_Height*0.09, self.m_Width*0.30, self.m_Height*0.04, _"Stadthalle", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
+		self.m_FactionBase = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.15, self.m_Width*0.30, self.m_Height*0.04, _"Fraktionsbase", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
+		self.m_CompanyBase = GUICheckbox:new(self.m_Width*0.33, self.m_Height*0.15, self.m_Width*0.30, self.m_Height*0.04, _"Unternehmensbase", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
+		self.m_GroupBase = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.21, self.m_Width*0.30, self.m_Height*0.04, _"Gruppe", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
+		self.m_House = GUICheckbox:new(self.m_Width*0.33, self.m_Height*0.21, self.m_Width*0.30, self.m_Height*0.04, _"Haus", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
+		self.m_Vehicle = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.27, self.m_Width*0.30, self.m_Height*0.04, _"Wohnwagen/Boot", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
 
 		self.m_FactionBase:setEnabled(localPlayer:getFaction() and true or false)
 		self.m_CompanyBase:setEnabled(localPlayer:getCompany() and true or false)
@@ -1217,11 +1216,11 @@ function SelfGUI:onSettingChange(setting)
 		self.m_CompanyBase.onChange = function() uncheckAll() self.m_CompanyBase:setChecked(true) triggerServerEvent("onPlayerUpdateSpawnLocation", localPlayer, SPAWN_LOCATIONS.COMPANY_BASE) end
 		self.m_GroupBase.onChange = function() uncheckAll() self.m_GroupBase:setChecked(true) triggerServerEvent("onPlayerUpdateSpawnLocation", localPlayer, SPAWN_LOCATIONS.GROUP_BASE) end
 
-		GUILabel:new(self.m_Width*0.02, self.m_Height*0.39, self.m_Width*0.6, self.m_Height*0.055, _"Nutze das Klicksystem bzw. das Hausmenü um den Spawnpunkt für ein Fahrzeug oder Haus festzulegen!", self.m_SettingBG)
+		GUILabel:new(self.m_Width*0.02, self.m_Height*0.33, self.m_Width*0.6, self.m_Height*0.055, _"Nutze das Klicksystem bzw. das Hausmenü um den Spawnpunkt für ein Fahrzeug oder Haus festzulegen!", self.m_SettingBG)
 
-		GUILabel:new(self.m_Width*0.02, self.m_Height*0.52, self.m_Width*0.8, self.m_Height*0.07, _"Spawneinstellungen (Fraktion)", self.m_SettingBG)
+		GUILabel:new(self.m_Width*0.02, self.m_Height*0.46, self.m_Width*0.8, self.m_Height*0.07, _"Spawneinstellungen (Fraktion)", self.m_SettingBG)
 
-		self.m_RescueSpawn = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.59, self.m_Width*0.6, self.m_Height*0.04, _"Am Krankenhaus spawnen (nach Tod)", self.m_SettingBG)
+		self.m_RescueSpawn = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.53, self.m_Width*0.6, self.m_Height*0.04, _"Am Krankenhaus spawnen (nach Tod)", self.m_SettingBG)
 		self.m_RescueSpawn:setFont(VRPFont(25))
 		self.m_RescueSpawn:setFontSize(1)
 		self.m_RescueSpawn:setChecked(core:get("Other", "RescueSpawnAfterDeath", false))
@@ -1229,7 +1228,7 @@ function SelfGUI:onSettingChange(setting)
 			core:set("Other", "RescueSpawnAfterDeath", state)
 		end
 
-		self.m_JailSpawn = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.65, self.m_Width*0.6, self.m_Height*0.04, _"In Fraktionsbasis spawnen (250$) (nach Knast)", self.m_SettingBG)
+		self.m_JailSpawn = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.59, self.m_Width*0.6, self.m_Height*0.04, _"In Fraktionsbasis spawnen (250$) (nach Knast)", self.m_SettingBG)
 		self.m_JailSpawn:setFont(VRPFont(25))
 		self.m_JailSpawn:setFontSize(1)
 		self.m_JailSpawn:setChecked(core:get("Other", "SpawnAfterJail", false))
@@ -1238,7 +1237,7 @@ function SelfGUI:onSettingChange(setting)
 			setElementData(localPlayer, "SpawnAfterJail", state, true)
 		end
 		
-		self.m_SkinSpawn = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.71, self.m_Width*0.8, self.m_Height*0.04, _"Im Fraktionsdienst spawnen (nur B-Fraktionen)", self.m_SettingBG)
+		self.m_SkinSpawn = GUICheckbox:new(self.m_Width*0.02, self.m_Height*0.65, self.m_Width*0.8, self.m_Height*0.04, _"Im Fraktionsdienst spawnen (nur B-Fraktionen)", self.m_SettingBG)
 		self.m_SkinSpawn:setEnabled(localPlayer:getFaction() and localPlayer:getFaction():isEvilFaction())
 		self.m_SkinSpawn:setFont(VRPFont(25))
 		self.m_SkinSpawn:setFontSize(1)
@@ -1844,8 +1843,9 @@ function SelfGUI:onSettingChange(setting)
 		self.m_InfraredSensitivtyLabel = GUILabel:new(self.m_Width*0.02, self.m_Height*0.59, self.m_Width*0.9, self.m_Height*0.06, _("Thermal Maussensitivität: %s", core:get("Vehicles", "InfraredSensitivity", 2)), self.m_SettingBG)
 		self.m_InfraredSensitivtyLabel:setAlignX("center")
 	elseif setting == "Server-Tour" then
+		GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.8, self.m_Height*0.07, _"Server-Tour", self.m_SettingBG)
 		local tourText = Tour:getSingleton():isActive() and _"Servertour beenden" or _"Servertour starten"
-		self.m_ServerTour = GUIButton:new(self.m_Width*0.02, self.m_Height*0.11, self.m_Width*0.35, self.m_Height*0.07, tourText, self.m_SettingBG):setBarEnabled(true)
+		self.m_ServerTour = GUIButton:new(self.m_Width*0.02, self.m_Height*0.09, self.m_Width*0.35, self.m_Height*0.07, tourText, self.m_SettingBG):setBarEnabled(true)
 		self.m_ServerTour.onLeftClick = function()
 			if not Tour:getSingleton():isActive() then
 			QuestionBox:new(
@@ -1858,8 +1858,8 @@ function SelfGUI:onSettingChange(setting)
 		end
 		self.m_ServerTour:setText(Tour:getSingleton():isActive() and _"Servertour beenden" or _"Servertour starten")
 	elseif setting == "Sprache" then
-		GUILabel:new(self.m_Width*0.02, self.m_Height*0.1, self.m_Width*0.6, self.m_Height*0.04, _"Sprache (Experimentelles Feature)", self.m_SettingBG):setFont(VRPFont(25)):setFontSize(1)
-		self.m_LanguageChange = GUIChanger:new(self.m_Width*0.02, self.m_Height*0.15, self.m_Width*0.55, self.m_Height*0.07, self.m_SettingBG)
+		GUILabel:new(self.m_Width*0.02, self.m_Height*0.02, self.m_Width*0.9, self.m_Height*0.07, _"Sprache (Experimentelles Feature)", self.m_SettingBG)
+		self.m_LanguageChange = GUIChanger:new(self.m_Width*0.02, self.m_Height*0.09, self.m_Width*0.55, self.m_Height*0.07, self.m_SettingBG)
 		self.m_LanguageChange:addItem("Deutsch/German")
 		self.m_LanguageChange:addItem("Englisch/English")
 		self.m_LanguageChange.onChange = function(text, index)
