@@ -72,7 +72,15 @@ function GUIScrollableArea:draw(incache, skipPostGUI)
 
 	-- Recreate AbsoluteX for the update() method to allow mouse actions
 	self.m_AbsoluteX, self.m_AbsoluteY = absx, absy
-	refreshAbsolutePosition(self)
+	local refreshAllPositions
+	refreshAllPositions = function(element)
+		for k, v in pairs(element.m_Children) do
+			v.m_AbsoluteX = element.m_AbsoluteX + v.m_PosX
+			v.m_AbsoluteY = element.m_AbsoluteY + v.m_PosY
+			refreshAllPositions(v)
+		end
+	end
+	refreshAllPositions(self)
 
 	if GUI_DEBUG then
 		dxDrawRectangle(self.m_AbsoluteX, self.m_AbsoluteY, self.m_Width, self.m_Height, tocolor(math.random(0, 255), math.random(0, 255), math.random(0, 255), 150))
