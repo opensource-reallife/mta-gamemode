@@ -634,6 +634,11 @@ function LocalPlayer:checkAFK()
 				return
 			end
 		end
+	else
+		HUDUI:getSingleton():hide()
+		HUDRadar:getSingleton():hide()
+		local pos = localPlayer:getPosition()
+		setCameraMatrix(pos.x, pos.y, pos.z-10, pos.x, pos.y, pos.z-100)
 	end
 end
 
@@ -665,6 +670,8 @@ function LocalPlayer:toggleAFK(state)
 		addEventHandler("onClientRender", root, self.m_AFKRender)
 		CustomF11Map:getSingleton():disable()
 		Nametag:getSingleton():setDisabled(true)
+		HUDUI:getSingleton():hide()
+		HUDRadar:getSingleton():hide()
 	else
 		self.m_AFKCode = false
 		InfoBox:new(_("Willkommen zurück, %s!", localPlayer:getName()))
@@ -677,6 +684,9 @@ function LocalPlayer:toggleAFK(state)
 		removeEventHandler("onClientRender", root, self.m_AFKRender)
 		CustomF11Map:getSingleton():enable()
 		Nametag:getSingleton():setDisabled(false)
+		HUDUI:getSingleton():show()
+		HUDRadar:getSingleton():show()
+		setCameraTarget(localPlayer)
 		toggleAllControls(true, true, false)
 		fadeCamera(true, 0)
 	end
@@ -687,8 +697,6 @@ function LocalPlayer:renderAFK()
 	dxDrawText(_("Du wurdest AFK gesetzt!\nGib folgenden Befehl ein: /noafk %s", self.m_AFKCode), 0, 0, w, h, tocolor(255, 0, 0, 255), 2, "clear", "center", "center", false, false, true)
 	toggleAllControls(false, true, false)
 	fadeCamera(false, 0)
-	dxDrawRectangle(0, h/2, w, h/2, Color.Black)
-	dxDrawRectangle(w/2, 0, w/2, h, Color.Black)
 	clearChatBox()
 end
 
