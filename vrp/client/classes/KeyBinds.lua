@@ -303,10 +303,15 @@ function KeyBinds:helpMenu()
 end
 
 function KeyBinds:scoreboardGUI(_, keyState)
+	local scoreboard = ScoreboardGUI:getSingleton()
 	if keyState == "down" then
-		ScoreboardGUI:getSingleton():setVisible(true):bringToFront()
+		if scoreboard:isPinned() then
+			scoreboard:hide()
+		else
+			scoreboard:setVisible(true):bringToFront()
+		end
 	else
-		ScoreboardGUI:getSingleton():setVisible(false)
+		scoreboard:onTabReleased()
 	end
 end
 
