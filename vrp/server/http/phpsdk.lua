@@ -1392,7 +1392,7 @@ function phpSDKShopVehicleEdit(adminId, shopVehId, data)
 	end
 	if tonumber(data.price) then entry.price = math.max(0, math.floor(tonumber(data.price))) end
 	if tonumber(data.level) then entry.level = math.max(0, math.floor(tonumber(data.level))) end
-	if tonumber(data.maxStock) then entry.maxStock = math.floor(tonumber(data.maxStock)) end
+	if tonumber(data.maxStock) and not shop.m_RandomizeStock then entry.maxStock = math.floor(tonumber(data.maxStock)) end
 	sql:queryExec("UPDATE ??_vehicle_shop_veh SET Model = ?, Name = ?, Price = ?, Level = ?, MaxStock = ?, TemplateId = ? WHERE Id = ?", sql:getPrefix(),
 		model, getVehicleNameFromModel(model), entry.price, entry.level, tonumber(data.maxStock) or entry.maxStock, entry.templateId or 0, entry.id)
 	if tonumber(data.stock) then
