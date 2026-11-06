@@ -50,6 +50,7 @@ function GUIRenderer.updateAll(elapsedTime)
 	end
 
 	GUITooltip.checkTooltip()
+	ClickHandler:getSingleton():syncCursorOverGUI()
 
 	if not GUIElement.ms_ClickProcessed then
 		GUIRenderer.process3DMouse()

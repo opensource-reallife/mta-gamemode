@@ -29,10 +29,11 @@ function ClickHandler:constructor()
 	self.m_ClickInfo = false
 	self.m_DrawCursor = false
 	self.m_LastWorldModel = 0
+	self.m_CursorOverGUI = false
 
 	addEventHandler("onClientClick", root,
 		function(button, state, absoluteX, absoluteY, worldX, worldY, worldZ, element)
-			if state == "up" then
+			if state == "up" and not GUIElement.getHoveredElement() then
 				self.m_ClickInfo = {button = button, absoluteX = absoluteX, absoluteY = absoluteY, element = element, worldX = worldX, worldY = worldY, worldZ = worldZ}
 			end
 		end
@@ -106,6 +107,14 @@ function ClickHandler:constructor()
 			end
 		end
 	)
+end
+
+function ClickHandler:syncCursorOverGUI()
+	local overGUI = GUIElement.getHoveredElement() and true or false
+	if overGUI ~= self.m_CursorOverGUI then
+		self.m_CursorOverGUI = overGUI
+		triggerServerEvent("setCursorOverGUI", localPlayer, overGUI)
+	end
 end
 
 function ClickHandler:invokeClick()

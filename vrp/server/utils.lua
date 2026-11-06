@@ -1,3 +1,36 @@
+local _addEventHandler = addEventHandler
+local _removeEventHandler = removeEventHandler
+local elementClickHandlers = {}
+
+local function getElementClickHandler(func)
+	if not elementClickHandlers[func] then
+		elementClickHandlers[func] = function(button, state, player, ...)
+			if isElement(player) and player.m_CursorOverGUI then return end
+			return func(button, state, player, ...)
+		end
+	end
+	return elementClickHandlers[func]
+end
+
+function addEventHandler(eventName, attached, func, ...)
+	if eventName == "onElementClicked" then
+		func = getElementClickHandler(func)
+	end
+	return _addEventHandler(eventName, attached, func, ...)
+end
+
+function removeEventHandler(eventName, attached, func)
+	if eventName == "onElementClicked" then
+		func = elementClickHandlers[func] or func
+	end
+	return _removeEventHandler(eventName, attached, func)
+end
+
+addRemoteEvents{"setCursorOverGUI"}
+_addEventHandler("setCursorOverGUI", root, function(state)
+	client.m_CursorOverGUI = state == true
+end)
+
 function critical_error(errmsg)
 	outputDebugString("[CRITICAL ERROR] "..tostring(errmsg))
 	outputDebugString("[CRITICAL ERROR] vRoleplay Script will now halt")
