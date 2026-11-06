@@ -37,7 +37,7 @@ local weaponTable = {
 	[33] = {3, 0, -0.18, -0.33, -3, 270, 0, 357, 6},
 	[34] = {3, 0, -0.13, -0.245, -3, 270, 0, 358, 6},
 	[35] = {3, .1, -0.2, 0, -3, 290, 0, 359, 7},
-	[36] = {3, .1, -0.2, 0, -3, 290, 0, 0, 360, 7},
+	[36] = {3, .1, -0.2, 0, -3, 290, 0, 360, 7},
 }
 
 local alternativeTable =
@@ -342,4 +342,76 @@ addEventHandler("WeaponAttach:onInititate", root, function()
 			end
 		end
 	end
+end)
+
+local alwaysVisibleWeapons = {
+	[34] = {concealable = true},
+	[35] = {concealable = false},
+	[36] = {concealable = false},
+}
+local carriedWeapons = {}
+local visibleObjects = {}
+
+local function isWeaponHandledBySlot(player, weapon, slot)
+	if getPedWeapon(player, slot) == weapon and getPedTotalAmmo(player, slot) > 0 then
+		return true
+	end
+	local object = getElementData(player, "a:weapon:slot"..slot.."")
+	return isElement(object) and getElementData(object, "a:weapon:id") == weapon
+end
+
+local function shouldShowWeapon(player, weapon, settings, slot)
+	if not carriedWeapons[player] or not carriedWeapons[player][weapon] then return false end
+	if isPedDead(player) or getPedOccupiedVehicle(player) then return false end
+	if getElementData(player, "a:allWeaponsAreConcealed") then return false end
+	if settings.concealable and getElementData(player, "a:weaponIsConcealed") then return false end
+	return not isWeaponHandledBySlot(player, weapon, slot)
+end
+
+local function refreshVisibleWeapons(player)
+	visibleObjects[player] = visibleObjects[player] or {}
+	local objects = visibleObjects[player]
+	for weapon, settings in pairs(alwaysVisibleWeapons) do
+		local slot = getSlotFromWeapon(weapon)
+		if shouldShowWeapon(player, weapon, settings, slot) then
+			if not isElement(objects[weapon]) then
+				local data = weaponTable[weapon]
+				local x, y, z = getElementPosition(player)
+				objects[weapon] = createObject(data[8], x, y, z)
+				exports.bone_attach:attachElementToBone(objects[weapon], player, data[1], data[2], data[3], data[4], data[5], data[6], data[7])
+				setElementCollisionsEnabled(objects[weapon], false)
+			end
+			setElementInterior(objects[weapon], getElementInterior(player))
+			setElementDimension(objects[weapon], getElementDimension(player))
+		elseif isElement(objects[weapon]) then
+			destroyElement(objects[weapon])
+			objects[weapon] = nil
+		end
+	end
+end
+
+addEvent("WeaponAttach:setCarriedWeapons")
+addEventHandler("WeaponAttach:setCarriedWeapons", root, function(weapons)
+	carriedWeapons[source] = weapons
+	refreshVisibleWeapons(source)
+end)
+
+local function refreshSourcePlayer()
+	if getElementType(source) == "player" then
+		refreshVisibleWeapons(source)
+	end
+end
+
+for _, eventName in ipairs({"WeaponAttach:concealWeapons", "WeaponAttach:unconcealWeapons", "WeaponAttach:onInititate", "createWepObject", "onPlayerVehicleEnter", "onPlayerVehicleExit", "onPlayerWasted", "onPlayerSpawn", "onElementDimensionChange", "onElementInteriorChange"}) do
+	addEventHandler(eventName, root, refreshSourcePlayer)
+end
+
+addEventHandler("onPlayerQuit", root, function()
+	for weapon, object in pairs(visibleObjects[source] or {}) do
+		if isElement(object) then
+			destroyElement(object)
+		end
+	end
+	visibleObjects[source] = nil
+	carriedWeapons[source] = nil
 end)
