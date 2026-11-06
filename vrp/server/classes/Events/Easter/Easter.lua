@@ -38,6 +38,13 @@ if (month == 3) or (month == 4 and day <= 7) then
 	}
 end
 
+function Easter.getEndTime()
+    local year = getRealTime().year + 1900
+    local startDay = os.date("*t", os.time({year = year, month = 1, day = EVENT_EASTER_START_DAY, hour = 12}))
+    local daysToSunday = (8 - startDay.wday) % 7
+    return os.time({year = year, month = 1, day = EVENT_EASTER_START_DAY + daysToSunday + 14, hour = 0})
+end
+
 function Easter:constructor()
     self.m_Objects = {}
     for day, data in pairs(Easter.RabbitObjects) do

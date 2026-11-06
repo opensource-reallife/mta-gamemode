@@ -104,6 +104,10 @@ elseif month == 12 and day >= 25 and day <= 31 then
 end
 ]]
 
+function Christmas.getEndTime()
+	return os.time({year = getRealTime().year + 1900, month = 12, day = 31, hour = 23, min = 59, sec = 59})
+end
+
 function Christmas:constructor()
 	self.m_AdventCalender = {}
 

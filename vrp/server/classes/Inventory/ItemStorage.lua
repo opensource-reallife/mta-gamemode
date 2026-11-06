@@ -61,6 +61,7 @@ function ItemStorage:removeExpired()
 		local data = self:getItemData(row["Item"])
 		local expiry = data["VerfallAm"] or (data["VerfallTage"] and (tonumber(row["Value"]) or 0))
 		if expiry and expiry <= now then
+			StatisticsLogger:getSingleton():addItemMoveLog(self.m_Type == "gunbox" and self.m_OwnerId or 0, row["Item"], -row["Amount"], ("Verfall %s"):format(self.m_Key))
 			self:removeRow(id, row["Amount"])
 		end
 	end

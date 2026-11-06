@@ -209,6 +209,10 @@ function Core:constructor()
 			Market:new()
 		end
 
+		InventoryManager:getSingleton():setItemsExpiry({71}, EVENT_EASTER and Easter.getEndTime() or 0)
+		InventoryManager:getSingleton():setItemsExpiry({26, 27}, EVENT_HALLOWEEN and Halloween.getEndTime() or 0)
+		InventoryManager:getSingleton():setItemsExpiry({28, 78}, EVENT_CHRISTMAS and Christmas.getEndTime() or 0)
+
 		if EVENT_EASTER then
 			Easter:new()
 		end

@@ -70,11 +70,30 @@ function InventoryManager:reloadItems()
 		end
 	end
 
+	self:syncItemData()
+end
+
+function InventoryManager:syncItemData()
 	for _index, player in ipairs(getElementsByType("player")) do
 		local inventory = player.getInventory and player:getInventory()
 		if inventory then
 			inventory:syncClient(true)
 		end
+	end
+end
+
+function InventoryManager:setItemsExpiry(itemIds, expiry)
+	local changed = false
+	for _index, itemId in ipairs(itemIds) do
+		local data = self.m_ItemData[self.m_ItemIds[itemId]]
+		if data and data["VerfallAm"] ~= expiry then
+			data["VerfallAm"] = expiry
+			sql:queryExec("UPDATE ??_inventory_items SET VerfallAm = ? WHERE ID = ?", sql:getPrefix(), expiry, itemId)
+			changed = true
+		end
+	end
+	if changed then
+		self:syncItemData()
 	end
 end
 

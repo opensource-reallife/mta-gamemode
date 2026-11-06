@@ -128,6 +128,10 @@ end
 
 Halloween.maxPumpkinsToDropPerPlayer = 3
 
+function Halloween.getEndTime()
+	return os.time({year = getRealTime().year + 1900, month = 1, day = EVENT_HALLOWEEN_START_DAY + 15, hour = 23, min = 59, sec = 59})
+end
+
 function Halloween:constructor()
 	self.m_MapParser = MapParser:new(":exo_maps/events/halloween.map")
 	self.m_MapParser:create()
