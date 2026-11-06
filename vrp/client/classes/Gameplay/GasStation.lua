@@ -48,6 +48,20 @@ function GasStation:constructor()
 	addEventHandler("onClientElementStreamIn", root, bind(GasStation.onObjectStreamIn, self))
 	addEventHandler("onClientElementStreamOut",root ,bind(GasStation.onObjectStreamOut, self))
 	addEventHandler("onClientRender", root, bind(GasStation.renderGasStation, self))
+
+	for _index, object in ipairs(getElementsByType("object", root, true)) do
+		if object:getModel() == 1676 then
+			self:applyTexture(object)
+		end
+	end
+end
+
+function GasStation:applyTexture(object)
+	for _index, replacer in ipairs(self.m_Shaders) do
+		if replacer.m_Shader then
+			engineApplyShaderToWorldTexture(replacer.m_Shader, replacer.m_TextureName, object)
+		end
+	end
 end
 
 function GasStation:onObjectStreamIn()
@@ -59,6 +73,7 @@ function GasStation:onObjectStreamIn()
 	if source:getModel() == 1676 then
 		self.m_RenderGasStations[source] = true
 		source:setBreakable(false)
+		self:applyTexture(source)
 		return
 	end
 end
