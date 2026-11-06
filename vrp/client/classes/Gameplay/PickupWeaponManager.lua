@@ -3,7 +3,35 @@ local LAST_USE_CHECK = 500
 local LAST_BIND_CHECK = 2000
 
 function PickupWeaponManager:constructor() 
-	addEventHandler("onClientPickupHit", root, bind(self.Event_onPickupHit, self))
+	addEventHandler("onClientColShapeHit", root, bind(self.Event_onPickupHit, self))
+	self.m_SpinObjects = {}
+	for _index, object in ipairs(getElementsByType("object", root, true)) do
+		if getElementData(object, "pickupSpin") then
+			self.m_SpinObjects[object] = true
+		end
+	end
+	addEventHandler("onClientElementStreamIn", root, function()
+		if getElementType(source) == "object" and getElementData(source, "pickupSpin") then
+			self.m_SpinObjects[source] = true
+		end
+	end)
+	addEventHandler("onClientElementDataChange", root, function(dataName)
+		if dataName == "pickupSpin" and getElementType(source) == "object" and isElementStreamedIn(source) then
+			self.m_SpinObjects[source] = true
+		end
+	end)
+	addEventHandler("onClientElementStreamOut", root, function()
+		self.m_SpinObjects[source] = nil
+	end)
+	addEventHandler("onClientElementDestroy", root, function()
+		self.m_SpinObjects[source] = nil
+	end)
+	addEventHandler("onClientPreRender", root, function()
+		local rotation = (getTickCount() * 0.12) % 360
+		for object in pairs(self.m_SpinObjects) do
+			setElementRotation(object, 0, 0, rotation)
+		end
+	end)
 	self.m_KeyBind = bind(self.checkKey, self)
 	bindKey("m", "down", self.m_KeyBind)	-- for m+alt and alt+n
 	bindKey("n", "down", self.m_KeyBind)	-- for m+alt and alt+n
@@ -20,7 +48,7 @@ function PickupWeaponManager:Event_onPickupHit( player, dimension)
 			if not getPedOccupiedVehicle(player) then 
 				if getElementData(source, "pickupWeapon") then
 					self.m_HitWeaponPickup = source
-					ShortMessage:new("Drücke Links-Alt + M um die Waffe aufzuheben!", "Waffe auf dem Boden")
+					ShortMessage:new(("Drücke Links-Alt + M um %s aufzuheben!"):format(getElementData(source, "pickupLabel") or "die Waffe"), "Gegenstand auf dem Boden")
 				end
 			end
 		end

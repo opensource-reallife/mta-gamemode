@@ -8,7 +8,7 @@
 
 AdminGUI = inherit(GUIForm)
 inherit(Singleton, AdminGUI)
-AdminGUI.playerFunctions = {"gethere", "goto", "rkick", "prison", "unprison", "freeze", "warn", "timeban", "permaban", "setCompany", "setFaction", "setGroup", "showVehicles", "showGroupVehicles", "unban", "spect", "nickchange", "modsBan", "removeModsBan"}
+AdminGUI.playerFunctions = {"gethere", "goto", "rkick", "prison", "unprison", "freeze", "warn", "timeban", "permaban", "setCompany", "setFaction", "setGroup", "showVehicles", "showGroupVehicles", "showInventory","unban", "spect", "nickchange", "modsBan", "removeModsBan"}
 
 for i, v in pairs(AdminGUI.playerFunctions) do
 	AdminGUI.playerFunctions[v] = i
@@ -145,6 +145,7 @@ function AdminGUI:constructor(money)
 	self:addAdminButton("setFaction", "in Fraktion setzen", self.onPlayerButtonClick, 610, 290, 160, 30, Color.Accent, tabSpieler)
 	self:addAdminButton("setCompany", "in Unternehmen setzen", self.onPlayerButtonClick, 610, 330, 160, 30, Color.Accent, tabSpieler)
 	self:addAdminButton("setGroup", "in Gruppe setzen", self.onPlayerButtonClick, 610, 370, 160, 30, Color.Accent, tabSpieler)
+	self:addAdminButton("showInventory", "Inventar ansehen", self.onPlayerButtonClick, 610, 410, 160, 30, Color.Accent, tabSpieler)
 
 	local tabOffline = self.m_TabPanel:addTab(_"Offline")
 	GUILabel:new(10, 10, 200, 20, "Suche:", tabOffline)
@@ -474,7 +475,7 @@ function AdminGUI:onPlayerButtonClick(func)
 	elseif func == "showGroupVehicles" then
 		AdminVehicleGUI:new(self.m_SelectedPlayer, self, true)
 		self:close()
-	elseif func == "gethere" or func == "goto" or func == "spect" or func == "freeze" then
+	elseif func == "gethere" or func == "goto" or func == "spect" or func == "freeze" or func == "showInventory" then
 		triggerServerEvent("adminPlayerFunction", root, func, self.m_SelectedPlayer)
 	elseif func == "rkick" then
 		InputBox:new(_("Spieler %s kicken", self.m_SelectedPlayer:getName()),

@@ -57,7 +57,8 @@ function FoodShopGUI:constructor(ped)
 	GUIForm.constructor(self, 10, screenHeight/2-350/2, 300, 350, true, false, ped)
 	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, "Restaurant", true, true, self)
 
-	self.m_FoodList = GUIGridList:new(5, 35, self.m_Width-10, 270, self)
+	self.m_FoodList = GUIGridList:new(5, 35, self.m_Width-10, 248, self)
+	self.m_LabelWeight = GUILabel:new(5, 287, self.m_Width-10, 24, "", self)
 	self.m_FoodList:addColumn(_"Name", 0.75)
 	self.m_FoodList:addColumn(_"Preis", 0.25)
 	self.m_Buy = GUIButton:new(5, 315, self.m_Width-10, 30, "Kaufen", self):setBackgroundColor(Color.Green)
@@ -119,6 +120,7 @@ function FoodShopGUI:buy()
 end
 
 function FoodShopGUI:onSelectMenu(menu, type)
+	self.m_LabelWeight:setText("")
 	local table = typeTable[type]
 	setCameraMatrix(table["CameraMatrixPos"], table["CameraMatrixLookAt"], 0, 70)
 	self.m_CamaraMatrix = true
@@ -129,6 +131,8 @@ function FoodShopGUI:onSelectMenu(menu, type)
 end
 
 function FoodShopGUI:onSelectItem(item)
+	local text, color = Inventory:getSingleton():getWeightPreview(item, 1)
+	self.m_LabelWeight:setText(text):setColor(color)
 	if self.m_CamaraMatrix then
 		setCameraTarget(localPlayer)
 		self.m_CamaraMatrix = false

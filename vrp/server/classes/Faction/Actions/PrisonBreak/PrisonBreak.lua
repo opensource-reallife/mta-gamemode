@@ -81,7 +81,7 @@ function PrisonBreak:PedTargetRefresh(count, startingPlayer)
 			for attacker in pairs(attackers) do
 				if isElement(attacker) and not table.find(self.m_KeycardPlayers, attacker) then
 					attacker:triggerEvent("Countdown", math.floor( getTimerDetails (self.m_KeycardDeactivateTimer) / 1000), "Keycards")
-					attacker:getInventory():giveItem("Keycard", 1)
+					attacker:getInventory():giveItem(94, 1)
 					attacker:sendSuccess("Du hast eine Keycard erhalten!")
 					table.insert(self.m_KeycardPlayers, attacker)
 				end

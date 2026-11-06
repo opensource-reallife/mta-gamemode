@@ -16,7 +16,7 @@ function ClickHandler:constructor()
 
 	self.m_ClickableModels = {
 		[2922] = function(element) triggerServerEvent("keypadClick", element) end;
-		[2977] = function(element) GunBoxGUI:new(element) end;
+		[2977] = function(element) triggerServerEvent("requestGunBoxData", localPlayer, element.position.x, element.position.y, element.position.z) end;
 		[FERRIS_IDS.Gond] = function(element) FerrisWheel.onClientClickedGond(element) end;
 		[ATM_NORMAL_MODEL] = function(element) AtmManager.onAtmClick(element) end;
 		[ATM_BROKEN_MODEL] = function(element) AtmManager.onAtmClick(element) end;

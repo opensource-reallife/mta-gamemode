@@ -1018,8 +1018,8 @@ msgstr "The load is ready! Click on the crates and bring them to the weapons tru
 msgid "Du hast zuwenig augeladen! Mindestens: %d$"
 msgstr "You have charged too few! At least: %d$"
 
-msgid "Ihr hast nicht ausreichend Geld in der Fraktions Kasse! (%d$)"
-msgstr "You don't have enough money in the faction till! (%d$)"
+msgid "Ihr habt nicht ausreichend Geld in der Fraktionskasse! (%d$)"
+msgstr "You don't have enough money in the faction! (%d$)"
 
 msgid "Du bist in keiner Fraktion!"
 msgstr "You're not in any faction!"

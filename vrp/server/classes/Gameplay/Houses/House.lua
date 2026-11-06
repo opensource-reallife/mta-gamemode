@@ -642,9 +642,8 @@ function House:giveRobItem( player )
 					player:meChat(true, "entdeckt etwas und versucht es einzustecken. ((%s))", item, true)
 					local inventory = player:getInventory()
 					local itemName = "Diebesgut"
-					if inventory:giveItem(itemName, 1) then
-						local bag = (InventoryManager:getSingleton():getItemDataForItem(itemName))["Tasche"]
-						local place = inventory:getPlaceForItem(itemName, 0)
+					if inventory:giveItemFromName(itemName, 1) then
+						local place, bag = unpack(inventory:getItemPlacesByName(itemName)[1])
 						local value = tonumber(inventory:getItemValueByBag(bag, place)) or 0
 						local min = FactionState:getSingleton():countPlayers(true, true) >= 1 and 180 or 90
 						inventory:setItemValueByBag(bag, place, value + Randomizer:get(min, 540))
@@ -783,4 +782,28 @@ end
 
 function House:getGarageCount()
 	return table.size(self.m_Garage)
+end
+function House:getStorage()
+	return ItemStorage.get("house", self.m_Id, {
+		title = ("Hauslager (Hausnr. %d)"):format(self.m_Id),
+		head = "Hauslager:",
+		rule = "Besitzer und Mieter",
+		getCapacity = function()
+			return InventoryManager:getSingleton():getCapacity("house", self.m_InteriorID)
+		end,
+		accepts = function(itemName, data)
+			return data["Handel"] == 1 and not data["WaffenId"] and not data["MunitionFuer"]
+		end,
+		canAccess = function(player)
+			if not self:isValidToEnter(player) then
+				player:sendError(_("Das Hauslager können nur Besitzer und Mieter öffnen!", player))
+				return false
+			end
+			return player.visitingHouse == self.m_Id
+		end,
+	})
+end
+
+function House:openStorage(player)
+	self:getStorage():open(player)
 end

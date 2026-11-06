@@ -251,7 +251,7 @@ function ShopManager:buyItem(shopId, item, amount)
 				value = getRealTime().timestamp + 30*24*60*60
 			end
 
-			if client:getInventory():giveItem(item, amount, value) then
+			if client:getInventory():giveItemFromName(item, amount, value) then
 				local bankServer = BankServer.get("shop.item")
 				client:transferMoney(bankServer, shop.m_Items[item]*amount, "Item-Einkauf", "Gameplay", "Item")
 				if shop.m_Stock > 0 then
@@ -317,6 +317,11 @@ function ShopManager:buyWeaponFromItemShop(shopId, weaponId)
 			if client:getMoney() >= price then
 				local ammo = 20 --getWeaponProperty(weaponId, "pro", "maximum_clip_ammo") or 1 doesn't work with the camera, at least not for me - MasterM
 
+				if not client:getInventory():canCarryWeapon(weaponId, ammo) then
+					client:sendError(_("Das ist zu schwer für dich!", client))
+					return
+				end
+
 				if client:getWeapon(getSlotFromWeapon(weaponId)) == 0 then
 					client:giveWeapon(weaponId, ammo)
 					reloadPedWeapon(client)
@@ -366,6 +371,10 @@ function ShopManager:buyWeapon(shopId, itemType, weaponId, amount)
 			end
 			if client:getMoney() >= price then
 				local weaponAmount = shop.m_Magazines[weaponId] and shop.m_Magazines[weaponId].amount*amount or 1
+				if itemType ~= "Vest" and not client:getInventory():canCarryWeapon(weaponId, weaponAmount) then
+					client:sendError(_("Das ist zu schwer für dich!", client))
+					return
+				end
 
 				if itemType == "Vest" then
 					client:setArmor(100)
@@ -618,47 +627,130 @@ function ShopManager:createOrder(player, weaponTable)
 	setElementCollisionsEnabled(dropObject, false)
 	moveObject(dropObject, 9000, x, y, z+6.3 )
 	setTimer(destroyElement, 10000, 1, dropObject )
-	setTimer(function(x, y, z, weaponTable)
-		local pickup = createPickup(x, y, z, 3, 1210)
-		addEventHandler("onPickupHit", pickup, function(hitElement)
-			if hitElement:getType() == "player" and not hitElement:getOccupiedVehicle() then
-				self:giveWeaponsFromOrder(hitElement, weaponTable)
-				StatisticsLogger:getSingleton():addAmmunationLog(hitElement, "Pickup", toJSON(weaponTable), 0)
-				if source and isElement(source) then
-					destroyElement(source)
+	local order = self:prepareOrder(weaponTable)
+	setTimer(function(x, y, z)
+		local crate = createObject(3014, x, y, z)
+		setElementCollisionsEnabled(crate, false)
+		setElementData(crate, "pickupSpin", true)
+		local pickup = createColSphere(x, y, z, 1)
+		addEventHandler("onColShapeHit", pickup, function(hitElement, matchingDimension)
+			if matchingDimension and getElementType(hitElement) == "player" and not hitElement:getOccupiedVehicle() then
+				local taken = self:giveWeaponsFromOrder(hitElement, order)
+				if next(taken) then
+					StatisticsLogger:getSingleton():addAmmunationLog(hitElement, "Pickup", toJSON(taken), 0)
+				end
+				if not next(order) then
+					destroyElement(crate)
+					destroyElement(pickup)
 				end
 			end
 		end)
-	end, 10000, 1, x, y, z, weaponTable)
+		setTimer(function()
+			if isElement(pickup) then
+				destroyElement(crate)
+				destroyElement(pickup)
+				if isElement(player) then
+					player:sendWarning(_("Der Rest deiner Ammu-Nation Bestellung ist verschwunden!", player))
+				end
+			end
+		end, 30 * 60 * 1000, 1)
+	end, 10000, 1, x, y, z)
 end
 
-function ShopManager:giveWeaponsFromOrder(player, weaponTable)
+function ShopManager:prepareOrder(weaponTable)
+	local order = {}
+	for weaponID, entry in pairs(weaponTable) do
+		local weapons, magazines = entry["Waffe"] or 0, entry["Munition"] or 0
+		if weaponID == 0 then
+			if weapons > 0 then
+				order[weaponID] = {weapon = true, rounds = 0}
+			end
+		elseif weapons > 0 or magazines > 0 then
+			local mag = getWeaponProperty(weaponID, "pro", "maximum_clip_ammo") or 1
+			order[weaponID] = {
+				weapon = weapons > 0 and not THROWABLE_WEAPONS[weaponID],
+				rounds = NO_MUNITION_WEAPONS[weaponID] and 0 or math.floor(((weapons > 0 and 1 or 0) + magazines) * mag)
+			}
+		end
+	end
+	return order
+end
+
+function ShopManager:giveWeaponsFromOrder(player, order)
+	local manager = InventoryManager:getSingleton()
+	local inventory = player:getInventory()
+	local context = isInventoryWeaponContext(player)
+	local free = (not context or inventory:getDutyValue()) and math.huge or inventory:getFreeCarryWeight()
 	local playerWeapons = self:getPlayerWeapons(player)
-	outputChatBox(_("Du hast folgende Waffen und Magazine erhalten:", player),player,255,255,255)
-	for weaponID,v in pairs(weaponTable) do
-		for typ,amount in pairs(weaponTable[weaponID]) do
-			if amount > 0 then
-				local mag = getWeaponProperty(weaponID, "pro", "maximum_clip_ammo") or 1
-				if typ == "Waffe" then
-					if weaponID > 0 then
-						outputChatBox(_("%s %s", player, amount, WEAPON_NAMES[weaponID]),player,255,125,0)
-						giveWeapon(player, weaponID, mag)
-					else
-						outputChatBox(_("1 Schutzweste", player),player,255,125,0)
-						player:setArmor(100)
-					end
-				elseif typ == "Munition" then
-					playerWeapons = self:getPlayerWeapons(player)
-					if playerWeapons[weaponID] then
-						giveWeapon(player,weaponID,amount*mag)
-						outputChatBox(_("%s %s Magazin/e", player, amount, WEAPON_NAMES[weaponID]),player,255,125,0)
-					else
-						outputChatBox(_("Du hast keine %s für ein Magazin!", player, WEAPON_NAMES[weaponID]),player,255,0,0)
-					end
+	local received, left, taken = {}, {}, {}
+
+	local getWeight = function(itemName)
+		return itemName and manager:getItemDataForItem(itemName)["Gewicht"] or 0
+	end
+
+	for weaponID, entry in pairs(order) do
+		if weaponID == 0 then
+			player:setArmor(100)
+			received[#received + 1] = _("1 Schutzweste", player)
+			taken[weaponID] = {Waffe = 1}
+			order[weaponID] = nil
+		else
+			local name = WEAPON_NAMES[weaponID]
+			local throwable = THROWABLE_WEAPONS[weaponID]
+			local weaponWeight = getWeight(manager:getWeaponItemName(weaponID))
+			local unitWeight = throwable and weaponWeight or getWeight(manager:getAmmoItemName(weaponID))
+			local hasWeapon = playerWeapons[weaponID] or (context and inventory:hasWeapon(weaponID))
+			local giveNow = entry.weapon and not hasWeapon and weaponWeight <= free + 0.0001
+			local rounds = 0
+
+			if giveNow then
+				free = free - weaponWeight
+			end
+			if throwable or hasWeapon or giveNow then
+				rounds = entry.rounds
+				if unitWeight > 0 then
+					rounds = math.max(0, math.min(rounds, math.floor((free + 0.0001) / unitWeight)))
 				end
+				free = free - unitWeight * rounds
+			end
+
+			if giveNow or rounds > 0 then
+				giveWeapon(player, weaponID, NO_MUNITION_WEAPONS[weaponID] and 1 or rounds)
+				taken[weaponID] = {Waffe = giveNow and 1 or 0, Schuss = rounds}
+			end
+			if giveNow then
+				entry.weapon = false
+				received[#received + 1] = _("1 %s", player, name)
+			end
+			if rounds > 0 then
+				entry.rounds = entry.rounds - rounds
+				received[#received + 1] = throwable and _("%d %s", player, rounds, name) or _("%d Schuss %s", player, rounds, name)
+			end
+
+			if entry.weapon then
+				left[#left + 1] = hasWeapon and _("1 %s (du hast bereits eine)", player, name) or _("1 %s (zu schwer)", player, name)
+			end
+			if entry.rounds > 0 then
+				if throwable then
+					left[#left + 1] = _("%d %s (zu schwer)", player, entry.rounds, name)
+				else
+					left[#left + 1] = (hasWeapon or giveNow) and _("%d Schuss %s (zu schwer)", player, entry.rounds, name) or _("%d Schuss %s (du hast keine passende Waffe)", player, entry.rounds, name)
+				end
+			end
+			if not entry.weapon and entry.rounds <= 0 then
+				order[weaponID] = nil
 			end
 		end
 	end
+
+	if #received > 0 then
+		player:sendSuccess(_("Du hast erhalten: %s", player, table.concat(received, ", ")))
+	end
+	if #left > 0 and (#received > 0 or getTickCount() - (player.m_LastOrderNotice or -5000) >= 5000) then
+		player.m_LastOrderNotice = getTickCount()
+		player:sendError(_("Das bleibt hier liegen: %s", player, table.concat(left, ", ")))
+	end
+	return taken
 end
 
 function ShopManager:editShopVehicle( shop, model, index, property, value) 

@@ -69,6 +69,9 @@ function GasStationShopGUI:constructor(callback, name, ped)
 	GUILabel:new(240, 230, 100, 25, _"Anzahl:", tabItemShop)
 	self.m_EditAmount = GUIEdit:new(300, 230, 50, 25, tabItemShop):setNumeric(true, true):setMaxLength(3):setText("1")
 
+	self.m_EditAmount.onChange = function() self:updateWeightPreview() end
+	self.m_LabelWeight = GUILabel:new(240, 205, 240, 25, "", tabItemShop)
+
 	self.m_ButtonBuy = GUIButton:new(355, 230, 120, 25, _"Kaufen", tabItemShop):setBackgroundColor(Color.Green)
 	self.m_ButtonBuy.onLeftClick = bind(self.ButtonBuy_Click, self)
 
@@ -88,9 +91,17 @@ function GasStationShopGUI:refreshItemShopGUI(shopId, items)
 			item.onLeftClick = function()
 				self.m_Preview:setImage("files/images/Inventory/items/"..itemData[name]["Icon"])
 				self.m_LabelDescription:setText(_(itemData[name]["Info"]))
+				self:updateWeightPreview(name)
 			end
 		end
 	end
+end
+
+function GasStationShopGUI:updateWeightPreview(itemName)
+	self.m_PreviewItem = itemName or self.m_PreviewItem
+	if not self.m_PreviewItem then return end
+	local text, color = Inventory:getSingleton():getWeightPreview(self.m_PreviewItem, self.m_EditAmount:getText())
+	self.m_LabelWeight:setText(text):setColor(color)
 end
 
 function GasStationShopGUI:ButtonBuy_Click()

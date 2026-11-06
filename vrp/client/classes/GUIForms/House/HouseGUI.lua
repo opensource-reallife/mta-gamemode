@@ -25,7 +25,7 @@ function HouseGUI:constructor(ownerName, price, rentprice, isValidRob, isClosed,
 
 	GUIWindow.updateGrid()
 	self.m_Width = grid("x", self.m_isOwner and 13 or 7)
-	self.m_Height = grid("y", self.m_isOwner and 11 or 10)
+	self.m_Height = grid("y", self.m_isOwner and 12 or 11)
 
 	GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true, false, pickup)
 	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _("Hausmenü (Hausnr. %d)", houseId), true, true, self)
@@ -64,6 +64,11 @@ function HouseGUI:constructor(ownerName, price, rentprice, isValidRob, isClosed,
 	end
 	self.m_RobBtn = GUIGridButton:new(1, 8, 6, 1, (localPlayer:getFaction() and localPlayer:getFaction():isStateFaction() and localPlayer:getPublicSync("Faction:Duty") == true) and _"Tür aufbrechen" or _"Raub starten", self.m_Window):setBackgroundColor(Color.Orange):setEnabled(isValidRob)
 	self.m_EnterLeaveBtn = GUIGridButton:new(1, 9, self.m_isInside and 6 or 5, 1, self.m_isInside and _"Verlassen" or (ownerName and _"Betreten" or _"Besichtigen"), self.m_Window):setBarEnabled(false)
+	self.m_StorageBtn = GUIGridButton:new(1, 10, 6, 1, _"Hauslager", self.m_Window):setEnabled(hasKey and self.m_isInside)
+	self.m_StorageBtn.onLeftClick = function()
+		triggerServerEvent("houseOpenStorage", localPlayer)
+		delete(self)
+	end
 	if not self.m_isInside then
 		self.m_DoorBellBtn = GUIGridIconButton:new(6, 9, FontAwesomeSymbols.Bell, self.m_Window):setTooltip(_"an der Tür klingeln", "bottom")
 		self.m_DoorBellBtn.onLeftClick = function()

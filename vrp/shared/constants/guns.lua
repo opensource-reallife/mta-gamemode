@@ -297,3 +297,10 @@ end
 if EVENT_CHRISTMAS then
 	NODM_ZONES[#NODM_ZONES+1] = {Vector3(1441.15, -1720.72, 12), Vector3(76.71, 116.84, 40)} --pershing square
 end
+
+function getWeaponClipSize(weaponId)
+	if WEAPON_CLIPS[weaponId] then return WEAPON_CLIPS[weaponId] end
+	local clip = getWeaponProperty(weaponId, "pro", "maximum_clip_ammo")
+	if clip and clip > 0 then return clip end
+	return 1
+end

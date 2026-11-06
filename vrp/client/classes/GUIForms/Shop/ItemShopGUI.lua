@@ -26,6 +26,8 @@ function ItemShopGUI:constructor(callback, shopName, rangeElement)
 	self.m_EditAmount = GUIEdit:new(self.m_Width*0.27, self.m_Height*0.805, self.m_Width*0.09, self.m_Height*0.09, self.m_Window)
 	self.m_EditAmount:setNumeric(true, true)
 	self.m_EditAmount:setText("1")
+	self.m_EditAmount.onChange = function() self:updateWeightPreview() end
+	self.m_LabelWeight = GUILabel:new(self.m_Width*0.02, self.m_Height*0.9, self.m_Width*0.6, self.m_Height*0.08, "", self.m_Window)
 
 	self.m_ButtonBuy = GUIButton:new(self.m_Width*0.65, self.m_Height*0.85, self.m_Width*0.33, self.m_Height*0.12, _"Kaufen", self.m_Window):setBackgroundColor(Color.Green):setBarEnabled(true)
 	self.m_ButtonBuy.onLeftClick = bind(self.ButtonBuy_Click, self)
@@ -52,6 +54,7 @@ function ItemShopGUI:refreshItemShopGUI(shopId, items, sortedItems, weaponItems)
 					function()
 						self.m_Preview:setImage(("files/images/Inventory/items/%s"):format(itemData[name]["Icon"]))
 						self.m_LabelDescription:setText(_(itemData[name]["Info"]))
+						self:updateWeightPreview(name)
 					end
 			end
 		end
@@ -69,6 +72,13 @@ function ItemShopGUI:refreshItemShopGUI(shopId, items, sortedItems, weaponItems)
 			end
 		end
 	end
+end
+
+function ItemShopGUI:updateWeightPreview(itemName)
+	self.m_PreviewItem = itemName or self.m_PreviewItem
+	if not self.m_PreviewItem then return end
+	local text, color = Inventory:getSingleton():getWeightPreview(self.m_PreviewItem, self.m_EditAmount:getText())
+	self.m_LabelWeight:setText(text):setColor(color)
 end
 
 function ItemShopGUI:ButtonBuy_Click()

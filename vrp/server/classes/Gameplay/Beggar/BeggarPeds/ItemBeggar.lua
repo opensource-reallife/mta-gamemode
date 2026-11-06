@@ -48,7 +48,7 @@ function ItemBeggar:buyItem(player, item)
 					},
 					points = 5,
 				})
-				player:getInventory():giveItem(item, BeggarItemBuy[item]["amount"])
+				player:getInventory():giveItemFromName(item, BeggarItemBuy[item]["amount"])
 				self:sendMessage(player, BeggarPhraseTypes.Thanks)
 				player:meChat(true, "erhält von %s eine Tüte!", self.m_Name, false)
 
@@ -82,6 +82,6 @@ function ItemBeggar:giveLoot(player)
 
 	local item = BeggarItemBuyTypes[self.m_Type][math.random(1, #BeggarItemBuyTypes[self.m_Type])]
 	local amount = math.floor(BeggarItemBuy[item]["amount"]/2)
-	player:getInventory():giveItem(item, math.floor(BeggarItemBuy[item]["amount"]/2))
+	player:getInventory():giveItemFromName(item, math.floor(BeggarItemBuy[item]["amount"]/2))
 	player:sendInfo(_("Du hast %s %s von %s erhalten.", player, amount, item, self.m_Name))
 end

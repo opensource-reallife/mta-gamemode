@@ -10,7 +10,6 @@ Trunk.Map = {}
 Trunk.ItemSlots = 4
 Trunk.WeaponSlots = 2
 
-addRemoteEvents{"trunkAddItem", "trunkAddWeapon", "trunkTake"}
 
 function Trunk.create()
 	local item = {}
@@ -47,40 +46,6 @@ function Trunk.getFromId(id)
 	return Trunk.Map[id]
 end
 
-addEventHandler("trunkAddItem", root, function(trunkId, item, amount, value)
-	if Trunk.getFromId(trunkId) then
-		Trunk.getFromId(trunkId):addItem(client, item, amount, value)
-	else
-		client:sendError("Internal Error - Trunk not found")
-	end
-end)
-
-addEventHandler("trunkAddWeapon", root, function(trunkId, weaponId, muni)
-	if RESTRICTED_WEAPONS[weaponId] then
-		client:sendError("Diese Waffe kannst Du nicht einlagern!")
-		return
-	end
-	if Trunk.getFromId(trunkId) then
-		Trunk.getFromId(trunkId):addWeapon(client, weaponId, muni)
-	else
-		client:sendError("Internal Error - Trunk not found")
-	end
-end)
-
-addEventHandler("trunkTake", root, function(trunkId, type, slot)
-	if Trunk.getFromId(trunkId) then
-		if type == "weapon" then
-			Trunk.getFromId(trunkId):takeWeapon(client, slot)
-		elseif type == "item" then
-			Trunk.getFromId(trunkId):takeItem(client, slot)
-		end
-	else
-		client:sendError("Internal Error - Trunk not found")
-	end
-end)
-
-
-
 function Trunk:constructor(Id, ItemSlot1, ItemSlot2, ItemSlot3, ItemSlot4, WeaponSlot1, WeaponSlot2)
 	self.m_Id = Id
 	self.m_ItemSlot = {}
@@ -116,170 +81,88 @@ function Trunk:checkDistance(player)
 	return false
 end
 
-
-function Trunk:addItem(player, item, amount, value)
-	if not self:checkDistance(player) then return end
+function Trunk:importLegacySlots()
+	local changed = false
+	local storage = self:getStorage()
 	for index, slot in pairs(self.m_ItemSlot) do
-		if slot["Item"] == "none" then
-			if item == "Kleidung" then
-				if not SkinInfo[tonumber(value)] then
-					player:sendError(_("Du kannst diesen Skin nicht in den Kofferraum legen!", player))
-					return false
-				end
-
-				if player:getModel() == tonumber(value) then
-					WearableManager:getSingleton():removeWearable(player, item, value)
-				end
+		if slot["Item"] and slot["Item"] ~= "none" and slot["Item"] ~= 0 then
+			local value = slot["Value"]
+			if value == "" then value = nil end
+			if storage:importItem(slot["Item"], slot["Amount"], value) then
+				self.m_ItemSlot[index] = {["Item"] = "none", ["Amount"] = 0}
+				changed = true
 			end
+		end
+	end
+	for index, slot in pairs(self.m_WeaponSlot) do
+		if slot["WeaponId"] and slot["WeaponId"] > 0 then
+			if storage:importWeapon(slot["WeaponId"], slot["Amount"]) then
+				self.m_WeaponSlot[index] = {["WeaponId"] = 0, ["Amount"] = 0}
+				changed = true
+			end
+		end
+	end
+	if changed then self:save() end
+end
 
-			--[[
-			if item == "Weed" or item == "Weed-Samen" then
-				player:sendError(_("Du kannst dieses Item nicht in den Kofferraum legen!", player))
-				self:refreshClient(player)
+function Trunk:getStorage()
+	return ItemStorage.get("trunk", self.m_Id, {
+		title = "Fahrzeug-Kofferraum",
+		head = "Kofferraum:",
+		rule = "Items mit Handel und erlaubte Waffen",
+		element = self.m_Vehicle,
+		getCapacity = function()
+			return InventoryManager:getSingleton():getCapacity("trunk", self.m_Vehicle and self.m_Vehicle:getModel())
+		end,
+		accepts = function(itemName, data)
+			if data["WaffenId"] then return not RESTRICTED_WEAPONS[data["WaffenId"]] end
+			if data["MunitionFuer"] then return not RESTRICTED_WEAPONS[data["MunitionFuer"]] end
+			return data["Handel"] == 1
+		end,
+		canAccess = function(player)
+			return self:checkDistance(player)
+		end,
+		canDeposit = function(player, itemName, data, value)
+			if (data["WaffenId"] or data["MunitionFuer"]) and player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty() then
+				player:sendError(_("Du darfst im Dienst keine Waffen einlagern!", player))
 				return false
 			end
-			]]
-
-			if player:getInventory():removeItem(item, amount, value) then
-				slot["Item"] = item
-				slot["Amount"] = amount
-				slot["Value"] = value
-				player:sendInfo(_("Du hast %d %s in den Kofferraum (Slot %d) gelegt!", player, amount, item, index))
-				self:refreshClient(player)
-				StatisticsLogger:getSingleton():addVehicleTrunkLog(self.m_Id, player, "insert", "item", item, amount, index)
-				return
-			else
-				player:sendError(_("Du hast nicht genug %s!", player, item))
+			if itemName == "Kleidung" and not SkinInfo[tonumber(value)] then
+				player:sendError(_("Du kannst diesen Skin nicht in den Kofferraum legen!", player))
+				return false
 			end
-		end
-	end
-	player:sendError(_("Du hast keinen freien Item-Slot in diesem Kofferraum!", player))
-end
-
-function Trunk:takeItem(player, slot)
-	if not self:checkDistance(player) then return end
-	local isCopSeizing = player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty()
-	if self.m_ItemSlot[slot] then
-		if self.m_ItemSlot[slot]["Item"] ~= "none" then
-			local item = self.m_ItemSlot[slot]["Item"]
-			local amount = self.m_ItemSlot[slot]["Amount"]
-			local success = false
-			if isCopSeizing then
-				if FactionState:getSingleton():isItemIllegal(item) then
-					success = StateEvidence:getSingleton():addItemToEvidence(player, item, amount)
-					if success then self.m_Vehicle:sendOwnerMessage(_("%s hat %d %s aus dem Kofferraum deines Fahrzeuges %s konfisziert!", player, player:getName(), amount, item, self.m_Vehicle:getName())) end
-				else
-					player:sendError(_("Dieses Item ist nicht illegal!", player))
-				end
+			return true
+		end,
+		onWithdraw = function(player, itemName, data, amount, value)
+			if not (player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty()) then return nil end
+			local vehicle = self.m_Vehicle
+			if data["WaffenId"] then
+				StateEvidence:getSingleton():addWeaponsToEvidence(player, data["WaffenId"], amount)
+			elseif data["MunitionFuer"] then
+				StateEvidence:getSingleton():addMunitionToEvidence(player, data["MunitionFuer"], amount)
+			elseif FactionState:getSingleton():isItemIllegal(itemName) then
+				if not StateEvidence:getSingleton():addItemToEvidence(player, itemName, amount) then return false end
 			else
-				success = player:getInventory():giveItem(item, amount, self.m_ItemSlot[slot]["Value"])
-				if success then player:sendInfo(_("Du hast %d %s aus deinem Kofferraum (Slot %d) genommen!", player, amount, item, slot)) end
+				player:sendError(_("Dieses Item ist nicht illegal!", player))
+				return false
 			end
-			if success then
-				self.m_ItemSlot[slot]["Item"] = "none"
-				self.m_ItemSlot[slot]["Amount"] = 0
-
-				self.m_ItemSlot[slot]["Value"] = ""
-				self:refreshClient(player)
-				StatisticsLogger:getSingleton():addVehicleTrunkLog(self.m_Id, player, "take", "item", item, amount, slot)
-				return
-			else
-				self:refreshClient(player)
-			end
-		else
-			player:sendError(_("Du hast kein Item in diesem Slot!", player))
-		end
-	end
-end
-
-function Trunk:takeWeapon(player, slot)
-	if not self:checkDistance(player) then return end
-	if player:hasTemporaryStorage() then player:sendError(_("Du kannst aktuell keine Waffen entnehmen!", player)) return end
-	local isCopSeizing = player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty() --seize the weapon instead of taking it
-	if self.m_WeaponSlot[slot] then
-		if self.m_WeaponSlot[slot]["WeaponId"] > 0 then
-			--if self.m_ItemSlot[slot]["Amount"] > 0 then
-				local weaponId = self.m_WeaponSlot[slot]["WeaponId"]
-				local amount = self.m_WeaponSlot[slot]["Amount"]
-				if isCopSeizing or (MIN_WEAPON_LEVELS[weaponId] <= player:getWeaponLevel()) then
-					if player:getWeapon(getSlotFromWeapon(weaponId)) == 0 then
-						self.m_WeaponSlot[slot]["WeaponId"] = 0
-						self.m_WeaponSlot[slot]["Amount"] = 0
-						if isCopSeizing then
-							StateEvidence:getSingleton():addWeaponWithMunitionToEvidence(player, weaponId, amount)
-							self.m_Vehicle:sendOwnerMessage(_("%s hat eine/n %s mit %d Schuss aus dem Kofferraum deines Fahrzeuges %s konfisziert!", player, player:getName(), WEAPON_NAMES[weaponId], amount, self.m_Vehicle:getName()))
-						else
-							player:giveWeapon(weaponId, amount)
-							player:sendInfo(_("Du hast eine/n %s mit %d Schuss aus deinem Kofferraum (Slot %d) genommen!", player, WEAPON_NAMES[weaponId], amount, slot))
-						end
-						self:refreshClient(player)
-						StatisticsLogger:getSingleton():addVehicleTrunkLog(self.m_Id, player, "take", "weapon", weaponId, amount, slot)
-						return
-					else
-						player:sendError(_("Du hast bereits eine Waffe dieser Art dabei!", player))
-					end
-				else
-					player:sendError(_("Dein Waffenlevel ist zu niedrig!", player))
-				end
-			--else
-			--	player:sendError("Internal Error Amount to low", player)
-			--end
-		else
-			player:sendError(_("Du hast kein Item in diesem Slot!", player))
-		end
-	end
-end
-
-
-function Trunk:addWeapon(player, weaponId, muni)
-	if player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty() then
-		player:sendError(_("Du darfst im Dienst keine Waffen einlagern!", player))
-		return
-	end
-
-	if player:hasTemporaryStorage() then player:sendError(_("Du kannst aktuell keine Waffen einlagern!", player)) return end
-
-	for index, slot in pairs(self.m_WeaponSlot) do
-		if slot["WeaponId"] == 0 then
-			local weaponSlot = getSlotFromWeapon(weaponId)
-			if player:getWeapon(weaponSlot) == weaponId then
-				if player:getTotalAmmo(weaponSlot) >= muni then
-					takeWeapon(player, weaponId)
-					slot["WeaponId"] = weaponId
-					slot["Amount"] = muni
-					player:sendInfo(_("Du hast eine/n %s mit %d Schuss in den Kofferraum (Slot %d) gelegt!", player, WEAPON_NAMES[weaponId], muni, index))
-					self:refreshClient(player)
-					StatisticsLogger:getSingleton():addVehicleTrunkLog(self.m_Id, player, "insert", "weapon", weaponId, muni, index)
-					return
-				else
-					player:sendInfo(_("Du hast nicht genug %s Munition!", player, WEAPON_NAMES[weaponId]))
-				end
-			else
-				player:sendInfo(_("Du hast keine/n %s!", player, WEAPON_NAMES[weaponId]))
-			end
-		end
-	end
-	player:sendError(_("Du hast keinen freien Waffen-Slot in diesem Kofferraum!", player))
+			vehicle:sendOwnerMessage(_("%s hat %d %s aus dem Kofferraum deines Fahrzeuges %s konfisziert!", player, player:getName(), amount, itemName, vehicle:getName()))
+			StatisticsLogger:getSingleton():addVehicleTrunkLog(self.m_Id, player, "take", "item", itemName, amount, 0)
+			return true
+		end,
+		onMoved = function(player, action, itemName, amount)
+			StatisticsLogger:getSingleton():addVehicleTrunkLog(self.m_Id, player, action, "item", itemName, amount, 0)
+		end,
+	})
 end
 
 function Trunk:open(player)
-	local allowedVehicleIds = {
-		[411] = false, --Infernus
-		[451] = false, --Turismo
-		[494] = false, --Hotring Racer 1
-		[503] = false, --Hotring Racer 2
-		[502] = false, --Hotring Racer 3
-		[568] = false, --Bandito
-		[424] = false, --BF Injection
-	}
-
 	if not self:checkDistance(player) then return end
 
 	if self.m_Vehicle and self.m_Vehicle:getModel() then
 		local vehId = self.m_Vehicle:getModel()
 
-		local vehicleType = self.m_Vehicle:getVehicleType()
-		if vehicleType ~= VehicleType.Automobile or allowedVehicleIds[vehId] == false then
+		if InventoryManager:getSingleton():getCapacity("trunk", vehId) <= 0 then
 			player:sendError(_("Dieses Fahrzeug hat keinen Kofferraum!", player))
 			return
 		end
@@ -292,13 +175,10 @@ function Trunk:open(player)
 		end
 	end
 
-	player:triggerEvent("openTrunk", self.m_Vehicle)
-	self:refreshClient(player)
+	self:importLegacySlots()
+	self:getStorage():open(player)
 end
 
-function Trunk:refreshClient(player)
-	player:triggerEvent("getTrunkData", self.m_Id, self.m_ItemSlot, self.m_WeaponSlot, self.m_Vehicle)
-end
 
 function Trunk:getId()
   return self.m_Id

@@ -174,7 +174,7 @@ function Christmas:Event_buyBonus(bonusId)
 		client:giveWeapon(bonus["WeaponId"], bonus["Ammo"])
 	elseif bonus["Type"] == "Item" then
 		if client:getInventory():getFreePlacesForItem(bonus["ItemName"]) >= bonus["ItemAmount"] then
-			client:getInventory():giveItem(bonus["ItemName"], bonus["ItemAmount"])
+			client:getInventory():giveItemFromName(bonus["ItemName"], bonus["ItemAmount"])
 		else
 			client:sendError(_("Du hast nicht genug Platz in deinem Inventar!", client))
 			return
@@ -196,7 +196,7 @@ function Christmas:Event_buyBonus(bonusId)
 		client:givePoints(bonus["PointsAmount"])
 		client:sendShortMessage(_("%d Punkte erhalten!", client, bonus["PointsAmount"]))
 	elseif bonus["Type"] == "Skin" then
-		client:getInventory():giveItem("Kleidung", 1, bonus["SkinId"])
+		client:getInventory():giveItem(64, 1, bonus["SkinId"])
 		client:sendShortMessage("Der Skin wurde in dein Inventar gelegt!")
 	elseif bonus["Type"] == "Special" then
 		if bonus["Text"] == "Schutzweste" then
@@ -211,7 +211,7 @@ function Christmas:Event_buyBonus(bonusId)
 			end
 			client.m_Premium:giveEventMonth()
 		elseif bonus["Text"] == "Lebkuchen-Maske" then
-			client:getInventory():giveItem("Lebkuchen-Maske", 1)
+			client:getInventory():giveItem(112, 1)
 			client:sendShortMessage("Die Maske wurde in dein Inventar gelegt!")
 		end
 	end
@@ -225,7 +225,7 @@ end
 
 function Christmas:openDoor()
 	if not self.m_AdventCalender[client:getId()] then
-		if client:getInventory():giveItem("Päckchen", 5) then
+		if client:getInventory():giveItem(28, 5) then
 			client:sendSuccess("Du hast 5 Päckchen erhalten!")
 			self.m_AdventCalender[client:getId()] = true
 		end

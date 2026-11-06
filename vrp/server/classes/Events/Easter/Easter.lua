@@ -93,6 +93,6 @@ function Easter:onHidingRabbitFound(rabbit)
     else
         sql:queryExec("UPDATE ??_easter_rabbit_data SET RabbitsFound = ? WHERE UserId = ?", sql:getPrefix(), rabbit, client:getId())
     end
-    client:getInventory():giveItem("Osterei", 10)
+    client:getInventory():giveItem(71, 10)
     client:sendSuccess("Du hast ein Helferchen des Osterhasen gefunden! Du hast 10 Ostereier erhalten!")
 end

@@ -272,14 +272,14 @@ function EasterSlotmachine:giveWin(player, name, x, y, z)
 	elseif name == "Easter_Egg" then
 		local amount = 6
 		player:sendInfo(_("Du hast %d Ostereier gewonnen!", player, amount))
-		player:getInventory():giveItem("Osterei", amount)
+		player:getInventory():giveItem(71, amount)
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
 		StatisticsLogger:addCasino(player, "Easter_Eggs", amount)
 	elseif name == "Easter_Eggs" then
 		local amount = 12
 		player:sendInfo(_("Du hast %d Ostereier gewonnen!", player, amount))
-		player:getInventory():giveItem("Osterei", amount)
+		player:getInventory():giveItem(71, amount)
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
 		StatisticsLogger:addCasino(player, name, amount)
@@ -291,7 +291,7 @@ function EasterSlotmachine:giveWin(player, name, x, y, z)
 		StatisticsLogger:addCasino(player, name, 1)
 	elseif name == "Bunny_Ears" then
 		player:sendInfo(_("Du hast ein paar Hasenohren gewonnen!", player))
-		player:getInventory():giveItem("Hasenohren", 1)
+		player:getInventory():giveItem(72, 1)
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
 		StatisticsLogger:addCasino(player, name, 1)

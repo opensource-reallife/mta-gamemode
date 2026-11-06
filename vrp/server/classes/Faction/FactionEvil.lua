@@ -532,7 +532,7 @@ function FactionEvil:Event_FactionRearm()
 	if not self:isPlayerInDutyPickup(client) then return client:sendError(_("Du bist zu weit entfernt!", client)) end
 	if client:isFactionDuty() then
 		client.m_WeaponStoragePosition = client.position
-		client:triggerEvent("showFactionWeaponShopGUI", client.m_CurrentDutyPickup)
+		client:getFaction():getDepot():showArmory(client, client.m_CurrentDutyPickup)
 		client:setHealth(100)
 		client:setArmor(100)
 		StatisticsLogger:getSingleton():addHealLog(client, 100, "Faction Rearm Heal")
@@ -579,4 +579,4 @@ function FactionEvil:onLCNBarrierGateHit(player)
 	else
 		return false 
 	end 
-end
+end

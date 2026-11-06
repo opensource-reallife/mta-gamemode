@@ -145,3 +145,10 @@ function ItemFishing:useSecondary(player, itemId, bag, place, itemName)
 		end
 	end
 end
+
+function ItemFishing:hasSecondaryUse(itemName)
+	if self:isFishingRod(itemName) then
+		return FISHING_RODS[itemName].baitSlots > 0
+	end
+	return itemName == "Köder"
+end

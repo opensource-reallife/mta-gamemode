@@ -284,7 +284,7 @@ end
 function FactionVehicle:takeFactionItem(player, itemName)
 	if self.m_FactionTrunk and self.m_FactionTrunk[itemName] then
 		if self.m_FactionTrunk[itemName] >= 1 then
-			if player:getInventory():giveItem(itemName, 1) then
+			if player:getInventory():giveItemFromName(itemName, 1) then
 				self.m_FactionTrunk[itemName] = self.m_FactionTrunk[itemName]-1
 				player:sendShortMessage(_("Du hast 1 %s aus dem Fahrzeug in dein Inventar gepackt!", player, itemName))
 				player:getFaction():addLog(player, "Item", ("hat %s in den %s (%s) gelegt!"):format(itemName, self:getName(), self:getPlateText()))

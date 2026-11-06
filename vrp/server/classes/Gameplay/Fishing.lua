@@ -237,7 +237,7 @@ function Fishing:FishHit(location, castPower)
 			if randomMessage ~= "nichts" then 
 				if math.random(1, 10) < 3 then 
 					if FISHING_BAD_CATCH_ITEMS_SEWERS[index] then 
-						client:getInventory():giveItem(FISHING_BAD_CATCH_ITEMS_SEWERS[index], 1)
+						client:getInventory():giveItemFromName(FISHING_BAD_CATCH_ITEMS_SEWERS[index], 1)
 					end
 				else
 					randomMessage = "nichts"

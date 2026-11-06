@@ -492,6 +492,12 @@ factionEquipmentDepotInfo = {
 	["Gasmaske"] = {["Item"] = -1, ["Price"] = 500, ["MaxPerAirDrop"] = 100}, -- Gasmaske
 }
 
+for index, key in pairs(factionWeaponDepotInfo) do
+	local clip = getWeaponClipSize(index)
+	key["Magazine"] = key["Magazine"] * clip
+	key["MagazinPreis"] = key["MagazinPreis"] / clip
+end
+
 factionWeaponDepotInfoState = {}
 for index, key in pairs(factionWeaponDepotInfo) do
 	local multiplier = 4

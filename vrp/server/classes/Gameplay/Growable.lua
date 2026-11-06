@@ -131,7 +131,7 @@ function Growable:harvest(player)
 					setTimer(function(player, amount)
 						if isElement(player) then
 							player:sendInfo(_("Du hast %d %s geerntet!", player, amount, self.ms_Item))
-							player:getInventory():giveItem(self.ms_Item, amount)
+							player:getInventory():giveItemFromName(self.ms_Item, amount)
 							player:triggerEvent("hidePlantGUI")
 							self.m_Size = 0
 							self.m_TimesEarned = self.m_TimesEarned + 1

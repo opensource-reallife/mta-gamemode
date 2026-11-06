@@ -60,7 +60,7 @@ function GroupPropertyManager:OnRequestPropertyItemDepot(id)
 	if client then
 		if client.m_LastPropertyPickup then
 			if PermissionsManager:getSingleton():hasPlayerPermissionsTo(client, "group", "manageImmoDepot") then
-				client.m_LastPropertyPickup:getDepot():showItemDepot(client, client.m_LastPropertyPickup)
+				client.m_LastPropertyPickup:getDepot():showItemDepot(client)
 			else
 				return client:sendError(_("Du bist nicht berechtigt das Depot zu verwalten"))
 			end

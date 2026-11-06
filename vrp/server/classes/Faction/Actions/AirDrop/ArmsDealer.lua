@@ -112,7 +112,7 @@ function ArmsDealer:checkoutCart(cart, maxPrice)
                     if subdata["Munition"] > 0 then 
                         --currentAmount = weaponDepot[product]["Munition"]
                         pricePerPiece = maxWeapons[product]["MagazinPreis"]
-                        totalPrice = pricePerPiece*subdata["Munition"]
+                        totalPrice = math.ceil(pricePerPiece*subdata["Munition"])
                         self.m_TotalPrice = self.m_TotalPrice + totalPrice
                         table.insert(self.m_Order[faction], {"Munition", WEAPON_NAMES[product], subdata["Munition"], totalPrice, product, pricePerPiece})
                     end

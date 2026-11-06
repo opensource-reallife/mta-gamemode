@@ -13,7 +13,7 @@ addRemoteEvents{"enterHouse", "leaveHouse", "buyHouse", "sellHouse", "rentHouse"
 "tryRobHouse","playerFindRobableItem","playerRobTryToGiveWanted",
 "houseAdminRequestData", "houseAdminChangeInterior", "houseAdminFree",
 "houseRingDoor", "houseRequestGUI", "breakHouseDoor", "toggleGarageState", "setHouseForSale",
-"buyHouseFromPlayer", "requestHousesForSale", "houseAdminEndSale"
+"buyHouseFromPlayer", "requestHousesForSale", "houseAdminEndSale", "houseOpenStorage"
 }
 
 local ROB_DELAY = DEBUG and 50 or 1000*60*15
@@ -53,6 +53,7 @@ function HouseManager:constructor()
 	addEventHandler("tryRobHouse",root,bind(self.tryRob,self))
 	addEventHandler("breakHouseDoor",root,bind(self.breakDoor,self))
 	addEventHandler("houseRingDoor",root,bind(self.ringDoorBell,self))
+	addEventHandler("houseOpenStorage",root,bind(self.openStorage,self))
 	addEventHandler("playerFindRobableItem",root,bind(self.onFindRobItem,self))
 	addEventHandler("playerRobTryToGiveWanted",root,bind(self.onTryToGiveWanted,self))
 	addEventHandler("houseAdminRequestData", root, bind(self.requestAdminData,self))
@@ -404,5 +405,12 @@ end
 function HouseManager:destructor()
 	for key, house in pairs(self.m_Houses) do
 		house:save()
+	end
+end
+function HouseManager:openStorage()
+	if not client or not client.visitingHouse then return end
+	local house = self.m_Houses[client.visitingHouse]
+	if house then
+		house:openStorage(client)
 	end
 end

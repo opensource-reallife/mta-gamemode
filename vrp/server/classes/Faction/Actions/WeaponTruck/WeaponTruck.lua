@@ -382,7 +382,7 @@ function WeaponTruck:outputBoxContent(player, box)
 					if typ == "Waffe" then
 						outputChatBox(_("Kiste: %s: %s %s Waffe/n", player, box.id, amount, WEAPON_NAMES[weaponID]),player,255,255,0)
 					elseif typ == "Munition" then
-						outputChatBox(_("Kiste: %s: %s %s Magazin/e", player, box.id, amount, WEAPON_NAMES[weaponID]),player,255,255,0)
+						outputChatBox(_("Kiste: %s: %s %s Schuss", player, box.id, amount, WEAPON_NAMES[weaponID]),player,255,255,0)
 					end
 				end
 			end
@@ -680,7 +680,7 @@ function WeaponTruck:addWeaponsToDepot(player, faction, weaponTable)
 						end
 						depot:addMagazineD(weaponID,insertAmount)
 						weaponTable[weaponID]["Munition"] = weaponTable[weaponID]["Munition"] - insertAmount
-						shortMessage[#shortMessage+1] = {WEAPON_NAMES[weaponID].." Magazin/e", insertAmount}
+						shortMessage[#shortMessage+1] = {WEAPON_NAMES[weaponID].." Schuss", insertAmount}
 					end
 				end
 			end
@@ -712,7 +712,7 @@ function WeaponTruck:addWeaponsToDepot(player, faction, weaponTable)
 		end
 	end
 	if money > 0 then
-		self.m_BankAccountServer:transferMoney(faction, money, "Waffentruck Kisten", "Action", "WeaponTruck")
+		self.m_BankAccountServer:transferMoney(faction, math.ceil(money), "Waffentruck Kisten", "Action", "WeaponTruck")
 	end
 
 	local shortmessageString = "Ins Depot gelegt:"

@@ -24,13 +24,13 @@ function ItemPresent:use(player)
     player:meChat(true, "öffnet ein Päckchen...")
 
     if random == 1 then
-        player:getInventory():giveItem("Zuckerstange", 1)
+        player:getInventory():giveItem(78, 1)
         player:sendSuccess(_("Du hast im Päckchen eine leckere Zuckerstange gefunden!", player))
     elseif random == 2 then
-        player:getInventory():giveItem("Zuckerstange", 2)
+        player:getInventory():giveItem(78, 2)
         player:sendSuccess(_("Du hast im Päckchen %s leckere Zuckerstangen gefunden!", player, random))
     elseif random == 3 then
-        player:getInventory():giveItem("Zuckerstange", 3)
+        player:getInventory():giveItem(78, 3)
         player:sendSuccess(_("Du hast im Päckchen %s leckere Zuckerstangen gefunden!", player, random))
     else
         player:sendError(_("Leider war das Päckchen leer!", player))
@@ -66,7 +66,7 @@ function ItemPresent:onPresentClick(button, state, player)
             if player:getInventory():getFreePlacesForItem("Päckchen") >= 1 then
                 source.Present:destroy()
                 source:destroy()
-                player:getInventory():giveItem("Päckchen", 1)
+                player:getInventory():giveItem(28, 1)
                 player:sendInfo(_("Du hast einen Päckchen gesammelt!", player))
             else
                 player:sendError(_("Du kannst nicht soviele Päckchen tragen! Maximal %d Stk.!", player, player:getInventory():getMaxItemAmount("Päckchen")))

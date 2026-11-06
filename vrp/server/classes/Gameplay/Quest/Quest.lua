@@ -60,7 +60,7 @@ function Quest:success(player)
 			elseif v[1] == "Punkte" then
 				player:givePoints(v[2])
 			else
-				player:getInventory():giveItem(v[1], v[2])
+				player:getInventory():giveItemFromName(v[1], v[2])
 			end
 			rewardString = rewardString .. v[2] .. " " .. _(v[1], player)
 			if self.m_Reward[k+1] then

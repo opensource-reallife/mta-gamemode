@@ -18,6 +18,7 @@ WearableHelmet.objectTable =
 	["Weihnachtsmütze"] = {1936, 0.14, 0, 1, 0, 90, "Weihnachtsmütze", true},
 	["Stern"] = {902, 0.1, 0, 0.2, 0, 90, "Stern", true},
 	["Lebkuchen-Maske"] = {2107, -0.6, -0.003, 1, 0, 90, "Lebkuchen-Maske", true},
+	["Kürbishut"] = {1935, 0.05, 0, 0.8, 0, 180, "Kürbishut", true},
 }
 
 
@@ -38,7 +39,7 @@ function WearableHelmet:use(player, itemId, bag, place, itemName)
 
 	end
 	if not player.m_IsWearingHelmet and not player.m_Helmet then --// if the player clicks onto the helmet without currently wearing one
-		if itemName == "Einsatzhelm" and not (player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty()) then
+		if InventoryManager:getSingleton():getItemDataForItem(itemName)["DienstItem"] == 1 and not (player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty()) then
 			player:sendError(_("Du bist nicht im Dienst! Das Item wurde abgenommen.", player))
 			player:getInventory():removeAllItem(self:getName())
 			return
@@ -83,7 +84,7 @@ function WearableHelmet:use(player, itemId, bag, place, itemName)
 		player:triggerEvent("onClientToggleHelmet", false, itemName)
 		player:setPublicSync("HelmetItem", false)
 	else --// else the player must have clicked on another helmet otherwise this instance of the class would have not been called
-		if itemName == "Einsatzhelm" and (not player:getFaction() or not player:getFaction():isStateFaction() or not player:isFactionDuty()) then
+		if InventoryManager:getSingleton():getItemDataForItem(itemName)["DienstItem"] == 1 and (not player:getFaction() or not player:getFaction():isStateFaction() or not player:isFactionDuty()) then
 			player:sendError(_("Du bist nicht im Dienst! Das Item wurde abgenommen.", player))
 			player:getInventory():removeAllItem(self:getName())
 			return

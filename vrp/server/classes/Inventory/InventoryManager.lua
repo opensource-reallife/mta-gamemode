@@ -7,6 +7,7 @@
 -- ****************************************************************************
 InventoryManager = inherit(Singleton)
 
+
 function InventoryManager:constructor()
 
 	self.m_Slots = {
@@ -14,11 +15,18 @@ function InventoryManager:constructor()
 		["Objekte"] = 21,
 		["Essen"] = 21,
 		["Drogen"] = 21,
+		["Waffen"] = 21,
 	}
 
 	self.m_ItemData = {}
+	self.m_ItemIds = {}
+	self.m_WeaponItems = {}
+	self.m_AmmoItems = {}
 	self.m_ItemData = self:loadItems()
+	self.m_Capacities = self:loadCapacities()
+	self.m_Tabs = self:loadTabs()
 	self.Map = {}
+	self.m_ExpiryTimer = setTimer(bind(self.checkExpiredItems, self), 60000, 0)
 
 	addRemoteEvents{"onPlayerItemUseServer", "onPlayerSecondaryItemUseServer", "throwItem", "refreshInventory",
 	"requestTrade", "acceptItemTrade", "acceptWeaponTrade", "declineTrade"}
@@ -39,6 +47,37 @@ function InventoryManager:destructor()
 
 end
 
+function InventoryManager:reloadItems()
+	local fresh = self:loadItems()
+	for itemName, data in pairs(fresh) do
+		local current = self.m_ItemData[itemName]
+		if current then
+			data["HatAlternativ"] = current["HatAlternativ"]
+			for key in pairs(current) do
+				current[key] = nil
+			end
+			for key, value in pairs(data) do
+				current[key] = value
+			end
+		else
+			self.m_ItemData[itemName] = data
+		end
+
+		local instance = ItemManager.Map[itemName]
+		if instance then
+			instance:loadItem()
+			instance.m_Breakable = data["Zerbrechlich"] == 1
+		end
+	end
+
+	for _index, player in ipairs(getElementsByType("player")) do
+		local inventory = player.getInventory and player:getInventory()
+		if inventory then
+			inventory:syncClient(true)
+		end
+	end
+end
+
 function InventoryManager:getItemDataForItem(itemName)
 	return self.m_ItemData[itemName]
 end
@@ -52,18 +91,89 @@ function InventoryManager:loadItems()
 		itemData[itemName] = {}
 		itemData[itemName]["Name"] = itemName
 		itemData[itemName]["Info"] = utf8.escape(row["Info"])
-		itemData[itemName]["Tasche"] = row["Tasche"]
 		itemData[itemName]["Icon"] = row["Icon"]
 		itemData[itemName]["Item_Max"] = tonumber(row["max_items"])
 		itemData[itemName]["Wegwerf"] = tonumber(row["wegwerfen"])
 		itemData[itemName]["Handel"] = tonumber(row["Handel"])
-		itemData[itemName]["Stack_max"] = tonumber(row["stack_max"])
 		itemData[itemName]["Verbraucht"] = tonumber(row["verbraucht"])
 		itemData[itemName]["ModelID"] = tonumber(row["ModelID"])
 		itemData[itemName]["MaxWear"] = tonumber(row["MaxWear"]) or nil
+		itemData[itemName]["Id"] = tonumber(row["ID"])
+		itemData[itemName]["Gewicht"] = tonumber(row["Gewicht"]) or 0
+		itemData[itemName]["Kategorie"] = row["Kategorie"]
+		itemData[itemName]["Gruppe"] = row["Gruppe"]
+		itemData[itemName]["Seltenheit"] = tonumber(row["Seltenheit"]) or 0
+		itemData[itemName]["VerfallAm"] = tonumber(row["VerfallAm"]) or nil
+		itemData[itemName]["VerfallTage"] = tonumber(row["VerfallTage"]) or nil
+		itemData[itemName]["DienstItem"] = tonumber(row["DienstItem"]) or 0
+		itemData[itemName]["WaffenId"] = tonumber(row["WaffenId"]) or nil
+		itemData[itemName]["MunitionFuer"] = tonumber(row["MunitionFuer"]) or nil
+		itemData[itemName]["Klasse"] = row["Klasse"]
+		itemData[itemName]["Zerbrechlich"] = tonumber(row["Zerbrechlich"]) or 0
+		itemData[itemName]["WegwerfDrop"] = tonumber(row["WegwerfDrop"]) or 0
+		if row["AlternativText"] and row["AlternativText"] ~= "" then
+			itemData[itemName]["AlternativText"] = row["AlternativText"]
+		end
+		if row["Effekte"] and row["Effekte"] ~= "" then
+			itemData[itemName]["Effekte"] = fromJSON(row["Effekte"])
+		end
+
+		self.m_ItemIds[itemData[itemName]["Id"]] = itemName
+		if itemData[itemName]["WaffenId"] then
+			self.m_WeaponItems[itemData[itemName]["WaffenId"]] = itemName
+		end
+		if itemData[itemName]["MunitionFuer"] then
+			self.m_AmmoItems[itemData[itemName]["MunitionFuer"]] = itemName
+		end
 	end
 
 	return itemData
+end
+
+function InventoryManager:loadCapacities()
+	local capacities = {}
+	for _index, row in ipairs(sql:queryFetch("SELECT * FROM ??_item_storage_capacity", sql:getPrefix())) do
+		capacities[row["StorageType"]] = capacities[row["StorageType"]] or {}
+		capacities[row["StorageType"]][tonumber(row["ModelId"])] = tonumber(row["Kilo"])
+	end
+	return capacities
+end
+
+function InventoryManager:getCapacity(storageType, modelId)
+	local capacities = self.m_Capacities[storageType]
+	if not capacities then return 0 end
+	return (modelId and capacities[modelId]) or capacities[0] or 0
+end
+
+function InventoryManager:resolveItemName(item)
+	if self.m_ItemIds[tonumber(item)] then
+		return self.m_ItemIds[tonumber(item)]
+	end
+	if self.m_ItemData[item] then
+		return item
+	end
+	return false
+end
+
+function InventoryManager:getItemId(item)
+	local itemName = self:resolveItemName(item)
+	return itemName and self.m_ItemData[itemName]["Id"]
+end
+
+function InventoryManager:getWeaponItemName(weaponId)
+	return self.m_WeaponItems[weaponId]
+end
+
+function InventoryManager:getAmmoItemName(weaponId)
+	return self.m_AmmoItems[weaponId]
+end
+
+function InventoryManager:checkExpiredItems()
+	for player, inventory in pairs(self.Map) do
+		if isElement(player) and inventory.m_Items then
+			inventory:removeExpiredItems()
+		end
+	end
 end
 
 function InventoryManager:loadInventory(player)
@@ -86,8 +196,8 @@ function InventoryManager:Event_onItemSecondaryUse(itemid, bag, itemName, place)
 	client:getInventory():useItemSecondary(itemid, bag, itemName, place)
 end
 
-function InventoryManager:Event_throwItem(item, bag, id, place, name)
-	client:getInventory():throwItem(item, bag, id, place, name)
+function InventoryManager:Event_throwItem(item, bag, id, place, name, amount)
+	client:getInventory():throwItem(item, bag, id, place, name, amount)
 end
 
 function InventoryManager:Event_refreshInventory()
@@ -107,6 +217,11 @@ function InventoryManager:Event_requestTrade(type, target, item, amount, money, 
 	if type == "Item" then
 		client.sendRequest = {target = target, item = item, amount = amount, money = money, itemValue = value}
 		target.receiveRequest = {target = client, item = item, amount = amount, money = money, itemValue = value}
+
+		item = self:resolveItemName(item)
+		if not item then return false end
+		client.sendRequest.item = item
+		target.receiveRequest.item = item
 
 		if client:getInventory():getItemAmount(item) >= amount then
 			local text = _("%s möchte dir %d %s schenken! Geschenk annehmen?", target, client.name, amount, item)
@@ -176,6 +291,29 @@ function InventoryManager:Event_acceptItemTrade(player, target)
 		end
 	end
 
+	local itemData = self.m_ItemData[item]
+	if not itemData or itemData["Handel"] ~= 1 or itemData["DienstItem"] == 1 or value == "duty" then
+		player:sendError(_("Du kannst dieses Item nicht handeln!", player))
+		return false
+	end
+	local weaponId = itemData["WaffenId"]
+	if weaponId then
+		if player:getInventory():isWeaponArmed(weaponId) and not THROWABLE_WEAPONS[weaponId] then
+			player:sendError(_("Stecke die Waffe zuerst weg!", player))
+			return false
+		end
+		if target:getWeaponLevel() < (MIN_WEAPON_LEVELS[weaponId] or 0) then
+			player:sendError(_("Das Waffenlevel von %s ist zu niedrig! (Benötigt: %i)", player, target.name, MIN_WEAPON_LEVELS[weaponId]))
+			target:sendError(_("Dein Waffenlevel ist zu niedrig! (Benötigt: %i)", target, MIN_WEAPON_LEVELS[weaponId]))
+			return false
+		end
+		if not THROWABLE_WEAPONS[weaponId] and target:getInventory():hasWeapon(weaponId) then
+			player:sendError(_("%s hat bereits eine %s dabei!", player, target:getName(), item))
+			target:sendError(_("Du hast bereits eine %s dabei!", target, item))
+			return false
+		end
+	end
+
 	if (player:getPosition() - target:getPosition()).length > 10 then
 		player:sendError(_("Du bist zu weit von %s entfernt!", player, target.name))
 		target:sendError(_("Du bist zu weit von %s entfernt!", target, player.name))
@@ -191,7 +329,7 @@ function InventoryManager:Event_acceptItemTrade(player, target)
 	end
 	if player:getInventory():getItemAmount(item) >= amount then
 		if target:getMoney() >= money then
-			if target:getInventory():giveItem(item, amount, value) then
+			if target:getInventory():giveItemFromName(item, amount, value) then
 				player:sendInfo(_("%s hat den Handel akzeptiert!", player, target:getName()))
 				target:sendInfo(_("Du hast das Angebot von %s akzeptiert und erhälst %d %s für %d$!", target, player:getName(), amount, item, money))
 				if amount <= 10 then
@@ -281,4 +419,20 @@ function InventoryManager:Event_acceptWeaponTrade(player, target)
 		target:sendError(_("%s hat die Waffe nicht mehr!", target, player:getName()))
 		player:sendError(_("Du hast die Waffe nicht mehr!", player))
 	end
+end
+
+function InventoryManager:loadTabs()
+	local tabs = {}
+	for _index, row in ipairs(sql:queryFetch("SELECT * FROM ??_inventory_tabs ORDER BY Reihenfolge", sql:getPrefix())) do
+		tabs[#tabs + 1] = {key = row["Schluessel"], name = row["Name"]}
+	end
+	return tabs
+end
+
+function InventoryManager:getTabs()
+	return self.m_Tabs
+end
+
+function InventoryManager:getOverloadFactor()
+	return 1 + self:getCapacity("overload_percent") / 100
 end

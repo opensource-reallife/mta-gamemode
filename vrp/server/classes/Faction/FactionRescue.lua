@@ -269,7 +269,7 @@ function FactionRescue:Event_toggleDuty(type, wasted, prefSkin, dontChangeSkin, 
 				client:sendInfo(_("Du bist nun im Dienst deiner Fraktion!", client))
 				client:setPublicSync("Rescue:Type",type)
 				client:getInventory():removeAllItem("Warnkegel")
-				client:getInventory():giveItem("Warnkegel", 10)
+				client:getInventory():giveItem(73, 10)
 				faction:updateDutyGUI(client)
 				faction:changeSkin(client, prefSkin)
 				client:setBadge(FACTION_STATE_BADGES[faction:getId()], ("%s %s"):format(factionBadgeId[faction:getId()][faction:getPlayerRank(client)], client:getId()), nil)

@@ -37,7 +37,7 @@ function ItemEasteregg:onEastereggClick(button, state, player)
         if source:getModel() == self.m_Model then
             if player:getInventory():getFreePlacesForItem("Osterei") >= 1 then
                 source:destroy()
-                player:getInventory():giveItem("Osterei", 1)
+                player:getInventory():giveItem(71, 1)
                 player:sendInfo(_("Du hast ein Osterei gesammelt!", player))
 
 				player:giveAchievement(88) -- Finde dein erstes Osterei

@@ -192,7 +192,7 @@ function Ware:resetRound()
 	for k, player in ipairs( self.m_Players ) do
 		pumpkinsEarned = math.ceil((player:getData("Ware:pumpkinsEarned") or 0) / 2)
 		if pumpkinsEarned > 0 then
-			player:getInventory():giveItem("Kürbis", pumpkinsEarned)
+			player:getInventory():giveItem(27, pumpkinsEarned)
 			player:sendInfo(_("Du erhälst "..pumpkinsEarned.. " Kürbisse als Belohnung!", player))
 		end
 		player:setData("Ware:roundsWon",  0	)

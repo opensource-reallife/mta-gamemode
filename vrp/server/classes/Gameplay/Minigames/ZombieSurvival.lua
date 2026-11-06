@@ -159,8 +159,8 @@ function ZombieSurvival:removePlayer(player)
 		local candyAmount = math.round(score / 3)
 
 		if pumpkinAmount + candyAmount > 0 then
-			player:getInventory():giveItem("Kürbis", pumpkinAmount)
-			player:getInventory():giveItem("Suessigkeiten", candyAmount)
+			player:getInventory():giveItem(27, pumpkinAmount)
+			player:getInventory():giveItem(26, candyAmount)
 			player:sendSuccess(_("Du hast %s Kürbisse und und %s Süßigkeiten erhalten!", player, pumpkinAmount, candyAmount))
 		end
 	end

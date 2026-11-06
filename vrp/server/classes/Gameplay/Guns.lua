@@ -76,7 +76,7 @@ end
 function Guns:Event_WeaponSwitch( pw, cw) --// sync bug fix "schlagbug"
 	local slot = getSlotFromWeapon(cw)
 	if slot >= 2 and slot <= 6 then
-		giveWeapon(source, cw, 0)
+		rawGiveWeapon(source, cw, 0)
 	end
 end
 
@@ -456,7 +456,57 @@ function Guns:Event_syncRocketLauncherEffect(start, stop, back)
 	end
 end
 
-function giveWeapon( player, weapon, ammo, current)
+_setWeaponAmmo = setWeaponAmmo
+
+function isInventoryWeaponContext(player)
+	if not isElement(player) or getElementType(player) ~= "player" then return false end
+	if not player.getInventory or not player:getInventory() or not player:getInventory().m_Items then return false end
+	if player.hasTemporaryStorage and player:hasTemporaryStorage() then return false end
+	if player.Minigame or player:getData("isInDeathMatch") or player:getData("inWare") then return false end
+	return true
+end
+
+local function isManagedWeapon(player, weapon)
+	return isInventoryWeaponContext(player) and InventoryManager:getSingleton():getWeaponItemName(weapon)
+end
+
+function giveWeapon(player, weapon, ammo, current)
+	if isManagedWeapon(player, weapon) then
+		return player:getInventory():onWeaponGiven(weapon, ammo, current)
+	end
+	return rawGiveWeapon(player, weapon, ammo, current)
+end
+
+function takeWeapon(player, weapon, ammo)
+	if isManagedWeapon(player, weapon) then
+		return player:getInventory():onWeaponTaken(weapon, ammo)
+	end
+	return rawTakeWeapon(player, weapon, ammo)
+end
+
+function takeAllWeapons(player)
+	if isInventoryWeaponContext(player) then
+		player:getInventory():onAllWeaponsTaken()
+	end
+	return rawTakeAllWeapons(player)
+end
+
+function setWeaponAmmo(player, weapon, ammo, clip)
+	if isManagedWeapon(player, weapon) then
+		local inventory = player:getInventory()
+		local ammoItem = inventory:getAmmoItemName(weapon)
+		local rounds = inventory:getRounds(weapon)
+		if ammoItem and ammo < rounds then
+			inventory:removeItem(ammoItem, rounds - ammo)
+		elseif ammoItem and ammo > rounds then
+			inventory:giveItemFromName(ammoItem, ammo - rounds, inventory:getDutyValue(), true)
+		end
+		return true
+	end
+	return _setWeaponAmmo(player, weapon, ammo, clip)
+end
+
+function rawGiveWeapon(player, weapon, ammo, current)
 	local slot = getSlotFromWeapon(weapon)
 	local object = getElementData(player, "a:weapon:slot"..slot.."")
 	if object then
@@ -478,7 +528,7 @@ function giveWeapon( player, weapon, ammo, current)
 	return result
 end
 
-function takeWeapon( player, weapon, ammo)
+function rawTakeWeapon(player, weapon, ammo)
 	local slot = getSlotFromWeapon(weapon)
 	local object = getElementData(player, "a:weapon:slot"..slot.."")
 	if object then
@@ -502,7 +552,7 @@ function takeWeapon( player, weapon, ammo)
 	return result
 end
 
-function takeAllWeapons( player )
+function rawTakeAllWeapons(player)
 	if player then
 		if getElementHealth(player) > 0 then
 			triggerEvent("WeaponAttach:removeAllWeapons", player)
@@ -644,4 +694,4 @@ end
 
 		if target.m_LastCopAttack and isElement(target.m_LastCopAttack) then
 			target.m_LastCopAttack:sendInfo(_("Der Spieler %s wurde aufgrund von Selbstmord ins Gefängnis befördert", target.m_LastCopAttack))
-		end]]
+		end]]

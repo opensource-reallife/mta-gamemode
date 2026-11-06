@@ -17,12 +17,10 @@ end
 function Item:loadItem()
 	local itemData = InventoryManager:getSingleton():getItemDataForItem(self.m_ItemName)
 	if itemData then
-		self.m_ItemTasche = itemData["Tasche"]
 		self.m_ItemIcon = itemData["Icon"]
 		self.m_ItemItemMax = itemData["Item_Max"]
 		self.m_ItemWegwerf = itemData["Wegwerf"]
 		self.m_ItemHandel = itemData["Handel"]
-		self.m_ItemStack_max = itemData["Stack_max"]
 		self.m_ItemVerbraucht = itemData["Verbraucht"]
 		self.m_ItemModel = itemData["ModelID"]
 	else
@@ -32,6 +30,10 @@ end
 
 function Item:getName()
 	return self.m_ItemName
+end
+
+function Item:hasSecondaryUse(itemName)
+	return self.useSecondary ~= nil
 end
 
 function Item:expire()

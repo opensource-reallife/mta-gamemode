@@ -88,9 +88,8 @@ function GroupHouseRob:Event_OnSellAccept()
 			local inv = client:getInventory()
 			if inv then
 				local itemName = "Diebesgut"
-				local bag = (InventoryManager:getSingleton():getItemDataForItem(itemName))["Tasche"]
-				local place = inv:getPlaceForItem(itemName, 0)
-				local pay = tonumber(inv:getItemValueByBag(bag, place)) or 0
+				local place = inv:getItemPlacesByName(itemName)[1]
+				local pay = place and tonumber(inv:getItemValueByBag(place[2], place[1])) or 0
 				inv:removeAllItem(itemName)
 				self.m_BankServerAccount:transferMoney(client, pay, "Verkauf von Diebesware", "Group", "HouseRob")
 				client:meChat(true, "streckt seine Hand aus und nimmt einen Umschlag mit Scheinen entgegen!")

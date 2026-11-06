@@ -195,6 +195,8 @@ function Admin:loadPermissionsFromDatabase()
         end
     end
 
+    ADMIN_RANK_PERMISSION["showInventory"] = ADMIN_RANK_PERMISSION["showInventory"] or RANK.Supporter
+
     triggerClientEvent(root, "adminPermissionsSync", resourceRoot, ADMIN_RANK_PERMISSION)
 end
 
@@ -642,6 +644,53 @@ function Admin:Event_adminTriggerFunction(func, target, reason, duration, admin)
 	end
 end
 
+function Admin:getStorageViewSection(title, storage)
+	local rows = {}
+	for id, row in pairs(storage.m_Rows) do
+		rows[#rows + 1] = {["Objekt"] = row["Item"], ["Menge"] = row["Amount"], ["Value"] = row["Value"]}
+	end
+	return {title = title, weight = storage:getWeight(), capacity = storage:getCapacity(), rows = rows}
+end
+
+function Admin:showPlayerInventory(admin, target)
+	if not isElement(target) or not target:getInventory() then
+		admin:sendError(_("Das Inventar dieses Spielers ist nicht geladen!", admin))
+		return
+	end
+
+	local inventory = target:getInventory()
+	local rows = {}
+	for id, row in pairs(inventory.m_Items) do
+		rows[#rows + 1] = {["Objekt"] = row["Objekt"], ["Menge"] = row["Menge"], ["Value"] = row["Value"]}
+	end
+	local sections = {{title = "Inventar", weight = inventory:getWeight(), capacity = inventory:getMaxWeight(), rows = rows}}
+
+	sections[#sections + 1] = self:getStorageViewSection("Waffenbox", PlayerManager:getSingleton():getGunBoxStorage(target))
+
+	local playerId = target:getId()
+	for id, house in pairs(HouseManager.Map) do
+		if house:getOwner() == playerId or (house.m_Keys and house.m_Keys[playerId]) then
+			sections[#sections + 1] = self:getStorageViewSection(("Hauslager #%d"):format(id), house:getStorage())
+		end
+	end
+
+	local addVehicles = function(vehicles, label)
+		for id, vehicle in pairs(vehicles) do
+			local trunk = vehicle.getTrunk and vehicle:getTrunk()
+			if trunk then
+				sections[#sections + 1] = self:getStorageViewSection(("%s: %s (#%d)"):format(label, vehicle:getName(), vehicle:getId()), trunk:getStorage())
+			end
+		end
+	end
+	addVehicles(VehicleManager:getSingleton():getPlayerVehicles(target), "Kofferraum")
+	if target:getGroup() then
+		addVehicles(VehicleManager:getSingleton():getGroupVehicles(target:getGroup():getId()) or {}, "Gruppe")
+	end
+
+	StatisticsLogger:getSingleton():addAdminAction(admin, "showInventory", target)
+	admin:triggerEvent("adminShowInventoryView", target:getName(), sections)
+end
+
 function Admin:Event_playerFunction(func, target, reason, duration, admin)
 	if client and isElement(client) then
         admin = client
@@ -654,6 +703,11 @@ function Admin:Event_playerFunction(func, target, reason, duration, admin)
 
 	if admin:getRank() < ADMIN_RANK_PERMISSION[func] then
 		admin:sendError(_("Du darfst diese Aktion nicht ausführen!", admin))
+		return
+	end
+
+	if func == "showInventory" then
+		self:showPlayerInventory(admin, target)
 		return
 	end
 
@@ -843,7 +897,7 @@ function Admin:Event_playerFunction(func, target, reason, duration, admin)
 		end
 	elseif func == "cookie" then
 		local reason = reason:gsub("_", " ")
-		if target:getInventory():giveItem("Keks", 1) then
+		if target:getInventory():giveItem(35, 1) then
 			target:sendSuccess(_("%s hat dir einen Keks gegeben! Grund: %s", target, admin:getName(), reason))
 			local format = {admin:getName(), target:getName(), reason}
 			self:sendShortMessage("%s hat %s einen Keks gegeben! Grund: %s", format)

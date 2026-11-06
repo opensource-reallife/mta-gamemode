@@ -130,6 +130,7 @@
 	<script src="server/classes/Inventory/WorldItems/CompanyWorldItem.lua" type="server"/>
 	<script src="server/classes/Inventory/Inventory.lua" type="server"/>
 	<script src="server/classes/Inventory/InventoryManager.lua" type="server"/>
+	<script src="server/classes/Inventory/ItemStorage.lua" type="server"/>
 	<script src="server/classes/Inventory/ItemManager.lua" type="server"/>
 	<script src="server/classes/Inventory/StaticWorldItems.lua" type="server"/>
 
@@ -854,6 +855,7 @@
 	<script src="client/classes/GUIForms/Admin/AdminEventGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Admin/AdminFireGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Admin/AdminGUI.lua" type="client" />
+    <script src="client/classes/GUIForms/Admin/AdminInventoryGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Admin/AdminLeaderBanGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Admin/AdminPedGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Admin/AdminSerialAccountsGUI.lua" type="client" />
@@ -905,12 +907,12 @@
     <script src="client/classes/GUIForms/Deathmatch/DeathmatchWeaponSelectGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Deathmatch/DmHalloweenGUI.lua" type="client" />
 
+    <script src="client/classes/GUIForms/Faction/WeaponOrderGUI.lua" type="client" />
+    <script src="client/classes/GUIForms/Faction/FactionArmoryGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Faction/ArmsDealerGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Faction/ChristmasTruckTreeGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Faction/FactionExplosiveTruckBoxGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Faction/FactionMoneyBagHoverGUI.lua" type="client" />
-    <script src="client/classes/GUIForms/Faction/FactionWeaponShopGUI.lua" type="client" />
-    <script src="client/classes/GUIForms/Faction/FactionWeaponStoreGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Faction/FactionWTHoverGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Faction/FactionWTLoadGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Faction/PolicePanel.lua" type="client" />
@@ -1017,7 +1019,6 @@
 
     <script src="client/classes/GUIForms/Vehicle/PremiumVehicleGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Vehicle/TexturePreviewGUI.lua" type="client" />
-    <script src="client/classes/GUIForms/Vehicle/TrunkGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Vehicle/VehicleCustomTextureGUI.lua" type="client" />
     <script src="client/classes/GUIForms/Vehicle/VehicleHealth.lua" type="client" />
     <script src="client/classes/GUIForms/Vehicle/VehicleInteraction.lua" type="client" />
@@ -1043,6 +1044,7 @@
     <script src="client/classes/GUIForms/ChangerBox.lua" type="client" />
     <script src="client/classes/GUIForms/ChangerBoxWithCheck.lua" type="client" />
     <script src="client/classes/GUIForms/InputBoxWithChanger.lua" type="client" />
+    <script src="client/classes/GUIForms/ItemAmountBox.lua" type="client" />
     <script src="client/classes/GUIForms/ColorPicker.lua" type="client" />
     <script src="client/classes/GUIForms/CookieClickerGUI.lua" type="client" />
     <script src="client/classes/GUIForms/CoolingBagGUI.lua" type="client" />
@@ -1058,7 +1060,6 @@
     <script src="client/classes/GUIForms/FishingGUIs.lua" type="client" />
     <script src="client/classes/GUIForms/ForumPermissionsGUI.lua" type="client" />
     <script src="client/classes/GUIForms/FriskGUI.lua" type="client" />
-    <script src="client/classes/GUIForms/GunBoxGUI.lua" type="client" />
     <script src="client/classes/GUIForms/HelpBar.lua" type="client" />
     <script src="client/classes/GUIForms/HelpGUI.lua" type="client" />
     <script src="client/classes/GUIForms/HistoryPlayerGUI.lua" type="client" />
@@ -1072,8 +1073,6 @@
     <script src="client/classes/GUIForms/InputBox.lua" type="client" />
     <script src="client/classes/GUIForms/InteriorEnterExitGUI.lua" type="client" />
     <script src="client/classes/GUIForms/InviteGUI.lua" type="client" />
-    <script src="client/classes/GUIForms/ItemDepotGUI.lua" type="client" />
-    <script src="client/classes/GUIForms/ItemEquipmentGUI.lua" type="client" />
     <script src="client/classes/GUIForms/KartGUI.lua" type="client" />
     <script src="client/classes/GUIForms/LogGUI.lua" type="client" />
     <script src="client/classes/GUIForms/LoginGUI.lua" type="client" />
@@ -1098,6 +1097,7 @@
     <script src="client/classes/GUIForms/ShortMessageQuestion.lua" type="client" />
     <script src="client/classes/GUIForms/SkinSelectGUI.lua" type="client" />
     <script src="client/classes/GUIForms/SpeakBubble3D.lua" type="client" />
+    <script src="client/classes/GUIForms/StorageGUI.lua" type="client" />
     <script src="client/classes/GUIForms/StyleguideDemonstrationGUI.lua" type="client" />
     <script src="client/classes/GUIForms/TourGUI.lua" type="client" />
     <script src="client/classes/GUIForms/TownHallInfoGUI.lua" type="client" />
@@ -1666,6 +1666,7 @@
 	<export function="phpSDKMapImport" type="server" http="true" />
 	<export function="phpSDKTexture" type="server" http="true" />
 	<export function="phpSDKStorageCleanup" type="server" http="true" />
+	<export function="phpSDKItemEdit" type="server" http="true" />
 	<export function="phpSDKEditPlayerOffline" type="server" http="true" />
 	<export function="phpSDKGiveQRAchievementOffline" type="server" http="true" />
 	<export function="phpSDKPrisonPlayer" type="server" http="true" />

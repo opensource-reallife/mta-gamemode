@@ -166,7 +166,7 @@ end
 				PlayerManager:getSingleton():breakingNews("Der Weed-Transport wurde erfolgreich abgeschlossen!")
 				Discord:getSingleton():outputBreakingNews("Der Weed-Transport wurde erfolgreich abgeschlossen!")
 				hitElement:sendInfo(_("Weed-Truck abgegeben! Du erhälst %d Gramm Weed!", hitElement, WeedTruck.Weed))
-				hitElement:getInventory():giveItem("Weed", WeedTruck.Weed)
+				hitElement:getInventory():giveItem(1, WeedTruck.Weed)
 				self:Event_OnWeedTruckExit(hitElement,0)
 				delete(self)
 			end
@@ -351,7 +351,7 @@ function WeedTruck:onDestinationPedClick(player, ped, stateDestination)
 					StateEvidence:getSingleton():addItemToEvidence(player, "Weed", WeedTruck.WeedPerPackage, false)
 				else
 					if ped.faction == player:getFaction() then
-						player:getInventory():giveItem("Weed", WeedTruck.WeedPerPackage)
+						player:getInventory():giveItem(1, WeedTruck.WeedPerPackage)
 						breakingNewsText = "Paket %d von %d wurde von der/dem %s abgegeben!"
 					else
 						breakingNewsText = "Paket %d von %d wurde an das/die %s übergeben!"

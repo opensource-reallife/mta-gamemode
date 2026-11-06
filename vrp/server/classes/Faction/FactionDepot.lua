@@ -9,19 +9,7 @@ Depot = inherit(Object)
 Depot.Map = {}
 
 function Depot.initalize()
-	addRemoteEvents{"itemDepotAdd", "itemDepotTake", "equipmentDepotAdd", "equipmentDepotTake"}
-
-	addEventHandler("itemDepotAdd", root, function(id, item, amount)
-		if Depot.Map[id] then
-			Depot.Map[id]:addItem(client, item, math.floor(amount))
-		end
-	end)
-
-	addEventHandler("itemDepotTake", root, function(id, slotId)
-		if Depot.Map[id] then
-			Depot.Map[id]:takeItem(client, slotId)
-		end
-	end)
+	addRemoteEvents{"equipmentDepotAdd", "equipmentDepotTake"}
 
 	addEventHandler("equipmentDepotAdd", root, function(id, item, amount)
 		if Depot.Map[id] then
@@ -100,6 +88,12 @@ end
 function Depot:constructor(Id, weapons, items, equipments, owner)
 	self.m_Id = Id
 	self.m_Weapons = fromJSON(weapons)
+	for id, weapon in pairs(self.m_Weapons) do
+		if not weapon["InSchuss"] then
+			weapon["Munition"] = (weapon["Munition"] or 0) * getWeaponClipSize(id)
+			weapon["InSchuss"] = true
+		end
+	end
 	self.m_Items = fromJSON(items)
 	self.m_Equipments = fromJSON(equipments)
 	self.m_Owner = owner
@@ -150,19 +144,82 @@ function Depot:addMagazineD(id,amount)
 	self.m_Weapons[id]["Munition"] = self.m_Weapons[id]["Munition"] + amount
 end
 
+function Depot:getStorage(element)
+	return ItemStorage.get("depot", self.m_Id, {
+		title = "Itemlager",
+		head = "Itemlager:",
+		rule = "Jede Bewegung landet im Log",
+		element = element,
+		getCapacity = function()
+			return InventoryManager:getSingleton():getCapacity("depot")
+		end,
+		accepts = function(itemName, data)
+			return data["Handel"] == 1 and itemName ~= "Kleidung" and not data["WaffenId"] and not data["MunitionFuer"]
+		end,
+		canAccess = function(player)
+			return not element or not isElement(element) or getDistanceBetweenPoints3D(element.position, player.position) <= 15
+		end,
+		onMoved = function(player, action, itemName, amount)
+			if action == "insert" then
+				StatisticsLogger:getSingleton():addItemDepotLog(player, self.m_Id, itemName, amount)
+				self.m_Owner:addLog(player, "Itemlager", ("hat %s  %s in das Lager gelegt!"):format(amount, itemName))
+			else
+				StatisticsLogger:getSingleton():addItemDepotLog(player, self.m_Id, itemName, -amount)
+				self.m_Owner:addLog(player, "Itemlager", ("hat %s  %s aus dem Lager genommen!"):format(amount, itemName))
+			end
+		end,
+	})
+end
+
+function Depot:importLegacyItems(storage)
+	local changed = false
+	for index, slot in pairs(self.m_Items) do
+		if slot["Item"] and slot["Item"] ~= 0 then
+			if storage:importItem(slot["Item"], slot["Amount"]) then
+				self.m_Items[index] = {["Item"] = 0, ["Amount"] = 0}
+				changed = true
+			end
+		end
+	end
+	if changed then self:save() end
+end
+
 function Depot:showItemDepot(player, depotElement)
-	player:triggerEvent("ItemDepotOpen", depotElement)
-	player:triggerEvent("ItemDepotRefresh", self.m_Id, self.m_Items)
+	local storage = self:getStorage(depotElement)
+	self:importLegacyItems(storage)
+	storage:open(player)
+end
+
+function Depot:addItem(player, item, amount, giveItemFromServer)
+	local storage = self:getStorage()
+	self:importLegacyItems(storage)
+	if not giveItemFromServer and not player:getInventory():removeItem(item, amount) then
+		player:sendError(_("Du hast nicht genug %s!", player, item))
+		return
+	end
+	storage:importItem(item, amount)
+	player:sendInfo(_("Du hast %d %s ins Depot gelegt!", player, amount, item))
+	StatisticsLogger:getSingleton():addItemDepotLog(player, self.m_Id, item, amount)
+	self.m_Owner:addLog(player, "Itemlager", ("hat %s  %s in das Lager gelegt!"):format(amount, item))
+	storage:syncAll()
 end
 
 function Depot:showEquipmentDepot(player, depotElement)
-	player:getInventory():syncClient()
-	player:triggerEvent("ItemEquipmentOpen", depotElement)
-	player:triggerEvent("ItemEquipmentRefresh", self.m_Id, self.m_Equipments, ArmsDealer.Data, true)
+	EquipmentStorage.get(self, depotElement):open(player)
+	setElementData(player, "isEquipmentGUIOpen", false, true)
+end
+
+function Depot:showArmory(player, element)
+	ArmoryStorage.get(self, element):open(player)
 end
 
 function Depot:getPlayerWeapons(player)
 	local playerWeapons = {}
+	if isInventoryWeaponContext(player) then
+		for _index, info in ipairs(player:getInventory():getCarriedWeapons()) do
+			playerWeapons[info[1]] = true
+		end
+	end
 	for i=1, 12 do
 		if getPedWeapon(player,i) > 0 then
 			playerWeapons[getPedWeapon(player,i)] = true
@@ -188,7 +245,9 @@ function Depot:takeWeaponsFromDepot(player,weaponTable)
 				if WEAPON_CLIPS[weaponID] then clipAmmo = WEAPON_CLIPS[weaponID] end
 
 				if typ == "Waffe" then
-					if self.m_Weapons[weaponID]["Waffe"] >= amount then
+					if self.m_Weapons[weaponID]["Waffe"] >= amount and not player:getInventory():canCarryWeapon(weaponID, THROWABLE_WEAPONS[weaponID] and amount or 0) then
+						player:sendError(_("%s ist zu schwer für dich!", player, WEAPON_NAMES[weaponID]))
+					elseif self.m_Weapons[weaponID]["Waffe"] >= amount then
 						slot = getSlotFromWeapon(weaponID)
 						if slot == 2 then
 							isInVariable = false
@@ -219,7 +278,9 @@ function Depot:takeWeaponsFromDepot(player,weaponTable)
 				elseif typ == "Munition" then
 					playerWeapons = self:getPlayerWeapons(player)
 					if playerWeapons[weaponID] then
-						if self.m_Weapons[weaponID]["Munition"] >= amount then
+						if self.m_Weapons[weaponID]["Munition"] >= amount and not player:getInventory():canCarryWeapon(weaponID, amount) then
+							player:sendError(_("%s-Munition ist zu schwer für dich!", player, WEAPON_NAMES[weaponID]))
+						elseif self.m_Weapons[weaponID]["Munition"] >= amount then
 							self:takeMagazineD(weaponID,amount)
 							bIsStorageWeapon = false
 							for i = 1, #weaponStorage do
@@ -228,19 +289,19 @@ function Depot:takeWeaponsFromDepot(player,weaponTable)
 								end
 							end
 							if bIsStorageWeapon then
-								ammoStorage[weaponID] = ammoStorage[weaponID]+amount*clipAmmo
+								ammoStorage[weaponID] = ammoStorage[weaponID]+amount
 							end
-							giveWeapon(player, weaponID, amount*clipAmmo)
+							giveWeapon(player, weaponID, amount)
 							if not logData[WEAPON_NAMES[weaponID]] then
 								logData[WEAPON_NAMES[weaponID]] = amount
 							else
 								logData[WEAPON_NAMES[weaponID]] = logData[WEAPON_NAMES[weaponID]] + amount
 							end
 						else
-							player:sendError(_("Es sind nicht genug %s-Magazine im Lager (%s)!", player, WEAPON_NAMES[weaponID], amount))
+							player:sendError(_("Es ist nicht genug %s-Munition im Lager (%s)!", player, WEAPON_NAMES[weaponID], amount))
 						end
 					else
-						player:sendError(_("Du hast keine %s für ein Magazin!", player, WEAPON_NAMES[weaponID]))
+						player:sendError(_("Du hast keine %s für diese Munition!", player, WEAPON_NAMES[weaponID]))
 					end
 				end
 				if logData.w or logData.m then
@@ -251,10 +312,10 @@ function Depot:takeWeaponsFromDepot(player,weaponTable)
 	end
 	local textForPlayer = "Du hast folgende Waffen aus dem Lager genommen:"
 	for i,v in pairs(logData) do
-		self.m_Owner:addLog(player, "Waffenlager", ("hat ein/e(n) %s mit %s Magazin(en) aus dem Lager genommen!"):format(i, (v-1)))
+		self.m_Owner:addLog(player, "Waffenlager", ("hat ein/e(n) %s mit %s Schuss aus dem Lager genommen!"):format(i, (v-1)))
 		textForPlayer = textForPlayer.."\n"..i
 		if v > 1 then
-			textForPlayer = textForPlayer.. " mit ".. (v-1) .. " Magazin(en)"
+			textForPlayer = textForPlayer.. " mit ".. (v-1) .. " Schuss"
 		end
 	end
 	player:sendInfo(textForPlayer)
@@ -262,59 +323,6 @@ function Depot:takeWeaponsFromDepot(player,weaponTable)
 end
 
 
-
-function Depot:addItem(player, item, amount, giveItemFromServer)
-	for i=1, 6 do
-		if not self.m_Items[i] then self.m_Items[i] = {} self.m_Items[i]["Item"] = 0 self.m_Items[i]["Amount"] = 0  end
-		if self.m_Items[i]["Item"] == 0 then
-			if item ~= "Kleidung" then --wtf we cant check if the item has a value wtf wtf wtf - MasterM 2017
-				if giveItemFromServer or player:getInventory():removeItem(item, amount) then
-					self.m_Items[i]["Item"] = item
-					self.m_Items[i]["Amount"] = amount
-					player:sendInfo(_("Du hast %d %s ins Depot (Slot %d) gelegt!", player, amount, item, i))
-					player:triggerEvent("ItemDepotRefresh", self.m_Id, self.m_Items)
-					StatisticsLogger:getSingleton():addItemDepotLog(player, self.m_Id, item, amount)
-					self.m_Owner:addLog(player, "Itemlager", ("hat %s  %s in das Lager gelegt!"):format(amount, item))
-					return
-				else
-					player:sendError(_("Du hast nicht genug %s!", player, item))
-					return
-				end
-			else
-				player:sendError(_("Du kannst dieses Item nicht einlagern!", player, item))
-				return
-			end
-		end
-	end
-	player:sendError(_("Es gibt keinen freien Item-Slot in diesem Depot!", player))
-end
-
-function Depot:takeItem(player, slotId)
-	if self.m_Items[slotId] then
-		if self.m_Items[slotId]["Item"] ~= 0 then
-			--if self.m_Items[slotId]["Amount"] > 0 then
-				local item = self.m_Items[slotId]["Item"]
-				local amount = self.m_Items[slotId]["Amount"]
-				if player:getInventory():getFreePlacesForItem(item) >= amount then
-					self.m_Items[slotId]["Item"] = 0
-					self.m_Items[slotId]["Amount"] = 0
-					player:getInventory():giveItem(item, amount)
-					player:sendInfo(_("Du hast %d %s aus dem Depot (Slot %d) genommen!", player, amount, item, slotId))
-					player:triggerEvent("ItemDepotRefresh", self.m_Id, self.m_Items)
-					StatisticsLogger:getSingleton():addItemDepotLog(player, self.m_Id, item, -amount)
-					self.m_Owner:addLog(player, "Itemlager", ("hat %s  %s aus dem Lager genommen!"):format(amount, item))
-					return
-				else
-					player:sendError(_("Du hast nicht genug Platz in deinem Inventar!", player))
-				end
-			--else
-			--	player:sendError("Internal Error Amount to low", player)
-			--end
-		else
-			player:sendError(_("Du hast kein Item in diesem Slot!", player))
-		end
-	end
-end
 
 function Depot:addEquipment(player, item, amount, forceSpawn)
 	if not forceSpawn and not self:checkDistanceFromEquipment(player) then return end
@@ -352,7 +360,6 @@ function Depot:addEquipment(player, item, amount, forceSpawn)
 			end
 			StatisticsLogger:getSingleton():addItemDepotLog(player, self.m_Id, item, -amount)
 			self.m_Owner:addLog(player, "Itemlager", ("hat %s  %s in das Lager gelegt!"):format(amount, item))
-			player:triggerEvent("ItemEquipmentRefresh", self.m_Id, self.m_Equipments, ArmsDealer.Data)
 			player:sendInfo(_("Du hast %d %s ins Depot gelegt!", player, amount, item))
 			return
 		else
@@ -391,9 +398,8 @@ function Depot:takeEquipment(player, item, amount)
 			if amount > 0 then
 				self.m_Equipments[item] = self.m_Equipments[item] - amount
 				if not armsData[3] then
-					if not player:getInventory():giveItem(item, amount) then
+					if not player:getInventory():giveItemFromName(item, amount) then
 						self.m_Equipments[item] = self.m_Equipments[item] + amount
-						player:triggerEvent("ItemEquipmentRefresh", self.m_Id, self.m_Equipments, ArmsDealer.Data)
 						return
 					end
 				else
@@ -403,9 +409,8 @@ function Depot:takeEquipment(player, item, amount)
 				amount = self.m_Equipments[item]
 				self.m_Equipments[item] = 0
 				if not armsData[3] then
-					if not player:getInventory():giveItem(item, amount) then
+					if not player:getInventory():giveItemFromName(item, amount) then
 						self.m_Equipments[item] = amount
-						player:triggerEvent("ItemEquipmentRefresh", self.m_Id, self.m_Equipments, ArmsDealer.Data)
 						return
 					end
 				else
@@ -414,7 +419,6 @@ function Depot:takeEquipment(player, item, amount)
 			end
 			player:sendInfo(_("Du hast %d %s aus dem Depot genommen!", player, amount, item))
 			StatisticsLogger:getSingleton():addItemDepotLog(player, self.m_Id, item, -amount)
-			player:triggerEvent("ItemEquipmentRefresh", self.m_Id, self.m_Equipments, ArmsDealer.Data)
 			self.m_Owner:addLog(player, "Itemlager", ("hat %s  %s aus dem Lager genommen!"):format(amount, item))
 			return
 		else

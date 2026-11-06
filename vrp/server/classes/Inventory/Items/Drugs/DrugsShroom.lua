@@ -60,7 +60,7 @@ function DrugsShroom:onMushroomClick(button, state, player)
         if source:getModel() == self.m_MagicModel then
             if player:getInventory():getFreePlacesForItem("Shrooms") >= 1 then
                 source:destroy()
-                player:getInventory():giveItem("Shrooms", 1)
+                player:getInventory():giveItem(13, 1)
                 player:sendInfo(_("Du hast einen seltenen Magic-Mushroom gesammelt!", player))
             else
                 player:sendError(_("Du kannst nicht soviele Shrooms tragen! Maximal %d Stk.!", player, player:getInventory():getMaxItemAmount("Shrooms")))
@@ -68,7 +68,7 @@ function DrugsShroom:onMushroomClick(button, state, player)
         elseif source:getModel() == self.m_NormalModel then
             if player:getInventory():getFreePlacesForItem("Pilz") >= 1 then
                 source:destroy()
-                player:getInventory():giveItem("Pilz", 1)
+                player:getInventory():giveItem(44, 1)
                 player:sendInfo(_("Du hast einen Pilz gesammelt!", player))
             else
                 player:sendError(_("Du kannst nicht soviele Pilze tragen! Maximal %d Stk.!", player, player:getInventory():getMaxItemAmount("Pilz")))

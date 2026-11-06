@@ -70,16 +70,18 @@ function Player:destructor()
 
 	Player.ms_QuitHook:call(self)
 
+	if self:isFactionDuty() and (self:getFaction() and not self:getFaction():isEvilFaction()) then -- don't delete weapons if evil-duty
+		takeAllWeapons(self)
+	elseif self.m_Inventory and self.m_Inventory.m_Items then
+		self.m_Inventory:syncArmedAmmo()
+	end
+
 	if self.m_Inventory then
 		delete(self.m_Inventory)
 	end
 
 	if self:getRank() > 0 then
 		Admin:getSingleton():removeAdmin(self,self:getRank())
-	end
-
-	if self:isFactionDuty() and (self:getFaction() and not self:getFaction():isEvilFaction()) then -- don't delete weapons if evil-duty
-		takeAllWeapons(self)
 	end
 
 	self:setJailNewTime()
@@ -400,7 +402,9 @@ function Player:save()
 		local weapons = {}
 		for slot = 0, 11 do -- exclude satchel detonator (slot 12)
 			local weapon, ammo = getPedWeapon(self, slot), getPedTotalAmmo(self, slot)
-			if ammo > 0 then
+			if weapon > 0 and InventoryManager:getSingleton():getWeaponItemName(weapon) then
+				weapons[#weapons + 1] = {weapon, 0}
+			elseif ammo > 0 then
 				weapons[#weapons + 1] = {weapon, ammo}
 			end
 		end
@@ -530,8 +534,13 @@ function Player:spawn()
 
 	-- Give weapons
 	for k, info in pairs(self.m_Weapons) do
-		giveWeapon(self, info[1], info[2])
+		if isInventoryWeaponContext(self) then
+			self:getInventory():restoreSavedWeapon(info[1], info[2])
+		else
+			rawGiveWeapon(self, info[1], info[2])
+		end
 	end
+	self.m_Weapons = {}
 
 	setCameraTarget(self, self)
 	fadeCamera(self, true)
@@ -654,20 +663,27 @@ function Player:dropReviveWeapons()
 	if self.m_ReviveWeaponsInfo then
 		self.m_ReviveWeapons =  {}
 		local pickupWeapon, weapon, ammo, model, x, y, z, dim, int
-		for i = 1, 12 do
-			if self.m_ReviveWeaponsInfo[i] then
-				px,py,z = getElementPosition(self)
-				x,y = getPointFromDistanceRotation(px, py, 3, 360*(i/12))
-				int = getElementInterior(self)
-				dim = getElementDimension(self)
-				weapon =  self.m_ReviveWeaponsInfo[i][1]
-				ammo = self.m_ReviveWeaponsInfo[i][2]
-				if weapon ~= 23 and weapon ~= 38 and weapon ~= 37 and weapon ~= 39 and weapon ~= 42 and weapon ~= 9 then
-					pickupWeapon = PickupWeapon:new(x, y, z, int , dim, weapon, ammo, self, false, true, x-px, y-py)
-					if pickupWeapon then
-						self.m_ReviveWeapons[#self.m_ReviveWeapons+1] = pickupWeapon
-					end
+		local total = #self.m_ReviveWeaponsInfo + #(self.m_ReviveAmmoInfo or {})
+		for i, info in ipairs(self.m_ReviveWeaponsInfo) do
+			px,py,z = getElementPosition(self)
+			x,y = getPointFromDistanceRotation(px, py, 3, 360*(i/total))
+			int = getElementInterior(self)
+			dim = getElementDimension(self)
+			weapon = info[1]
+			ammo = info[2]
+			if weapon ~= 23 and weapon ~= 38 and weapon ~= 37 and weapon ~= 39 and weapon ~= 42 and weapon ~= 9 then
+				pickupWeapon = PickupWeapon:new(x, y, z, int , dim, weapon, ammo, self, false, true, x-px, y-py)
+				if pickupWeapon then
+					self.m_ReviveWeapons[#self.m_ReviveWeapons+1] = pickupWeapon
 				end
+			end
+		end
+		for i, info in ipairs(self.m_ReviveAmmoInfo or {}) do
+			px,py,z = getElementPosition(self)
+			x,y = getPointFromDistanceRotation(px, py, 3, 360*((#self.m_ReviveWeaponsInfo + i)/total))
+			pickupWeapon = PickupWeapon:new(x, y, z, getElementInterior(self), getElementDimension(self), info[1], info[2], self, false, true, x-px, y-py, true)
+			if pickupWeapon then
+				self.m_ReviveWeapons[#self.m_ReviveWeapons+1] = pickupWeapon
 			end
 		end
 		--[[nextframe( Workaround, Pickups werden erst attached, wenn man den Skin kurz darauf wechselt (Warum auch immer...)
@@ -717,21 +733,37 @@ end
 function Player:setReviveWeapons(deathStateFactionDuty)
 	self.m_ReviveWeaponsInfo = {}
 	self.m_DeathStateFactionDuty = deathStateFactionDuty -- only use this to prevent weapon retieval if a onduty cop gets killed
+	self.m_ReviveAmmoInfo = {}
+	local managed = {}
+	if isInventoryWeaponContext(self) then
+		self.m_ReviveWeaponsInfo, self.m_ReviveAmmoInfo = self:getInventory():takeWeaponsForDeath()
+		for _index, info in ipairs(self.m_ReviveWeaponsInfo) do
+			managed[info[1]] = true
+		end
+	end
+
 	local weaponInSlot, ammoInSlot
 	for i = 1, 12 do
 		weaponInSlot = getPedWeapon(self, i)
-		ammoInSlot = getPedTotalAmmo(self, i )
-		self.m_ReviveWeaponsInfo[i] = {weaponInSlot, ammoInSlot}
+		ammoInSlot = getPedTotalAmmo(self, i)
+		if weaponInSlot > 0 and not managed[weaponInSlot] then
+			self.m_ReviveWeaponsInfo[#self.m_ReviveWeaponsInfo + 1] = {weaponInSlot, ammoInSlot}
+		end
 	end
 end
 
 function Player:giveReviveWeapons()
 	if self.m_ReviveWeaponsInfo then
-		for i = 1, 12 do
-			if self.m_ReviveWeaponsInfo[i] then
-				giveWeapon( self, self.m_ReviveWeaponsInfo[i][1], self.m_ReviveWeaponsInfo[i][2], true)
+		for _index, info in ipairs(self.m_ReviveWeaponsInfo) do
+			giveWeapon(self, info[1], info[2], true)
+		end
+		for _index, info in ipairs(self.m_ReviveAmmoInfo or {}) do
+			local ammoItem = InventoryManager:getSingleton():getAmmoItemName(info[1])
+			if ammoItem then
+				self:getInventory():giveItemFromName(ammoItem, info[2], false, true)
 			end
 		end
+		self.m_ReviveAmmoInfo = nil
 		if self.m_DeathStateFactionDuty then
 			FactionState:getSingleton():Event_storageWeapons(self, true)
 		end
@@ -764,6 +796,14 @@ function DatabasePlayer:setCpToken(token) if self:isActive() then self:setPrivat
 
 function Player:getInventory()
 	return self.m_Inventory
+end
+
+function Player:giveWeapon(weapon, ammo, current)
+	return giveWeapon(self, weapon, ammo, current)
+end
+
+function Player:takeWeapon(weapon, ammo)
+	return takeWeapon(self, weapon, ammo)
 end
 
 function Player.staticGroupChatHandler(self, command, ...)
@@ -1224,25 +1264,25 @@ function Player:payDay()
 
 	if EVENT_EASTER then
 		self:addPaydayText("info", _("Du hast 5 Ostereier bekommen!", self))
-		self:getInventory():giveItem("Osterei", 5)
+		self:getInventory():giveItem(71, 5)
 	end
 
 	if EVENT_CHRISTMAS then
 		self:addPaydayText("info", _("Du hast 3 Zuckerstangen bekommen!", self))
-		self:getInventory():giveItem("Zuckerstange", 3)
+		self:getInventory():giveItem(78, 3)
 
 		if self:getFaction() and not self:getFaction():isRescueFaction() and ChristmasTruckManager:getSingleton():getPresentsCount(self:getFaction()) then
 			local presentCount = ChristmasTruckManager:getSingleton():getPresentsCount(self:getFaction())
 			if presentCount >= ChristmasTruckManager.MaxPresents then
 				self:addPaydayText("info", _("Du hast %s zusätzliche Zuckerstangen bekommen (Voller Baum)!", self, ChristmasTruckManager.SugarcaneBonusIfFull))
-				self:getInventory():giveItem("Zuckerstange", ChristmasTruckManager.SugarcaneBonusIfFull)
+				self:getInventory():giveItem(78, ChristmasTruckManager.SugarcaneBonusIfFull)
 			end
 		end
 	end
 
 	if EVENT_HALLOWEEN then
 		self:addPaydayText("info", _("Du hast 5 Kürbisse bekommen!", self))
-		self:getInventory():giveItem("Kürbis", 5)
+		self:getInventory():giveItem(27, 5)
 	end
 
 	triggerClientEvent ( self, "paydayBox", self, self.m_paydayTexts)
@@ -1846,6 +1886,9 @@ function Player:createStorage(storeSkills)
 	end
 
 	takeAllWeapons(self)
+	if self:getInventory() then
+		self:getInventory():updateVisibleWeapons()
+	end
 
 	if storeSkills then
 		for _, stat in pairs(stats) do
@@ -1871,6 +1914,9 @@ function Player:restoreStorage()
 	self:setArmor(self.m_Storage.armor)
 
 	self.m_Storage = nil
+	if self:getInventory() then
+		self:getInventory():updateVisibleWeapons()
+	end
 end
 
 function Player:hasTemporaryStorage()

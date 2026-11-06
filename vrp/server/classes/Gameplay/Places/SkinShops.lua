@@ -55,5 +55,5 @@ function SkinShops:giveClothItem( player, skinID )
 	-- 		end
 	-- 	end
 	-- end
-	return inv:giveItem("Kleidung",1,skinID)
+	return inv:giveItem(64,1,skinID)
 end

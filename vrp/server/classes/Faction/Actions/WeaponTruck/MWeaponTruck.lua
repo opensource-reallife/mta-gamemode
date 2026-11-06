@@ -124,7 +124,7 @@ function MWeaponTruck:Event_onWeaponTruckLoad(boxContentTable)
 							if typ == "Waffe" then
 								totalAmount = totalAmount + faction.m_WeaponDepotInfo[weaponID]["WaffenPreis"] * amount
 							elseif typ == "Munition" then
-								totalAmount = totalAmount + faction.m_WeaponDepotInfo[weaponID]["MagazinPreis"] * amount
+								totalAmount = totalAmount + math.ceil(faction.m_WeaponDepotInfo[weaponID]["MagazinPreis"] * amount)
 							end
 						end
 					end
@@ -161,7 +161,7 @@ function MWeaponTruck:Event_onWeaponTruckLoad(boxContentTable)
 					client:sendError(_("Du hast zuwenig augeladen! Mindestens: %d$",client,self.m_AmountPerBox))
 				end
 			else
-				client:sendError(_("Ihr hast nicht ausreichend Geld in der Fraktions Kasse! (%d$)",client,totalAmount))
+				client:sendError(_("Ihr habt nicht ausreichend Geld in der Fraktionskasse! (%d$)",client,totalAmount))
 			end
 		else
 			client:sendError(_("Du bist in keiner Fraktion!",client))

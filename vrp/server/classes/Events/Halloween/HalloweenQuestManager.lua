@@ -75,8 +75,8 @@ end
 function HalloweenQuestManager:requestQuestUpdate(quest)
 	self:setQuestState(client, quest)
 
-	client:getInventory():giveItem("Kürbis", HalloweenQuestManager.ms_QuestRewards[quest].pumpkins)
-    client:getInventory():giveItem("Suessigkeiten", HalloweenQuestManager.ms_QuestRewards[quest].sweets)
+	client:getInventory():giveItem(27, HalloweenQuestManager.ms_QuestRewards[quest].pumpkins)
+    client:getInventory():giveItem(26, HalloweenQuestManager.ms_QuestRewards[quest].sweets)
 
     client:sendSuccess(_("Du hast %s Kürbisse und und %s Süßigkeiten erhalten!", client, HalloweenQuestManager.ms_QuestRewards[quest].pumpkins, HalloweenQuestManager.ms_QuestRewards[quest].sweets))
 end

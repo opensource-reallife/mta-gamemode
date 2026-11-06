@@ -32,7 +32,7 @@ function WearableShirt:use(player, itemId, bag, place, itemName)
 
 	end
 	if not player.m_IsWearingShirt and not player.m_Shirt then --// if the player clicks onto the Shirt without currently wearing one
-		if itemName == "Kevlar" and not (player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty()) then
+		if InventoryManager:getSingleton():getItemDataForItem(itemName)["DienstItem"] == 1 and not (player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty()) then
 			player:sendError(_("Du bist nicht im Dienst! Das Item wurde abgenommen.", player))
 			player:getInventory():removeAllItem(self:getName())
 			return
@@ -87,7 +87,7 @@ function WearableShirt:use(player, itemId, bag, place, itemName)
 		setElementData(player,"CanWeaponBeConcealed",false)
 		triggerEvent("WeaponAttach:unconcealWeapons", player)
 	else --// else the player must have clicked on another Shirt otherwise this instance of the class would have not been called
-		if itemName == "Kevlar" and not (player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty()) then
+		if InventoryManager:getSingleton():getItemDataForItem(itemName)["DienstItem"] == 1 and not (player:getFaction() and player:getFaction():isStateFaction() and player:isFactionDuty()) then
 			player:sendError(_("Du bist nicht im Dienst! Das Item wurde abgenommen.", player))
 			player:getInventory():removeAllItem(self:getName())
 			return

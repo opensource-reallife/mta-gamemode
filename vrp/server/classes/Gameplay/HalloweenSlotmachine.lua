@@ -272,28 +272,28 @@ function HalloweenSlotmachine:giveWin(player, name, x, y, z)
 	elseif name == "Pumpkin" then
 		local amount = 10
 		player:sendInfo(_("Du hast %d Kürbisse gewonnen!", player, amount))
-		player:getInventory():giveItem("Kürbis", amount)
+		player:getInventory():giveItem(27, amount)
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
 		StatisticsLogger:addCasino(player, "Pumpkins", amount)
 	elseif name == "PumpkinBad" then
 		local amount = 2
 		player:sendInfo(_("Du hast %d Kürbisse gewonnen!", player, amount))
-		player:getInventory():giveItem("Kürbis", amount)
+		player:getInventory():giveItem(27, amount)
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
 		StatisticsLogger:addCasino(player, "Pumpkins", amount)
 	elseif name == "Pumpkins" then
 		local amount = 20
 		player:sendInfo(_("Du hast %d Kürbisse gewonnen!", player, amount))
-		player:getInventory():giveItem("Kürbis", amount)
+		player:getInventory():giveItem(27, amount)
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
 		StatisticsLogger:addCasino(player, name, amount)
 	elseif name == "PumpkinsBad" then
 		local amount = 5
 		player:sendInfo(_("Du hast %d Kürbisse gewonnen!", player, amount))
-		player:getInventory():giveItem("Kürbis", amount)
+		player:getInventory():giveItem(27, amount)
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
 		StatisticsLogger:addCasino(player, name, amount)
@@ -306,14 +306,14 @@ function HalloweenSlotmachine:giveWin(player, name, x, y, z)
 	elseif name == "Sweets" then
         local amount = 50
 		player:sendInfo(_("Du hast %d Süßigkeiten gewonnen!", player, amount))
-		player:getInventory():giveItem("Suessigkeiten", amount)
+		player:getInventory():giveItem(26, amount)
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
 		StatisticsLogger:addCasino(player, name, amount)
 	elseif name == "SweetsBad" then
         local amount = 10
 		player:sendInfo(_("Du hast %d Süßigkeiten gewonnen!", player, amount))
-		player:getInventory():giveItem("Suessigkeiten", amount)
+		player:getInventory():giveItem(26, amount)
 
 		triggerClientEvent(root, "onSlotmachineSoundPlay", root, x, y, z, "win_stuff")
 		StatisticsLogger:addCasino(player, name, amount)

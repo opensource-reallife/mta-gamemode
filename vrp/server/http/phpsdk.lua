@@ -297,8 +297,8 @@ function phpSDKEditPlayer(adminId, targetId, action, data)
 		local item, amount = tostring(data.item or ""), math.floor(tonumber(data.amount) or 0)
 		if not inv or not inv.m_ItemData[item] or amount == 0 then return result("ERROR", "UNKNOWN_ITEM") end
 		if amount > 0 then
-			if inv:getItemAmount(item) + amount > inv.m_ItemData[item]["Item_Max"] then return result("ERROR", "ITEM_MAX") end
-			if inv:giveItem(item, amount) == false then return result("ERROR", "INVENTORY_FULL") end
+			if inv.m_ItemData[item]["Item_Max"] >= 0 and inv:getItemAmount(item) + amount > inv.m_ItemData[item]["Item_Max"] then return result("ERROR", "ITEM_MAX") end
+			if inv:giveItemFromName(item, amount) == false then return result("ERROR", "INVENTORY_FULL") end
 		else
 			if inv:getItemAmount(item) < -amount then return result("ERROR", "NOT_ENOUGH") end
 			inv:removeItem(item, -amount)
@@ -312,7 +312,6 @@ function phpSDKEditPlayer(adminId, targetId, action, data)
 		local weaponId, ammo = math.floor(tonumber(data.weapon) or 0), math.max(0, math.floor(tonumber(data.amount) or 0))
 		player.m_GunBox = type(player.m_GunBox) == "table" and player.m_GunBox or {}
 		player.m_GunBox[tostring(slot)] = {WeaponId = weaponId, Amount = weaponId > 0 and ammo or 0, VIP = slot >= 4}
-		player:triggerEvent("receiveGunBoxData", player.m_GunBox)
 		player:save()
 		return result("SUCCESS")
 
@@ -2037,21 +2036,8 @@ function phpSDKVoucher(adminId, playerId, data)
 	for _, it in ipairs(type(data.items) == "table" and data.items or {}) do
 		local name, amount = tostring(it.item or ""), math.floor(tonumber(it.amount) or 0)
 		local info = inv and inv.m_ItemData[name]
-		local fits = false
-		if info and amount > 0 and inv:getItemAmount(name) + amount <= info["Item_Max"] then
-			local bag, stackMax = info["Tasche"], info["Stack_max"]
-			local stackSpace, empty = 0, 0
-			for place = 0, inv:getPlaces(bag) do
-				local id = inv:getItemID(bag, place)
-				if not id then
-					empty = empty + 1
-				elseif inv.m_Items[id]["Objekt"] == name and inv.m_Items[id]["Menge"] < stackMax then
-					stackSpace = stackSpace + (stackMax - inv.m_Items[id]["Menge"])
-				end
-			end
-			fits = math.ceil(math.max(0, amount - stackSpace) / stackMax) <= empty
-		end
-		local given = fits and inv:giveItem(name, amount) ~= false
+		local fits = info and amount > 0 and (info["Item_Max"] < 0 or inv:getItemAmount(name) + amount <= info["Item_Max"])
+		local given = fits and inv:giveItemFromName(name, amount) ~= false
 		items[#items + 1] = {item = name, amount = amount, ok = given, ticket = not given}
 	end
 	local weapons = {}
@@ -2509,42 +2495,34 @@ function phpSDKVoucherOffline(adminId, playerId, data)
 	if points > 0 then
 		result.points = (phpSDKAffected(sql, "UPDATE ??_character SET Points = Points + ? WHERE Id = ?", prefix, points, playerId) or 0) > 0
 	end
-	local slots = math.floor(tonumber(data.slots) or 21)
 	for _, it in ipairs(type(data.items) == "table" and data.items or {}) do
 		local name, amount = tostring(it.item or ""), math.floor(tonumber(it.amount) or 0)
-		local info = sql:queryFetchSingle("SELECT Tasche, stack_max, max_items, MaxWear FROM ??_inventory_items WHERE Objektname = ?", prefix, name)
+		local info = sql:queryFetchSingle("SELECT max_items, MaxWear FROM ??_inventory_items WHERE Objektname = ?", prefix, name)
 		local given = false
 		if info and amount > 0 then
-			local stackMax = math.max(1, tonumber(info.stack_max) or 1)
-			local rows = sql:queryFetch("SELECT id, Objekt, Platz, Menge, Value FROM ??_inventory_slots WHERE PlayerId = ? AND Tasche = ?", prefix, playerId, info.Tasche) or {}
-			local total, used, stacks, space = 0, {}, {}, 0
+			local rows = sql:queryFetch("SELECT id, Objekt, Platz, Menge, Value, Tasche FROM ??_inventory_slots WHERE PlayerId = ?", prefix, playerId) or {}
+			local total, used, stack = 0, {}, false
 			for _, s in ipairs(rows) do
-				used[tonumber(s.Platz)] = true
-				if s.Objekt == name then
+				if s.Tasche == Inventory.DefaultBag then
+					used[tonumber(s.Platz)] = true
+				end
+				if s.Objekt == name or s.Objekt == tostring(InventoryManager:getSingleton():getItemId(name)) then
 					total = total + tonumber(s.Menge)
-					if tostring(s.Value or "") == "" and tonumber(s.Menge) < stackMax then
-						stacks[#stacks + 1] = s
-						space = space + stackMax - tonumber(s.Menge)
+					if tostring(s.Value or "") == "" and not stack then
+						stack = s
 					end
 				end
 			end
-			local free = {}
-			for place = 0, slots - 1 do
-				if not used[place] then free[#free + 1] = place end
+			local freePlace = 0
+			while used[freePlace] do
+				freePlace = freePlace + 1
 			end
-			if total + amount <= tonumber(info.max_items) and math.ceil(math.max(0, amount - space) / stackMax) <= #free then
-				local left = amount
-				for _, s in ipairs(stacks) do
-					if left <= 0 then break end
-					local add = math.min(left, stackMax - tonumber(s.Menge))
-					sql:queryExec("UPDATE ??_inventory_slots SET Menge = ? WHERE id = ?", prefix, tonumber(s.Menge) + add, s.id)
-					left = left - add
-				end
-				local wear = (tonumber(info.MaxWear) or 0) > 0 and tostring(math.floor(tonumber(info.MaxWear))) or ""
-				for _, place in ipairs(free) do
-					if left <= 0 then break end
-					sql:queryExec("INSERT INTO ??_inventory_slots (PlayerId, Menge, Objekt, Platz, Tasche, Value, WearLevel) VALUES (?, ?, ?, ?, ?, '', NULLIF(?, ''))", prefix, playerId, math.min(left, stackMax), name, place, info.Tasche, wear)
-					left = left - math.min(left, stackMax)
+			if tonumber(info.max_items) < 0 or total + amount <= tonumber(info.max_items) then
+				if stack then
+					sql:queryExec("UPDATE ??_inventory_slots SET Menge = ? WHERE id = ?", prefix, tonumber(stack.Menge) + amount, stack.id)
+				else
+					local wear = (tonumber(info.MaxWear) or 0) > 0 and tostring(math.floor(tonumber(info.MaxWear))) or ""
+					sql:queryExec("INSERT INTO ??_inventory_slots (PlayerId, Menge, Objekt, Platz, Tasche, Value, WearLevel) VALUES (?, ?, ?, ?, ?, '', NULLIF(?, ''))", prefix, playerId, amount, name, freePlace, Inventory.DefaultBag, wear)
 				end
 				given = true
 			end
@@ -2918,6 +2896,57 @@ function phpSDKTexture(adminId, action, data)
 	return {status = "SUCCESS"}
 end
 
+local phpSDKItemFields = {
+	Info = "text", Icon = "text", Kategorie = "text", Gruppe = "text",
+	AlternativText = "textOrNull", Klasse = "textOrNull", Effekte = "json",
+	Gewicht = "number", Seltenheit = "number", max_items = "number", ModelID = "number",
+	wegwerfen = "number", Handel = "number", verbraucht = "number",
+	DienstItem = "number", Zerbrechlich = "number", WegwerfDrop = "number",
+	VerfallTage = "numberOrNull", VerfallAm = "numberOrNull", MaxWear = "numberOrNull",
+}
+
+function phpSDKItemEdit(adminId, itemId, fields)
+	itemId = tonumber(itemId)
+	if not itemId or type(fields) ~= "table" then return {status = "ERROR", error = "INVALID_DATA"} end
+	if not sql:queryFetchSingle("SELECT ID FROM ??_inventory_items WHERE ID = ?", sql:getPrefix(), itemId) then
+		return {status = "ERROR", error = "UNKNOWN_ITEM"}
+	end
+
+	local values = {}
+	for column, kind in pairs(phpSDKItemFields) do
+		local value = fields[column]
+		if value ~= nil then
+			value = tostring(value)
+			if kind == "number" or kind == "numberOrNull" then
+				if value == "" and kind == "numberOrNull" then
+					values[column] = false
+				elseif tonumber(value) then
+					values[column] = tonumber(value)
+				else
+					return {status = "ERROR", error = "INVALID_"..column}
+				end
+			elseif value == "" and kind ~= "text" then
+				values[column] = false
+			elseif kind == "json" and type(fromJSON(value)) ~= "table" then
+				return {status = "ERROR", error = "INVALID_"..column}
+			else
+				values[column] = value
+			end
+		end
+	end
+
+	for column, value in pairs(values) do
+		if value == false then
+			sql:queryExec(("UPDATE ??_inventory_items SET `%s` = NULL WHERE ID = ?"):format(column), sql:getPrefix(), itemId)
+		else
+			sql:queryExec(("UPDATE ??_inventory_items SET `%s` = ? WHERE ID = ?"):format(column), sql:getPrefix(), value, itemId)
+		end
+	end
+
+	InventoryManager:getSingleton():reloadItems()
+	return {status = "SUCCESS"}
+end
+
 function phpSDKStorageCleanup(adminId, area, file)
 	file = tostring(file or "")
 	if not file:match("^[%w%.%-_]+$") then return {status = "ERROR", error = "INVALID_FILE"} end
@@ -3014,33 +3043,21 @@ function phpSDKEditPlayerOffline(adminId, targetId, action, data)
 		sql:queryExec(("UPDATE ??_vehicle_trunks SET %s = ? WHERE Id = ?"):format(column), prefix, toJSON(value), trunk.Id)
 	elseif action == "inventory" then
 		local item, amount = tostring(data.item or ""), math.floor(tonumber(data.amount) or 0)
-		local info = sql:queryFetchSingle("SELECT Tasche, stack_max, max_items, MaxWear FROM ??_inventory_items WHERE Objektname = ?", prefix, item)
+		local info = sql:queryFetchSingle("SELECT max_items, MaxWear FROM ??_inventory_items WHERE Objektname = ?", prefix, item)
 		if not info then return result("ERROR", "UNKNOWN_ITEM") end
-		local rows = sql:queryFetch("SELECT id, Platz, Menge FROM ??_inventory_slots WHERE PlayerId = ? AND Objekt = ? ORDER BY Platz", prefix, targetId, item) or {}
-		local have, stack = 0, math.max(1, tonumber(info.stack_max) or 1)
+		local rows = sql:queryFetch("SELECT id, Platz, Menge FROM ??_inventory_slots WHERE PlayerId = ? AND (Objekt = ? OR Objekt = ?) ORDER BY Platz", prefix, targetId, item, tostring(InventoryManager:getSingleton():getItemId(item))) or {}
+		local have = 0
 		for _, r in ipairs(rows) do have = have + tonumber(r.Menge) end
 		if amount > 0 then
-			if have + amount > tonumber(info.max_items) then return result("ERROR", "ITEM_MAX") end
-			local used, free, space = {}, 0, 0
-			for _, r in ipairs(sql:queryFetch("SELECT Platz FROM ??_inventory_slots WHERE PlayerId = ? AND Tasche = ?", prefix, targetId, info.Tasche) or {}) do used[tonumber(r.Platz)] = true end
-			for place = 0, 20 do if not used[place] then free = free + 1 end end
-			for _, r in ipairs(rows) do space = space + math.max(0, stack - tonumber(r.Menge)) end
-			if math.ceil(math.max(0, amount - space) / stack) > free then return result("ERROR", "INVENTORY_FULL") end
-			local rest = amount
-			for _, r in ipairs(rows) do
-				if rest > 0 and tonumber(r.Menge) < stack then
-					local add = math.min(stack - tonumber(r.Menge), rest)
-					sql:queryExec("UPDATE ??_inventory_slots SET Menge = Menge + ? WHERE id = ?", prefix, add, r.id)
-					rest = rest - add
-				end
-			end
-			local wear = (tonumber(info.MaxWear) or 0) > 0 and tostring(math.floor(tonumber(info.MaxWear))) or ""
-			for place = 0, 20 do
-				if rest > 0 and not used[place] then
-					local put = math.min(stack, rest)
-					sql:queryExec("INSERT INTO ??_inventory_slots (PlayerId, Objekt, Platz, Menge, Tasche, Value, WearLevel) VALUES (?, ?, ?, ?, ?, '', NULLIF(?, ''))", prefix, targetId, item, place, put, info.Tasche, wear)
-					rest = rest - put
-				end
+			if tonumber(info.max_items) >= 0 and have + amount > tonumber(info.max_items) then return result("ERROR", "ITEM_MAX") end
+			if rows[1] then
+				sql:queryExec("UPDATE ??_inventory_slots SET Menge = Menge + ? WHERE id = ?", prefix, amount, rows[1].id)
+			else
+				local used, freePlace = {}, 0
+				for _, r in ipairs(sql:queryFetch("SELECT Platz FROM ??_inventory_slots WHERE PlayerId = ? AND Tasche = ?", prefix, targetId, Inventory.DefaultBag) or {}) do used[tonumber(r.Platz)] = true end
+				while used[freePlace] do freePlace = freePlace + 1 end
+				local wear = (tonumber(info.MaxWear) or 0) > 0 and tostring(math.floor(tonumber(info.MaxWear))) or ""
+				sql:queryExec("INSERT INTO ??_inventory_slots (PlayerId, Objekt, Platz, Menge, Tasche, Value, WearLevel) VALUES (?, ?, ?, ?, ?, '', NULLIF(?, ''))", prefix, targetId, item, freePlace, amount, Inventory.DefaultBag, wear)
 			end
 		else
 			if have < -amount then return result("ERROR", "NOT_ENOUGH") end

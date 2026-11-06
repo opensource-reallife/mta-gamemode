@@ -1777,7 +1777,7 @@ function FactionState:Event_FactionRearm()
 	if not self:isPlayerInDutyPickup(client) then return client:sendError(_("Du bist zu weit entfernt!", client)) end
 	if client:isFactionDuty() then
 		client.m_WeaponStoragePosition = client.position
-		client:triggerEvent("showFactionWeaponShopGUI", client.m_CurrentDutyPickup)
+		client:getFaction():getDepot():showArmory(client, client.m_CurrentDutyPickup)
 		client:setHealth(100)
 		client:setArmor(100)
 		StatisticsLogger:getSingleton():addHealLog(client, 100, "Faction Rearm Heal")
@@ -1793,11 +1793,11 @@ function FactionState:Event_FactionRearm()
 		local inv = client:getInventory()
 		if inv then
 			inv:removeAllItem("Einsatzhelm")
-			inv:giveItem("Einsatzhelm",1)
+			inv:giveItem(69,1)
 		end
 		if client:getFaction():isStateFaction() and client:getData("Faction:InSpecialDuty", true, true) then
 			inv:removeAllItem("Kevlar")
-			inv:giveItem("Kevlar", 1)
+			inv:giveItem(60, 1)
 		end
 	end
 end
@@ -1880,11 +1880,11 @@ function FactionState:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, pl
 				Guns:getSingleton():setWeaponInStorage(client, false, false)
 				client:sendInfo(_("Du bist nun im Dienst!", client))
 				client:getInventory():removeAllItem("Warnkegel")
-				client:getInventory():giveItem("Warnkegel", 5)
+				client:getInventory():giveItem(73, 5)
 				client:getInventory():removeAllItem("Einsatzhelm")
-				client:getInventory():giveItem("Einsatzhelm", 1)
+				client:getInventory():giveItem(69, 1)
 				client:getInventory():removeAllItem("Taser")
-				client:getInventory():giveItem("Taser", 1)
+				client:getInventory():giveItem(77, 1)
 				client:getInventory():removeItem("Kevlar", 1)
 
 				-- remove illegal items
@@ -2658,4 +2658,4 @@ function FactionState:stopCountDown(text)
 			end
 		end
 	end
-end
+end

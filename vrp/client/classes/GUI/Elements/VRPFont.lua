@@ -135,6 +135,7 @@ FontAwesomeSymbols = {
 	Building = "",
 	Medikit = "",
 	IDCard = "",
+	ThLarge = "\239\128\137",
 	Table = "", --chart
 	Bomb = "",
 	Taxi = "",

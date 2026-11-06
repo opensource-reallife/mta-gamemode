@@ -11,16 +11,23 @@ function ItemPumpkin:constructor()
 
     self.m_Model = 1935
 	self.m_Pumpkins = {}
-	WearableHelmet.objectTable["Kürbis"] = {1935, 0.05, 0, 0.8, 0, 180, "Kürbis", true}
-	--model, zOffset, yOffset, scale, rotX, rotZ
 end
 
 function ItemPumpkin:destructor()
 
 end
 
-function ItemPumpkin:use(...)
-	ItemManager:getSingleton():getInstance("Helm"):use(...)
+function ItemPumpkin:use(player)
+	local inventory = player:getInventory()
+	if inventory:getItemAmount("Kürbishut") > 0 then
+		player:sendError(_("Du hast bereits einen Kürbishut!", player))
+		return false
+	end
+	if not inventory:giveItemFromName("Kürbishut", 1, false, true) then
+		return false
+	end
+	inventory:removeItem("Kürbis", 1)
+	player:sendInfo(_("Du hast aus einem Kürbis einen Kürbishut gemacht! Du findest ihn unter Equipment.", player))
 end
 
 function ItemPumpkin:addObject(Id, pos, rot, interior, dimension)
@@ -40,7 +47,7 @@ function ItemPumpkin:onPumpkinClick(button, state, player)
         if source:getModel() == self.m_Model then
             if player:getInventory():getFreePlacesForItem("Kürbis") >= 1 then
                 source:destroy()
-                player:getInventory():giveItem("Kürbis", 1)
+                player:getInventory():giveItem(27, 1)
                 player:sendInfo(_("Du hast einen Kürbis gesammelt!", player))
 
 				player:giveAchievement(109) -- Finde deinen ersten Kürbis

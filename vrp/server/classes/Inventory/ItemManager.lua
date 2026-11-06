@@ -10,140 +10,21 @@ ItemManager.Map = {}
 
 function ItemManager:constructor()
 	addRemoteEvents{"onClientBreakItem"}
-	self.m_ClassItems = {
-		["Keypad"] = ItemKeyPad,
-		["Tor"] = ItemDoor,
-		["Einrichtung"] = ItemFurniture,
-		["Eingang"] = ItemEntrance,
-		["Transmitter"] = ItemTransmitter,
-		["Barrikade"] = ItemBarricade,
-		["Warnkegel"] = ItemBarricade,
-		["Sky Beam"] = ItemSkyBeam,
-		["Blitzer"] = ItemSpeedCam,
-		["Nagel-Band"] = ItemNails,
-		["Radio"] = ItemRadio,
-		["Sprengstoff"] = ItemBomb,
-		["Weed"] = DrugsWeed,
-		["Heroin"] = DrugsHeroin,
-		["Shrooms"] = DrugsShroom,
-		["Kokain"] = DrugsCocaine,
-		["Burger"] = ItemFood,
-		["Lebkuchen"] = ItemFood,
-		["Wuerstchen"] = ItemFood,
-		["Frittiertes Hähnchen"] = ItemFood,
-		["Pommes"] = ItemFood,
+	self.m_ClassItems = {}
 
-		["Kuheuter mit Pommes"] = ItemFood,
-		["Zombie-Burger"] = ItemFood,
-		["Suessigkeiten"] = ItemFood,
-		["Zuckerstange"] = ItemFood,
-		["Pizza"] = ItemFood,
-		["Pilz"] = ItemFood,
-		["Zigarette"] = ItemFood,
-		["Zigarettenpackung"] = ItemCigarettePack,
-		["Donut"] = ItemFood,
-		["Keks"] = ItemFood,
-		["Apfel"] = ItemFood,
-		["Karotte"] = ItemFood,
-		["Birne"] = ItemFood,
-		["Erdbeeren"] = ItemFood,
-		["KöderDummy"] = ItemFood,
-		["Donutbox"] = ItemDonutBox,
-		["Osterei"] = ItemEasteregg;
-		["Kürbis"] = ItemPumpkin;
-		["Taser"] = ItemTaser;
-		["SLAM"] = ItemSlam;
-		["Rauchgranate"] = ItemSmokeGrenade;
-		["DefuseKit"] = ItemDefuseKit;
-		["Päckchen"] = ItemPresent;
-
-		["Bambusstange"] = ItemFishing,
-		["Angelrute"] = ItemFishing,
-		["Profi Angelrute"] = ItemFishing,
-		["Legendäre Angelrute"] = ItemFishing,
-		["Kleine Kühltasche"] = ItemFishing,
-		["Kühltasche"] = ItemFishing,
-		["Kühlbox"] = ItemFishing,
-		["Köder"] = ItemFishing,
-		["Leuchtköder"] = ItemFishing,
-		["Pilkerköder"] = ItemFishing,
-		["Schwimmer"] = ItemFishing,
-		["Spinner"] = ItemFishing,
-		["Fischlexikon"] = ItemFishing,
-
-		["Wuerfel"] = ItemDice,
-		["Weed-Samen"] = Plant,
-		["Apfelbaum-Samen"] = Plant,
-		["Blumen-Samen"] = Plant,
-		["Karotten-Samen"] = Plant,
-		["Birnbaum-Samen"] = Plant,
-		["Erdbeer-Samen"] = Plant,
-		["Kanne"] = ItemCan,
-		["Handelsvertrag"] = ItemSellContract,
-		["Ausweis"] = ItemIDCard,
-		["Benzinkanister"] = ItemFuelcan,
-		["Reparaturkit"] = ItemRepairKit,
-
-		--Medical
-		["Medikit"] = ItemFood,
-		["Bandage"] = ItemFood,
-		
-		--Alcohol
-		["Bier"] = ItemFood,
-		["Whiskey"] = ItemFood,
-		["Sex on the Beach"] = ItemFood,
-		["Pina Colada"] = ItemFood,
-		["Monster"] = ItemFood,
-		["Shot"] = ItemFood,
-		["Cuba-Libre"] = ItemFood,
-		["Gluehwein"] = ItemFood,
-
-		--Firework
-		["Rakete"] = ItemFirework,
-		["Rohrbombe"] = ItemFirework,
-		["Raketen Batterie"] = ItemFirework,
-		["Römische Kerze"] = ItemFirework,
-		["Römische Kerzen Batterie"] = ItemFirework,
-		["Kugelbombe"] = ItemFirework,
-		["Böller"] = ItemFirework,
-
-		--//Wearables
-		["Helm"] = WearableHelmet,
-		["Motorcross-Helm"] = WearableHelmet,
-		["Pot-Helm"] = WearableHelmet,
-		["Gasmaske"] = WearableHelmet,
-		["Stern"] = WearableHelmet,
-		["Einsatzhelm"] = WearableHelmet,
-		["Hasenohren"] = WearableHelmet,
-		["Weihnachtsmütze"] = WearableHelmet,
-		["Lebkuchen-Maske"] = WearableHelmet,
-		["Kevlar"] = WearableShirt,
-		["Tragetasche"] = WearableShirt,
-		["Swatschild"] = WearablePortables,
-		["Kleidung"] = WearableClothes,
-
-		["Clubkarte"] = ItemPlayHouseCard,
-
-		["Schuh"] = ItemThrowShoe, 
-		["Abfall"] = ItemThrowTrash,
-		["Flasche"] = ItemThrowBottle,  
-	}
-
-	self.m_Properties = {
-		["Barrikade"] = {true}, --// breakable,
-		["Warnkegel"] = {true}, --// breakable,
-	}
-
-	for name, class in pairs(self.m_ClassItems) do
-		local breakable = false
-		if self.m_Properties[name] then
-			breakable = true
+	for name, data in pairs(InventoryManager:getSingleton().m_ItemData) do
+		local class = (data["Klasse"] and _G[data["Klasse"]]) or (data["Effekte"] and ItemFood)
+		if class then
+			local instance = class:new()
+			instance:setName(name)
+			instance:loadItem()
+			instance.m_Breakable = data["Zerbrechlich"] == 1
+			data["HatAlternativ"] = instance:hasSecondaryUse(name)
+			self.m_ClassItems[name] = class
+			ItemManager.Map[name] = instance
+		elseif data["Klasse"] then
+			outputServerLog(("[INV] Unbekannte Item-Klasse '%s' bei Item '%s'"):format(data["Klasse"], name))
 		end
-		local instance = class:new( )
-		instance:setName(name)
-		instance:loadItem()
-		instance.m_Breakable = breakable
-		ItemManager.Map[name] = instance
 	end
 
 	addEventHandler("onClientBreakItem",root, bind(self.Event_onItemBreak,self))

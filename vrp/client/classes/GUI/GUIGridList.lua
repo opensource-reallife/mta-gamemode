@@ -9,7 +9,7 @@ GUIGridList = inherit(GUIElement)
 inherit(GUIColorable, GUIGridList)
 inherit(GUIFontContainer, GUIGridList)
 
-function GUIGridList:constructor(posX, posY, width, height, parent, alternateColor, lineColor)
+function GUIGridList:constructor(posX, posY, width, height, parent, alternateColor, lineColor, itemHeight)
 	GUIElement.constructor(self, posX, posY, width, height, parent)
 	GUIColorable.constructor(self, tocolor(0, 0, 0, 180))
 	GUIFontContainer.constructor(self, "", 1, VRPFont(28))
@@ -17,7 +17,7 @@ function GUIGridList:constructor(posX, posY, width, height, parent, alternateCol
 	self.m_ColumnBGColor = self.m_Color
 	self.m_AlternateColor = alternateColor
 	self.m_LineColor = lineColor
-	self.m_ItemHeight = 30
+	self.m_ItemHeight = itemHeight or 30
 	self.m_Columns = {}
 	self.m_ScrollArea = GUIScrollableArea:new(0, self.m_ItemHeight, self.m_Width, self.m_Height-self.m_ItemHeight, self.m_Width, 1, true, false, self, self.m_ItemHeight)
 	self.m_SelectedItem = nil
