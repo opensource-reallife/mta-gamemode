@@ -154,6 +154,7 @@ function GUIGridList:setSelectedItem(itemIndex)
 		for k, item in ipairs(self:getItems()) do
 			item:setBackgroundColor(Color.Clear)
 		end
+		self:restoreSelectedItemColor()
 		self.m_SelectedItem = nil
 		self:anyChange()
 	else
@@ -175,14 +176,20 @@ function GUIGridList:clear()
 	self.m_ScrollArea:resize(self.m_Width, 1)
 end
 
+function GUIGridList:restoreSelectedItemColor()
+	local item = self.m_SelectedItem
+	if item and item.m_InternalClickSavedColor then
+		for i, color in pairs(item.m_InternalClickSavedColor) do
+			item:setColumnColor(i, color)
+		end
+		item.m_InternalClickSavedColor = nil
+	end
+end
+
 function GUIGridList:onInternalSelectItem(item)
 	if self.m_SelectedItem then
 		self.m_SelectedItem:setBackgroundColor(Color.Clear)
-		if item.m_InternalClickSavedColor then -- it had another color which got changed by click
-			for i, color in pairs(item.m_InternalClickSavedColor) do
-				self.m_SelectedItem:setColumnColor(i, color)
-			end
-		end
+		self:restoreSelectedItemColor()
 	end
 
 	self.m_SelectedItem = item
