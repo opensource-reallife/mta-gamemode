@@ -134,7 +134,7 @@ end
 function table.copy(tab)
 	local temp = {}
 	for k, v in pairs(tab) do
-		temp[k] = type(v) == "table" and table.copy(tab) or v
+		temp[k] = type(v) == "table" and table.copy(v) or v
 	end
 	return temp
 end
@@ -1061,4 +1061,4 @@ function formatDateStringToTimeStamp(dateString)
 	local year, month, day, hour, minute, second = dateString:match("(%d+)%-(%d+)%-(%d+) (%d+)%:(%d+)%:(%d+)")
 	year, month, day, hour, minute, second = tonumber(year), tonumber(month), tonumber(day), tonumber(hour), tonumber(minute), tonumber(second)
 	return getTimestamp(year, month, day, hour, minute, second)
-end
+end
