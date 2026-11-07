@@ -822,8 +822,8 @@ function Admin:Event_playerFunction(func, target, reason, duration, admin)
 		admin:setPrivateSync("isSpecting", target)
 		admin.m_PreSpectInt = getElementInterior(admin)
 		admin.m_PreSpectDim = getElementDimension(admin)
-		admin.m_SpectInteriorFunc = function(int) setElementInterior(admin, int) admin:setCameraInterior(int) end -- using overloaded methods to prevent that onElementInteriorChange will triggered
-		admin.m_SpectDimensionFunc = function(dim) setElementDimension(admin, dim) end -- using overloaded methods to prevent that onElementDimensionChange will triggered
+		admin.m_SpectInteriorFunc = function(_, int) setElementInterior(admin, int) admin:setCameraInterior(int) end -- using overloaded methods to prevent that onElementInteriorChange will triggered
+		admin.m_SpectDimensionFunc = function(_, dim) setElementDimension(admin, dim) end -- using overloaded methods to prevent that onElementDimensionChange will triggered
 		admin.m_SpectStop =
 			function()
 				if target.spectBy then
@@ -843,6 +843,7 @@ function Admin:Event_playerFunction(func, target, reason, duration, admin)
 					admin:setFrozen(false)
 					if admin:isInVehicle() then admin:getOccupiedVehicle():setFrozen(false) end
 					admin:setInterior(admin.m_PreSpectInt)
+					admin:setCameraInterior(admin.m_PreSpectInt)
 					admin:setDimension(admin.m_PreSpectDim)
 
 					admin.m_IsSpecting = false
