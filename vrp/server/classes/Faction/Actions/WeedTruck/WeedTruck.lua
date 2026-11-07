@@ -351,7 +351,7 @@ function WeedTruck:onDestinationPedClick(player, ped, stateDestination)
 					StateEvidence:getSingleton():addItemToEvidence(player, "Weed", WeedTruck.WeedPerPackage, false)
 				else
 					if ped.faction == player:getFaction() then
-						player:getInventory():giveItem(1, WeedTruck.WeedPerPackage)
+						faction:getDepot():addItem(player, "Weed", WeedTruck.WeedPerPackage, true)
 						breakingNewsText = "Paket %d von %d wurde von der/dem %s abgegeben!"
 					else
 						breakingNewsText = "Paket %d von %d wurde an das/die %s übergeben!"
@@ -364,6 +364,7 @@ function WeedTruck:onDestinationPedClick(player, ped, stateDestination)
 					StateEvidence:getSingleton():addItemToEvidence(player, "Weed", WeedTruck.WeedPerPackage, false)
 				else 
 					player:sendPedChatMessage(ped:getData("Ped:Name"), _("Haste noch mehr? Wenn nicht kannste wieder gehen.", player))
+					ped.faction:getDepot():addItem(player, "Weed", WeedTruck.WeedPerPackage, true)
 				end
 				breakingNewsText = "Paket %d von %d wurde an das/die %s übergeben!"
 				PlayerManager:getSingleton():breakingNews(breakingNewsText, 10-self:getRemainingPackageAmount()+1, WeedTruck.MaxPackages, ped.faction:getShortName())
