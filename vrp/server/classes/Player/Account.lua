@@ -58,11 +58,7 @@ function Account.login(player, username, password, pwhash, enableAutologin, webL
 
 	local account = sql:queryFetchSingle("SELECT Id, ForumId, Name, Password, Salt, RegisterDate, TeamspeakId, AutologinToken FROM ??_account WHERE LCASE(Name) = ?", sql:getPrefix(), username)
 	local storedHash = account and account.Password and account.Password:sub(1, 2) == "$2"
-	if account and not account.Password and tonumber(account.ForumId) ~= 0 then
-		player:triggerEvent("loginfailed", _("Dein Passwort muss einmalig übernommen werden. Melde dich dazu mit deinem bisherigen Passwort im Control Panel an: cp.openreallife.net", player))
-		return
-	end
-	if player.m_WebLogin and account and not storedHash and (account.Password == "" or not account.Password) then
+	if player.m_WebLogin and account and not storedHash and (account.Password == "" or (not account.Password and tonumber(account.ForumId) == 0)) then
 		player:triggerEvent("loginNeedReset", account.Name)
 		return
 	end
@@ -85,8 +81,26 @@ function Account.login(player, username, password, pwhash, enableAutologin, webL
 
 	local passwordHash = sha256((row.Salt or "")..password)
 	if passwordHash ~= row.Password then
-		player:triggerEvent("loginfailed", _("Falsches Passwort", player))
-		return
+		if tonumber(row.ForumId) == 0 or row.Password == "" then
+			player:triggerEvent("loginfailed", _("Falsches Passwort", player))
+			return
+		end
+
+		Account.checkForumPassword(player, tonumber(row.ForumId), password, Async.waitFor(self))
+		local match, wait = Async.wait()
+		if not isElement(player) then return end
+
+		if match == false then
+			player:triggerEvent("loginfailed", wait and _("Zu viele Versuche. Versuche es in %d Minuten erneut.", player, wait) or _("Falsches Passwort", player))
+			return
+		elseif match == nil then
+			if player.m_WebLogin then
+				player:triggerEvent("loginNeedReset", row.Name)
+			else
+				player:triggerEvent("loginfailed", _("Dein Passwort konnte nicht geprüft werden. Versuche es später erneut oder nutze „Passwort vergessen“ im Control Panel: cp.openreallife.net", player))
+			end
+			return
+		end
 	end
 	Account.storePassword(row.Id, password)
 
@@ -122,6 +136,21 @@ function Account.storePassword(id, password)
 			sql:queryExec("UPDATE ??_account SET Password = ?, Salt = NULL WHERE Id = ?", sql:getPrefix(), hash, id)
 		end
 	end)
+end
+
+function Account.checkForumPassword(player, forumId, password, callback)
+	local secret = Config.get("CP_SECRET")
+	if not secret or secret == "" then return callback(nil) end
+	jwtSign(function(token)
+		if not token then return callback(nil) end
+		fetchRemote(CP_WEB_PATH .. "/api_forum_password.php", {method = "POST", connectionAttempts = 2, formFields = {token = token}}, function(data, info)
+			local result = info and info.success and fromJSON(data)
+			if type(result) ~= "table" then return callback(nil) end
+			if result.ok then return callback(result.match == true) end
+			if tonumber(result.wait) then return callback(false, tonumber(result.wait)) end
+			callback(nil)
+		end)
+	end, {["forumId"] = forumId, ["password"] = password, ["ip"] = player:getIP(), ["aud"] = "cp-forumpw", ["exp"] = getRealTime().timestamp + 60}, JWT_ALGORITHM_HS256, secret)
 end
 
 function Account.isEmailValid(email)

@@ -4532,6 +4532,12 @@ msgstr "This account doesn't exist"
 msgid "Falsches Passwort"
 msgstr "Wrong password"
 
+msgid "Zu viele Versuche. Versuche es in %d Minuten erneut."
+msgstr "Too many attempts. Please try again in %d minutes."
+
+msgid "Dein Passwort konnte nicht geprüft werden. Versuche es später erneut oder nutze „Passwort vergessen“ im Control Panel: cp.openreallife.net"
+msgstr "Your password could not be checked. Please try again later or use “Forgot password” in the control panel: cp.openreallife.net"
+
 msgid "Bettler-Geschenk"
 msgstr "Beggar gift"
 
