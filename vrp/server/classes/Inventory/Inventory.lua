@@ -723,6 +723,32 @@ function Inventory:isWeaponContext()
 	return isInventoryWeaponContext(self.m_Owner)
 end
 
+local AMMO_SYNC_DELAY = 2000
+
+function Inventory:setArmedAmmo(weaponId, rounds)
+	self.m_AmmoPending = self.m_AmmoPending or {}
+	self.m_AmmoPending[weaponId] = true
+	_setWeaponAmmo(self.m_Owner, weaponId, rounds)
+end
+
+function Inventory:isArmedAmmoPending(weaponId)
+	local pending = self.m_AmmoPending and self.m_AmmoPending[weaponId]
+	if not pending then return false end
+
+	if getPedWeapon(self.m_Owner) ~= weaponId then
+		self.m_AmmoPending[weaponId] = true
+		return true
+	end
+	if pending == true then
+		self.m_AmmoPending[weaponId] = getTickCount()
+		return true
+	end
+	if getTickCount() - pending < AMMO_SYNC_DELAY then return true end
+
+	self.m_AmmoPending[weaponId] = nil
+	return false
+end
+
 function Inventory:syncArmedAmmo()
 	if self.m_SyncingAmmo or not isElement(self.m_Owner) or isPedDead(self.m_Owner) or not self:isWeaponContext() then return end
 
@@ -731,7 +757,7 @@ function Inventory:syncArmedAmmo()
 	for slot = 0, 12 do
 		local weaponId = getPedWeapon(self.m_Owner, slot)
 		local ammoItem = weaponId > 0 and manager:getWeaponItemName(weaponId) and self:getAmmoItemName(weaponId)
-		if ammoItem then
+		if ammoItem and not self:isArmedAmmoPending(weaponId) then
 			local carried = self:getItemAmount(ammoItem)
 			local loaded = getPedTotalAmmo(self.m_Owner, slot)
 			if loaded < carried then
@@ -750,11 +776,11 @@ function Inventory:refreshArmedAmmo(itemName)
 	if weaponId and self:isWeaponArmed(weaponId) then
 		local rounds = self:getRounds(weaponId)
 		if rounds > 0 then
-			_setWeaponAmmo(self.m_Owner, weaponId, rounds)
+			self:setArmedAmmo(weaponId, rounds)
 		elseif THROWABLE_WEAPONS[weaponId] then
 			rawTakeWeapon(self.m_Owner, weaponId)
 		else
-			_setWeaponAmmo(self.m_Owner, weaponId, 0)
+			self:setArmedAmmo(weaponId, 0)
 		end
 	end
 end
@@ -772,7 +798,7 @@ function Inventory:armWeapon(weaponId, current)
 	local rounds = NO_MUNITION_WEAPONS[weaponId] and 1 or self:getRounds(weaponId)
 	if previous == weaponId then
 		if not NO_MUNITION_WEAPONS[weaponId] then
-			_setWeaponAmmo(self.m_Owner, weaponId, rounds)
+			self:setArmedAmmo(weaponId, rounds)
 		end
 	else
 		rawGiveWeapon(self.m_Owner, weaponId, rounds, current)
