@@ -171,7 +171,7 @@ Tour.Data = {
 	{
 		["Title"] = "Formel 1 - Naja fast",
 		["Description"] = "Der letzte Punkt unserer Tour führt zu einem richtigen Highlight. Der %s Kartbahn!",
-		["Success"] = "Hier kannst du Rennen gegen die Uhr fahren und neue Toptimes aufstellen. Das wars mit der Tour, weiter Hilfe findest du unter F1, /report oder im Forum!",
+		["Success"] = "Hier kannst du Rennen gegen die Uhr fahren und neue Toptimes aufstellen. Das wars mit der Tour, weiter Hilfe findest du unter F1, /report oder im Control Panel!",
 		["Position"] = Vector3(1295.52, 149.98, 19),
 		["Money"] = 0
 	},

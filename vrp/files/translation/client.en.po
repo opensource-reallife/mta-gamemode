@@ -2230,11 +2230,11 @@ msgstr "error text gets loaded here"
 msgid "Da alle Regeln in einem Dokument stehen wirkt der Scrollbalken erscheckend klein - aber keine Sorge, wichtig für dich sind für den Anfang nur die Regeln von §1 - §5.\nMit gedrückter Shift-Taste kannst du im Dokument schneller scrollen."
 msgstr "Since all rules are in one document, the scrollbar might seem surprisingly small - but don't worry, for starters, only rules from §1 to §5 are essential for you. You can use the Shift key to scroll through the document faster."
 
-msgid "Für deine Serial existiert bereits ein Account. Wenn du mit anderen Spielern im gleichen Netzwerk spielen möchtest, musst du einen Multiaccount-Antrag im Forum (forum.openreallife.net) verfassen."
-msgstr "Your serial is already linked to an account. If you want to play with other players in the same network, you have to write a multi-account request in the forum (forum.openreallife.net)."
+msgid "Für deine Serial existiert bereits ein Account. Wenn du mit anderen Spielern im gleichen Netzwerk spielen möchtest, musst du im Control Panel (cp.openreallife.net) ein Ticket erstellen."
+msgstr "Your serial is already linked to an account. If you want to play with other players in the same network, you have to create a ticket in the control panel (cp.openreallife.net)."
 
-msgid "Deine Serial wurde zuletzt vom Spieler '%s' benutzt! Wenn du mit anderen Spielern im gleichen Netzwerk spielen möchtest, musst du einen Multiaccount-Antrag im Forum (forum.openreallife.net) verfassen."
-msgstr "Your serial was last used by the player '%s'! If you want to play with other players in the same network, you have to write a multi-account request in the forum (forum.openreallife.net)."
+msgid "Deine Serial wurde zuletzt vom Spieler '%s' benutzt! Wenn du mit anderen Spielern im gleichen Netzwerk spielen möchtest, musst du im Control Panel (cp.openreallife.net) ein Ticket erstellen."
+msgstr "Your serial was last used by the player '%s'! If you want to play with other players in the same network, you have to create a ticket in the control panel (cp.openreallife.net)."
 
 msgid "Regelwerk"
 msgstr "Rules"
@@ -4957,8 +4957,8 @@ msgstr "Formula 1 - Well, almost"
 msgid "Der letzte Punkt unserer Tour führt zu einem richtigen Highlight. Der %s Kartbahn!"
 msgstr "The final point of our tour leads to a real highlight. The %s go-kart track!"
 
-msgid "Hier kannst du Rennen gegen die Uhr fahren und neue Toptimes aufstellen. Das wars mit der Tour, weiter Hilfe findest du unter F1, /report oder im Forum!"
-msgstr "Here, you can race against the clock and set new top times. That's it for the tour; for further assistance, you can find help under F1, /report, or in the forum!"
+msgid "Hier kannst du Rennen gegen die Uhr fahren und neue Toptimes aufstellen. Das wars mit der Tour, weiter Hilfe findest du unter F1, /report oder im Control Panel!"
+msgstr "Here, you can race against the clock and set new top times. That's it for the tour; for further assistance, you can find help under F1, /report, or in the control panel!"
 
 msgid "Um nicht AFK gesetzt zu werden, gib folgenden Befehl ein: /noafk %s"
 msgstr "To avoid getting set AFK, enter the following command: /noafk %s"
@@ -6655,8 +6655,8 @@ msgstr "Copied to the clipboard."
 msgid "Zu viele Anfragen. Versuche es in %d Minuten erneut."
 msgstr "Too many requests. Please try again in %d minutes."
 
-msgid "Verbindung zum Forum fehlgeschlagen! (%d/%d)\nVersuche erneut%s"
-msgstr "Connection to the forum failed! (%d/%d)\nTrying again%s"
+msgid "Verbindung zum Server fehlgeschlagen! (%d/%d)\nVersuche erneut%s"
+msgstr "Connection to the server failed! (%d/%d)\nTrying again%s"
 
 msgid "Du wurdest AFK gesetzt!\nGib folgenden Befehl ein: /noafk %s"
 msgstr "You were set AFK!\nEnter the command: /noafk %s"

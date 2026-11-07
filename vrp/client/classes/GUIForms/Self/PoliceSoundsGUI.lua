@@ -66,7 +66,7 @@ function PoliceSoundsGUI:constructor()
         stopSound(testsound)
     else
         if not fileExists("_custom/files/audio/police/script/Bank_004/sound_001.wav") then
-            self.m_Label = GUIGridLabel:new(1, 9, 7, 1, "Fehler: Dir fehlen Sound-Dateien, lade Sie dir im Forum herunter!", self.m_Window)
+            self.m_Label = GUIGridLabel:new(1, 9, 7, 1, "Fehler: Dir fehlen Sound-Dateien, lade Sie dir im Control Panel herunter!", self.m_Window)
         end
     end
 end

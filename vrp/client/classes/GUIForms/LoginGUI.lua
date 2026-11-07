@@ -289,9 +289,9 @@ function LoginGUI:showRegisterMultiaccountError(name)
 	self.m_Elements.checkAcceptRules:setVisible(false)
 	self.m_Elements.cLblRules:setVisible(false)
 
-	local text = _("Für deine Serial existiert bereits ein Account. Wenn du mit anderen Spielern im gleichen Netzwerk spielen möchtest, musst du einen Multiaccount-Antrag im Forum (forum.openreallife.net) verfassen.")
+	local text = _("Für deine Serial existiert bereits ein Account. Wenn du mit anderen Spielern im gleichen Netzwerk spielen möchtest, musst du im Control Panel (cp.openreallife.net) ein Ticket erstellen.")
 	if name then
-		text = _("Deine Serial wurde zuletzt vom Spieler '%s' benutzt! Wenn du mit anderen Spielern im gleichen Netzwerk spielen möchtest, musst du einen Multiaccount-Antrag im Forum (forum.openreallife.net) verfassen.", name)
+		text = _("Deine Serial wurde zuletzt vom Spieler '%s' benutzt! Wenn du mit anderen Spielern im gleichen Netzwerk spielen möchtest, musst du im Control Panel (cp.openreallife.net) ein Ticket erstellen.", name)
 	end
 	self.m_Elements.ErrorLbl:setVisible(true)
 	self.m_Elements.ErrorLbl:setText(text)
@@ -341,7 +341,7 @@ function LoginGUI:updateTexts()
 	if self.m_QueuePosition and self.m_QueuePosition > 1 then
 		text = _("Position in Warteschlange: %d", self.m_QueuePosition)
 	elseif self.m_ConnectionAttempt and self.m_ConnectionAttempt > 0 then
-		text = _("Verbindung zum Forum fehlgeschlagen! (%d/%d)\nVersuche erneut%s", self.m_ConnectionAttempt-1, FORUM_MAX_CONNECTION_ATTEMPTS-1, self.m_Dots)
+		text = _("Verbindung zum Server fehlgeschlagen! (%d/%d)\nVersuche erneut%s", self.m_ConnectionAttempt-1, FORUM_MAX_CONNECTION_ATTEMPTS-1, self.m_Dots)
 	end
 
 	button:setText(buttonText)
@@ -396,7 +396,7 @@ addEventHandler("loginInformationUpdate", root,
 		if LoginGUI:isInstantiated() then
 			if connectionAttempt == true then
 				LoginGUI:getSingleton():setLoggingIn(false)
-				ErrorBox:new(_"Verbindung zum Forum nicht möglich!")
+				ErrorBox:new(_"Verbindung zum Server nicht möglich!")
 				return
 			end
 			LoginGUI:getSingleton().m_QueuePosition = queuePosition

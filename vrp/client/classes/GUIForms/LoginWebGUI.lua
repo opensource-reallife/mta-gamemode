@@ -150,7 +150,7 @@ function LoginWebGUI:updateTexts()
 	if self.m_QueuePosition and self.m_QueuePosition > 1 then
 		text = _("Position in Warteschlange: %d", self.m_QueuePosition)
 	elseif self.m_ConnectionAttempt and self.m_ConnectionAttempt > 0 then
-		text = _("Verbindung zum Forum fehlgeschlagen! (%d/%d)\nVersuche erneut%s", self.m_ConnectionAttempt-1, FORUM_MAX_CONNECTION_ATTEMPTS-1, "...")
+		text = _("Verbindung zum Server fehlgeschlagen! (%d/%d)\nVersuche erneut%s", self.m_ConnectionAttempt-1, FORUM_MAX_CONNECTION_ATTEMPTS-1, "...")
 	end
 	if text ~= self.m_StatusText then
 		self.m_StatusText = text
@@ -281,7 +281,7 @@ addEventHandler("loginInformationUpdate", root,
 		if LoginWebGUI:isInstantiated() then
 			if connectionAttempt == true then
 				LoginWebGUI:getSingleton():setLoggingIn(false)
-				ErrorBox:new(_"Verbindung zum Forum nicht möglich!")
+				ErrorBox:new(_"Verbindung zum Server nicht möglich!")
 				return
 			end
 			LoginWebGUI:getSingleton().m_QueuePosition = queuePosition
