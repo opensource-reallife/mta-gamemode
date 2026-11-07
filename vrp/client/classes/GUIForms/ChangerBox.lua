@@ -6,6 +6,7 @@
 -- *
 -- ****************************************************************************
 ChangerBox = inherit(GUIForm)
+ChangerBox.m_IsDialog = true
 
 function ChangerBox:constructor(title, text, items, callback)
 	GUIForm.constructor(self, screenWidth/2 - screenWidth*0.4/2, screenHeight/2 - screenHeight*0.18/2, screenWidth*0.4, screenHeight*0.18)

@@ -6,7 +6,7 @@
 -- *
 -- ****************************************************************************
 QuestionBox = inherit(GUIForm)
-inherit(Singleton, QuestionBox)
+QuestionBox.m_IsDialog = true
 
 function QuestionBox:constructor(text, yesCallback, noCallback, rangeElement, range)
 	GUIForm.constructor(self, screenWidth/2 - screenWidth*0.4/2, screenHeight/2 - screenHeight*0.18/2, screenWidth*0.4, screenHeight*0.18, true, false, rangeElement, range)
@@ -46,6 +46,8 @@ addEventHandler("questionBox", root,
 addEvent("questionBoxClose", true)
 addEventHandler("questionBoxClose", root,
 	function()
-		delete(QuestionBox:getSingleton())
+		if GUIForm.ms_Dialog and instanceof(GUIForm.ms_Dialog, QuestionBox) then
+			delete(GUIForm.ms_Dialog)
+		end
 	end
 )

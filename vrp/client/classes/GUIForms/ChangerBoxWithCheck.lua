@@ -6,6 +6,7 @@
 -- *
 -- ****************************************************************************
 ChangerBoxWithCheck = inherit(GUIForm)
+ChangerBoxWithCheck.m_IsDialog = true
 
 function ChangerBoxWithCheck:constructor(title, text, items, items2, checkBoxText, callback)
 	GUIForm.constructor(self, screenWidth/2 - 707/2, screenHeight/2 - 218/2, 707, 218)

@@ -6,7 +6,7 @@
 -- *
 -- ****************************************************************************
 InputBox = inherit(GUIForm)
-inherit(Singleton, InputBox)
+InputBox.m_IsDialog = true
 
 function InputBox:constructor(title, text, callback, integerOnly, offsetY)
 	local offsetY = offsetY or 0
@@ -68,7 +68,7 @@ addEventHandler("inputBox", root,
 )
 
 InputBoxWithCheckbox = inherit(GUIForm)
-inherit(Singleton, InputBoxWithCheckbox)
+InputBoxWithCheckbox.m_IsDialog = true
 
 function InputBoxWithCheckbox:constructor(title, text, textCheckbox ,callback, integerOnly, offsetY)
 	local offsetY = offsetY or 0

@@ -6,6 +6,7 @@
 -- *
 -- ****************************************************************************
 PasswordBox = inherit(GUIForm)
+PasswordBox.m_IsDialog = true
 
 function PasswordBox:constructor(password, yesCallback, noCallback)
 	GUIForm.constructor(self, screenWidth/2 - screenWidth*0.4/2, screenHeight/2 - screenHeight*0.18/2, screenWidth*0.4, screenHeight*0.18)

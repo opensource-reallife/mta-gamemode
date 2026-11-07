@@ -6,6 +6,7 @@
 -- *
 -- ****************************************************************************
 InputBoxWithChanger = inherit(GUIForm)
+InputBoxWithChanger.m_IsDialog = true
 
 function InputBoxWithChanger:constructor(title, text, input, items, callback)
     GUIWindow.updateGrid()

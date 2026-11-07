@@ -1,4 +1,5 @@
 ItemAmountBox = inherit(GUIForm)
+ItemAmountBox.m_IsDialog = true
 
 function ItemAmountBox:constructor(title, text, maxAmount, callback)
 	local scale = Inventory.getScale()

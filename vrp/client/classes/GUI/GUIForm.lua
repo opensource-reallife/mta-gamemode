@@ -10,7 +10,15 @@ GUIForm.Map = {}
 GUIForm.BlurCounter = 0
 
 function GUIForm:constructor(posX, posY, width, height, incrementCursorCounter, postGUI, rangeElement, rangeToClose)
+	if self.m_IsDialog and GUIForm.ms_Dialog then
+		delete(GUIForm.ms_Dialog)
+	end
+
 	CacheArea.constructor(self, posX or 0, posY or 0, width or screenWidth, height or screenHeight, true, true, postGUI)
+
+	if self.m_IsDialog then
+		GUIForm.ms_Dialog = self
+	end
 	self.m_KeyBinds = {}
 	if incrementCursorCounter ~= false then
 		Cursor:show()
@@ -34,6 +42,10 @@ function GUIForm:destructor()
 		GUIForm.Map[self.m_Id] = nil
 	end
 
+	if GUIForm.ms_Dialog == self then
+		GUIForm.ms_Dialog = nil
+	end
+
 	if self.m_KeyBinds then
 		for k, v in pairs(self.m_KeyBinds) do
 			unbindKey(k, "down", v)
@@ -49,6 +61,14 @@ function GUIForm:destructor()
 
 	-- Todo: Replace this by virtual_destructor
 	CacheArea.destructor(self)
+end
+
+function GUIForm:bringToFront()
+	CacheArea.bringToFront(self)
+
+	if GUIForm.ms_Dialog and GUIForm.ms_Dialog ~= self then
+		CacheArea.bringToFront(GUIForm.ms_Dialog)
+	end
 end
 
 function GUIForm:open(hiddenCursor)
