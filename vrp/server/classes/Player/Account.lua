@@ -63,8 +63,11 @@ function Account.login(player, username, password, pwhash, enableAutologin, webL
 
 	local account = sql:queryFetchSingle("SELECT Id, ForumId, Name, Password, Salt, RegisterDate, TeamspeakId, AutologinToken FROM ??_account WHERE LCASE(Name) = ?", sql:getPrefix(), username)
 	local storedHash = account and account.Password and account.Password:sub(1, 2) == "$2"
-	local useForum = FORUM_LOGIN and (not account or tonumber(account.ForumId) ~= 0)
-	if player.m_WebLogin and account and not storedHash and (account.Password == "" or (not useForum and not account.Password)) then
+	if account and not account.Password and tonumber(account.ForumId) ~= 0 then
+		player:triggerEvent("loginfailed", _("Dein Passwort muss einmalig übernommen werden. Melde dich dazu mit deinem bisherigen Passwort im Control Panel an: cp.openreallife.net", player))
+		return
+	end
+	if player.m_WebLogin and account and not storedHash and (account.Password == "" or not account.Password) then
 		player:triggerEvent("loginNeedReset", account.Name)
 		return
 	end
@@ -79,71 +82,31 @@ function Account.login(player, username, password, pwhash, enableAutologin, webL
 		return
 	end
 
-	if not useForum then
-		local row = account
-		if not row then
-			player:triggerEvent("loginfailed", _("Dieser Account existiert nicht", player))
-			return
-		end
-
-		local passwordHash = sha256((row.Salt or "")..password)
-		if passwordHash ~= row.Password then
-			player:triggerEvent("loginfailed", _("Falsches Passwort", player))
-			return
-		end
-		Account.storePassword(row.Id, password)
-
-		local loginToken = nil
-
-		if enableAutologin then
-			loginToken = string.random(32) .. "." .. player:getSerial()
-			sql:queryExec("UPDATE ??_account SET AutologinToken = ? WHERE Id = ?", sql:getPrefix(), loginToken, row.Id)
-		else
-			if row.AutologinToken then
-				sql:queryExec("UPDATE ??_account SET AutologinToken = ? WHERE Id = ?", sql:getPrefix(), "", row.Id)
-			end
-		end
-
-		Account.loginSuccess(player, row.Id, row.Name, row.ForumId, row.RegisterDate, row.TeamspeakId, loginToken)
+	local row = account
+	if not row then
+		player:triggerEvent("loginfailed", _("Dieser Account existiert nicht", player))
 		return
 	end
 
-	Forum:getSingleton():userLogin(username, password, Async.waitFor(self))
-	local data = Async.wait()
-
-	local resData = fromJSON(data)
-
-	if resData and resData.status and resData.status == 200 then
-		local data = resData.data
-		sql:queryFetchSingle(Async.waitFor(self), ("SELECT Id, ForumId, Name, RegisterDate, TeamspeakId, AutologinToken FROM ??_account WHERE ForumId = ?"), sql:getPrefix(), data.userID)
-		local row = Async.wait()
-
-		if not row then
-			Account.createAccount(player, data.userID, data.username, data.email, password)
-			return
-		else
-			Account.storePassword(row.Id, password)
-			local loginToken = nil
-
-			if enableAutologin then
-				loginToken = string.random(32) .. "." .. player:getSerial()
-				sql:queryExec("UPDATE ??_account SET AutologinToken = ? WHERE Id = ?", sql:getPrefix(), loginToken, row.Id)
-			else
-				if row.AutologinToken then
-					sql:queryExec("UPDATE ??_account SET AutologinToken = ? WHERE Id = ?", sql:getPrefix(), "", row.Id)
-				end
-			end
-
-			Account.loginSuccess(player, row.Id, row.Name, row.ForumId, row.RegisterDate, row.TeamspeakId, loginToken)
-			return
-		end
-	elseif resData and resData.status and (resData.status == 400 or resData.status == 412) then
-		player:triggerEvent("loginfailed", "Falscher Name oder Passwort") -- Error: Invalid username or password2
-		return false
-	else
-		player:triggerEvent("loginInformationUpdate", nil, true)
-		return false
+	local passwordHash = sha256((row.Salt or "")..password)
+	if passwordHash ~= row.Password then
+		player:triggerEvent("loginfailed", _("Falsches Passwort", player))
+		return
 	end
+	Account.storePassword(row.Id, password)
+
+	local loginToken = nil
+
+	if enableAutologin then
+		loginToken = string.random(32) .. "." .. player:getSerial()
+		sql:queryExec("UPDATE ??_account SET AutologinToken = ? WHERE Id = ?", sql:getPrefix(), loginToken, row.Id)
+	else
+		if row.AutologinToken then
+			sql:queryExec("UPDATE ??_account SET AutologinToken = ? WHERE Id = ?", sql:getPrefix(), "", row.Id)
+		end
+	end
+
+	Account.loginSuccess(player, row.Id, row.Name, row.ForumId, row.RegisterDate, row.TeamspeakId, loginToken)
 end
 addEvent("accountlogin", true)
 addEventHandler("accountlogin", root, function(...) Async.create(Account.login)(client, ...) end)
@@ -423,41 +386,12 @@ function Account.register(player, username, password, email, referrer)
 		end
 	end
 
-	-- Login via Database
-	if not FORUM_LOGIN then
-		if sql:queryFetchSingle("SELECT Name FROM ??_account WHERE Name = ?", sql:getPrefix(), username) then
-			player:triggerEvent("registerfailed", _("Benutzername wird bereits verwendet!", player))
-			return false
-		end
-
-		Account.createAccount(player, 0, username, email, password, referrerId)
-		return
+	if sql:queryFetchSingle("SELECT Name FROM ??_account WHERE Name = ?", sql:getPrefix(), username) then
+		player:triggerEvent("registerfailed", _("Benutzername wird bereits verwendet!", player))
+		return false
 	end
 
-	-- Check if someone uses this username already
-	Account.createForum(username, password, email, player, Async.waitFor(self))
-	local result = Async.wait()
-	local data = fromJSON(result)
-
-	if data and data.status and data.status == 200 then
-		Account.createAccount(player, data.data.userID, username, email, password, referrerId)
-	else
-		if data and data.message then
-			if data.message == "username is not notUnique" then
-				player:triggerEvent("registerfailed", _("Benutzername wird bereits verwendet", player))
-			elseif data.message == "username is not invalid" then
-				player:triggerEvent("registerfailed", _("Benutzername enthält nicht erlaubte Zeichen", player))
-			elseif data.message == "email is not notUnique" then
-				player:triggerEvent("registerfailed", _("Diese E-Mail wird bereits verwendet", player))
-			elseif data.message == "email is not invalid" then
-				player:triggerEvent("registerfailed", _("Diese E-Mail ist nicht gültig", player))
-			else
-				player:triggerEvent("loginfailed", "Fehler: Forum-Acc konnte nicht angelegt werden")
-			end
-		else
-			player:triggerEvent("loginfailed", "Fehler: Forum-Acc konnte nicht angelegt werden")
-		end
-	end
+	Account.createAccount(player, 0, username, email, password, referrerId)
 end
 addEvent("accountregister", true)
 addEventHandler("accountregister", root, function(...) Async.create(Account.register)(client, ...) end)
