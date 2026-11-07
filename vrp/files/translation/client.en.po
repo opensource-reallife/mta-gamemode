@@ -6655,8 +6655,5 @@ msgstr "Copied to the clipboard."
 msgid "Zu viele Anfragen. Versuche es in %d Minuten erneut."
 msgstr "Too many requests. Please try again in %d minutes."
 
-msgid "Verbindung zum Server fehlgeschlagen! (%d/%d)\nVersuche erneut%s"
-msgstr "Connection to the server failed! (%d/%d)\nTrying again%s"
-
 msgid "Du wurdest AFK gesetzt!\nGib folgenden Befehl ein: /noafk %s"
 msgstr "You were set AFK!\nEnter the command: /noafk %s"

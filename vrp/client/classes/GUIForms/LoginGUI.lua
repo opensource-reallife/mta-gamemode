@@ -320,17 +320,12 @@ function LoginGUI:setLoggingIn(state)
 		button:setEnabled(true)
 		label:setClickable(true)
 		killTimer(self.m_UpdateTimer)
-		if self.m_ShortMessage then delete(self.m_ShortMessage) end
-		self.m_ShortMessage = nil
-		self.m_QueuePosition = nil
-		self.m_ConnectionAttempt = nil
 	end
 end
 
 function LoginGUI:updateTexts()
 	local button = self.m_LoginMode and self.m_Elements.BtnLogin or self.m_Elements.BtnRegister
 	local buttonText = _(self.m_LoginMode and "Einloggen%s" or "Registrieren%s", self.m_Dots)
-	local text = ""
 
 	if #self.m_Dots >= 3 then
 		self.m_Dots = ""
@@ -338,21 +333,7 @@ function LoginGUI:updateTexts()
 		self.m_Dots = self.m_Dots.."."
 	end
 
-	if self.m_QueuePosition and self.m_QueuePosition > 1 then
-		text = _("Position in Warteschlange: %d", self.m_QueuePosition)
-	elseif self.m_ConnectionAttempt and self.m_ConnectionAttempt > 0 then
-		text = _("Verbindung zum Server fehlgeschlagen! (%d/%d)\nVersuche erneut%s", self.m_ConnectionAttempt-1, FORUM_MAX_CONNECTION_ATTEMPTS-1, self.m_Dots)
-	end
-
 	button:setText(buttonText)
-	if self.m_ShortMessage and #text > 0 then
-		self.m_ShortMessage:setText(text)
-	elseif #text > 0 then
-		self.m_ShortMessage = ShortMessage:new(text, nil, false, -1, false, false, false, false, true)
-	elseif self.m_ShortMessage then
-		delete(self.m_ShortMessage)
-		self.m_ShortMessage = nil
-	end
 end
 
 addEvent("receiveRegisterAllowed", true)
@@ -387,21 +368,6 @@ addEventHandler("closeLogin", root,
 	function()
 		if not LoginGUI:isInstantiated() then return end
 		LoginGUI:getSingleton():initClose()
-	end
-)
-
-addEvent("loginInformationUpdate", true)
-addEventHandler("loginInformationUpdate", root, 
-	function(queuePosition, connectionAttempt)
-		if LoginGUI:isInstantiated() then
-			if connectionAttempt == true then
-				LoginGUI:getSingleton():setLoggingIn(false)
-				ErrorBox:new(_"Verbindung zum Server nicht möglich!")
-				return
-			end
-			LoginGUI:getSingleton().m_QueuePosition = queuePosition
-			LoginGUI:getSingleton().m_ConnectionAttempt = connectionAttempt
-		end
 	end
 )
 

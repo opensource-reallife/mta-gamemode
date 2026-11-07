@@ -12,22 +12,17 @@
 		1.) checkRegisterAllowed triggered From Client
 		2.) receiveRegisterAllowed triggered to Client
 		3.) Account.register triggered from Client
-		4.) Account.createForumAccount
-		5.) Account.createAccount
-		6.) Account.loginSuccess
-		7.) In Account.loginSuccess there is Account.checkCharacter and
-		8.) player:createCharacter() in Account.loginSuccess
-		9.) Finished
+		4.) Account.createAccount
+		5.) Account.loginSuccess
+		6.) In Account.loginSuccess there is Account.checkCharacter and
+		7.) player:createCharacter() in Account.loginSuccess
+		8.) Finished
 ]]
 
 local MULTIACCOUNT_CHECK = GIT_BRANCH == "release/production" and true or false
 
 Account = inherit(Object)
 Account.REGISTRATION_ACTIVATED = false
-Account.PendingRequests = {
-	Logins = {},
-	Registrations = {}
-}
 
 function Account.login(player, username, password, pwhash, enableAutologin, webLogin)
 	if player:getAccount() then return false end
@@ -552,69 +547,6 @@ function Account.getBoardIdFromName(name)
 	local row = sql:queryFetchSingle("SELECT ForumId FROM ??_account WHERE Name = ?", sql:getPrefix(), name)
 	return row.ForumId or 0
 end
-
-function Account.createForum(username, password, email, player, callback)
-	local onFinish = function(...)
-		Account.createForumEnd(player)
-		callback(...)
-	end
-
-	local request = Forum:getSingleton():userCreate(username, password, email, onFinish)
-
-	table.insert(Account.PendingRequests.Registrations, {player = player, currentAttempt = 1, currentQueuePosition = 1, request = request})
-end
-
-function Account.createForumEnd(player)
-	for k, login in pairs(Account.PendingRequests.Registrations) do
-		if login.player == player then
-			table.remove(Account.PendingRequests.Registrations, k)
-		end
-	end
-end
-
-function Account.loginForum(username, password, player, callback)
-	local onFinish = function(...)
-		Account.loginForumEnd(player)
-		callback(...)
-	end
-
-	local request = Forum:getSingleton():userLogin(username, password, onFinish)
-
-	table.insert(Account.PendingRequests.Logins, {player = player, currentAttempt = 1, currentQueuePosition = 1, request = request})
-end
-
-function Account.loginForumEnd(player)
-	for k, login in pairs(Account.PendingRequests.Logins) do
-		if login.player == player then
-			table.remove(Account.PendingRequests.Logins, k)
-		end
-	end
-end
-
-function Account.updatePendingLogins()
-	for k, pendingTable in pairs(Account.PendingRequests) do
-
-		for i = #pendingTable, 1, -1 do --check if maybe a player disconnected and abort his request
-			if not isElement(pendingTable[i].player) then
-				abortRemoteRequest(pendingTable[i])
-				table.remove(pendingTable, i)
-			end
-		end
-
-		for pos, login in pairs(pendingTable) do
-			local info = getRemoteRequestInfo(login.request)
-
-			if info and (info.currentAttempt ~= login.currentAttempt or pos ~= currentQueuePosition) then
-				login.currentAttempt = info.currentAttempt
-				login.currentQueuePosition = pos
-
-				login.player:triggerEvent("loginInformationUpdate", login.currentAttempt, pos)
-			end
-		end
-		
-	end
-end
-Account.LoginUpdateTimer = setTimer(Account.updatePendingLogins, 1000, 0)
 
 function Account.signCpToken(player)
 	local secret = Config.get("CP_SECRET")

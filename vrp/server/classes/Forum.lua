@@ -18,35 +18,6 @@ end
 function Forum:destructor()
 end
 
-function Forum:userCreate(username, password, email, callback)
-	return fetchRemote(self.m_BaseUrl .. "?user-api&method=create", {
-		queueName = "Forum:userCreate",
-		connectionAttempts = FORUM_MAX_CONNECTION_ATTEMPTS,
-		connectTimeout = 5000,
-		method = "POST",
-		formFields = {
-			secret = self.m_Secret,
-			username = username,
-			password = password,
-			email = email
-		}
-	}, callback)
-end
-
-function Forum:userLogin(username, password, callback)
-	return fetchRemote(self.m_BaseUrl .. "?user-api&method=login", {
-		queueName = "Forum:userLogin",
-		connectionAttempts = FORUM_MAX_CONNECTION_ATTEMPTS,
-		connectTimeout = 5000,
-		method = "POST",
-		formFields = {
-			secret = self.m_Secret,
-			username = username,
-			password = password
-		}
-	}, callback)
-end
-
 function Forum:userGet(forumId, callback)
 	local data = {
 		secret = self.m_Secret

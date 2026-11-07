@@ -135,27 +135,6 @@ end
 function LoginWebGUI:setLoggingIn(state)
 	self.m_LoggingIn = state
 	self:call("busy", {state = state})
-
-	if state then
-		self.m_UpdateTimer = setTimer(bind(self.updateTexts, self), 250, 0)
-	else
-		if self.m_UpdateTimer and isTimer(self.m_UpdateTimer) then killTimer(self.m_UpdateTimer) end
-		self.m_QueuePosition = nil
-		self.m_ConnectionAttempt = nil
-	end
-end
-
-function LoginWebGUI:updateTexts()
-	local text = ""
-	if self.m_QueuePosition and self.m_QueuePosition > 1 then
-		text = _("Position in Warteschlange: %d", self.m_QueuePosition)
-	elseif self.m_ConnectionAttempt and self.m_ConnectionAttempt > 0 then
-		text = _("Verbindung zum Server fehlgeschlagen! (%d/%d)\nVersuche erneut%s", self.m_ConnectionAttempt-1, FORUM_MAX_CONNECTION_ATTEMPTS-1, "...")
-	end
-	if text ~= self.m_StatusText then
-		self.m_StatusText = text
-		self:call("status", {text = text})
-	end
 end
 
 addEvent("receiveRegisterAllowed", true)
@@ -272,21 +251,6 @@ addEventHandler("closeLogin", root,
 	function()
 		if not LoginWebGUI:isInstantiated() then return end
 		LoginWebGUI:getSingleton():initClose()
-	end
-)
-
-addEvent("loginInformationUpdate", true)
-addEventHandler("loginInformationUpdate", root,
-	function(queuePosition, connectionAttempt)
-		if LoginWebGUI:isInstantiated() then
-			if connectionAttempt == true then
-				LoginWebGUI:getSingleton():setLoggingIn(false)
-				ErrorBox:new(_"Verbindung zum Server nicht möglich!")
-				return
-			end
-			LoginWebGUI:getSingleton().m_QueuePosition = queuePosition
-			LoginWebGUI:getSingleton().m_ConnectionAttempt = connectionAttempt
-		end
 	end
 )
 
