@@ -263,11 +263,6 @@ function Account.loginSuccess(player, Id, Username, ForumId, RegisterDate, Teams
 	nextframe(function() player:spawn() end)
 	player:triggerEvent("loginsuccess", pwhash)
 
-	if not FORUM_LOGIN then
-		player:setSessionId("none")
-		return
-	end
-
 	if player:isActive() then
 		jwtSign(function(result)
 			player:setSessionId(result)

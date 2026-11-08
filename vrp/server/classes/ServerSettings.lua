@@ -43,10 +43,6 @@ function ServerSettings:load()
 			end
 		end
 
-		if row.Index == "ForumLogin" then
-			FORUM_LOGIN = toboolean(row.Value)
-		end
-
 		if row.Index == "LoginWeb" then
 			resourceRoot:setData("LoginWeb", toboolean(row.Value))
 		end
