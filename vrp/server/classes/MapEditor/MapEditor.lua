@@ -156,12 +156,11 @@ end
 function MapEditor:removeWorldModel(worldModelId, wX, wY, wZ, wrX, wrY, wrZ, radius, worldLODModelId)
     local interior = client:getInterior()
     local mapId = self:getPlayerEditingMap(client)
-    if MapLoader:getSingleton():isGangwarMap(mapId) then
-        client:sendError(_("In Gangwar-Maps können keine World-Objects entfernt werden!", client))
-        return
-    end
     local creator = client:getId()
     local result = MapLoader:getSingleton():removeWorldModel(worldModelId, wX, wY, wZ, wrX, wrY, wrZ, radius, worldLODModelId, interior, mapId, creator)
+    if result and MapLoader:getSingleton():isGangwarMap(mapId) then
+        GangwarMapEditor:getSingleton():syncRemovals(mapId)
+    end
     if result == 1 then
         client:sendSuccess(_("Das World-Object wurde gelöscht!", client))
     elseif result == 2 then
@@ -173,6 +172,9 @@ end
 
 function MapEditor:restoreWorldModel(mapId, index)
     if MapLoader:getSingleton():restoreWorldModel(mapId, index) then
+        if MapLoader:getSingleton():isGangwarMap(mapId) then
+            GangwarMapEditor:getSingleton():syncRemovals(mapId)
+        end
         client:sendSuccess(_("Das World-Object wurde wiederhergestellt!", client))
     else
         client:sendError(_("Das World-Object konnte nicht wiederhergestellt werden!", client))

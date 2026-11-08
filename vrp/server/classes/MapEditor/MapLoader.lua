@@ -82,12 +82,14 @@ function MapLoader:loadFromDatabase(id, dimension)
                 object:setData("MapEditor:mapId", id, true)
 
                 self:addRef(object)
-            elseif oRow.Type == 0 and not self:isGangwarMap(id) then
+            elseif oRow.Type == 0 then
                 local index = #self.m_MapRemovals[id]+1
                 local radius = tonumber(oRow.Radius) or 0
 
                 self.m_MapRemovals[id][index] = {insertId=oRow.Id, worldModelId=oRow.Model, wX=oRow.PosX, wY=oRow.PosY, wZ=oRow.PosZ, wrX=oRow.RotX, wrY=oRow.RotY, wrZ=oRow.RotZ, interior=oRow.Interior, radius=radius, creator=oRow.Creator}
-                removeWorldModel(oRow.Model, radius, oRow.PosX, oRow.PosY, oRow.PosZ, oRow.Interior)
+                if not self:isGangwarMap(id) then
+                    removeWorldModel(oRow.Model, radius, oRow.PosX, oRow.PosY, oRow.PosZ, oRow.Interior)
+                end
             end
         end
         triggerClientEvent(PlayerManager:getSingleton():getReadyPlayers(), "applyBreakableState", resourceRoot)
@@ -185,7 +187,11 @@ function MapLoader:removeObject(object)
 end
 
 function MapLoader:removeWorldModel(worldModelId, wX, wY, wZ, wrX, wrY, wrZ, radius, worldLODModelId, interior, mapId, creator)
-    if removeWorldModel(worldModelId, radius, wX, wY, wZ, interior) then
+    local isGangwar = self:isGangwarMap(mapId)
+    if isGangwar then
+        self:clearGangwarRemovalCache(mapId)
+    end
+    if isGangwar or removeWorldModel(worldModelId, radius, wX, wY, wZ, interior) then
         local index = #self.m_MapRemovals[mapId]+1
         local result, numrows, insertId = sql:queryFetch("INSERT INTO ??_map_editor_objects (Type, Model, PosX, PosY, PosZ, RotX, RotY, RotZ, Interior, MapId, Radius, Creator) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             sql:getPrefix(), 0, worldModelId, wX, wY, wZ, wrX, wrY, wrZ, interior, mapId, radius, creator)
@@ -195,12 +201,12 @@ function MapLoader:removeWorldModel(worldModelId, wX, wY, wZ, wrX, wrY, wrZ, rad
         return false
     end
     if worldLODModelId and worldLODModelId ~= 0 then
-        if removeWorldModel(worldLODModelId, radius, wX, wY, wZ, interior) then
+        if isGangwar or removeWorldModel(worldLODModelId, radius, wX, wY, wZ, interior) then
             local index = #self.m_MapRemovals[mapId]+1
             local result, numrows, insertId = sql:queryFetch("INSERT INTO ??_map_editor_objects (Type, Model, PosX, PosY, PosZ, RotX, RotY, RotZ, Interior, MapId, Radius, Creator) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 sql:getPrefix(), 0, worldLODModelId, wX, wY, wZ, wrX, wrY, wrZ, interior, mapId, radius, creator)
 
-            self.m_MapRemovals[mapId][index] = {insertId=insertId, worldModelId=worldModelId, wX=wX, wY=wY, wZ=wZ, wrX=wrX, wrY=wrY, wrZ=wrZ, interior=interior, radius=radius, creator=creator}
+            self.m_MapRemovals[mapId][index] = {insertId=insertId, worldModelId=worldLODModelId, wX=wX, wY=wY, wZ=wZ, wrX=wrX, wrY=wrY, wrZ=wrZ, interior=interior, radius=radius, creator=creator}
             return 2
         end
     end
@@ -208,6 +214,10 @@ function MapLoader:removeWorldModel(worldModelId, wX, wY, wZ, wrX, wrY, wrZ, rad
 end
 
 function MapLoader:restoreWorldModel(mapId, index)
+    if not self.m_MapRemovals[mapId] or not self.m_MapRemovals[mapId][index] then
+        return false
+    end
+    local isGangwar = self:isGangwarMap(mapId)
     local insertId = self.m_MapRemovals[mapId][index].insertId
     local worldModelId = self.m_MapRemovals[mapId][index].worldModelId
     local wX = self.m_MapRemovals[mapId][index].wX
@@ -215,9 +225,12 @@ function MapLoader:restoreWorldModel(mapId, index)
     local wZ = self.m_MapRemovals[mapId][index].wZ
     local interior = self.m_MapRemovals[mapId][index].interior
 
-    if restoreWorldModel(worldModelId, 0.1, wX, wY, wZ, interior) then
-        self.m_MapRemovals[mapId][index] = nil
+    if isGangwar or restoreWorldModel(worldModelId, 0.1, wX, wY, wZ, interior) then
+        table.remove(self.m_MapRemovals[mapId], index)
         local result = sql:queryExec("DELETE FROM ??_map_editor_objects WHERE Id = ?", sql:getPrefix(), insertId)
+        if isGangwar then
+            self:clearGangwarRemovalCache(mapId)
+        end
         return true
     end
 end
@@ -434,6 +447,33 @@ function MapLoader:createGangwarMap(areaId, creator)
         self.m_GangwarMaps[areaId] = insertId
         return insertId
     end
+end
+
+function MapLoader:getGangwarRemovals(areaId)
+    local mapId = self.m_GangwarMaps[areaId]
+    if not mapId then
+        return {}
+    end
+    self.m_GangwarRemovalCache = self.m_GangwarRemovalCache or {}
+    if not self.m_GangwarRemovalCache[mapId] then
+        local list = {}
+        local rows = sql:queryFetch("SELECT Model, PosX, PosY, PosZ, Interior, Radius FROM ??_map_editor_objects WHERE MapId = ? AND Type = 0", sql:getPrefix(), mapId) or {}
+        for key, oRow in ipairs(rows) do
+            list[#list+1] = {tonumber(oRow.Model), tonumber(oRow.Radius) or 0, tonumber(oRow.PosX), tonumber(oRow.PosY), tonumber(oRow.PosZ), tonumber(oRow.Interior) or 0}
+        end
+        self.m_GangwarRemovalCache[mapId] = list
+    end
+    return self.m_GangwarRemovalCache[mapId]
+end
+
+function MapLoader:clearGangwarRemovalCache(mapId)
+    if self.m_GangwarRemovalCache then
+        self.m_GangwarRemovalCache[mapId] = nil
+    end
+end
+
+function MapLoader:getGangwarAreaId(mapId)
+    return self.m_MapInfos[mapId] and self.m_MapInfos[mapId][7]
 end
 
 function MapLoader:unloadMap(id)

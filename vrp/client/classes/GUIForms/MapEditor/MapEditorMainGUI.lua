@@ -26,10 +26,6 @@ function MapEditorMainGUI:constructor()
     end
 
     self.m_DeleteWorldObjectButton.onLeftClick = function()
-        if MapEditor:getSingleton():isGangwarMode() then
-            ErrorBox:new(_"In Gangwar-Maps können keine World-Objects entfernt werden!")
-            return
-        end
         if not MapEditor:getSingleton():getRemovingMode() then
             MapEditor:getSingleton():setRemovingMode(true)
         else

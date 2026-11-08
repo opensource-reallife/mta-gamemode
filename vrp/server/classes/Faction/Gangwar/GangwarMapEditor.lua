@@ -97,6 +97,7 @@ function GangwarMapEditor:Event_editArea(areaId)
 	client:setInterior(0)
 	client:setDimension(GANGWAR_DIMENSION_BASE)
 	client:setPosition(x, y, z + 1)
+	self:sendWorld(client, areaId)
 
 	MapEditor:getSingleton():setPlayerInEditorMode(client, mapId)
 	Admin:getSingleton():sendShortMessage("%s bearbeitet die Gangwar-Map von %s!", {client:getName(), area.m_Name})
@@ -104,10 +105,39 @@ function GangwarMapEditor:Event_editArea(areaId)
 	self:sendData(client, false)
 end
 
-function GangwarMapEditor:onEditorClosed(player)
+function GangwarMapEditor:sendWorld(player, areaId)
+	local removals = MapLoader:getSingleton():getGangwarRemovals(areaId)
+	if not player.m_GangwarWorldSent then
+		player.m_GangwarWorldSent = true
+		player:triggerEvent("Gangwar:enterWorld", Gangwar:getSingleton():getWorldRemovals(), removals)
+	else
+		player:triggerEvent("Gangwar:enterWorld", false, removals)
+	end
+end
+
+function GangwarMapEditor:syncRemovals(mapId)
+	local loader = MapLoader:getSingleton()
+	local areaId = loader:getGangwarAreaId(mapId)
+	if not areaId then return end
+	local removals = loader:getGangwarRemovals(areaId)
+	for key, player in ipairs(getElementsByType("player")) do
+		if player.m_GangwarMapArea == areaId then
+			player:triggerEvent("Gangwar:setAreaRemovals", removals)
+		end
+	end
+	local area = Gangwar:getSingleton().m_Areas[areaId]
+	if area and area.m_AttackSession then
+		area.m_AttackSession:broadcast("Gangwar:setAreaRemovals", removals)
+	end
+end
+
+function GangwarMapEditor:onEditorClosed(player, quitting)
 	local areaId = player.m_GangwarMapArea
 	if not areaId then return end
 	player.m_GangwarMapArea = nil
+	if not quitting then
+		player:triggerEvent("Gangwar:leaveWorld")
+	end
 
 	local target = player.m_GangwarMapReturn
 	player.m_GangwarMapReturn = nil
@@ -185,6 +215,6 @@ function GangwarMapEditor:onPlayerQuit(player)
 	if player.m_GangwarMapArea then
 		player.m_IsInEditorMode = nil
 		player.m_EditingMapId = nil
-		self:onEditorClosed(player)
+		self:onEditorClosed(player, true)
 	end
 end

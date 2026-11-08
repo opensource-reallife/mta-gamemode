@@ -365,11 +365,12 @@ function AttackSession:enterPlayer(player)
 	player:setPublicSync("gangwarParticipant", self.m_Slot)
 	player:setData("gangwarBlockDriveby", true, true)
 
+	local removals = MapLoader:getSingleton():getGangwarRemovals(self.m_AreaObj:getId())
 	if not player.m_GangwarWorldSent then
 		player.m_GangwarWorldSent = true
-		player:triggerEvent("Gangwar:enterWorld", self.m_Manager:getWorldRemovals())
+		player:triggerEvent("Gangwar:enterWorld", self.m_Manager:getWorldRemovals(), removals)
 	else
-		player:triggerEvent("Gangwar:enterWorld")
+		player:triggerEvent("Gangwar:enterWorld", false, removals)
 	end
 	player:triggerEvent("AttackClient:launchClient", self:getClientData())
 	self:synchronizeLists()

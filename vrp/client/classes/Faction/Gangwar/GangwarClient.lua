@@ -6,7 +6,7 @@
 -- *
 -- ****************************************************************************
 GangwarClient = inherit(Singleton)
-addRemoteEvents{"Gangwar:enterWorld", "Gangwar:leaveWorld", "GangwarPick:status", "GangwarPick:statusClose", "GangwarMenu:open", "Gangwar:requestQuestion", "Gangwar:requestClose", "GangwarNpc:open", "GangwarPick:open", "GangwarVehicle:open", "GangwarVehicle:close"}
+addRemoteEvents{"Gangwar:enterWorld", "Gangwar:leaveWorld", "Gangwar:setAreaRemovals", "GangwarPick:status", "GangwarPick:statusClose", "GangwarMenu:open", "Gangwar:requestQuestion", "Gangwar:requestClose", "GangwarNpc:open", "GangwarPick:open", "GangwarVehicle:open", "GangwarVehicle:close"}
 
 GANGWAR_ATTACK_PAUSE = 1
 UNIX_TIMESTAMP_24HRS = 86400
@@ -19,8 +19,10 @@ local REPLACED_MODELS = {
 function GangwarClient:constructor()
 	self.m_Questions = {}
 	self.m_ServerRemovals = {}
+	self.m_AreaRemovals = {}
 	addEventHandler("Gangwar:enterWorld", localPlayer, bind(self.Event_enterWorld, self))
 	addEventHandler("Gangwar:leaveWorld", localPlayer, bind(self.Event_leaveWorld, self))
+	addEventHandler("Gangwar:setAreaRemovals", localPlayer, bind(self.Event_setAreaRemovals, self))
 	addEventHandler("GangwarPick:status", localPlayer, bind(self.Event_pickStatus, self))
 	addEventHandler("GangwarPick:statusClose", localPlayer, bind(self.Event_pickStatusClose, self))
 	addEventHandler("GangwarMenu:open", localPlayer, bind(self.Event_openMenu, self))
@@ -32,12 +34,36 @@ function GangwarClient:constructor()
 	addEventHandler("GangwarVehicle:close", localPlayer, bind(self.Event_closeVehicles, self))
 end
 
-function GangwarClient:Event_enterWorld(list)
+function GangwarClient:Event_enterWorld(list, areaRemovals)
 	if list then
 		self.m_ServerRemovals = list
 	end
-	if self.m_RestoredModels then return end
+	if not self.m_RestoredModels then
+		self:restoreWorld()
+	end
+	self:setAreaRemovals(areaRemovals or {})
+end
 
+function GangwarClient:Event_setAreaRemovals(list)
+	if self.m_RestoredModels then
+		self:setAreaRemovals(list or {})
+	end
+end
+
+function GangwarClient:setAreaRemovals(list)
+	for key, entry in ipairs(self.m_AreaRemovals) do
+		WorldModelRegistry.RawRestore(entry[1], entry[2], entry[3], entry[4], entry[5], entry[6])
+	end
+	self.m_AreaRemovals = {}
+	if not self.m_RestoredModels then return end
+	for key, entry in ipairs(list) do
+		if WorldModelRegistry.RawRemove(entry[1], entry[2], entry[3], entry[4], entry[5], entry[6]) then
+			self.m_AreaRemovals[#self.m_AreaRemovals + 1] = entry
+		end
+	end
+end
+
+function GangwarClient:restoreWorld()
 	self.m_RestoredModels = {}
 	for key, entry in ipairs(self.m_ServerRemovals) do
 		self.m_RestoredModels[#self.m_RestoredModels + 1] = entry
@@ -83,6 +109,7 @@ end
 
 function GangwarClient:Event_leaveWorld()
 	if not self.m_RestoredModels then return end
+	self:setAreaRemovals({})
 	for key, entry in ipairs(self.m_RestoredModels) do
 		WorldModelRegistry.RawRemove(entry[1], entry[2], entry[3], entry[4], entry[5], entry[6])
 	end

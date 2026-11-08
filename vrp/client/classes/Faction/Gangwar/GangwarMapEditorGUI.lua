@@ -48,6 +48,13 @@ function GangwarMapEditorGUI:constructor()
 
 	self.m_DeleteObjectButton = GUIGridButton:new(18, 8, 5, 1, _"Löschen", self.m_Window):setBackgroundColor(Color.Red)
 	self.m_DeleteObjectButton.onLeftClick = function()
+		local item = self.m_ObjectGrid:getSelectedItem()
+		if item and item.m_RemovalIndex then
+			triggerServerEvent("MapEditor:restoreWorldModel", localPlayer, self.m_CurrentMapId, item.m_RemovalIndex)
+			MapEditor:getSingleton():selectObject()
+			self:requestObjects()
+			return
+		end
 		local object = self:getSelectedObject()
 		if object then
 			triggerServerEvent("MapEditor:removeObject", object)
@@ -127,7 +134,7 @@ function GangwarMapEditorGUI:requestObjects()
 	end
 end
 
-function GangwarMapEditorGUI:receiveObjects(objectTable)
+function GangwarMapEditorGUI:receiveObjects(objectTable, removalsTable)
 	self.m_ObjectGrid:clear()
 	self.m_ObjectTable = objectTable
 	for key, data in ipairs(objectTable) do
@@ -143,6 +150,15 @@ function GangwarMapEditorGUI:receiveObjects(objectTable)
 					end
 				end)
 			end
+		end
+	end
+	for key, data in pairs(removalsTable or {}) do
+		local name = MapEditor:getSingleton():getWorldModelName(data.worldModelId) or data.worldModelId
+		local item = self.m_ObjectGrid:addItem(key, _("Entfernt: %s", name), data.creator or "-")
+		item:setColumnColor(2, Color.Red)
+		item.m_RemovalIndex = key
+		item.onLeftClick = function()
+			nextframe(function() MapEditor:getSingleton():selectObject(data) end)
 		end
 	end
 end
