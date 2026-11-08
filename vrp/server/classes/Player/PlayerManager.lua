@@ -937,29 +937,7 @@ function PlayerManager:Event_changeWalkingstyle(walkingstyle)
 end
 
 function PlayerManager:Event_passwordChange(old, new1, new2)
-	--Todo: Kurzfristig deaktiviert wegen Forum Login
-	client:sendError("Funktion deaktiviert!", client)
-	if true then return false end
-
-	if new1 == new2 then
-		local row = sql:queryFetchSingle("SELECT Id, Salt, Password FROM ??_account WHERE Name = ? ", sql:getPrefix(), client:getName())
-		if row then
-			local oldPwhash = sha256(row.Salt..old)
-			if oldPwhash == row.Password then
-				local newSalt = md5(math.random())
-				local newPwhash = sha256(newSalt..new1)
-				sql:queryExec("UPDATE ??_account SET Password = ?, Salt = ? WHERE Name = ? ", sql:getPrefix(), newPwhash, newSalt, client:getName())
-				client:sendInfo("Dein neues Passwort wurde gespeichert!", client)
-				client:triggerEvent("passwordChangeSuccess")
-			else
-				client:sendError("Dein bisheriges Passwort ist nicht korrekt!", client)
-			end
-		else
-			client:sendError("Internal Error @Password Change!", client)
-		end
-	else
-		client:sendError("Die beiden eingegebenen neuen Passwörter sind nicht identisch!", client)
-	end
+	client:sendError(_("Dein Passwort änderst du im Control Panel.", client))
 end
 
 function PlayerManager:getGunBoxStorage(player)

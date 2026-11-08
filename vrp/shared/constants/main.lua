@@ -19,8 +19,7 @@ end
 
 GROUP_LOGS_URL = CP_WEB_PATH .. "/api_group_logs.php?groupType=%s&groupId=%d"
 
-DOMAINS = {"openreallife.net", "forum.openreallife.net", INGAME_WEB_PATH:gsub("https://", ""), PICUPLOAD_PATH:gsub("https://", ""), "i.imgur.com", "cp.openreallife.net", (CP_WEB_PATH:gsub("^https?://", ""):gsub(":%d+$", ""))}
-FORUM_MAX_CONNECTION_ATTEMPTS = 4
+DOMAINS = {"openreallife.net", INGAME_WEB_PATH:gsub("https://", ""), PICUPLOAD_PATH:gsub("https://", ""), "i.imgur.com", "cp.openreallife.net", (CP_WEB_PATH:gsub("^https?://", ""):gsub(":%d+$", ""))}
 
 -- LEVELS
 MAX_JOB_LEVEL = 10

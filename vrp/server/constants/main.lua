@@ -13,7 +13,6 @@ else
   -- shutdown('No config no server')
 end
 ]]
-API_URL = "http://v-roleplay.net/forum/wcf/lib/data/vrp/api/api.php?"
 IS_TESTSERVER = getServerName():find("Script") ~= nil
 PERFORMANCE_HOOK_TRIGGER_PERCENT = 20 -- everything that has a higher percentage on lua timiing gets sent to slack
 PERFORMANCE_HOOK_TRIGGER_PERCENT_FUNC = 1 -- every function that has a higher percentage on lua timiing gets sent to slack

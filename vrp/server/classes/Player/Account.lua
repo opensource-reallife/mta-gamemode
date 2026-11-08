@@ -46,11 +46,11 @@ function Account.login(player, username, password, pwhash, enableAutologin, webL
 		-- check if is an autologin token
 		local data = split(pwhash, ".")
 		if #data == 2 and #data[1] == 32 and #data[2] == 32 then
-			sql:queryFetchSingle(Async.waitFor(self), ("SELECT Id, ForumId, Name, RegisterDate, TeamspeakId FROM ??_account WHERE LCASE(Name) = ? AND AutologinToken = ?"), sql:getPrefix(), username, pwhash)
+			sql:queryFetchSingle(Async.waitFor(self), ("SELECT Id, Name, RegisterDate, TeamspeakId FROM ??_account WHERE LCASE(Name) = ? AND AutologinToken = ?"), sql:getPrefix(), username, pwhash)
 			local row = Async.wait()
 
 			if row and player:getSerial() == data[2] then
-				Account.loginSuccess(player, row.Id, row.Name, row.ForumId, row.RegisterDate, row.TeamspeakId, pwhash)
+				Account.loginSuccess(player, row.Id, row.Name, row.RegisterDate, row.TeamspeakId, pwhash)
 				return
 			end
 		end
@@ -69,7 +69,7 @@ function Account.login(player, username, password, pwhash, enableAutologin, webL
 			player:triggerEvent("loginfailed", _("Falscher Name oder Passwort", player))
 			return
 		end
-		Account.loginSuccess(player, account.Id, account.Name, account.ForumId, account.RegisterDate, account.TeamspeakId, Account.updateAutologin(player, account, enableAutologin))
+		Account.loginSuccess(player, account.Id, account.Name, account.RegisterDate, account.TeamspeakId, Account.updateAutologin(player, account, enableAutologin))
 		return
 	end
 
@@ -115,7 +115,7 @@ function Account.login(player, username, password, pwhash, enableAutologin, webL
 		end
 	end
 
-	Account.loginSuccess(player, row.Id, row.Name, row.ForumId, row.RegisterDate, row.TeamspeakId, loginToken)
+	Account.loginSuccess(player, row.Id, row.Name, row.RegisterDate, row.TeamspeakId, loginToken)
 end
 addEvent("accountlogin", true)
 addEventHandler("accountlogin", root, function(...) Async.create(Account.login)(client, ...) end)
@@ -186,7 +186,7 @@ function Account.loginFix(player, Id)
 	return false
 end
 
-function Account.loginSuccess(player, Id, Username, ForumId, RegisterDate, TeamspeakId, pwhash)
+function Account.loginSuccess(player, Id, Username, RegisterDate, TeamspeakId, pwhash)
 	if DatabasePlayer.getFromId(Id) then
 		local fixed = Account.loginFix(player, Id)
 		if fixed == "retry" then
@@ -228,7 +228,7 @@ function Account.loginSuccess(player, Id, Username, ForumId, RegisterDate, Teams
 	if player.m_WebLogin and not player.m_EmailChecked then
 		local mailRow = sql:queryFetchSingle("SELECT EMail FROM ??_account WHERE Id = ?", sql:getPrefix(), Id)
 		if not mailRow or not Account.isEmailValid(mailRow.EMail) then
-			player.m_PendingLogin = {Id, Username, ForumId, RegisterDate, TeamspeakId, pwhash}
+			player.m_PendingLogin = {Id, Username, RegisterDate, TeamspeakId, pwhash}
 			player:triggerEvent("loginNeedEmail")
 			return false
 		end
@@ -238,7 +238,7 @@ function Account.loginSuccess(player, Id, Username, ForumId, RegisterDate, Teams
 	-- Update last serial and last login
 	sql:queryExec("UPDATE ??_account SET LastSerial = ?, LastIP = ?, LastLogin = NOW() WHERE Id = ?", sql:getPrefix(), player:getSerial(), player:getIP(), Id)
 
-	player.m_Account = Account:new(Id, Username, player, false, ForumId, TeamspeakId, RegisterDate)
+	player.m_Account = Account:new(Id, Username, player, false, TeamspeakId, RegisterDate)
 
 	if not player or not isElement(player) then -- Cause of kick directly after login (e.g. ban, warn) / Should not happened now
 		outputDebugString("Account.loginSuccess: Player-Element for "..UserName.." not found!", 1)
@@ -266,7 +266,7 @@ function Account.loginSuccess(player, Id, Username, ForumId, RegisterDate, Teams
 	if player:isActive() then
 		jwtSign(function(result)
 			player:setSessionId(result)
-		end, {["sub"] = player:getId(), ["name"] = player:getName(), ["exp"] = getRealTime().timestamp + 60 * 60 * 24, ["forumId"] = player:getAccount().m_ForumId}, JWT_ALGORITHM_HS256, Config.get("INGAME_WEB_SECRET"))
+		end, {["sub"] = player:getId(), ["name"] = player:getName(), ["exp"] = getRealTime().timestamp + 60 * 60 * 24}, JWT_ALGORITHM_HS256, Config.get("INGAME_WEB_SECRET"))
 		Account.signCpToken(player)
 	end
 end
@@ -404,13 +404,13 @@ function Account.register(player, username, password, email, referrer)
 		return false
 	end
 
-	Account.createAccount(player, 0, username, email, password, referrerId)
+	Account.createAccount(player, username, email, password, referrerId)
 end
 addEvent("accountregister", true)
 addEventHandler("accountregister", root, function(...) Async.create(Account.register)(client, ...) end)
 
-function Account.createAccount(player, boardId, username, email, password, referrerId)
-	local result, _, Id = sql:queryFetch("INSERT INTO ??_account (ForumId, Name, EMail, Rank, LastSerial, LastIP, LastLogin, RegisterDate) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW());", sql:getPrefix(), boardId, username, email, 0, player:getSerial(), player:getIP())
+function Account.createAccount(player, username, email, password, referrerId)
+	local result, _, Id = sql:queryFetch("INSERT INTO ??_account (ForumId, Name, EMail, Rank, LastSerial, LastIP, LastLogin, RegisterDate) VALUES (0, ?, ?, ?, ?, ?, NOW(), NOW());", sql:getPrefix(), username, email, 0, player:getSerial(), player:getIP())
 	if result and referrerId then
 		sql:queryExec("UPDATE ??_account SET ReferrerId = ? WHERE Id = ?", sql:getPrefix(), referrerId, Id)
 	end
@@ -420,7 +420,7 @@ function Account.createAccount(player, boardId, username, email, password, refer
 	
 	if result then
 		Account.notifyCpRegistration(Id, username)
-		Account.loginSuccess(player, Id, username, boardId, RegisterDate, 0, nil, false)
+		Account.loginSuccess(player, Id, username, RegisterDate, 0, nil, false)
 	else
 		player:triggerEvent("loginfailed", "Fehler: Unable to create Ingame-Acc.")
 	end
@@ -450,12 +450,11 @@ function Account.asyncCallAPI(func, postData)
 	return Async.wait()
 end
 
-function Account:constructor(id, username, player, guest, ForumId, TeamspeakId, RegisterDate)
+function Account:constructor(id, username, player, guest, TeamspeakId, RegisterDate)
 	-- Account Information
 	self.m_Id = id
 	self.m_Username = username
 	self.m_Player = player
-	self.m_ForumId = ForumId
 	self.m_TeamspeakId = TeamspeakId
 	self.m_RegisterDate = RegisterDate or "Unbekannt"
 	player.m_IsGuest = guest;
@@ -513,21 +512,6 @@ function Account.getNameFromId(id)
 	return row and row.Name
 end
 
-function Account.getBoardIdFromId(id)
-	local player = Player.getFromId(id)
-	if player and isElement(player) then
-		return player:getAccount().m_ForumId
-	end
-
-	local row = sql:queryFetchSingle("SELECT ForumId FROM ??_account WHERE Id = ?", sql:getPrefix(), id)
-	return row and row.ForumId
-end
-
-function Account.getIdFromIdBoard(id)
-	local row = sql:queryFetchSingle("SELECT Id FROM ??_account WHERE ForumId = ?", sql:getPrefix(), id)
-	return row and row.Id
-end
-
 function Account.getTeamspeakIdFromId(id)
 	local player = Player.getFromId(id)
 	if player and isElement(player) then
@@ -559,11 +543,6 @@ function Account.getIdFromName(name)
 		return row.Id
 	end
 	return false
-end
-
-function Account.getBoardIdFromName(name)
-	local row = sql:queryFetchSingle("SELECT ForumId FROM ??_account WHERE Name = ?", sql:getPrefix(), name)
-	return row.ForumId or 0
 end
 
 function Account.signCpToken(player)
