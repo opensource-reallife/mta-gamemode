@@ -102,69 +102,6 @@ function Faction:destructor()
 	self:save()
 end
 
-function Faction:getRequiredForumPermissionsChanges(playerId)
-	local forumId = Account.getBoardIdFromId(playerId)
-
-	Forum:getSingleton():userGet(forumId, Async.waitFor(self))
-	local result = Async.wait()
-	local data = fromJSON(result)
-
-	if data["status"] == 200 then
-		local groups = data["data"]["groups"]
-		local currentGroups = {}
-
-		for _, v in pairs(groups) do
-			if not table.find(currentGroups, v["groupID"]) then
-				table.insert(currentGroups, v["groupID"])
-			end
-		end
-
-		local rank = self:getPlayerRank(playerId)
-		local modifications = {
-			add = {},
-			remove = {}
-		}
-
-		if rank and self.m_Permissions["forum"] and self.m_Permissions["forum"]["ranks"] then
-			local newGroups = self.m_Permissions["forum"]["ranks"][tostring(rank)]
-
-			if type(newGroups) == "table" then
-				newGroups = table.copy(newGroups)
-			else
-				newGroups = {newGroups}
-			end
-
-			for _, groupId in pairs(currentGroups) do
-				local isFactionGroup = table.find(self.m_ForumGroups, groupId) and true or false
-				local isNewGroup = table.find(newGroups, groupId) and true or false
-
-				if isFactionGroup and not isNewGroup then
-					table.insert(modifications.remove, groupId)
-				elseif isNewGroup then
-					table.removevalue(newGroups, groupId)
-				end
-			end
-
-			for _, groupId in pairs(newGroups) do
-				table.insert(modifications.add, groupId)
-			end
-		else
-			for _, groupId in pairs(currentGroups) do
-				local isFactionGroup = table.find(self.m_ForumGroups, groupId) and true or false
-
-				if isFactionGroup then
-					table.insert(modifications.remove, groupId)
-				end
-			end
-		end
-
-		return modifications
-	else
-		outputDebugString("[Faction@getRequiredForumPermissionsChanges]Can't determinant changes for the user " .. tostring(playerId))
-	end
-	return false
-end
-
 function Faction:save()
 	local diplomacy = ""
 	if self.m_Diplomacy then

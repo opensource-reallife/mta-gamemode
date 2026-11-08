@@ -106,7 +106,6 @@ function CompanyGUI:constructor()
 	self.m_CompanyRankDownButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.35, self.m_Width*0.3, self.m_Height*0.07, _"Rang runter", tabMitglieder):setBarEnabled(true)
 	self.m_CompanyToggleLoanButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.45, self.m_Width*0.3, self.m_Height*0.07, _"Gehalt deaktivieren", tabMitglieder):setBarEnabled(true)
 	self.m_CompanyPlayerFileButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.55, self.m_Width*0.3, self.m_Height*0.07, _"Spielerakten", self.m_tabMitglieder):setBarEnabled(true)
-	self.m_CompanyForumSyncButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.65, self.m_Width*0.3, self.m_Height*0.07, _"Foren-Gruppen", self.m_tabMitglieder):setBarEnabled(true)
 	self.m_CompanyPlayerPermissionsButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.75, self.m_Width*0.3, self.m_Height*0.07, _"Rechte bearbeiten", self.m_tabMitglieder):setBarEnabled(true)
 	self.m_CompanyAddPlayerButton:setEnabled(false)
 	self.m_CompanyRemovePlayerButton:setEnabled(false)
@@ -114,7 +113,6 @@ function CompanyGUI:constructor()
 	self.m_CompanyRankDownButton:setEnabled(false)
 	self.m_CompanyToggleLoanButton:setEnabled(false)
 	self.m_CompanyPlayerFileButton:setEnabled(false)
-	self.m_CompanyForumSyncButton:setVisible(false)
 	self.m_CompanyPlayerPermissionsButton:setEnabled(false)
 
 	self.m_TabPanel.onTabChanged = bind(self.TabPanel_TabChanged, self)
@@ -127,7 +125,6 @@ function CompanyGUI:constructor()
 	self.m_CompanyRankDownButton.onLeftClick = bind(self.CompanyRankDownButton_Click, self)
 	self.m_CompanyToggleLoanButton.onLeftClick = bind(self.CompanyToggleLoanButton_Click, self)
 	self.m_CompanyPlayerFileButton.onLeftClick = bind(self.CompanyPlayerFileButton_Click, self)
-	self.m_CompanyForumSyncButton.onLeftClick = bind(self.CompanyForumSyncButton_Click, self)
 	self.m_CompanyPlayerPermissionsButton.onLeftClick = bind(self.companyPlayerPermissionsButton_Click, self)
 
 	self.m_TabLogs = self.m_TabPanel:addTab(_"Logs")
@@ -336,12 +333,6 @@ end
 function CompanyGUI:CompanyPlayerFileButton_Click()
 	self:close()
 	HistoryPlayerGUI:new(CompanyGUI)
-end
-
-function CompanyGUI:CompanyForumSyncButton_Click()
-	-- triggerServerEvent("companyForumSync", root)
-	self:close()
-	ForumPermissionsGUI:new("company", localPlayer:getCompany().m_Id)
 end
 
 function CompanyGUI:CompanyQuitButton_Click()

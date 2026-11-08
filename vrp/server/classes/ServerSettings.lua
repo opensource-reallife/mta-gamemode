@@ -29,10 +29,6 @@ function ServerSettings:load()
 			resourceRoot:setData("ServerFPSLimit", tonumber(row.Value) or 65)
 		end
 
-		if row.Index == "ServiceSync" then
-			SERVICE_SYNC = toboolean(row.Value)
-		end
-
 		if row.Index == "JobPayMultiplicator" then
 			JOB_PAY_MULTIPLICATOR = tonumber(row.Value)
 			if (EVENT_EASTER) or (EVENT_HALLOWEEN) or (EVENT_CHRISTMAS) then

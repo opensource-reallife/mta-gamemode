@@ -114,7 +114,6 @@ function CompanyManager:Event_companyQuit(reason)
     company:addLog(client, "Unternehmen", "hat das Unternehmen verlassen!")
 
 	self:sendInfosToClient(client)
-	Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(client.m_Id)
 end
 
 function CompanyManager:Event_companyDeposit(amount)
@@ -226,7 +225,6 @@ function CompanyManager:Event_companyDeleteMember(playerId, reasonInternaly, rea
     company:addLog(client, "Unternehmen", "hat den Spieler "..Account.getNameFromId(playerId).." aus dem Unternehmen geworfen!")
 
 	self:sendInfosToClient(client)
-	Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(playerId)
 end
 
 function CompanyManager:Event_companyInvitationAccept(companyId)
@@ -250,7 +248,6 @@ function CompanyManager:Event_companyInvitationAccept(companyId)
 			HistoryPlayer:getSingleton():addJoinEntry(client.m_Id, company:hasInvitation(client), company.m_Id, "company")
 
 			self:sendInfosToClient(client)
-			Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(client.m_Id)
 		else
 			client:sendError(_("Du bisd bereits in einem Unternehmen!", client))
 		end
@@ -322,7 +319,6 @@ function CompanyManager:Event_companyRankUp(playerId, leaderSwitch)
 			end
 			self:sendInfosToClient(client)
 			PermissionsManager:getSingleton():onRankChange("up", client, playerId, "company")
-			Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(playerId)
 		else
 			client:sendError(_("Mit deinem Rang kannst du Spieler maximal auf Rang %d befördern!", client, company:getPlayerRank(client)))
 		end
@@ -369,7 +365,6 @@ function CompanyManager:Event_companyRankDown(playerId)
 			end
 			self:sendInfosToClient(client)
 			PermissionsManager:getSingleton():onRankChange("down", client, playerId, "company")
-			Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(playerId)
 		else
 			client:sendError(_("Du kannst ranghöhere Mitglieder nicht degradieren!", client))
 		end
@@ -391,7 +386,6 @@ function CompanyManager:switchLeaders(oldLeader, newLeader)
 			
 			self:sendInfosToClient(oldLeader)
 			PermissionsManager:getSingleton():onRankChange("down", oldLeader, oldLeader:getId(), "company")
-			Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(oldLeader:getId())
 		end
 	)(oldLeader)
 end

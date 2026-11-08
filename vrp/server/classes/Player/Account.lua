@@ -253,10 +253,6 @@ function Account.loginSuccess(player, Id, Username, ForumId, RegisterDate, Teams
 	StatisticsLogger:addLogin( player, Username, "Login")
 	ClientStatistics:getSingleton():handle(player)
 
-	if not DEBUG and SERVICE_SYNC then
-		ServiceSync:getSingleton():syncPlayer(Id)
-	end
-
 	if not player.loadCharacter then
 		outputDebugString( ("Account.loginSuccess: Player-Element %s, inherited by Player-class: %s"):format(inspect(player), tostring(instanceof(player, Player))) )
 		player:kick("Fehler beim Einloggen, melde Dich bitte im Support!")
@@ -278,8 +274,6 @@ function Account.loginSuccess(player, Id, Username, ForumId, RegisterDate, Teams
 		end, {["sub"] = player:getId(), ["name"] = player:getName(), ["exp"] = getRealTime().timestamp + 60 * 60 * 24, ["forumId"] = player:getAccount().m_ForumId}, JWT_ALGORITHM_HS256, Config.get("INGAME_WEB_SECRET"))
 		Account.signCpToken(player)
 	end
-
-	ServiceSync:getSingleton():syncPlayer(Id)
 end
 
 function Account.checkCharacter(Id)

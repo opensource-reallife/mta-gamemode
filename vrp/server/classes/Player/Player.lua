@@ -148,10 +148,6 @@ function Player:join()
 end
 
 
-function Player:sendNews()
-	self:triggerEvent("ingamenews", Forum:getSingleton():getNews())
-end
-
 function Player:triggerEvent(ev, ...)
 	if self and isElement(self) then
 		triggerClientEvent(self, ev, self, ...)

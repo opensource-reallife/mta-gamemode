@@ -94,7 +94,6 @@ function AdminGUI:constructor(money)
 	self.m_PlayerID = GUIEdit:new(self.m_Width-225,  230, 200, 30, tabAllgemein):setNumeric(true):setCaption(_"ID des Spielers")
 	self:addAdminButton("loginFix", "Login-Fix", self.onGeneralButtonClick, self.m_Width-225, 265, 200, 30, Color.Orange, tabAllgemein)
 
-	self:addAdminButton("syncForum", "Foren-Gruppen", self.onGeneralButtonClick, self.m_Width-225, 310, 200, 30, Color.Orange, tabAllgemein)
 	self:addAdminButton("vehicleMenu", "Fahrzeug-Menü", self.onGeneralButtonClick, self.m_Width-225, 350, 200, 30, Color.Accent, tabAllgemein)
 	self:addAdminButton("transactionMenu", "Transaktions-Menü", self.onGeneralButtonClick, self.m_Width-225, 390, 200, 30, Color.Accent, tabAllgemein)
 	self:addAdminButton("multiAccountMenu", "Multi-Accounts", self.onGeneralButtonClick, self.m_Width-225, 430, 200, 30, Color.Accent, tabAllgemein)
@@ -631,8 +630,6 @@ function AdminGUI:onGeneralButtonClick(func)
 				function (factionId)
 					triggerServerEvent("adminRespawnFactionVehicles", root, factionId)
 				end)
-	elseif func == "syncForum" then
-		ForumPermissionsGUI:new()
 	elseif func == "aduty" or func == "smode" or func == "clearchat" or func == "clearAd" or func == "resetAction" then
 		triggerServerEvent("adminTriggerFunction", root, func)
 	elseif func == "loginFix" then

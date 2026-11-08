@@ -348,7 +348,6 @@ function FactionManager:Event_factionQuit(reason)
 	faction:addLog(client, "Fraktion", "hat die Fraktion verlassen!")
 
 	self:sendInfosToClient(client)
-	Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(client.m_Id)
 end
 
 function FactionManager:Event_factionDeposit(amount)
@@ -484,7 +483,6 @@ function FactionManager:Event_factionDeleteMember(playerId, reasonInternaly, rea
 
 	faction:removePlayer(playerId)
 	self:sendInfosToClient(client)
-	Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(playerId)
 end
 
 function FactionManager:Event_factionInvitationAccept(factionId)
@@ -522,7 +520,6 @@ function FactionManager:Event_factionInvitationAccept(factionId)
 			HistoryPlayer:getSingleton():addJoinEntry(client.m_Id, faction:hasInvitation(client), faction.m_Id, "faction")
 
 			self:sendInfosToClient(client)
-			Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(client.m_Id)
 		else
 			client:sendError(_("Du bisd bereits einer Fraktion beigetreten!", client))
 		end
@@ -612,7 +609,6 @@ function FactionManager:Event_factionRankUp(playerId, leaderSwitch)
 					end
 					self:sendInfosToClient(client)
 					PermissionsManager:getSingleton():onRankChange("up", client, playerId, "faction")
-					Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(playerId)
 				else
 					client:sendError(_("Mit deinem Rang kannst du Spieler maximal auf Rang %d befördern!", client, faction:getPlayerRank(client)))
 				end
@@ -672,7 +668,6 @@ function FactionManager:Event_factionRankDown(playerId)
 					end
 					self:sendInfosToClient(client)
 					PermissionsManager:getSingleton():onRankChange("down", client, playerId, "faction")
-					Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(playerId)
 				else
 					client:sendError(_("Du kannst ranghöhere Mitglieder nicht degradieren!", client))
 				end
@@ -700,7 +695,6 @@ function FactionManager:switchLeaders(oldLeader, newLeader)
 			
 			self:sendInfosToClient(oldLeader)
 			PermissionsManager:getSingleton():onRankChange("down", oldLeader, oldLeader:getId(), "faction")
-			Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(oldLeader:getId())
 		end
 	)(oldLeader)
 end

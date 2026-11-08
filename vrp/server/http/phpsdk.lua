@@ -970,7 +970,6 @@ function phpSDKChangeMember(adminId, targetId, groupType, groupId, action, reaso
 		instance:addLog(adminId, category, ("hat den Spieler %s über das ControlPanel aus %s geworfen!"):format(targetName, groupType == "faction" and "der Fraktion" or "dem Unternehmen"))
 		instance:removePlayer(targetId)
 		if target then target:sendShortMessage(("Entlassen von %s über das ControlPanel. Grund: %s"):format(adminName, reasonExternal), instance:getName()) end
-		Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(targetId)
 		return result("SUCCESS", nil, rank)
 	end
 
@@ -1000,7 +999,6 @@ function phpSDKChangeMember(adminId, targetId, groupType, groupId, action, reaso
 	end
 
 	if not target then
-		Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(targetId)
 		return result("SUCCESS", nil, newRank)
 	end
 	if action == "up" then
@@ -1012,7 +1010,6 @@ function phpSDKChangeMember(adminId, targetId, groupType, groupId, action, reaso
 		target:sendShortMessage(reasonExternal, instance:getName())
 	end
 	target:setPublicSync(groupType == "faction" and "FactionRank" or "CompanyRank", newRank)
-	Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(targetId)
 	return result("SUCCESS", nil, newRank)
 end
 
@@ -1587,7 +1584,6 @@ function phpSDKSetMembership(adminId, targetId, groupType, groupId, rank, reason
 			target:setPublicSync(groupType == "faction" and "FactionRank" or groupType == "company" and "CompanyRank" or "GroupRank", rank)
 			target:sendShortMessage(("Dein Rang wurde über das ControlPanel auf %d gesetzt."):format(rank), old:getName())
 		end
-		Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(targetId)
 		return {status = "SUCCESS"}
 	end
 	if old then
@@ -1609,7 +1605,6 @@ function phpSDKSetMembership(adminId, targetId, groupType, groupId, rank, reason
 		if groupType == "group" then new:spawnVehicles() end
 		if target then target:sendShortMessage(("Du wurdest über das ControlPanel in %s gesetzt (Rang %d)."):format(new:getName(), rank), new:getName()) end
 	end
-	Async.create(function(id) ServiceSync:getSingleton():syncPlayer(id) end)(targetId)
 	return {status = "SUCCESS"}
 end
 

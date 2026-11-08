@@ -98,7 +98,6 @@ function FactionGUI:constructor()
 	self.m_FactionToggleLoanButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.45, self.m_Width*0.3, self.m_Height*0.07, _"Gehalt deaktivieren", tabMitglieder):setBarEnabled(true)
 	self.m_FactionToggleActionMoneySplit = GUIButton:new(self.m_Width*0.64, self.m_Height*0.55, self.m_Width*0.3, self.m_Height*0.07, _"Aktionsbet. deaktivieren", tabMitglieder):setBarEnabled(true)
 	self.m_FactionPlayerFileButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.65, self.m_Width*0.3, self.m_Height*0.07, _"Spielerakten", self.m_tabMitglieder)
-	self.m_FactionForumSyncButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.75, self.m_Width*0.3, self.m_Height*0.07, _"Foren-Gruppen", self.m_tabMitglieder):setBarEnabled(true)
 	self.m_FactionPlayerPermissionsButton = GUIButton:new(self.m_Width*0.64, self.m_Height*0.75, self.m_Width*0.3, self.m_Height*0.07, _"Rechte bearbeiten", self.m_tabMitglieder):setBarEnabled(true)
 	self.m_FactionAddPlayerButton:setEnabled(false)
 	self.m_FactionRemovePlayerButton:setEnabled(false)
@@ -107,7 +106,6 @@ function FactionGUI:constructor()
 	self.m_FactionToggleLoanButton:setEnabled(false)
 	self.m_FactionToggleActionMoneySplit:setEnabled(false)
 	self.m_FactionPlayerFileButton:setEnabled(false)
-	self.m_FactionForumSyncButton:setVisible(false)
 	self.m_FactionPlayerPermissionsButton:setEnabled(false)
 	
 	self.m_tabGangwar = self.m_TabPanel:addTab(_"Gangwar")
@@ -121,7 +119,6 @@ function FactionGUI:constructor()
 	self.m_FactionToggleLoanButton.onLeftClick = bind(self.FactionToggleLoanButton_Click, self)
 	self.m_FactionToggleActionMoneySplit.onLeftClick = bind(self.FactionToggleActionMoneySplit_Click, self)
 	self.m_FactionPlayerFileButton.onLeftClick = bind(self.FactionPlayerFileButton_Click, self)
-	self.m_FactionForumSyncButton.onLeftClick = bind(self.FactionForumSyncButton_Click, self)
 	self.m_FactionPlayerPermissionsButton.onLeftClick = bind(self.factionPlayerPermissionsButton_Click, self)
 
 	-- self.m_WeaponsName = {}
@@ -211,7 +208,6 @@ function FactionGUI:refreshLeaderTab()
 
 	--[[
 	self.m_WeaponArea:setVisible(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editWeaponPermissions"))
-	--self.m_FactionForumSyncButton:setVisible(localPlayer:getPublicSync("FactionRank") >= FactionRank.Manager)
 	self.m_ChangePermissions:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "changePermissions"))
 	self.m_ChangeActionPermissions:setEnabled(PermissionsManager:getSingleton():hasPlayerPermissionsTo("faction", "editActionPermissions"))
 
@@ -721,12 +717,6 @@ function FactionGUI:FactionAddPlayerButton_Click()
 			triggerServerEvent("factionAddPlayer", root, player)
 		end,"faction"
 	)
-end
-
-function FactionGUI:FactionForumSyncButton_Click()
-	-- triggerServerEvent("factionForumSync", root)
-	self:close()
-	ForumPermissionsGUI:new("faction", localPlayer:getFaction().m_Id)
 end
 
 function FactionGUI:FactionQuitButton_Click()
