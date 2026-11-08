@@ -6,6 +6,7 @@
 -- *
 -- ****************************************************************************
 GasStation = inherit(Singleton)
+local MODEL_REFRESH_COOLDOWN = 30000
 addRemoteEvents{"gasStationReset", "gasStationNonInteriorRequest"}
 
 function GasStation:constructor()
@@ -52,8 +53,18 @@ function GasStation:constructor()
 	for _index, object in ipairs(getElementsByType("object", root, true)) do
 		if object:getModel() == 1676 then
 			self:applyTexture(object)
+			self:refreshModel()
 		end
 	end
+end
+
+function GasStation:refreshModel()
+	local now = getTickCount()
+	if self.m_LastModelRefresh and now - self.m_LastModelRefresh < MODEL_REFRESH_COOLDOWN then return end
+	self.m_LastModelRefresh = now
+	nextframe(function()
+		CustomModelManager:getSingleton():reapplyDFF(1676)
+	end)
 end
 
 function GasStation:applyTexture(object)
@@ -74,6 +85,7 @@ function GasStation:onObjectStreamIn()
 		self.m_RenderGasStations[source] = true
 		source:setBreakable(false)
 		self:applyTexture(source)
+		self:refreshModel()
 		return
 	end
 end

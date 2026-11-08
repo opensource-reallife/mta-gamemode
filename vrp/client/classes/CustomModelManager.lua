@@ -298,6 +298,11 @@ function CustomModelManager:loadImportDFF(filePath, modelId)
 	return dff and engineReplaceModel(dff, modelId)
 end
 
+function CustomModelManager:reapplyDFF(modelId)
+	local dff = self.m_DFFMap[modelId]
+	return dff and engineReplaceModel(dff, modelId)
+end
+
 function CustomModelManager:loadImportTXD(filePath, modelId)
 	local txd = engineLoadTXD(filePath)
 	self.m_TXDMap[modelId] = txd
