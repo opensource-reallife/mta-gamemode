@@ -618,7 +618,7 @@ function Inventory:updateWeight()
 
 	self.m_WeightBar:setText(_("Gewicht: %.2f / %.2f kg", weight, maxWeight))
 	self.m_WeightBar:setProgress(math.min(100, math.max(0, ratio*100)))
-	self.m_WeightBar:setForegroundColor(ratio >= 1 and Color.Red or Color.Accent)
+	self.m_WeightBar:setForegroundColor(ratio >= 1 and Color.Red or ratio >= 0.85 and Color.Orange or Color.Accent)
 	self.m_WeightInfo:setText(_("Davon %s: %.2f kg", _(Inventory.TabList[self.m_CurrentTab].name), tabWeight))
 	if ratio > 1 then
 		self.m_WeightState:setText(self:isOverloadExempt() and _"Überlast: im Support-Modus ohne Sperre" or _"Überlast: kein Sprinten und Springen"):setColor(Color.LightRed)
