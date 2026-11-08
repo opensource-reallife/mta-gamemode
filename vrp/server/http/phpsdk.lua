@@ -2802,8 +2802,9 @@ function phpSDKMultiAccount(adminId, action, id, data)
 	for _, accountId in ipairs(type(data.accounts) == "table" and data.accounts or {}) do
 		if tonumber(accountId) then linked[#linked + 1] = math.floor(tonumber(accountId)) end
 	end
-	if #linked < 2 then return {status = "ERROR", error = "TOO_FEW_ACCOUNTS"} end
 	local allow = (data.allowCreate == true or data.allowCreate == 1) and 1 or 0
+	if #linked < (allow == 1 and 1 or 2) then return {status = "ERROR", error = "TOO_FEW_ACCOUNTS"} end
+	if allow == 1 and #linked >= 2 then return {status = "ERROR", error = "TOO_MANY_FOR_CREATE"} end
 	if id > 0 then
 		sql:queryExec("UPDATE ??_account_multiaccount SET Serial = ?, LinkedTo = ?, allowCreate = ? WHERE ID = ?", sql:getPrefix(), serial, toJSON(linked), allow, id)
 	else
