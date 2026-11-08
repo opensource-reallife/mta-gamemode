@@ -38,6 +38,5 @@ end
 function DefendActor:destructor()
     removeEventHandler("onColShapeHit", self.m_AttackRange, self.m_ColShapeHitFunc)
     self:stopPrimaryTask()
-    delete(self.m_AttackRange)
-    self:destroy()
+    self.m_AttackRange:destroy()
 end

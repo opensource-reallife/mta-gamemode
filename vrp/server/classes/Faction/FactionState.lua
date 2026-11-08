@@ -1974,7 +1974,7 @@ function FactionState:createDefendActors(Actors)
 		end
 		addEventHandler("onPedWasted", actor, function()
 			setTimer(function()
-				delete(actor)
+				actor:destroy()
 				self:createDefendActors({v})
 			end, 60*1000*15, 1) -- Recreate after 15mins
 		end)
