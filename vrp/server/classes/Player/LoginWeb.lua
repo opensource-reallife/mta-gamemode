@@ -53,7 +53,7 @@ addEventHandler("accountPasswordCheck", root, function(sha1, seq)
 		if info and info.success and data then
 			count = 0
 			for suffix, amount in data:gmatch("(%x+):(%d+)") do
-				if suffix:upper() == sha1:sub(6) then
+				if suffix:upper() == sha1:sub(6, 40) then
 					count = tonumber(amount)
 					break
 				end
