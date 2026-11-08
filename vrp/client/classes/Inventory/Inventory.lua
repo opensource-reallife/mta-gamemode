@@ -20,13 +20,22 @@ Inventory.Color = {
 
 Inventory.TabList = {}
 
-Inventory.RarityColor = {
-	[1] = Color.LightBlue,
-	[2] = Color.Purple,
-	[3] = Color.Orange,
-	[4] = Color.Accent,
-}
-Inventory.RarityName = {[1] = "Selten", [2] = "Episch", [3] = "Legendär", [4] = "Event"}
+Inventory.RarityColor = {}
+Inventory.RarityName = {}
+
+function Inventory.setRarities(rarities)
+	if type(rarities) ~= "table" then return end
+	local colors, names = {}, {}
+	for id, rarity in pairs(rarities) do
+		id = tonumber(id)
+		if id and type(rarity) == "table" and type(rarity.color) == "table" then
+			colors[id] = tocolor(rarity.color[1] or 255, rarity.color[2] or 255, rarity.color[3] or 255)
+			names[id] = rarity.name
+		end
+	end
+	Inventory.RarityColor = colors
+	Inventory.RarityName = names
+end
 
 local SCALE, TOP, WIDTH, HEIGHT, LIST_X, LIST_Y, LIST_WIDTH, DETAIL_X, DETAIL_WIDTH
 
@@ -156,7 +165,8 @@ function Inventory:buildTabs(tabs)
 	end
 end
 
-function Inventory:Event_syncInventoryFromServer(bag, items, itemData, weight, maxWeight)
+function Inventory:Event_syncInventoryFromServer(bag, items, itemData, weight, maxWeight, rarities)
+	Inventory.setRarities(rarities)
 	self.m_Bag = bag
 	self.m_Items = items or {}
 	if itemData then self.m_ItemData = itemData end
@@ -184,7 +194,8 @@ function Inventory:applyOverload()
 	self.m_Overloaded = overloaded
 end
 
-function Inventory:Event_loadPlayerInventarClient(slots, itemData, tabs)
+function Inventory:Event_loadPlayerInventarClient(slots, itemData, tabs, rarities)
+	Inventory.setRarities(rarities)
 	self.m_Slots = slots
 	self.m_ItemData = itemData
 	self:buildTabs(tabs or {})

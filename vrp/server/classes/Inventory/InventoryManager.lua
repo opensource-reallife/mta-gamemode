@@ -25,6 +25,7 @@ function InventoryManager:constructor()
 	self.m_ItemData = self:loadItems()
 	self.m_Capacities = self:loadCapacities()
 	self.m_Tabs = self:loadTabs()
+	self.m_Rarities = self:loadRarities()
 	self.Map = {}
 	self.m_ExpiryTimer = setTimer(bind(self.checkExpiredItems, self), 60000, 0)
 
@@ -70,6 +71,7 @@ function InventoryManager:reloadItems()
 		end
 	end
 
+	self.m_Rarities = self:loadRarities()
 	self:syncItemData()
 end
 
@@ -491,6 +493,21 @@ end
 
 function InventoryManager:getTabs()
 	return self.m_Tabs
+end
+
+function InventoryManager:loadRarities()
+	local rarities = {}
+	for _index, row in ipairs(sql:queryFetch("SELECT * FROM ??_inventory_itemrarity", sql:getPrefix()) or {}) do
+		local id = tonumber(row["Id"])
+		if id and id > 0 then
+			rarities[id] = {name = row["Name"], color = {tonumber(row["R"]) or 255, tonumber(row["G"]) or 255, tonumber(row["B"]) or 255}}
+		end
+	end
+	return rarities
+end
+
+function InventoryManager:getRarities()
+	return self.m_Rarities
 end
 
 function InventoryManager:getOverloadFactor()

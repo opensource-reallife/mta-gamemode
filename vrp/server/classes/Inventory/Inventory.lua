@@ -32,7 +32,7 @@ function Inventory:constructor(owner, inventorySlots, itemData, classItems)
 	self:mergeMigratedExpiry()
 	self:removeExpiredItems()
 
-	triggerClientEvent(self.m_Owner, "loadPlayerInventarClient", self.m_Owner, self.m_InventorySlots, self.m_ItemData, InventoryManager:getSingleton():getTabs())
+	triggerClientEvent(self.m_Owner, "loadPlayerInventarClient", self.m_Owner, self.m_InventorySlots, self.m_ItemData, InventoryManager:getSingleton():getTabs(), InventoryManager:getSingleton():getRarities())
 	self:syncClient()
 end
 
@@ -248,7 +248,7 @@ function Inventory:syncClient(includeItemData)
 		self:syncArmedAmmo()
 		self:updateOverload()
 		self:updateVisibleWeapons()
-		self.m_Owner:triggerEvent("syncInventoryFromServer", self.m_Bag, self.m_Items, includeItemData and self.m_ItemData or false, self:getWeight(), self:getMaxWeight())
+		self.m_Owner:triggerEvent("syncInventoryFromServer", self.m_Bag, self.m_Items, includeItemData and self.m_ItemData or false, self:getWeight(), self:getMaxWeight(), includeItemData and InventoryManager:getSingleton():getRarities() or false)
 	end
 end
 
