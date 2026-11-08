@@ -605,8 +605,9 @@ function AttackSession:requestLateJoin(player)
 		player:sendError(_("Deine Anfrage läuft noch!", player))
 		return
 	end
-	if (self.m_LateCooldown[id] or 0) > getRealTime().timestamp then
-		player:sendError(_("Warte kurz, bevor du erneut anfragst!", player))
+	local cooldown = (self.m_LateCooldown[id] or 0) - getRealTime().timestamp
+	if cooldown > 0 then
+		player:sendError(_("Du kannst erst in %d:%02d Minuten erneut anfragen!", player, math.floor(cooldown/60), cooldown%60))
 		return
 	end
 
@@ -631,11 +632,12 @@ function AttackSession:requestLateJoin(player)
 	local opponent = self:getOpponent(faction)
 	local clear = function()
 		self.m_LateRequests[id] = nil
-		self.m_LateCooldown[id] = getRealTime().timestamp + 60
 	end
 	self.m_LateRequests[id] = true
+	self.m_LateCooldown[id] = getRealTime().timestamp + 180
 	local request = self.m_Manager:createRequest({
 		session = self,
+		timeout = 30,
 		text = self.m_Eliminated[id] and _("%s (%s) ist bereits ausgeschieden und möchte erneut beitreten. Erlauben?", player, player:getName(), faction:getShortName()) or _("%s (%s) möchte dem Gangwar nachjoinen. Erlauben?", player, player:getName(), faction:getShortName()),
 		rankFaction = opponent,
 		candidates = function()

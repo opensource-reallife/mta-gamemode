@@ -160,8 +160,25 @@ function GangwarClient:Event_openMenu(info)
 	GangwarMenuGUI.Current = GangwarMenuGUI:new(info)
 end
 
-function GangwarClient:Event_requestQuestion(id, text)
+function GangwarClient:Event_requestQuestion(id, text, timeout)
 	self:Event_requestClose(id)
+	if timeout then
+		local message = ShortMessage:new(_("%s\n(Linksklick = Annehmen, Rechtsklick = Ablehnen)", text), _"Gangwar", Color.Accent, timeout, nil, function()
+			self.m_Questions[id] = nil
+		end)
+		message.onLeftClick = function()
+			self.m_Questions[id] = nil
+			triggerServerEvent("Gangwar:answerRequest", localPlayer, id, true)
+			delete(message)
+		end
+		message.onRightClick = function()
+			self.m_Questions[id] = nil
+			triggerServerEvent("Gangwar:answerRequest", localPlayer, id, false)
+			delete(message)
+		end
+		self.m_Questions[id] = message
+		return
+	end
 	self.m_Questions[id] = QuestionBox:new(text,
 		function()
 			self.m_Questions[id] = nil

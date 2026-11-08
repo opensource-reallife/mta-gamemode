@@ -605,7 +605,7 @@ function Gangwar:createRequest(config)
 	self.m_NextRequestId = self.m_NextRequestId + 1
 	local id = self.m_NextRequestId
 	config.id = id
-	config.timer = setTimer(bind(self.resolveRequest, self), GANGWAR_REQUEST_TIMEOUT*1000, 1, id, false)
+	config.timer = setTimer(bind(self.resolveRequest, self), (config.timeout or GANGWAR_REQUEST_TIMEOUT)*1000, 1, id, false)
 	self.m_Requests[id] = config
 	if not self:askRequest(id) then
 		return false
@@ -632,7 +632,8 @@ function Gangwar:askRequest(id)
 		self:resolveRequest(id, false)
 		return false
 	end
-	best:triggerEvent("Gangwar:requestQuestion", id, request.text)
+	local remaining = request.timeout and isTimer(request.timer) and getTimerDetails(request.timer) or false
+	best:triggerEvent("Gangwar:requestQuestion", id, request.text, remaining)
 	return true
 end
 
@@ -660,6 +661,10 @@ end
 function Gangwar:Event_answerRequest(id, accepted)
 	local request = self.m_Requests[id]
 	if request and request.current == client then
+		if accepted == true and not table.find(request.candidates(), client) then
+			client:sendError(_("Dazu bist du nicht berechtigt!", client))
+			return
+		end
 		self:resolveRequest(id, accepted == true)
 	end
 end
