@@ -63,9 +63,9 @@ function AttackClient:destructor()
 end
 
 function AttackClient:startDefenderZone(data)
-	if data.phase ~= "prepare" or localPlayer:getFactionId() ~= data.faction2.m_Id then return end
+	if (data.phase ~= "prepare" and data.phase ~= "battle") or localPlayer:getFactionId() ~= data.faction2.m_Id then return end
 
-	self.m_DefenderZone = data.defenderZone
+	self.m_DefenderZone = data.phase == "prepare" and data.defenderZone or nil
 	self.m_VehicleCircle = data.vehicleCircle
 	self.m_CircleColor = tocolor(data.faction2.m_Color.r, data.faction2.m_Color.g, data.faction2.m_Color.b, 110)
 	self.m_ZoneColor = tocolor(230, 30, 30, 90)
@@ -90,17 +90,22 @@ function AttackClient:startDefenderZone(data)
 	addEventHandler("onClientRender", root, self.m_ZoneRender)
 end
 
-function AttackClient:stopDefenderZone()
-	if self.m_ZoneRender then
-		removeEventHandler("onClientRender", root, self.m_ZoneRender)
-		self.m_ZoneRender = nil
-	end
+function AttackClient:stopZoneWalls()
+	self.m_DefenderZone = nil
 	if self.m_ZoneAreas then
 		for key, area in ipairs(self.m_ZoneAreas) do
 			HUDRadar:getSingleton():removeArea(area)
 		end
 		self.m_ZoneAreas = nil
 	end
+end
+
+function AttackClient:stopDefenderZone()
+	if self.m_ZoneRender then
+		removeEventHandler("onClientRender", root, self.m_ZoneRender)
+		self.m_ZoneRender = nil
+	end
+	self:stopZoneWalls()
 	if isElement(self.m_ZoneTexture) then
 		destroyElement(self.m_ZoneTexture)
 	end
@@ -250,7 +255,9 @@ end)
 addEventHandler("AttackClient:synchronizeTime", localPlayer, function(phase, time)
 	if pseudoSingleton then
 		pseudoSingleton.m_Phase = phase
-		if phase ~= "prepare" then
+		if phase == "battle" then
+			pseudoSingleton:stopZoneWalls()
+		elseif phase ~= "prepare" then
 			pseudoSingleton:stopDefenderZone()
 		end
 		if pseudoSingleton.m_Display then

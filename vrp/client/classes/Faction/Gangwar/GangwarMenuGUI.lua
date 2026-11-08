@@ -13,7 +13,7 @@ function GangwarMenuGUI:constructor(info)
 	GUIGridLabel:new(1, 2, 9, 1, _("%s: noch %d:%02d", phase, math.floor(info.time/60), info.time%60), self.m_Window)
 
 	self.m_VehicleButton = GUIGridButton:new(1, 3, 9, 1, _"Fahrzeug spawnen", self.m_Window)
-	self.m_VehicleButton:setEnabled(isPrepare and info.entered or false)
+	self.m_VehicleButton:setEnabled(info.canSpawnVehicles and info.entered or false)
 	self.m_VehicleButton.onLeftClick = function()
 		triggerServerEvent("Gangwar:requestVehicleMenu", localPlayer)
 		delete(self)

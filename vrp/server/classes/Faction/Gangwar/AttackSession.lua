@@ -32,6 +32,7 @@ function AttackSession:constructor(pAreaObj, faction1, faction2, attackingPlayer
 	self.m_VehicleCounts = {[faction1:getId()] = {}, [faction2:getId()] = {}}
 	self.m_LateRequests = {}
 	self.m_LateCooldown = {}
+	self.m_LateDeclined = {}
 
 	self.m_MapObjects = MapLoader:getSingleton():createGangwarInstance(pAreaObj.m_ID, self.m_Dimension)
 	self:createFlag()
@@ -585,6 +586,7 @@ function AttackSession:getNpcInfo(player)
 		time = self:getTimeLeft(),
 		picked = self:isPicked(player),
 		entered = self:isParticipantInList(player),
+		canSpawnVehicles = self:canSpawnVehicles(player),
 		eliminated = self.m_Eliminated[player:getId()] or false,
 		canPick = self:canModifyPick(player),
 		pickOpen = not self.m_PickSubmitted[player:getFaction():getId()],
@@ -599,6 +601,10 @@ function AttackSession:requestLateJoin(player)
 	end
 	if self:isParticipantInList(player) then
 		player:sendError(_("Du kannst nicht nachjoinen!", player))
+		return
+	end
+	if self.m_LateDeclined[id] then
+		player:sendError(_("Dein Nachjoin wurde bereits abgelehnt!", player))
 		return
 	end
 	if self.m_LateRequests[id] then
@@ -664,10 +670,13 @@ function AttackSession:requestLateJoin(player)
 			self:enterPlayer(player)
 			self:sendToBoth(("[Gangwar] #FFFFFFDer Spieler %s jointe dem Gangwar nach!"):format(player:getName()), 0, 204, 204)
 		end,
-		onDecline = function()
+		onDecline = function(answered)
 			clear()
+			if answered then
+				self.m_LateDeclined[id] = true
+			end
 			if isElement(player) then
-				player:sendError(_("Dein Nachjoin wurde abgelehnt!", player))
+				player:sendError(answered and _("Dein Nachjoin wurde abgelehnt! Du kannst in diesem Gangwar nicht mehr anfragen.", player) or _("Deine Anfrage wurde nicht beantwortet!", player))
 			end
 		end,
 	})
@@ -707,7 +716,6 @@ end
 
 function AttackSession:onPrepareEnd()
 	if self.m_Finished then return end
-	self:destroyVehicleZones()
 	self:closePickStatus()
 	if isTimer(self.m_DefenderZoneTimer) then killTimer(self.m_DefenderZoneTimer) end
 	self:applySaves()
@@ -716,7 +724,9 @@ function AttackSession:onPrepareEnd()
 	for _, player in ipairs(self.m_Participants) do
 		player:setHealth(100)
 		player:setArmor(100)
-		player:triggerEvent("GangwarVehicle:close")
+		if player:getFaction() == self.m_Faction1 then
+			player:triggerEvent("GangwarVehicle:close")
+		end
 	end
 
 	self.m_PhaseTimer = setTimer(function()
@@ -792,7 +802,7 @@ end
 
 function AttackSession:onVehicleZoneHit(hitElement, matchingDimension)
 	if not matchingDimension or getElementType(hitElement) ~= "player" or hitElement.vehicle then return end
-	if self.m_Phase == "prepare" and self:isParticipantInList(hitElement) and hitElement:getFaction() == source.m_GangwarFaction then
+	if self:canSpawnVehicles(hitElement) and self:isParticipantInList(hitElement) and hitElement:getFaction() == source.m_GangwarFaction then
 		self:sendVehicleMenu(hitElement)
 	end
 end
@@ -804,11 +814,18 @@ function AttackSession:onVehicleZoneLeave(leaveElement, matchingDimension)
 end
 
 function AttackSession:getVehicleSpawnBlockReason(player)
-	local px, py = getElementPosition(player)
+	local px, py, pz = getElementPosition(player)
 	if player:getFaction() == self.m_Faction1 then
 		local x1, y1, x2, y2 = unpack(self.m_AreaObj.m_PositionRadar)
 		if px < x1 or px > x2 or py < y1 or py > y2 then
 			return _("Fahrzeuge kannst du nur innerhalb des Gebiets spawnen!", player)
+		end
+		if not isPedOnGround(player) or getPedContactElement(player) then
+			return _("Fahrzeuge kannst du nur spawnen, wenn du auf dem Boden stehst!", player)
+		end
+		local fx, fy, fz = unpack(self.m_AreaObj:getPosition())
+		if getDistanceBetweenPoints2D(fx, fy, px, py) <= self.m_Manager:getSetting("VehicleFlagRadius") and math.abs(pz - fz) > self.m_Manager:getSetting("VehicleMaxHeight") then
+			return _("In der Nähe des TKs kannst du Fahrzeuge nur auf Bodenhöhe spawnen!", player)
 		end
 		return false
 	end
@@ -819,8 +836,12 @@ function AttackSession:getVehicleSpawnBlockReason(player)
 	return false
 end
 
+function AttackSession:canSpawnVehicles(player)
+	return self.m_Phase == "prepare" or (self.m_Phase == "battle" and player:getFaction() == self.m_Faction2)
+end
+
 function AttackSession:requestVehicleMenu(player)
-	if self.m_Phase ~= "prepare" then
+	if not self:canSpawnVehicles(player) then
 		player:sendError(_("Fahrzeuge können nur in der Aufbauphase gespawnt werden!", player))
 		return
 	end
@@ -851,7 +872,7 @@ function AttackSession:sendVehicleMenu(player)
 end
 
 function AttackSession:spawnVehicle(player, vehicleId)
-	if self.m_Phase ~= "prepare" then
+	if not self:canSpawnVehicles(player) then
 		player:sendError(_("Fahrzeuge können nur in der Aufbauzeit gespawnt werden!", player))
 		return
 	end

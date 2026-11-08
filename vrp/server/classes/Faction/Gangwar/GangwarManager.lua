@@ -17,7 +17,7 @@ GANGWAR_FLAG_PICKUPMODEL = 2993
 GANGWAR_PAYOUT_PER_PLAYER = 400
 GANGWAR_PAYOUT_PER_AREA = 800
 UNIX_TIMESTAMP_24HRS = 86400
-GANGWAR_PAY_PER_DAMAGE = 1
+GANGWAR_PAY_PER_DAMAGE = 3
 GANGWAR_PAY_PER_KILL = 500
 GANGWAR_DIMENSION_BASE = 65000
 GANGWAR_INVALID_WINNER = "Ungueltig"
@@ -43,6 +43,8 @@ local DEFAULT_SETTINGS = {
 	VehicleRadius = 20,
 	DefenderDistance = 100,
 	MaxFlagDistance = 700,
+	VehicleFlagRadius = 50,
+	VehicleMaxHeight = 4,
 }
 
 addRemoteEvents{
@@ -648,13 +650,13 @@ function Gangwar:closeRequest(id)
 	return request
 end
 
-function Gangwar:resolveRequest(id, accepted)
+function Gangwar:resolveRequest(id, accepted, answered)
 	local request = self:closeRequest(id)
 	if not request then return end
 	if accepted then
 		if request.onAccept then request.onAccept() end
 	else
-		if request.onDecline then request.onDecline() end
+		if request.onDecline then request.onDecline(answered == true) end
 	end
 end
 
@@ -665,7 +667,7 @@ function Gangwar:Event_answerRequest(id, accepted)
 			client:sendError(_("Dazu bist du nicht berechtigt!", client))
 			return
 		end
-		self:resolveRequest(id, accepted == true)
+		self:resolveRequest(id, accepted == true, true)
 	end
 end
 
