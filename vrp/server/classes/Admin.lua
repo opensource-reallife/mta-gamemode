@@ -217,8 +217,7 @@ function Admin:Event_OnAdminGangwarReset( id, ts )
 			if ts < 0 then ts = 0 end
 			area.m_LastAttack = ts
 			area:update()
-			area.m_RadarArea:delete()
-			area:createRadar()
+			area:refreshRadar()
 			local format = {client:getName(), Gangwar:getSingleton().m_Areas[id].m_Name}
 			self:sendShortMessage("%s hat die Attackier-Zeit des Gebietes %s geändert!", format)
 			client:sendInfo(_("Das Gebiet wird freigegeben am: "..day.."/"..month.."/"..year.." "..hour..":"..minute.."h !", client))
@@ -251,8 +250,7 @@ function Admin:Event_OnAdminGangwarChangeOwner( id, faction)
 				local now = getRealTime().timestamp
 				area.m_LastAttack = now
 				area:update()
-				area.m_RadarArea:delete()
-				area:createRadar()
+				area:refreshRadar()
 				client:sendInfo(_("Das Gebiet wurde umgesetzt!", client))
 				local format = {client:getName(), Gangwar:getSingleton().m_Areas[id].m_Name, faction:getShortName()}
 				self:sendShortMessage("%s hat das Gebiet %s der Fraktion %s gesetzt!", format)

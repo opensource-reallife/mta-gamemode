@@ -1110,6 +1110,10 @@ function PlayerManager:Event_RequestQuickTrade(bArmor, target, value)
 	if Vector3(target.position - client.position):getLength() > 5 then
 		client:sendError(_("Du bist zu weit entfernt von dem Spieler!"))
 	end
+	if not bArmor and (client.m_GangwarSession or target.m_GangwarSession) then
+		client:sendError(_("Im Gangwar kannst du keine Munition weitergeben!", client))
+		return
+	end
 	if not bArmor then
 		ShortMessageQuestion:new(client, target, ("Der Spieler %s möchte dir Munition geben!"):format(client:getName()), "PlayerManager:onAcceptQuickTrade", nil,  nil, client, target, bArmor, value)
 	else
@@ -1121,6 +1125,7 @@ end
 function PlayerManager:Event_OnStartQuickTrade(client, target, bArmor, value)
 	if not client or not isElement(client) then return end
 	if not target or not isElement(target) then return end
+	if not bArmor and (client.m_GangwarSession or target.m_GangwarSession) then return end
 	if not client:isLoggedIn() then return end
 	if not target:isLoggedIn() then return end
 	if client == target then return end
@@ -1200,7 +1205,7 @@ function PlayerManager:Event_requestPlayerWeaponInfo()
 end
 
 function PlayerManager:Event_DecreaseHunger()
-	if client:getPublicSync("supportMode") or DEBUG then return end
+	if client:getPublicSync("supportMode") or DEBUG or client.m_GangwarSession then return end
 	local loss = Randomizer:get(25, 75) / 100
 	if client.m_LessHunger then loss = loss / 2 end
 	client:setHunger(client:getHunger() - loss)

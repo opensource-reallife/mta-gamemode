@@ -85,6 +85,9 @@ function KeyBinds:constructor()
 			["KeyToggleThermalMode"] 	= {["defaultKey"] = "m", 		["name"] = "Thermalkamera-Suchmodus", 		["category"] = "Helikopter", 	["func"] = self.m_ThermalModeKey, ["trigger"] = "down"};
 			["KeyToggleThermalSpeed"] 	= {["defaultKey"] = "lalt", 	["name"] = "Thermalkamera umschalten", 		["category"] = "Helikopter", 	["func"] = self.m_ThermalSpeedKey, ["trigger"] = "down"};
 
+			-- Gangwar
+			["KeyGangwarMenu"]			= {["defaultKey"] = "f4", 		["name"] = "Gangwar-Menü", 				["category"] = "Fraktion", 		["func"] = function() GangwarClient:getSingleton():toggleMenu() end, ["trigger"] = "down"};
+
 			-- Waffen
 			["KeyToggleReddot"]			= {["defaultKey"] = "N/A", 		["name"] = "Rotpunktvisir umschalten", 		["category"] = "Waffe", 		["func"] = function() HUDUI:getSingleton().m_RedDot = not HUDUI:getSingleton().m_RedDot end, ["trigger"] = "up"};
 			["KeyToggleTaser"]			= {["defaultKey"] = "o", 		["name"] = "Taser ziehen", 					["category"] = "Waffe", 		["func"] = function() if localPlayer:getFaction() and localPlayer:getFaction():isStateFaction() and localPlayer:getPublicSync("Faction:Duty") then triggerServerEvent("onPlayerItemUseServer", localPlayer, false, false, "Taser") end end, ["trigger"] = "down"};
@@ -233,6 +236,14 @@ end
 
 function KeyBinds:policePanel()
 	local isValidCop = (localPlayer:getFactionId() == 1 or localPlayer:getFactionId() == 2 or localPlayer:getFactionId() == 3) and localPlayer:getPublicSync("Faction:Duty")
+	if AttackClient.isActive() then
+		if PolicePanel:isInstantiated() and PolicePanel:getSingleton():isVisible() then
+			PolicePanel:getSingleton():toggle()
+		elseif isValidCop then
+			ErrorBox:new(_"Während des Gangwars kannst du den Polizeicomputer nicht öffnen!")
+		end
+		return
+	end
 	if not PolicePanel:isInstantiated() and isValidCop then --create new only if player is cop
 		PolicePanel:new()
 		return true

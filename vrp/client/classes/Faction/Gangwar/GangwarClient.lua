@@ -5,151 +5,205 @@
 -- *  PURPOSE:     Gangwar Client Class
 -- *
 -- ****************************************************************************
-GangwarClient = inherit( Singleton )
-addRemoteEvents{"Gangwar:show_AttackGUI","Gangwar_shortMessageAttack", "Gangwar:notifyGangwarOver"}
+GangwarClient = inherit(Singleton)
+addRemoteEvents{"Gangwar:enterWorld", "Gangwar:leaveWorld", "GangwarPick:status", "GangwarPick:statusClose", "GangwarMenu:open", "Gangwar:requestQuestion", "Gangwar:requestClose", "GangwarNpc:open", "GangwarPick:open", "GangwarVehicle:open", "GangwarVehicle:close"}
 
---// CONSTANTS
-GANGWAR_ATTACK_PAUSE = 1 --// UPDATE THIS IF YOU UPDATE THE SERVER CONSTANT
+GANGWAR_ATTACK_PAUSE = 1
 UNIX_TIMESTAMP_24HRS = 86400
-local ANIM_SCALE = 1
-local ANIM_TIME = 2000
-local w, h = screenWidth, screenHeight
-local width ,height = w*0.4,h*0.3
 
-function GangwarClient:constructor( )
-	self.m_ShowBind = bind( self.show_AttackRequest, self)
-	self.m_NotifyBind = bind(self.Event_notifyGangwarOver, self)
-	addEventHandler("Gangwar_shortMessageAttack",localPlayer, bind(GangwarClient.Event_shortMessageAttack,self))
-	addEventHandler("Gangwar:show_AttackGUI", root, self.m_ShowBind)
-	addEventHandler("Gangwar:notifyGangwarOver", root, self.m_NotifyBind)
+local REPLACED_MODELS = {
+	{model = 4012, dff = ":floors-los-santos/4012.dff"},
+	{model = 3983, dff = ":floors-los-santos/3983.dff", col = ":floors-los-santos/3983.col"},
+}
+
+function GangwarClient:constructor()
+	self.m_Questions = {}
+	self.m_ServerRemovals = {}
+	addEventHandler("Gangwar:enterWorld", localPlayer, bind(self.Event_enterWorld, self))
+	addEventHandler("Gangwar:leaveWorld", localPlayer, bind(self.Event_leaveWorld, self))
+	addEventHandler("GangwarPick:status", localPlayer, bind(self.Event_pickStatus, self))
+	addEventHandler("GangwarPick:statusClose", localPlayer, bind(self.Event_pickStatusClose, self))
+	addEventHandler("GangwarMenu:open", localPlayer, bind(self.Event_openMenu, self))
+	addEventHandler("Gangwar:requestQuestion", localPlayer, bind(self.Event_requestQuestion, self))
+	addEventHandler("Gangwar:requestClose", localPlayer, bind(self.Event_requestClose, self))
+	addEventHandler("GangwarNpc:open", localPlayer, bind(self.Event_openNpc, self))
+	addEventHandler("GangwarPick:open", localPlayer, bind(self.Event_openPick, self))
+	addEventHandler("GangwarVehicle:open", localPlayer, bind(self.Event_openVehicles, self))
+	addEventHandler("GangwarVehicle:close", localPlayer, bind(self.Event_closeVehicles, self))
 end
 
-function GangwarClient:Event_notifyGangwarOver()
-	playSound("files/audio/gangwar_notify.ogg")
-	setTimer( playSoundFrontEnd, 500, 4, 33)
+function GangwarClient:Event_enterWorld(list)
+	if list then
+		self.m_ServerRemovals = list
+	end
+	if self.m_RestoredModels then return end
+
+	self.m_RestoredModels = {}
+	for key, entry in ipairs(self.m_ServerRemovals) do
+		self.m_RestoredModels[#self.m_RestoredModels + 1] = entry
+	end
+	for key, entry in ipairs(WorldModelRegistry.getOutdoorEntries()) do
+		self.m_RestoredModels[#self.m_RestoredModels + 1] = entry
+	end
+	for key, entry in ipairs(self.m_RestoredModels) do
+		WorldModelRegistry.RawRestore(entry[1], entry[2], entry[3], entry[4], entry[5], entry[6])
+	end
+	self:restoreReplacedModels()
 end
 
+function GangwarClient:restoreReplacedModels()
+	local resource = getResourceFromName("floors-los-santos")
+	if not resource or getResourceState(resource) ~= "running" then return end
 
-function GangwarClient:Event_shortMessageAttack( pArea )
-	self.m_LastArea = pArea
-	self.m_ShortCallback = function (this)
-		if GangwarClient:getSingleton().m_LastArea then
-			GangwarClient:show_AttackRequest( GangwarClient:getSingleton().m_LastArea )
-			delete(this)
+	self.m_RestoredReplacedModels = {}
+	for key, entry in ipairs(REPLACED_MODELS) do
+		entry.dffElement = entry.dffElement or engineLoadDFF(entry.dff)
+		if entry.col then
+			entry.colElement = entry.colElement or engineLoadCOL(entry.col)
 		end
-	end
-	ShortMessage:new("Dies ist ein Gangwar-Gebiet, klicke hier um anzugreifen!", "Gangwar", Color.DarkLightBlue, 5000, self.m_ShortCallback)
-end
-
-function GangwarClient:show_AttackRequest( pArea )
-	if not self.m_AttackDisplayShowing then
-		self.m_AttackDisplayShowing = true
-		self.m_RenderBind = bind( self.render_Window_start , self)
-		self.m_ClickBind = bind(self.clickBind,self)
-		self.m_StartTick1 = getTickCount()
-		self.m_EndTick1 = self.m_StartTick1 + ANIM_SCALE*ANIM_TIME
-		self.m_Area = pArea
-		if self.m_RenderBind then
-			removeEventHandler("onClientRender",root,self.m_RenderBind)
-			addEventHandler("onClientRender",root,self.m_RenderBind)
-		end
-		if self.m_RenderBind2 then
-			removeEventHandler("onClientRender",root,self.m_RenderBind2)
-		end
-		if self.m_ClickBind then
-			removeEventHandler("onClientClick",root,self.m_ClickBind)
-			addEventHandler("onClientClick",root,self.m_ClickBind)
-		end
-	end
-end
-
-function GangwarClient:hide_AttackRequest( )
-	if self.m_RenderBind then
-		removeEventHandler("onClientRender",root,self.m_RenderBind)
-	end
-	if self.m_RenderBind2 then
-		removeEventHandler("onClientRender",root,self.m_RenderBind2)
-	end
-	if self.m_ClickBind then
-		removeEventHandler("onClientClick",root,self.m_ClickBind)
-	end
-	self.m_AttackDisplayShowing = false
-end
-
-function GangwarClient:clickBind( b, s)
-	if b == "left" then
-		if s == "up" then
-			if self.m_Over == 1 then
-				self:hide_AttackRequest()
-				triggerServerEvent("Gangwar:onClientRequestAttack",localPlayer)
-			elseif self.m_Over == 2 then
-				self:hide_AttackRequest()
+		if entry.dffElement and (not entry.col or entry.colElement) then
+			if entry.col then
+				engineRestoreCOL(entry.model)
 			end
+			engineRestoreModel(entry.model)
+			table.insert(self.m_RestoredReplacedModels, entry)
 		end
 	end
 end
 
-function GangwarClient:render_Window_start( )
-	local now = getTickCount()
-	local elap = now - self.m_StartTick1
-	local dur = self.m_EndTick1 - self.m_StartTick1
-	local prog = elap / dur
-	local h_x = interpolateBetween( -h*0.5,0,0,h*0.5,0,0,prog,"OutBack")
-	dxDrawRectangle(0,h_x-(w*0.05),w,w*0.1,tocolor(0,205,205,100))
-	dxDrawImage(w*0.2,(h_x)-(w*0.05),w*0.3,w*0.1,"files/images/gangwar/gangwar.png")
-	if prog >= 1 then
-		removeEventHandler("onClientRender",root,self.m_RenderBind)
-		self.m_StartTick2 = getTickCount()
-		self.m_EndTick2 = self.m_StartTick2 + ANIM_SCALE*ANIM_TIME
-		self.m_RenderBind2 = bind( self.render_Window_options, self)
-		addEventHandler("onClientRender",root,self.m_RenderBind2)
-	end
-end
-
-function GangwarClient:render_Window_options( )
-	local now = getTickCount()
-	local elap = now - self.m_StartTick2
-	local dur = self.m_EndTick2 - self.m_StartTick2
-	local prog = elap / dur
-	local w_x = interpolateBetween( w*0.2,0,0,w*0.5,0,0,prog,"OutBack")
-	local alpha = interpolateBetween(0,0,0,255,0,0,prog,"Linear")
-	local w_x2 = interpolateBetween( w*0.5,0,0,w*0.65,0,0,prog,"OutBack")
-	local w_x3 = interpolateBetween( -w*0.5,0,0,w*0.025,0,0,prog*1.4,"OutBack")
-	local color1 = tocolor(255,255,255,alpha)
-	local color2 = tocolor(255,255,255,alpha)
-	if self:isMouseOver( w_x,(h*0.5)-(w*0.05),w*0.15,w*0.05) then
-		color1 = tocolor(0,204,204,alpha)
-		self.m_Over = 1
-	elseif self:isMouseOver( w_x,(h*0.5)-(w*0.05)+(w*0.05),w*0.15,w*0.05) then
-		color2 = tocolor(0,204,204,alpha)
-		self.m_Over = 2
-	else self.m_Over = nil
-	end
-	dxDrawRectangle(0,h*0.5-(w*0.05),w,w*0.1,tocolor(0,205,205,100))
-	dxDrawImage(w*0.2,(h*0.5)-(w*0.05),w*0.3,w*0.1,"files/images/gangwar/gangwar.png")
-	dxDrawImage(w_x,(h*0.5)-(w*0.05),w*0.15,w*0.05,"files/images/gangwar/attack.png",0,0,0,color1)
-	dxDrawImage(w_x,(h*0.5)-(w*0.05)+(w*0.05),w*0.15,w*0.05,"files/images/gangwar/close.png",0,0,0,color2)
-	dxDrawLine(w*0.5,h*0.5,w_x2,h*0.5)
-
-	self:dxDrawBoxText(self.m_Area.m_Name , w_x3, h*0.5-w*0.05, w*0.3 , w*0.05, tocolor(255,255,255,255),1,"pricedown","left","top" )
-
-end
-
-function GangwarClient:isMouseOver( x,y,width,height)
-	if isCursorShowing() then
-		local cx,cy = getCursorPosition()
-		cx = cx*w
-		cy = cy*h
-		if cx >= x and cx <= x+width then
-			if cy >= y and cy <= y+height then
-				return true
-			end
+function GangwarClient:applyReplacedModels()
+	for key, entry in ipairs(self.m_RestoredReplacedModels or {}) do
+		engineReplaceModel(entry.dffElement, entry.model, true)
+		if entry.colElement then
+			engineReplaceCOL(entry.colElement, entry.model)
 		end
 	end
-	return false
+	self.m_RestoredReplacedModels = nil
 end
 
+function GangwarClient:Event_leaveWorld()
+	if not self.m_RestoredModels then return end
+	for key, entry in ipairs(self.m_RestoredModels) do
+		WorldModelRegistry.RawRemove(entry[1], entry[2], entry[3], entry[4], entry[5], entry[6])
+	end
+	self.m_RestoredModels = nil
+	self:applyReplacedModels()
+	self:Event_closeVehicles()
+end
 
-function GangwarClient:dxDrawBoxText( text , x, y , w , h , ... )
-	dxDrawText( text , x , y , x + w , y + h , ... )
+function GangwarClient:updatePickedMessage(status, isPicked, isEntered)
+	if not isPicked then
+		self:closePickedMessage()
+		return
+	end
+	local text = isEntered and _("Du bist im Gangwar um %s dabei. Warte auf den Start der Attackphase!", status.area) or _("Du bist für den Gangwar im Gebiet %s eingeteilt. Melde dich beim Gangwar-NPC deiner Fraktion!", status.area)
+	if self.m_PickedMessage then
+		self.m_PickedMessage:setText(text)
+	else
+		self.m_PickedMessage = ShortMessage:new(text, "Gangwar", nil, -1, nil, nil, nil, nil, true)
+	end
+end
+
+function GangwarClient:closePickedMessage()
+	if self.m_PickedMessage then
+		delete(self.m_PickedMessage)
+		self.m_PickedMessage = nil
+	end
+end
+
+function GangwarClient:Event_pickStatus(status, isPicked, isEntered)
+	self:updatePickedMessage(status, isPicked, isEntered)
+	local text = _"Klicken zum Öffnen (F4)"
+	if #status.entries == 0 then
+		text = text .. "\n• " .. _"Noch niemand eingeteilt"
+	end
+	for key, entry in ipairs(status.entries) do
+		text = text .. ("\n• %s%s"):format(entry.name, entry.entered and _" (dabei)" or "")
+	end
+	if not self.m_PickMessage then
+		self.m_PickMessage = ShortMessage:new(text, _("Einteilung - %s", status.area), tocolor(140, 40, 0), -1, function()
+			triggerServerEvent("Gangwar:requestPickData", localPlayer)
+		end, nil, nil, nil, true)
+	else
+		self.m_PickMessage:setText(text)
+	end
+end
+
+function GangwarClient:Event_pickStatusClose()
+	self:closePickedMessage()
+	if self.m_PickMessage then
+		delete(self.m_PickMessage)
+		self.m_PickMessage = nil
+	end
+	if GangwarPickGUI.Current then
+		delete(GangwarPickGUI.Current)
+	end
+end
+
+function GangwarClient:toggleMenu()
+	local isOpen = false
+	for key, gui in ipairs({GangwarMenuGUI, GangwarVehicleGUI, GangwarPickGUI}) do
+		if gui.Current then
+			delete(gui.Current)
+			isOpen = true
+		end
+	end
+	if not isOpen then
+		triggerServerEvent("Gangwar:requestMenu", localPlayer)
+	end
+end
+
+function GangwarClient:Event_openMenu(info)
+	if GangwarMenuGUI.Current then
+		delete(GangwarMenuGUI.Current)
+	end
+	GangwarMenuGUI.Current = GangwarMenuGUI:new(info)
+end
+
+function GangwarClient:Event_requestQuestion(id, text)
+	self:Event_requestClose(id)
+	self.m_Questions[id] = QuestionBox:new(text,
+		function()
+			self.m_Questions[id] = nil
+			triggerServerEvent("Gangwar:answerRequest", localPlayer, id, true)
+		end,
+		function()
+			self.m_Questions[id] = nil
+			triggerServerEvent("Gangwar:answerRequest", localPlayer, id, false)
+		end
+	)
+end
+
+function GangwarClient:Event_requestClose(id)
+	if self.m_Questions[id] then
+		delete(self.m_Questions[id])
+		self.m_Questions[id] = nil
+	end
+end
+
+function GangwarClient:Event_openNpc(data)
+	if GangwarNpcGUI.Current then
+		delete(GangwarNpcGUI.Current)
+	end
+	GangwarNpcGUI.Current = GangwarNpcGUI:new(data)
+end
+
+function GangwarClient:Event_openPick(data)
+	GangwarPickGUI.open(data, _"Einteilen", function(ids)
+		triggerServerEvent("Gangwar:submitPick", localPlayer, ids)
+	end)
+end
+
+function GangwarClient:Event_openVehicles(list, carsLeft, carsTotal)
+	if GangwarVehicleGUI.Current then
+		GangwarVehicleGUI.Current:fill(list, carsLeft, carsTotal)
+	else
+		GangwarVehicleGUI.Current = GangwarVehicleGUI:new(list, carsLeft, carsTotal)
+	end
+end
+
+function GangwarClient:Event_closeVehicles()
+	if GangwarVehicleGUI.Current then
+		delete(GangwarVehicleGUI.Current)
+	end
 end

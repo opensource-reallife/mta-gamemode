@@ -402,9 +402,7 @@ function Faction:removePlayer(playerId)
 				player:setPublicSync("RadioStatus", nil)
 			end
 		end
-		if (Gangwar:getSingleton():getCurrentGangwar() and Gangwar:getSingleton():getCurrentGangwar().m_AttackSession and  Gangwar:getSingleton():getCurrentGangwar().m_AttackSession:isParticipantInList(player)) then
-			Gangwar:getSingleton():getCurrentGangwar():removeParticipant(player)
-		end
+		Gangwar:getSingleton():onPlayerLeaveFaction(player)
 
 		player:saveAccountActivity()
 		setElementData(player, "playingTimeFaction", 0)

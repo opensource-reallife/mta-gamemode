@@ -7,26 +7,25 @@
 -- ****************************************************************************
 
 --[[
- This class includes the Box-Display containing the count of alive ally/enemy players and the name of the attacking/defending faction.
- It also displays the damage and kills the localPlayer has inflicted as well as the remaining time for the gangwar.
+ This class includes the score bar at the top of the screen with both factions, the alive players, the phase and the remaining time.
+ Below it the damage and kills of the localPlayer are shown.
 
-	_____________________________________
-	| FACTON-NAME 	|  FACTON-NAME2 	|
-	|  X / X		|		X / X		|
-	|_______________|___________________|
-	|  DAMAGE	|	KILLS   | 	TIME	|
-	|___________|___________|___________|
+	_____________________________________________
+	| FACTION-NAME  X/X | PHASE | X/X  FACTION-NAME2 |
+	|___________________| TIME  |___________________|
+	          | DAMAGE | FLAG | KILLS |
 ---]]
 
 GangwarDisplay = inherit(Object)
 local w, h = screenWidth, screenHeight
-local width, height = w*0.2,h*0.1
-local startX,startY = w- width*1.1, h*0.5-(height/2)
+local width, height = w*0.5, h*0.065
+local startX, startY = (w - width)/2, 0
+local TOP_ROW_SHARE = 0.58
+local CENTER_SHARE = 0.2
 local overViewHeight = h*0.4 / ASPECT_RATIO_MULTIPLIER
 local overViewWidth =  screenWidth/2-(screenWidth*0.65/2) / ASPECT_RATIO_MULTIPLIER
 local overViewStartHeight = h*0.5-h*0.3+(screenWidth*0.65)*0.06
 local overViewHealthWidth = dxGetTextWidth("200", 1, "default-bold")
-local overViewScoreboardEnd = overViewWidth+screenWidth*0.65
 local gradientTexture = dxCreateTexture( "files/images/Gangwar/gradient.png", "argb", true, "clamp")
 local overViewLocationSize = 1
 local overViewNameSize = 1
@@ -52,70 +51,89 @@ local moveStateImages =
 	["powerwalk"] = "run_icon",
 }
 
+local PHASE_TITLES = {
+	prepare = "Aufbauphase",
+	battle = "Attackphase",
+	["end"] = "Endphase",
+}
+
 -- constructor/destructor --
-function GangwarDisplay:constructor( fac1, fac2, pAttackClient, pInitTime, pPos )
+function GangwarDisplay:constructor( fac1, fac2, pAttackClient, pPhase, pInitTime, pPos )
 	self.m_Faction1 = fac1
 	self.m_Faction2 = fac2
 	self.m_AttackClient = pAttackClient
+	self.m_Phase = pPhase
 	self.m_TimeLeft = pInitTime
+	startX = tonumber(core:get("Gangwar", "DisplayTopX", startX)) or startX
+	startY = tonumber(core:get("Gangwar", "DisplayTopY", startY)) or startY
 	self.m_BindRender = bind( self.render,self)
 	self.m_FlagPosition = pPos
 	addEventHandler("onClientRender",root,self.m_BindRender)
 	self.m_BindClick = bind(self.click,self)
 	addEventHandler("onClientClick",root,self.m_BindClick)
 	self.m_BindFuncTime = bind( GangwarDisplay.tickTime, self )
-	setTimer( self.m_BindFuncTime, 1000, pInitTime )
+	self.m_TickTimer = setTimer( self.m_BindFuncTime, 1000, 0 )
 end
 
 function GangwarDisplay:destructor()
 	removeEventHandler("onClientRender",root,self.m_BindRender)
+	removeEventHandler("onClientClick",root,self.m_BindClick)
+	if isTimer(self.m_TickTimer) then killTimer(self.m_TickTimer) end
 end
 
 -- draw-functions --
 function GangwarDisplay:render()
+	if CustomF11Map:isInstantiated() and CustomF11Map:getSingleton().m_Visible then return end
 	self:checkDragDrop()
 	self:rend_Display()
 end
 
+function GangwarDisplay:drawTeamBox(faction, x, boxWidth, boxHeight, isLeft)
+	local color = faction.m_Color
+	local white = tocolor(255, 255, 255, 255)
+	local padding = boxWidth*0.04
+	local participants = #self.m_AttackClient:getFactionParticipants(faction)
+	local score = participants.."/"..self.m_AttackClient:getPickCount(faction)
+	dxDrawImage(x, startY, boxWidth, boxHeight, "files/images/gangwar/tile.png", 0, 0, 0, tocolor(color.r, color.g, color.b, 220))
+	self:dxDrawBoxShape(x, startY, boxWidth, boxHeight, tocolor(0, 0, 0, 255))
+	self:drawShadowBoxText(faction.m_Name, x + padding, startY, boxWidth - padding*2, boxHeight, white, 1.2, "default-bold", isLeft and "left" or "right", "center")
+	self:drawShadowBoxText(score, x + padding, startY, boxWidth - padding*2, boxHeight, white, 1.4, "default-bold", isLeft and "right" or "left", "center")
+end
+
+function GangwarDisplay:drawInfoCell(x, y, cellWidth, cellHeight, image, text)
+	local iconSize = cellHeight*0.8
+	local textWidth = dxGetTextWidth(text, 1, "default-bold")
+	local contentX = x + (cellWidth - iconSize - 6 - textWidth)/2
+	dxDrawImage(contentX, y + cellHeight*0.1, iconSize, iconSize, image)
+	self:drawShadowBoxText(text, contentX + iconSize + 6, y, textWidth + 2, cellHeight, tocolor(255, 255, 255, 255), 1, "default-bold", "left", "center")
+end
+
 function GangwarDisplay:rend_Display( )
-	local bottom_width = (width - ( width*0.01)) / 3
+	local topHeight = height*TOP_ROW_SHARE
+	local bottomHeight = height - topHeight
+	local centerWidth = width*CENTER_SHARE
+	local sideWidth = (width - centerWidth)/2
+	local centerX = startX + sideWidth
+	local white = tocolor(255, 255, 255, 255)
 
-	local r,g,b = self.m_Faction1.m_Color["r"],self.m_Faction1.m_Color["g"],self.m_Faction1.m_Color["b"]
-	dxDrawImage( startX , startY , width*0.495 , height*0.495,"files/images/gangwar/tile.png",0,0,0,tocolor(r,g,b,200) )
-	self:dxDrawBoxShape(startX , startY , width*0.495 , height*0.495,tocolor(0,0,0,255))
-	self:drawShadowBoxText( self.m_Faction1.m_Name,startX , startY+height*0.05 , width*0.495 , height*0.495, tocolor(255,255,255,255),1,"default-bold","center","top" )
+	self:drawTeamBox(self.m_Faction1, startX, sideWidth, topHeight, true)
+	self:drawTeamBox(self.m_Faction2, centerX + centerWidth, sideWidth, topHeight, false)
 
-	local tParticipants = self.m_AttackClient:getFactionParticipants( self.m_Faction1 )
-	local tFacMembers =  self.m_AttackClient:getFactionsMembers(self.m_Faction1 )
-	self:drawShadowBoxText(#tParticipants.."/"..#tFacMembers,startX , startY -height*0.1, width*0.495 , height*0.495, tocolor(255,255,255,255),1,"default-bold","center","bottom" )
+	dxDrawRectangle(centerX, startY, centerWidth, topHeight, tocolor(0, 0, 0, 230))
+	self:dxDrawBoxShape(centerX, startY, centerWidth, topHeight, tocolor(0, 0, 0, 255))
+	self:drawShadowBoxText(PHASE_TITLES[self.m_Phase] or "", centerX, startY + topHeight*0.03, centerWidth, topHeight*0.45, white, 1, "default-bold", "center", "center")
+	self:drawShadowBoxText(self:formatTick(self.m_TimeLeft), centerX, startY + topHeight*0.47, centerWidth, topHeight*0.5, white, 1.3, "default-bold", "center", "center")
 
-	r,g,b = self.m_Faction2.m_Color["r"],self.m_Faction2.m_Color["g"],self.m_Faction2.m_Color["b"]
-	dxDrawImage( startX+width*0.5 , startY , width*0.495 , height*0.495, "files/images/gangwar/tile.png",0,0,0,tocolor(r,g,b,200)  )
-	self:dxDrawBoxShape(startX+width*0.5 , startY , width*0.495 , height*0.495,tocolor(0,0,0,255))
-	self:drawShadowBoxText( self.m_Faction2.m_Name,startX+width*0.5 , startY +height*0.05, width*0.495 , height*0.495, tocolor(255,255,255,255),1,"default-bold","center","top" )
+	local rowWidth = width*0.5
+	local rowX = startX + (width - rowWidth)/2
+	local rowY = startY + topHeight
+	local cellWidth = rowWidth/3
+	dxDrawRectangle(rowX, rowY, rowWidth, bottomHeight, tocolor(0, 0, 0, 180))
+	self:dxDrawBoxShape(rowX, rowY, rowWidth, bottomHeight, tocolor(0, 0, 0, 255))
+	self:drawInfoCell(rowX, rowY, cellWidth, bottomHeight, "files/images/gangwar/gw_damage.png", tostring(self.m_AttackClient.m_GangwarDamage))
+	self:drawInfoCell(rowX + cellWidth*2, rowY, cellWidth, bottomHeight, "files/images/gangwar/gw_kill.png", tostring(self.m_AttackClient.m_GangwarKill))
+	self:rend_Flag(rowX + cellWidth, rowY, cellWidth, bottomHeight)
 
-	tParticipants = self.m_AttackClient:getFactionParticipants( self.m_Faction2 )
-	tFacMembers =  self.m_AttackClient:getFactionsMembers(self.m_Faction2 )
-	self:drawShadowBoxText(#tParticipants.."/"..#tFacMembers,startX+width*0.5 , startY -height*0.1, width*0.495 , height*0.495, tocolor(255,255,255,255),1,"default-bold","center","bottom" )
-
-
-	dxDrawImage( startX , startY+height*0.5 , bottom_width , height*0.495,"files/images/gangwar/tile.png",0,0,0, tocolor(0,204,204,180)  )
-	self:dxDrawBoxShape(startX , startY+height*0.5 , bottom_width , height*0.495,tocolor(0,0,0,150))
-	dxDrawImage( startX+ bottom_width*0.075 , startY+height*0.5+(height*0.495)*0.3 , bottom_width*0.2, bottom_width*0.2, "files/images/gangwar/gw_damage.png" )
-	self:drawShadowBoxText( self.m_AttackClient.m_GangwarDamage,startX , startY+height*0.5 , bottom_width , height*0.495, tocolor(255,255,255,255),1,"default-bold","center","center" )
-
-	dxDrawImage( startX+(bottom_width+width*0.005) , startY + height*0.5, bottom_width , height*0.495, "files/images/gangwar/tile.png",0,0,0,tocolor(0,204,204,180)  )
-	self:dxDrawBoxShape(startX+(bottom_width+width*0.005) , startY + height*0.5, bottom_width , height*0.495,tocolor(0,0,0,150))
-	dxDrawImage( startX+(bottom_width + width*0.01)+ bottom_width*0.075 , startY+height*0.5+(height*0.495)*0.3 , bottom_width*0.2, bottom_width*0.2, "files/images/gangwar/gw_kill.png" )
-	self:drawShadowBoxText( self.m_AttackClient.m_GangwarKill,startX+(bottom_width+width*0.005) , startY + height*0.5, bottom_width , height*0.495, tocolor(255,255,255,255),1,"default-bold","center","center" )
-
-	dxDrawImage( startX+(bottom_width*2 + width*0.01) , startY+height*0.5, bottom_width, height*0.495, "files/images/gangwar/tile.png",0,0,0,tocolor(0,204,204,180)  )
-	self:dxDrawBoxShape(startX+(bottom_width*2 + width*0.01) , startY+height*0.5, bottom_width, height*0.495,tocolor(0,0,0,150))
-	self:drawShadowBoxText( self:formatTick( self.m_TimeLeft ) ,startX+(bottom_width*2 + width*0.01) , startY+height*0.5, bottom_width, height*0.495, tocolor(255,255,255,255),1,"default-bold","center","center" )
-	dxDrawImage( startX+(bottom_width*2 + width*0.01)+ bottom_width*0.075 , startY+height*0.5+(height*0.495)*0.3 , bottom_width*0.2, bottom_width*0.2, "files/images/gangwar/gw_time.png" )
-	self:dxDrawBoxShape(startX,startY,width,height,tocolor(0,0,0,150))
-
-	self:rend_Flag()
 	if not dxGetStatus().AllowScreenUpload then
 		dxDrawRectangle(0, 0, w, h, tocolor(0, 0, 0, 255), true)
 		dxDrawText('Bitte aktiviere die Option "Erlauben von Screenshots" unter MTA -> Einstellungen', 0, 0, w, h, tocolor(255, 255, 255, 255), 2, "clear", "center", "center", false, false, true)
@@ -125,18 +143,12 @@ function GangwarDisplay:rend_Display( )
 	end
 end
 
-function GangwarDisplay:rend_Flag()
-	if self.m_FlagPosition then
-		local x, y = self.m_FlagPosition[1], self.m_FlagPosition[2], self.m_FlagPosition[3]
-		local px, py = getElementPosition( localPlayer )
-		local distance = math.floor( getDistanceBetweenPoints2D( x, y, px ,py) )
-		if distance > 15 then
-			distance = "#ee0000"..distance
-		else
-			distance = "#00ee00"..distance
-		end
-		dxDrawText( distance.."#ffffff/15 m",startX, startY - height*0.2, width, height*0.2, tocolor( 255, 255, 255, 255), 1,"default-bold","left","top", false, false, false, true)
-	end
+function GangwarDisplay:rend_Flag(x, y, cellWidth, cellHeight)
+	local flagX, flagY = self.m_FlagPosition[1], self.m_FlagPosition[2]
+	local px, py = getElementPosition(localPlayer)
+	local distance = math.floor(getDistanceBetweenPoints2D(flagX, flagY, px, py))
+	local color = distance > 15 and "#ee0000" or "#00ee00"
+	dxDrawText(color..distance.."#ffffff/15 m", x, y, x + cellWidth, y + cellHeight, tocolor(255, 255, 255, 255), 1, "default-bold", "center", "center", false, false, false, true)
 end
 
 function GangwarDisplay:drawParticipantOverview()
@@ -146,8 +158,10 @@ function GangwarDisplay:drawParticipantOverview()
 	local localFaction = localPlayer:getFactionId()
 	local localFactionObject = localPlayer:getFaction()
 	local enemyFaction, enemyFactionObject
+	local slot = localPlayer:getPublicSync("gangwarParticipant")
+	if not slot then return end
 	for key, player in ipairs(getElementsByType("player")) do
-		if player:getPublicSync("gangwarParticipant") then
+		if player:getPublicSync("gangwarParticipant") == slot then
 			if player:getFactionId() == localFaction then
 				factionPlayers1[#factionPlayers1+1] = player
 			else
@@ -167,14 +181,15 @@ function GangwarDisplay:drawParticipantOverview()
 end
 
 function GangwarDisplay:drawAttackerOverview( playerTable, enemyTable, r, g, b, r2, g2, b2 )
+	local left, right = ScoreboardGUI:getSingleton():getBodyRange()
 	local heightPerElement =  overViewHeight / #playerTable
 	if heightPerElement >= h*0.06 then heightPerElement = h*0.06 end
 	for i = 0, #playerTable -1, 1 do
-		self:drawPlayerOverview(playerTable[i+1], 0, overViewStartHeight+(heightPerElement*i), overViewWidth, heightPerElement, r, g, b)
+		self:drawPlayerOverview(playerTable[i+1], left - overViewWidth, overViewStartHeight+(heightPerElement*i), overViewWidth, heightPerElement, r, g, b)
 	end
 	if r2 and g2 and b2 then
 		for i = 0, #enemyTable -1, 1 do
-			self:drawEnemyOverview(enemyTable[i+1], overViewScoreboardEnd*1+overViewWidth*0.05, overViewStartHeight+(heightPerElement*i), overViewWidth, heightPerElement, r2, g2, b2)
+			self:drawEnemyOverview(enemyTable[i+1], right, overViewStartHeight+(heightPerElement*i), overViewWidth, heightPerElement, r2, g2, b2)
 		end
 	end
 end
@@ -206,12 +221,13 @@ function GangwarDisplay:drawEnemyOverview( player, x, y, width, height, r, g, b)
 end
 
 -- synchronize functions --
-function GangwarDisplay:synchronizeTime( pTime )
+function GangwarDisplay:synchronize( pPhase, pTime )
+	self.m_Phase = pPhase
 	self.m_TimeLeft = pTime
 end
 
 function GangwarDisplay:tickTime( )
-	self.m_TimeLeft = self.m_TimeLeft - 1
+	self.m_TimeLeft = math.max(0, self.m_TimeLeft - 1)
 end
 
 -- click functions --
@@ -236,16 +252,22 @@ function GangwarDisplay:click( b, s)
 			if s == "down" then
 				self.m_Drag = true
 			else
-				self.m_Drag = false
-				self.offsetX = nil
-				self.offsetY = nil
+				self:stopDrag()
 			end
 		else
-			self.m_Drag = false
-			self.offsetX = nil
-			self.offsetY = nil
+			self:stopDrag()
 		end
 	end
+end
+
+function GangwarDisplay:stopDrag()
+	if self.m_Drag then
+		core:set("Gangwar", "DisplayTopX", startX)
+		core:set("Gangwar", "DisplayTopY", startY)
+	end
+	self.m_Drag = false
+	self.offsetX = nil
+	self.offsetY = nil
 end
 
 -- These functions are utilities --

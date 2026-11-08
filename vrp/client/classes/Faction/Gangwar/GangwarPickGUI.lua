@@ -1,290 +1,153 @@
 GangwarPickGUI = inherit(GUIForm)
-local width,height = screenWidth * 0.3 , screenHeight*0.4
 
-function GangwarPickGUI:constructor( area, canModify, enablePick )
-    GUIWindow.updateGrid()
-	self.m_Width = grid("x", 16) 
-    self.m_Height = grid("y", 12)
-    
+function GangwarPickGUI.open(data, submitText, callback)
+	if GangwarPickGUI.Current then
+		delete(GangwarPickGUI.Current)
+	end
+	GangwarPickGUI.Current = GangwarPickGUI:new(data, submitText, callback)
+end
+
+function GangwarPickGUI:constructor(data, submitText, callback)
+	GUIWindow.updateGrid()
+	self.m_Width = grid("x", 16)
+	self.m_Height = grid("y", 12)
 	GUIForm.constructor(self, screenWidth/2-self.m_Width/2, screenHeight/2-self.m_Height/2, self.m_Width, self.m_Height, true)
-    self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _("Spielereinteilung - %s", area) , true, true, self)
-    if enablePick then
-        self.m_InfoLabel = GUIGridLabel:new(1, 1, 12, 1, _"Hier können die Teilnehmer des Gangwars eingeteilt werden!", self)
-    else 
-        self.m_InfoLabel = GUIGridLabel:new(1, 1, 12, 1, _"Die Gegner teilen ihre Spieler ein!", self)
-    end
-    self.m_ButtonRefresh = GUIGridButton:new(12, 1, 2, 1, FontAwesomeSymbols.Refresh, self):setFont(FontAwesome(15)):setFontSize(1):setBarEnabled(false)
-    self.m_ButtonRefresh.onLeftClick = bind(self.Event_OnRefreshClick, self)
+	self.m_Window = GUIWindow:new(0, 0, self.m_Width, self.m_Height, _("Spielereinteilung - %s", data.title), true, true, self)
 
-    self.m_ButtonAccept = GUIGridButton:new(14, 1, 2, 1, FontAwesomeSymbols.Accept, self):setFont(FontAwesome(15)):setFontSize(1):setBarEnabled(false):setBackgroundColor(tocolor(0, 120, 0, 255))
-    self.m_ButtonAccept.onLeftClick = bind(self.Event_OnAcceptClick, self)
+	self.m_Members = data.members
+	self.m_Names = {}
+	for key, member in ipairs(data.members) do
+		self.m_Names[member.id] = member
+	end
+	self.m_Picks = {}
+	for key, id in ipairs(data.picks) do
+		self.m_Picks[#self.m_Picks + 1] = id
+	end
+	self.m_MaxPlayers = data.maxPlayers
+	self.m_CanModify = data.canModify
+	self.m_LockedId = data.lockedId
+	self.m_Callback = callback
 
-	self.m_OnlineList = GUIGridGridList:new(1, 2, 7, 10, self)
-	self.m_OnlineList:addColumn(_"Online", 1)
-	
-	self.m_ButtonPick = GUIGridButton:new(8, 2, 1, 5, FontAwesomeSymbols.Right, self):setFont(FontAwesome(15)):setFontSize(1):setBarEnabled(false)
-    self.m_ButtonPick:setBackgroundColor(tocolor(2, 45, 16, 255))
-    self.m_ButtonPick.onLeftClick = bind(self.Event_OnPick, self)
+	GUIGridLabel:new(1, 1, 11, 1, _"Reihenfolge = Save-Reihenfolge: Wer oben steht, wird zuletzt gesaved.", self.m_Window)
+	self.m_SubmitButton = GUIGridButton:new(12, 1, 4, 1, submitText, self.m_Window):setBackgroundColor(Color.Green)
+	self.m_SubmitButton:setEnabled(data.canModify)
+	self.m_SubmitButton.onLeftClick = bind(self.onSubmitClick, self)
 
-    self.m_ButtonRemove = GUIGridButton:new(8, 7, 1, 5, FontAwesomeSymbols.Left, self):setFont(FontAwesome(15)):setFontSize(1):setBarEnabled(false)
-    self.m_ButtonRemove:setBackgroundColor(tocolor(66, 3, 4, 255))
-    self.m_ButtonRemove.onLeftClick = bind(self.Event_OnRemove, self)
-    
-	self.m_ParticipantList = GUIGridGridList:new(9, 2, 7, 10, self)
-	self.m_ParticipantList:addColumn(_"Teilnehmer", 1)
+	self.m_MemberList = GUIGridGridList:new(1, 2, 7, 10, self.m_Window)
+	self.m_MemberList:addColumn(_"Mitglieder", 0.7)
+	self.m_MemberList:addColumn(_"Status", 0.3)
 
-    self.m_Window:deleteOnClose( false )
-    self.m_ParticipantList:clear()
+	self.m_AddButton = GUIGridButton:new(8, 2, 1, 3, FontAwesomeSymbols.Right, self.m_Window):setFont(FontAwesome(15)):setFontSize(1):setBarEnabled(false)
+	self.m_AddButton:setBackgroundColor(tocolor(2, 45, 16, 255))
+	self.m_AddButton:setEnabled(data.canModify)
+	self.m_AddButton.onLeftClick = bind(self.onAddClick, self)
 
-    self.m_UpdateBind = bind(self.Event_OnUpdateTick, self)
-    self.m_UpdateTimer = setTimer( self.m_UpdateBind, 500, 0)
+	self.m_RemoveButton = GUIGridButton:new(8, 5, 1, 3, FontAwesomeSymbols.Left, self.m_Window):setFont(FontAwesome(15)):setFontSize(1):setBarEnabled(false)
+	self.m_RemoveButton:setBackgroundColor(tocolor(66, 3, 4, 255))
+	self.m_RemoveButton:setEnabled(data.canModify)
+	self.m_RemoveButton.onLeftClick = bind(self.onRemoveClick, self)
 
-    self:fill()
-    self:createMessage( enablePick )
-    self:setModify( canModify )
-    showCursor(false)
-end
+	self.m_UpButton = GUIGridButton:new(8, 8, 1, 2, FontAwesomeSymbols.Double_Up, self.m_Window):setFont(FontAwesome(15)):setFontSize(1):setBarEnabled(false)
+	self.m_UpButton:setEnabled(data.canModify)
+	self.m_UpButton.onLeftClick = function() self:moveSelected(-1) end
 
-function GangwarPickGUI:fill()
-    self.m_Online = {}
-    self.m_Pick = {}
-    self.m_RemotePick = {}
-    self.m_Disqualified = {}
-    self.m_Participants = {}
-    self:refill()
-end
+	self.m_DownButton = GUIGridButton:new(8, 10, 1, 2, FontAwesomeSymbols.Double_Down, self.m_Window):setFont(FontAwesome(15)):setFontSize(1):setBarEnabled(false)
+	self.m_DownButton:setEnabled(data.canModify)
+	self.m_DownButton.onLeftClick = function() self:moveSelected(1) end
 
-function GangwarPickGUI:synchronize( participants, disqualified )
-    self.m_Participants = participants
-    self.m_Disqualified = disqualified 
-    self:refill()
-end
+	self.m_PickList = GUIGridGridList:new(9, 2, 7, 10, self.m_Window)
+	self.m_PickList:addColumn(_"Eingeteilt", 1)
 
-function GangwarPickGUI:refresh( )
-    self.m_OnlineList:clear()
-    local item
-    for key, player in ipairs(self.m_Online) do 
-        if player and isElement(player) then
-            item = self.m_OnlineList:addItem(player:getName())
-            item.m_Player = player
-        else 
-            local index = self:isInTable(self.m_Pick, player)
-            if index then
-                table.remove(self.m_Online, index)
-            end
-        end
-    end
-    self.m_ParticipantList:clear()
-    for key, player in ipairs(self.m_Pick) do 
-        if player and isElement(player)  then
-            item = self.m_ParticipantList:addItem(("• %s  %s"):format(key, player:getName()))
-            item.m_Player = player
-        else 
-            local index = self:isInTable(self.m_Pick, player)
-            if index then
-                table.remove(self.m_Pick, index)
-            end
-        end
-    end
-end
-
-function GangwarPickGUI:check() 
-    for _, player in ipairs(self.m_Pick) do
-        for key, player2 in ipairs(self.m_Online) do
-            if player == player2 then 
-                table.remove(self.m_Online, key)
-            end
-        end
-    end
-    self:refresh()
-end
-
-function GangwarPickGUI:remove( player ) 
-    local index = self:isInTable(self.m_Pick, player)
-    if index then
-        table.remove(self.m_Pick, index) 
-        self:refill()
-    end
-end
-
-function GangwarPickGUI:add( player ) 
-    local index = self:isInTable(self.m_Pick, player)
-    if not index then
-        table.insert(self.m_Pick, player)
-        self:refill()
-    end
-end
-
-function GangwarPickGUI:createMessage( enablePick ) 
-    if not self.m_PickMessage then 
-        if enablePick then
-            self.m_ClickBind = bind(self.onMessageClick, self)
-            self.m_PickMessage = ShortMessage:new("", "Teilnehmer [Bearbeiten]", tocolor(140,40,0), -1, self.m_ClickBind, nil, nil, nil, true)
-            self.m_PickMessage:setText("• Klicken um die Spieler einzuteilen (Sollte eine leere Liste eingereicht werden, machen alle mit)")
-        else 
-            self.m_PickMessage = ShortMessage:new("", "Teilnehmer der Gegner", tocolor(140,40,0), -1, self.m_ClickBind, nil, nil, nil, true)
-            self.m_PickMessage:setText("• Die Gegner teilen zurzeit ihre Spieler ein!")
-        end
-    end
-end
-
-function GangwarPickGUI:updateMessage( list, updater, tick, isRemote )
-    self:createMessage()
-    self.m_Update = getTickCount()
-    self.m_Creator = updater
-    self.m_Pick = list
-    if isRemote then
-        self.m_RemotePick = table.copy(list) -- this is the original list so we can compare if any changes have been done locally before we push the newer one
-    end
-    self:writeMessage()
-    self:refill()
-end
-
-function GangwarPickGUI:writeMessage()
-    if self.m_Pick and self.m_Creator and self.m_Update then
-        local updateTime = (getTickCount() - self.m_Update) / 1000
-        local status = not self:compare() and "[ENTWURF]" or ""
-        local text = ("Eingeteilt von %s vor %s Sek. %s"):format(self.m_Creator, math.floor(updateTime), status)
-        if self.m_PickMessage then 
-            if #self.m_Pick > 0 then
-                for key, player in ipairs(self.m_Pick) do 
-                    if player and isElement(player) then 
-                        text = text .. "\n • " .. player:getName()
-                    end
-                end
-            else 
-                text = text .. "\n • Keiner eingeteilt! (Alle machen mit)"
-            end
-        end
-        self.m_PickMessage:setText(_("%s", text))
-    end
-end
-
-function GangwarPickGUI:compare( )
-    for _, player in ipairs(self.m_RemotePick) do 
-        if not self:isInTable(self.m_Pick, player) then
-            return false
-        end
-    end
-    for _, player in pairs(self.m_Pick) do 
-        if not self:isInTable(self.m_RemotePick, player) then
-            return false
-        end
-    end
-    return true
-end
-
-function GangwarPickGUI:setModify(bool) 
-    self.m_Modify = bool
-    self.m_ButtonAccept:setEnabled(bool)
-    self.m_ButtonRemove:setEnabled(bool)
-    self.m_ButtonPick:setEnabled(bool)
-end
-
-function GangwarPickGUI:canModify() 
-    return self.m_Modify
-end
-
-function GangwarPickGUI:isDisqualified( player )
-    if player and isElement(player) then 
-        for i = 1, #self.m_Disqualified do 
-            if self.m_Disqualified[i] == player:getName() then 
-                return true
-            end
-        end
-    end
-    return false
-end
-
-function GangwarPickGUI:refill()
-    self.m_Online = {}
-    for key, player in ipairs(self.m_Participants) do 
-        if not self:isDisqualified(player) and not self:isInTable(self.m_Online, player) then
-            table.insert(self.m_Online, player)
-        end
-    end
-    self:check()
-end
-
-function GangwarPickGUI:isInTable( tbl, obj )
-    for i = 1, #tbl do 
-        if tbl[i] == obj then 
-            return i
-        end
-    end
-    return false
-end
-
-function GangwarPickGUI:onHide() 
-    self.m_IsHidden = true
-    self:toggleKeys(true)
-end
-
-function GangwarPickGUI:onMessageClick()
-    if self.m_IsHidden then 
-        self.m_IsHidden = false
-        self:setVisible(true)
-        self:toggleKeys(false)
-    end
-end
-
-function GangwarPickGUI:Event_OnPick()
-    if self:canModify() then
-        local item = self.m_OnlineList:getSelectedItem()
-        if item then 
-            if item.m_Player and isElement(item.m_Player) and not self:isDisqualified(player) then 
-                self:add( item.m_Player )
-            end
-        end
-    end
-end
-
-function GangwarPickGUI:Event_OnUpdateTick()
-    if self.m_PickMessage then 
-        self:writeMessage()
-    end
-end
-
-function GangwarPickGUI:Event_OnRemove()
-    if self:canModify() then
-        local item = self.m_ParticipantList:getSelectedItem()
-        if item then 
-            if item.m_Player and isElement(item.m_Player) then 
-                self:remove( item.m_Player )
-            end
-        end
-    end
-end
-
-function GangwarPickGUI:Event_OnRefreshClick(  )
-    self.m_OnlineList:clear()
-    for _, player in ipairs(self.m_Online) do 
-        if player and isElement(player) and not self:isDisqualified(player) then
-            item = self.m_OnlineList:addItem(player:getName())
-            item.m_Player = player
-        end
-    end
-    self.m_ParticipantList:clear()
-    for key, player in ipairs(self.m_Pick) do 
-        if player and isElement(player) and not self:isDisqualified(player) then
-            item = self.m_ParticipantList:addItem(("• %s  %s"):format(key, player:getName()))
-            item.m_Player = player
-        end
-    end
-end
-
-function GangwarPickGUI:Event_OnAcceptClick()
-    if self:canModify() then
-        self.m_RemotePick = table.copy(self.m_Pick) -- this is the original list so we can compare if any changes have been done locally before we push the newer one
-        triggerServerEvent("GangwarPick:submit", localPlayer, self.m_Pick)
-    end
+	self:refresh()
 end
 
 function GangwarPickGUI:destructor()
-    if isTimer( self.m_UpdateTimer ) then killTimer(self.m_UpdateTimer) end
-    GUIForm.destructor(self)
-    if self.m_PickMessage then 
-        self.m_PickMessage:delete()
-    end
+	GangwarPickGUI.Current = nil
+	GUIForm.destructor(self)
 end
 
+function GangwarPickGUI:isPicked(id)
+	for key, pickId in ipairs(self.m_Picks) do
+		if pickId == id then
+			return key
+		end
+	end
+	return false
+end
+
+function GangwarPickGUI:refresh(selectedId)
+	self.m_MemberList:clear()
+	for key, member in ipairs(self.m_Members) do
+		if not self:isPicked(member.id) then
+			local item = self.m_MemberList:addItem(member.name, member.online and _"Online" or _"Offline")
+			item.m_Id = member.id
+			item.onLeftDoubleClick = function() self:addPick(member.id) end
+			if not member.online then
+				item:setColumnColor(2, Color.LightGrey)
+			end
+		end
+	end
+
+	self.m_PickList:clear()
+	for key, id in ipairs(self.m_Picks) do
+		local member = self.m_Names[id]
+		local item = self.m_PickList:addItem(("• %d  %s%s"):format(key, member and member.name or tostring(id), (member and not member.online) and " (Offline)" or ""))
+		item.m_Id = id
+		item.onLeftDoubleClick = function() self:removePick(id) end
+		if id == selectedId then
+			self.m_PickList:onInternalSelectItem(item)
+		end
+	end
+end
+
+function GangwarPickGUI:addPick(id)
+	if not self.m_CanModify or self:isPicked(id) then return end
+	if #self.m_Picks >= self.m_MaxPlayers then
+		ErrorBox:new(_("Es können höchstens %d Spieler eingeteilt werden!", self.m_MaxPlayers))
+		return
+	end
+	self.m_Picks[#self.m_Picks + 1] = id
+	self:refresh()
+end
+
+function GangwarPickGUI:removePick(id)
+	if not self.m_CanModify then return end
+	if id == self.m_LockedId then
+		ErrorBox:new(_"Wer den Angriff gestartet hat, bleibt eingeteilt. Nur die Reihenfolge lässt sich ändern.")
+		return
+	end
+	local index = self:isPicked(id)
+	if index then
+		table.remove(self.m_Picks, index)
+		self:refresh()
+	end
+end
+
+function GangwarPickGUI:moveSelected(direction)
+	local item = self.m_PickList:getSelectedItem()
+	if not item then return end
+	local index = self:isPicked(item.m_Id)
+	local target = index and index + direction
+	if not target or target < 1 or target > #self.m_Picks then return end
+	self.m_Picks[index], self.m_Picks[target] = self.m_Picks[target], self.m_Picks[index]
+	self:refresh(item.m_Id)
+end
+
+function GangwarPickGUI:onAddClick()
+	local item = self.m_MemberList:getSelectedItem()
+	if item then
+		self:addPick(item.m_Id)
+	end
+end
+
+function GangwarPickGUI:onRemoveClick()
+	local item = self.m_PickList:getSelectedItem()
+	if item then
+		self:removePick(item.m_Id)
+	end
+end
+
+function GangwarPickGUI:onSubmitClick()
+	self.m_Callback(self.m_Picks)
+	delete(self)
+end

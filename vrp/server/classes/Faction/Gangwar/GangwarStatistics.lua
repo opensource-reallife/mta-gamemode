@@ -11,8 +11,6 @@ local CACHE_TIME = (60*1000)*30
 
 GangwarStatistics.CacheStats = { }
 function GangwarStatistics:constructor() 
-	self.m_CollectorMap =  {}
-	self.m_CollectorTimeouts =  {}
 	self.m_SQLStats = {}
 	self.runtimeMostDamage = {}
 	self.m_BankAccountServer = BankServer.get("faction.gangwar")
@@ -30,10 +28,6 @@ function GangwarStatistics:prepareAttackLog()
 	end
 end
 
-function GangwarStatistics:newCollector( mAreaID )
-	self.m_CollectorMap[mAreaID] = {}
-end
-
 function GangwarStatistics:getAttackLog() 
 	return self.m_AttackLog
 end
@@ -42,53 +36,63 @@ function GangwarStatistics:addAttackLog( area, attacker, owner, start, endTime, 
 	table.insert(self.m_AttackLog, 1, {area, attacker, owner, start, endTime, winner})
 end
 
-function GangwarStatistics:stopAndOutput( mAreaID )
-	local bestTable = self:getBestOfCollector( mAreaID )
-	for _, value in ipairs( self.m_CollectorMap[mAreaID] ) do 
-		value[1]:triggerEvent( "GangwarStatistics:clientGetMVP", bestTable )
-	end
-	self.m_CollectorMap[mAreaID] = {}
-	self.m_CollectorTimeouts[mAreaID] = {}
-	self:addNewMVP( bestTable[1][1] )
-	self:flushSQLTable()
-	self:getTopTenList() 
-end
-
-function GangwarStatistics:collectDamage(mAreaID, facPlayers)
-	local damage, moneyDamage, moneyKill, player, kill
-	for i = 1, #facPlayers do 
-		player = facPlayers[i]
-		if player and isElement(player) then
-			damage = math.ceil(player.g_damage or 0)
-			kill = 0
-			if player.g_kills then
-				if tonumber(player.g_kills) then 
-					kill = tonumber(player.g_kills)
-				end
-			end
-			moneyDamage = damage * GANGWAR_PAY_PER_DAMAGE
-			moneyKill = kill * GANGWAR_PAY_PER_KILL
-			if moneyDamage + moneyKill > 0 then
-				outputChatBox(_("[Gangwar-Boni] #FFFFFFDu erhälst %s$ für deinen Damage!", player , moneyDamage),player,200,200,0,true)
-				outputChatBox(_("[Gangwar-Boni] #FFFFFFDu erhälst %s$ für deine Kills!", player , moneyKill),player,200,200,0,true)
-				self.m_BankAccountServer:transferMoney(player, moneyDamage + moneyKill, "Gangwar-Boni", "Faction", "GangwarBoni")
-			end
-			self.m_CollectorMap[mAreaID][#self.m_CollectorMap[mAreaID]+1] = { player, damage}
-			self.m_SQLStats[#self.m_SQLStats+1] = {player:getId(), "Damage", damage, player:getName()}
-			self.m_SQLStats[#self.m_SQLStats+1] = {player:getId(), "Kill", kill, player:getName()}
+function GangwarStatistics:markAttackLogInvalid( area, attacker, start )
+	for _, row in ipairs(self.m_AttackLog) do
+		if row[1] == area and row[2] == attacker and row[4] == start then
+			row[6] = GANGWAR_INVALID_WINNER
 		end
 	end
-	self:stopAndOutput( mAreaID )
 end
 
-function GangwarStatistics:getBestOfCollector( mAreaID )
-	table.sort( self.m_CollectorMap[mAreaID] , function( a ,b ) return a[2] > b[2] end)
-	return self.m_CollectorMap[mAreaID]
+function GangwarStatistics:payOfflinePlayer( playerId, amount, areaName )
+	self.m_BankAccountServer:transferMoney({"player", playerId, true}, amount, "Gangwar-Boni", "Faction", "GangwarBoni")
+	local target, isOffline = DatabasePlayer.get(playerId)
+	if target and isOffline then
+		target:addOfflineMessage(("Du hast für den Gangwar um %s %d$ Gangwar-Boni auf dein Konto erhalten."):format(areaName, amount), 1)
+		delete(target)
+	end
 end
 
-function GangwarStatistics:addNewMVP( player )
-	self.m_SQLStats[#self.m_SQLStats+1] = {player:getId(), "MVP", 1, player:getName()}
-	
+function GangwarStatistics:collectDamage( stats, review )
+	local best = {}
+	local receivers = {}
+	for id, entry in pairs(stats) do
+		local damage = math.ceil(entry.damage)
+		local kills = entry.kills
+		local moneyDamage = damage * GANGWAR_PAY_PER_DAMAGE
+		local moneyKill = kills * GANGWAR_PAY_PER_KILL
+		best[#best + 1] = {id = id, name = entry.name, faction = entry.faction:getShortName(), damage = damage, kills = kills}
+		self.m_SQLStats[#self.m_SQLStats+1] = {id, "Damage", damage, entry.name}
+		self.m_SQLStats[#self.m_SQLStats+1] = {id, "Kill", kills, entry.name}
+
+		local player = Player.getFromId(id)
+		if player and isElement(player) then
+			receivers[#receivers + 1] = {player = player, own = {
+				factionId = entry.faction:getId(),
+				color = entry.faction.m_Color,
+				damage = damage,
+				kills = kills,
+				moneyDamage = moneyDamage,
+				moneyKill = moneyKill,
+			}}
+			if moneyDamage + moneyKill > 0 then
+				self.m_BankAccountServer:transferMoney({player, true}, moneyDamage + moneyKill, "Gangwar-Boni", "Faction", "GangwarBoni")
+			end
+		elseif moneyDamage + moneyKill > 0 then
+			self:payOfflinePlayer(id, moneyDamage + moneyKill, review.area)
+		end
+	end
+
+	table.sort(best, function(a, b) return a.damage > b.damage end)
+	review.best = best
+	for index, receiver in ipairs(receivers) do
+		receiver.player:triggerEvent("GangwarReview:show", review, receiver.own)
+	end
+	if best[1] and best[1].damage > 0 then
+		self.m_SQLStats[#self.m_SQLStats+1] = {best[1].id, "MVP", 1, best[1].name}
+	end
+	self:flushSQLTable()
+	self:getTopTenList()
 end
 
 function GangwarStatistics:flushSQLTable() 

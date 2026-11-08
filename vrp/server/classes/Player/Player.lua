@@ -447,6 +447,12 @@ function Player:spawn()
 	self:setStat(22, 1000)
 	self:setStat(225, 1000)
 
+	if self.m_SavedDimension and self.m_SavedDimension >= GANGWAR_DIMENSION_BASE then
+		self.m_SavedPosition = HOSPITAL_POSITION
+		self.m_SavedInterior = 0
+		self.m_SavedDimension = 0
+	end
+
 	if not quitTick or (getTickCount() - quitTick > 300000) then
 		if self.m_SpawnLocation == SPAWN_LOCATIONS.DEFAULT then
 			spawnSuccess = spawnPlayer(self, self.m_SavedPosition.x, self.m_SavedPosition.y, self.m_SavedPosition.z, 0, self.m_Skin or 0, self.m_SavedInterior, self.m_SavedDimension)
@@ -617,10 +623,14 @@ function Player:respawn(position, rotation, bJailSpawn)
 	setPedAnimation(self,false)
 	setElementAlpha(self,255)
 
-	self:takeEquipment()
+	if not self.m_GangwarRespawn then
+		self:takeEquipment()
+	end
 	if self:getExecutionPed() then delete(self:getExecutionPed()) end
 
-	WearableManager:getSingleton():removeAllWearables(self)
+	if not self.m_GangwarRespawn then
+		WearableManager:getSingleton():removeAllWearables(self)
+	end
 	if self.m_SuicideEscape then
 		FactionState:getSingleton():Event_JailPlayer(self, false, true, self.m_LastCopAttack, false, nil, false, false, true)
 	elseif self.m_DeathInJail then
@@ -1683,6 +1693,8 @@ function Player:attachToVehicle(forceDetach)
 		return
 	end
 
+	if forceDetach then return end
+	if self.m_GangwarSession then return self:sendError(_("Im Gangwar kannst du dich nicht am Fahrzeug festhalten!", self)) end
 	if self:getData("PreventVehicles") then return self:sendError(_("Du kannst dich mit deinem Objekt nicht am Fahrzeug festhalten!", self)) end
 
 	if forceDetach or not self.contactElement or self.contactElement:getType() ~= "vehicle" then return end
@@ -1851,7 +1863,7 @@ function Player:moveToJail(CUTSCENE, alreadySpawned)
 end
 
 function Player:isInGangwar()
-	return Gangwar:getSingleton():isPlayerInGangwar(self)
+	return self.m_GangwarSession ~= nil
 end
 
 -- Override mta function

@@ -239,6 +239,11 @@ function InventoryManager:Event_requestTrade(type, target, item, amount, money, 
 
 		item = self:resolveItemName(item)
 		if not item then return false end
+		local itemData = self:getItemDataForItem(item)
+		if itemData and itemData["MunitionFuer"] and (client.m_GangwarSession or target.m_GangwarSession) then
+			client:sendError(_("Im Gangwar kannst du keine Munition handeln!", client))
+			return false
+		end
 		client.sendRequest.item = item
 		target.receiveRequest.item = item
 

@@ -1187,7 +1187,16 @@ function FactionState:outputMegaphone(player, text, lang)
 	return false
 end
 
+function FactionState:isBlockedByGangwar(player)
+	if player.m_GangwarSession then
+		player:sendError(_("Während des Gangwars kannst du keine Wanteds oder StVO-Punkte vergeben!", player))
+		return true
+	end
+	return false
+end
+
 function FactionState:Command_suspect(player,cmd,target,amount,...)
+	if self:isBlockedByGangwar(player) then return end
 	if player:isFactionDuty() and player:getFaction() and player:getFaction():isStateFaction() == true then
 		local reason, wAmount = self:getFullReasonFromShortcut(table.concat({...}, " "))
 		local reason2, wAmount2
@@ -1252,6 +1261,7 @@ function FactionState:Command_suspect(player,cmd,target,amount,...)
 end
 
 function FactionState:Command_stvo(player, cmd, target, category, amount,...)
+	if self:isBlockedByGangwar(player) then return end
 	if player:isFactionDuty() and player:getFaction() and player:getFaction():isStateFaction() == true then
 		local amount = tonumber(amount)
 		if amount and amount >= 1 and amount <= 6 then
@@ -1285,6 +1295,7 @@ function FactionState:Command_stvo(player, cmd, target, category, amount,...)
 end
 
 function FactionState:Event_giveSTVO(target, category, amount, reason)
+	if self:isBlockedByGangwar(client) then return end
 	local faction = client:getFaction()
 	if faction and faction:isStateFaction() then
 		if client:isFactionDuty() then
@@ -1308,6 +1319,7 @@ function FactionState:Event_giveSTVO(target, category, amount, reason)
 end
 
 function FactionState:Event_setSTVO(target, category, amount, reason)
+	if self:isBlockedByGangwar(client) then return end
 	local faction = client:getFaction()
 	if faction and faction:isStateFaction() then
 		if client:isFactionDuty() then
@@ -1987,6 +1999,7 @@ function FactionState:checkLogout(player)
 end
 
 function FactionState:Event_giveWanteds(target, amount, reason)
+	if self:isBlockedByGangwar(client) then return end
 	local faction = client:getFaction()
 	if faction and faction:isStateFaction() then
 		if client:isFactionDuty() then
@@ -2016,6 +2029,7 @@ function FactionState:Event_giveWanteds(target, amount, reason)
 end
 
 function FactionState:Event_setWanteds(target, amount, reason)
+	if self:isBlockedByGangwar(client) then return end
 	local faction = client:getFaction()
 	if faction and faction:isStateFaction() then
 		if client:isFactionDuty() then

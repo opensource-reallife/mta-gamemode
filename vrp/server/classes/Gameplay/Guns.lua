@@ -130,6 +130,9 @@ function Guns:Event_onClientDamage(target, weapon, bodypart, loss, isMelee)
 	if not target or not attacker or not isElement(target) or not isElement(attacker) then
 		return
 	end
+	if (target.m_GangwarSession or attacker.m_GangwarSession) and not Gangwar:getSingleton():isDamageAllowed(attacker, target) then
+		return
+	end
 	if attacker:isInVehicle() and not (target:isInVehicle() or target:getPrivateSync("isAttachedToVehicle")) then
 		outputDebug("canceling drive by damage (from: "..attacker:getName()..") to walking player (to: "..target:getName()..")")
 		return
@@ -148,14 +151,14 @@ function Guns:Event_onClientDamage(target, weapon, bodypart, loss, isMelee)
 		target.m_LastCopAttack = attacker:getId()
 	end
 	if weapon == 34 and bodypart == 9 then
-		if self:destroyProtectionHelmet(attacker, target) then
+		if not target.m_GangwarSession and self:destroyProtectionHelmet(attacker, target) then
 			return
 		end
 		target:triggerEvent("clientBloodScreen")
 		self:killPed(target, attacker, weapon, bodypart)
 		return
 	end
-	if target.m_Shirt then
+	if target.m_Shirt and not target.m_GangwarSession then
 		if bodypart == 3 and WEAPONS_KEVLAR_REPELS[weapon] and target.m_Shirt:getData("isProtectingChest") then
 			target.m_KevlarShotsCount = target.m_KevlarShotsCount + SHOT_STRENGTH_AGAINST_KEVLAR[weapon]
 			
@@ -205,7 +208,7 @@ function Guns:Event_OnWasted(totalAmmo, killer, weapon, bodypart)
 
 	if source:getExecutionPed() then delete(source:getExecutionPed()) end
 
-	if not source.Minigame and not source.raceLobby and not source:getData("isInDeathMatch") and not source:getData("inWare") and not source:getPublicSync("JobBoxer:activeLevel") then
+	if not source.m_GangwarSession and not source.Minigame and not source.raceLobby and not source:getData("isInDeathMatch") and not source:getData("inWare") and not source:getPublicSync("JobBoxer:activeLevel") then
 		local inv = source:getInventory()
 		-- TAKE THE MONEY BRUHH
 
@@ -269,6 +272,9 @@ function Guns:Event_OnWasted(totalAmmo, killer, weapon, bodypart)
 end
 
 function Guns:Event_logMeleeDamage(target, weapon, bodypart, loss)
+	if target and isElement(target) and target.m_GangwarSession and target.m_GangwarSession == client.m_GangwarSession and target:getFaction() ~= client:getFaction() and loss > 0 then
+		target.m_GangwarHealthDamaged = true
+	end
 	--StatisticsLogger:getSingleton():addDamageLog(client, target, weapon, bodypart, loss)
 	local count, inst = DamageManager:getSingleton():getDamageByWeapon(target, weapon)
 	if target and isElement(target) and not target.deathmatchLobby then
@@ -324,15 +330,12 @@ function Guns:getWeaponInStorage( player, slot)
 	return false, false
 end
 
-function Guns:addGangwarDamage(target, attacker, damage)
-	if Gangwar:isInstantiated() then
-		if Gangwar:getSingleton():getCurrentGangwar() then
-			if Gangwar:getSingleton():getCurrentGangwar().m_AttackSession:isParticipantInList(target) and Gangwar:getSingleton():getCurrentGangwar().m_AttackSession:isParticipantInList(attacker) then
-				if target:getFaction() ~= attacker:getFaction() then
-					attacker.g_damage = attacker.g_damage + damage
-					attacker:triggerEvent("onGangwarDamage", damage)
-				end
-			end
+function Guns:addGangwarDamage(target, attacker, damage, lostHealth)
+	local session = target.m_GangwarSession
+	if session and session == attacker.m_GangwarSession and target:getFaction() ~= attacker:getFaction() then
+		session:addDamage(attacker, damage)
+		if lostHealth then
+			target.m_GangwarHealthDamaged = true
 		end
 	end
 end
@@ -363,7 +366,7 @@ function Guns:damagePlayer(player, loss, attacker, weapon, bodypart)
 			player:setHealth(health-loss)
 		end
 	end
-	self:addGangwarDamage(player, attacker, loss)
+	self:addGangwarDamage(player, attacker, loss, armor < loss)
 	local count, inst = DamageManager:getSingleton():getDamageByWeapon(player, weapon)
 	if count > 0 and inst and loss > 0 and not player.deathmatchLobby then
 		if count > 10 then

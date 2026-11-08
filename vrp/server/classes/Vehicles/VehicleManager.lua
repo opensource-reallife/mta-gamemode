@@ -125,9 +125,17 @@ function VehicleManager:constructor()
 		function()
 			if client.vehicleSeat ~= 0 then return end
 
+			if client.vehicle.m_GangwarFaction then
+				if self:canToggleGangwarHandbrake(client, client.vehicle) then
+					client.vehicle:toggleHandBrake(client)
+				else
+					client:sendError(_("Die Handbremse darf nur die Fraktion des Fahrzeugs bedienen!", client))
+				end
+				return
+			end
+
 			if client.vehicle:hasKey(client) or
 					client.vehicle:canObjectBeLoaded() or
-					client.vehicle:getData("isGangwarVehicle") or
 					(client.vehicle.isRcVehicle and client:getData("RcVehicle")) or
 					client.vehicle:getData("Vehicle:Stolen") or
 					(client.vehicle.importVehicle and client:getCompany() and client:getCompany():getId() == CompanyStaticId.EPT) or
@@ -987,10 +995,19 @@ function VehicleManager:Event_vehiclePark()
 	end
  end
 
+function VehicleManager:canToggleGangwarHandbrake(player, vehicle)
+	return vehicle.m_GangwarFaction == player:getFaction() or player:getRank() >= ADMIN_RANK_PERMISSION["looseVehicleHandbrake"]
+end
+
 function VehicleManager:Event_toggleHandBrake()
 	if not source.m_HandBrake then return client:sendError(_("Die Handbremse ist nicht angezogen!", client)) end
 	
-	if client:getCompany() and client:getCompany():getId() == CompanyStaticId.MECHANIC and client:isCompanyDuty() then
+	if source.m_GangwarFaction then
+		if not self:canToggleGangwarHandbrake(client, source) then
+			client:sendError(_("Die Handbremse darf nur die Fraktion des Fahrzeugs bedienen!", client))
+			return
+		end
+	elseif client:getCompany() and client:getCompany():getId() == CompanyStaticId.MECHANIC and client:isCompanyDuty() then
 		if getElementData(source, "forSale") then
 			source:setForSale(false, 0)
 		end

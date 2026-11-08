@@ -267,6 +267,10 @@ function Inventory:useItem(itemId, bag, itemName, place)
 	end
 
 	local data = self.m_ItemData[itemName]
+	if self.m_Owner.m_GangwarSession and (data["Kategorie"] == "place" or itemName == "SLAM") then
+		client:sendError(_("Im Gangwar kannst du keine Objekte platzieren!", client))
+		return
+	end
 	if data["WaffenId"] then
 		return self:toggleWeapon(data["WaffenId"])
 	end
@@ -550,6 +554,10 @@ function Inventory:throwItem(item, bag, id, place, name, amount)
 	local data = self.m_ItemData[row["Objekt"]]
 	if data["Wegwerf"] ~= 1 then
 		self.m_Owner:sendError(_("Du kannst dieses Item nicht zerstören!", self.m_Owner))
+		return
+	end
+	if (data["WaffenId"] or data["MunitionFuer"]) and self.m_Owner:hasTemporaryStorage() then
+		self.m_Owner:sendError(_("Du kannst das gerade nicht wegwerfen!", self.m_Owner))
 		return
 	end
 	if data["WaffenId"] and self:isWeaponArmed(data["WaffenId"]) then

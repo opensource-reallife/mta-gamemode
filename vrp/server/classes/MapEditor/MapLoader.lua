@@ -14,6 +14,7 @@ function MapLoader:constructor()
     self.m_MapInfos = {}
     self.m_Objects = {} -- containts !all! objects
     self.m_Categories = {}
+    self.m_GangwarMaps = {}
 end
 
 function MapLoader:destructor()
@@ -33,14 +34,33 @@ function MapLoader:loadAllFromDatabase()
     
     local maps = sql:queryFetch("SELECT * FROM ??_map_editor_maps", sql:getPrefix())
     for key, mRow in pairs(maps) do
-        self.m_MapInfos[mRow.Id] = {mRow.Name, Account.getNameFromId(mRow.Creator), mRow.Activated, mRow.SaveObjects, mRow.Deactivatable, mRow.Category and mRow.Category or 0}
-        if mRow.Activated == 1 then
+        self.m_MapInfos[mRow.Id] = {mRow.Name, Account.getNameFromId(mRow.Creator), mRow.Activated, mRow.SaveObjects, mRow.Deactivatable, mRow.Category and mRow.Category or 0, tonumber(mRow.GangwarAreaId)}
+        if tonumber(mRow.GangwarAreaId) then
+            self.m_GangwarMaps[tonumber(mRow.GangwarAreaId)] = mRow.Id
+        elseif mRow.Activated == 1 then
             self:loadFromDatabase(mRow.Id)
         end
     end
 end
 
-function MapLoader:loadFromDatabase(id)
+function MapLoader:createObjectFromRow(oRow, dimension)
+    local object = createObject(oRow.Model, oRow.PosX, oRow.PosY, oRow.PosZ, oRow.RotX, oRow.RotY, oRow.RotZ)
+    object:setScale(oRow.ScaleX, oRow.ScaleY, oRow.ScaleZ)
+    object:setInterior(oRow.Interior)
+    object:setDimension(dimension or oRow.Dimension)
+    object:setCollisionsEnabled(toboolean(oRow.Collision))
+    object:setDoubleSided(toboolean(oRow.Doublesided))
+    object.m_TextureData = oRow.Textures and fromJSON(oRow.Textures) or {}
+    object.m_Textures = {}
+    object.m_LodEnabled = toboolean(oRow.LodEnabled)
+    object:setData("breakable", toboolean(oRow.Breakable), toboolean(oRow.Breakable))
+
+    self:loadTextures(object)
+    self:createLowLOD(object)
+    return object
+end
+
+function MapLoader:loadFromDatabase(id, dimension)
     if not self.m_Maps[id] then
         self.m_MapInfos[id][3] = 1
         self.m_Maps[id] = {}
@@ -50,30 +70,19 @@ function MapLoader:loadFromDatabase(id)
         for key, oRow in pairs(objects) do
             if oRow.Type == 1 then
                 local index = #self.m_Maps[id]+1
+                local object = self:createObjectFromRow(oRow, dimension)
 
-                self.m_Maps[id][index] = createObject(oRow.Model, oRow.PosX, oRow.PosY, oRow.PosZ, oRow.RotX, oRow.RotY, oRow.RotZ)
-                self.m_Maps[id][index]:setScale(oRow.ScaleX, oRow.ScaleY, oRow.ScaleZ)
-                self.m_Maps[id][index]:setInterior(oRow.Interior)
-                self.m_Maps[id][index]:setDimension(oRow.Dimension)
-                self.m_Maps[id][index]:setCollisionsEnabled(toboolean(oRow.Collision))
-                self.m_Maps[id][index]:setDoubleSided(toboolean(oRow.Doublesided))
-                self.m_Maps[id][index].m_TextureData = oRow.Textures and fromJSON(oRow.Textures) or {}
-                self.m_Maps[id][index].m_Textures = {}
-                self.m_Maps[id][index].m_LodEnabled = toboolean(oRow.LodEnabled)
-                self.m_Maps[id][index].m_Creator = oRow.Creator
-                self.m_Maps[id][index].m_ObjectId = oRow.Id
-                self.m_Maps[id][index].m_MapId = id
-                self.m_Maps[id][index].m_Index = index
-                self.m_Maps[id][index]:setData("MapEditor:object", true, true)
-                self.m_Maps[id][index]:setData("MapEditor:id", oRow.Id, true)
-                self.m_Maps[id][index]:setData("MapEditor:mapId", id, true)
-                self.m_Maps[id][index]:setData("breakable", toboolean(oRow.Breakable), toboolean(oRow.Breakable))
+                self.m_Maps[id][index] = object
+                object.m_Creator = oRow.Creator
+                object.m_ObjectId = oRow.Id
+                object.m_MapId = id
+                object.m_Index = index
+                object:setData("MapEditor:object", true, true)
+                object:setData("MapEditor:id", oRow.Id, true)
+                object:setData("MapEditor:mapId", id, true)
 
-                self:loadTextures(self.m_Maps[id][index])
-                self:createLowLOD(self.m_Maps[id][index])
-
-                self:addRef(self.m_Maps[id][index])
-            elseif oRow.Type == 0 then
+                self:addRef(object)
+            elseif oRow.Type == 0 and not self:isGangwarMap(id) then
                 local index = #self.m_MapRemovals[id]+1
                 local radius = tonumber(oRow.Radius) or 0
 
@@ -249,8 +258,19 @@ function MapLoader:createLowLOD(object)
     if object.m_LodEnabled then
         local id = LOD_MAP[model] or model
         local lowLOD = createObject(id, x, y, z, rx, ry, rz, true)
+        lowLOD:setInterior(object:getInterior())
+        lowLOD:setDimension(object:getDimension())
         object:setLowLOD(lowLOD)
     end
+end
+
+function MapLoader:destroyMapObject(object)
+    if not isElement(object) then return end
+    local lowLOD = object:getLowLOD()
+    if lowLOD then
+        lowLOD:destroy()
+    end
+    object:destroy()
 end
 
 function MapLoader:addRef(object)
@@ -393,4 +413,70 @@ end
 
 function MapLoader:getMapCategories()
     return self.m_Categories
+end
+
+function MapLoader:isGangwarMap(id)
+    return self.m_MapInfos[id] and self.m_MapInfos[id][7] ~= nil
+end
+
+function MapLoader:getGangwarMapId(areaId)
+    return self.m_GangwarMaps[areaId]
+end
+
+function MapLoader:createGangwarMap(areaId, creator)
+    if self.m_GangwarMaps[areaId] then
+        return self.m_GangwarMaps[areaId]
+    end
+    local name = ("Gangwar_%d"):format(areaId)
+    local result, numrows, insertId = sql:queryFetch("INSERT INTO ??_map_editor_maps (Name, Creator, SaveObjects, Activated, Deactivatable, GangwarAreaId) VALUES(?, ?, ?, ?, ?, ?)", sql:getPrefix(), name, creator:getId(), 1, 0, 1, areaId)
+    if result and insertId then
+        self.m_MapInfos[insertId] = {name, creator:getName(), 0, 1, 1, 0, areaId}
+        self.m_GangwarMaps[areaId] = insertId
+        return insertId
+    end
+end
+
+function MapLoader:unloadMap(id)
+    if self.m_Maps[id] then
+        for key, object in ipairs(self.m_Maps[id]) do
+            self:removeRef(object)
+            self:destroyMapObject(object)
+        end
+    end
+    self.m_Maps[id] = nil
+    self.m_MapRemovals[id] = nil
+    if self.m_MapInfos[id] then
+        self.m_MapInfos[id][3] = 0
+    end
+end
+
+function MapLoader:createGangwarInstance(areaId, dimension)
+    local objects = {}
+    local mapId = self.m_GangwarMaps[areaId]
+    if not mapId then
+        return objects
+    end
+    local rows = sql:queryFetch("SELECT * FROM ??_map_editor_objects WHERE MapId = ? AND Type = 1", sql:getPrefix(), mapId) or {}
+    for key, oRow in ipairs(rows) do
+        objects[#objects+1] = self:createObjectFromRow(oRow, dimension)
+    end
+    if #objects > 0 then
+        triggerClientEvent(PlayerManager:getSingleton():getReadyPlayers(), "applyBreakableState", resourceRoot)
+    end
+    return objects
+end
+
+function MapLoader:destroyGangwarInstance(objects)
+    for key, object in ipairs(objects or {}) do
+        self:destroyMapObject(object)
+    end
+end
+
+function MapLoader:getGangwarObjectCounts()
+    local counts = {}
+    local rows = sql:queryFetch("SELECT o.MapId, COUNT(*) AS Amount FROM ??_map_editor_objects o INNER JOIN ??_map_editor_maps m ON m.Id = o.MapId WHERE o.Type = 1 AND m.GangwarAreaId IS NOT NULL GROUP BY o.MapId", sql:getPrefix(), sql:getPrefix()) or {}
+    for key, row in ipairs(rows) do
+        counts[row.MapId] = tonumber(row.Amount)
+    end
+    return counts
 end

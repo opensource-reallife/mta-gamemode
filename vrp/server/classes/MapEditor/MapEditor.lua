@@ -56,6 +56,10 @@ function MapEditor:startEditing(player)
         player:sendError(_("Du bist nicht berechtigt!", client))
         return
     end
+    if player.m_GangwarMapArea then
+        player:sendError(_("Schließe zuerst den Gangwar-Map-Editor!", player))
+        return
+    end
     self:setPlayerInEditorMode(player, 1)
     local format = {player:getName()}
     Admin:getSingleton():sendShortMessage("%s hat den Map Editor geöffnet!", format)
@@ -65,11 +69,12 @@ function MapEditor:setPlayerInEditorMode(player, mapId, close)
     if not close then
         player.m_IsInEditorMode = true
         player.m_EditingMapId = mapId or 1
-        player:triggerEvent("MapEditor:enableClient", true, mapId, MapLoader:getSingleton():getMapCategories())
+        player:triggerEvent("MapEditor:enableClient", true, mapId, MapLoader:getSingleton():getMapCategories(), MapLoader:getSingleton():isGangwarMap(mapId or 1))
     else
         player.m_IsInEditorMode = nil
         player.m_EditingMapId = nil
         player:triggerEvent("MapEditor:enableClient", false)
+        GangwarMapEditor:getSingleton():onEditorClosed(player)
     end
 end
 
@@ -81,6 +86,10 @@ function MapEditor:placeObject(x, y, z, rx, ry, rz, sx, sy, sz, interior, dimens
     if not MapLoader:getSingleton():getMapStatus(self:getPlayerEditingMap(client)) then
         client:sendError(_("Die Map #%s ist deaktiviert!", client, self:getPlayerEditingMap(client)))
         return
+    end
+
+    if MapLoader:getSingleton():isGangwarMap(self:getPlayerEditingMap(client)) then
+        interior, dimension = 0, GANGWAR_DIMENSION_BASE
     end
 
     local object = source
@@ -147,6 +156,10 @@ end
 function MapEditor:removeWorldModel(worldModelId, wX, wY, wZ, wrX, wrY, wrZ, radius, worldLODModelId)
     local interior = client:getInterior()
     local mapId = self:getPlayerEditingMap(client)
+    if MapLoader:getSingleton():isGangwarMap(mapId) then
+        client:sendError(_("In Gangwar-Maps können keine World-Objects entfernt werden!", client))
+        return
+    end
     local creator = client:getId()
     local result = MapLoader:getSingleton():removeWorldModel(worldModelId, wX, wY, wZ, wrX, wrY, wrZ, radius, worldLODModelId, interior, mapId, creator)
     if result == 1 then
@@ -205,7 +218,12 @@ function MapEditor:sendMapInfosToClient(player)
     if player then
         client = player
     end
-    local mapTable = MapLoader:getSingleton():getMapInfos()
+    local mapTable = {}
+    for id, info in pairs(MapLoader:getSingleton():getMapInfos()) do
+        if not MapLoader:getSingleton():isGangwarMap(id) then
+            mapTable[id] = info
+        end
+    end
     client:triggerEvent("MapEditorMapGUI:sendInfos", mapTable)
 end
 
@@ -271,6 +289,10 @@ end
 
 function MapEditor:startMapEditing(player, id)
     if client then
+        if MapLoader:getSingleton():isGangwarMap(id) or player.m_GangwarMapArea then
+            client:sendError(_("Gangwar-Maps werden über /gwmapeditor bearbeitet!", client))
+            return
+        end
         if client:getRank() >= (client ~= player and ADMIN_RANK_PERMISSION["remoteOpenMapEditor"] or ADMIN_RANK_PERMISSION["openMapEditor"]) then
             self:setPlayerInEditorMode(player, id)
             local format = {player:getName(), id}
@@ -288,6 +310,10 @@ function MapEditor:setMapStatus(id, player)
     end
     if client:getRank() < ADMIN_RANK_PERMISSION["setMapStatus"] then
         client:sendError(_("Du bist nicht berechtigt!", client))
+        return
+    end
+    if MapLoader:getSingleton():isGangwarMap(id) then
+        client:sendError(_("Gangwar-Maps werden nur während eines Gangwars geladen!", client))
         return
     end
 
@@ -342,6 +368,11 @@ function MapEditor:changeSettings(settingsTable)
     local saveObjects = settingsTable[4]
     local deactivatable = settingsTable[5]
     local categorie = settingsTable[6]
+
+    if MapLoader:getSingleton():isGangwarMap(id) then
+        client:sendError(_("Gangwar-Maps haben keine Einstellungen!", client))
+        return
+    end
 
     if name ~= false then
         local result = MapLoader:getSingleton():setMapName(id, name)

@@ -1,55 +1,39 @@
-GangwarGuard = inherit(Object) 
+GangwarGuard = inherit(Object)
 
-
-function GangwarGuard:constructor() 
-	self.m_LockedTime = 0
-	self.m_FactionAttacks = {}
-
+function GangwarGuard:constructor()
+	self.m_AttackerLocks = {}
+	self.m_DefenderLocks = {}
+	self.m_PairLocks = {}
 end
 
-function GangwarGuard:destructor() 
-
+function GangwarGuard:destructor()
 end
 
-function GangwarGuard:setLockedTime( seconds ) 
+function GangwarGuard:lockAfterAttack(attacker, defender, seconds, pairSeconds)
 	local now = getRealTime().timestamp
-	self.m_LockedTime = now + seconds
+	self.m_AttackerLocks[attacker:getId()] = now + seconds
+	self.m_DefenderLocks[defender:getId()] = now + seconds
+	self.m_PairLocks[attacker:getId()] = self.m_PairLocks[attacker:getId()] or {}
+	self.m_PairLocks[attacker:getId()][defender:getId()] = now + pairSeconds
 end
 
-function GangwarGuard:addAttack( faction )
-	local factionId = faction:getId()
-	if not self.m_FactionAttacks[factionId] then
-		self.m_FactionAttacks[factionId] = 0
+function GangwarGuard:clearAfterAttack(attacker, defender)
+	self.m_AttackerLocks[attacker:getId()] = nil
+	self.m_DefenderLocks[defender:getId()] = nil
+	if self.m_PairLocks[attacker:getId()] then
+		self.m_PairLocks[attacker:getId()][defender:getId()] = nil
 	end
-	self.m_FactionAttacks[factionId] = self.m_FactionAttacks[factionId] + 1
 end
 
-function GangwarGuard:getAttackCount ( faction )
-	local factionId = faction:getId()
-	if not self.m_FactionAttacks[factionId] then
-		self.m_FactionAttacks[factionId] = 0
-	end
-	return self.m_FactionAttacks[factionId]
+function GangwarGuard:getPairLock(attacker, defender)
+	local locks = self.m_PairLocks[attacker:getId()]
+	return math.max(0, (locks and locks[defender:getId()] or 0) - getRealTime().timestamp)
 end
 
-function GangwarGuard:getLockedTime() 
-	return self.m_LockedTime
+function GangwarGuard:getAttackerLock(faction)
+	return math.max(0, (self.m_AttackerLocks[faction:getId()] or 0) - getRealTime().timestamp)
 end
 
-function GangwarGuard:isGangwarLocked( faction ) 
-	local now = getRealTime().timestamp
-	local factionId = faction:getId()
-	if not self.m_FactionAttacks[factionId] then
-		self.m_FactionAttacks[factionId] = 0
-	end
-	local attackCount = self.m_FactionAttacks[factionId]
-	local lockedTime = self:getLockedTime()
-	lockedTime = lockedTime + (10*attackCount) 
-	if now >= lockedTime then 
-		return false
-	end
-	return true, lockedTime-now
+function GangwarGuard:getDefenderLock(faction)
+	return math.max(0, (self.m_DefenderLocks[faction:getId()] or 0) - getRealTime().timestamp)
 end
-
-
-

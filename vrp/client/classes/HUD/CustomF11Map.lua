@@ -99,6 +99,7 @@ function CustomF11Map:updateBlipList()
 	if self.m_Visible then
 		self.m_BlipList:clear()
 		self.m_CurrentClickedBlip = nil
+		self:addGangwarAreaToggle()
 		for i, cat in pairs(BLIP_CATEGORY_ORDER) do
 			local texts = Blip.DisplayTexts[cat]
 			if texts then
@@ -139,6 +140,25 @@ function CustomF11Map:updateBlipList()
 	end
 end
 
+function CustomF11Map:addGangwarAreaToggle()
+	if not HUDRadar:getSingleton():canSeeGangwarAreas() then return end
+
+	self.m_BlipList:addItemNoClick("", _"Gebiete")
+	local item = self.m_BlipList:addItem("files/images/Radar/Blips/Gangwar.png", _"Gangwar-Gebiete")
+	local updateItem = function()
+		local isEnabled = core:get("HUD", "showGangwarAreas", true)
+		item:setColumnColor(1, isEnabled and Color.White or Color.Clear)
+		item:setColor(isEnabled and Color.White or Color.LightGrey)
+	end
+	item:setColumnToImage(1, true, item.m_Height)
+	updateItem()
+	item.onRightClick = function()
+		core:set("HUD", "showGangwarAreas", not core:get("HUD", "showGangwarAreas", true))
+		updateItem()
+		HUDRadar:getSingleton():refreshAreaVisibility()
+	end
+end
+
 function CustomF11Map:draw()
 	if DEBUG then ExecTimeRecorder:getSingleton():startRecording("UI/HUD/F11Map") end
 	local height = self.m_Height * self.m_Zoom
@@ -176,7 +196,10 @@ function CustomF11Map:draw()
 		local width, height = v.Width/(6000/height), v.Height/(6000/height)
 		local r, g, b = fromcolor(v.color)
 
-		if v.flashing then
+		if not HUDRadar:getSingleton():isAreaVisible(v) then
+		elseif v.flashing and v.splitColors then
+			HUDRadar:getSingleton():drawSplitArea(centerPosX + mapX, centerPosY + mapY, width, height, v.splitColors, core:get("HUD","mapOpacity", 0.7)*165)
+		elseif v.flashing then
 			dxDrawRectangle(centerPosX + mapX, centerPosY + mapY,  width, height, Color.Red)
 			dxDrawRectangle(centerPosX + mapX + 2, centerPosY + mapY + 2,  width - 4, height - 4, tocolor(r, g, b, core:get("HUD","mapOpacity", 0.7)*165))
 		else
@@ -197,8 +220,7 @@ function CustomF11Map:draw()
 
 			if Blip.AttachedBlips[blip] then
 				if not isElement(Blip.AttachedBlips[blip]) then Blip.AttachedBlips[blip] = nil end
-				local int, dim = Blip.AttachedBlips[blip]:getInterior(), Blip.AttachedBlips[blip]:getDimension()
-				if int == 0 and dim == 0 then
+				if Blip.isAttachedElementVisible(Blip.AttachedBlips[blip]) then
 					posX, posY = getElementPosition(Blip.AttachedBlips[blip])
 				else
 					display = false

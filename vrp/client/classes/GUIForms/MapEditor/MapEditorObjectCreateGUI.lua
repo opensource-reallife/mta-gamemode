@@ -166,6 +166,8 @@ function MapEditorObjectCreateGUI:createTempObject(model)
     if self.m_TempObject and isElement(self.m_TempObject) then self.m_TempObject:destroy() end
 
     self.m_TempObject = createObject(model, localPlayer:getPosition() + Vector3(localPlayer.matrix.forward.x*1.25, localPlayer.matrix.forward.y*1.25, 0.25))
+    self.m_TempObject:setInterior(localPlayer:getInterior())
+    self.m_TempObject:setDimension(localPlayer:getDimension())
     self.m_TempObject:setCollisionsEnabled(false)
     self.m_TempObject:setScale(5 / self.m_TempObject:getRadius())
 

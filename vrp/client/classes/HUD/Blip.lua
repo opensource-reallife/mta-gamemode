@@ -149,6 +149,13 @@ function Blip:detach()
 	end
 end
 
+function Blip.isAttachedElementVisible(element)
+	if element:getInterior() ~= 0 then return false end
+	local dimension = element:getDimension()
+	if dimension == 0 then return true end
+	return localPlayer:getPublicSync("gangwarParticipant") and dimension == localPlayer:getDimension() or false
+end
+
 function Blip:setDisplayText(text, category)
 	if text and not self.m_DisplayText then 
 		local category = category or BLIP_CATEGORY.Default
@@ -230,7 +237,7 @@ function Blip.getVisibleBlipsForRadar()
 					delete(Blip.Blips[i])
 					break
 				end
-				if Blip.AttachedBlips[blip]:getInterior() ~= 0 or Blip.AttachedBlips[blip]:getDimension() ~= 0 then
+				if not Blip.isAttachedElementVisible(Blip.AttachedBlips[blip]) then
 					display = false
 				end
 			end

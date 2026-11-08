@@ -163,6 +163,9 @@ end
 
 MELEE_CACHE_CHECK = 2000
 function Guns:Event_onClientPlayerDamage(attacker, weapon, bodypart, loss)
+	if AttackClient.isDamageBlocked(source, attacker, weapon) then
+		return cancelEvent()
+	end
 	local bPlaySound = false
 	local bRangeCheck = true
 	local isThrowingHit = false

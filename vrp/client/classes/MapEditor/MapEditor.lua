@@ -9,9 +9,9 @@
 MapEditor = inherit(Singleton)
 addRemoteEvents{"MapEditor:enableClient", "MapEditor:giveControlPermission", "MapEditor:sendCategories"}
 
-function MapEditor.enableClient(state, mapId, categories)
+function MapEditor.enableClient(state, mapId, categories, isGangwar)
     MapEditor:new(categories)
-    MapEditor:getSingleton():enableEditorMode(state, mapId)
+    MapEditor:getSingleton():enableEditorMode(state, mapId, isGangwar)
 end
 addEventHandler("MapEditor:enableClient", root, MapEditor.enableClient)
 
@@ -55,7 +55,8 @@ function MapEditor:destructor()
     end
 end
 
-function MapEditor:enableEditorMode(state, mapId)
+function MapEditor:enableEditorMode(state, mapId, isGangwar)
+    self.m_IsGangwar = state == true and isGangwar or nil
     if state == true then
         if not isEventHandlerAdded("onClientClick", root, self.m_ClickBind) then
             addEventHandler("onClientClick", root, self.m_ClickBind)
@@ -489,6 +490,10 @@ end
 
 function MapEditor:getRemovingMode()
     return self.m_RemovingMode
+end
+
+function MapEditor:isGangwarMode()
+    return self.m_IsGangwar == true
 end
 
 function MapEditor:setAllBoundingBoxesEnabled(bool)

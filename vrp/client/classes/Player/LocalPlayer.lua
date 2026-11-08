@@ -67,6 +67,8 @@ function LocalPlayer:constructor()
 
 	self.m_DeathRenderBind = bind(self.deathRender, self)
 
+	self:addGangwarSyncChangeHandler()
+
 	--Hungersystem
 	Timer(bind(self.hungerDecrease, self), 1000*60, 0)
 
@@ -357,7 +359,7 @@ end
 
 function LocalPlayer:playerWasted( killer, weapon, bodypart)
 	if source == localPlayer then
-		if localPlayer:getPublicSync("Faction:Duty") and localPlayer:getFaction() and not localPlayer:getData("isInDeathMatch") and not localPlayer:getData("inWare") then
+		if localPlayer:getPublicSync("Faction:Duty") and localPlayer:getFaction() and not localPlayer:getData("isInDeathMatch") and not localPlayer:getData("inWare") and not localPlayer:getPublicSync("gangwarParticipant") then
 			if localPlayer:getFaction():isStateFaction() then
 				triggerServerEvent("factionStateToggleDuty", localPlayer, true, false, true)
 			elseif localPlayer:getFaction():isRescueFaction() then

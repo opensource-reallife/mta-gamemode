@@ -14,6 +14,8 @@ PERMISSIONS_INFO = { -- name = {{type, id} type = 0 for all, {faction min rank, 
 	["editDiplomacy"] =				{{1, {FactionStaticId.LCN, FactionStaticId.YAKUZA, FactionStaticId.GROVE, FactionStaticId.BALLAS, FactionStaticId.OUTLAWS, FactionStaticId.VATOS, FactionStaticId.TRIAD, FactionStaticId.BRIGADA}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}}, -- f done
 	["startGangWar"] =				{{1, {FactionStaticId.SAPD, FactionStaticId.LCN, FactionStaticId.YAKUZA, FactionStaticId.GROVE, FactionStaticId.BALLAS, FactionStaticId.OUTLAWS, FactionStaticId.VATOS, FactionStaticId.TRIAD, FactionStaticId.BRIGADA}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}}, -- f done
 	["joinGangWar"] =				{{1, {FactionStaticId.SAPD, FactionStaticId.LCN, FactionStaticId.YAKUZA, FactionStaticId.GROVE, FactionStaticId.BALLAS, FactionStaticId.OUTLAWS, FactionStaticId.VATOS, FactionStaticId.TRIAD, FactionStaticId.BRIGADA}}, {["faction"] = 0, ["company"] = nil, ["group"] = nil}}, -- f done
+	["giveGangwarAttack"] =			{{1, {FactionStaticId.SAPD, FactionStaticId.LCN, FactionStaticId.YAKUZA, FactionStaticId.GROVE, FactionStaticId.BALLAS, FactionStaticId.OUTLAWS, FactionStaticId.VATOS, FactionStaticId.TRIAD, FactionStaticId.BRIGADA}}, {["faction"] = 3, ["company"] = nil, ["group"] = nil}},
+	["allowGangwarLateJoin"] =		{{1, {FactionStaticId.SAPD, FactionStaticId.LCN, FactionStaticId.YAKUZA, FactionStaticId.GROVE, FactionStaticId.BALLAS, FactionStaticId.OUTLAWS, FactionStaticId.VATOS, FactionStaticId.TRIAD, FactionStaticId.BRIGADA}}, {["faction"] = 3, ["company"] = nil, ["group"] = nil}},
 	["editBinds"] =					{{0}, {["faction"] = 4, ["company"] = 3, ["group"] = nil}},
 	["editEquipment"] =				{{0}, {["faction"] = 4, ["company"] = nil, ["group"] = nil}},
 	["editActionPermissions"] =		{{0}, {["faction"] = 4, ["company"] = nil, ["group"] = 0}},
@@ -86,6 +88,8 @@ PERMISSION_NAMES = {
 	["editDiplomacy"] =				"Diplomatie verwalten",
 	["startGangWar"] =				"Gangwar starten",
 	["joinGangWar"] =				"Am Gangwar teilnehmen",
+	["giveGangwarAttack"] =			"Gangwar: Attack geben",
+	["allowGangwarLateJoin"] =		"Gangwar: Nachjoinen erlauben",
 	["editBinds"] =					"Binds verwalten",
 	["editEquipment"] =				"Equipmentrechte verwalten",
 	["editActionPermissions"] =		"Aktionsrechte verwalten",

@@ -23,6 +23,7 @@ function HUDRadar:constructor()
 	self.m_Rotation = 0
 	self.m_Blips = Blip.Blips
 	self.m_Areas = {}
+	setTimer(bind(self.refreshAreaVisibility, self), 5000, 0)
 	self.m_Visible = false
 	self.m_InInterior = false
 
@@ -143,18 +144,40 @@ function HUDRadar:updateMapTexture(checkForDesign)
 
 	-- Draw radar areas
 	for k, rect in pairs(self.m_Areas) do
-		local mapX, mapY = self:worldToMapPosition(rect.X, rect.Y)
-		local width, height = rect.Width/(6000/self.m_ImageSize), rect.Height/(6000/self.m_ImageSize)
+		if self:isAreaVisible(rect) then
+			local mapX, mapY = self:worldToMapPosition(rect.X, rect.Y)
+			local width, height = rect.Width/(6000/self.m_ImageSize), rect.Height/(6000/self.m_ImageSize)
 
-		if rect.flashing then
-			dxDrawRectangle(mapX, mapY, width, height, Color.Red)
-			dxDrawRectangle(mapX+2, mapY+2, width-4, height-4, rect.color)
-		else
-			dxDrawRectangle(mapX, mapY, width, height, rect.color)
+			if rect.flashing and rect.splitColors then
+				self:drawSplitArea(mapX, mapY, width, height, rect.splitColors, 150)
+			elseif rect.flashing then
+				dxDrawRectangle(mapX, mapY, width, height, Color.Red)
+				dxDrawRectangle(mapX+2, mapY+2, width-4, height-4, rect.color)
+			else
+				dxDrawRectangle(mapX, mapY, width, height, rect.color)
+			end
 		end
 	end
 
 	dxSetRenderTarget()
+end
+
+function HUDRadar:drawSplitArea(x, y, width, height, colors, alpha)
+	if width < 0 then
+		x, width = x + width, -width
+	end
+	if height < 0 then
+		y, height = y + height, -height
+	end
+	dxDrawRectangle(x, y, width/2, height, tocolor(colors[1].r, colors[1].g, colors[1].b, alpha))
+	dxDrawRectangle(x + width/2, y, width/2, height, tocolor(colors[2].r, colors[2].g, colors[2].b, alpha))
+	if self.m_FlashOn then
+		local color = tocolor(140, 0, 0, 255)
+		dxDrawRectangle(x, y, width, 2, color)
+		dxDrawRectangle(x, y + height - 2, width, 2, color)
+		dxDrawRectangle(x, y, 2, height, color)
+		dxDrawRectangle(x + width - 2, y, 2, height, color)
+	end
 end
 
 function HUDRadar:getMapImage(path)
@@ -282,7 +305,7 @@ function HUDRadar:draw()
 		self.m_NorthBlip:setPosition(x, y + 10000, 0) -- update north blip position so it always stays north
 	end
 
-	local isNotInInterior = getElementInterior(localPlayer) == 0 and getElementDimension(localPlayer) <= 60000
+	local isNotInInterior = getElementInterior(localPlayer) == 0 and (getElementDimension(localPlayer) <= 60000 or localPlayer:getPublicSync("gangwarParticipant"))
 	local isInWater = isElementInWater(localPlayer)
 	if not isNotInInterior or localPlayer:getPrivateSync("isInGarage") then
 		MessageBoxManager.onRadarPositionChange()
@@ -473,7 +496,7 @@ function HUDRadar:getVisibleBlipsForRadar()
 					delete(Blip.Blips[i])
 					break
 				end
-				if Blip.AttachedBlips[blip]:getInterior() ~= 0 or Blip.AttachedBlips[blip]:getDimension() ~= 0 then
+				if not Blip.isAttachedElementVisible(Blip.AttachedBlips[blip]) then
 					display = false
 				end
 			end
@@ -597,8 +620,77 @@ function HUDRadar:syncBlips()
 	self.m_Blips = Blip.Blips
 end
 
-function HUDRadar:addArea(worldX, worldY, width, height, color)
+function HUDRadar:canSeeGangwarAreas()
+	local faction = localPlayer:getFaction()
+	if not faction then return false end
+	for key, factionId in ipairs(HUDRadar.GangwarFactions) do
+		if factionId == faction:getId() then
+			return true
+		end
+	end
+	return false
+end
+
+function HUDRadar:isAreaVisible(area)
+	if area.category ~= "gangwar" then return true end
+	return self:canSeeGangwarAreas() and core:get("HUD", "showGangwarAreas", true)
+end
+
+function HUDRadar:refreshAreaVisibility()
+	local changed = false
+	for key, area in pairs(self.m_Areas) do
+		if area.category == "gangwar" then
+			local visible = self:isAreaVisible(area)
+			if area.isShown ~= visible then
+				area.isShown = visible
+				self:updateNativeArea(area)
+				changed = true
+			end
+		end
+	end
+	if changed then
+		self:updateMapTexture()
+	end
+end
+
+function HUDRadar:setGangwarDimension(dimension)
+	self.m_GangwarDimension = dimension
+	for key, area in pairs(self.m_Areas) do
+		if area.category == "gangwar" then
+			self:updateNativeArea(area)
+		end
+	end
+end
+
+function HUDRadar:setAreaElementDimension(area, element)
+	if isElement(element) and area.category == "gangwar" then
+		setElementDimension(element, self.m_GangwarDimension or 0)
+	end
+end
+
+function HUDRadar:updateNativeArea(area)
+	local visible = self:isAreaVisible(area)
+	self:setAreaElementDimension(area, area.mtaElement)
+	for key, elements in ipairs({area.splitElements or {}, area.borderElements or {}}) do
+		for index, element in ipairs(elements) do
+			self:setAreaElementDimension(area, element)
+		end
+	end
+	if isElement(area.mtaElement) then
+		local r, g, b, a = fromcolor(area.color)
+		setRadarAreaColor(area.mtaElement, r, g, b, (visible and not area.splitColors) and a or 0)
+		setRadarAreaFlashing(area.mtaElement, (visible and area.flashing and not area.splitColors) and true or false)
+	end
+	for index, element in ipairs(area.splitElements or {}) do
+		local color = area.splitColors[index]
+		setRadarAreaColor(element, color.r, color.g, color.b, visible and 150 or 0)
+	end
+	self:updateBorderElements(area)
+end
+
+function HUDRadar:addArea(worldX, worldY, width, height, color, category)
 	local area = Rect:new(worldX, worldY, width, height)
+	area.category = category
 	if type(color) == "table" then
 		color = tocolor(unpack(color))
 	end
@@ -607,6 +699,8 @@ function HUDRadar:addArea(worldX, worldY, width, height, color)
 
 	area.mtaElement = createRadarArea(worldX, worldY-height, width, height, r, g, b, a)
 	table.insert(self.m_Areas, area)
+	area.isShown = self:isAreaVisible(area)
+	self:updateNativeArea(area)
 	self:updateMapTexture()
 	return area
 end
@@ -614,29 +708,90 @@ end
 function HUDRadar:removeArea(area)
 	local idx = table.find(self.m_Areas, area)
 	if idx then
+		self:destroySplitElements(self.m_Areas[idx])
 		destroyElement(self.m_Areas[idx].mtaElement)
 		table.remove(self.m_Areas, idx)
 		self:updateMapTexture()
 	end
 end
 
-function HUDRadar:setRadarAreaFlashing(serverAreaId, state)
+function HUDRadar:setRadarAreaFlashing(serverAreaId, state, splitColors)
 	local area = HUDRadar.ServerAreas[serverAreaId]
 	if area then
 		area.flashing = state
-		self:updateMapTexture()
-		if isElement(area.mtaElement) then
-			setRadarAreaFlashing(area.mtaElement,state)
+		area.splitColors = state and splitColors or nil
+		self:destroySplitElements(area)
+		if area.splitColors then
+			self:createSplitElements(area)
+			if not isTimer(self.m_FlashTimer) then
+				self.m_FlashTimer = setTimer(bind(self.onFlashTick, self), 750, 0)
+			end
 		end
+		self:updateMapTexture()
+		self:updateNativeArea(area)
+	end
+end
+
+function HUDRadar:createSplitElements(area)
+	local y = math.min(area.Y, area.Y - area.Height)
+	local width, height = math.abs(area.Width), math.abs(area.Height)
+	local x = area.X
+	local first, second = area.splitColors[1], area.splitColors[2]
+	local border = 6
+	area.splitElements = {
+		createRadarArea(x, y, width/2, height, first.r, first.g, first.b, 150),
+		createRadarArea(x + width/2, y, width/2, height, second.r, second.g, second.b, 150),
+	}
+	area.borderElements = {
+		createRadarArea(x, y, width, border, 140, 0, 0, 255),
+		createRadarArea(x, y + height - border, width, border, 140, 0, 0, 255),
+		createRadarArea(x, y, border, height, 140, 0, 0, 255),
+		createRadarArea(x + width - border, y, border, height, 140, 0, 0, 255),
+	}
+end
+
+function HUDRadar:updateBorderElements(area)
+	local visible = self.m_FlashOn and self:isAreaVisible(area)
+	for index, element in ipairs(area.borderElements or {}) do
+		setRadarAreaColor(element, 140, 0, 0, visible and 255 or 0)
+	end
+end
+
+function HUDRadar:destroySplitElements(area)
+	for key, elements in ipairs({area.splitElements or {}, area.borderElements or {}}) do
+		for index, element in ipairs(elements) do
+			if isElement(element) then
+				destroyElement(element)
+			end
+		end
+	end
+	area.splitElements = nil
+	area.borderElements = nil
+end
+
+function HUDRadar:onFlashTick()
+	self.m_FlashOn = not self.m_FlashOn
+	local isActive = false
+	for key, area in pairs(self.m_Areas) do
+		if area.splitColors then
+			isActive = true
+			self:updateBorderElements(area)
+		end
+	end
+	if isActive then
+		self:updateMapTexture()
+	elseif isTimer(self.m_FlashTimer) then
+		killTimer(self.m_FlashTimer)
 	end
 end
 
 -- Radar area RPCs
 HUDRadar.ServerAreas = {}
+HUDRadar.GangwarFactions = {}
 addEvent("radarAreaCreate", true)
 addEventHandler("radarAreaCreate", root,
-	function(index, x, y, width, height, color)
-		HUDRadar.ServerAreas[index] = HUDRadar:getSingleton():addArea(x, y, width, height, color)
+	function(index, x, y, width, height, color, category)
+		HUDRadar.ServerAreas[index] = HUDRadar:getSingleton():addArea(x, y, width, height, color, category)
 	end
 )
 
@@ -651,17 +806,21 @@ addEventHandler("radarAreaDestroy", root,
 
 addEvent("radarAreasRetrieve", true)
 addEventHandler("radarAreasRetrieve", root,
-	function(data)
+	function(data, gangwarFactions)
+		HUDRadar.GangwarFactions = gangwarFactions or {}
 		for k, v in pairs(data) do
-			local id, x, y, width, height, color = unpack(v)
-			HUDRadar.ServerAreas[id] = HUDRadar:getSingleton():addArea(x, y, width, height, color)
+			local id, x, y, width, height, color, flashing, splitColors, category = unpack(v, 1, 9)
+			HUDRadar.ServerAreas[id] = HUDRadar:getSingleton():addArea(x, y, width, height, color, category)
+			if flashing then
+				HUDRadar:getSingleton():setRadarAreaFlashing(id, flashing, splitColors)
+			end
 		end
 	end
 )
 
 addEvent("radarAreaFlash", true)
 addEventHandler("radarAreaFlash", root,
-	function(id, state)
-		HUDRadar:getSingleton():setRadarAreaFlashing(id, state)
+	function(id, state, splitColors)
+		HUDRadar:getSingleton():setRadarAreaFlashing(id, state, splitColors)
 	end
 )

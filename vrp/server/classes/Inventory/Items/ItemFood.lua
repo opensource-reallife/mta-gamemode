@@ -32,7 +32,12 @@ function ItemFood:use(player)
 	if not ItemSettings then return false end
 
 	if ItemSettings["Health"] and ItemSettings["Health"] > 0 then
-		if (player:isInGangwar() or AdminEventManager:getSingleton().m_EventRunning and AdminEventManager:getSingleton().m_CurrentEvent:isPlayerInEvent(player)) and player:getArmor() == 0 then
+		if player:isInGangwar() then
+			if player.m_GangwarHealthDamaged then
+				player:sendError(_("Du kannst dich nach Lebensschaden durch Gegner im Gangwar nicht mehr heilen!", player))
+				return false
+			end
+		elseif (AdminEventManager:getSingleton().m_EventRunning and AdminEventManager:getSingleton().m_CurrentEvent:isPlayerInEvent(player)) and player:getArmor() == 0 then
 			player:sendError(_("Du hast keine Schutzweste mehr!", player))
 			return false
 		end

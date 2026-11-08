@@ -56,6 +56,7 @@
 	<script src="shared/classes/MusicAPI.lua" type="shared"/>
 	<script src="shared/classes/InfluxDB.lua" type="shared"/>
 	<script src="shared/classes/Sentry.lua" type="shared"/>
+	<script src="shared/classes/WorldModelRegistry.lua" type="shared"/>
 
 	<!-- Server -->
 	<script src="server/utils.lua" type="server"/>
@@ -494,10 +495,11 @@
 
 	<script src="server/classes/HistoryPlayer.lua" type="server"/>
 	<script src="server/classes/ForumPermissions.lua" type="server"/>
-	<script src="server/classes/Faction/Gangwar/GangwarManager.lua" type="server"/>
-	<script src="server/classes/Faction/Gangwar/GangwarGuard.lua" type="server"/>
 	<script src="server/classes/Faction/Gangwar/Area.lua" type="server"/>
 	<script src="server/classes/Faction/Gangwar/AttackSession.lua" type="server"/>
+	<script src="server/classes/Faction/Gangwar/GangwarGuard.lua" type="server"/>
+	<script src="server/classes/Faction/Gangwar/GangwarManager.lua" type="server"/>
+	<script src="server/classes/Faction/Gangwar/GangwarMapEditor.lua" type="server"/>
 	<script src="server/classes/Faction/Gangwar/GangwarStatistics.lua" type="server"/>
 
 	<script src="server/classes/Faction/Actions/ExplosiveTruck/ExplosiveTruckManager.lua" type="server"/>
@@ -1270,13 +1272,16 @@
 	<script src="client/classes/Faction/Actions/FireManager.lua" type="client"/>
 	<script src="client/classes/Faction/Actions/SARManager.lua" type="client"/>
 	<script src="client/classes/Faction/Actions/BankRobberyManager.lua" type="client"/>
-	<script src="client/classes/Faction/Gangwar/GangwarClient.lua" type="client"/>
 	<script src="client/classes/Faction/Gangwar/AttackClient.lua" type="client"/>
+	<script src="client/classes/Faction/Gangwar/GangwarClient.lua" type="client"/>
 	<script src="client/classes/Faction/Gangwar/GangwarDisplay.lua" type="client"/>
-	<script src="client/classes/Faction/Gangwar/GangwarQuestion.lua" type="client"/>
-	<script src="client/classes/Faction/Gangwar/GangwarWeaponBox.lua" type="client"/>
-	<script src="client/classes/Faction/Gangwar/GangwarStatistics.lua" type="client"/>
+	<script src="client/classes/Faction/Gangwar/GangwarMapEditorGUI.lua" type="client"/>
+	<script src="client/classes/Faction/Gangwar/GangwarMenuGUI.lua" type="client"/>
+	<script src="client/classes/Faction/Gangwar/GangwarNpcGUI.lua" type="client"/>
 	<script src="client/classes/Faction/Gangwar/GangwarPickGUI.lua" type="client"/>
+	<script src="client/classes/Faction/Gangwar/GangwarReview.lua" type="client"/>
+	<script src="client/classes/Faction/Gangwar/GangwarStatistics.lua" type="client"/>
+	<script src="client/classes/Faction/Gangwar/GangwarVehicleGUI.lua" type="client"/>
 	<script src="client/classes/Faction/Actions/BankRobbery.lua" type="client"/>
 	<script src="client/classes/Faction/Actions/JewelryStoreRobbery/JewelryStoreRobberyManager.lua" type="client"/>
 
@@ -1469,6 +1474,7 @@
 	<vrpfile src="files/images/Textures/Ware/bomb.png"/>
 	<vrpfile src="files/images/Textures/Ware/fuse.png"/>
 	<vrpfile src="files/images/Textures/Ware/fire.png"/>
+	<vrpfile src="files/images/Textures/Ware/white.png"/>
 
 	<vrpfile src="files/audio/Ware/kahoot.ogg" />
 	<vrpfile src="files/audio/Ware/done.mp3" />

@@ -75,9 +75,9 @@ function ScoreboardGUI:onShow()
 	self.m_OldWeaponSlot = localPlayer:getWeaponSlot()
 	self.m_Pinned = false
 	self.m_CloseButton:setVisible(false)
-	self.m_Hint:setText(_("%s: Mauszeiger", core:get("KeyBindings", "KeyToggleCursor", "b"):upper()))
+	self.m_Hint:setText(_("Tab + Rechtsklick: Mauszeiger"))
 	self:refresh()
-	self.m_Timer = setTimer(bind(self.refresh, self), 15000, 0)
+	self.m_Timer = setTimer(bind(self.refresh, self), localPlayer:getPublicSync("gangwarParticipant") and 5000 or 15000, 0)
 	self.m_Showing = true
 	bindKey("mouse_wheel_up", "down", self.m_ScrollBind)
 	bindKey("mouse_wheel_down", "down", self.m_ScrollBind)
@@ -164,6 +164,12 @@ function ScoreboardGUI:onScoreBoardScroll(key)
 end
 
 function ScoreboardGUI:refresh()
+	local isInGangwar = localPlayer:getPublicSync("gangwarParticipant") and true or false
+	self.m_Side:setVisible(not isInGangwar)
+	self.m_BodyOffsetX = isInGangwar and self.m_SideWidth/2 or 0
+	self.m_Rect:setPosition(self.m_BodyOffsetX, self.m_BodyY)
+	self:refreshChildPositions(self.m_Rect)
+
 	local scrollPosX, scrollPosY = self.m_Grid.m_ScrollArea:getScrollPosition()
 	local scrollAreaDocumentSize_old = self.m_Grid.m_ScrollArea.m_DocumentHeight
 	local scrollAreaHeight = self.m_Grid.m_ScrollArea.m_Height
@@ -175,7 +181,7 @@ function ScoreboardGUI:refresh()
 	self.m_FactionCount = {}
 	self.m_FactionAFKCount = {}
 
-	for k, player in pairs(getElementsByType("player")) do
+	for k, player in ipairs(self:getVisiblePlayers()) do
 		local factionId = player:getFaction() and not player:getFaction():isInsurgentFaction() and player:getFaction():getId() or 0 -- not = Count Insurgent as civilian (Insurgent = Civilian)
 		local companyId = player:getCompany() and player:getCompany():getId() or 0
 		table.insert(self.m_Players, {player, factionId})
@@ -205,6 +211,7 @@ function ScoreboardGUI:refresh()
 	self.m_Grid.m_Columns[4].width = isRescue and 0.04 or 0
 
 	table.sort(self.m_Players, function (a, b) return (a[2] < b[2]) end)
+	self:groupGangwarPlayers()
 	self:insertPlayers()
 
 	local scrollAreaDocumentSize_new = self.m_Grid.m_ScrollArea.m_DocumentHeight
@@ -261,6 +268,54 @@ function ScoreboardGUI:refresh()
 	end
 
 	self.m_PlayerCount:setText(_("%d Spieler online", #getElementsByType("player")))
+end
+
+function ScoreboardGUI:refreshChildPositions(element)
+	for key, child in pairs(element.m_Children) do
+		child.m_AbsoluteX = element.m_AbsoluteX + child.m_PosX
+		child.m_AbsoluteY = element.m_AbsoluteY + child.m_PosY
+		self:refreshChildPositions(child)
+	end
+end
+
+function ScoreboardGUI:getBodyRange()
+	local x = self:getPosition(true)
+	local left = x + (self.m_BodyOffsetX or 0)
+	return left, left + self.m_Rect.m_Width
+end
+
+function ScoreboardGUI:getVisiblePlayers()
+	local slot = localPlayer:getPublicSync("gangwarParticipant")
+	local list = {}
+	for key, player in ipairs(getElementsByType("player")) do
+		if not slot or player:getPublicSync("gangwarParticipant") == slot then
+			list[#list + 1] = player
+		end
+	end
+	return list
+end
+
+function ScoreboardGUI:groupGangwarPlayers()
+	local session = localPlayer.attackSession
+	if not session or not localPlayer:getPublicSync("gangwarParticipant") then return end
+
+	local attackers, defenders = {}, {}
+	for key, playerTable in ipairs(self.m_Players) do
+		if playerTable[1]:getFactionId() == session.m_Faction.m_Id then
+			attackers[#attackers + 1] = playerTable
+		else
+			defenders[#defenders + 1] = playerTable
+		end
+	end
+
+	self.m_Players = {{header = _("Angreifer: %s (%d)", session.m_Faction.m_Name, #attackers)}}
+	for key, playerTable in ipairs(attackers) do
+		self.m_Players[#self.m_Players + 1] = playerTable
+	end
+	self.m_Players[#self.m_Players + 1] = {header = _("Verteidiger: %s (%d)", session.m_Faction2.m_Name, #defenders)}
+	for key, playerTable in ipairs(defenders) do
+		self.m_Players[#self.m_Players + 1] = playerTable
+	end
 end
 
 function ScoreboardGUI:shrinkLogo(shrink)
@@ -346,105 +401,112 @@ function ScoreboardGUI:insertPlayers()
 	self.m_OwnItem = nil
 
 	for index, playerTable in ipairs(self.m_Players) do
-		local player = playerTable[1]
-		local isLoggedIn = not player:getName():find("Gast_")
-
-		local playtime = ("%d:%.2d"):format(math.floor(player:getPlayTime()/60), (player:getPlayTime() - math.floor(player:getPlayTime()/60)*60))
-
-		local ping
-		if player:isAFK() then
-			ping = "AFK"
-		elseif player:isInJail() then
-			ping = "Knast"
-		elseif player:getPublicSync("gangwarParticipant") then
-			ping = "GW"
+		if playerTable.header then
+			self.m_Grid:addItemNoClick("", playerTable.header, "", "", "", "", "", "")
 		else
-			ping = player:getPing().."ms"
-		end
-
-		local gname = player:getGroupName()
-		if gname == "" or #gname == 0 then
-			gname = "–"
-		end
-
-		local name = (player.getPublicSync and (player:getPublicSync("supportMode") or player:getPublicSync("ticketsupportMode")) and ("[%s] %s"):format(RANKSCOREBOARD[player.getPublicSync and player:getPublicSync("Rank") or 3] or "Support", player:getName())) or player:getName()
-		local nameHeight
-		name, nameHeight = self:fitName(name)
-		local hasFaction = player:getFaction() and not player:getFaction():isInsurgentFaction()
-
-		local item = self.m_Grid:addItem(
-			(isLoggedIn and player:isPremium()) and "files/images/Nametag/premium.png" or "files/images/Textures/Other/trans.png",
-			name,
-			isLoggedIn and (hasFaction and player:getFaction():getShortName() or "–") or "-", -- not = Dont show player as Insurgent (Insurgent = Civilian)
-			isLoggedIn and ((localPlayer:getFaction() and localPlayer:getFaction():isRescueFaction()) and (player:getFaction() and player:getFaction():isRescueFaction() and player:getRadioStatus() or "-")) or "",
-			isLoggedIn and (player:getCompany() and player:getCompany():getShortName() or "–") or "-",
-			isLoggedIn and self:fitText(gname, 6) or "-",
-			isLoggedIn and playtime or "-",
-			ping or " - "
-		)
-		item:setColumnToImage(1, true, item.m_Height)
-		item:setFont(VRPFont(self.m_RowHeight))
-		item:setColumnFont(2, VRPFont(nameHeight), 1)
-		item.m_Player = player
-		item.onRightClick = function(item, cx, cy) self:openMenu(item, cx, cy) end
-
-		if player == localPlayer then
-			self.m_OwnItem = item
-		end
-
-		if not hasFaction then
-			item:setColumnColor(3, tocolor(140, 140, 140))
-		end
-		if not player:getCompany() then
-			item:setColumnColor(5, tocolor(140, 140, 140))
-		end
-		if gname == "–" then
-			item:setColumnColor(6, tocolor(140, 140, 140))
-		end
-
-		if hasFaction then
-			local color = player:getFaction():getColor()
-			if not player:getPublicSync("Faction:Duty") then -- Dont show player faction color when off duty
-				item:setColumnColor(3, tocolor(255, 255, 255))
-			else
-				item:setColumnColor(3, tocolor(color.r, color.g, color.b))
-			end
-
-			if (localPlayer:getFaction() and localPlayer:getFaction():isRescueFaction()) and (player:getFaction() and player:getFaction():isRescueFaction()) then
-				if tonumber(player:getRadioStatus()) and FMS_STATUS_COLORS[tonumber(player:getRadioStatus())] then
-					local colorFMS = FMS_STATUS_COLORS[tonumber(player:getRadioStatus())]
-					item:setColumnColor(4, tocolor(colorFMS[1], colorFMS[2], colorFMS[3]))
-				end
-			end
-		end
-
-		if player:getCompany() and player:getPublicSync("Company:Duty") then
-			local color = player:getCompany():getColor()
-			item:setColumnColor(5, tocolor(color.r, color.g, color.b))
-		end
-
-		if player.getPublicSync and player:getPublicSync("supportMode") or player:getPublicSync("ticketsupportMode") then
-			item:setColumnColor(2, tocolor(unpack(RANKCOLORS[player.getPublicSync and player:getPublicSync("Rank") or 3])))
-		end
-
-		if player:getGroupType() then
-			if player:getGroupType() == "Gang" then
-				item:setColumnColor(6, Color.Red)
-			elseif player:getGroupType() == "Firma" then
-				item:setColumnColor(6, Color.Accent)
-			end
-		end
-
-		if ping == "AFK" then
-			item:setColumnColor(8, Color.Red)
-		elseif ping == "Knast" then
-			item:setColumnColor(8, Color.Yellow)
-		elseif ping == "GW" then
-			item:setColumnColor(8, Color.Red)
+			self:insertPlayerRow(playerTable[1])
 		end
 	end
 
 	self:updateRowColors()
+end
+
+function ScoreboardGUI:insertPlayerRow(player)
+	local isLoggedIn = not player:getName():find("Gast_")
+
+	local playtime = ("%d:%.2d"):format(math.floor(player:getPlayTime()/60), (player:getPlayTime() - math.floor(player:getPlayTime()/60)*60))
+
+	local ping
+	if player:isAFK() then
+		ping = "AFK"
+	elseif player:isInJail() then
+		ping = "Knast"
+	elseif player:getPublicSync("gangwarParticipant") then
+		ping = "GW"
+	else
+		ping = player:getPing().."ms"
+	end
+
+	local gname = player:getGroupName()
+	if gname == "" or #gname == 0 then
+		gname = "–"
+	end
+
+	local name = (player.getPublicSync and (player:getPublicSync("supportMode") or player:getPublicSync("ticketsupportMode")) and ("[%s] %s"):format(RANKSCOREBOARD[player.getPublicSync and player:getPublicSync("Rank") or 3] or "Support", player:getName())) or player:getName()
+	local nameHeight
+	name, nameHeight = self:fitName(name)
+	local hasFaction = player:getFaction() and not player:getFaction():isInsurgentFaction()
+
+	local item = self.m_Grid:addItem(
+		(isLoggedIn and player:isPremium()) and "files/images/Nametag/premium.png" or "files/images/Textures/Other/trans.png",
+		name,
+		isLoggedIn and (hasFaction and player:getFaction():getShortName() or "–") or "-", -- not = Dont show player as Insurgent (Insurgent = Civilian)
+		isLoggedIn and ((localPlayer:getFaction() and localPlayer:getFaction():isRescueFaction()) and (player:getFaction() and player:getFaction():isRescueFaction() and player:getRadioStatus() or "-")) or "",
+		isLoggedIn and (player:getCompany() and player:getCompany():getShortName() or "–") or "-",
+		isLoggedIn and self:fitText(gname, 6) or "-",
+		isLoggedIn and playtime or "-",
+		ping or " - "
+	)
+	item:setColumnToImage(1, true, item.m_Height)
+	item:setFont(VRPFont(self.m_RowHeight))
+	item:setColumnFont(2, VRPFont(nameHeight), 1)
+	item.m_Player = player
+	item.onRightClick = function(item, cx, cy) self:openMenu(item, cx, cy) end
+
+	if player == localPlayer then
+		self.m_OwnItem = item
+	end
+
+	if not hasFaction then
+		item:setColumnColor(3, tocolor(140, 140, 140))
+	end
+	if not player:getCompany() then
+		item:setColumnColor(5, tocolor(140, 140, 140))
+	end
+	if gname == "–" then
+		item:setColumnColor(6, tocolor(140, 140, 140))
+	end
+
+	if hasFaction then
+		local color = player:getFaction():getColor()
+		if not player:getPublicSync("Faction:Duty") then -- Dont show player faction color when off duty
+			item:setColumnColor(3, tocolor(255, 255, 255))
+		else
+			item:setColumnColor(3, tocolor(color.r, color.g, color.b))
+		end
+
+		if (localPlayer:getFaction() and localPlayer:getFaction():isRescueFaction()) and (player:getFaction() and player:getFaction():isRescueFaction()) then
+			if tonumber(player:getRadioStatus()) and FMS_STATUS_COLORS[tonumber(player:getRadioStatus())] then
+				local colorFMS = FMS_STATUS_COLORS[tonumber(player:getRadioStatus())]
+				item:setColumnColor(4, tocolor(colorFMS[1], colorFMS[2], colorFMS[3]))
+			end
+		end
+	end
+
+	if player:getCompany() and player:getPublicSync("Company:Duty") then
+		local color = player:getCompany():getColor()
+		item:setColumnColor(5, tocolor(color.r, color.g, color.b))
+	end
+
+	if player.getPublicSync and player:getPublicSync("supportMode") or player:getPublicSync("ticketsupportMode") then
+		item:setColumnColor(2, tocolor(unpack(RANKCOLORS[player.getPublicSync and player:getPublicSync("Rank") or 3])))
+	end
+
+	if player:getGroupType() then
+		if player:getGroupType() == "Gang" then
+			item:setColumnColor(6, Color.Red)
+		elseif player:getGroupType() == "Firma" then
+			item:setColumnColor(6, Color.Accent)
+		end
+	end
+
+	if ping == "AFK" then
+		item:setColumnColor(8, Color.Red)
+	elseif ping == "Knast" then
+		item:setColumnColor(8, Color.Yellow)
+	elseif ping == "GW" then
+		item:setColumnColor(8, Color.Red)
+	end
 end
 
 function ScoreboardGUI:updateRowColors()

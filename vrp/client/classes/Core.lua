@@ -113,6 +113,9 @@ function Core:ready() --onClientResourceStart
 	MTAFixes:new()
 	ClickHandler:new()
 	HoverHandler:new()
+	if engineStreamingGetBufferSize() < STREAMING_BUFFER_SIZE then
+		engineStreamingSetBufferSize(STREAMING_BUFFER_SIZE)
+	end
 	CustomModelManager:new()
 	--GangAreaManager:new()
 	HelpBar:new()
@@ -144,7 +147,7 @@ function Core:ready() --onClientResourceStart
 	ColorCarsManager:new()
 	--// Gangwar
 	GangwarClient:new()
-	GangwarStatistics:new()
+	GangwarReview:new()
 	Damage:new()
 	--if core:get("World", "MostWantedEnabled", true) then MostWanted:new() end
 	if core:get("Other", "Movehead", true) then

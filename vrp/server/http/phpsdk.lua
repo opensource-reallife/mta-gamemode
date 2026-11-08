@@ -1988,12 +1988,11 @@ function phpSDKGangwar(adminId, action, areaId, value)
 	local adminName = Account.getNameFromId(tonumber(adminId)) or "Control Panel"
 	if action == "owner" then
 		local faction = FactionManager:getSingleton():getFromId(tonumber(value))
-		if not faction or not faction:isEvilFaction() then return {status = "ERROR", error = "UNKNOWN_FACTION"} end
+		if not faction or not gw:isGangwarFaction(faction:getId()) then return {status = "ERROR", error = "UNKNOWN_FACTION"} end
 		area.m_Owner = faction.m_Id
 		area.m_LastAttack = getRealTime().timestamp
 		area:update()
-		area.m_RadarArea:delete()
-		area:createRadar()
+		area:refreshRadar()
 		Admin:getSingleton():sendShortMessage("%s hat das Gebiet %s der Fraktion %s gesetzt! (Control Panel)", {adminName, area.m_Name, faction:getShortName()})
 		StatisticsLogger:getSingleton():addAdminAction(tonumber(adminId) or 0, "Gangwar-Gebiet", "Gebiet: " .. area.m_Name .. " Fraktion: " .. faction:getShortName() .. " ! (Control Panel)")
 		return {status = "SUCCESS"}
@@ -2002,8 +2001,7 @@ function phpSDKGangwar(adminId, action, areaId, value)
 		if ts == 0 then ts = getRealTime().timestamp end
 		area.m_LastAttack = math.max(0, ts - pause)
 		area:update()
-		area.m_RadarArea:delete()
-		area:createRadar()
+		area:refreshRadar()
 		local t = getRealTime(ts)
 		local when = ("%02d.%02d.%d %02d:%02d"):format(t.monthday, t.month + 1, t.year + 1900, t.hour, t.minute)
 		Admin:getSingleton():sendShortMessage("%s hat die Attackier-Zeit des Gebietes %s geändert! (Control Panel)", {adminName, area.m_Name})

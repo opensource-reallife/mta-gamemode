@@ -8,14 +8,15 @@
 RadarArea = inherit(Object)
 RadarArea.Map = {}
 
-function RadarArea:constructor(x, y, width, height, color)
+function RadarArea:constructor(x, y, width, height, color, category)
 	self.m_PosX, self.m_PosY = x, y
 	self.m_Width, self.m_Height = width, height
 	self.m_Color = color
+	self.m_Category = category
 	self.m_Id = #RadarArea.Map + 1
 	RadarArea.Map[self.m_Id] = self
 
-	triggerClientEvent(PlayerManager:getSingleton():getReadyPlayers(), "radarAreaCreate", resourceRoot, self.m_Id, self.m_PosX, self.m_PosY, self.m_Width, self.m_Height, self.m_Color)
+	triggerClientEvent(PlayerManager:getSingleton():getReadyPlayers(), "radarAreaCreate", resourceRoot, self.m_Id, self.m_PosX, self.m_PosY, self.m_Width, self.m_Height, self.m_Color, self.m_Category)
 end
 
 function RadarArea:destructor()
@@ -23,14 +24,16 @@ function RadarArea:destructor()
 	triggerClientEvent("radarAreaDestroy", resourceRoot, self.m_Id)
 end
 
-function RadarArea:setFlashing(state)
-	triggerClientEvent("radarAreaFlash", resourceRoot, self.m_Id, state)
+function RadarArea:setFlashing(state, splitColors)
+	self.m_Flashing = state
+	self.m_SplitColors = state and splitColors or nil
+	triggerClientEvent("radarAreaFlash", resourceRoot, self.m_Id, state, self.m_SplitColors)
 end
 
 function RadarArea.sendAllToClient(player)
 	local data = {}
 	for id, v in pairs(RadarArea.Map) do
-		data[#data + 1] = {id, v.m_PosX, v.m_PosY, v.m_Width, v.m_Height, v.m_Color}
+		data[#data + 1] = {id, v.m_PosX, v.m_PosY, v.m_Width, v.m_Height, v.m_Color, v.m_Flashing, v.m_SplitColors, v.m_Category}
 	end
-	player:triggerEvent("radarAreasRetrieve", data)
+	player:triggerEvent("radarAreasRetrieve", data, Gangwar:isInstantiated() and Gangwar:getSingleton():getFactionIds() or {})
 end
