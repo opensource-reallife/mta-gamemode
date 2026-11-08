@@ -2,6 +2,7 @@ PickupWeapon = inherit(Object)
 PickupWeapon.Map = { }
 local PICKUP_ANIMATION_BLOCK, PICKUP_ANIMATION_NAME = "misc", "pickup_box"
 local AMMO_PICKUP_MODEL = 2061
+local WEAPON_PICKUP_SCALE = 1.5
 
 function PickupWeapon:constructor(x, y, z, int, dim, weapon, ammo, owner, ignoreHours, attachToPlayer, xOffset, yOffset, ammoOnly)
 	if WEAPON_MODELS_WORLD[weapon] then
@@ -16,12 +17,13 @@ function PickupWeapon:constructor(x, y, z, int, dim, weapon, ammo, owner, ignore
 		end
 		self.m_IgnoreHoursPlayed = ignoreHours
 		local ammoItem = ammoOnly and InventoryManager:getSingleton():getAmmoItemName(weapon)
-		self:createEntity(ammoOnly and AMMO_PICKUP_MODEL or WEAPON_MODELS_WORLD[weapon], x, y, z, int, dim, ammoItem and ("%dx %s"):format(ammo, ammoItem) or (ammoOnly and "die Munition" or "die Waffe"))
+		self:createEntity(ammoOnly and AMMO_PICKUP_MODEL or WEAPON_MODELS_WORLD[weapon], x, y, z, int, dim, ammoItem and ("%dx %s"):format(ammo, ammoItem) or (ammoOnly and "die Munition" or "die Waffe"), not ammoOnly and WEAPON_PICKUP_SCALE)
 	end
 end
 
-function PickupWeapon:createEntity(model, x, y, z, int, dim, label)
+function PickupWeapon:createEntity(model, x, y, z, int, dim, label, scale)
 	self.m_Object = createObject(model, x, y, z)
+	if scale then setObjectScale(self.m_Object, scale) end
 	setElementCollisionsEnabled(self.m_Object, false)
 	setElementData(self.m_Object, "pickupSpin", true)
 	setElementDoubleSided(self.m_Object, true)
