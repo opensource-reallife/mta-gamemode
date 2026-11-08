@@ -27,7 +27,8 @@ function ItemPumpkin:use(player)
 		return false
 	end
 	inventory:removeItem("Kürbis", 1)
-	player:sendInfo(_("Du hast aus einem Kürbis einen Kürbishut gemacht! Du findest ihn unter Equipment.", player))
+	local tabName = InventoryManager:getSingleton():getItemTabName("Kürbishut")
+	player:sendInfo(_("Du hast aus einem Kürbis einen Kürbishut gemacht! Du findest ihn unter %s.", player, _(tabName, player)))
 end
 
 function ItemPumpkin:addObject(Id, pos, rot, interior, dimension)

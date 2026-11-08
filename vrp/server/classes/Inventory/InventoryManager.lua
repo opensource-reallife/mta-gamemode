@@ -187,6 +187,19 @@ function InventoryManager:getAmmoItemName(weaponId)
 	return self.m_AmmoItems[weaponId]
 end
 
+function InventoryManager:getItemTabName(item)
+	local itemName = self:resolveItemName(item)
+	if itemName and self.m_ItemData[itemName] then
+		local categoryKey = self.m_ItemData[itemName]["Kategorie"]
+		for _index, tab in ipairs(self.m_Tabs) do
+			if tab.key == categoryKey then
+				return tab.name
+			end
+		end
+	end
+	return false
+end
+
 function InventoryManager:checkExpiredItems()
 	for player, inventory in pairs(self.Map) do
 		if isElement(player) and inventory.m_Items then
