@@ -11,7 +11,7 @@ WearablePortables = inherit( Item )
 --3,0,-0.1325,0.145,0,0,0,1
 WearablePortables.objectTable =
 {
-	["Swatschild"] = {1631, -0.05, -0.15, 0.8, 180, -40,90, false,"Swat-Schild",0.4},
+	[62] = {1631, -0.05, -0.15, 0.8, 180, -40,90, false,"Swat-Schild",0.4},
 }
 
 function WearablePortables:constructor()
@@ -23,6 +23,7 @@ function WearablePortables:destructor()
 end
 
 function WearablePortables:use(player, itemId, bag, place, itemName)
+	local wearableId = self:getId()
 	local inventory = player:getInventory()
 	local value = inventory:getItemValueByBag( bag, place)
 	if player.m_PrisonTime > 0 then player:sendError(_("Im Prison nicht erlaubt!", player)) return end
@@ -37,11 +38,11 @@ function WearablePortables:use(player, itemId, bag, place, itemName)
 		local x,y,z = getElementPosition(player)
 		local dim = getElementDimension(player)
 		local int = getElementInterior(player)
-		local model, zOffset, yOffset, scale, rotX, rotZ = WearablePortables.objectTable[itemName][1] or WearablePortables.objectTable["Swatschild"][1],  WearablePortables.objectTable[itemName][2] or WearablePortables.objectTable["Swatschild"][2], WearablePortables.objectTable[itemName][3] or WearablePortables.objectTable["Swatschild"][3], WearablePortables.objectTable[itemName][4] or WearablePortables.objectTable["Swatschild"][4], WearablePortables.objectTable[itemName][5] or WearablePortables.objectTable["Swatschild"][5],  WearablePortables.objectTable[itemName][6] or WearablePortables.objectTable["Swatschild"][6]
-		local rotY =  WearablePortables.objectTable[itemName][7] or WearablePortables.objectTable["Swatschild"][7]
+		local model, zOffset, yOffset, scale, rotX, rotZ = WearablePortables.objectTable[wearableId][1] or WearablePortables.objectTable[62][1],  WearablePortables.objectTable[wearableId][2] or WearablePortables.objectTable[62][2], WearablePortables.objectTable[wearableId][3] or WearablePortables.objectTable[62][3], WearablePortables.objectTable[wearableId][4] or WearablePortables.objectTable[62][4], WearablePortables.objectTable[wearableId][5] or WearablePortables.objectTable[62][5],  WearablePortables.objectTable[wearableId][6] or WearablePortables.objectTable[62][6]
+		local rotY =  WearablePortables.objectTable[wearableId][7] or WearablePortables.objectTable[62][7]
 		local obj = createObject(model,x,y,z)
-		local objCollision =  WearablePortables.objectTable[itemName][8]
-		local objName =  WearablePortables.objectTable[itemName][9]
+		local objCollision =  WearablePortables.objectTable[wearableId][8]
+		local objName =  WearablePortables.objectTable[wearableId][9]
 		setElementDimension(obj, dim)
 		setElementInterior(obj, int)
 		setObjectScale(obj, scale)
@@ -56,14 +57,14 @@ function WearablePortables:use(player, itemId, bag, place, itemName)
 		self.m_Portabless[player] = nil
 		player.m_IsWearingPortables = false
 		player.m_Portables = false
-		player:meChat(true, "legt %s nieder!", WearablePortables.objectTable[itemName][9], true)
+		player:meChat(true, "legt %s nieder!", WearablePortables.objectTable[wearableId][9], true)
 	else --// else the player must have clicked on another Portables otherwise this instance of the class would have not been called
 		if isElement(player.m_Portables) then
 			destroyElement(player.m_Portables)
 		end
 		local x,y,z = getElementPosition(player)
-		local model, zOffset, yOffset, scale, rotX, rotZ  = WearablePortables.objectTable[itemName][1] or WearablePortables.objectTable["Swatschild"][1],  WearablePortables.objectTable[itemName][2] or WearablePortables.objectTable["Swatschild"][2], WearablePortables.objectTable[itemName][3] or WearablePortables.objectTable["Swatschild"][3], WearablePortables.objectTable[itemName][4] or WearablePortables.objectTable["Swatschild"][4], WearablePortables.objectTable[itemName][5] or WearablePortables.objectTable["Swatschild"][5],  WearablePortables.objectTable[itemName][6] or WearablePortables.objectTable["Swatschild"][6]
-		local rotY =  WearablePortables.objectTable[itemName][7] or WearablePortables.objectTable["Swatschild"][7]
+		local model, zOffset, yOffset, scale, rotX, rotZ  = WearablePortables.objectTable[wearableId][1] or WearablePortables.objectTable[62][1],  WearablePortables.objectTable[wearableId][2] or WearablePortables.objectTable[62][2], WearablePortables.objectTable[wearableId][3] or WearablePortables.objectTable[62][3], WearablePortables.objectTable[wearableId][4] or WearablePortables.objectTable[62][4], WearablePortables.objectTable[wearableId][5] or WearablePortables.objectTable[62][5],  WearablePortables.objectTable[wearableId][6] or WearablePortables.objectTable[62][6]
+		local rotY =  WearablePortables.objectTable[wearableId][7] or WearablePortables.objectTable[62][7]
 		local obj = createObject(model,x,y,z)
 		local dim = getElementDimension(player)
 		local int = getElementInterior(player)
@@ -73,6 +74,6 @@ function WearablePortables:use(player, itemId, bag, place, itemName)
 		exports.bone_attach:attachElementToBone(obj, player, 11, 0, yOffset, zOffset, rotX, rotY, rotZ)
 		player.m_Portables = obj
 		player.m_IsWearingPortables = itemName
-		player:meChat(true, "legt %s nieder!", WearablePortables.objectTable[itemName][8], true)
+		player:meChat(true, "legt %s nieder!", WearablePortables.objectTable[wearableId][8], true)
 	end
 end

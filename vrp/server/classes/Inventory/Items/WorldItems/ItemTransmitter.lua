@@ -48,7 +48,7 @@ function ItemTransmitter:addObject(Id, pos, rot, int, dim, value)
 	setElementFrozen(self.m_Transmitters[Id], true)
 	self.m_Transmitters[Id]:setRotation( rot ) 
 	self.m_Transmitters[Id].Id = Id
-	self.m_Transmitters[Id].Type = "Transmitter"
+	self.m_Transmitters[Id].Type = self:getId()
 	self.m_Transmitters[Id].m_UpdateFrequency = false
 	self.m_Transmitters[Id].m_Frequency = frequency
 	self.m_Transmitters[Id].m_FrequencyName  = frequencyName
@@ -65,19 +65,19 @@ function ItemTransmitter:use(player)
 	local result = self:startObjectPlacing(player,
 	function(item, position, rotation)
 		if item ~= self or not position then return end
-		player:getInventory():removeItem(self:getName(), 1)
-		player:sendInfo(_("%s hinzugefügt!", player, "Transmitter"))
+		player:getInventory():removeItem(self:getId(), 1)
+		player:sendInfo(_("%s hinzugefügt!", player, self:getName()))
 		local int = getElementInterior(player) 
 		local dim = getElementDimension(player)
 		--FactionState:getSingleton():sendShortMessage(_("%s hat ein Keypad bei %s/%s aufgestellt!", player, player:getName(), getZoneName(pos), getZoneName(pos, true)))
-		StatisticsLogger:getSingleton():itemPlaceLogs( player, "Transmitter", position.x..","..position.y..","..position.z)
-		sql:queryExec("INSERT INTO ??_static_world_items(Typ, PosX, PosY, PosZ, RotationZ, Interior, Dimension, Value, ZoneName, Admin, Date) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW());", sql:getPrefix(), "Transmitter", position.x, position.y, position.z, rotation, int, dim, "#:#", getZoneName(position).."/"..getZoneName(position, true), player:getId())
+		StatisticsLogger:getSingleton():itemPlaceLogs( player, self:getName(), position.x..","..position.y..","..position.z)
+		sql:queryExec("INSERT INTO ??_static_world_items(Typ, PosX, PosY, PosZ, RotationZ, Interior, Dimension, Value, ZoneName, Admin, Date) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW());", sql:getPrefix(), self:getName(), position.x, position.y, position.z, rotation, int, dim, "#:#", getZoneName(position).."/"..getZoneName(position, true), player:getId())
 		self:addObject(sql:lastInsertId(), position, Vector3(0,0,rotation), int, dim)
 	end)
 end
 
 function ItemTransmitter:onTransmitterClick(button, state, player)
-    if source.Type ~= "Transmitter" then return end
+    if source.Type ~= self:getId() then return end
 	if button == "left" and state == "up" then
         if source:getModel() == self.m_Model then
 			player.m_LastTransmitterID = source.Id

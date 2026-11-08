@@ -11,8 +11,8 @@ WearableShirt = inherit( Item )
 --3,0,-0.1325,0.145,0,0,0,1
 WearableShirt.objectTable =
 {
-	["Kevlar"] = {3916, 0.05, 0.05, 1.22, 0, 0,-90, "Schutzweste", false},
-	["Tragetasche"] = {3915,0.145,-0.1325,1,0,0,0, "Tragetasche", true},
+	[60] = {3916, 0.05, 0.05, 1.22, 0, 0,-90, "Schutzweste", false},
+	[61] = {3915,0.145,-0.1325,1,0,0,0, "Tragetasche", true},
 }
 
 function WearableShirt:constructor()
@@ -24,6 +24,7 @@ function WearableShirt:destructor()
 end
 
 function WearableShirt:use(player, itemId, bag, place, itemName)
+	local wearableId = self:getId()
 	local inventory = player:getInventory()
 	local value = inventory:getItemValueByBag( bag, place)
 	if player.m_PrisonTime > 0 then player:sendError(_("Im Prison nicht erlaubt!", player)) return end
@@ -43,11 +44,11 @@ function WearableShirt:use(player, itemId, bag, place, itemName)
 		local x,y,z = getElementPosition(player)
 		local dim = getElementDimension(player)
 		local int = getElementInterior(player)
-		local model, zOffset, yOffset, scale, rotX, rotZ = WearableShirt.objectTable[itemName][1] or WearableShirt.objectTable["Kevlar"][1],  WearableShirt.objectTable[itemName][2] or WearableShirt.objectTable["Kevlar"][2], WearableShirt.objectTable[itemName][3] or WearableShirt.objectTable["Kevlar"][3], WearableShirt.objectTable[itemName][4] or WearableShirt.objectTable["Kevlar"][4], WearableShirt.objectTable[itemName][5] or WearableShirt.objectTable["Kevlar"][5],  WearableShirt.objectTable[itemName][6] or WearableShirt.objectTable["Kevlar"][6]
-		local rotY =  WearableShirt.objectTable[itemName][7] or WearableShirt.objectTable["Kevlar"][7]
+		local model, zOffset, yOffset, scale, rotX, rotZ = WearableShirt.objectTable[wearableId][1] or WearableShirt.objectTable[60][1],  WearableShirt.objectTable[wearableId][2] or WearableShirt.objectTable[60][2], WearableShirt.objectTable[wearableId][3] or WearableShirt.objectTable[60][3], WearableShirt.objectTable[wearableId][4] or WearableShirt.objectTable[60][4], WearableShirt.objectTable[wearableId][5] or WearableShirt.objectTable[60][5],  WearableShirt.objectTable[wearableId][6] or WearableShirt.objectTable[60][6]
+		local rotY =  WearableShirt.objectTable[wearableId][7] or WearableShirt.objectTable[60][7]
 		local obj = createObject(model,x,y,z)
-		local objName =  WearableShirt.objectTable[itemName][8]
-		local bIsConceal = WearableShirt.objectTable[itemName][9]
+		local objName =  WearableShirt.objectTable[wearableId][8]
+		local bIsConceal = WearableShirt.objectTable[wearableId][9]
 		local bConcealOutput = false
 		if bIsConceal then
 			for i = 3,7 do
@@ -72,7 +73,7 @@ function WearableShirt:use(player, itemId, bag, place, itemName)
 		if bIsConceal then
 			triggerEvent("WeaponAttach:concealWeapons", player)
 		end
-		if itemName == "Kevlar" then
+		if wearableId == 60 then
 			obj:setData("isProtectingChest", true)
 			if not player.m_KevlarShotsCount then
 				player.m_KevlarShotsCount = 0
@@ -83,7 +84,7 @@ function WearableShirt:use(player, itemId, bag, place, itemName)
 		self.m_Shirts[player] = nil
 		player.m_IsWearingShirt = false
 		player.m_Shirt = false
-		player:meChat(true, "setzt %s ab!", WearableShirt.objectTable[itemName][8], true)
+		player:meChat(true, "setzt %s ab!", WearableShirt.objectTable[wearableId][8], true)
 		setElementData(player,"CanWeaponBeConcealed",false)
 		triggerEvent("WeaponAttach:unconcealWeapons", player)
 	else --// else the player must have clicked on another Shirt otherwise this instance of the class would have not been called
@@ -96,13 +97,13 @@ function WearableShirt:use(player, itemId, bag, place, itemName)
 			destroyElement(player.m_Shirt)
 		end
 		local x,y,z = getElementPosition(player)
-		local model, zOffset, yOffset, scale, rotX, rotZ  = WearableShirt.objectTable[itemName][1] or WearableShirt.objectTable["Kevlar"][1],  WearableShirt.objectTable[itemName][2] or WearableShirt.objectTable["Kevlar"][2], WearableShirt.objectTable[itemName][3] or WearableShirt.objectTable["Kevlar"][3], WearableShirt.objectTable[itemName][4] or WearableShirt.objectTable["Kevlar"][4], WearableShirt.objectTable[itemName][5] or WearableShirt.objectTable["Kevlar"][5],  WearableShirt.objectTable[itemName][6] or WearableShirt.objectTable["Kevlar"][6]
-		local rotY =  WearableShirt.objectTable[itemName][7] or WearableShirt.objectTable["Kevlar"][7]
+		local model, zOffset, yOffset, scale, rotX, rotZ  = WearableShirt.objectTable[wearableId][1] or WearableShirt.objectTable[60][1],  WearableShirt.objectTable[wearableId][2] or WearableShirt.objectTable[60][2], WearableShirt.objectTable[wearableId][3] or WearableShirt.objectTable[60][3], WearableShirt.objectTable[wearableId][4] or WearableShirt.objectTable[60][4], WearableShirt.objectTable[wearableId][5] or WearableShirt.objectTable[60][5],  WearableShirt.objectTable[wearableId][6] or WearableShirt.objectTable[60][6]
+		local rotY =  WearableShirt.objectTable[wearableId][7] or WearableShirt.objectTable[60][7]
 		local obj = createObject(model,x,y,z)
 		local dim = getElementDimension(player)
 		local int = getElementInterior(player)
-		local objName =  WearableShirt.objectTable[itemName][8]
-		local bIsConceal = WearableShirt.objectTable[itemName][9]
+		local objName =  WearableShirt.objectTable[wearableId][8]
+		local bIsConceal = WearableShirt.objectTable[wearableId][9]
 		local bConcealOutput = false
 		if bIsConceal then
 			for i = 3,7 do
@@ -123,7 +124,7 @@ function WearableShirt:use(player, itemId, bag, place, itemName)
 		setObjectScale(obj, scale)
 		setElementDoubleSided(obj,true)
 		setElementData(player,"CanWeaponBeConcealed", bIsConceal)
-		if itemName == "Kevlar" then
+		if wearableId == 60 then
 			obj:setData("isProtectingChest", true)
 		end
 		exports.bone_attach:attachElementToBone(obj, player, 3, 0, yOffset, zOffset, rotX, rotY, rotZ)
@@ -138,7 +139,7 @@ function WearableShirt:destroyShirt(player)
 	self.m_Shirts[player] = nil
 	player.m_IsWearingShirt = false
 	player.m_Shirt = false
-	player:meChat(true, "setzt %s ab!", WearableShirt.objectTable[itemName][8], true)
+	player:meChat(true, "setzt %s ab!", WearableShirt.objectTable[self:getId()][8], true)
 	setElementData(player,"CanWeaponBeConcealed",false)
 	triggerEvent("WeaponAttach:unconcealWeapons", player)
 end

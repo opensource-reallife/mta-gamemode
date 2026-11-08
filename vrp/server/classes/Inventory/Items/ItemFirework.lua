@@ -8,12 +8,12 @@
 ItemFirework = inherit(Item)
 
 ItemFirework.Cooldown = { -- in Seconds
-	["Römische Kerzen Batterie"] = 20,
-	["Raketen Batterie"] = 20,
-	["Rakete"] = 1,
-	["Römische Kerze"] = 5,
-	["Rohrbombe"] = 5,
-	["Kugelbombe"] = 5,
+	[87] = 20,
+	[85] = 20,
+	[83] = 1,
+	[86] = 5,
+	[84] = 5,
+	[88] = 5,
 }
 
 function ItemFirework:constructor()
@@ -34,27 +34,28 @@ function ItemFirework:use(player, itemId, bag, place, itemName)
 	end
 
 	if player:getInterior() == 0 and player:getDimension() == 0 then
-		if ItemFirework.Cooldown[itemName] then
+		local fireworkId = self:getId()
+		if ItemFirework.Cooldown[fireworkId] then
 			if not player.fireworkCooldown then player.fireworkCooldown = {} end
-			if player.fireworkCooldown[itemName] then
-				if not timestampCoolDown(player.fireworkCooldown[itemName], ItemFirework.Cooldown[itemName]) then
+			if player.fireworkCooldown[fireworkId] then
+				if not timestampCoolDown(player.fireworkCooldown[fireworkId], ItemFirework.Cooldown[fireworkId]) then
 					player:sendError(_("Du kannst die %s nicht so knapp hintereinander nutzen!", player, itemName))
 					return
 				end
 			end
-			player.fireworkCooldown[itemName] = getRealTime().timestamp
+			player.fireworkCooldown[fireworkId] = getRealTime().timestamp
 		end
 
 		local rnd = 0
 
-		if itemName == "Raketen Batterie" then rnd = math.random(5, 8)
-		elseif itemName == "Römische Kerze" then rnd = math.random(10, 15)
-		elseif itemName == "Römische Kerzen Batterie" then rnd = math.random(7, 12)
+		if fireworkId == 85 then rnd = math.random(5, 8)
+		elseif fireworkId == 86 then rnd = math.random(10, 15)
+		elseif fireworkId == 87 then rnd = math.random(7, 12)
 		end
 		player:meChat(true, "zündet eine/n %s!", itemName, true)
 
-		triggerClientEvent(root, "onClientFireworkStart", player, itemName, serialiseVector(player:getPosition()), rnd)
-		player:getInventory():removeItem(itemName, 1)
+		triggerClientEvent(root, "onClientFireworkStart", player, fireworkId, serialiseVector(player:getPosition()), rnd)
+		player:getInventory():removeItem(fireworkId, 1)
 	else
 		player:sendError(_("Du kannst kein Feuerwerk in einem Interior zünden!", player))
 	end

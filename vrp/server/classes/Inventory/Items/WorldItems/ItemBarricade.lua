@@ -24,7 +24,7 @@ function ItemBarricade:use(player)
 						self:toggleBlinkingLight(source, client)
 					end)
 				end
-				player:getInventory():removeItem(self:getName(), 1)
+				player:getInventory():removeItem(self:getId(), 1)
 			end
 		)
 	else

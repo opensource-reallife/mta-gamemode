@@ -95,8 +95,8 @@ function ItemFood:use(player)
 			DamageManager:getSingleton():clearPlayer(player)
 		end
 
-		if ItemSettings["GiveItem"] and player:getInventory():giveItemFromName(ItemSettings["GiveItem"], 1) then
-			player:sendInfo(_("Du hast %s erhalten!", player, ItemSettings["GiveItem"]))
+		if ItemSettings["GiveItem"] and player:getInventory():giveItem(InventoryManager:getSingleton():getItemId(ItemSettings["GiveItem"]), 1) then
+			player:sendInfo(_("Du hast %s erhalten!", player, InventoryManager:getSingleton():resolveItemName(ItemSettings["GiveItem"])))
 		end
 
 		if ItemSettings["Hunger"] and ItemSettings["Hunger"] > 0 then

@@ -21,7 +21,7 @@ function FurnitureShop:Event_furnitureBuy(model)
 	if not FurnitureInfo[model] then return end
 	local name, price = unpack(FurnitureInfo[model])
 	if client:getMoney() >= price then
-		if client:getInventory():giveItemFromName("Einrichtung", 1, model) then
+		if client:getInventory():giveItem(123, 1, model) then
 			client:transferMoney(self.m_BankAccountServer, price, "Einrichtungs-Kauf", "Gameplay", "Furniture")
 		end
 	else

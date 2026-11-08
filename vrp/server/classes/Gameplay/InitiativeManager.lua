@@ -137,7 +137,7 @@ end
 function InitiativeManager:Event_registerInitiativeVote(vote)
 	if source ~= client then return end
 
-	if client:getInventory():getItemAmount("Ausweis") == 0 then
+	if client:getInventory():getItemAmount(11) == 0 then
 		return client:sendError(_("Du brauchst einen Ausweis, um für eine Initiative abzustimmen!", client))
 	end
 

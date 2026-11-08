@@ -20,7 +20,7 @@ function ItemRepairKit:use(player)
 			setElementHealth(player.vehicle, 500)
 			player.vehicle:setBroken(false)
 			player:sendSuccess(_("Dein Fahrzeug funktioniert wieder einigermaßen!", player))
-			player:getInventory():removeItem(self:getName(), 1)
+			player:getInventory():removeItem(self:getId(), 1)
 		else
 			player:sendError(_("Dein Fahrzeug ist nicht kaputt!", player))
 		end

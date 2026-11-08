@@ -32,6 +32,10 @@ function Item:getName()
 	return self.m_ItemName
 end
 
+function Item:getId()
+	return InventoryManager:getSingleton():getItemId(self.m_ItemName)
+end
+
 function Item:hasSecondaryUse(itemName)
 	return self.useSecondary ~= nil
 end

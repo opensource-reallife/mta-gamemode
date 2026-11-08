@@ -36,7 +36,7 @@ function ItemThrowShoe:destructor()
 end
 
 function ItemThrowShoe:Event_throwCallback(player) 
-	player:getInventory():removeItem("Schuh", 1)
+	player:getInventory():removeItem(111, 1)
 	player:increaseStatistics("ThrownObject")
 end
 

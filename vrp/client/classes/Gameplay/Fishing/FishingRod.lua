@@ -13,7 +13,7 @@ function FishingRod:constructor(fishingRod, fishingRodName, baitName, accessorie
 	self.Random = Randomizer:new()
 
 	self.m_minFishingBiteTime = 600
-	self.m_maxFishingBiteTime = 30000 - FISHING_RODS[fishingRodName].biteTimeReduction - FISHING_BAITS[baitName].biteTimeReduction - FISHING_ACCESSORIES[accessorieName].biteTimeReduction
+	self.m_maxFishingBiteTime = 30000 - FISHING_RODS[getFishingItemId(fishingRodName)].biteTimeReduction - FISHING_BAITS[getFishingItemId(baitName)].biteTimeReduction - FISHING_ACCESSORIES[getFishingItemId(accessorieName)].biteTimeReduction
 	self.m_minTimeToNibble = 340
 	self.m_maxTimeToNibble = 800
 	self.m_isCasting = true
@@ -21,7 +21,7 @@ function FishingRod:constructor(fishingRod, fishingRodName, baitName, accessorie
 	self.m_isNibbling = false
 	self.m_Hit = false
 	self.m_MouseDown = false
-	self.m_RenderBobber = FISHING_ACCESSORIES[accessorieName].renderBobber
+	self.m_RenderBobber = FISHING_ACCESSORIES[getFishingItemId(accessorieName)].renderBobber
 
 	self:initAnimations()
 
@@ -83,8 +83,8 @@ function FishingRod:reset()
 end
 
 function FishingRod:updateEquipments(baitName, accessorieName)
-	self.m_maxFishingBiteTime = 30000 - FISHING_RODS[self.m_FishingRodName].biteTimeReduction - FISHING_BAITS[baitName].biteTimeReduction - FISHING_ACCESSORIES[accessorieName].biteTimeReduction
-	self.m_RenderBobber = FISHING_ACCESSORIES[accessorieName].renderBobber
+	self.m_maxFishingBiteTime = 30000 - FISHING_RODS[getFishingItemId(self.m_FishingRodName)].biteTimeReduction - FISHING_BAITS[getFishingItemId(baitName)].biteTimeReduction - FISHING_ACCESSORIES[getFishingItemId(accessorieName)].biteTimeReduction
+	self.m_RenderBobber = FISHING_ACCESSORIES[getFishingItemId(accessorieName)].renderBobber
 end
 
 function FishingRod:handleClick(_, state)

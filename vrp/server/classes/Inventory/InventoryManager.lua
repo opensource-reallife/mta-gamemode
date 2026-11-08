@@ -63,7 +63,7 @@ function InventoryManager:reloadItems()
 			self.m_ItemData[itemName] = data
 		end
 
-		local instance = ItemManager.Map[itemName]
+		local instance = ItemManager:getSingleton():getInstance(data["Id"])
 		if instance then
 			instance:loadItem()
 			instance.m_Breakable = data["Zerbrechlich"] == 1
@@ -177,6 +177,28 @@ end
 function InventoryManager:getItemId(item)
 	local itemName = self:resolveItemName(item)
 	return itemName and self.m_ItemData[itemName]["Id"]
+end
+
+function InventoryManager:getNamedItemTable(items)
+	if not items then return items end
+	local named = {}
+	for item, value in pairs(items) do
+		named[self:resolveItemName(item) or item] = value
+	end
+	return named
+end
+
+function InventoryManager:getNamedItemList(items)
+	if not items then return items end
+	local named = {}
+	for index, entry in ipairs(items) do
+		if entry[1] == true then
+			named[index] = entry
+		else
+			named[index] = {self:resolveItemName(entry[1]) or entry[1]}
+		end
+	end
+	return named
 end
 
 function InventoryManager:getWeaponItemName(weaponId)
@@ -321,17 +343,18 @@ function InventoryManager:Event_acceptItemTrade(player, target)
 	local money = player.sendRequest.money
 	local value = player.sendRequest.itemValue
 
-	if item == "Kleidung" then
-		if not SkinInfo[tonumber(value)] then
-			player:sendError(_("Du kannst diesen Skin nicht handeln!", player))
-			return false
-		end
-	end
-
 	local itemData = self.m_ItemData[item]
 	if not itemData or itemData["Handel"] ~= 1 or itemData["DienstItem"] == 1 or value == "duty" then
 		player:sendError(_("Du kannst dieses Item nicht handeln!", player))
 		return false
+	end
+	local itemId = itemData["Id"]
+
+	if itemId == 64 then
+		if not SkinInfo[tonumber(value)] then
+			player:sendError(_("Du kannst diesen Skin nicht handeln!", player))
+			return false
+		end
 	end
 	local weaponId = itemData["WaffenId"]
 	if weaponId then
@@ -366,7 +389,7 @@ function InventoryManager:Event_acceptItemTrade(player, target)
 	end
 	if player:getInventory():getItemAmount(item) >= amount then
 		if target:getMoney() >= money then
-			if target:getInventory():giveItemFromName(item, amount, value) then
+			if target:getInventory():giveItem(itemId, amount, value) then
 				player:sendInfo(_("%s hat den Handel akzeptiert!", player, target:getName()))
 				target:sendInfo(_("Du hast das Angebot von %s akzeptiert und erhälst %d %s für %d$!", target, player:getName(), amount, item, money))
 				if amount <= 10 then
@@ -376,17 +399,17 @@ function InventoryManager:Event_acceptItemTrade(player, target)
 				else
 				player:meChat(true, "übergibt %s ein Paket!", target:getName(), false)
 				end
-				player:getInventory():removeItem(item, amount, value)
+				player:getInventory():removeItem(itemId, amount, value)
 				WearableManager:getSingleton():removeWearable( player, item, value )
 				if money > 0 then
 					target:transferMoney(player, money, "Handel", "Gameplay", "Trade")
 				end
 				StatisticsLogger:getSingleton():itemTradeLogs( player, target, item, money, amount)
 
-				if item == "Osterei" and money == 0 then
+				if itemId == 71 and money == 0 then
 					target:giveAchievement(91) -- Verschenke ein Osterei
 				end
-				if item == "Clubkarte" then
+				if itemId == 105 then
 					player:setData("PlayHouse:clubcard", false, true)
 					target:setData("PlayHouse:clubcard", true, true)
 				end

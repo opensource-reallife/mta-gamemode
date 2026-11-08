@@ -449,7 +449,7 @@ function House:clearHouse()
 	if WorldItem.Map[self:getOwner()] then
 		for modelId, objects in pairs(WorldItem.Map[self:getOwner()]) do
 			for object, worldItem in pairs(objects) do
-				if worldItem:getItem():getName() == "Einrichtung" then
+				if worldItem:getItem():getId() == 123 then
 					worldItem:onDelete()
 				end
 			end
@@ -641,8 +641,8 @@ function House:giveRobItem( player )
 					local item = GroupHouseRob:getSingleton():getRandomItem()
 					player:meChat(true, "entdeckt etwas und versucht es einzustecken. ((%s))", item, true)
 					local inventory = player:getInventory()
-					local itemName = "Diebesgut"
-					if inventory:giveItemFromName(itemName, 1) then
+					local itemName = 63
+					if inventory:giveItem(itemName, 1) then
 						local place, bag = unpack(inventory:getItemPlacesByName(itemName)[1])
 						local value = tonumber(inventory:getItemValueByBag(bag, place)) or 0
 						local min = FactionState:getSingleton():countPlayers(true, true) >= 1 and 180 or 90

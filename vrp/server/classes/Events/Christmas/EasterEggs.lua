@@ -34,7 +34,7 @@ end
 function ChristmasEasterEggs:startPresentSpawnEasterEgg()
     local posTbl = Randomizer:getRandomOf(math.random(10, 15), ChristmasEasterEggs.PresentPositions)
     for i, pos in pairs(posTbl) do
-        ItemManager:getSingleton():getInstance("Päckchen"):addObject(sql:lastInsertId(), Vector3(pos.x, pos.y, pos.z - 0.55), Vector3(0, 0, 180), 0, 0)
+        ItemManager:getSingleton():getInstance(28):addObject(sql:lastInsertId(), Vector3(pos.x, pos.y, pos.z - 0.55), Vector3(0, 0, 180), 0, 0)
     end
 
     for i, player in pairs(PlayerManager:getSingleton():getReadyPlayers()) do

@@ -228,8 +228,8 @@ function Guns:Event_OnWasted(totalAmmo, killer, weapon, bodypart)
 			ExecutionPed:new(source, weapon, bodypart)
 		end
 		if inv then
-			if inv:getItemAmount("Diebesgut") > 0 then
-				inv:removeAllItem("Diebesgut")
+			if inv:getItemAmount(63) > 0 then
+				inv:removeAllItem(63)
 				outputChatBox(_("Dein Diebesgut ging verloren...", source), source, 200,0,0)
 			end
 		end
@@ -500,9 +500,9 @@ function setWeaponAmmo(player, weapon, ammo, clip)
 		local ammoItem = inventory:getAmmoItemName(weapon)
 		local rounds = inventory:getRounds(weapon)
 		if ammoItem and ammo < rounds then
-			inventory:removeItem(ammoItem, rounds - ammo)
+			inventory:removeItem(InventoryManager:getSingleton():getItemId(ammoItem), rounds - ammo)
 		elseif ammoItem and ammo > rounds then
-			inventory:giveItemFromName(ammoItem, ammo - rounds, inventory:getDutyValue(), true)
+			inventory:giveItem(InventoryManager:getSingleton():getItemId(ammoItem), ammo - rounds, inventory:getDutyValue(), true)
 		end
 		return true
 	end
@@ -642,7 +642,7 @@ function Guns:destroyProtectionHelmet(attacker, target)
 	if target.m_Helmet then
 		if target.m_Helmet:getData("isProtectingHeadshot") then
 			if math.random(1,8) == 1 then
-				target:getInventory():removeItem("Einsatzhelm", 1)
+				target:getInventory():removeItem(69, 1)
 				destroyElement(target.m_Helmet)
 				target:meChat(true, "wird von einer Kugel am Helm getroffen, welcher zerspringt!")
 				target.m_IsWearingHelmet = false
@@ -660,7 +660,7 @@ end
 function Guns:destroyKevlar(attacker, target)
 	if target.m_Shirt then
 		if target.m_Shirt:getData("isProtectingChest") then
-			target:getInventory():removeItem("Kevlar", 1)
+			target:getInventory():removeItem(60, 1)
 			destroyElement(target.m_Shirt)
 			target:meChat(true, "Kevlarweste wurde aufgrund der zu hohen Belastung unbrauchbar!")
 			target.m_IsWearingShirt = false

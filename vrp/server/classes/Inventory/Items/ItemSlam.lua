@@ -83,7 +83,7 @@ function ItemSlam:use(player)
 	local result = self:startObjectPlacing(player,
 	function(item, position, rotation)
 		if item ~= self or not position then return end
-		player:getInventory():removeItem(self:getName(), 1)
+		player:getInventory():removeItem(self:getId(), 1)
 		local worldItem =  PlayerWorldItem:new(item, player, position, rotation, false, player)
 		setElementDoubleSided(worldItem.m_Object, true)
 		setElementFrozen(worldItem.m_Object, true)

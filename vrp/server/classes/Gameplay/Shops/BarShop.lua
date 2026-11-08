@@ -63,7 +63,7 @@ function BarShop:onBarMarkerHit(hitElement, dim)
 	end
 end
 function BarShop:requestBarShopItems(player)
-	triggerClientEvent(player, "refreshItemShopGUI", player, self.m_Id, self.m_Items)
+	triggerClientEvent(player, "refreshItemShopGUI", player, self.m_Id, InventoryManager:getSingleton():getNamedItemTable(self.m_Items))
 end
 
 function BarShop:onShopEnter(player)

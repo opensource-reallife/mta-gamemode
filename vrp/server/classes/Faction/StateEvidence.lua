@@ -126,7 +126,8 @@ function StateEvidence:addWeaponWithMunitionToEvidence(player, weaponId, ammo, n
 end
 
 --one item with optional stack size
-function StateEvidence:addItemToEvidence(player, itemName, amount, noMessage)
+function StateEvidence:addItemToEvidence(player, item, amount, noMessage)
+	local itemName = InventoryManager:getSingleton():resolveItemName(item) or item
 	if self:insertNewObject("Item", itemName, amount, player and player:getId() or 0) then
 		player:getFaction():addLog(player, "Asservate", ("hat %s %s konfisziert!"):format(amount, itemName))
 		if not noMessage then player:sendShortMessage(("Du hast %s %s konfisziert."):format(amount, itemName)) end

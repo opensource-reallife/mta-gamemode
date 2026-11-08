@@ -38,8 +38,9 @@ function VehicleMouseMenuFactionItems:constructor(posX, posY, element)
 				end
 			end
 		end
-		for item, amount in pairs(FACTION_TRUNK_MAX_ITEMS) do
-			if Inventory:getSingleton():getItemAmount(item) > 0 then
+		for itemId, amount in pairs(FACTION_TRUNK_MAX_ITEMS) do
+			local item = Inventory:getSingleton():getItemName(itemId)
+			if item and Inventory:getSingleton():getItemAmount(item) > 0 then
 				self:addItem(_("%s reinlegen", item),
 					function()
 						if self:getElement() then

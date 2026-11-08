@@ -134,21 +134,21 @@ function PlayHouse:close()
 end
 
 function PlayHouse:Event_checkClubCard() 
-    local itemPlace = client:getInventory():getItemPlacesByName("Clubkarte")
+    local itemPlace = client:getInventory():getItemPlacesByName(105)
     if itemPlace then 
         if itemPlace[1] then 
             if itemPlace[1][1] then 
                 local value =  client:getInventory():getItemValueByBag(itemPlace[1][2], itemPlace[1][1])
                 if value and tonumber(value) then 
                     if tonumber(value) <= getRealTime().timestamp then 
-                        client:getInventory():removeAllItem("Clubkarte")
+                        client:getInventory():removeAllItem(105)
                         client:sendShortMessage(_("Deine Spielhaus-Clubkarte ist abgelaufen und wurde entfernt!", client))
                     end
                 end
             end
         end
     end
-    if client:getInventory():getItemAmount("Clubkarte") == 1 then 
+    if client:getInventory():getItemAmount(105) == 1 then 
         client:setData("PlayHouse:clubcard", true, true)
     else   
         client:setData("PlayHouse:clubcard", false, true)
@@ -170,12 +170,12 @@ function PlayHouse:Event_buyItem(item, price, cardDuration)
         local price = PlayHouse.Items[item]
         if price then 
             if price <= client:getMoney() then 
-                if item:find("karte") and client:getInventory():getItemAmount("Clubkarte") and client:getInventory():getItemAmount("Clubkarte") > 0 then 
+                if item:find("karte") and client:getInventory():getItemAmount(105) and client:getInventory():getItemAmount(105) > 0 then 
                     return  client:sendError(_("Du besitzt bereits eine Clubkarte!", client))
                 end
-                if client:getInventory():giveItemFromName(item:find("karte") and "Clubkarte" or item, 1, (cardDuration and tonumber(cardDuration) and getRealTime().timestamp + cardDuration) or nil) then 
+                if client:getInventory():giveItem(item:find("karte") and 105 or InventoryManager:getSingleton():getItemId(item), 1, (cardDuration and tonumber(cardDuration) and getRealTime().timestamp + cardDuration) or nil) then 
                     if not client:transferMoney(self.m_BankAccountServer, price, "Item-Kauf (Spielhaus)", "Gameplay", "PlayHouse") then
-                        client:getInventory():removeAllItem("Clubkarte")
+                        client:getInventory():removeAllItem(105)
                         client:sendError(_("Etwas ist fehlgeschlagen!", client))
                     else 
                         self:onPlayerMoney(client, -price)

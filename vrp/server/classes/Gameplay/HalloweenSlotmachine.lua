@@ -380,7 +380,7 @@ function HalloweenSlotmachine:startPlayer(player)
 	if not self.canSpin then return end
 
 	local amount = 2
-	if player:getInventory():removeItem("Kürbis", amount) then
+	if player:getInventory():removeItem(27, amount) then
 		self:start(player)
 	else
 		player:sendWarning(_("Du brauchst %s Kürbisse, um spielen zu können!", player, amount))

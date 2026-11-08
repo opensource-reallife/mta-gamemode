@@ -18,7 +18,7 @@ end
 function DrugsHeroin:use( player )
 	ItemDrugs.use(self, player)
 
-  	player:triggerEvent("onClientItemUse", "Heroin", DrugsHeroin.m_ExpireTime )
+  	player:triggerEvent("onClientItemUse", 23, DrugsHeroin.m_ExpireTime )
     if isTimer( player.m_HeroinExpireTimer ) then
       killTimer( player.m_HeroinExpireTimer )
       if ( player.m_DrugOverdose ) then
@@ -29,11 +29,11 @@ function DrugsHeroin:use( player )
     end
     player.m_HeroinExpireFunc = bind( DrugsHeroin.expire, self )
     player.m_HeroinExpireTimer = setTimer( player.m_HeroinExpireFunc, DrugsHeroin.m_ExpireTime, 1, player )
-	StatisticsLogger:getSingleton():addDrugUse( player, "Heroin" )
+	StatisticsLogger:getSingleton():addDrugUse( player, self:getName() )
 end
 
 function DrugsHeroin:expire( player )
   if not isElement(player) or getElementType(player) ~= "player" then return false end
   player.m_DrugOverDose = 0
-  player:triggerEvent("onClientItemExpire", "Heroin" )
+  player:triggerEvent("onClientItemExpire", 23 )
 end

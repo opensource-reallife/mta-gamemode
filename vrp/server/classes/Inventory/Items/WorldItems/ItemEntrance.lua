@@ -57,7 +57,7 @@ function ItemEntrance:addWorldObjectCallback(Id, worldObject)
 		addEventHandler("onColShapeHit", object.m_ColShape, self.m_ColShapeBind)
 		addEventHandler("onColShapeLeave", object.m_ColShape, self.m_ColShapeBind2)
 		object.Id = Id
-		object.Type = "Eingang"
+		object.Type = self:getId()
 		object.HouseID = houseID
 		object.Title = title 
 		object.Description = desc
@@ -335,12 +335,12 @@ function ItemEntrance:use(player, itemId, bag, place, itemName)
 	function(item, position, rotation)
 		if item ~= self or not position then return end
 		local valueString = (value or "#:"..self.m_Model)
-		player:getInventory():removeItem(self:getName(), 1)
+		player:getInventory():removeItem(self:getId(), 1)
 		player:sendInfo(_("%s hinzugefügt!", player, "Eingang Modell ("..model..")"))
 		local dim = getElementDimension(player) 
 		local int = getElementInterior(player)
-		StatisticsLogger:getSingleton():itemPlaceLogs( player, "Eingang", position.x..","..position.y..","..position.z)
-		local worldObject = PlayerWorldItem:new(ItemManager:getSingleton():getInstance("Eingang"), player:getId(), position, rotation, false, player:getId(), true, false, valueString)
+		StatisticsLogger:getSingleton():itemPlaceLogs( player, self:getName(), position.x..","..position.y..","..position.z)
+		local worldObject = PlayerWorldItem:new(ItemManager:getSingleton():getInstance(82), player:getId(), position, rotation, false, player:getId(), true, false, valueString)
 		worldObject:setDimension(dim) 
 		worldObject:setInterior(int)
 		local id = worldObject:forceSave() 
@@ -353,7 +353,7 @@ function ItemEntrance:use(player, itemId, bag, place, itemName)
 end
 
 function ItemEntrance:onEntranceClick(button, state, player)
-    if source.Type ~= "Eingang" then return end
+    if source.Type ~= self:getId() then return end
 	if button == "right" and state == "up" then
 		if player.m_SupMode then
 			player.m_LastEntranceId = source.Id

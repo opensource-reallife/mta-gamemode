@@ -14,7 +14,7 @@ function ItemDonutBox:destructor()
 end
 
 function ItemDonutBox:use(player, itemId, bag, place, itemName)
-	if ItemManager.Map["Donut"]:use(player) then -- use item donut
+	if ItemManager:getSingleton():getInstance(55):use(player) then -- use item donut
 		local inventory = player:getInventory()
 		local donutsLeft = tonumber(player:getInventory():getItemValueByBag(bag, place)) or 9
 		if donutsLeft and (donutsLeft-1) >= 0 then

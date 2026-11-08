@@ -348,10 +348,10 @@ function WeedTruck:onDestinationPedClick(player, ped, stateDestination)
 				if stateDestination then
 					breakingNewsText = "Paket %d von %d wurde vom %s beschlagnahmt!"
 					PlayerManager:getSingleton():breakingNews(breakingNewsText, 10-self:getRemainingPackageAmount()+1, WeedTruck.MaxPackages, faction:getShortName())
-					StateEvidence:getSingleton():addItemToEvidence(player, "Weed", WeedTruck.WeedPerPackage, false)
+					StateEvidence:getSingleton():addItemToEvidence(player, 1, WeedTruck.WeedPerPackage, false)
 				else
 					if ped.faction == player:getFaction() then
-						faction:getDepot():addItem(player, "Weed", WeedTruck.WeedPerPackage, true)
+						faction:getDepot():addItem(player, 1, WeedTruck.WeedPerPackage, true)
 						breakingNewsText = "Paket %d von %d wurde von der/dem %s abgegeben!"
 					else
 						breakingNewsText = "Paket %d von %d wurde an das/die %s übergeben!"
@@ -361,10 +361,10 @@ function WeedTruck:onDestinationPedClick(player, ped, stateDestination)
 			else 
 				if stateDestination then
 					player:sendPedChatMessage(ped:getData("Ped:Name"), _("Vielen Dank für deine Kooperation mit dem Staat.", player))
-					StateEvidence:getSingleton():addItemToEvidence(player, "Weed", WeedTruck.WeedPerPackage, false)
+					StateEvidence:getSingleton():addItemToEvidence(player, 1, WeedTruck.WeedPerPackage, false)
 				else 
 					player:sendPedChatMessage(ped:getData("Ped:Name"), _("Haste noch mehr? Wenn nicht kannste wieder gehen.", player))
-					ped.faction:getDepot():addItem(player, "Weed", WeedTruck.WeedPerPackage, true)
+					ped.faction:getDepot():addItem(player, 1, WeedTruck.WeedPerPackage, true)
 				end
 				breakingNewsText = "Paket %d von %d wurde an das/die %s übergeben!"
 				PlayerManager:getSingleton():breakingNews(breakingNewsText, 10-self:getRemainingPackageAmount()+1, WeedTruck.MaxPackages, ped.faction:getShortName())

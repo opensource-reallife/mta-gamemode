@@ -12,25 +12,25 @@ function StaticWorldItems:constructor()
 
 	self.m_Items = {
 		["Mushroom"]= {
-			["class"] = ItemManager:getSingleton():getInstance("Shrooms"),
+			["class"] = ItemManager:getSingleton():getInstance(13),
 			["offsetZ"] = -1,
 			["chance"] = 33,
 			["enabled"] = true
 					  },
 		["Osterei"] = {
-			["class"] = ItemManager:getSingleton():getInstance("Osterei"),
+			["class"] = ItemManager:getSingleton():getInstance(71),
 			["offsetZ"] = -0.85,
 			["chance"] = 33,
 			["enabled"] = EVENT_EASTER
 					  },
 		["Kürbis"] = {
-			["class"] = ItemManager:getSingleton():getInstance("Kürbis"),
+			["class"] = ItemManager:getSingleton():getInstance(27),
 			["offsetZ"] = -0.85,
 			["chance"] = 33,
 			["enabled"] = EVENT_HALLOWEEN
 		},
 		["Päckchen"] = {
-			["class"] = ItemManager:getSingleton():getInstance("Päckchen"),
+			["class"] = ItemManager:getSingleton():getInstance(28),
 			["offsetZ"] = -0.55,
 			["chance"] = 33,
 			["enabled"] = EVENT_CHRISTMAS

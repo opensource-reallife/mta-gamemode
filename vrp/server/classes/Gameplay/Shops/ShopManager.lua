@@ -234,7 +234,8 @@ function ShopManager:buyItem(shopId, item, amount)
 	if not item then return end
 	if not amount then amount = 1 end
 	local shop = self:getFromId(shopId)
-	if shop.m_Items[item] then
+	local shopItemId = InventoryManager:getSingleton():getItemId(item)
+	if shop.m_Items[shopItemId] then
 		if ItemManager:getSingleton():getInstance(item) and ItemManager:getSingleton():getInstance(item).canBuy then
 			local state, reason = ItemManager:getSingleton():getInstance(item):canBuy(client, item)
 			if not state then
@@ -243,19 +244,19 @@ function ShopManager:buyItem(shopId, item, amount)
 			end
 		end
 
-		if client:getMoney() >= shop.m_Items[item]*amount then
+		if client:getMoney() >= shop.m_Items[shopItemId]*amount then
 			local value
-			if item == "Kanne" then
+			if shopItemId == 45 then
 				value = 10
-			elseif item == "Mautpass" then
+			elseif shopItemId == 34 then
 				value = getRealTime().timestamp + 30*24*60*60
 			end
 
-			if client:getInventory():giveItemFromName(item, amount, value) then
+			if client:getInventory():giveItem(shopItemId, amount, value) then
 				local bankServer = BankServer.get("shop.item")
-				client:transferMoney(bankServer, shop.m_Items[item]*amount, "Item-Einkauf", "Gameplay", "Item")
+				client:transferMoney(bankServer, shop.m_Items[shopItemId]*amount, "Item-Einkauf", "Gameplay", "Item")
 				if shop.m_Stock > 0 then
-					bankServer:transferMoney(shop.m_BankAccount, shop.m_Items[item]*amount*0.8, "Item-Einkauf", "Gameplay", "Item")
+					bankServer:transferMoney(shop.m_BankAccount, shop.m_Items[shopItemId]*amount*0.8, "Item-Einkauf", "Gameplay", "Item")
 					shop.m_Stock = math.max(0, shop.m_Stock - amount)
 				end
 				client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, shop.m_Name))
@@ -414,17 +415,18 @@ function ShopManager:barBuyDrink(shopId, item, amount)
 	if not item then return end
 	if not amount then amount = 1 end
 	local shop = self:getFromId(shopId)
-	if shop.m_Items[item] then
-		if client:getMoney() >= shop.m_Items[item]*amount then
+	local shopItemId = InventoryManager:getSingleton():getItemId(item)
+	if shop.m_Items[shopItemId] then
+		if client:getMoney() >= shop.m_Items[shopItemId]*amount then
 			local bankServer = BankServer.get("shop.bar")
-			client:transferMoney(bankServer, shop.m_Items[item]*amount, "Item-Einkauf", "Gameplay", "Item")
+			client:transferMoney(bankServer, shop.m_Items[shopItemId]*amount, "Item-Einkauf", "Gameplay", "Item")
 			if shop.m_Stock > 0 then
-				bankServer:transferMoney(shop.m_BankAccount, shop.m_Items[item]*amount*0.8, "Item-Einkauf", "Gameplay", "Item")
+				bankServer:transferMoney(shop.m_BankAccount, shop.m_Items[shopItemId]*amount*0.8, "Item-Einkauf", "Gameplay", "Item")
 				shop.m_Stock = math.max(0, shop.m_Stock - amount)
 			end
 			client:sendInfo(_("%s bedankt sich für deinen Einkauf!", client, _(shop.m_Name, client)))
 
-			local instance = ItemManager.Map[item]
+			local instance = ItemManager:getSingleton():getInstance(item)
 			if instance.use then
 				if instance:use(client, itemId, bag, place, item) == false then
 					return false

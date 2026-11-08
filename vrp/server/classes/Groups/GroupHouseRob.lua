@@ -87,7 +87,7 @@ function GroupHouseRob:Event_OnSellAccept()
 			end
 			local inv = client:getInventory()
 			if inv then
-				local itemName = "Diebesgut"
+				local itemName = 63
 				local place = inv:getItemPlacesByName(itemName)[1]
 				local pay = place and tonumber(inv:getItemValueByBag(place[2], place[1])) or 0
 				inv:removeAllItem(itemName)
@@ -130,7 +130,7 @@ function GroupHouseRob:Event_onClickPed(  m, s, player)
 		if s == "up" then
 			local inv = player:getInventory()
 			if inv then
-				local thiefItems = inv:getItemAmount("Diebesgut")
+				local thiefItems = inv:getItemAmount(63)
 				if thiefItems > 0 then
 					player:meChat(true, "nickt mit dem Kopf.")
 					player.m_ClickPed = source

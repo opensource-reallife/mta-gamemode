@@ -20,7 +20,7 @@ function BuyItemBeggar:giveItem(player, item)
 				end, 50, 1
 			)
 		else
-			player:sendError(_("Du hast kein/en %s dabei!", player, item))
+			player:sendError(_("Du hast kein/en %s dabei!", player, InventoryManager:getSingleton():resolveItemName(item)))
 		end
 	else
 		client:sendError(_("Steige zuerst aus deinem Fahrzeug aus!", client))

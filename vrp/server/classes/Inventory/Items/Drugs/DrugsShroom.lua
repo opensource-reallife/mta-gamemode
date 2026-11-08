@@ -23,7 +23,7 @@ end
 function DrugsShroom:use( player )
 	ItemDrugs.use(self, player)
 
-  	player:triggerEvent("onClientItemUse", "Shrooms", DrugsShroom.m_ExpireTime )
+  	player:triggerEvent("onClientItemUse", 13, DrugsShroom.m_ExpireTime )
     if isTimer( player.m_ShroomExpireTimer ) then
       killTimer( player.m_ShroomExpireTimer )
       if ( player.m_DrugOverdose ) then
@@ -34,13 +34,13 @@ function DrugsShroom:use( player )
     end
     player.m_ShroomExpireFunc = bind( DrugsShroom.expire, self )
     player.m_ShroomExpireTimer = setTimer( player.m_ShroomExpireFunc, DrugsShroom.m_ExpireTime, 1, player )
-	StatisticsLogger:getSingleton():addDrugUse( player, "Shrooms" )
+	StatisticsLogger:getSingleton():addDrugUse( player, self:getName() )
 end
 
 function DrugsShroom:expire( player )
   if not isElement(player) or getElementType(player) ~= "player" then return false end
   player.m_DrugOverDose = 0
-  player:triggerEvent("onClientItemExpire", "Shrooms" )
+  player:triggerEvent("onClientItemExpire", 13 )
 end
 
 function DrugsShroom:addObject(Id, pos)
@@ -58,20 +58,20 @@ function DrugsShroom:onMushroomClick(button, state, player)
 
 	if button == "left" and state == "down" then
         if source:getModel() == self.m_MagicModel then
-            if player:getInventory():getFreePlacesForItem("Shrooms") >= 1 then
+            if player:getInventory():getFreePlacesForItem(13) >= 1 then
                 source:destroy()
                 player:getInventory():giveItem(13, 1)
                 player:sendInfo(_("Du hast einen seltenen Magic-Mushroom gesammelt!", player))
             else
-                player:sendError(_("Du kannst nicht soviele Shrooms tragen! Maximal %d Stk.!", player, player:getInventory():getMaxItemAmount("Shrooms")))
+                player:sendError(_("Du kannst nicht soviele Shrooms tragen! Maximal %d Stk.!", player, player:getInventory():getMaxItemAmount(13)))
             end
         elseif source:getModel() == self.m_NormalModel then
-            if player:getInventory():getFreePlacesForItem("Pilz") >= 1 then
+            if player:getInventory():getFreePlacesForItem(44) >= 1 then
                 source:destroy()
                 player:getInventory():giveItem(44, 1)
                 player:sendInfo(_("Du hast einen Pilz gesammelt!", player))
             else
-                player:sendError(_("Du kannst nicht soviele Pilze tragen! Maximal %d Stk.!", player, player:getInventory():getMaxItemAmount("Pilz")))
+                player:sendError(_("Du kannst nicht soviele Pilze tragen! Maximal %d Stk.!", player, player:getInventory():getMaxItemAmount(44)))
             end
         end
     end

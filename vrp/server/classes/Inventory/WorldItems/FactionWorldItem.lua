@@ -30,7 +30,7 @@ function FactionWorldItem:hasPlayerPermissionTo(player, action)
 			end
 		end
 		if player:getFaction() == self:getOwner() and player:isFactionDuty() then
-			if self.m_ItemName == "Blitzer" then
+			if self.m_Item:getId() == 47 then
 				if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "faction", "useSpeedCam") then
 					return true
 				else 
@@ -44,7 +44,7 @@ function FactionWorldItem:hasPlayerPermissionTo(player, action)
 				player:sendError(_("Dazu benötigst du mindestens Rang %d.", player, rank))
 			end
 		elseif self:getPlacer() == player and not self.m_SuperOwner then
-			if self.m_ItemName == "Blitzer" then
+			if self.m_Item:getId() == 47 then
 				if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "faction", "useSpeedCam") then
 					return true
 				else 
@@ -64,7 +64,7 @@ function FactionWorldItem:hasPlayerPermissionTo(player, action)
 			return true 
 		end
 		if player:getFaction() == self:getOwner() and player:isFactionDuty() then
-			if self.m_ItemName == "Blitzer" then
+			if self.m_Item:getId() == 47 then
 				if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "faction", "useSpeedCam") then
 					return true
 				else 
@@ -80,7 +80,7 @@ function FactionWorldItem:hasPlayerPermissionTo(player, action)
 				player:sendError(_("Dazu benötigst du mindestens Rang %d.", player, rank))
 			end
 		elseif self:getPlacer() == player and not self.m_SuperOwner then
-			if self.m_ItemName == "Blitzer" then
+			if self.m_Item:getId() == 47 then
 				if PermissionsManager:getSingleton():hasPlayerPermissionsTo(player, "faction", "useSpeedCam") then
 					return true
 				else 

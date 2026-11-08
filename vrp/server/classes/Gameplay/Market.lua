@@ -15,11 +15,11 @@ function Market:constructor()
         ["marketSellWeapon"] = bind(self.Event_marketSellWeapon, self)
     }
 
-    self:addTrader(218, Vector3(1480.17, -1705.34, 14.05), 140, "Frida Fraise", "Möchtest du Erdbeeren verkaufen?", "Erdbeeren", Randomizer:get(5, 15), 70)
-    self:addTrader(31, Vector3(1480.41, -1710.62, 14.05), 38, "Maria Manzana", "Verkaufst du Äpfel?", "Apfel", Randomizer:get(5, 30), 70)
-    self:addTrader(158, Vector3(1480.48, -1684.65, 14.05), 124, "Carlos Carota", "Hast du Karotten? Ich zahle gut!", "Karotte", Randomizer:get(15, 60), 70)
-    self:addTrader(264, Vector3(1478.28, -1706.71, 14.05), 205, "Benjamin Blume", "Wenn du Blumen hast, kaufe ich sie dir ab!", 14, Randomizer:get(200, 500), 50)
-    self:addTrader(72, Vector3(1478.29, -1689.98, 14.05), 315, "Patrick Pera", "Kaufe Birnen zu fairen Preisen!", "Birne", Randomizer:get(5, 30), 70)
+    self:addTrader(218, Vector3(1480.17, -1705.34, 14.05), 140, "Frida Fraise", "Möchtest du Erdbeeren verkaufen?", 121, Randomizer:get(5, 15), 70)
+    self:addTrader(31, Vector3(1480.41, -1710.62, 14.05), 38, "Maria Manzana", "Verkaufst du Äpfel?", 74, Randomizer:get(5, 30), 70)
+    self:addTrader(158, Vector3(1480.48, -1684.65, 14.05), 124, "Carlos Carota", "Hast du Karotten? Ich zahle gut!", 117, Randomizer:get(15, 60), 70)
+    self:addTrader(264, Vector3(1478.28, -1706.71, 14.05), 205, "Benjamin Blume", "Wenn du Blumen hast, kaufe ich sie dir ab!", 14, Randomizer:get(200, 500), 50, true)
+    self:addTrader(72, Vector3(1478.29, -1689.98, 14.05), 315, "Patrick Pera", "Kaufe Birnen zu fairen Preisen!", 119, Randomizer:get(5, 30), 70)
     self:addTrader(205, Vector3(1470.76, -1677.19, 14.05), 246, "Wilma Worstje", "Würstchen sind leider ausverkauft!")
 
     addEvent("marketSellWeapon", false)
@@ -29,7 +29,7 @@ function Market:constructor()
     NoDm:getSingleton():addZone({{1441.15, -1720.72, 12}, {76.71, 116.84, 40}}, "market")
 end
 
-function Market:addTrader(model, pos, rotZ, name, text, item, price, spawnChance)
+function Market:addTrader(model, pos, rotZ, name, text, item, price, spawnChance, isWeapon)
     if spawnChance and not chance(spawnChance) then return end
 
     local id = #self.m_Traders + 1
@@ -45,6 +45,7 @@ function Market:addTrader(model, pos, rotZ, name, text, item, price, spawnChance
     trader.m_Name = name
     trader.m_Text = text
     trader.m_Item = item
+    trader.m_IsWeapon = isWeapon
     trader.m_Price = price
 
     local colShape = createColSphere(trader:getPosition(), 5)
@@ -60,10 +61,10 @@ function Market:Event_onTraderClicked(button, state, player)
 	if button == "left" and state == "down" then
         local item, price = source.m_Item, source.m_Price
         if item and price then
-            if type(item) == "number" then
+            if source.m_IsWeapon then
                 QuestionBox:new(player, _("Möchtest du %s für %s$ verkaufen?", player, _(WEAPON_NAMES[item], player), price), "marketSellWeapon", nil, false, false, source.m_Id)
             else
-                player:triggerEvent("inputBox", _("Verkaufen: %s", player, _(item, player)), _("Wie viel möchtest du verkaufen? (%s$ pro Stück)", player, price), "marketSellItem", source.m_Id)
+                player:triggerEvent("inputBox", _("Verkaufen: %s", player, _(InventoryManager:getSingleton():resolveItemName(item), player)), _("Wie viel möchtest du verkaufen? (%s$ pro Stück)", player, price), "marketSellItem", source.m_Id)
             end
         end
     end

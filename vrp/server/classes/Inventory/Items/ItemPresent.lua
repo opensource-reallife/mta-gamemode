@@ -20,7 +20,7 @@ end
 function ItemPresent:use(player)
     local random = Randomizer:get(1, 5)
 
-    player:getInventory():removeItem("Päckchen", 1)
+    player:getInventory():removeItem(28, 1)
     player:meChat(true, "öffnet ein Päckchen...")
 
     if random == 1 then
@@ -63,13 +63,13 @@ function ItemPresent:onPresentClick(button, state, player)
     if getDistanceBetweenPoints3D(source.position, player.position) > 5 then return end
 	if button == "left" and state == "down" then
         if source.Present:getModel() == self.m_Model then
-            if player:getInventory():getFreePlacesForItem("Päckchen") >= 1 then
+            if player:getInventory():getFreePlacesForItem(28) >= 1 then
                 source.Present:destroy()
                 source:destroy()
                 player:getInventory():giveItem(28, 1)
                 player:sendInfo(_("Du hast einen Päckchen gesammelt!", player))
             else
-                player:sendError(_("Du kannst nicht soviele Päckchen tragen! Maximal %d Stk.!", player, player:getInventory():getMaxItemAmount("Päckchen")))
+                player:sendError(_("Du kannst nicht soviele Päckchen tragen! Maximal %d Stk.!", player, player:getInventory():getMaxItemAmount(28)))
             end
         end
     end

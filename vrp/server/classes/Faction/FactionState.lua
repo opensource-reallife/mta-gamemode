@@ -41,7 +41,7 @@ function FactionState:constructor()
 	--self.m_InteriorGarageEntrance:addEnterEvent(function( player) player:triggerEvent("setOcclusion", false) end)
 	--self.m_InteriorGarageEntrance:addExitEvent(function( player) player:triggerEvent("setOcclusion", true) end)
 
-	self.ms_IllegalItems = {"Kokain", "Weed", "Heroin", "Shrooms", "Diebesgut", "Sprengstoff", "Hacking-Kit"}
+	self.ms_IllegalItems = {24, 1, 23, 13, 63, 42, 113}
 
 	self.m_BankAccountServer = BankServer.get("faction.state")
 
@@ -60,14 +60,14 @@ function FactionState:constructor()
 	self:createEquipmentEvidence(Vector3( 136.93, 1857.62, 16.68), 0, 0, 275) --SASF EquipmentDepot
 
 	self.m_Items = {
-		["Barrikade"] = 0,
-		["Nagel-Band"] = 0,
-		["Blitzer"] = 1500,
-		["Warnkegel"] = 0,
-		["Rauchgranate"] = 5000,
-		["Gasmaske"] = 1000,
-		["SLAM"] = 25000,
-		["DefuseKit"] = 1000,
+		[41] = 0,
+		[48] = 0,
+		[47] = 1500,
+		[73] = 0,
+		[91] = 5000,
+		[59] = 1000,
+		[90] = 25000,
+		[96] = 1000,
 	}
 
 	self.m_AlertBind = bind(self.startAreaAlert, self)
@@ -495,7 +495,7 @@ function FactionState:createTakeItemsPickup(pos, int, dim)
 					local veh = hitElement.vehicle
 					if instanceof(veh, FactionVehicle) and veh:getFaction():isStateFaction() then
 						hitElement:triggerEvent("showStateItemGUI", "Ausrüstungskiste")
-						triggerClientEvent(hitElement, "refreshItemShopGUI", hitElement, 0, self.m_Items)
+						triggerClientEvent(hitElement, "refreshItemShopGUI", hitElement, 0, InventoryManager:getSingleton():getNamedItemTable(self.m_Items))
 					else
 						hitElement:sendError(_("Ungültiges Fahrzeug!", hitElement))
 					end
@@ -1804,11 +1804,11 @@ function FactionState:Event_FactionRearm()
 		end
 		local inv = client:getInventory()
 		if inv then
-			inv:removeAllItem("Einsatzhelm")
+			inv:removeAllItem(69)
 			inv:giveItem(69,1)
 		end
 		if client:getFaction():isStateFaction() and client:getData("Faction:InSpecialDuty", true, true) then
-			inv:removeAllItem("Kevlar")
+			inv:removeAllItem(60)
 			inv:giveItem(60, 1)
 		end
 	end
@@ -1850,15 +1850,15 @@ function FactionState:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, pl
 				end
 				client:setFactionDuty(false)
 				client:sendInfo(_("Du bist nicht mehr im Dienst!", client))
-				client:getInventory():removeAllItem("Taser")
-				client:getInventory():removeAllItem("Warnkegel")
-				client:getInventory():removeAllItem("Barrikade")
-				client:getInventory():removeAllItem("Nagel-Band")
-				client:getInventory():removeAllItem("Blitzer")
-				client:getInventory():removeAllItem("Einsatzhelm")
-				client:getInventory():removeAllItem("Kevlar")
-				WearableManager:getSingleton():removeWearable(client, "Einsatzhelm")
-				WearableManager:getSingleton():removeWearable(client, "Kevlar")
+				client:getInventory():removeAllItem(77)
+				client:getInventory():removeAllItem(73)
+				client:getInventory():removeAllItem(41)
+				client:getInventory():removeAllItem(48)
+				client:getInventory():removeAllItem(47)
+				client:getInventory():removeAllItem(69)
+				client:getInventory():removeAllItem(60)
+				WearableManager:getSingleton():removeWearable(client, 69)
+				WearableManager:getSingleton():removeWearable(client, 60)
 				client.m_KevlarShotsCount = nil
 				client:setData("Faction:InSpecialDuty", nil, true)
 				client:takeEquipment(true)
@@ -1891,13 +1891,13 @@ function FactionState:Event_toggleDuty(wasted, preferredSkin, dontChangeSkin, pl
 				takeAllWeapons(client)
 				Guns:getSingleton():setWeaponInStorage(client, false, false)
 				client:sendInfo(_("Du bist nun im Dienst!", client))
-				client:getInventory():removeAllItem("Warnkegel")
+				client:getInventory():removeAllItem(73)
 				client:getInventory():giveItem(73, 5)
-				client:getInventory():removeAllItem("Einsatzhelm")
+				client:getInventory():removeAllItem(69)
 				client:getInventory():giveItem(69, 1)
-				client:getInventory():removeAllItem("Taser")
+				client:getInventory():removeAllItem(77)
 				client:getInventory():giveItem(77, 1)
-				client:getInventory():removeItem("Kevlar", 1)
+				client:getInventory():removeItem(60, 1)
 
 				-- remove illegal items
 				local DrugItems = self.ms_IllegalItems
@@ -1937,7 +1937,7 @@ function FactionState:Event_storageWeapons(player, ignoreDutyCheck) -- ignoreDut
 			--switch tazer if it is being used
 			local weapon = getPedWeapon(client, 2)
 			if weapon == 23 then
-				ItemManager.Map["Taser"]:use(client)
+				ItemManager.Map[77]:use(client)
 			end
 			--storage weapons
 			faction:storageWeapons(client)
@@ -2120,7 +2120,7 @@ function FactionState:Event_friskPlayer(target)
 			local targetDrugs = {}
 			for index, item in pairs(DrugItems) do
 				if inv:getItemAmount(item) > 0 then
-					targetDrugs[item] = inv:getItemAmount(item)
+					targetDrugs[InventoryManager:getSingleton():resolveItemName(item)] = inv:getItemAmount(item)
 				end
 			end
 
@@ -2209,7 +2209,7 @@ end
 
 function FactionState:isItemIllegal(itemName)
 	for index, item in pairs(self.ms_IllegalItems) do
-		if item == itemName then return true end
+		if item == InventoryManager:getSingleton():getItemId(itemName) then return true end
 	end
 	return false
 end
@@ -2228,8 +2228,8 @@ function FactionState:Event_takeDrugs(target)
 				if inv:getItemAmount(item) > 0 then
 					amount = inv:getItemAmount(item)
 					drugsTaken = true
-					client:sendMessage(_("%d %s", client, amount, item), 255, 125, 0)
-					target:sendMessage(_("%d %s", target, amount, item), 255, 125, 0)
+					client:sendMessage(_("%d %s", client, amount, InventoryManager:getSingleton():resolveItemName(item)), 255, 125, 0)
+					target:sendMessage(_("%d %s", target, amount, InventoryManager:getSingleton():resolveItemName(item)), 255, 125, 0)
 					inv:removeAllItem(item)
 					StateEvidence:getSingleton():addItemToEvidence(client,item,amount)
 				end
@@ -2269,7 +2269,7 @@ function FactionState:Event_putItemInVehicle(itemName, amount, inventory)
 		if client:isFactionDuty() and client:getFaction() and client:getFaction():isStateFaction() == true then
 			local veh = inventory and source or client.vehicle
 			if veh:getFaction() and veh:getFaction():isStateFaction() then
-				if FACTION_TRUNK_SWAT_ITEMS[itemName] then
+				if FACTION_TRUNK_SWAT_ITEMS[InventoryManager:getSingleton():getItemId(itemName)] then
 					if client.vehicle and not (client.vehicle:getModel() == 427 or client.vehicle:getModel() == 433 or client.vehicle:getModel() == 528) then
 						client:sendError(_("Dieses Item kann nur in einen Enforcer, FBI Truck oder Barracks getan werden!", client))
 						return

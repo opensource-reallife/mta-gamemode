@@ -21,7 +21,7 @@ function ItemBeggar:giveItem(player, item)
 			)
 			triggerEvent("onBeggarHelp", player) -- For Quest
 		else
-			player:sendError(_("Du hast kein/en %s dabei!", player, item))
+			player:sendError(_("Du hast kein/en %s dabei!", player, InventoryManager:getSingleton():resolveItemName(item)))
 		end
 	else
 		client:sendError(_("Steige zuerst aus deinem Fahrzeug aus!", client))
@@ -48,7 +48,7 @@ function ItemBeggar:buyItem(player, item)
 					},
 					points = 5,
 				})
-				player:getInventory():giveItemFromName(item, BeggarItemBuy[item]["amount"])
+				player:getInventory():giveItem(item, BeggarItemBuy[item]["amount"])
 				self:sendMessage(player, BeggarPhraseTypes.Thanks)
 				player:meChat(true, "erhält von %s eine Tüte!", self.m_Name, false)
 
@@ -68,7 +68,7 @@ function ItemBeggar:buyItem(player, item)
 				player:sendError(_("Du hast nicht genug Geld dabei! (%d$)", player, price, item))
 			end
 		else
-			player:sendError(_("In deinem Inventar ist nicht genug Platz für %d %s!", player, BeggarItemBuy[item]["amount"], item))
+			player:sendError(_("In deinem Inventar ist nicht genug Platz für %d %s!", player, BeggarItemBuy[item]["amount"], InventoryManager:getSingleton():resolveItemName(item)))
 		end
 	else
 		client:sendError(_("Steige zuerst aus deinem Fahrzeug aus!", client))
@@ -82,6 +82,6 @@ function ItemBeggar:giveLoot(player)
 
 	local item = BeggarItemBuyTypes[self.m_Type][math.random(1, #BeggarItemBuyTypes[self.m_Type])]
 	local amount = math.floor(BeggarItemBuy[item]["amount"]/2)
-	player:getInventory():giveItemFromName(item, math.floor(BeggarItemBuy[item]["amount"]/2))
-	player:sendInfo(_("Du hast %s %s von %s erhalten.", player, amount, item, self.m_Name))
+	player:getInventory():giveItem(item, math.floor(BeggarItemBuy[item]["amount"]/2))
+	player:sendInfo(_("Du hast %s %s von %s erhalten.", player, amount, InventoryManager:getSingleton():resolveItemName(item), self.m_Name))
 end

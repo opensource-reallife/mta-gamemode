@@ -267,7 +267,7 @@ function Inventory:useItem(itemId, bag, itemName, place)
 	end
 
 	local data = self.m_ItemData[itemName]
-	if self.m_Owner.m_GangwarSession and (data["Kategorie"] == "place" or itemName == "SLAM") then
+	if self.m_Owner.m_GangwarSession and (data["Kategorie"] == "place" or data["Id"] == 90) then
 		client:sendError(_("Im Gangwar kannst du keine Objekte platzieren!", client))
 		return
 	end
@@ -280,7 +280,7 @@ function Inventory:useItem(itemId, bag, itemName, place)
 	end
 
 	if self.m_ClassItems[itemName] then
-		local instance = ItemManager.Map[itemName]
+		local instance = ItemManager:getSingleton():getInstance(data["Id"])
 		if instance.use then
 			if instance:use(client, itemId, bag, place, itemName) == false then
 				return false
@@ -312,7 +312,7 @@ function Inventory:useItemSecondary(itemId, bag, itemName, place)
 	end
 
 	if self.m_ClassItems[itemName] then
-		local instance = ItemManager.Map[itemName]
+		local instance = ItemManager:getSingleton():getInstance(self.m_ItemData[itemName]["Id"])
 		if instance.useSecondary then
 			return instance:useSecondary(client, itemId, bag, place, itemName)
 		end
@@ -490,9 +490,17 @@ function Inventory:getItemLimitSpace(itemName)
 	return math.max(0, maxItems - self:getItemAmount(itemName))
 end
 
-function Inventory:removeItem(item, amount, value, wearFilter)
-	local itemName = self:resolve(item)
-	if not itemName then return false end
+function Inventory:removeItemFromName(itemName, amount, value, wearFilter)
+	local data = self.m_ItemData[itemName]
+	return data and self:removeItem(data["Id"], amount, value, wearFilter) or false
+end
+
+function Inventory:removeItem(itemId, amount, value, wearFilter)
+	local itemName = type(itemId) == "number" and self:resolve(itemId)
+	if not itemName then
+		outputDebugString("[INV] Ungültiges Item bei removeItem: "..tostring(itemId))
+		return false
+	end
 
 	local matches = function(row)
 		if value and row["Value"] ~= value then return false end
@@ -582,7 +590,7 @@ function Inventory:throwItem(item, bag, id, place, name, amount)
 		WearableManager:getSingleton():removeWearable(self.m_Owner, itemName, value)
 	end
 	self:removeItemFromPlace(bag, place, amount)
-	if itemName == "Clubkarte" then
+	if data["Id"] == 105 then
 		self.m_Owner:setData("PlayHouse:clubcard", nil, true)
 	end
 end
@@ -769,7 +777,7 @@ function Inventory:syncArmedAmmo()
 			local carried = self:getItemAmount(ammoItem)
 			local loaded = getPedTotalAmmo(self.m_Owner, slot)
 			if loaded < carried then
-				self:removeItem(ammoItem, carried - loaded)
+				self:removeItem(manager:getItemId(ammoItem), carried - loaded)
 			end
 		end
 	end
@@ -870,15 +878,15 @@ function Inventory:onWeaponGiven(weaponId, ammo, current)
 
 	if THROWABLE_WEAPONS[weaponId] then
 		if ammo > 0 then
-			self:giveItemFromName(weaponItem, ammo, value, true)
+			self:giveItem(manager:getItemId(weaponItem), ammo, value, true)
 		end
 	else
 		if not self:hasWeapon(weaponId) then
-			self:giveItemFromName(weaponItem, 1, value, true)
+			self:giveItem(manager:getItemId(weaponItem), 1, value, true)
 		end
 		local ammoItem = manager:getAmmoItemName(weaponId)
 		if ammoItem and ammo > 0 and not NO_MUNITION_WEAPONS[weaponId] then
-			self:giveItemFromName(ammoItem, ammo, value, true)
+			self:giveItem(manager:getItemId(ammoItem), ammo, value, true)
 		end
 	end
 
@@ -896,7 +904,7 @@ function Inventory:onWeaponTaken(weaponId, ammo)
 	if ammo then
 		local ammoItem = self:getAmmoItemName(weaponId)
 		if ammoItem then
-			self:removeItem(ammoItem, math.min(math.floor(ammo), self:getItemAmount(ammoItem)))
+			self:removeItem(manager:getItemId(ammoItem), math.min(math.floor(ammo), self:getItemAmount(ammoItem)))
 		end
 		self:syncClient()
 		return true

@@ -44,7 +44,7 @@ function ItemKeyPad:addWorldObjectCallback(Id, worldObject)
 		object = self.m_Keypads[Id]:getObject()
 		object:setDoubleSided(true)
 		object.Id = Id
-		object.Type = "Keypad"
+		object.Type = self:getId()
 		object.UpdatePin = updatePin
 		object.Pin = pin
 		object:setData("clickable", true, true)
@@ -59,12 +59,12 @@ function ItemKeyPad:use(player)
 	local result = self:startObjectPlacing(player,
 	function(item, position, rotation)
 		if item ~= self or not position then return end
-		player:getInventory():removeItem(self:getName(), 1)
-		player:sendInfo(_("%s hinzugefügt!", player, "Keypad"))
+		player:getInventory():removeItem(self:getId(), 1)
+		player:sendInfo(_("%s hinzugefügt!", player, self:getName()))
 		local int = player:getInterior() 
 		local dim = player:getDimension()
-		StatisticsLogger:getSingleton():itemPlaceLogs( player, "Keypad", position.x..","..position.y..","..position.z)
-		local worldObject = PlayerWorldItem:new(ItemManager:getSingleton():getInstance("Keypad"), player:getId(), position, rotation, false, player:getId(), true, false, "#####")
+		StatisticsLogger:getSingleton():itemPlaceLogs( player, self:getName(), position.x..","..position.y..","..position.z)
+		local worldObject = PlayerWorldItem:new(ItemManager:getSingleton():getInstance(80), player:getId(), position, rotation, false, player:getId(), true, false, "#####")
 		worldObject:setInterior(int) 
 		worldObject:setDimension(dim)
 		local id = worldObject:forceSave() 
@@ -77,7 +77,7 @@ function ItemKeyPad:use(player)
 end
 
 function ItemKeyPad:onKeyPadClick(button, state, player)
-    if source.Type ~= "Keypad" then return end
+    if source.Type ~= self:getId() then return end
 	if button == "right" and state == "up" then
         if source:getModel() == self.m_Model then
 			player.m_LastKeyPadID = source.Id

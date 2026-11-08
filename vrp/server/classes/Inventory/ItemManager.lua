@@ -21,7 +21,7 @@ function ItemManager:constructor()
 			instance.m_Breakable = data["Zerbrechlich"] == 1
 			data["HatAlternativ"] = instance:hasSecondaryUse(name)
 			self.m_ClassItems[name] = class
-			ItemManager.Map[name] = instance
+			ItemManager.Map[data["Id"]] = instance
 		elseif data["Klasse"] then
 			outputServerLog(("[INV] Unbekannte Item-Klasse '%s' bei Item '%s'"):format(data["Klasse"], name))
 		end
@@ -46,6 +46,6 @@ function ItemManager:getClassItems()
 	return self.m_ClassItems
 end
 
-function ItemManager:getInstance(itemName)
-	return ItemManager.Map[itemName]
+function ItemManager:getInstance(itemId)
+	return ItemManager.Map[InventoryManager:getSingleton():getItemId(itemId)]
 end

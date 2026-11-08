@@ -300,14 +300,14 @@ function Sewers:Event_onPedClick(button, state, player)
 end
 
 function Sewers:addKevlarToPed(ped)
-    local itemName = "Kevlar"
+    local wearableId = 60
     local x,y,z = getElementPosition(ped)
     local dim = getElementDimension(ped)
     local int = getElementInterior(ped)
-    local model, zOffset, yOffset, scale, rotX, rotZ = WearableShirt.objectTable[itemName][1] or WearableShirt.objectTable["Kevlar"][1],  WearableShirt.objectTable[itemName][2] or WearableShirt.objectTable["Kevlar"][2], WearableShirt.objectTable[itemName][3] or WearableShirt.objectTable["Kevlar"][3], WearableShirt.objectTable[itemName][4] or WearableShirt.objectTable["Kevlar"][4], WearableShirt.objectTable[itemName][5] or WearableShirt.objectTable["Kevlar"][5],  WearableShirt.objectTable[itemName][6] or WearableShirt.objectTable["Kevlar"][6]
-    local rotY =  WearableShirt.objectTable[itemName][7] or WearableShirt.objectTable["Kevlar"][7]
+    local model, zOffset, yOffset, scale, rotX, rotZ = WearableShirt.objectTable[wearableId][1] or WearableShirt.objectTable[60][1],  WearableShirt.objectTable[wearableId][2] or WearableShirt.objectTable[60][2], WearableShirt.objectTable[wearableId][3] or WearableShirt.objectTable[60][3], WearableShirt.objectTable[wearableId][4] or WearableShirt.objectTable[60][4], WearableShirt.objectTable[wearableId][5] or WearableShirt.objectTable[60][5],  WearableShirt.objectTable[wearableId][6] or WearableShirt.objectTable[60][6]
+    local rotY =  WearableShirt.objectTable[wearableId][7] or WearableShirt.objectTable[60][7]
     local obj = createObject(model,x,y,z)
-    local objName =  WearableShirt.objectTable["Kevlar"][8]
+    local objName =  WearableShirt.objectTable[60][8]
     setElementDimension(obj, dim)
     setElementInterior(obj, int)
     setObjectScale(obj, scale)

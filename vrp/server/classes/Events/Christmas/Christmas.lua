@@ -144,7 +144,7 @@ function Christmas:constructor()
 	addEventHandler("Christmas:openDoor", root, bind(self.openDoor, self))
 
 	if Christmas.ms_PricePoolName then
-		self.m_PricePool = PricePoolManager:getSingleton():getPricePool(Christmas.ms_PricePoolName, "Päckchen", Christmas.ms_PricePoolPrices, Christmas.ms_PricePoolEnd)
+		self.m_PricePool = PricePoolManager:getSingleton():getPricePool(Christmas.ms_PricePoolName, 28, Christmas.ms_PricePoolPrices, Christmas.ms_PricePoolEnd)
 		if self.m_PricePool then
 			PricePoolManager:getSingleton():createPed(self.m_PricePool, 185, Vector3(1476.20, -1670.43, 14.55), 190.62)
 		end
@@ -158,8 +158,8 @@ function Christmas:Event_requestBonusData()
 end
 
 function Christmas:Event_buyBonus(bonusId)
-	local playerPackages = client:getInventory():getItemAmount("Päckchen", true)
-	local playerCandyCane = client:getInventory():getItemAmount("Zuckerstange", true)
+	local playerPackages = client:getInventory():getItemAmount(28, true)
+	local playerCandyCane = client:getInventory():getItemAmount(78, true)
 
 	local bonus = Christmas.ms_Bonus[bonusId]
 	if not bonus then return end
@@ -177,8 +177,8 @@ function Christmas:Event_buyBonus(bonusId)
 	if bonus["Type"] == "Weapon" then
 		client:giveWeapon(bonus["WeaponId"], bonus["Ammo"])
 	elseif bonus["Type"] == "Item" then
-		if client:getInventory():getFreePlacesForItem(bonus["ItemName"]) >= bonus["ItemAmount"] then
-			client:getInventory():giveItemFromName(bonus["ItemName"], bonus["ItemAmount"])
+		if client:getInventory():getFreePlacesForItem(bonus["ItemId"]) >= bonus["ItemAmount"] then
+			client:getInventory():giveItem(bonus["ItemId"], bonus["ItemAmount"])
 		else
 			client:sendError(_("Du hast nicht genug Platz in deinem Inventar!", client))
 			return
@@ -220,8 +220,8 @@ function Christmas:Event_buyBonus(bonusId)
 		end
 	end
 
-	client:getInventory():removeItem("Zuckerstange", bonus["CandyCane"])
-	client:getInventory():removeItem("Päckchen", bonus["Packages"])
+	client:getInventory():removeItem(78, bonus["CandyCane"])
+	client:getInventory():removeItem(28, bonus["Packages"])
 	client:sendSuccess(_("Du hast erfolgreich den Bonus %s für %d Päckchen und %d Zuckerstange/n gekauft!", client, bonus["Text"], bonus["Packages"], bonus["CandyCane"]))
 	StatisticsLogger:getSingleton():addEventShopLog(client, bonus["Text"], bonus["Packages"], bonus["CandyCane"])
 

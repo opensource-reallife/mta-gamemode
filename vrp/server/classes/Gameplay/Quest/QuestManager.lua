@@ -9,28 +9,28 @@ function QuestManager:constructor()
 			["Description"] = "Bringe den Weihnachtsmann zum markierten Ort!",
 			["Type"] = "Christmas",
 			["Class"] = QuestNPCTransport,
-			["Reward"] = { {"Päckchen", 7}, {"Zuckerstange", 10}, {"Punkte", 200} }
+			["Reward"] = { {28, 7}, {78, 10}, {"Punkte", 200} }
 		},
 		[2] = {
 			["Name"] = "Weihnachtsmann-Foto",
 			["Description"] = "Finde den Weihnachtsmann in Los Santos und schieße ein Foto von ihm!",
 			["Type"] = "Christmas",
 			["Class"] = QuestPhotography,
-			["Reward"] = { {"Päckchen", 5}, {"Zuckerstange", 7}, {"Punkte", 100} }
+			["Reward"] = { {28, 5}, {78, 7}, {"Punkte", 100} }
 		},
 		[3] = {
 			["Name"] = "Päckchen-Transport",
 			["Description"] = "Liefere die Päckchen an den angezeigten Ort! Pass gut auf den Anhänger auf!",
 			["Type"] = "Christmas",
 			["Class"] = QuestPackageTransport,
-			["Reward"] = { {"Päckchen", 7}, {"Zuckerstange", 10}, {"Punkte", 200} }
+			["Reward"] = { {28, 7}, {78, 10}, {"Punkte", 200} }
 		},
 		[4] = {
 			["Name"] = "Weihnachts-Morde",
 			["Description"] = "Suche die Einbrecher in den orange markierten Gegenden und bringe sie um!",
 			["Type"] = "Christmas",
 			["Class"] = QuestSantaKill,
-			["Reward"] = { {"Päckchen", 10}, {"Zuckerstange", 15}, {"Punkte", 300} }
+			["Reward"] = { {28, 10}, {78, 15}, {"Punkte", 300} }
 		},
 		[5] = {
 			["Name"] = "Fotograf",
@@ -43,14 +43,14 @@ function QuestManager:constructor()
 			["Description"] = "Finde fünf Päckchen und klicke diese an!",
 			["Type"] = "Christmas",
 			["Class"] = QuestPackageFind,
-			["Reward"] = { {"Päckchen", 5}, {"Zuckerstange", 7}, {"Punkte", 150} }
+			["Reward"] = { {28, 5}, {78, 7}, {"Punkte", 150} }
 		},
 		[7] = {
 			["Name"] = "Glücksrad-Master",
 			["Description"] = "Drehe drei mal an einem Glücksrad!",
 			["Type"] = "Christmas",
 			["Class"] = QuestFortuneWheel,
-			["Reward"] = { {"Päckchen", 3}, {"Zuckerstange", 5}, {"Punkte", 100} }
+			["Reward"] = { {28, 3}, {78, 5}, {"Punkte", 100} }
 		},
 		[8] = {
 			["Name"] = "Feierabend",
@@ -69,7 +69,7 @@ function QuestManager:constructor()
 			["Description"] = "Schieße ein Foto mit mindestens einem Spieler, der eine Weihnachtsmütze trägt!",
 			["Type"] = "Christmas",
 			["Class"] = QuestPhotography,
-			["Reward"] = { {"Päckchen", 5}, {"Zuckerstange", 7}, {"Punkte", 150} }
+			["Reward"] = { {28, 5}, {78, 7}, {"Punkte", 150} }
 		},
 		[11] = {
 			["Name"] = "Team-Fotograf",
@@ -81,7 +81,7 @@ function QuestManager:constructor()
 			["Name"] = "Gärtner",
 			["Description"] = "Pflanze fünf Pflanzen an!",
 			["Class"] = QuestGrowablePlant,
-			["Reward"] = { {"Dollar", 1000}, {"Punkte", 100}, {"Apfelbaum-Samen", 2}, {"Weed-Samen", 2}, {"Blumen-Samen", 1} }
+			["Reward"] = { {"Dollar", 1000}, {"Punkte", 100}, {75, 2}, {12, 2}, {95, 1} }
 		},
 		[13] = {
 			["Name"] = "Spielsüchtig",
@@ -93,7 +93,7 @@ function QuestManager:constructor()
 			["Name"] = "Angler",
 			["Description"] = "Stelle deine Angelfähigkeiten unter Beweis und angle zehn Fische!",
 			["Class"] = QuestFishing,
-			["Reward"] = { {"Dollar", 1500}, {"Punkte", 150}, {"Köder", 10} }
+			["Reward"] = { {"Dollar", 1500}, {"Punkte", 150}, {70, 10} }
 		},
 		[15] = {
 			["Name"] = "Tourist",
@@ -105,7 +105,7 @@ function QuestManager:constructor()
 			["Name"] = "Guter Samariter",
 			["Description"] = "Gib einem Obdachlosen etwas zu essen!",
 			["Class"] = QuestBeggarHelp,
-			["Reward"] = { {"Dollar", 1000}, {"Punkte", 100}, {"Zigarettenpackung", 1} }
+			["Reward"] = { {"Dollar", 1000}, {"Punkte", 100}, {114, 1} }
 		}
 	}
 

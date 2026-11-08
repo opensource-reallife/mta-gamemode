@@ -43,7 +43,7 @@ end
 function SkinShops:giveClothItem( player, skinID )
 	
 	local inv = player:getInventory()
-	-- local pAllSkins = inv:getItemPlacesByName("Kleidung")
+	-- local pAllSkins = inv:getItemPlacesByName(64)
 	-- local place, bag, value
 	-- for i = 1, #pAllSkins do
 	-- 	place = pAllSkins[i][1]

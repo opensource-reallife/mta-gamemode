@@ -8,7 +8,7 @@
 
 ExplosiveTruck = inherit(Object)
 ExplosiveTruck.Price = 5000
-ExplosiveTruck.Item = "Sprengstoff"
+ExplosiveTruck.Item = 42
 ExplosiveTruck.ItemAmount = 1
 
 function ExplosiveTruck:constructor(faction, player)

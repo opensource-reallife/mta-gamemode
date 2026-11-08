@@ -39,7 +39,15 @@ function Quest:removePlayer(player)
 end
 
 function Quest:onClick(player)
-	player:triggerEvent("questOpenGUI", self.m_QuestId, _(self.m_Name, player), _(self.m_Description, player), self.m_Reward, player)
+	player:triggerEvent("questOpenGUI", self.m_QuestId, _(self.m_Name, player), _(self.m_Description, player), self:getNamedRewards(), player)
+end
+
+function Quest:getNamedRewards()
+	local rewards = {}
+	for index, reward in ipairs(self.m_Reward) do
+		rewards[index] = {InventoryManager:getSingleton():resolveItemName(reward[1]) or reward[1], reward[2]}
+	end
+	return rewards
 end
 
 function Quest:success(player)
@@ -60,9 +68,9 @@ function Quest:success(player)
 			elseif v[1] == "Punkte" then
 				player:givePoints(v[2])
 			else
-				player:getInventory():giveItemFromName(v[1], v[2])
+				player:getInventory():giveItem(v[1], v[2])
 			end
-			rewardString = rewardString .. v[2] .. " " .. _(v[1], player)
+			rewardString = rewardString .. v[2] .. " " .. _(InventoryManager:getSingleton():resolveItemName(v[1]) or v[1], player)
 			if self.m_Reward[k+1] then
 				rewardString = rewardString .. ", "
 			end

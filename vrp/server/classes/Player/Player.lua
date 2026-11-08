@@ -563,13 +563,13 @@ function Player:spawn()
 	)
 	
 	-- remove special items
-	self:getInventory():removeAllItem("Taser")
-	self:getInventory():removeAllItem("Warnkegel")
-	self:getInventory():removeAllItem("Barrikade")
-	self:getInventory():removeAllItem("Nagel-Band")
-	self:getInventory():removeAllItem("Blitzer")
-	self:getInventory():removeAllItem("Einsatzhelm")
-	self:getInventory():removeAllItem("Kevlar")
+	self:getInventory():removeAllItem(77)
+	self:getInventory():removeAllItem(73)
+	self:getInventory():removeAllItem(41)
+	self:getInventory():removeAllItem(48)
+	self:getInventory():removeAllItem(47)
+	self:getInventory():removeAllItem(69)
+	self:getInventory():removeAllItem(60)
 	WearableManager:getSingleton():removeAllWearables(self)
 
 	if self.m_DeathInJail then
@@ -770,7 +770,7 @@ function Player:giveReviveWeapons()
 		for _index, info in ipairs(self.m_ReviveAmmoInfo or {}) do
 			local ammoItem = InventoryManager:getSingleton():getAmmoItemName(info[1])
 			if ammoItem then
-				self:getInventory():giveItemFromName(ammoItem, info[2], false, true)
+				self:getInventory():giveItem(InventoryManager:getSingleton():getItemId(ammoItem), info[2], false, true)
 			end
 		end
 		self.m_ReviveAmmoInfo = nil

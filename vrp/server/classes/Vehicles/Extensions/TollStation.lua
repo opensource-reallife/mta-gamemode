@@ -43,7 +43,7 @@ function TollStation:checkRequirements(player)
 		return true
 	end
 
-	if player:getInventory():getItemAmount("Mautpass") > 0 then
+	if player:getInventory():getItemAmount(34) > 0 then
 		player:sendShortMessage(_("Willkommen bei der Maut-Station %s! Da du einen Mautpass besitzt, darfst du kostenlos passieren! Gute Fahrt.", player, self.m_Name), _("Maut-Station: %s", player, self.m_Name), {125, 0, 0})
 		return true
 	end

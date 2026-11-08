@@ -19,15 +19,15 @@ end
 
 function ItemPumpkin:use(player)
 	local inventory = player:getInventory()
-	if inventory:getItemAmount("Kürbishut") > 0 then
+	if inventory:getItemAmount(173) > 0 then
 		player:sendError(_("Du hast bereits einen Kürbishut!", player))
 		return false
 	end
-	if not inventory:giveItemFromName("Kürbishut", 1, false, true) then
+	if not inventory:giveItem(173, 1, false, true) then
 		return false
 	end
-	inventory:removeItem("Kürbis", 1)
-	local tabName = InventoryManager:getSingleton():getItemTabName("Kürbishut")
+	inventory:removeItem(27, 1)
+	local tabName = InventoryManager:getSingleton():getItemTabName(173)
 	player:sendInfo(_("Du hast aus einem Kürbis einen Kürbishut gemacht! Du findest ihn unter %s.", player, _(tabName, player)))
 end
 
@@ -46,18 +46,18 @@ function ItemPumpkin:onPumpkinClick(button, state, player)
     if source.Type ~= "Pumpkin" then return end
 	if button == "left" and state == "down" then
         if source:getModel() == self.m_Model then
-            if player:getInventory():getFreePlacesForItem("Kürbis") >= 1 then
+            if player:getInventory():getFreePlacesForItem(27) >= 1 then
                 source:destroy()
                 player:getInventory():giveItem(27, 1)
                 player:sendInfo(_("Du hast einen Kürbis gesammelt!", player))
 
 				player:giveAchievement(109) -- Finde deinen ersten Kürbis
 
-				if player:getInventory():getItemAmount("Kürbis") >= 50 then
+				if player:getInventory():getItemAmount(27) >= 50 then
 					player:giveAchievement(110) -- Kürbissammler
 				end
             else
-                player:sendError(_("Du kannst nicht soviele Kürbisse tragen! Maximal %d Stk.!", player, player:getInventory():getMaxItemAmount("Kürbis")))
+                player:sendError(_("Du kannst nicht soviele Kürbisse tragen! Maximal %d Stk.!", player, player:getInventory():getMaxItemAmount(27)))
             end
         end
     end

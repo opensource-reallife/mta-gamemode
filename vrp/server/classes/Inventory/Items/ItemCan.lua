@@ -38,7 +38,6 @@ end
 
 function ItemCan:action(player, key, state, bag, place)
 	if state == "down" then
-		local itemName = "Kanne"
 		local fillstate = tonumber(player:getInventory():getItemValueByBag(bag, place)) or 0
 		local greenhouse = GreenhouseManager:getSingleton().m_Greenhouses[player]
 		if fillstate < 1 then

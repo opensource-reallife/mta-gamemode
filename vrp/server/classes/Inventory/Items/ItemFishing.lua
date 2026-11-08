@@ -16,18 +16,18 @@ function ItemFishing:destructor()
 end
 
 function ItemFishing:canBuy(player, itemName)
-	if not FISHING_EQUIPMENT[itemName] then return true end
+	if not FISHING_EQUIPMENT[getFishingItemId(itemName)] then return true end
 
-	if player:getPrivateSync("FishingLevel") >= FISHING_EQUIPMENT[itemName].level then
+	if player:getPrivateSync("FishingLevel") >= FISHING_EQUIPMENT[getFishingItemId(itemName)].level then
 		return true
 	end
 
-	return false, _("Du brauchst mind. Fischer Level %s um dieses Item zu kaufen!", player, FISHING_EQUIPMENT[itemName].level)
+	return false, _("Du brauchst mind. Fischer Level %s um dieses Item zu kaufen!", player, FISHING_EQUIPMENT[getFishingItemId(itemName)].level)
 end
 
 function ItemFishing:isFishingRod(itemName)
 	for fishingRod in pairs(FISHING_RODS) do
-		if fishingRod == itemName then
+		if fishingRod == getFishingItemId(itemName) then
 			return true
 		end
 	end
@@ -35,7 +35,7 @@ end
 
 function ItemFishing:isCoolingBag(itemName)
 	for coolingBag in pairs(FISHING_BAGS) do
-		if coolingBag == itemName then
+		if coolingBag == getFishingItemId(itemName) then
 			return true
 		end
 	end
@@ -43,7 +43,7 @@ end
 
 function ItemFishing:isBait(itemName)
 	for bait in pairs(FISHING_BAITS) do
-		if bait == itemName then
+		if bait == getFishingItemId(itemName) then
 			return true
 		end
 	end
@@ -51,7 +51,7 @@ end
 
 function ItemFishing:isAccessorie(itemName)
 	for bait in pairs(FISHING_ACCESSORIES) do
-		if bait == itemName then
+		if bait == getFishingItemId(itemName) then
 			return true
 		end
 	end
@@ -85,7 +85,7 @@ function ItemFishing:use(player, itemId, bag, place, itemName)
 
 		for fishingRod, fishingRodData in pairs(FISHING_RODS) do
 			if fishingRodData.baitSlots > 0 and playerInventory:getItemAmount(fishingRod) > 0 then
-				table.insert(fishingRods, fishingRod)
+				table.insert(fishingRods, InventoryManager:getSingleton():resolveItemName(fishingRod))
 			end
 		end
 
@@ -100,7 +100,7 @@ function ItemFishing:use(player, itemId, bag, place, itemName)
 
 		for fishingRod, fishingRodData in pairs(FISHING_RODS) do
 			if fishingRodData.accessorieSlots > 0 and playerInventory:getItemAmount(fishingRod) > 0 then
-				table.insert(fishingRods, fishingRod)
+				table.insert(fishingRods, InventoryManager:getSingleton():resolveItemName(fishingRod))
 			end
 		end
 
@@ -109,7 +109,7 @@ function ItemFishing:use(player, itemId, bag, place, itemName)
 		return
 	end
 
-	if itemName == "Fischlexikon" then
+	if getFishingItemId(itemName) == 97 then
 		local playerSpeciesCaught = player:getFishSpeciesCaught()
 		player:triggerEvent("closeInventory")
 		player:triggerEvent("receiveCaughtFishSpecies", Fishing.Fish, playerSpeciesCaught)
@@ -119,7 +119,7 @@ end
 
 function ItemFishing:useSecondary(player, itemId, bag, place, itemName)
 	if self:isFishingRod(itemName) then
-		if FISHING_RODS[itemName].baitSlots > 0 then
+		if FISHING_RODS[getFishingItemId(itemName)].baitSlots > 0 then
 			local fishingRodEquipments = Fishing:getSingleton():getFishingRodEquipments(player, itemName)
 
 			player:triggerEvent("closeInventory")
@@ -132,23 +132,23 @@ function ItemFishing:useSecondary(player, itemId, bag, place, itemName)
 		return
 	end
 
-	if itemName == "Köder" then
+	if getFishingItemId(itemName) == 70 then
 		if self.Random:get(1, 100) <= 2 then
 			player:giveAchievement(105) --Proteine?!
-			player:getInventory():removeItem(itemName, 1)
+			player:getInventory():removeItem(InventoryManager:getSingleton():getItemId(itemName), 1)
 			player:kill()
 			return
 		end
 
-		if ItemManager.Map["KöderDummy"]:use(player) then
-			player:getInventory():removeItem(itemName, 1)
+		if ItemManager:getSingleton():getInstance(171):use(player) then
+			player:getInventory():removeItem(InventoryManager:getSingleton():getItemId(itemName), 1)
 		end
 	end
 end
 
 function ItemFishing:hasSecondaryUse(itemName)
 	if self:isFishingRod(itemName) then
-		return FISHING_RODS[itemName].baitSlots > 0
+		return FISHING_RODS[getFishingItemId(itemName)].baitSlots > 0
 	end
-	return itemName == "Köder"
+	return getFishingItemId(itemName) == 70
 end

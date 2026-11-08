@@ -154,7 +154,7 @@ function Depot:getStorage(element)
 			return InventoryManager:getSingleton():getCapacity("depot")
 		end,
 		accepts = function(itemName, data)
-			return data["Handel"] == 1 and itemName ~= "Kleidung" and not data["WaffenId"] and not data["MunitionFuer"]
+			return data["Handel"] == 1 and data["Id"] ~= 64 and not data["WaffenId"] and not data["MunitionFuer"]
 		end,
 		canAccess = function(player)
 			return not element or not isElement(element) or getDistanceBetweenPoints3D(element.position, player.position) <= 15
@@ -190,10 +190,12 @@ function Depot:showItemDepot(player, depotElement)
 	storage:open(player)
 end
 
-function Depot:addItem(player, item, amount, giveItemFromServer)
+function Depot:addItem(player, itemId, amount, giveItemFromServer)
+	local item = InventoryManager:getSingleton():resolveItemName(itemId)
+	if not item then return end
 	local storage = self:getStorage()
 	self:importLegacyItems(storage)
-	if not giveItemFromServer and not player:getInventory():removeItem(item, amount) then
+	if not giveItemFromServer and not player:getInventory():removeItem(InventoryManager:getSingleton():getItemId(item), amount) then
 		player:sendError(_("Du hast nicht genug %s!", player, item))
 		return
 	end
@@ -337,7 +339,7 @@ function Depot:addEquipment(player, item, amount, forceSpawn)
 
 		if forceSpawn
 		or (armsData[3] and (getPedWeapon(player, getSlotFromWeapon ( armsData[3])) == armsData[3]) and ((amount > 0 and getPedTotalAmmo(player, getSlotFromWeapon ( armsData[3])) >= amount) or amount==-1))
-		or (amount > 0 and player:getInventory():removeItem(item, amount))
+		or (amount > 0 and player:getInventory():removeItem(InventoryManager:getSingleton():getItemId(item), amount))
 		or (amount==-1 and self:removeAllEquipment(player, item, allAmount)) then
 			if not self.m_Equipments[item] then
 				self.m_Equipments[item] = 0
@@ -370,7 +372,7 @@ end
 
 function Depot:removeAllEquipment(player, item, amount) -- this executes removeItem x amount since removeAllItem occasionally misses an item in the inventory
 	for i = 1, amount do
-		if not player:getInventory():removeItem(item, 1) then
+		if not player:getInventory():removeItem(InventoryManager:getSingleton():getItemId(item), 1) then
 			return false
 		end
 	end
@@ -398,7 +400,7 @@ function Depot:takeEquipment(player, item, amount)
 			if amount > 0 then
 				self.m_Equipments[item] = self.m_Equipments[item] - amount
 				if not armsData[3] then
-					if not player:getInventory():giveItemFromName(item, amount) then
+					if not player:getInventory():giveItem(InventoryManager:getSingleton():getItemId(item), amount) then
 						self.m_Equipments[item] = self.m_Equipments[item] + amount
 						return
 					end
@@ -409,7 +411,7 @@ function Depot:takeEquipment(player, item, amount)
 				amount = self.m_Equipments[item]
 				self.m_Equipments[item] = 0
 				if not armsData[3] then
-					if not player:getInventory():giveItemFromName(item, amount) then
+					if not player:getInventory():giveItem(InventoryManager:getSingleton():getItemId(item), amount) then
 						self.m_Equipments[item] = amount
 						return
 					end

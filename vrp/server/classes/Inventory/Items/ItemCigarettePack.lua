@@ -17,7 +17,7 @@ function ItemCigarettePack:use(player, itemId, bag, place, itemName)
 	local inventory = player:getInventory()
 	local cigarettesLeft = (tonumber(player:getInventory():getItemValueByBag(bag, place)) or 20) - 1
 
-	if ItemManager.Map["Zigarette"]:use(player) then
+	if ItemManager:getSingleton():getInstance(9):use(player) then
 		player:sendMessage(_("#4F4F65%d/20 Zigaretten übrig!", player, cigarettesLeft))
 		
 		player.m_LessHunger = true

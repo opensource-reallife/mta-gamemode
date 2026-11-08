@@ -50,7 +50,7 @@ function PickupWeapon:pickup(player)
 				end
 			elseif self.m_AmmoOnly then
 				local ammoItem = InventoryManager:getSingleton():getAmmoItemName(self.m_WeaponID)
-				if not ammoItem or not player:getInventory():giveItemFromName(ammoItem, self.m_Ammo) then
+				if not ammoItem or not player:getInventory():giveItem(InventoryManager:getSingleton():getItemId(ammoItem), self.m_Ammo) then
 					return
 				end
 				player:sendSuccess(_("Du hast die Munition erhalten!", player))
@@ -111,7 +111,7 @@ function PickupItem:pickup(player)
 			return
 		end
 		StateEvidence:getSingleton():addItemToEvidence(player, self.m_ItemName, self.m_Amount)
-	elseif not player:getInventory():giveItemFromName(self.m_ItemName, self.m_Amount, self.m_Value, false, self.m_WearLevel) then
+	elseif not player:getInventory():giveItem(InventoryManager:getSingleton():getItemId(self.m_ItemName), self.m_Amount, self.m_Value, false, self.m_WearLevel) then
 		return
 	else
 		player:sendSuccess(_("Du hast %dx %s aufgehoben!", player, self.m_Amount, self.m_ItemName))

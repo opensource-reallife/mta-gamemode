@@ -36,7 +36,7 @@ function ItemThrowTrash:destructor()
 end
 
 function ItemThrowTrash:Event_throwCallback(player) 
-	player:getInventory():removeItem("Abfall", 1)
+	player:getInventory():removeItem(110, 1)
 	player:increaseStatistics("ThrownObject")
 end
 

@@ -90,9 +90,9 @@ function TradeGUI:loadItems()
 						self.m_ButtonTrade:setEnabled(true)
 						self.m_Preview:setImage("files/images/Inventory/items/"..self.m_ItemData[itemInv["Objekt"]]["Icon"])
 						local itemValue = tonumber(itemInv["Value"])
-						if itemInv["Objekt"] == "Einrichtung" and FurnitureInfo[itemValue] then
+						if Inventory:getSingleton():getItemId(itemInv["Objekt"]) == 123 and FurnitureInfo[itemValue] then
 							self.m_LabelDescription:setText(_(FurnitureInfo[itemValue][1]))
-						elseif itemInv["Objekt"] == "Kleidung" and SkinInfo[itemValue] then
+						elseif Inventory:getSingleton():getItemId(itemInv["Objekt"]) == 64 and SkinInfo[itemValue] then
 							self.m_LabelDescription:setText(_(SkinInfo[itemValue][1]))
 						else
 							self.m_LabelDescription:setText(_(self.m_ItemData[itemInv["Objekt"]]["Info"]))

@@ -60,7 +60,7 @@ function ItemSpeedCam:use(player)
 						local worldItem = FactionWorldItem:new(self, player:getFaction(), position, rotation, false, player)
 						worldItem:setFactionSuperOwner(true)
 
-						player:getInventory():removeItem(self:getName(), 1)
+						player:getInventory():removeItem(self:getId(), 1)
 
 						local object = worldItem:getObject()
 						setElementData(object, "earning", 0)
@@ -78,7 +78,7 @@ function ItemSpeedCam:use(player)
 
 						local pos = player:getPosition()
 						FactionState:getSingleton():sendShortMessage(_("%s hat einen Blitzer bei %s/%s aufgestellt!", player, player:getName(), getZoneName(pos), getZoneName(pos, true)))
-						StatisticsLogger:getSingleton():itemPlaceLogs( player, "Blitzer", pos.x..","..pos.y..","..pos.z)
+						StatisticsLogger:getSingleton():itemPlaceLogs( player, self:getName(), pos.x..","..pos.y..","..pos.z)
 					end
 				)
 			else

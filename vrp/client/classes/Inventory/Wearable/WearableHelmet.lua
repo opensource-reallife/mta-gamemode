@@ -58,7 +58,7 @@ end
 
 function WearableHelmet:Event_toggleHelmet( state, item )
 	if state then
-		if item == "Gasmaske" then
+		if item == 59 then
 			self.m_GasMask = true
 			self.m_StartTick = getTickCount()
 			self.m_EndTick = self.m_StartTick + 3000

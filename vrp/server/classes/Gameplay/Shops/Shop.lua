@@ -174,7 +174,7 @@ function Shop:onFoodMarkerHit(hitElement, dim)
 		if self.m_Robable and self.m_Robable.m_RobActive then return end
 
 		hitElement:triggerEvent("showFoodShopMenu", self.m_Ped or self.m_Position)
-		triggerClientEvent(hitElement, "refreshFoodShopMenu", hitElement, self.m_Id, self.m_Type, self.m_Menues, self.m_Items)
+		triggerClientEvent(hitElement, "refreshFoodShopMenu", hitElement, self.m_Id, self.m_Type, self.m_Menues, InventoryManager:getSingleton():getNamedItemTable(self.m_Items))
 	end
 end
 
@@ -183,7 +183,7 @@ function Shop:onItemMarkerHit(hitElement, dim)
 		if self.m_Robable and self.m_Robable.m_RobActive then return end
 
 		hitElement:triggerEvent("showItemShopGUI", self.m_Ped or self.m_Position)
-		triggerClientEvent(hitElement, "refreshItemShopGUI", hitElement, self.m_Id, self.m_Items, self.m_SortedItems, self.m_WeaponItems)
+		triggerClientEvent(hitElement, "refreshItemShopGUI", hitElement, self.m_Id, InventoryManager:getSingleton():getNamedItemTable(self.m_Items), InventoryManager:getSingleton():getNamedItemList(self.m_SortedItems), self.m_WeaponItems)
 	end
 end
 
@@ -192,7 +192,7 @@ function Shop:onGasStationMarkerHit(hitElement, dim)
 		if self.m_Robable and self.m_Robable.m_RobActive then return end
 
 		hitElement:triggerEvent("showGasStationShopGUI", self.m_Name, self.m_Ped or self.m_Position)
-		triggerClientEvent(hitElement, "refreshGasStationShopGUI", hitElement, self.m_Id, self.m_Items)
+		triggerClientEvent(hitElement, "refreshGasStationShopGUI", hitElement, self.m_Id, InventoryManager:getSingleton():getNamedItemTable(self.m_Items))
 	end
 end
 

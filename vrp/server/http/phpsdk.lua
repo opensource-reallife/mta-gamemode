@@ -301,7 +301,7 @@ function phpSDKEditPlayer(adminId, targetId, action, data)
 			if inv:giveItemFromName(item, amount) == false then return result("ERROR", "INVENTORY_FULL") end
 		else
 			if inv:getItemAmount(item) < -amount then return result("ERROR", "NOT_ENOUGH") end
-			inv:removeItem(item, -amount)
+			inv:removeItemFromName(item, -amount)
 		end
 		return result("SUCCESS")
 

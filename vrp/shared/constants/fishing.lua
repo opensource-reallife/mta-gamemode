@@ -8,50 +8,50 @@ FISHING_INVENTORY_BAG = "Items"
 
 FISHING_EQUIPMENT = {
 	-- Coolingbags
-	["Kühlbox"] = {level = 8},
-	["Kühltasche"] = {level = 4},
-	["Kleine Kühltasche"] = {level = 0},
+	[68] = {level = 8},
+	[67] = {level = 4},
+	[66] = {level = 0},
 
 	-- Fishingrods
-	["Bambusstange"] = {level = 0},
-	["Angelrute"] = {level = 3},
-	["Profi Angelrute"] = {level = 7},
-	["Legendäre Angelrute"] = {level = 13},
+	[65] = {level = 0},
+	[98] = {level = 3},
+	[99] = {level = 7},
+	[100] = {level = 13},
 
 	-- Baits
-	["Köder"] = {level = 3},
-	["Leuchtköder"] = {level = 5},
-	["Pilkerköder"] = {level = 11},
+	[70] = {level = 3},
+	[101] = {level = 5},
+	[102] = {level = 11},
 
 	-- Accessories
-	["Schwimmer"] = 	{level = 1},
-	["Spinner"] = 		{level = 10},
+	[103] = 	{level = 1},
+	[104] = 		{level = 10},
 }
 
 FISHING_BAGS = {
-	["Kühlbox"] = {max = 65},
-	["Kühltasche"] = {max = 25},
-	["Kleine Kühltasche"] = {max = 15},
+	[68] = {max = 65},
+	[67] = {max = 25},
+	[66] = {max = 15},
 }
 
 FISHING_RODS = {
-	["Bambusstange"] = 			{baitSlots = 0, accessorieSlots = 0, difficultyReduction = 0, biteTimeReduction = 0},
-	["Angelrute"] = 			{baitSlots = 1, accessorieSlots = 0, difficultyReduction = 15, biteTimeReduction = 4000},
-	["Profi Angelrute"] = 		{baitSlots = 1, accessorieSlots = 1, difficultyReduction = 25, biteTimeReduction = 7500},
-	["Legendäre Angelrute"] = 	{baitSlots = 1, accessorieSlots = 1, difficultyReduction = 40, biteTimeReduction = 10000},
+	[65] = 			{baitSlots = 0, accessorieSlots = 0, difficultyReduction = 0, biteTimeReduction = 0},
+	[98] = 			{baitSlots = 1, accessorieSlots = 0, difficultyReduction = 15, biteTimeReduction = 4000},
+	[99] = 		{baitSlots = 1, accessorieSlots = 1, difficultyReduction = 25, biteTimeReduction = 7500},
+	[100] = 	{baitSlots = 1, accessorieSlots = 1, difficultyReduction = 40, biteTimeReduction = 10000},
 }
 
 FISHING_BAITS = {
 	[false] = 			{biteTimeReduction = 0, difficultyReduction = 0},
-	["Köder"] = 		{biteTimeReduction = 1000, difficultyReduction = 25},
-	["Leuchtköder"] = 	{biteTimeReduction = 5000, difficultyReduction = 5},
-	["Pilkerköder"] = 	{biteTimeReduction = 5000, difficultyReduction = 15},
+	[70] = 		{biteTimeReduction = 1000, difficultyReduction = 25},
+	[101] = 	{biteTimeReduction = 5000, difficultyReduction = 5},
+	[102] = 	{biteTimeReduction = 5000, difficultyReduction = 15},
 }
 
 FISHING_ACCESSORIES = {
 	[false] = 			{biteTimeReduction = 0, difficultyReduction = 0, bobberBarHeightMultiplier = 1},
-	["Schwimmer"] =		{biteTimeReduction = 1000, difficultyReduction = 0, bobberBarHeightMultiplier = 1, renderBobber = true},
-	["Spinner"] =		{biteTimeReduction = 2500, difficultyReduction = 10, bobberBarHeightMultiplier = 1.1},
+	[103] =		{biteTimeReduction = 1000, difficultyReduction = 0, bobberBarHeightMultiplier = 1, renderBobber = true},
+	[104] =		{biteTimeReduction = 2500, difficultyReduction = 10, bobberBarHeightMultiplier = 1.1},
 }
 
 -- (level * 15)^2 // for i = 1, 15 do print(("[%s] = %s,"):format(i, math.floor((i*15)^(i>10 and 2.2 or 2)))) end
@@ -150,7 +150,13 @@ FISHING_BAD_CATCH_MESSAGES_SEWERS = {
 
 FISHING_BAD_CATCH_ITEMS_SEWERS = 
 {
-	"Schuh",
-	"Abfall",
-	"Flasche",
+	111,
+	110,
+	109,
 }
+
+function getFishingItemId(item)
+	if not item or type(item) == "number" then return item end
+	if localPlayer then return Inventory:getSingleton():getItemId(item) end
+	return InventoryManager:getSingleton():getItemId(item)
+end

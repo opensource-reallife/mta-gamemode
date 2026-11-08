@@ -23,7 +23,7 @@ function ItemNails:use(player)
 
 					local worldItem = FactionWorldItem:new(self, player:getFaction(), position, rotation, false, player)
 					worldItem:setFactionSuperOwner(true)
-					player:getInventory():removeItem(self:getName(), 1)
+					player:getInventory():removeItem(self:getId(), 1)
 
 					local object = worldItem:getObject()
 					ItemNails.Map[#ItemNails.Map+1] = object

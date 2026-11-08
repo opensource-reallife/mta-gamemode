@@ -36,7 +36,7 @@ function ItemThrowBottle:destructor()
 end
 
 function ItemThrowBottle:Event_throwCallback(player) 
-	player:getInventory():removeItem("Flasche", 1)
+	player:getInventory():removeItem(109, 1)
 	player:increaseStatistics("ThrownObject")
 end
 

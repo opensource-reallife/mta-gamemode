@@ -53,7 +53,7 @@ function ItemDoor:addWorldObjectCallback(Id, worldObject)
 		local object = self.m_Doors[Id]:getObject()
 		object:setDoubleSided(true)
 		object.Id = Id
-		object.Type = "Tor"
+		object.Type = self:getId()
 		object.openPos = Vector3(oX or pos.x, oY or pos.y , oZ or pos.z -2)
 		object.closedPos = self.m_Doors[Id]:getObject():getPosition()
 		object.UpdateDoor = updateDoor
@@ -192,12 +192,12 @@ function ItemDoor:use(player, itemId, bag, place, itemName)
 	function(item, position, rotation)
 		if item ~= self or not position then return end
 		local valueString = (value or "#:"..self.m_Model)
-		player:getInventory():removeItem(self:getName(), 1)
+		player:getInventory():removeItem(self:getId(), 1)
 		player:sendInfo(_("%s hinzugefügt!", player, "Tor Modell ("..model..")"))
 		local dim = player:getDimension() 
 		local int = player:getInterior()
-		StatisticsLogger:getSingleton():itemPlaceLogs( player, "Tor", position.x..","..position.y..","..position.z)
-		local worldObject = PlayerWorldItem:new(ItemManager:getSingleton():getInstance("Tor"), player:getId(), position, rotation, false, player:getId(), true, false, valueString)
+		StatisticsLogger:getSingleton():itemPlaceLogs( player, self:getName(), position.x..","..position.y..","..position.z)
+		local worldObject = PlayerWorldItem:new(ItemManager:getSingleton():getInstance(81), player:getId(), position, rotation, false, player:getId(), true, false, valueString)
 		worldObject:setDimension(dim) 
 		worldObject:setInterior(int)
 		local id = worldObject:forceSave() 
@@ -210,7 +210,7 @@ function ItemDoor:use(player, itemId, bag, place, itemName)
 end
 
 function ItemDoor:onDoorClick(button, state, player)
-    if source.Type ~= "Tor" then return end
+    if source.Type ~= self:getId() then return end
 	if button == "right" and state == "up" then
 		if player.m_SupMode then
 			player.m_LastDoorId = source.Id

@@ -12,7 +12,7 @@ function ItemFurniture:use(player, itemId, bag, place, itemName)
 	if WorldItem.Map[player:getId()] then
 		for modelId, objects in pairs(WorldItem.Map[player:getId()]) do
 			for object, worldItem in pairs(objects) do
-				if worldItem:getItem():getName() == "Einrichtung" then
+				if worldItem:getItem():getId() == 123 then
 					itemCount = itemCount + 1
 				end
 			end
@@ -33,7 +33,7 @@ function ItemFurniture:use(player, itemId, bag, place, itemName)
 		local result = self:startObjectPlacing(player, function(item, position, rotation)
 			if item ~= self or not position then return end
 			player:getInventory():removeItemFromPlace(bag, place, 1)
-			StatisticsLogger:getSingleton():itemPlaceLogs(player, "Einrichtung", position.x..","..position.y..","..position.z)
+			StatisticsLogger:getSingleton():itemPlaceLogs(player, self:getName(), position.x..","..position.y..","..position.z)
 			local worldObject = PlayerWorldItem:new(self, player:getId(), position, rotation, false, player:getId(), true, false, model)
 			worldObject:setInterior(int) 
 			worldObject:setDimension(dim)

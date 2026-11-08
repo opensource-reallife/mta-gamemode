@@ -39,7 +39,7 @@ function WheelOfFortune:onClicked()
     --actual functions
     if not self.m_InUse then
         if not client.m_IsUsingWheel then
-            if not client:getInventory():removeItem("Zuckerstange", 1) then
+            if not client:getInventory():removeItem(78, 1) then
                 return client:sendError(_("Du benötigst eine Zuckerstange um am Glücksrad zu drehen!", client))
             end
 
@@ -75,13 +75,13 @@ function WheelOfFortune:start(player)
 end
 
 function WheelOfFortune:givePrice(player, type)
-    if type == "Päckchen" then
+    if type == 28 then
         player:getInventory():giveItem(28, 1)
         player:sendSuccess(_("Du hast ein Päckchen gewonnen!", player))
-    elseif type == "Gluehwein" then
+    elseif type == 29 then
         player:getInventory():giveItem(29, 1)
         player:sendSuccess(_("Du hast eine Tasse Glühwein gewonnen!", player))
-    elseif type == "Lebkuchen" then
+    elseif type == 31 then
         player:getInventory():giveItem(31, 1)
         player:sendSuccess(_("Du hast ein paar Lebkuchen gewonnen!", player))
     elseif type == "Punkte" then
@@ -95,26 +95,26 @@ function WheelOfFortune:givePrice(player, type)
     elseif type == "Muetze" then
         player:getInventory():giveItem(40, 1)
         player:sendSuccess(_("Du hast eine Weihnachtsmütze gewonnen! Ho ho ho!", player))
-    elseif type == "Weed" then
+    elseif type == 1 then
         player:getInventory():giveItem(1, 3)
         player:sendSuccess(_("Du hast 3 Gramm Weed gewonnen!", player))
     end
 end
 
 WheelOfFortune.WinRotations = {
-    [1]="Päckchen",
+    [1]=28,
     [2]="Punkte",
-    [3]="Lebkuchen",
-    [4]="Päckchen",
+    [3]=31,
+    [4]=28,
     [5]="Punkte",
     [6]="Muetze",
     [7]="1000$",
     [8]="Punkte",
-    [9]="Päckchen",
+    [9]=28,
     [10]="500$",
     [11]="Punkte",
-    [12]="Weed",
-    [13]="Gluehwein",
-    [14]="Päckchen",
+    [12]=1,
+    [13]=29,
+    [14]=28,
     [15]="2500$",
 }

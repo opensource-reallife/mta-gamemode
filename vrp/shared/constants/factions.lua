@@ -3,30 +3,30 @@ VEHICLE_BOX_LOAD[543] = {["count"]= 2, [1] = Vector3(0, -1.9, -0.2), [2] = Vecto
 VEHICLE_BOX_LOAD[427] = {["count"]= 2,	[1] = Vector3(0, -1.5, -0.2), [2] = Vector3(0, -3, -0.2)}
 
 FACTION_TRUNK_MAX_ITEMS = {
-	["Barrikade"] = 10,
-	["Nagel-Band"] = 3,
-	["Blitzer"] = 5,
-	["Warnkegel"] = 10,
-	["SLAM"] = 2,
-	["Gasmaske"] = 10,
-	["Rauchgranate"] = 10,
-	["DefuseKit"] = 10,
+	[41] = 10,
+	[48] = 3,
+	[47] = 5,
+	[73] = 10,
+	[90] = 2,
+	[59] = 10,
+	[91] = 10,
+	[96] = 10,
 }
 
 FACTION_TRUNK_SWAT_ITEMS = 
 {
-	["SLAM"] = true,
-	["Gasmaske"] = true,
-	["Rauchgranate"] = true,
-	["DefuseKit"] = true,
+	[90] = true,
+	[59] = true,
+	[91] = true,
+	[96] = true,
 }
 
 FACTION_TRUNK_SWAT_ITEM_PERMISSIONS = 
 {
-	["SLAM"] = {3, 3}, --// rank,faction
-	["Gasmaske"] = {0},
-	["Rauchgranate"] = {3},
-	["DefuseKit"] = {0},
+	[90] = {3, 3}, --// rank,faction
+	[59] = {0},
+	[91] = {3},
+	[96] = {0},
 }
 
 VEHICLE_BAG_LOAD = {}

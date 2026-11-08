@@ -15,8 +15,8 @@ GrowableManager.Types = {
 		["GrowPerHourWatered"] = 1,
 		["HoursWatered"] = 6,
 		["MaxSize"] = 20,
-		["Item"] = "Weed",
-		["Seed"] = "Weed-Samen",
+		["Item"] = 1,
+		["Seed"] = 12,
 		["ItemPerSize"] = 1,
 		["TimesEarnedForDestroy"] = 1,
 		["Illegal"] = true,
@@ -30,8 +30,8 @@ GrowableManager.Types = {
 		["GrowPerHourWatered"] = 0.5,
 		["HoursWatered"] = 3,
 		["MaxSize"] = 6,
-		["Item"] = "Apfel",
-		["Seed"] = "Apfelbaum-Samen",
+		["Item"] = 74,
+		["Seed"] = 75,
 		["ItemPerSize"] = 1,
 		["TimesEarnedForDestroy"] = 3,
 		["Illegal"] = false,
@@ -45,8 +45,8 @@ GrowableManager.Types = {
 		["GrowPerHourWatered"] = 0.17,
 		["HoursWatered"] = 4,
 		["MaxSize"] = 1,
-		["Item"] = "Blumen",
-		["Seed"] = "Blumen-Samen",
+		["Item"] = 166,
+		["Seed"] = 95,
 		["ItemPerSize"] = 1,
 		["TimesEarnedForDestroy"] = 1,
 		["Illegal"] = false,
@@ -60,8 +60,8 @@ GrowableManager.Types = {
 		["GrowPerHourWatered"] = 1,
 		["HoursWatered"] = 1,
 		["MaxSize"] = 1,
-		["Item"] = "Karotte",
-		["Seed"] = "Karotten-Samen",
+		["Item"] = 117,
+		["Seed"] = 118,
 		["ItemPerSize"] = 1,
 		["TimesEarnedForDestroy"] = 1,
 		["Illegal"] = false,
@@ -75,8 +75,8 @@ GrowableManager.Types = {
 		["GrowPerHourWatered"] = 0.5,
 		["HoursWatered"] = 3,
 		["MaxSize"] = 6,
-		["Item"] = "Birne",
-		["Seed"] = "Birnbaum-Samen",
+		["Item"] = 119,
+		["Seed"] = 120,
 		["ItemPerSize"] = 1,
 		["TimesEarnedForDestroy"] = 3,
 		["Illegal"] = false,
@@ -90,8 +90,8 @@ GrowableManager.Types = {
 		["GrowPerHourWatered"] = 1,
 		["HoursWatered"] = 3,
 		["MaxSize"] = 3,
-		["Item"] = "Erdbeeren",
-		["Seed"] = "Erdbeer-Samen",
+		["Item"] = 121,
+		["Seed"] = 122,
 		["ItemPerSize"] = 1,
 		["TimesEarnedForDestroy"] = 3,
 		["Illegal"] = false,
@@ -180,7 +180,7 @@ end
 
 function GrowableManager:getPlantNameFromSeed(seed)
 	for index, data in pairs(GrowableManager.Types) do
-		if data["Seed"] == seed then
+		if data["Seed"] == InventoryManager:getSingleton():getItemId(seed) then
 			return index
 		end
 	end
@@ -203,7 +203,7 @@ function GrowableManager:getClientCheck(seed, bool, z_pos, isUnderWater, isWrong
 	local inGreenhouse = false
 	if isWrongDimension then
 		if GreenhouseManager:getSingleton().m_Greenhouses[client] then
-			if seed == "Weed-Samen" then
+			if InventoryManager:getSingleton():getItemId(seed) == 12 then
 				client:sendError(_("Du darfst im Gewächshaus keine illegalen Pflanzen anpflanzen!", client))
 				return false
 			else
@@ -222,7 +222,7 @@ function GrowableManager:getClientCheck(seed, bool, z_pos, isUnderWater, isWrong
 		setTimer(function(client, seed, z_pos)
 			local pos = client:getPosition()
 			client:giveAchievement(61)
-			client:getInventory():removeItem(seed, 1)
+			client:getInventory():removeItem(InventoryManager:getSingleton():getItemId(seed), 1)
 			self:addNewPlant(self:getPlantNameFromSeed(seed), Vector3(pos.x, pos.y, z_pos), client, inGreenhouse)
 			toggleAllControls(client, true)
 			client.m_IsPlanting = false

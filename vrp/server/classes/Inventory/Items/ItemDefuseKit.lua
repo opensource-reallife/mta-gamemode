@@ -24,7 +24,7 @@ function ItemDefuseKit:use(player)
             setPedAnimationSpeed(player, "bom_plant_loop", .5)
             toggleAllControls(player, false)
             player:triggerEvent("Countdown", 10, "Entschärft in")
-            player:getInventory():removeItem(self:getName(), 1)
+            player:getInventory():removeItem(self:getId(), 1)
 
             addEventHandler("onPedWasted", player, bind(self.onWasted, self))
             self.m_DefuseSlam = bind(self.defuse, self)
@@ -36,9 +36,9 @@ end
 
 function ItemDefuseKit:defuse(player, slam)
     if math.random(1, 10) ~= 1 then
-	    ItemManager:getSingleton():getInstance("SLAM"):deleteSlam(ItemSlam.Map[slam])
+	    ItemManager:getSingleton():getInstance(90):deleteSlam(ItemSlam.Map[slam])
     else
-        ItemManager:getSingleton():getInstance("SLAM"):detonateSlam(ItemSlam.Map[slam], player)
+        ItemManager:getSingleton():getInstance(90):detonateSlam(ItemSlam.Map[slam], player)
     end
     player:setAnimation(nil)
     toggleAllControls(player, true)

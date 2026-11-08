@@ -18,10 +18,10 @@ function BobberBar:constructor(fishData, fishingRodName, baitName, accessorieNam
 	self.Sound = SoundManager:new("files/audio/Fishing")
 	self.Random = Randomizer:new()
 
-	self.m_Difficulty = math.max(MIN_FISHING_DIFFICULTY, fishData.Difficulty - FISHING_BAITS[baitName].difficultyReduction - FISHING_RODS[fishingRodName].difficultyReduction - FISHING_ACCESSORIES[accessorieName].difficultyReduction)
+	self.m_Difficulty = math.max(MIN_FISHING_DIFFICULTY, fishData.Difficulty - FISHING_BAITS[getFishingItemId(baitName)].difficultyReduction - FISHING_RODS[getFishingItemId(fishingRodName)].difficultyReduction - FISHING_ACCESSORIES[getFishingItemId(accessorieName)].difficultyReduction)
 	self.m_MotionType = self:getMotionType(fishData.Behavior)
 
-	self.m_BobberBarHeight = ((64 + self.m_FisherLevel*4 - self.m_Difficulty/10)*FISHING_ACCESSORIES[accessorieName].bobberBarHeightMultiplier) / 1080 * screenHeight
+	self.m_BobberBarHeight = ((64 + self.m_FisherLevel*4 - self.m_Difficulty/10)*FISHING_ACCESSORIES[getFishingItemId(accessorieName)].bobberBarHeightMultiplier) / 1080 * screenHeight
 	self.m_BobberBarPosition = self.m_Size.y - self.m_BobberBarHeight - 5
 	self.m_BobberBarSpeed = 0
 

@@ -59,7 +59,7 @@ function Easter:constructor()
         end
     end
     if Easter.ms_PricePoolName then
-		self.m_PricePool = PricePoolManager:getSingleton():getPricePool(Easter.ms_PricePoolName, "Osterei", Easter.ms_PricePoolPrices, Easter.ms_PricePoolEnd)
+		self.m_PricePool = PricePoolManager:getSingleton():getPricePool(Easter.ms_PricePoolName, 71, Easter.ms_PricePoolPrices, Easter.ms_PricePoolEnd)
 		if self.m_PricePool then
             self.m_PricePool:setDailyEntryBuyLimit(50)
 			PricePoolManager:getSingleton():createPed(self.m_PricePool, 185, Vector3(1483.915, -1750.245, 15.445), 0)

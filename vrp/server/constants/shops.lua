@@ -197,86 +197,86 @@ SHOP_TYPES = {
 
 SHOP_ITEMS = {
 	["Gärtnerei"] = {
-		["Weed-Samen"] = 40,
-		["Kanne"] = 500,
-		["Apfelbaum-Samen"] = 60,
-		["Blumen-Samen"] = 80,
-		["Karotten-Samen"] = 10,
-		["Birnbaum-Samen"] = 60,
-		["Erdbeer-Samen"] = 40,
+		[12] = 40,
+		[45] = 500,
+		[75] = 60,
+		[95] = 80,
+		[118] = 10,
+		[120] = 60,
+		[122] = 40,
 	};
 	["24/7"] = {
-		["Radio"] = 1000,
-		["Zigarettenpackung"] = 150,
-		["Wuerfel"] = 50,
-		["Helm"] = 2500,
-		["Motorcross-Helm"] = 1250,
-		["Pot-Helm"] = 1500,
-		["Reparaturkit"] = 750,
-		["Tragetasche"] = 1000,
-		["Medikit"] = 250,
-		["Bandage"] = 50,
+		[7] = 1000,
+		[114] = 150,
+		[8] = 50,
+		[56] = 2500,
+		[57] = 1250,
+		[58] = 1500,
+		[25] = 750,
+		[61] = 1000,
+		[6] = 250,
+		[79] = 50,
 	};
 	["Tankstelle"] = {
-		["Zigarettenpackung"] = 250,
-		["Mautpass"] = 2000,
-		["Benzinkanister"] = 500,
-		["Reparaturkit"] = 1000,
-		["Medikit"] = 350,
-		["Bandage"] = 75,
+		[114] = 250,
+		[34] = 2000,
+		[3] = 500,
+		[25] = 1000,
+		[6] = 350,
+		[79] = 75,
 	};
 	["Stadthalle"] = {
-		["Ausweis"] = 250,
-		["Handelsvertrag"] = 500
+		[11] = 250,
+		[46] = 500
 	};
 	["Bank"] = {
-		["Handelsvertrag"] = 500
+		[46] = 500
 	};
 	["Bar"] = {
-		["Bier"] = 10,
-		["Whiskey"] = 20,
-		["Sex on the Beach"] = 30,
-		["Pina Colada"] = 30,
-		["Monster"] = 50,
-		["Shot"] = 15,
-		["Cuba-Libre"] = 25
+		[16] = 10,
+		[49] = 20,
+		[50] = 30,
+		[51] = 30,
+		[52] = 50,
+		[32] = 15,
+		[53] = 25
 	};
 	["Angel- / Outdoor-Shop"] = {
-		["Fischlexikon"] = 500,
-		["Bambusstange"] = 1500,
-		["Angelrute"] = 10000,
-		["Profi Angelrute"] = 30000,
-		["Legendäre Angelrute"] = 60000,
-		["Kleine Kühltasche"] = 500,
-		["Kühltasche"] = 1500,
-		["Kühlbox"] = 4000,
-		["Köder"] = 5,
-		["Leuchtköder"] = 40,
-		["Pilkerköder"] = 40,
-		["Schwimmer"] = 500,
-		["Spinner"] = 3500,
+		[97] = 500,
+		[65] = 1500,
+		[98] = 10000,
+		[99] = 30000,
+		[100] = 60000,
+		[66] = 500,
+		[67] = 1500,
+		[68] = 4000,
+		[70] = 5,
+		[101] = 40,
+		[102] = 40,
+		[103] = 500,
+		[104] = 3500,
 	};
 	["Halloween Shop"] = {
-		["Kuheuter mit Pommes"] = 50,
-		["Zombie-Burger"] = 50,
+		[38] = 50,
+		[39] = 50,
 	},
 	["Weihnachtsmarkt"] = {
-		["Gluehwein"] = 30,
-		["Shot"] = 15,
-		["Lebkuchen"] = 30,
-		["Wuerstchen"] = 50,
+		[29] = 30,
+		[32] = 15,
+		[31] = 30,
+		[33] = 50,
 	},
 	["Feuerwerks-Shop"] = {
-		["Rakete"] = 100,
-		["Rohrbombe"] = 100,
-		["Raketen Batterie"] = 200,
-		["Römische Kerze"] = 150,
-		["Römische Kerzen Batterie"] = 250,
-		["Kugelbombe"] = 100,
-		["Böller"] = 50,
+		[83] = 100,
+		[84] = 100,
+		[85] = 200,
+		[86] = 150,
+		[87] = 250,
+		[88] = 100,
+		[89] = 50,
 	},
 	["Suspekter Typ"] = {
-		["Hacking-Kit"] = 1000,
+		[113] = 1000,
 	}
 }
 
@@ -291,23 +291,23 @@ SHOP_ITEM_WEAPONS = {
 
 SHOP_ITEM_SORT = {
 	["Angel- / Outdoor-Shop"] = {
-		{"Fischlexikon"},
+		{97},
 		{true, "Angelruten"}, --GridListItemNoClick
-		{"Bambusstange"},
-		{"Angelrute"},
-		{"Profi Angelrute"},
-		{"Legendäre Angelrute"},
+		{65},
+		{98},
+		{99},
+		{100},
 		{true, "Kühltaschen"}, --GridListItemNoClick
-		{"Kleine Kühltasche"},
-		{"Kühltasche"},
-		{"Kühlbox"},
+		{66},
+		{67},
+		{68},
 		{true, "Köder"},--GridListItemNoClick
-		{"Köder"},
-		{"Leuchtköder"},
-		{"Pilkerköder"},
+		{70},
+		{101},
+		{102},
 		{true, "Zubehör"}, --GridListItemNoClick
-		{"Schwimmer"},
-		{"Spinner"},
+		{103},
+		{104},
 	}
 }
 

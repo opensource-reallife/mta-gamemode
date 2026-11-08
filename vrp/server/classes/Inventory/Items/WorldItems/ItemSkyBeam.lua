@@ -18,7 +18,7 @@ function ItemSkyBeam:use(player)
                 
                 self.m_WorldItem:attach(createObject(2887, position), false, Vector3(0, 90, 0))
 
-				player:getInventory():removeItem(self:getName(), 1)
+				player:getInventory():removeItem(self:getId(), 1)
 			end
 		)
 	else

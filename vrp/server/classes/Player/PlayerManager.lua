@@ -390,10 +390,10 @@ function PlayerManager:playerQuit(quitType, reason, responsibleElement)
 	if index then
 		table.remove(self.m_ReadyPlayers, index)
 	end
-	if ItemManager.Map["Kanne"] then
-		if ItemManager.Map["Kanne"].m_Cans then
-			if ItemManager.Map["Kanne"].m_Cans[source] and isElement(ItemManager.Map["Kanne"].m_Cans[source]) then
-				destroyElement(ItemManager.Map["Kanne"].m_Cans[source])
+	if ItemManager.Map[45] then
+		if ItemManager.Map[45].m_Cans then
+			if ItemManager.Map[45].m_Cans[source] and isElement(ItemManager.Map[45].m_Cans[source]) then
+				destroyElement(ItemManager.Map[45].m_Cans[source])
 			end
 		end
 	end

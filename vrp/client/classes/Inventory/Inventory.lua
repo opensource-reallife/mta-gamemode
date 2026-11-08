@@ -333,9 +333,9 @@ end
 function Inventory:getDisplayName(row)
 	local itemName = row["Objekt"]
 	local value = tonumber(row["Value"])
-	if itemName == "Kleidung" and value and SkinInfo[value] then
+	if self:getItemId(itemName) == 64 and value and SkinInfo[value] then
 		return _(SkinInfo[value][1])
-	elseif itemName == "Einrichtung" and value and FurnitureInfo[value] then
+	elseif self:getItemId(itemName) == 123 and value and FurnitureInfo[value] then
 		return _(FurnitureInfo[value][1])
 	end
 	return _(itemName)
@@ -349,7 +349,7 @@ function Inventory:getItemIcon(row)
 	local value = tonumber(row["Value"])
 	if data["WaffenId"] then
 		return FileModdingHelper:getSingleton():getWeaponImage(data["WaffenId"]) or "files/images/Other/noImg.png"
-	elseif row["Objekt"] == "Kleidung" and value and fileExists(("files/images/Skins/head/%d.png"):format(value)) then
+	elseif self:getItemId(row["Objekt"]) == 64 and value and fileExists(("files/images/Skins/head/%d.png"):format(value)) then
 		return ("files/images/Skins/head/%d.png"):format(value)
 	elseif data["Icon"] and data["Icon"] ~= "" then
 		return "files/images/Inventory/items/"..data["Icon"]
@@ -667,7 +667,7 @@ function Inventory:updateDetail()
 	local info = data["Info"] ~= "" and _(data["Info"]) or ""
 	if data["WaffenId"] then info = _("GTA-Waffe mit der ID %d.", data["WaffenId"]) end
 	if isAmmo then info = _("Munition für %s. Passt in keine andere Waffe.", WEAPON_NAMES[data["MunitionFuer"]]) end
-	if (row["Objekt"] == "Zigarettenpackung" or row["Objekt"] == "Donutbox") and tonumber(row["Value"]) then
+	if (self:getItemId(row["Objekt"]) == 114 or self:getItemId(row["Objekt"]) == 54) and tonumber(row["Value"]) then
 		info = _("%s (%s übrig)", info, tonumber(row["Value"]))
 	end
 	self.m_DetailInfo:setText(info)
@@ -807,8 +807,24 @@ function Inventory:onHide()
 	self.m_Search:setText("")
 end
 
+function Inventory:getItemName(itemId)
+	if type(itemId) ~= "number" then return itemId end
+	for itemName, data in pairs(self.m_ItemData or {}) do
+		if data["Id"] == itemId then
+			return itemName
+		end
+	end
+	return false
+end
+
+function Inventory:getItemId(itemName)
+	local data = self.m_ItemData and self.m_ItemData[itemName]
+	return data and data["Id"] or false
+end
+
 function Inventory:getItemAmount(item)
 	triggerServerEvent("refreshInventory", localPlayer)
+	item = self:getItemName(item)
 	local amount = 0
 	for index, itemInv in pairs(self.m_Items) do
 		if itemInv["Objekt"] == item then

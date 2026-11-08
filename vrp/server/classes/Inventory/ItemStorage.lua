@@ -193,7 +193,7 @@ function ItemStorage:deposit(player, itemName, amount, value, wearLevel)
 	if self:getWeight() + data["Gewicht"] * amount > self:getCapacity() + 0.0001 then
 		return player:sendError(_("%dx %s passt nicht mehr hinein! Frei sind noch %.2f kg.", player, amount, itemName, math.max(0, self:getCapacity() - self:getWeight())))
 	end
-	if not inventory:removeItem(itemName, amount, value, wearFilter) then
+	if not inventory:removeItem(data["Id"], amount, value, wearFilter) then
 		return player:sendError(_("Du hast nicht genug %s!", player, itemName))
 	end
 
@@ -235,7 +235,7 @@ function ItemStorage:withdraw(player, itemName, amount, value, wearLevel)
 		end
 		amount = 1
 	end
-	if not inventory:giveItemFromName(itemName, amount, value, false, wearLevel) then
+	if not inventory:giveItem(data["Id"], amount, value, false, wearLevel) then
 		return
 	end
 
@@ -466,7 +466,7 @@ function ArmoryStorage:deposit(player, itemName, amount, value)
 	if data["WaffenId"] and not THROWABLE_WEAPONS[weaponId] and inventory:isWeaponArmed(weaponId) then
 		inventory:disarmWeapon(weaponId)
 	end
-	if not inventory:removeItem(itemName, amount, value) then
+	if not inventory:removeItem(data["Id"], amount, value) then
 		return player:sendError(_("Du hast nicht genug %s!", player, itemName))
 	end
 
@@ -512,7 +512,7 @@ function ArmoryStorage:withdraw(player, itemName, amount, value)
 			return player:sendError(_("So viel ist hier nicht eingelagert!", player))
 		end
 		local dutyValue = inventory:getDutyValue()
-		if not inventory:giveItemFromName(itemName, amount, dutyValue, dutyValue and true or false) then
+		if not inventory:giveItem(data["Id"], amount, dutyValue, dutyValue and true or false) then
 			return
 		end
 		self.m_Depot:takeMagazineD(weaponId, amount)

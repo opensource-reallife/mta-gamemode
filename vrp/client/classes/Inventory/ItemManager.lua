@@ -58,11 +58,11 @@ end
 
 function ItemManager:loadEffectItems( )
   self.m_Items = {  }
-  self.m_Items["Weed"] = DrugsWeed:new()
-  self.m_Items["Heroin"] = DrugsHeroin:new()
-  self.m_Items["Shrooms"] = DrugsShroom:new()
-  self.m_Items["Kokain"] = DrugsCocaine:new()
-  self.m_Items["Weed-Samen"] = Plant:new()
+  self.m_Items[1] = DrugsWeed:new()
+  self.m_Items[23] = DrugsHeroin:new()
+  self.m_Items[13] = DrugsShroom:new()
+  self.m_Items[24] = DrugsCocaine:new()
+  self.m_Items[12] = Plant:new()
 
   ItemDestructable:new()
   ItemSlam:new()

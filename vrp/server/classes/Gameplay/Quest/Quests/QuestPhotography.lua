@@ -68,7 +68,7 @@ function QuestPhotography:onTakePhoto(playersOnPhoto, pedsOnPhoto)
 		elseif self.m_Target["PlayersWithHat"] then
 			local count = 0
 			for index, player in pairs(playersOnPhoto) do
-				if player.m_IsWearingHelmet and player.m_IsWearingHelmet == "Weihnachtsmütze" then
+				if player.m_IsWearingHelmet and InventoryManager:getSingleton():getItemId(player.m_IsWearingHelmet) == 40 then
 					count = count +1
 				end
 			end

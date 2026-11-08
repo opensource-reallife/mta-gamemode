@@ -96,7 +96,7 @@ function Growable:harvest(player)
 
 		local amount = self.m_Size*self.ms_ItemPerSize
 
-		if self.ms_Item == "Blumen" then
+		if self.ms_Item == 166 then
 			if amount >= 1 then
 				if player:getWeapon(10) ~= 14 then
 					player:triggerEvent("hidePlantGUI")
@@ -130,8 +130,8 @@ function Growable:harvest(player)
 					player:setAnimation("bomber", "bom_plant", 1500, false, false, false, false)
 					setTimer(function(player, amount)
 						if isElement(player) then
-							player:sendInfo(_("Du hast %d %s geerntet!", player, amount, self.ms_Item))
-							player:getInventory():giveItemFromName(self.ms_Item, amount)
+							player:sendInfo(_("Du hast %d %s geerntet!", player, amount, InventoryManager:getSingleton():resolveItemName(self.ms_Item)))
+							player:getInventory():giveItem(self.ms_Item, amount)
 							player:triggerEvent("hidePlantGUI")
 							self.m_Size = 0
 							self.m_TimesEarned = self.m_TimesEarned + 1
@@ -150,7 +150,7 @@ function Growable:harvest(player)
 					player:sendError(_("Die Pflanze wird gerade schon geerntet!", player))
 				end
 			else
-				player:sendError(_("Du hast in deinem Inventar keinen Platz für %d %s!", player, amount, self.ms_Item))
+				player:sendError(_("Du hast in deinem Inventar keinen Platz für %d %s!", player, amount, InventoryManager:getSingleton():resolveItemName(self.ms_Item)))
 			end
 		else
 			player:sendError(_("Die Pflanze ist noch nicht gewachsen!", player))
@@ -186,7 +186,7 @@ end
 function Growable:onColShapeHit(hit, dim)
 	if hit:getType() == "player" and dim then
 		hit:setData("Plant:Current", self)
-		hit:triggerEvent("showPlantGUI", self.m_Id, self.m_Type, self.m_LastGrown, self.m_Size, self.ms_MaxSize, self.ms_Item, self.ms_ItemPerSize, self.m_Owner, self.m_LastWatered, self.ms_HoursWatered)
+		hit:triggerEvent("showPlantGUI", self.m_Id, self.m_Type, self.m_LastGrown, self.m_Size, self.ms_MaxSize, InventoryManager:getSingleton():resolveItemName(self.ms_Item), self.ms_ItemPerSize, self.m_Owner, self.m_LastWatered, self.ms_HoursWatered)
 	end
 end
 

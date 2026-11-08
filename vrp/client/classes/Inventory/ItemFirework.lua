@@ -9,19 +9,19 @@ addEventHandler("onClientFireworkStart", root, function(firework, position, rnd)
 			return
 		end
 		local pos   = normaliseVector(position);
-		if firework == "Rakete" then
+		if firework == 83 then
 			ItemFireworkRocket:new(pos)
-		elseif firework == "Rohrbombe" then
+		elseif firework == 84 then
 			ItemPipeBomb:new(pos);
-		elseif firework == "Raketen Batterie" then
+		elseif firework == 85 then
 			ItemFireworkBattery:new(pos, rnd);
-		elseif firework == "Römische Kerze" then
+		elseif firework == 86 then
 			ItemFireworkRomanCandle:new(pos, rnd);
-		elseif firework == "Römische Kerzen Batterie" then
+		elseif firework == 87 then
 			ItemFireworkRomanCandleBattery:new(pos, rnd);
-		elseif firework == "Kugelbombe" then
+		elseif firework == 88 then
 			ItemFireworkGroundShell:new(pos)
-		elseif firework == "Böller" then
+		elseif firework == 89 then
 			ItemFireworkBanger:new(pos)
 		end
 	end

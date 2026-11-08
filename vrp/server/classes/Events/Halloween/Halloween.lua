@@ -79,7 +79,7 @@ Halloween.ms_Bonus = {
 		["Pumpkin"] = 0,
 		["Sweets"] = 50,
 		["Type"] = "Item",
-		["ItemName"] = "Kürbis",
+		["ItemId"] = 27,
 		["ItemAmount"] = 5
 	},
 	{
@@ -88,7 +88,7 @@ Halloween.ms_Bonus = {
 		["Pumpkin"] = 10,
 		["Sweets"] = 0,
 		["Type"] = "Item",
-		["ItemName"] = "Suessigkeiten",
+		["ItemId"] = 26,
 		["ItemAmount"] = 50
 	},
 }
@@ -185,7 +185,7 @@ function Halloween:constructor()
 	HalloweenEasterEggs:new()
 
 	if Halloween.ms_PricePoolName then
-		self.m_PricePool = PricePoolManager:getSingleton():getPricePool(Halloween.ms_PricePoolName, "Kürbis", Halloween.ms_PricePoolPrices, Halloween.ms_PricePoolEnd)
+		self.m_PricePool = PricePoolManager:getSingleton():getPricePool(Halloween.ms_PricePoolName, 27, Halloween.ms_PricePoolPrices, Halloween.ms_PricePoolEnd)
 		if self.m_PricePool then
 			PricePoolManager:getSingleton():createPed(self.m_PricePool, 185, Vector3(884.832, -1080.05, 24.297), 220)
 			self.m_PricePool:setDailyEntryBuyLimit(100)
@@ -269,7 +269,7 @@ function Halloween:finishTrickOrTreat(pId, houseId)
 						if d.lastMessage and d.lastMessage >= d.trickStarted and (getTickCount() - d.lastVisited) > 20000 then
 							if ownerAtHome then
 								local rnd = math.random(1, math.min(5, pCount)) + (chance(50) and 1 or 0)
-								if pl.m_IsWearingHelmet == "Kürbishut" then --pumpkin head bonus
+								if InventoryManager:getSingleton():getItemId(pl.m_IsWearingHelmet) == 173 then --pumpkin head bonus
 									rnd = rnd + (chance(50) and 1 or 0)
 								end
 								if pl:getModel() == 310 then --zombie skin bonus
@@ -301,8 +301,8 @@ function Halloween:Event_requestBonusData()
 end
 
 function Halloween:Event_buyBonus(bonusId)
-	local playerSweets = client:getInventory():getItemAmount("Suessigkeiten", true)
-	local playerPumpinks = client:getInventory():getItemAmount("Kürbis", true)
+	local playerSweets = client:getInventory():getItemAmount(26, true)
+	local playerPumpinks = client:getInventory():getItemAmount(27, true)
 	local bonus = Halloween.ms_Bonus[bonusId]
 	if not bonus then return end
 
@@ -319,8 +319,8 @@ function Halloween:Event_buyBonus(bonusId)
 	if bonus["Type"] == "Weapon" then
 		client:giveWeapon(bonus["WeaponId"], bonus["Ammo"])
 	elseif bonus["Type"] == "Item" then
-		if client:getInventory():getFreePlacesForItem(bonus["ItemName"]) >= bonus["ItemAmount"] then
-			client:getInventory():giveItemFromName(bonus["ItemName"], bonus["ItemAmount"])
+		if client:getInventory():getFreePlacesForItem(bonus["ItemId"]) >= bonus["ItemAmount"] then
+			client:getInventory():giveItem(bonus["ItemId"], bonus["ItemAmount"])
 		else
 			client:sendError(_("Du hast nicht genug Platz in deinem Inventar!", client))
 			return
@@ -336,7 +336,7 @@ function Halloween:Event_buyBonus(bonusId)
 			client:sendMessage(_("Fehler beim Erstellen des Fahrzeugs. Bitte benachrichtige einen Admin!", client), 255, 0, 0)
 		end
 	elseif bonus["Type"] == "Item" then
-		client:getInventory():giveItemFromName(bonus["ItemName"], bonus["ItemAmount"])
+		client:getInventory():giveItem(bonus["ItemId"], bonus["ItemAmount"])
 	elseif bonus["Type"] == "Money" then
 		self.m_BankServerAccount:transferMoney(client, bonus["MoneyAmount"], "Halloween-Event", "Event", "Halloween")
 	elseif bonus["Type"] == "Points" then
@@ -362,8 +362,8 @@ function Halloween:Event_buyBonus(bonusId)
 		end
 	end
 
-	client:getInventory():removeItem("Suessigkeiten", bonus["Sweets"])
-	client:getInventory():removeItem("Kürbis", bonus["Pumpkin"])
+	client:getInventory():removeItem(26, bonus["Sweets"])
+	client:getInventory():removeItem(27, bonus["Pumpkin"])
 	client:sendSuccess(_("Du hast erfolgreich den Bonus %s für %d Kürbisse und %d Süßigkeiten gekauft!", client, bonus["Text"], bonus["Pumpkin"], bonus["Sweets"]))
 	StatisticsLogger:getSingleton():addEventShopLog(client, bonus["Text"], bonus["Pumpkin"], bonus["Sweets"])
 end

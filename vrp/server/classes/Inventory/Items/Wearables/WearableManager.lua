@@ -104,7 +104,7 @@ function WearableManager:removeAllWearables( player )
 		destroyElement(player.m_Helmet)
 		player.m_IsWearingHelmet = false
 		player.m_Helmet = false
-		player:triggerEvent("onClientToggleHelmet", false, "Gasmaske")
+		player:triggerEvent("onClientToggleHelmet", false, 59)
 		player:setData("isFaceConcealed", false)
 	end
 	if player.m_Shirt then
@@ -121,7 +121,8 @@ function WearableManager:removeAllWearables( player )
 	end
 end
 
-function WearableManager:removeWearable( player, itemName, value )
+function WearableManager:removeWearable( player, itemId, value )
+	local itemName = InventoryManager:getSingleton():resolveItemName(itemId)
 	if itemName then
 		local itemManager = ItemManager:getSingleton()
 		if itemManager then

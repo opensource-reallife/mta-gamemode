@@ -25,7 +25,7 @@ function DrugsWeed:use( player )
 
 	  ItemDrugs.use(self, player)
 
-  	player:triggerEvent("onClientItemUse", "Weed", DrugsWeed.m_ExpireTime )
+  	player:triggerEvent("onClientItemUse", 1, DrugsWeed.m_ExpireTime )
     if isTimer( player.m_WeedExpireTimer ) then
       killTimer( player.m_WeedExpireTimer )
       if ( player.m_DrugOverdose ) then
@@ -39,13 +39,13 @@ function DrugsWeed:use( player )
     local healSteps = math.floor( DrugsWeed.m_ExpireTime / DrugsWeed.m_HealInterval )
     player.m_WeedExpireTimer = setTimer( player.m_WeedExpireFunc, DrugsWeed.m_ExpireTime, 1, player )
     player.m_WeedHealTimer = setTimer( player.m_WeedHealFunc, DrugsWeed.m_HealInterval , healSteps , player )
-	  StatisticsLogger:getSingleton():addDrugUse( player, "Weed" )
+	  StatisticsLogger:getSingleton():addDrugUse( player, self:getName() )
 end
 
 function DrugsWeed:expire( player )
   if not isElement(player) or getElementType(player) ~= "player" then return false end
   player.m_DrugOverDose = 0
-  player:triggerEvent("onClientItemExpire", "Weed" )
+  player:triggerEvent("onClientItemExpire", 1 )
 end
 
 function DrugsWeed:effect( player )

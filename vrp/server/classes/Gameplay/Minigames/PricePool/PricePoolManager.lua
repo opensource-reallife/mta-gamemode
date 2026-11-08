@@ -69,7 +69,7 @@ end
 
 function PricePoolManager:openEntryWindow(pricepool, player, active)
     local entries = pricepool:getEntriesByName()
-    local entryPrice = pricepool:getEntryPrice()
+    local entryPrice = InventoryManager:getSingleton():resolveItemName(pricepool:getEntryPrice())
     local date = getOpticalTimestamp(pricepool:getRaffleDate())
     local priceList = pricepool:getPriceList()
 
@@ -85,7 +85,7 @@ function PricePoolManager:buyEntries(pricepoolId, entries)
         client:sendError(_("Du kannst heute nur noch %d Lose kaufen!", client, pricepool:getDailyEntryBuyLimit() - pricepool:getTodaysEntryAmount(client:getId())))
         return
     end
-    if client:getInventory():removeItem(pricepool:getEntryPrice(), entries) then
+    if client:getInventory():removeItem(InventoryManager:getSingleton():getItemId(pricepool:getEntryPrice()), entries) then
         pricepool:addEntry(client:getId(), entries)
         client:sendSuccess(_("Du hast dir erfolgreich %d Lose gekauft!", client, entries))
         for key, player in pairs(PlayerManager:getSingleton():getReadyPlayers()) do

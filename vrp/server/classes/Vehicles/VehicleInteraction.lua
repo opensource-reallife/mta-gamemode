@@ -85,9 +85,9 @@ function VehicleInteraction:repairVehicle(player, veh)
 		end
 		fullRepair = true
 
-	elseif player:getInventory():getItemAmount("Reparaturkit") > 0 then
+	elseif player:getInventory():getItemAmount(25) > 0 then
 		if veh.isBroken and veh:isBroken() then
-			player:getInventory():removeItem("Reparaturkit", 1)
+			player:getInventory():removeItem(25, 1)
 		else
 			player:sendError(_("Das Fahrzeug hat keinen Totalschaden!", player))
 			return

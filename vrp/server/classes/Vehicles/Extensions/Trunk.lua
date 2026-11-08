@@ -127,7 +127,7 @@ function Trunk:getStorage()
 				player:sendError(_("Du darfst im Dienst keine Waffen einlagern!", player))
 				return false
 			end
-			if itemName == "Kleidung" and not SkinInfo[tonumber(value)] then
+			if InventoryManager:getSingleton():getItemId(itemName) == 64 and not SkinInfo[tonumber(value)] then
 				player:sendError(_("Du kannst diesen Skin nicht in den Kofferraum legen!", player))
 				return false
 			end

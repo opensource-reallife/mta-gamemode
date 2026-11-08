@@ -78,7 +78,7 @@ function ItemSellContract:Event_OnTradeSuceed( player, price, car )
 						setElementData(car, "VehicleKeys", car.m_Keys)
 						VehicleManager:getSingleton():syncVehicleInfo( player )
 						VehicleManager:getSingleton():syncVehicleInfo( client )
-						player:getInventory():removeItem("Handelsvertrag", 1)
+						player:getInventory():removeItem(46, 1)
 						StatisticsLogger:getSingleton():addVehicleTradeLog(car, player, client, price, "player")
 					else
 						client:sendError(_("Du hast nicht genügend Geld!", client))

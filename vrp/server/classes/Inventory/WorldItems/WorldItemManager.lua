@@ -11,23 +11,23 @@ WorldItemManager.Map = {}
 function WorldItemManager:constructor() 
 	self.m_CallbackMap = -- functions that are called once a specific world-item is created for an item
 	{
-		["Tor"] =  ItemManager:getSingleton():getInstance("Tor").addWorldObjectCallback, 
-		["Keypad"] =  ItemManager:getSingleton():getInstance("Keypad").addWorldObjectCallback,
-		["Eingang"] =  ItemManager:getSingleton():getInstance("Eingang").addWorldObjectCallback,
-		["Einrichtung"] = ItemManager:getSingleton():getInstance("Einrichtung").addWorldObjectCallback,
+		[81] =  ItemManager:getSingleton():getInstance(81).addWorldObjectCallback, 
+		[80] =  ItemManager:getSingleton():getInstance(80).addWorldObjectCallback,
+		[82] =  ItemManager:getSingleton():getInstance(82).addWorldObjectCallback,
+		[123] = ItemManager:getSingleton():getInstance(123).addWorldObjectCallback,
 	}
 	local result = sql:queryFetch("SELECT * FROM ??_WorldItems", sql:getPrefix())
 	local model, item, obj, value, interior, dimension, posX, posY, posZ, owner, id, worldItemInstance
 	for k, row in pairs(result) do 
 		id, model, item, value, interior, dimension, breakable, owner, locked = row.Id, row.Model, row.Item, row.Value, row.Interior, row.Dimension, row.Breakable, row.Owner, row.Locked
 		posX, posY, posZ, rot = row.PosX, row.PosY, row.PosZ, row.Rotation
-		worldItemInstance = PlayerWorldItem:new(ItemManager.Map[item], owner, Vector3(posX, posY, posZ), rot, breakable, owner, true, locked, row.Model)
+		worldItemInstance = PlayerWorldItem:new(ItemManager:getSingleton():getInstance(item), owner, Vector3(posX, posY, posZ), rot, breakable, owner, true, locked, row.Model)
 		worldItemInstance:setDataBaseId(id)
 		worldItemInstance:setValue(value)
 		worldItemInstance:setInterior(interior) 
 		worldItemInstance:setDimension(dimension)
-		if self.m_CallbackMap[item] then 
-			self.m_CallbackMap[item](ItemManager:getSingleton():getInstance(item), id, worldItemInstance)
+		if self.m_CallbackMap[InventoryManager:getSingleton():getItemId(item)] then 
+			self.m_CallbackMap[InventoryManager:getSingleton():getItemId(item)](ItemManager:getSingleton():getInstance(item), id, worldItemInstance)
 		end
 	end
 end
@@ -57,17 +57,17 @@ function WorldItemManager:destructor()
 end
 
 function WorldItemManager:onDestruction() 
-	if ItemManager.Map["Keypad"] then 
-		ItemManager.Map["Keypad"]:delete() 
+	if ItemManager.Map[80] then 
+		ItemManager.Map[80]:delete() 
 	end
-	if ItemManager.Map["Tor"] then 
-		ItemManager.Map["Tor"]:delete() 
+	if ItemManager.Map[81] then 
+		ItemManager.Map[81]:delete() 
 	end
-	if ItemManager.Map["Eingang"] then 
-		ItemManager.Map["Eingang"]:delete() 
+	if ItemManager.Map[82] then 
+		ItemManager.Map[82]:delete() 
 	end
-	if ItemManager.Map["Transmitter"] then 
-		ItemManager.Map["Transmitter"]:delete() 
+	if ItemManager.Map[92] then 
+		ItemManager.Map[92]:delete() 
 	end
 end
 

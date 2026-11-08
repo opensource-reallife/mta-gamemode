@@ -194,7 +194,7 @@ function Guns:Event_onClientPlayerDamage(attacker, weapon, bodypart, loss)
 		end
 		cancelEvent()
 	elseif weapon == 17 then
-		if source.getPublicSync and source:getPublicSync("HelmetItem") == "Gasmaske" then
+		if source.getPublicSync and source:getPublicSync("HelmetItem") == 59 then
 		else
 			if source == localPlayer then
 				WearableHelmet:getSingleton():onTearNade()

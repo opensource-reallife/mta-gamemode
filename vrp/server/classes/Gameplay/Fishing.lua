@@ -195,7 +195,7 @@ function Fishing:FishingRodCast()
 		local playerInventory = client:getInventory()
 		local itemAmount = playerInventory:getItemAmount(baitName)
 		if itemAmount > 0 then
-			playerInventory:removeItem(baitName, 1)
+			playerInventory:removeItem(InventoryManager:getSingleton():getItemId(baitName), 1)
 
 			if itemAmount == 1 then
 				client:sendWarning(_("Das ist der letzte %s!", client, baitName))
@@ -237,7 +237,7 @@ function Fishing:FishHit(location, castPower)
 			if randomMessage ~= "nichts" then 
 				if math.random(1, 10) < 3 then 
 					if FISHING_BAD_CATCH_ITEMS_SEWERS[index] then 
-						client:getInventory():giveItemFromName(FISHING_BAD_CATCH_ITEMS_SEWERS[index], 1)
+						client:getInventory():giveItem(FISHING_BAD_CATCH_ITEMS_SEWERS[index], 1)
 					end
 				else
 					randomMessage = "nichts"
@@ -407,7 +407,7 @@ function Fishing:onFishRequestTrading()
 				v.fishName = self:getFishNameFromId(v.Id)
 			end
 
-			table.insert(fishes, {name = bagName, content = currentValue})
+			table.insert(fishes, {name = InventoryManager:getSingleton():resolveItemName(bagName), content = currentValue})
 		end
 	end
 
@@ -594,14 +594,14 @@ function Fishing:getFishingRodEquipments(player, fishingRodName)
 	local equipements = {}
 
 	for key, valueName in pairs(equipmentSlots) do
-		if FISHING_RODS[fishingRodName][key] > 0 then
+		if FISHING_RODS[getFishingItemId(fishingRodName)][key] > 0 then
 			local playerInventory = player:getInventory()
 			local place = playerInventory:getItemPlacesByName(fishingRodName)[1][1]
 			local fishingRodValue = playerInventory:getItemValueByBag(FISHING_INVENTORY_BAG, place)
 			fishingRodValue = fromJSON(fishingRodValue) or {}
 
 			local equipment = fishingRodValue[valueName]
-			if FISHING_EQUIPMENT[equipment] and playerInventory:getItemAmount(equipment) > 0 then
+			if FISHING_EQUIPMENT[getFishingItemId(equipment)] and playerInventory:getItemAmount(equipment) > 0 then
 				equipements[valueName] = equipment
 			else
 				equipements[valueName] = false
@@ -617,7 +617,7 @@ function Fishing:isPlayerFishing(player) return self.m_Players[player] end
 function Fishing:addFishingRodEquipment(player, fishingRodName, equipment)
 	local playerInventory = player:getInventory()
 	if playerInventory:getItemAmount(fishingRodName) > 0 and playerInventory:getItemAmount(equipment) > 0 then
-		local savingTable = FISHING_BAITS[equipment] and "bait" or "accessories"
+		local savingTable = FISHING_BAITS[getFishingItemId(equipment)] and "bait" or "accessories"
 		local place = playerInventory:getItemPlacesByName(fishingRodName)[1][1]
 		local fishingRodValue = playerInventory:getItemValueByBag(FISHING_INVENTORY_BAG, place)
 		fishingRodValue = fromJSON(fishingRodValue) or {}
@@ -633,7 +633,7 @@ end
 function Fishing:removeFishingRodEquipment(player, fishingRodName, equipment)
 	local playerInventory = player:getInventory()
 	if playerInventory:getItemAmount(fishingRodName) > 0 then
-		local savingTable = FISHING_BAITS[equipment] and "bait" or "accessories"
+		local savingTable = FISHING_BAITS[getFishingItemId(equipment)] and "bait" or "accessories"
 		local place = playerInventory:getItemPlacesByName(fishingRodName)[1][1]
 		local fishingRodValue = playerInventory:getItemValueByBag(FISHING_INVENTORY_BAG, place)
 		fishingRodValue = fromJSON(fishingRodValue) or {}

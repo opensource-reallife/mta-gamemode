@@ -75,7 +75,7 @@ end
 
 function AtmManager:Event_onStartHacking(atm)
 	if client:isFactionDuty() or client:isCompanyDuty() then return client:sendError(_("Du kannst das nicht tun, während du im Dienst bist!", client)) end
-    if client:getInventory():getItemAmount("Hacking-Kit") >= 1 then
+    if client:getInventory():getItemAmount(113) >= 1 then
         if self.m_AtmCooldowns[atm] then
             if getTickCount() - self.m_AtmCooldowns[atm] < AtmManager.Cooldown then
                 client:sendError(_("Dieser Bankautomat wurde erst kürzlich sabotiert!", client))
@@ -88,7 +88,7 @@ function AtmManager:Event_onStartHacking(atm)
                 return
             end
         end
-        if client:getInventory():removeItem("Hacking-Kit", 1) then
+        if client:getInventory():removeItem(113, 1) then
             client:meChat(true, "macht sich am Bankautomaten zu schaffen!")
             client.m_LastAtmHacked = atm
             triggerClientEvent(client, "startCircuitBreaker", client, "onAtmHackSuccess", "onAtmHackFail", atm)
