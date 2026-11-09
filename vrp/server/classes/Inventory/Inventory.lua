@@ -657,7 +657,7 @@ function Inventory:giveItem(itemId, amount, value, force, wearLevel)
 		self:loadRow({["id"] = lastId, ["Objekt"] = tostring(data["Id"]), ["Menge"] = amount, ["Platz"] = place, ["Tasche"] = bag, ["Value"] = value or "", ["WearLevel"] = wear})
 	end
 
-	self:refreshArmedAmmo(itemName)
+	self:refreshArmedAmmo(itemName, amount)
 	self:logItemMove(itemName, amount)
 	self:syncClient()
 	return true
@@ -739,11 +739,12 @@ function Inventory:isWeaponContext()
 	return isInventoryWeaponContext(self.m_Owner)
 end
 
-local AMMO_SYNC_DELAY = 2000
+local AMMO_SYNC_MIN_DELAY = 1500
+local AMMO_SYNC_TIMEOUT = 10000
 
 function Inventory:setArmedAmmo(weaponId, rounds)
 	self.m_AmmoPending = self.m_AmmoPending or {}
-	self.m_AmmoPending[weaponId] = true
+	self.m_AmmoPending[weaponId] = {rounds = rounds, tick = false}
 	_setWeaponAmmo(self.m_Owner, weaponId, rounds)
 end
 
@@ -752,14 +753,16 @@ function Inventory:isArmedAmmoPending(weaponId)
 	if not pending then return false end
 
 	if getPedWeapon(self.m_Owner) ~= weaponId then
-		self.m_AmmoPending[weaponId] = true
+		pending.tick = false
 		return true
 	end
-	if pending == true then
-		self.m_AmmoPending[weaponId] = getTickCount()
+	if not pending.tick then
+		pending.tick = getTickCount()
 		return true
 	end
-	if getTickCount() - pending < AMMO_SYNC_DELAY then return true end
+	local elapsed = getTickCount() - pending.tick
+	if elapsed < AMMO_SYNC_MIN_DELAY then return true end
+	if getPedTotalAmmo(self.m_Owner, getSlotFromWeapon(weaponId)) ~= pending.rounds and elapsed < AMMO_SYNC_TIMEOUT then return true end
 
 	self.m_AmmoPending[weaponId] = nil
 	return false
@@ -784,14 +787,18 @@ function Inventory:syncArmedAmmo()
 	self.m_SyncingAmmo = false
 end
 
-function Inventory:refreshArmedAmmo(itemName)
+function Inventory:refreshArmedAmmo(itemName, added)
 	if self.m_SyncingAmmo or not isElement(self.m_Owner) or not self:isWeaponContext() then return end
 
 	local data = self.m_ItemData[itemName]
 	local weaponId = data["MunitionFuer"] or (data["WaffenId"] and THROWABLE_WEAPONS[data["WaffenId"]] and data["WaffenId"])
 	if weaponId and self:isWeaponArmed(weaponId) then
 		local rounds = self:getRounds(weaponId)
-		if rounds > 0 then
+		if added and added > 0 and not THROWABLE_WEAPONS[weaponId] then
+			self.m_AmmoPending = self.m_AmmoPending or {}
+			self.m_AmmoPending[weaponId] = {rounds = rounds, tick = false}
+			_giveWeapon(self.m_Owner, weaponId, added, false)
+		elseif rounds > 0 then
 			self:setArmedAmmo(weaponId, rounds)
 		elseif THROWABLE_WEAPONS[weaponId] then
 			rawTakeWeapon(self.m_Owner, weaponId)
