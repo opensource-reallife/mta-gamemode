@@ -2521,7 +2521,7 @@ function phpSDKVoucherOffline(adminId, playerId, data)
 					sql:queryExec("UPDATE ??_inventory_slots SET Menge = ? WHERE id = ?", prefix, tonumber(stack.Menge) + amount, stack.id)
 				else
 					local wear = (tonumber(info.MaxWear) or 0) > 0 and tostring(math.floor(tonumber(info.MaxWear))) or ""
-					sql:queryExec("INSERT INTO ??_inventory_slots (PlayerId, Menge, Objekt, Platz, Tasche, Value, WearLevel) VALUES (?, ?, ?, ?, ?, '', NULLIF(?, ''))", prefix, playerId, amount, name, freePlace, Inventory.DefaultBag, wear)
+					sql:queryExec("INSERT INTO ??_inventory_slots (PlayerId, Menge, Objekt, Platz, Tasche, Value, WearLevel) VALUES (?, ?, ?, ?, ?, '', NULLIF(?, ''))", prefix, playerId, amount, tostring(InventoryManager:getSingleton():getItemId(name) or name), freePlace, Inventory.DefaultBag, wear)
 				end
 				given = true
 			end
@@ -3057,7 +3057,7 @@ function phpSDKEditPlayerOffline(adminId, targetId, action, data)
 				for _, r in ipairs(sql:queryFetch("SELECT Platz FROM ??_inventory_slots WHERE PlayerId = ? AND Tasche = ?", prefix, targetId, Inventory.DefaultBag) or {}) do used[tonumber(r.Platz)] = true end
 				while used[freePlace] do freePlace = freePlace + 1 end
 				local wear = (tonumber(info.MaxWear) or 0) > 0 and tostring(math.floor(tonumber(info.MaxWear))) or ""
-				sql:queryExec("INSERT INTO ??_inventory_slots (PlayerId, Objekt, Platz, Menge, Tasche, Value, WearLevel) VALUES (?, ?, ?, ?, ?, '', NULLIF(?, ''))", prefix, targetId, item, freePlace, amount, Inventory.DefaultBag, wear)
+				sql:queryExec("INSERT INTO ??_inventory_slots (PlayerId, Objekt, Platz, Menge, Tasche, Value, WearLevel) VALUES (?, ?, ?, ?, ?, '', NULLIF(?, ''))", prefix, targetId, tostring(InventoryManager:getSingleton():getItemId(item) or item), freePlace, amount, Inventory.DefaultBag, wear)
 			end
 		else
 			if have < -amount then return result("ERROR", "NOT_ENOUGH") end
