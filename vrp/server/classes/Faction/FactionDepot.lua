@@ -22,6 +22,75 @@ function Depot.initalize()
 			Depot.Map[id]:takeEquipment(client, item, math.floor(amount))
 		end
 	end)
+
+	Depot.Initialized = true
+	for _id, depot in pairs(Depot.Map) do
+		depot:convertToIds()
+	end
+end
+
+function Depot.getEquipmentId(item)
+	if type(item) == "number" then return item end
+	local manager = InventoryManager:getSingleton()
+	local armsData = ArmsDealer.getItemData(ArmsDealer, item)
+	if armsData and armsData[3] then
+		local weaponItem = manager:getWeaponItemName(armsData[3])
+		if weaponItem then
+			return manager:getItemId(weaponItem)
+		end
+	end
+	return manager:getItemId(item) or false
+end
+
+function Depot.getEquipmentProduct(itemId)
+	if not Depot.EquipmentProducts then
+		Depot.EquipmentProducts = {}
+		for category, data in pairs(ArmsDealer.Data) do
+			if category ~= "Waffen" then
+				for product in pairs(data) do
+					local id = Depot.getEquipmentId(product)
+					if id then
+						Depot.EquipmentProducts[id] = product
+					end
+				end
+			end
+		end
+	end
+	return Depot.EquipmentProducts[itemId]
+end
+
+function Depot:convertToIds()
+	local manager = InventoryManager:getSingleton()
+	local changed = false
+
+	local equipments = {}
+	self.m_UnknownEquipments = self.m_UnknownEquipments or {}
+	for key, amount in pairs(self.m_Equipments or {}) do
+		local id = tonumber(key) or Depot.getEquipmentId(key)
+		if id then
+			equipments[id] = (equipments[id] or 0) + (tonumber(amount) or 0)
+			if not tonumber(key) then changed = true end
+		else
+			self.m_UnknownEquipments[key] = amount
+			outputDebugString(("[Depot] Unbekanntes Equipment '%s' in Depot %d bleibt unverändert"):format(tostring(key), self.m_Id))
+		end
+	end
+	self.m_Equipments = equipments
+
+	for _index, slot in pairs(self.m_Items or {}) do
+		if type(slot) == "table" and slot["Item"] and slot["Item"] ~= 0 and not tonumber(slot["Item"]) then
+			local id = manager:getItemId(slot["Item"])
+			if id then
+				slot["Item"] = id
+				changed = true
+			else
+				outputDebugString(("[Depot] Unbekanntes Item '%s' in Depot %d bleibt unverändert"):format(tostring(slot["Item"]), self.m_Id))
+			end
+		end
+	end
+
+	self.m_Converted = true
+	if changed then self:save() end
 end
 --//
 function Depot.load(Id, Owner, type)
@@ -65,21 +134,16 @@ function Depot.load(Id, Owner, type)
 	end
 
 	if string.len(equipments) < 5 then
-		equipments = {}
-		for category, data in pairs(ArmsDealer.Data) do
-			if category ~= "Waffen" then
-				for product, subdata in pairs(data) do
-					equipments[product] = 0
-				end
-			end
-		end
-		equipments = toJSON(equipments)
+		equipments = toJSON({})
 		DepotSave = true
 		outputDebugString("Creating new Equipment-Table for Depot "..Id)
 	end
 
 	Depot.Map[Id] = Depot:new(Id, weapons, items, equipments, Owner)
 
+	if Depot.Initialized then
+		Depot.Map[Id]:convertToIds()
+	end
 	if DepotSave == true then Depot.Map[Id]:save() end
 
 	return Depot.Map[Id]
@@ -94,8 +158,8 @@ function Depot:constructor(Id, weapons, items, equipments, owner)
 			weapon["InSchuss"] = true
 		end
 	end
-	self.m_Items = fromJSON(items)
-	self.m_Equipments = fromJSON(equipments)
+	self.m_Items = fromJSON(items) or {}
+	self.m_Equipments = fromJSON(equipments) or {}
 	self.m_Owner = owner
 end
 
@@ -104,7 +168,14 @@ function Depot:destructor()
 end
 
 function Depot:save()
-	return sql:queryExec("UPDATE ??_depot SET Weapons = ?, Items = ?, Equipments = ? WHERE Id = ?", sql:getPrefix(), toJSON(self.m_Weapons), toJSON(self.m_Items), toJSON(self.m_Equipments), self.m_Id)
+	local equipments = {}
+	for key, amount in pairs(self.m_UnknownEquipments or {}) do
+		equipments[tostring(key)] = amount
+	end
+	for key, amount in pairs(self.m_Equipments) do
+		equipments[tostring(key)] = amount
+	end
+	return sql:queryExec("UPDATE ??_depot SET Weapons = ?, Items = ?, Equipments = ? WHERE Id = ?", sql:getPrefix(), toJSON(self.m_Weapons), toJSON(self.m_Items), toJSON(equipments), self.m_Id)
 end
 
 function Depot:getId()
@@ -116,7 +187,19 @@ function Depot:getWeaponTable()
 end
 
 function Depot:getEquipmentTable()
-	return self.m_Equipments
+	local named = {}
+	Depot.getEquipmentProduct(0)
+	for id, product in pairs(Depot.EquipmentProducts) do
+		named[product] = self.m_Equipments[id] or 0
+	end
+	return named
+end
+
+function Depot:setEquipmentAmount(item, amount)
+	local id = Depot.getEquipmentId(item)
+	if not id then return false end
+	self.m_Equipments[id] = amount
+	return true
 end
 
 function Depot:getWeapon(id)
@@ -125,7 +208,8 @@ function Depot:getWeapon(id)
 end
 
 function Depot:getEquipmentItem(item)
-	return self.m_Equipments[item]
+	local id = Depot.getEquipmentId(item)
+	return id and self.m_Equipments[id]
 end
 
 function Depot:takeWeaponD(id,amount)
@@ -328,7 +412,9 @@ end
 
 function Depot:addEquipment(player, item, amount, forceSpawn)
 	if not forceSpawn and not self:checkDistanceFromEquipment(player) then return end
-	if self.m_Equipments then
+	local equipmentId = Depot.getEquipmentId(item)
+	item = equipmentId and Depot.getEquipmentProduct(equipmentId) or item
+	if self.m_Equipments and equipmentId then
 		local armsData = ArmsDealer:getSingleton():getItemData(item)
 		local allAmount
 		if not armsData[3] then
@@ -339,24 +425,24 @@ function Depot:addEquipment(player, item, amount, forceSpawn)
 
 		if forceSpawn
 		or (armsData[3] and (getPedWeapon(player, getSlotFromWeapon ( armsData[3])) == armsData[3]) and ((amount > 0 and getPedTotalAmmo(player, getSlotFromWeapon ( armsData[3])) >= amount) or amount==-1))
-		or (amount > 0 and player:getInventory():removeItem(InventoryManager:getSingleton():getItemId(item), amount))
+		or (amount > 0 and player:getInventory():removeItem(equipmentId, amount))
 		or (amount==-1 and self:removeAllEquipment(player, item, allAmount)) then
-			if not self.m_Equipments[item] then
-				self.m_Equipments[item] = 0
+			if not self.m_Equipments[equipmentId] then
+				self.m_Equipments[equipmentId] = 0
 			end
 			if amount > 0 then
-				self.m_Equipments[item] = self.m_Equipments[item] + amount
+				self.m_Equipments[equipmentId] = self.m_Equipments[equipmentId] + amount
 				if armsData[3] then
 					if not forceSpawn and not takeWeapon(player, armsData[3], amount) then
-						self.m_Equipments[item] = self.m_Equipments[item] - amount -- prevent bug-abuse
+						self.m_Equipments[equipmentId] = self.m_Equipments[equipmentId] - amount -- prevent bug-abuse
 					end
 				end
 			else
-				self.m_Equipments[item] = self.m_Equipments[item] + allAmount
+				self.m_Equipments[equipmentId] = self.m_Equipments[equipmentId] + allAmount
 				amount = allAmount
 				if armsData[3] then
 					if not forceSpawn and not takeWeapon(player, armsData[3]) then
-						self.m_Equipments[item] = self.m_Equipments[item] - allAmount -- prevent bug-abuse
+						self.m_Equipments[equipmentId] = self.m_Equipments[equipmentId] - allAmount -- prevent bug-abuse
 					end
 				end
 			end
@@ -381,6 +467,9 @@ end
 
 function Depot:takeEquipment(player, item, amount)
 	if not self:checkDistanceFromEquipment(player) then return end
+	local equipmentId = Depot.getEquipmentId(item)
+	if not equipmentId then return end
+	item = Depot.getEquipmentProduct(equipmentId) or item
 	if not player:isFactionDuty() then return player:sendError(_("Du bist nicht im Fraktionsmodus!", player)) end
 	if player:getFaction() then
 		if self.m_Owner == player:getFaction() then
@@ -394,25 +483,25 @@ function Depot:takeEquipment(player, item, amount)
 			end
 		end
 	end
-	if self.m_Equipments[item] then
+	if self.m_Equipments[equipmentId] then
  		local armsData = ArmsDealer:getSingleton():getItemData(item)
-		if armsData[3] or (amount > 0 and self.m_Equipments[item] >= amount) or (amount==-1 and player:getInventory():getFreePlacesForItem(item) >= self.m_Equipments[item] ) then
+		if armsData[3] or (amount > 0 and self.m_Equipments[equipmentId] >= amount) or (amount==-1 and player:getInventory():getFreePlacesForItem(item) >= self.m_Equipments[equipmentId] ) then
 			if amount > 0 then
-				self.m_Equipments[item] = self.m_Equipments[item] - amount
+				self.m_Equipments[equipmentId] = self.m_Equipments[equipmentId] - amount
 				if not armsData[3] then
-					if not player:getInventory():giveItem(InventoryManager:getSingleton():getItemId(item), amount) then
-						self.m_Equipments[item] = self.m_Equipments[item] + amount
+					if not player:getInventory():giveItem(equipmentId, amount) then
+						self.m_Equipments[equipmentId] = self.m_Equipments[equipmentId] + amount
 						return
 					end
 				else
 					giveWeapon(player, armsData[3], amount)
 				end
 			elseif amount == -1 then
-				amount = self.m_Equipments[item]
-				self.m_Equipments[item] = 0
+				amount = self.m_Equipments[equipmentId]
+				self.m_Equipments[equipmentId] = 0
 				if not armsData[3] then
-					if not player:getInventory():giveItem(InventoryManager:getSingleton():getItemId(item), amount) then
-						self.m_Equipments[item] = amount
+					if not player:getInventory():giveItem(equipmentId, amount) then
+						self.m_Equipments[equipmentId] = amount
 						return
 					end
 				else

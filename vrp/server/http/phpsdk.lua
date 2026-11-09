@@ -1515,7 +1515,7 @@ function phpSDKFactionDepot(factionId)
 	local items = {}
 	for slot, it in pairs(depot.m_Items or {}) do
 		if type(it) == "table" and it.Item and it.Item ~= 0 and (it.Amount or 0) > 0 then
-			items[#items + 1] = {slot = tonumber(slot), item = tostring(it.Item), amount = it.Amount}
+			items[#items + 1] = {slot = tonumber(slot), item = tostring(InventoryManager:getSingleton():resolveItemName(it.Item) or it.Item), amount = it.Amount}
 		end
 	end
 	local equipment = {}
@@ -1543,12 +1543,15 @@ function phpSDKFactionDepotEdit(adminId, factionId, kind, key, a, b)
 		if not slot or slot < 1 or slot > 6 then return {status = "ERROR", error = "INVALID"} end
 		local amount = math.max(0, math.floor(tonumber(b) or 0))
 		local empty = not a or a == "" or amount == 0
-		depot.m_Items[slot] = {Item = empty and 0 or tostring(a), Amount = empty and 0 or amount}
+		local itemId = not empty and InventoryManager:getSingleton():getItemId(tostring(a))
+		if not empty and not itemId then return {status = "ERROR", error = "UNKNOWN_ITEM"} end
+		depot.m_Items[slot] = {Item = empty and 0 or itemId, Amount = empty and 0 or amount}
 		text = empty and ("Itemplatz %d geleert"):format(slot) or ("Itemplatz %d: %d %s"):format(slot, amount, tostring(a))
 	elseif kind == "equipment" then
 		if type(key) ~= "string" or key == "" then return {status = "ERROR", error = "INVALID"} end
-		depot.m_Equipments[key] = math.max(0, math.floor(tonumber(a) or 0))
-		text = ("%s: %d"):format(key, depot.m_Equipments[key])
+		local amount = math.max(0, math.floor(tonumber(a) or 0))
+		if not depot:setEquipmentAmount(key, amount) then return {status = "ERROR", error = "UNKNOWN_ITEM"} end
+		text = ("%s: %d"):format(key, amount)
 	else
 		return {status = "ERROR", error = "UNKNOWN_ACTION"}
 	end

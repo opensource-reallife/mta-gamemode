@@ -23,6 +23,27 @@ Inventory.TabList = {}
 Inventory.RarityColor = {}
 Inventory.RarityName = {}
 
+addRemoteEvents{"inventoryReceivedMessage"}
+addEventHandler("inventoryReceivedMessage", root, function(title, received, left, receivedHeader, leftHeader)
+	local lines = {}
+	if received and #received > 0 then
+		lines[#lines + 1] = receivedHeader or _"Erhalten:"
+		for _index, entry in ipairs(received) do
+			lines[#lines + 1] = "  + "..entry
+		end
+	end
+	if left and #left > 0 then
+		lines[#lines + 1] = leftHeader or _"Nicht aufgenommen:"
+		for _index, entry in ipairs(left) do
+			lines[#lines + 1] = "  - "..entry
+		end
+	end
+	if #lines == 0 then return end
+	local success = received and #received > 0
+	ShortMessage:new(table.concat(lines, "\n"), title, success and {60, 118, 61} or {178, 35, 33}, 8000)
+	playSound(success and "files/audio/Success.mp3" or "files/audio/Message.mp3")
+end)
+
 function Inventory.setRarities(rarities)
 	if type(rarities) ~= "table" then return end
 	local colors, names = {}, {}

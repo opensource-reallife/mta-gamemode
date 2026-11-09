@@ -1,7 +1,7 @@
 ItemStorage = inherit(Object)
 ItemStorage.Map = {}
 
-addRemoteEvents{"itemStorageMove", "itemStorageClose"}
+addRemoteEvents{"itemStorageMove", "itemStorageClose", "factionArmoryTakeLoadout", "factionArmoryStoreAll"}
 
 function ItemStorage.get(storageType, ownerId, config)
 	local key = ("%s:%d"):format(storageType, ownerId)
@@ -481,8 +481,65 @@ function ArmoryStorage:deposit(player, itemName, amount, value)
 	self:syncAll()
 end
 
-function ArmoryStorage:withdraw(player, itemName, amount, value)
+function ArmoryStorage:storeAll(player)
 	local inventory = player:getInventory()
+	local manager = InventoryManager:getSingleton()
+	local stored, left = {}, {}
+	for weaponId, info in pairs(self.m_Depot.m_Weapons) do
+		for _index, itemName in ipairs({manager:getAmmoItemName(weaponId) or false, manager:getWeaponItemName(weaponId) or false}) do
+			local carried = itemName and inventory:getItemAmount(itemName) or 0
+			if carried > 0 then
+				local data = self:getItemData(itemName)
+				local key = data["WaffenId"] and "Waffe" or "Munition"
+				local space = math.max(0, self:getLimit(data) - (info[key] or 0))
+				local amount = math.min(carried, space)
+				if amount > 0 then
+					if data["WaffenId"] and not THROWABLE_WEAPONS[weaponId] and inventory:isWeaponArmed(weaponId) then
+						inventory:disarmWeapon(weaponId)
+					end
+					if inventory:removeItem(data["Id"], amount) then
+						if data["WaffenId"] then
+							self.m_Depot:addWeaponD(weaponId, amount)
+						else
+							self.m_Depot:addMagazineD(weaponId, amount)
+						end
+						self:getFaction():addLog(player, "Waffenlager", ("hat %s %s in das Lager gelegt!"):format(amount, itemName))
+						stored[#stored + 1] = ("%dx %s"):format(amount, itemName)
+					else
+						amount = 0
+					end
+				end
+				if amount < carried then
+					left[#left + 1] = _("%dx %s (kein Platz im Lager)", player, carried - amount, itemName)
+				end
+			end
+		end
+	end
+
+	if #stored == 0 and #left == 0 then
+		return player:sendError(_("Du hast keine Waffen oder Munition für dieses Lager dabei!", player))
+	end
+	InventoryManager:getSingleton():sendReceivedMessage(player, _("Waffenlager", player), stored, left, _("Eingelagert:", player), _("Nicht eingelagert:", player))
+	if #stored > 0 then
+		self.m_Depot:save()
+		self:syncAll()
+	end
+end
+
+addEventHandler("factionArmoryStoreAll", root, function(key)
+	local storage = ItemStorage.Map[key]
+	if not storage or not storage.storeAll or client.m_OpenStorage ~= storage then return end
+	if not storage.m_Config.canAccess(client) then
+		storage:close(client)
+		return
+	end
+	if client:hasTemporaryStorage() then
+		return client:sendError(_("Das geht gerade nicht!", client))
+	end
+	storage:storeAll(client)
+end)
+
+function ArmoryStorage:withdraw(player, itemName, amount, value)
 	local data = self:getItemData(itemName)
 	local weaponId = data["WaffenId"] or data["MunitionFuer"]
 	local info = weaponId and self.m_Depot.m_Weapons[weaponId]
@@ -492,37 +549,152 @@ function ArmoryStorage:withdraw(player, itemName, amount, value)
 		return player:sendError(_("Du darfst %s nicht entnehmen!", player, itemName))
 	end
 
+	local taken, reason
 	if data["WaffenId"] then
-		if not THROWABLE_WEAPONS[weaponId] then
-			if inventory:hasWeapon(weaponId) then
-				return player:sendError(_("Du hast bereits eine %s dabei!", player, itemName))
-			end
-			amount = 1
-		end
-		if info["Waffe"] < amount then
-			return player:sendError(_("So viel ist hier nicht eingelagert!", player))
-		end
-		if not inventory:canCarryWeapon(weaponId, THROWABLE_WEAPONS[weaponId] and amount or 0) then
-			return player:sendError(_("%s ist zu schwer für dich!", player, itemName))
-		end
-		self.m_Depot:takeWeaponD(weaponId, amount)
-		giveWeapon(player, weaponId, THROWABLE_WEAPONS[weaponId] and amount or (NO_MUNITION_WEAPONS[weaponId] and 1 or 0))
+		taken, reason = self:takeWeapon(player, weaponId, amount)
 	else
-		if info["Munition"] < amount then
-			return player:sendError(_("So viel ist hier nicht eingelagert!", player))
-		end
-		local dutyValue = inventory:getDutyValue()
-		if not inventory:giveItem(data["Id"], amount, dutyValue, dutyValue and true or false) then
-			return
-		end
-		self.m_Depot:takeMagazineD(weaponId, amount)
+		taken, reason = self:takeAmmo(player, weaponId, amount, true)
+	end
+	if not taken then
+		if reason then player:sendError(reason) end
+		return
 	end
 
-	self:getFaction():addLog(player, "Waffenlager", ("hat %s %s aus dem Lager genommen!"):format(amount, itemName))
-	player:sendInfo(_("Du hast %dx %s entnommen!", player, amount, itemName))
+	player:sendInfo(_("Du hast %dx %s entnommen!", player, taken, itemName))
 	self.m_Depot:save()
 	self:syncAll()
 end
+
+function ArmoryStorage:takeWeapon(player, weaponId, amount)
+	local inventory = player:getInventory()
+	local info = self.m_Depot.m_Weapons[weaponId]
+	local itemName = InventoryManager:getSingleton():getWeaponItemName(weaponId)
+	if not info or not itemName then
+		return false, _("Diese Waffe gibt es hier nicht!", player)
+	end
+	if not self:isPlayerAllowed(player, weaponId) then
+		return false, _("Du darfst %s nicht entnehmen!", player, itemName)
+	end
+	if not THROWABLE_WEAPONS[weaponId] then
+		if inventory:hasWeapon(weaponId) then
+			return false, _("Du hast bereits eine %s dabei!", player, itemName)
+		end
+		amount = 1
+	end
+	if (info["Waffe"] or 0) < amount then
+		return false, _("So viel %s ist hier nicht eingelagert!", player, itemName)
+	end
+	if not inventory:canCarryWeapon(weaponId, THROWABLE_WEAPONS[weaponId] and amount or 0) then
+		return false, _("%s ist zu schwer für dich!", player, itemName)
+	end
+	self.m_Depot:takeWeaponD(weaponId, amount)
+	giveWeapon(player, weaponId, THROWABLE_WEAPONS[weaponId] and amount or (NO_MUNITION_WEAPONS[weaponId] and 1 or 0))
+	self:getFaction():addLog(player, "Waffenlager", ("hat %s %s aus dem Lager genommen!"):format(amount, itemName))
+	return amount
+end
+
+function ArmoryStorage:takeAmmo(player, weaponId, amount, exact)
+	local inventory = player:getInventory()
+	local manager = InventoryManager:getSingleton()
+	local info = self.m_Depot.m_Weapons[weaponId]
+	local itemName = manager:getAmmoItemName(weaponId)
+	if not info or not itemName then
+		return false, _("Diese Munition gibt es hier nicht!", player)
+	end
+	if not self:isPlayerAllowed(player, weaponId) then
+		return false, _("Du darfst %s nicht entnehmen!", player, itemName)
+	end
+	if not inventory:hasWeapon(weaponId) then
+		return false, _("Du brauchst dafür eine %s!", player, WEAPON_NAMES[weaponId] or manager:getWeaponItemName(weaponId) or "")
+	end
+	local stored = info["Munition"] or 0
+	if stored < amount then
+		if exact or stored <= 0 then
+			return false, _("So viel %s ist hier nicht eingelagert!", player, itemName)
+		end
+		amount = stored
+	end
+	local dutyValue = inventory:getDutyValue()
+	if not dutyValue and not exact then
+		local unitWeight = manager:getItemDataForItem(itemName)["Gewicht"] or 0
+		if unitWeight > 0 then
+			amount = math.min(amount, math.floor((inventory:getFreeCarryWeight() + 0.0001) / unitWeight))
+		end
+		amount = math.min(amount, inventory:getItemLimitSpace(itemName))
+		if amount <= 0 then
+			return false, _("%s ist zu schwer für dich!", player, itemName)
+		end
+	end
+	if not inventory:giveItem(manager:getItemId(itemName), amount, dutyValue, dutyValue and true or false) then
+		return false, not exact and _("Du kannst %s nicht tragen!", player, itemName) or nil
+	end
+	self.m_Depot:takeMagazineD(weaponId, amount)
+	self:getFaction():addLog(player, "Waffenlager", ("hat %s %s aus dem Lager genommen!"):format(amount, itemName))
+	return amount
+end
+
+function ArmoryStorage:takeLoadout(player, name, entries)
+	local received, left = {}, {}
+	local count = 0
+	for _index, entry in ipairs(entries) do
+		count = count + 1
+		if count > 30 then break end
+		local weaponId = tonumber(type(entry) == "table" and entry.id)
+		local ammo = math.max(0, math.floor(tonumber(type(entry) == "table" and entry.ammo) or 0))
+		local weaponName = weaponId and (WEAPON_NAMES[weaponId] or InventoryManager:getSingleton():getWeaponItemName(weaponId))
+		if weaponName then
+			local throwable = THROWABLE_WEAPONS[weaponId]
+			if throwable then
+				local taken, reason = self:takeWeapon(player, weaponId, math.max(ammo, 1))
+				if taken then
+					received[#received + 1] = _("%dx %s", player, taken, weaponName)
+				else
+					left[#left + 1] = ("%dx %s (%s)"):format(math.max(ammo, 1), weaponName, reason)
+				end
+			else
+				if not player:getInventory():hasWeapon(weaponId) then
+					local taken, reason = self:takeWeapon(player, weaponId, 1)
+					if taken then
+						received[#received + 1] = _("1x %s", player, weaponName)
+					else
+						left[#left + 1] = ("1x %s (%s)"):format(weaponName, reason)
+					end
+				end
+				if ammo > 0 and InventoryManager:getSingleton():getAmmoItemName(weaponId) then
+					local taken, reason = self:takeAmmo(player, weaponId, ammo, false)
+					if taken then
+						received[#received + 1] = _("%d Schuss %s", player, taken, weaponName)
+						if taken < ammo then
+							left[#left + 1] = _("%d Schuss %s (nicht genug im Lager oder zu schwer)", player, ammo - taken, weaponName)
+						end
+					else
+						left[#left + 1] = ("%d Schuss %s (%s)"):format(ammo, weaponName, reason)
+					end
+				end
+			end
+		end
+	end
+
+	InventoryManager:getSingleton():sendReceivedMessage(player, _("Equipment: %s", player, name), received, left)
+	if #received > 0 then
+		self.m_Depot:save()
+		self:syncAll()
+	end
+end
+
+addEventHandler("factionArmoryTakeLoadout", root, function(key, name, entries)
+	local storage = ItemStorage.Map[key]
+	if not storage or not storage.takeLoadout or client.m_OpenStorage ~= storage then return end
+	if not storage.m_Config.canAccess(client) then
+		storage:close(client)
+		return
+	end
+	if client:hasTemporaryStorage() then
+		return client:sendError(_("Das geht gerade nicht!", client))
+	end
+	if type(entries) ~= "table" then return end
+	storage:takeLoadout(client, tostring(name or ""):sub(1, 32), entries)
+end)
 
 function ArmoryStorage:open(player)
 	if not self.m_Config.canAccess(player) then return false end

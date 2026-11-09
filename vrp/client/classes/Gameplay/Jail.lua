@@ -25,7 +25,17 @@ addEventHandler("playerJailed", root,
 	end
 )
 
+function Jail.restoreControls()
+	toggleControl("fire", true)
+	toggleControl("aim_weapon", true)
+	toggleControl("jump", true)
+	if Inventory:isInstantiated() then
+		Inventory:getSingleton():applyOverload()
+	end
+end
+
 function Jail.startCountdown(jailTime)
+	if not localPlayer:getData("inJail") then return end
 	InfoBox:new(_("Du wurdest für %d Minuten ins Gefängnis gesperrt!", jailTime))
 	local countdown = Countdown:new(jailTime*60, "Frei in:")
 	countdown:addTickEvent(function()
@@ -46,6 +56,8 @@ addEventHandler("playerLeftJail", root,
 		if Countdown.Map["Frei in:"] then
 			delete(Countdown.Map["Frei in:"])
 		end
+		isPrisonBreak = false
+		Jail.restoreControls()
 	end
 )
 

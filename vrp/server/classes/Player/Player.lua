@@ -443,6 +443,11 @@ function Player:spawn()
 	self:setStat(22, 1000)
 	self:setStat(225, 1000)
 
+	-- After a resource restart the player element keeps its old dimension on the server, while the login screen has set it
+	-- to 0 on the client (LoginGUI). spawnPlayer with an unchanged dimension does not sync it again, so the client would stay
+	-- in dimension 0 (e.g. faction interiors without NPCs, depots and exit marker). Resetting it here forces the sync.
+	setElementDimension(self, 0)
+
 	if self.m_SavedDimension and self.m_SavedDimension >= GANGWAR_DIMENSION_BASE then
 		self.m_SavedPosition = HOSPITAL_POSITION
 		self.m_SavedInterior = 0
@@ -1840,7 +1845,7 @@ function Player:moveToJail(CUTSCENE, alreadySpawned)
 		end
 		self:toggleControl("fire", false)
 		self:toggleControl("jump", false)
-		self:toggleControl("aim_weapon ", false)
+		self:toggleControl("aim_weapon", false)
 		takeAllWeapons(self)
 		self.m_JailStart = getRealTime().timestamp
 		self:setData("inJail",true, true)

@@ -143,7 +143,7 @@ function Jail:setPrisonBreak(state)
 	for index, player in pairs(self:getJailedPlayers()) do
 		player:toggleControl("fire", state)
 		player:toggleControl("jump", state)
-		player:toggleControl("aim_weapon ", state)
+		player:toggleControl("aim_weapon", state)
 		player:triggerEvent("setPrisonBreak", state)
 		if state then
 			if player:getFaction() and player:getFaction():isEvilFaction() then
