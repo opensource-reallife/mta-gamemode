@@ -24,16 +24,16 @@ Inventory.RarityColor = {}
 Inventory.RarityName = {}
 
 addRemoteEvents{"inventoryReceivedMessage"}
-addEventHandler("inventoryReceivedMessage", root, function(title, received, left)
+addEventHandler("inventoryReceivedMessage", root, function(title, received, left, receivedHeader, leftHeader)
 	local lines = {}
 	if received and #received > 0 then
-		lines[#lines + 1] = _"Erhalten:"
+		lines[#lines + 1] = receivedHeader or _"Erhalten:"
 		for _index, entry in ipairs(received) do
 			lines[#lines + 1] = "  + "..entry
 		end
 	end
 	if left and #left > 0 then
-		lines[#lines + 1] = _"Nicht aufgenommen:"
+		lines[#lines + 1] = leftHeader or _"Nicht aufgenommen:"
 		for _index, entry in ipairs(left) do
 			lines[#lines + 1] = "  - "..entry
 		end

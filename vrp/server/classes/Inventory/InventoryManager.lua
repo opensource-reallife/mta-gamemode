@@ -510,10 +510,10 @@ function InventoryManager:getRarities()
 	return self.m_Rarities
 end
 
-function InventoryManager:sendReceivedMessage(player, title, received, left)
+function InventoryManager:sendReceivedMessage(player, title, received, left, receivedHeader, leftHeader)
 	if not isElement(player) then return end
 	if (not received or #received == 0) and (not left or #left == 0) then return end
-	player:triggerEvent("inventoryReceivedMessage", title, received or {}, left or {})
+	player:triggerEvent("inventoryReceivedMessage", title, received or {}, left or {}, receivedHeader, leftHeader)
 end
 
 function InventoryManager:getOverloadFactor()
