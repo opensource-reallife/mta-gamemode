@@ -568,6 +568,10 @@ function Inventory:throwItem(item, bag, id, place, name, amount)
 		self.m_Owner:sendError(_("Du kannst das gerade nicht wegwerfen!", self.m_Owner))
 		return
 	end
+	if (data["WaffenId"] or data["MunitionFuer"]) and row["Value"] == DUTY_VALUE and self:isStateDuty() then
+		self.m_Owner:sendError(_("Im Dienst kannst du Dienstwaffen und Munition nicht wegwerfen!", self.m_Owner))
+		return
+	end
 	if data["WaffenId"] and self:isWeaponArmed(data["WaffenId"]) then
 		self.m_Owner:sendError(_("Stecke die Waffe zuerst weg!", self.m_Owner))
 		return
@@ -866,6 +870,23 @@ function Inventory:toggleWeapon(weaponId)
 	end
 	self:syncClient()
 	return true
+end
+
+function Inventory:isStateDuty()
+	local faction = self.m_Owner:getFaction()
+	return faction and faction:isStateFaction() and self.m_Owner:isFactionDuty() and true or false
+end
+
+function Inventory:isDutyWeapon(weaponId)
+	local manager = InventoryManager:getSingleton()
+	for _index, itemName in ipairs({manager:getWeaponItemName(weaponId), manager:getAmmoItemName(weaponId)}) do
+		for _rowIndex, id in ipairs(self:getRowsOfItem(itemName)) do
+			if self.m_Items[id]["Value"] == DUTY_VALUE then
+				return true
+			end
+		end
+	end
+	return false
 end
 
 function Inventory:getDutyValue()

@@ -27,6 +27,10 @@ function PickupWeaponManager:Event_onPlayerDropWeapon(data)
 		if client:getData("isInDeathMatch") then return end
 		if client:getData("inWare") then return end
 		if not isPedDead(client) and getElementHealth(client) ~= 0 and (client.getExecutionPed and not client:getExecutionPed()) then
+			local inventory = client:getInventory()
+			if inventory and inventory.m_Items and inventory:isStateDuty() and inventory:isDutyWeapon(data[6]) then
+				return client:sendError(_("Im Dienst kannst du Dienstwaffen und Munition nicht wegwerfen!", client))
+			end
 			takeWeapon(client, data[6])
 			PickupWeapon:new(data[1], data[2], data[3], data[4], data[5], data[6], data[7], client, false)
 		end
