@@ -745,12 +745,9 @@ function ShopManager:giveWeaponsFromOrder(player, order)
 		end
 	end
 
-	if #received > 0 then
-		player:sendSuccess(_("Du hast erhalten: %s", player, table.concat(received, ", ")))
-	end
-	if #left > 0 and (#received > 0 or getTickCount() - (player.m_LastOrderNotice or -5000) >= 5000) then
+	if #received > 0 or (#left > 0 and getTickCount() - (player.m_LastOrderNotice or -5000) >= 5000) then
 		player.m_LastOrderNotice = getTickCount()
-		player:sendError(_("Das bleibt hier liegen: %s", player, table.concat(left, ", ")))
+		manager:sendReceivedMessage(player, _("Ammu-Nation Bestellung", player), received, left)
 	end
 	return taken
 end

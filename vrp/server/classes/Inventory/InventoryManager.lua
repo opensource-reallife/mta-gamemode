@@ -510,6 +510,12 @@ function InventoryManager:getRarities()
 	return self.m_Rarities
 end
 
+function InventoryManager:sendReceivedMessage(player, title, received, left)
+	if not isElement(player) then return end
+	if (not received or #received == 0) and (not left or #left == 0) then return end
+	player:triggerEvent("inventoryReceivedMessage", title, received or {}, left or {})
+end
+
 function InventoryManager:getOverloadFactor()
 	return 1 + self:getCapacity("overload_percent") / 100
 end

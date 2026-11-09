@@ -21,6 +21,19 @@ function PickupWeapon:constructor(x, y, z, int, dim, weapon, ammo, owner, ignore
 	end
 end
 
+function PickupWeapon.getBlockReason(player, itemName, amount)
+	local inventory = player:getInventory()
+	if not inventory then return false end
+	local limit = inventory:getItemLimitSpace(itemName)
+	if amount > limit then
+		return limit <= 0 and _("Limit erreicht", player) or _("Limit erreicht, nur noch %d möglich", player, limit)
+	end
+	if not inventory:canCarry(itemName, amount) then
+		return _("zu schwer, noch %.2f kg frei", player, math.max(0, inventory:getFreeCarryWeight()))
+	end
+	return false
+end
+
 function PickupWeapon:createEntity(model, x, y, z, int, dim, label, scale)
 	self.m_Object = createObject(model, x, y, z)
 	if scale then setObjectScale(self.m_Object, scale) end
@@ -49,18 +62,27 @@ function PickupWeapon:pickup(player)
 					StateEvidence:getSingleton():addWeaponWithMunitionToEvidence(player, self.m_WeaponID, self.m_Ammo)
 				end
 			elseif self.m_AmmoOnly then
-				local ammoItem = InventoryManager:getSingleton():getAmmoItemName(self.m_WeaponID)
-				if not ammoItem or not player:getInventory():giveItem(InventoryManager:getSingleton():getItemId(ammoItem), self.m_Ammo) then
+				local manager = InventoryManager:getSingleton()
+				local ammoItem = manager:getAmmoItemName(self.m_WeaponID)
+				local entry = _("%d Schuss %s", player, self.m_Ammo, WEAPON_NAMES[self.m_WeaponID] or ammoItem or "")
+				local reason = ammoItem and PickupWeapon.getBlockReason(player, ammoItem, self.m_Ammo)
+				if reason then
+					manager:sendReceivedMessage(player, _("Aufheben", player), {}, {("%s (%s)"):format(entry, reason)})
 					return
 				end
-				player:sendSuccess(_("Du hast die Munition erhalten!", player))
+				if not ammoItem or not player:getInventory():giveItem(manager:getItemId(ammoItem), self.m_Ammo) then
+					return
+				end
+				manager:sendReceivedMessage(player, _("Aufgehoben", player), {entry}, {})
 			else
+				local name = WEAPON_NAMES[self.m_WeaponID] or ""
+				local entry = (self.m_Ammo > 0 and not THROWABLE_WEAPONS[self.m_WeaponID]) and _("1x %s mit %d Schuss", player, name, self.m_Ammo) or _("%dx %s", player, THROWABLE_WEAPONS[self.m_WeaponID] and math.max(self.m_Ammo, 1) or 1, name)
 				if player:getInventory() and not player:getInventory():canCarryWeapon(self.m_WeaponID, self.m_Ammo) then
-					player:sendError(_("Die Waffe ist zu schwer für dich!", player))
+					InventoryManager:getSingleton():sendReceivedMessage(player, _("Aufheben", player), {}, {_("%s (zu schwer, noch %.2f kg frei)", player, entry, math.max(0, player:getInventory():getFreeCarryWeight()))})
 					return
 				end
 				giveWeapon(player, self.m_WeaponID, self.m_Ammo, true)
-				player:sendSuccess(_("Du hast die Waffe erhalten!", player))
+				InventoryManager:getSingleton():sendReceivedMessage(player, _("Aufgehoben", player), {entry}, {})
 			end
 			player:meChat(true, "kniet sich nieder und hebt %s auf!", self.m_AmmoOnly and "Munition" or "eine Waffe")
 			setPedAnimation(player, PICKUP_ANIMATION_BLOCK, PICKUP_ANIMATION_NAME, 500, false, false, false)
@@ -111,10 +133,18 @@ function PickupItem:pickup(player)
 			return
 		end
 		StateEvidence:getSingleton():addItemToEvidence(player, self.m_ItemName, self.m_Amount)
-	elseif not player:getInventory():giveItem(InventoryManager:getSingleton():getItemId(self.m_ItemName), self.m_Amount, self.m_Value, false, self.m_WearLevel) then
-		return
 	else
-		player:sendSuccess(_("Du hast %dx %s aufgehoben!", player, self.m_Amount, self.m_ItemName))
+		local manager = InventoryManager:getSingleton()
+		local entry = _("%dx %s", player, self.m_Amount, _(self.m_ItemName, player))
+		local reason = PickupWeapon.getBlockReason(player, self.m_ItemName, self.m_Amount)
+		if reason then
+			manager:sendReceivedMessage(player, _("Aufheben", player), {}, {("%s (%s)"):format(entry, reason)})
+			return
+		end
+		if not player:getInventory():giveItem(manager:getItemId(self.m_ItemName), self.m_Amount, self.m_Value, false, self.m_WearLevel) then
+			return
+		end
+		manager:sendReceivedMessage(player, _("Aufgehoben", player), {entry}, {})
 	end
 
 	player:meChat(true, "kniet sich nieder und hebt %s auf!", self.m_ItemName, true)
