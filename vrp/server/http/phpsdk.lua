@@ -1260,7 +1260,23 @@ local function phpSDKAccountPurge(targetId, newName, keepSerials)
 		end
 		run("Serials", sql, "DELETE FROM ??_account_to_serial WHERE PlayerId = ?", prefix, targetId)
 		run("Hardware", sql, "DELETE FROM ??_client_statistics WHERE UserId = ?", prefix, targetId)
-		run("Multiaccount-Serials", sql, "DELETE FROM ??_account_multiaccount WHERE LinkedTo = ?", prefix, targetId)
+		for _, row in ipairs(sql:queryFetch("SELECT ID, LinkedTo, allowCreate FROM ??_account_multiaccount", prefix) or {}) do
+			local rest, found = {}, false
+			for _, id in ipairs(fromJSON(row.LinkedTo or "") or {}) do
+				if tonumber(id) == targetId then
+					found = true
+				elseif tonumber(id) then
+					rest[#rest + 1] = tonumber(id)
+				end
+			end
+			if found then
+				if #rest == 0 or (#rest == 1 and tonumber(row.allowCreate) ~= 1) then
+					run("Multiaccount-Freigaben", sql, "DELETE FROM ??_account_multiaccount WHERE ID = ?", prefix, row.ID)
+				else
+					run("Multiaccount-Freigaben", sql, "UPDATE ??_account_multiaccount SET LinkedTo = ? WHERE ID = ?", prefix, toJSON(rest), row.ID)
+				end
+			end
+		end
 	end
 	run("Screenshots", sql, "DELETE FROM ??_account_screenshot WHERE UserId = ?", prefix, targetId)
 	run("TeamSpeak", sql, "DELETE FROM ??_teamspeak_identity WHERE UserId = ?", prefix, targetId)
@@ -1272,35 +1288,25 @@ local function phpSDKAccountPurge(targetId, newName, keepSerials)
 		run("Rechnungsdaten", sqlPremium, ("UPDATE `user` SET `%s` = '' WHERE UserId = ? AND `%s` <> ''"):format(col, col), targetId)
 	end
 	run("Rechnungsdaten", sqlPremium, "UPDATE `user` SET Name = ? WHERE UserId = ?", newName, targetId)
-	local playerCols = {UserId = true, UserID = true, TargetId = true, PlayerId = true, PoliceId = true, HostId = true, ReceivingId = true, GivingId = true, Attacker = true, Target = true, SellerId = true, BuyerId = true, Receiver = true}
-	local keep = {vrplogs_punish = true, vrplogs_punishlog = true}
-	local tables = {}
-	for _, row in ipairs(sqlLogs:queryFetch("SELECT TABLE_NAME AS T, COLUMN_NAME AS C FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ?", sqlLogs.m_Database) or {}) do
-		tables[row.T] = tables[row.T] or {}
-		tables[row.T][row.C] = true
+	local logPrefix = sqlLogs:getPrefix()
+	local logTables = {}
+	for _, row in ipairs(sqlLogs:queryFetch("SELECT TABLE_NAME AS T FROM information_schema.TABLES WHERE TABLE_SCHEMA = ?", sqlLogs.m_Database) or {}) do
+		logTables[tostring(row.T):lower()] = true
 	end
-	for name, cols in pairs(tables) do
-		if not keep[name] then
-			local where, args = {}, {}
-			for col in pairs(cols) do
-				if playerCols[col] then
-					where[#where + 1] = ("`%s` = ?"):format(col)
-					args[#args + 1] = targetId
-				end
-			end
-			if cols.FromType and cols.ToType then
-				where[#where + 1] = "(FromType = 1 AND FromId = ?) OR (ToType = 1 AND ToId = ?)"
-				args[#args + 1], args[#args + 2] = targetId, targetId
-			end
-			if cols.ElementType and cols.ElementId then
-				where[#where + 1] = "(ElementType = 'player' AND ElementId = ?)"
-				args[#args + 1] = targetId
-			end
-			if #where > 0 then
-				run("Logs", sqlLogs, ("DELETE FROM `%s` WHERE %s"):format(name, table.concat(where, " OR ")), unpack(args))
-			end
+	local logExec = function(tableName, query, ...)
+		if logTables[(logPrefix .. "_" .. tableName):lower()] then
+			sqlLogs:queryExec(query, ...)
+			purged["Logs (im Hintergrund)"] = (purged["Logs (im Hintergrund)"] or 0) + 1
 		end
 	end
+	if logTables[(logPrefix .. "_Chat"):lower()] then
+		logExec("ChatReceivers", "DELETE r FROM ??_ChatReceivers r JOIN ??_Chat c ON c.ID = r.MessageId WHERE c.UserId = ?", logPrefix, logPrefix, targetId)
+	end
+	logExec("Chat", "DELETE FROM ??_Chat WHERE UserId = ?", logPrefix, targetId)
+	logExec("Login", "DELETE FROM ??_Login WHERE UserId = ?", logPrefix, targetId)
+	logExec("Advert", "DELETE FROM ??_Advert WHERE UserId = ?", logPrefix, targetId)
+	logExec("AntiCheatKicks", "UPDATE ??_AntiCheatKicks SET Serial = '', Ip = '' WHERE UserId = ?", logPrefix, targetId)
+	logExec("GangwarTopList", "UPDATE ??_GangwarTopList SET Name = ? WHERE UserId = ?", logPrefix, newName, targetId)
 	sql:queryExec("UPDATE ??_account SET Name = ?, EMail = NULL, Password = '', Salt = '', " .. (keepSerials and "" or "LastSerial = NULL, ") .. "LastIP = NULL, AutologinToken = NULL, RememberToken = NULL, ApiToken = NULL, TeamspeakId = NULL, TeamspeakActivationCode = NULL, ForumID = 0 WHERE Id = ?", prefix, newName, targetId)
 	return purged
 end
