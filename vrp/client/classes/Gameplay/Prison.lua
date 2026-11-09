@@ -34,5 +34,12 @@ addEvent("playerLeftPrison", true)
 addEventHandler("playerLeftPrison", root,
 	function()
 		if PrisonCountdown then delete(PrisonCountdown) end
+		PrisonCountdown = nil
+		toggleControl("fire", true)
+		toggleControl("aim_weapon", true)
+		toggleControl("jump", true)
+		if Inventory:isInstantiated() then
+			Inventory:getSingleton():applyOverload()
+		end
 	end
 )

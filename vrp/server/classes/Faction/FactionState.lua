@@ -1771,8 +1771,8 @@ function FactionState:freePlayer(player, prisonBreak)
 	player:setData("inJail",false, true)
 	player:toggleControl("fire", true)
 	player:toggleControl("jump", true)
-	player:toggleControl("aim_weapon ", true)
-	player:toggleControl("enter_exit ", true)
+	player:toggleControl("aim_weapon", true)
+	player:toggleControl("enter_exit", true)
 	if isTimer(player.m_JailTimer) then
 		killTimer( player.m_JailTimer )
 	end
